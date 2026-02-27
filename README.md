@@ -1,36 +1,125 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# BytovaApp
+
+Open-source web application for managing residential apartment buildings (bytove domy) in Slovakia. Built for building administrators, owners, and tenants to handle voting, announcements, document management, and owner administration.
+
+## Features
+
+- **Board (Nastenka)** — Post announcements with categories (info, urgent, event, maintenance), pin/unpin posts
+- **Voting** — Weighted voting by ownership share, electronic and paper ballots, mandate delegation, audit trail
+- **Owner Management** — User CRUD with role-based access (admin, owner, tenant, vote counter)
+- **Documents** — Upload and share building documents
+- **Settings** — Building configuration and management
+- **Authentication** — Secure login with NextAuth v5 credentials provider
+- **RBAC** — Role-based permissions across all features
+
+## Tech Stack
+
+- **Framework:** Next.js 14 (App Router)
+- **Language:** TypeScript
+- **Styling:** Tailwind CSS
+- **Database:** PostgreSQL 16
+- **ORM:** Drizzle ORM
+- **Auth:** NextAuth v5 (beta)
+- **Deployment:** Docker + Caddy
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
+
+- Node.js 18+
+- PostgreSQL 16 (or Docker)
+- npm
+
+### Setup
+
+1. Clone the repository:
+
+```bash
+git clone https://github.com/open-housing/byt-app.git
+cd byt-app
+```
+
+2. Install dependencies:
+
+```bash
+npm install
+```
+
+3. Create a `.env` file based on `.env.example` and configure your database connection and auth secret.
+
+4. Start the database (if using Docker):
+
+```bash
+docker compose up db
+```
+
+5. Run migrations and seed:
+
+```bash
+npm run db:generate
+npm run db:migrate
+npm run db:seed
+```
+
+6. Start the development server:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Seed Credentials
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+| Role  | Email          | Password   |
+|-------|----------------|------------|
+| Admin | admin@test.sk  | Admin123!  |
+| Owner | jan@test.sk    | Admin123!  |
+| Owner | maria@test.sk  | Admin123!  |
+| Owner | peter@test.sk  | Admin123!  |
+| Owner | anna@test.sk   | Admin123!  |
 
-## Learn More
+## Project Structure
 
-To learn more about Next.js, take a look at the following resources:
+```
+src/
+  app/
+    (auth)/           # Login page
+    (dashboard)/      # Protected pages
+      board/          # Announcements board
+      voting/         # Voting system
+      owners/         # Owner/user management
+      settings/       # Building settings
+    api/              # API routes
+  components/         # Reusable UI components
+  db/                 # Schema, migrations, seed
+  lib/                # Auth, permissions, voting logic
+  types/              # TypeScript type definitions
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Scripts
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+| Command              | Description                    |
+|----------------------|--------------------------------|
+| `npm run dev`        | Start development server       |
+| `npm run build`      | Build for production           |
+| `npm run start`      | Start production server        |
+| `npm run lint`       | Run ESLint                     |
+| `npm run db:generate`| Generate Drizzle migrations    |
+| `npm run db:migrate` | Run database migrations        |
+| `npm run db:seed`    | Seed database with test data   |
+| `npm run db:studio`  | Open Drizzle Studio            |
 
-## Deploy on Vercel
+## Contributing
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Contributions are welcome! Please read the [Code of Conduct](CODE_OF_CONDUCT.md) before contributing.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/my-feature`)
+3. Commit your changes (`git commit -m 'Add my feature'`)
+4. Push to the branch (`git push origin feature/my-feature`)
+5. Open a Pull Request
+
+## License
+
+This project is licensed under the [MIT License](LICENSE).
