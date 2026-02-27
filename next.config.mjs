@@ -1,4 +1,7 @@
 /** @type {import('next').NextConfig} */
-const nextConfig = {};
+const nextConfig = {
+  output: "standalone",
+  transpilePackages: ["next-auth", "@auth/core"],
+};
 
 export default nextConfig;
