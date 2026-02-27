@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useTranslations } from "next-intl";
 import type { VoteChoice } from "@/types";
 
 interface Owner {
@@ -16,11 +17,12 @@ interface PaperVoteModalProps {
   onRecorded: () => void;
 }
 
-const choices: { value: VoteChoice; label: string }[] = [
-  { value: "za", label: "ZA" },
-  { value: "proti", label: "PROTI" },
-  { value: "zdrzal_sa", label: "ZDRŽAL SA" },
-];
+const choiceValues: VoteChoice[] = ["za", "proti", "zdrzal_sa"];
+const choiceKeys: Record<VoteChoice, string> = {
+  za: "for",
+  proti: "against",
+  zdrzal_sa: "abstain",
+};
 
 export default function PaperVoteModal({
   isOpen,
@@ -28,6 +30,8 @@ export default function PaperVoteModal({
   onClose,
   onRecorded,
 }: PaperVoteModalProps) {
+  const t = useTranslations("PaperVote");
+  const tCommon = useTranslations("Common");
   const [owners, setOwners] = useState<Owner[]>([]);
   const [selectedOwner, setSelectedOwner] = useState("");
   const [selectedChoice, setSelectedChoice] = useState<VoteChoice | "">("");
@@ -65,7 +69,7 @@ export default function PaperVoteModal({
 
     if (!res.ok) {
       const data = await res.json();
-      setError(data.error || "Nepodarilo sa zaznamenať hlas");
+      setError(data.error || t("submitFailed"));
       setLoading(false);
       return;
     }
@@ -81,7 +85,7 @@ export default function PaperVoteModal({
       <div className="bg-white rounded-2xl w-full max-w-md p-6">
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-xl font-bold text-gray-900">
-            Zaznamenať listinný hlas
+            {t("title")}
           </h2>
           <button
             onClick={onClose}
@@ -100,7 +104,7 @@ export default function PaperVoteModal({
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className="block text-base font-medium text-gray-700 mb-1">
-              Vlastník
+              {t("ownerLabel")}
             </label>
             <select
               value={selectedOwner}
@@ -108,10 +112,10 @@ export default function PaperVoteModal({
               required
               className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
             >
-              <option value="">Vyberte vlastníka</option>
+              <option value="">{t("ownerPlaceholder")}</option>
               {owners.map((o) => (
                 <option key={o.id} value={o.id}>
-                  {o.name} (byt {o.flatNumber})
+                  {o.name} ({t("flat", { number: o.flatNumber })})
                 </option>
               ))}
             </select>
@@ -119,14 +123,14 @@ export default function PaperVoteModal({
 
           <div>
             <label className="block text-base font-medium text-gray-700 mb-2">
-              Hlas
+              {t("voteLabel")}
             </label>
             <div className="space-y-2">
-              {choices.map((c) => (
+              {choiceValues.map((c) => (
                 <label
-                  key={c.value}
+                  key={c}
                   className={`flex items-center gap-3 p-3 border rounded-lg cursor-pointer transition-colors ${
-                    selectedChoice === c.value
+                    selectedChoice === c
                       ? "border-blue-500 bg-blue-50"
                       : "border-gray-200 hover:bg-gray-50"
                   }`}
@@ -134,14 +138,14 @@ export default function PaperVoteModal({
                   <input
                     type="radio"
                     name="choice"
-                    value={c.value}
-                    checked={selectedChoice === c.value}
+                    value={c}
+                    checked={selectedChoice === c}
                     onChange={(e) =>
                       setSelectedChoice(e.target.value as VoteChoice)
                     }
                     className="w-5 h-5 text-blue-600"
                   />
-                  <span className="text-base font-medium">{c.label}</span>
+                  <span className="text-base font-medium">{t(choiceKeys[c])}</span>
                 </label>
               ))}
             </div>
@@ -153,14 +157,14 @@ export default function PaperVoteModal({
               onClick={onClose}
               className="flex-1 py-3 px-4 text-base font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
             >
-              Zrušiť
+              {tCommon("cancel")}
             </button>
             <button
               type="submit"
               disabled={loading || !selectedOwner || !selectedChoice}
               className="flex-1 py-3 px-4 text-base font-medium text-white bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 rounded-lg transition-colors"
             >
-              {loading ? "Ukladám..." : "Zaznamenať"}
+              {loading ? tCommon("saving") : t("submit")}
             </button>
           </div>
         </form>

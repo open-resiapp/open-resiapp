@@ -1,23 +1,23 @@
 "use client";
 
-import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { useTranslations } from "next-intl";
+import { Link, usePathname } from "@/i18n/navigation";
 import type { UserRole } from "@/types";
 import { hasPermission } from "@/lib/permissions";
 
 interface NavItem {
   href: string;
-  label: string;
+  labelKey: string;
   icon: string;
   permission?: Parameters<typeof hasPermission>[1];
 }
 
 const navItems: NavItem[] = [
-  { href: "/", label: "Dashboard", icon: "📊" },
-  { href: "/board", label: "Nástenka", icon: "📋" },
-  { href: "/voting", label: "Hlasovanie", icon: "🗳️" },
-  { href: "/owners", label: "Vlastníci", icon: "👥", permission: "manageUsers" },
-  { href: "/settings", label: "Nastavenia", icon: "⚙️", permission: "viewSettings" },
+  { href: "/", labelKey: "dashboard", icon: "📊" },
+  { href: "/board", labelKey: "board", icon: "📋" },
+  { href: "/voting", labelKey: "voting", icon: "🗳️" },
+  { href: "/owners", labelKey: "owners", icon: "👥", permission: "manageUsers" },
+  { href: "/settings", labelKey: "settings", icon: "⚙️", permission: "viewSettings" },
 ];
 
 export default function Sidebar({
@@ -29,6 +29,7 @@ export default function Sidebar({
   isOpen: boolean;
   onClose: () => void;
 }) {
+  const t = useTranslations("Sidebar");
   const pathname = usePathname();
 
   const visibleItems = navItems.filter(
@@ -50,8 +51,8 @@ export default function Sidebar({
         }`}
       >
         <div className="p-6 border-b border-gray-200">
-          <h2 className="text-lg font-bold text-blue-600">BytováApp</h2>
-          <p className="text-sm text-gray-500 mt-1">Správa bytového domu</p>
+          <h2 className="text-lg font-bold text-blue-600">{t("appName")}</h2>
+          <p className="text-sm text-gray-500 mt-1">{t("appDescription")}</p>
         </div>
 
         <nav className="p-4 space-y-1">
@@ -73,7 +74,7 @@ export default function Sidebar({
                 }`}
               >
                 <span className="text-xl">{item.icon}</span>
-                {item.label}
+                {t(item.labelKey)}
               </Link>
             );
           })}

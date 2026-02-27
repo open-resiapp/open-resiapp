@@ -1,6 +1,7 @@
 "use client";
 
 import { useSession } from "next-auth/react";
+import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import { hasPermission } from "@/lib/permissions";
 import type { UserRole } from "@/types";
@@ -14,6 +15,7 @@ interface BuildingInfo {
 
 export default function SettingsPage() {
   const { data: session } = useSession();
+  const t = useTranslations("Settings");
   const [buildingInfo, setBuildingInfo] = useState<BuildingInfo | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -22,7 +24,7 @@ export default function SettingsPage() {
   if (!hasPermission(role, "viewSettings")) {
     return (
       <div className="text-center py-12 text-gray-500 text-lg">
-        Nemáte oprávnenie na zobrazenie nastavení.
+        {t("noPermission")}
       </div>
     );
   }
@@ -49,35 +51,35 @@ export default function SettingsPage() {
 
   return (
     <div className="max-w-2xl">
-      <h1 className="text-2xl font-bold text-gray-900 mb-6">Nastavenia</h1>
+      <h1 className="text-2xl font-bold text-gray-900 mb-6">{t("title")}</h1>
 
       <div className="bg-white rounded-xl border border-gray-200 p-6">
         <h2 className="text-lg font-bold text-gray-900 mb-4">
-          Informácie o bytovom dome
+          {t("buildingInfo")}
         </h2>
 
         {buildingInfo ? (
           <dl className="space-y-3">
             <div>
-              <dt className="text-sm text-gray-500">Názov</dt>
+              <dt className="text-sm text-gray-500">{t("name")}</dt>
               <dd className="text-base text-gray-900">{buildingInfo.name}</dd>
             </div>
             <div>
-              <dt className="text-sm text-gray-500">Adresa</dt>
+              <dt className="text-sm text-gray-500">{t("address")}</dt>
               <dd className="text-base text-gray-900">
                 {buildingInfo.address}
               </dd>
             </div>
             {buildingInfo.ico && (
               <div>
-                <dt className="text-sm text-gray-500">IČO</dt>
+                <dt className="text-sm text-gray-500">{t("ico")}</dt>
                 <dd className="text-base text-gray-900">{buildingInfo.ico}</dd>
               </div>
             )}
           </dl>
         ) : (
           <p className="text-base text-gray-500">
-            Informácie o bytovom dome nie sú k dispozícii.
+            {t("noInfo")}
           </p>
         )}
       </div>

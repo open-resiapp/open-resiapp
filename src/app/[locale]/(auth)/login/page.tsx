@@ -1,11 +1,13 @@
 "use client";
 
 import { signIn } from "next-auth/react";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@/i18n/navigation";
+import { useTranslations } from "next-intl";
 import { useState } from "react";
 
 export default function LoginPage() {
   const router = useRouter();
+  const t = useTranslations("Auth");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -25,7 +27,7 @@ export default function LoginPage() {
     });
 
     if (result?.error) {
-      setError("Nesprávny email alebo heslo.");
+      setError(t("invalidCredentials"));
       setLoading(false);
     } else {
       router.push("/");
@@ -36,10 +38,8 @@ export default function LoginPage() {
   return (
     <div className="bg-white rounded-2xl shadow-lg p-8">
       <div className="text-center mb-8">
-        <h1 className="text-2xl font-bold text-gray-900">Prihlásenie</h1>
-        <p className="text-gray-600 mt-2 text-base">
-          Bytové spoločenstvo
-        </p>
+        <h1 className="text-2xl font-bold text-gray-900">{t("title")}</h1>
+        <p className="text-gray-600 mt-2 text-base">{t("subtitle")}</p>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6">
@@ -54,7 +54,7 @@ export default function LoginPage() {
             htmlFor="email"
             className="block text-base font-medium text-gray-700 mb-2"
           >
-            Email
+            {t("emailLabel")}
           </label>
           <input
             id="email"
@@ -63,7 +63,7 @@ export default function LoginPage() {
             required
             autoComplete="email"
             className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
-            placeholder="vas@email.sk"
+            placeholder={t("emailPlaceholder")}
           />
         </div>
 
@@ -72,7 +72,7 @@ export default function LoginPage() {
             htmlFor="password"
             className="block text-base font-medium text-gray-700 mb-2"
           >
-            Heslo
+            {t("passwordLabel")}
           </label>
           <input
             id="password"
@@ -89,7 +89,7 @@ export default function LoginPage() {
           disabled={loading}
           className="w-full py-3 px-4 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white text-lg font-medium rounded-lg transition-colors"
         >
-          {loading ? "Prihlasujem..." : "Prihlásiť sa"}
+          {loading ? t("submitting") : t("submit")}
         </button>
       </form>
     </div>

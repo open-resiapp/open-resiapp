@@ -1,25 +1,29 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import type { VoteChoice } from "@/types";
 
-const choiceConfig: Record<
+const choiceKeys: Record<VoteChoice, string> = {
+  za: "for",
+  proti: "against",
+  zdrzal_sa: "abstain",
+};
+
+const choiceStyles: Record<
   VoteChoice,
-  { label: string; bg: string; hoverBg: string; activeBg: string }
+  { bg: string; hoverBg: string; activeBg: string }
 > = {
   za: {
-    label: "ZA",
     bg: "bg-green-600",
     hoverBg: "hover:bg-green-700",
     activeBg: "bg-green-700 ring-4 ring-green-200",
   },
   proti: {
-    label: "PROTI",
     bg: "bg-red-600",
     hoverBg: "hover:bg-red-700",
     activeBg: "bg-red-700 ring-4 ring-red-200",
   },
   zdrzal_sa: {
-    label: "ZDRŽIAM SA",
     bg: "bg-gray-500",
     hoverBg: "hover:bg-gray-600",
     activeBg: "bg-gray-600 ring-4 ring-gray-200",
@@ -39,7 +43,9 @@ export default function VoteButton({
   disabled,
   onClick,
 }: VoteButtonProps) {
-  const config = choiceConfig[choice];
+  const t = useTranslations("VoteButton");
+  const config = choiceStyles[choice];
+  const label = t(choiceKeys[choice]);
 
   return (
     <button
@@ -53,7 +59,7 @@ export default function VoteButton({
           : `${config.bg} ${config.hoverBg}`
       }`}
     >
-      {selected ? `${config.label} ✓` : config.label}
+      {selected ? `${label} ✓` : label}
     </button>
   );
 }

@@ -1,8 +1,9 @@
 "use client";
 
 import { useSession } from "next-auth/react";
+import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import { hasPermission } from "@/lib/permissions";
 import type { UserRole } from "@/types";
 
@@ -17,15 +18,17 @@ interface UserData {
   createdAt: string;
 }
 
-const roleLabels: Record<UserRole, string> = {
-  admin: "Administrátor",
-  owner: "Vlastník",
-  tenant: "Nájomca",
-  vote_counter: "Zapisovateľ",
+const roleKeys: Record<UserRole, string> = {
+  admin: "roleAdmin",
+  owner: "roleOwner",
+  tenant: "roleTenant",
+  vote_counter: "roleVoteCounter",
 };
 
 export default function VlastniciPage() {
   const { data: session } = useSession();
+  const t = useTranslations("Owners");
+  const tCommon = useTranslations("Common");
   const [usersList, setUsersList] = useState<UserData[]>([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
@@ -37,7 +40,7 @@ export default function VlastniciPage() {
   if (!hasPermission(role, "manageUsers")) {
     return (
       <div className="text-center py-12 text-gray-500 text-lg">
-        Nemáte oprávnenie na správu vlastníkov.
+        {t("noPermission")}
       </div>
     );
   }
@@ -77,7 +80,7 @@ export default function VlastniciPage() {
 
     if (!res.ok) {
       const data = await res.json();
-      setFormError(data.error || "Nepodarilo sa vytvoriť používateľa");
+      setFormError(data.error || t("createFailed"));
       setFormLoading(false);
       return;
     }
@@ -90,19 +93,19 @@ export default function VlastniciPage() {
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">Vlastníci a užívatelia</h1>
+        <h1 className="text-2xl font-bold text-gray-900">{t("title")}</h1>
         <button
           onClick={() => setShowForm(!showForm)}
           className="px-5 py-3 bg-blue-600 hover:bg-blue-700 text-white text-base font-medium rounded-lg transition-colors"
         >
-          {showForm ? "Zavrieť" : "Pridať používateľa"}
+          {showForm ? tCommon("close") : t("addUser")}
         </button>
       </div>
 
       {showForm && (
         <div className="bg-white rounded-xl border border-gray-200 p-6 mb-6">
           <h2 className="text-lg font-bold text-gray-900 mb-4">
-            Nový používateľ
+            {t("newUser")}
           </h2>
           {formError && (
             <div className="bg-red-50 text-red-700 px-4 py-3 rounded-lg text-base mb-4">
@@ -113,7 +116,7 @@ export default function VlastniciPage() {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label className="block text-base font-medium text-gray-700 mb-1">
-                  Meno
+                  {t("nameLabel")}
                 </label>
                 <input
                   name="name"
@@ -123,7 +126,7 @@ export default function VlastniciPage() {
               </div>
               <div>
                 <label className="block text-base font-medium text-gray-700 mb-1">
-                  Email
+                  {t("emailLabel")}
                 </label>
                 <input
                   name="email"
@@ -134,7 +137,7 @@ export default function VlastniciPage() {
               </div>
               <div>
                 <label className="block text-base font-medium text-gray-700 mb-1">
-                  Heslo
+                  {t("passwordLabel")}
                 </label>
                 <input
                   name="password"
@@ -145,7 +148,7 @@ export default function VlastniciPage() {
               </div>
               <div>
                 <label className="block text-base font-medium text-gray-700 mb-1">
-                  Telefón
+                  {t("phoneLabel")}
                 </label>
                 <input
                   name="phone"
@@ -155,15 +158,15 @@ export default function VlastniciPage() {
             </div>
             <div>
               <label className="block text-base font-medium text-gray-700 mb-1">
-                Rola
+                {t("roleLabel")}
               </label>
               <select
                 name="role"
                 className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
               >
-                <option value="owner">Vlastník</option>
-                <option value="tenant">Nájomca</option>
-                <option value="admin">Administrátor</option>
+                <option value="owner">{t("roleOwner")}</option>
+                <option value="tenant">{t("roleTenant")}</option>
+                <option value="admin">{t("roleAdmin")}</option>
               </select>
             </div>
             <button
@@ -171,7 +174,7 @@ export default function VlastniciPage() {
               disabled={formLoading}
               className="px-6 py-3 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white text-base font-medium rounded-lg transition-colors"
             >
-              {formLoading ? "Ukladám..." : "Pridať"}
+              {formLoading ? tCommon("saving") : t("add")}
             </button>
           </form>
         </div>
@@ -187,7 +190,7 @@ export default function VlastniciPage() {
         </div>
       ) : usersList.length === 0 ? (
         <div className="text-center py-12 text-gray-500 text-lg">
-          Žiadni používatelia.
+          {t("empty")}
         </div>
       ) : (
         <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
@@ -196,19 +199,19 @@ export default function VlastniciPage() {
               <thead className="bg-gray-50 border-b border-gray-200">
                 <tr>
                   <th className="text-left px-6 py-3 text-sm font-medium text-gray-500">
-                    Meno
+                    {t("nameLabel")}
                   </th>
                   <th className="text-left px-6 py-3 text-sm font-medium text-gray-500">
-                    Email
+                    {t("emailLabel")}
                   </th>
                   <th className="text-left px-6 py-3 text-sm font-medium text-gray-500">
-                    Byt
+                    {t("flatLabel")}
                   </th>
                   <th className="text-left px-6 py-3 text-sm font-medium text-gray-500">
-                    Rola
+                    {t("roleLabel")}
                   </th>
                   <th className="text-left px-6 py-3 text-sm font-medium text-gray-500">
-                    Stav
+                    {t("statusLabel")}
                   </th>
                 </tr>
               </thead>
@@ -224,10 +227,10 @@ export default function VlastniciPage() {
                       {u.email}
                     </td>
                     <td className="px-6 py-4 text-base text-gray-600">
-                      {u.flatNumber || "—"}
+                      {u.flatNumber || tCommon("noDash")}
                     </td>
                     <td className="px-6 py-4 text-base text-gray-600">
-                      {roleLabels[u.role]}
+                      {t(roleKeys[u.role])}
                     </td>
                     <td className="px-6 py-4">
                       <span
@@ -237,7 +240,7 @@ export default function VlastniciPage() {
                             : "bg-red-100 text-red-700"
                         }`}
                       >
-                        {u.isActive ? "Aktívny" : "Neaktívny"}
+                        {u.isActive ? t("statusActive") : t("statusInactive")}
                       </span>
                     </td>
                   </tr>

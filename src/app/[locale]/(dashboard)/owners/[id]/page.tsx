@@ -1,9 +1,10 @@
 "use client";
 
 import { useSession } from "next-auth/react";
+import { useTranslations, useFormatter } from "next-intl";
 import { useEffect, useState, useCallback } from "react";
-import { useParams, useRouter } from "next/navigation";
-import Link from "next/link";
+import { useParams } from "next/navigation";
+import { Link } from "@/i18n/navigation";
 import { hasPermission } from "@/lib/permissions";
 import type { UserRole } from "@/types";
 
@@ -28,17 +29,19 @@ interface FlatOption {
   entranceName: string;
 }
 
-const roleLabels: Record<UserRole, string> = {
-  admin: "Administrátor",
-  owner: "Vlastník",
-  tenant: "Nájomca",
-  vote_counter: "Zapisovateľ",
+const roleKeys: Record<UserRole, string> = {
+  admin: "roleAdmin",
+  owner: "roleOwner",
+  tenant: "roleTenant",
+  vote_counter: "roleVoteCounter",
 };
 
 export default function UserDetailPage() {
   const { data: session } = useSession();
+  const t = useTranslations("Owners");
+  const tCommon = useTranslations("Common");
+  const format = useFormatter();
   const params = useParams();
-  const router = useRouter();
   const id = params.id as string;
 
   const [user, setUser] = useState<UserDetail | null>(null);
@@ -49,7 +52,6 @@ export default function UserDetailPage() {
   const [error, setError] = useState("");
   const [flats, setFlats] = useState<FlatOption[]>([]);
 
-  // Edit form state
   const [editName, setEditName] = useState("");
   const [editEmail, setEditEmail] = useState("");
   const [editPhone, setEditPhone] = useState("");
@@ -117,7 +119,7 @@ export default function UserDetailPage() {
 
     if (!res.ok) {
       const data = await res.json();
-      setError(data.error || "Nepodarilo sa uložiť zmeny");
+      setError(data.error || tCommon("saveFailed"));
       setSaving(false);
       return;
     }
@@ -146,7 +148,7 @@ export default function UserDetailPage() {
   if (!canManage) {
     return (
       <div className="text-center py-12 text-gray-500 text-lg">
-        Nemáte oprávnenie na správu vlastníkov.
+        {t("noPermission")}
       </div>
     );
   }
@@ -164,12 +166,30 @@ export default function UserDetailPage() {
   if (notFound || !user) {
     return (
       <div className="text-center py-12">
-        <p className="text-lg text-gray-500 mb-4">Používateľ nenájdený.</p>
+        <p className="text-lg text-gray-500 mb-4">{t("userNotFound")}</p>
         <Link href="/owners" className="text-blue-600 hover:underline text-base">
-          Späť na zoznam
+          {tCommon("backToList")}
         </Link>
       </div>
     );
+  }
+
+  function flatDisplay() {
+    if (!user?.flatNumber) return tCommon("noDash");
+    if (user.floor !== null && user.entranceName) {
+      return t("flatDisplay", {
+        number: user.flatNumber,
+        floor: user.floor,
+        entrance: user.entranceName,
+      });
+    }
+    if (user.entranceName) {
+      return t("flatDisplayNoFloor", {
+        number: user.flatNumber,
+        entrance: user.entranceName,
+      });
+    }
+    return `${t("flatLabel")} ${user.flatNumber}`;
   }
 
   return (
@@ -178,7 +198,7 @@ export default function UserDetailPage() {
         href="/owners"
         className="text-blue-600 hover:underline text-base mb-4 inline-block"
       >
-        &larr; Späť na zoznam
+        &larr; {tCommon("backToList")}
       </Link>
 
       <div className="bg-white rounded-xl border border-gray-200 p-6 mb-6">
@@ -192,7 +212,7 @@ export default function UserDetailPage() {
                   : "bg-red-100 text-red-700"
               }`}
             >
-              {user.isActive ? "Aktívny" : "Neaktívny"}
+              {user.isActive ? t("statusActive") : t("statusInactive")}
             </span>
           </div>
         </div>
@@ -201,29 +221,25 @@ export default function UserDetailPage() {
           <>
             <dl className="space-y-4">
               <div>
-                <dt className="text-sm font-medium text-gray-500">Email</dt>
+                <dt className="text-sm font-medium text-gray-500">{t("emailLabel")}</dt>
                 <dd className="text-base text-gray-900">{user.email}</dd>
               </div>
               <div>
-                <dt className="text-sm font-medium text-gray-500">Telefón</dt>
-                <dd className="text-base text-gray-900">{user.phone || "—"}</dd>
+                <dt className="text-sm font-medium text-gray-500">{t("phoneLabel")}</dt>
+                <dd className="text-base text-gray-900">{user.phone || tCommon("noDash")}</dd>
               </div>
               <div>
-                <dt className="text-sm font-medium text-gray-500">Rola</dt>
-                <dd className="text-base text-gray-900">{roleLabels[user.role]}</dd>
+                <dt className="text-sm font-medium text-gray-500">{t("roleLabel")}</dt>
+                <dd className="text-base text-gray-900">{t(roleKeys[user.role])}</dd>
               </div>
               <div>
-                <dt className="text-sm font-medium text-gray-500">Byt</dt>
+                <dt className="text-sm font-medium text-gray-500">{t("flatLabel")}</dt>
+                <dd className="text-base text-gray-900">{flatDisplay()}</dd>
+              </div>
+              <div>
+                <dt className="text-sm font-medium text-gray-500">{t("registered")}</dt>
                 <dd className="text-base text-gray-900">
-                  {user.flatNumber
-                    ? `Byt ${user.flatNumber}${user.floor !== null ? `, ${user.floor}. poschodie` : ""}${user.entranceName ? ` (${user.entranceName})` : ""}`
-                    : "—"}
-                </dd>
-              </div>
-              <div>
-                <dt className="text-sm font-medium text-gray-500">Registrovaný</dt>
-                <dd className="text-base text-gray-900">
-                  {new Date(user.createdAt).toLocaleDateString("sk-SK", {
+                  {format.dateTime(new Date(user.createdAt), {
                     day: "numeric",
                     month: "long",
                     year: "numeric",
@@ -237,7 +253,7 @@ export default function UserDetailPage() {
                 onClick={startEditing}
                 className="px-5 py-3 bg-blue-600 hover:bg-blue-700 text-white text-base font-medium rounded-lg transition-colors"
               >
-                Upraviť
+                {tCommon("edit")}
               </button>
               <button
                 onClick={toggleActive}
@@ -248,7 +264,7 @@ export default function UserDetailPage() {
                     : "bg-green-100 hover:bg-green-200 text-green-700"
                 }`}
               >
-                {user.isActive ? "Deaktivovať" : "Aktivovať"}
+                {user.isActive ? t("deactivate") : t("activate")}
               </button>
             </div>
           </>
@@ -263,7 +279,7 @@ export default function UserDetailPage() {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label className="block text-base font-medium text-gray-700 mb-1">
-                  Meno
+                  {t("nameLabel")}
                 </label>
                 <input
                   value={editName}
@@ -274,7 +290,7 @@ export default function UserDetailPage() {
               </div>
               <div>
                 <label className="block text-base font-medium text-gray-700 mb-1">
-                  Email
+                  {t("emailLabel")}
                 </label>
                 <input
                   type="email"
@@ -286,7 +302,7 @@ export default function UserDetailPage() {
               </div>
               <div>
                 <label className="block text-base font-medium text-gray-700 mb-1">
-                  Telefón
+                  {t("phoneLabel")}
                 </label>
                 <input
                   value={editPhone}
@@ -296,34 +312,34 @@ export default function UserDetailPage() {
               </div>
               <div>
                 <label className="block text-base font-medium text-gray-700 mb-1">
-                  Rola
+                  {t("roleLabel")}
                 </label>
                 <select
                   value={editRole}
                   onChange={(e) => setEditRole(e.target.value as UserRole)}
                   className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
                 >
-                  <option value="owner">Vlastník</option>
-                  <option value="tenant">Nájomca</option>
-                  <option value="admin">Administrátor</option>
-                  <option value="vote_counter">Zapisovateľ</option>
+                  <option value="owner">{t("roleOwner")}</option>
+                  <option value="tenant">{t("roleTenant")}</option>
+                  <option value="admin">{t("roleAdmin")}</option>
+                  <option value="vote_counter">{t("roleVoteCounter")}</option>
                 </select>
               </div>
             </div>
 
             <div>
               <label className="block text-base font-medium text-gray-700 mb-1">
-                Byt
+                {t("flatLabel")}
               </label>
               <select
                 value={editFlatId}
                 onChange={(e) => setEditFlatId(e.target.value)}
                 className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
               >
-                <option value="">Bez bytu</option>
+                <option value="">{t("noFlat")}</option>
                 {flats.map((f) => (
                   <option key={f.id} value={f.id}>
-                    Byt {f.flatNumber} ({f.entranceName})
+                    {t("flatLabel")} {f.flatNumber} ({f.entranceName})
                   </option>
                 ))}
               </select>
@@ -335,14 +351,14 @@ export default function UserDetailPage() {
                 onClick={() => setEditing(false)}
                 className="px-5 py-3 text-base font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
               >
-                Zrušiť
+                {tCommon("cancel")}
               </button>
               <button
                 type="submit"
                 disabled={saving}
                 className="px-5 py-3 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white text-base font-medium rounded-lg transition-colors"
               >
-                {saving ? "Ukladám..." : "Uložiť"}
+                {saving ? tCommon("saving") : tCommon("save")}
               </button>
             </div>
           </form>

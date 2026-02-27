@@ -1,0 +1,191 @@
+{
+  "Common": {
+    "loading": "Načítavam...",
+    "saving": "Ukladám...",
+    "cancel": "Zrušiť",
+    "save": "Uložiť",
+    "edit": "Upraviť",
+    "delete": "Zmazať",
+    "close": "Zavrieť",
+    "confirm": "Potvrdiť",
+    "backToList": "Späť na zoznam",
+    "unknown": "Neznámy",
+    "noPermission": "Nemáte oprávnenie na túto akciu.",
+    "saveFailed": "Nepodarilo sa uložiť zmeny",
+    "noDash": "—"
+  },
+  "Auth": {
+    "title": "Prihlásenie",
+    "subtitle": "Bytové spoločenstvo",
+    "emailLabel": "Email",
+    "emailPlaceholder": "vas@email.sk",
+    "passwordLabel": "Heslo",
+    "submit": "Prihlásiť sa",
+    "submitting": "Prihlasujem...",
+    "invalidCredentials": "Nesprávny email alebo heslo."
+  },
+  "Sidebar": {
+    "appName": "BytováApp",
+    "appDescription": "Správa bytového domu",
+    "dashboard": "Dashboard",
+    "board": "Nástenka",
+    "voting": "Hlasovanie",
+    "owners": "Vlastníci",
+    "settings": "Nastavenia"
+  },
+  "Header": {
+    "openMenu": "Otvoriť menu",
+    "logout": "Odhlásiť sa"
+  },
+  "LanguageSwitcher": {
+    "sk": "SK",
+    "en": "EN"
+  },
+  "Dashboard": {
+    "welcome": "Vitajte, {name}",
+    "boardTitle": "Nástenka",
+    "boardValue": "Zobraziť príspevky",
+    "votingTitle": "Hlasovanie",
+    "votingValue": "Aktívne hlasovania",
+    "ownersTitle": "Vlastníci",
+    "ownersValue": "Správa vlastníkov"
+  },
+  "Board": {
+    "title": "Nástenka",
+    "newPost": "Nový príspevok",
+    "empty": "Žiadne príspevky na nástenke.",
+    "confirmDelete": "Naozaj chcete zmazať tento príspevok?"
+  },
+  "PostCard": {
+    "pinned": "Pripnuté",
+    "pin": "Pripnúť",
+    "unpin": "Odopnúť",
+    "edit": "Upraviť",
+    "delete": "Zmazať",
+    "categoryInfo": "Informácia",
+    "categoryUrgent": "Dôležité",
+    "categoryEvent": "Udalosť",
+    "categoryMaintenance": "Údržba"
+  },
+  "PostModal": {
+    "newTitle": "Nový príspevok",
+    "editTitle": "Upraviť príspevok",
+    "titleLabel": "Nadpis",
+    "categoryLabel": "Kategória",
+    "contentLabel": "Obsah",
+    "pinLabel": "Pripnúť príspevok",
+    "create": "Vytvoriť",
+    "createFailed": "Nepodarilo sa vytvoriť príspevok",
+    "editFailed": "Nepodarilo sa uložiť zmeny"
+  },
+  "Voting": {
+    "title": "Hlasovanie",
+    "newVoting": "Nové hlasovanie",
+    "empty": "Zatiaľ neboli vytvorené žiadne hlasovania.",
+    "statusDraft": "Návrh",
+    "statusActive": "Aktívne",
+    "statusClosed": "Ukončené",
+    "from": "Od:",
+    "to": "Do:",
+    "createdBy": "Vytvoril: {name}",
+    "notFound": "Hlasovanie nenájdené.",
+    "castVote": "Odovzdajte svoj hlas",
+    "votedFor": "Hlasovali ste: ZA",
+    "votedAgainst": "Hlasovali ste: PROTI",
+    "votedAbstain": "Hlasovali ste: ZDRŽAL SA",
+    "startVoting": "Spustiť hlasovanie",
+    "endVoting": "Ukončiť hlasovanie",
+    "recordPaperVote": "Zaznamenať listinný hlas",
+    "delegateVote": "Delegovať hlas",
+    "titleLabel": "Názov",
+    "descriptionLabel": "Popis"
+  },
+  "VotingNew": {
+    "title": "Nové hlasovanie",
+    "noPermission": "Nemáte oprávnenie vytvárať hlasovania.",
+    "titleLabel": "Názov hlasovania",
+    "titlePlaceholder": "Napr.: Oprava strechy bytového domu",
+    "descriptionLabel": "Popis (voliteľné)",
+    "descriptionPlaceholder": "Podrobný popis hlasovania...",
+    "startsAtLabel": "Začiatok",
+    "endsAtLabel": "Koniec",
+    "statusLabel": "Stav",
+    "statusDraft": "Návrh",
+    "statusActive": "Aktívne (ihneď spustiť)",
+    "submit": "Vytvoriť hlasovanie",
+    "submitting": "Vytváram...",
+    "createFailed": "Nepodarilo sa vytvoriť hlasovanie"
+  },
+  "VotingResults": {
+    "title": "Výsledky",
+    "for": "ZA",
+    "against": "PROTI",
+    "abstain": "ZDRŽAL SA",
+    "totalVotes": "Celkom hlasov: {count}",
+    "approved": "SCHVÁLENÉ",
+    "notApproved": "NESCHVÁLENÉ"
+  },
+  "VoteButton": {
+    "for": "ZA",
+    "against": "PROTI",
+    "abstain": "ZDRŽIAM SA"
+  },
+  "PaperVote": {
+    "title": "Zaznamenať listinný hlas",
+    "ownerLabel": "Vlastník",
+    "ownerPlaceholder": "Vyberte vlastníka",
+    "voteLabel": "Hlas",
+    "for": "ZA",
+    "against": "PROTI",
+    "abstain": "ZDRŽAL SA",
+    "submit": "Zaznamenať",
+    "submitFailed": "Nepodarilo sa zaznamenať hlas",
+    "flat": "byt {number}"
+  },
+  "Mandate": {
+    "title": "Splnomocnenie",
+    "description": "Delegujte svoj hlas inému vlastníkovi pre toto hlasovanie.",
+    "delegateToLabel": "Delegovať na",
+    "ownerPlaceholder": "Vyberte vlastníka",
+    "submitFailed": "Nepodarilo sa vytvoriť splnomocnenie",
+    "flat": "byt {number}"
+  },
+  "Owners": {
+    "title": "Vlastníci a užívatelia",
+    "addUser": "Pridať používateľa",
+    "newUser": "Nový používateľ",
+    "empty": "Žiadni používatelia.",
+    "noPermission": "Nemáte oprávnenie na správu vlastníkov.",
+    "createFailed": "Nepodarilo sa vytvoriť používateľa",
+    "nameLabel": "Meno",
+    "emailLabel": "Email",
+    "passwordLabel": "Heslo",
+    "phoneLabel": "Telefón",
+    "roleLabel": "Rola",
+    "flatLabel": "Byt",
+    "statusLabel": "Stav",
+    "add": "Pridať",
+    "roleAdmin": "Administrátor",
+    "roleOwner": "Vlastník",
+    "roleTenant": "Nájomca",
+    "roleVoteCounter": "Zapisovateľ",
+    "statusActive": "Aktívny",
+    "statusInactive": "Neaktívny",
+    "userNotFound": "Používateľ nenájdený.",
+    "registered": "Registrovaný",
+    "flatDisplay": "Byt {number}, {floor}. poschodie ({entrance})",
+    "flatDisplayNoFloor": "Byt {number} ({entrance})",
+    "noFlat": "Bez bytu",
+    "deactivate": "Deaktivovať",
+    "activate": "Aktivovať"
+  },
+  "Settings": {
+    "title": "Nastavenia",
+    "buildingInfo": "Informácie o bytovom dome",
+    "name": "Názov",
+    "address": "Adresa",
+    "ico": "IČO",
+    "noInfo": "Informácie o bytovom dome nie sú k dispozícii.",
+    "noPermission": "Nemáte oprávnenie na zobrazenie nastavení."
+  }
+}

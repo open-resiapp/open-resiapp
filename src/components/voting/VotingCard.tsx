@@ -1,13 +1,19 @@
-import Link from "next/link";
+"use client";
+
+import { useTranslations, useFormatter } from "next-intl";
+import { Link } from "@/i18n/navigation";
 import type { VotingStatus } from "@/types";
 
-const statusConfig: Record<
-  VotingStatus,
-  { label: string; bg: string; text: string }
-> = {
-  draft: { label: "Návrh", bg: "bg-gray-100", text: "text-gray-700" },
-  active: { label: "Aktívne", bg: "bg-green-100", text: "text-green-700" },
-  closed: { label: "Ukončené", bg: "bg-red-100", text: "text-red-700" },
+const statusKeys: Record<VotingStatus, string> = {
+  draft: "statusDraft",
+  active: "statusActive",
+  closed: "statusClosed",
+};
+
+const statusStyles: Record<VotingStatus, { bg: string; text: string }> = {
+  draft: { bg: "bg-gray-100", text: "text-gray-700" },
+  active: { bg: "bg-green-100", text: "text-green-700" },
+  closed: { bg: "bg-red-100", text: "text-red-700" },
 };
 
 interface VotingCardProps {
@@ -27,7 +33,9 @@ export default function VotingCard({
   endsAt,
   createdByName,
 }: VotingCardProps) {
-  const s = statusConfig[status] || statusConfig.draft;
+  const t = useTranslations("Voting");
+  const format = useFormatter();
+  const style = statusStyles[status] || statusStyles.draft;
 
   return (
     <Link
@@ -37,30 +45,30 @@ export default function VotingCard({
       <div className="flex items-start justify-between gap-4 mb-3">
         <h3 className="text-lg font-semibold text-gray-900">{title}</h3>
         <span
-          className={`px-3 py-1 rounded-full text-sm font-medium whitespace-nowrap ${s.bg} ${s.text}`}
+          className={`px-3 py-1 rounded-full text-sm font-medium whitespace-nowrap ${style.bg} ${style.text}`}
         >
-          {s.label}
+          {t(statusKeys[status])}
         </span>
       </div>
 
       <div className="flex flex-wrap gap-4 text-sm text-gray-500">
         <span>
-          Od:{" "}
-          {new Date(startsAt).toLocaleDateString("sk-SK", {
+          {t("from")}{" "}
+          {format.dateTime(new Date(startsAt), {
             day: "numeric",
             month: "short",
             year: "numeric",
           })}
         </span>
         <span>
-          Do:{" "}
-          {new Date(endsAt).toLocaleDateString("sk-SK", {
+          {t("to")}{" "}
+          {format.dateTime(new Date(endsAt), {
             day: "numeric",
             month: "short",
             year: "numeric",
           })}
         </span>
-        <span>Vytvoril: {createdByName}</span>
+        <span>{t("createdBy", { name: createdByName })}</span>
       </div>
     </Link>
   );

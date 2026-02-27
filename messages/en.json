@@ -1,0 +1,191 @@
+{
+  "Common": {
+    "loading": "Loading...",
+    "saving": "Saving...",
+    "cancel": "Cancel",
+    "save": "Save",
+    "edit": "Edit",
+    "delete": "Delete",
+    "close": "Close",
+    "confirm": "Confirm",
+    "backToList": "Back to list",
+    "unknown": "Unknown",
+    "noPermission": "You do not have permission for this action.",
+    "saveFailed": "Failed to save changes",
+    "noDash": "—"
+  },
+  "Auth": {
+    "title": "Sign In",
+    "subtitle": "Residential community",
+    "emailLabel": "Email",
+    "emailPlaceholder": "your@email.com",
+    "passwordLabel": "Password",
+    "submit": "Sign in",
+    "submitting": "Signing in...",
+    "invalidCredentials": "Invalid email or password."
+  },
+  "Sidebar": {
+    "appName": "BytováApp",
+    "appDescription": "Building management",
+    "dashboard": "Dashboard",
+    "board": "Board",
+    "voting": "Voting",
+    "owners": "Owners",
+    "settings": "Settings"
+  },
+  "Header": {
+    "openMenu": "Open menu",
+    "logout": "Sign out"
+  },
+  "LanguageSwitcher": {
+    "sk": "SK",
+    "en": "EN"
+  },
+  "Dashboard": {
+    "welcome": "Welcome, {name}",
+    "boardTitle": "Board",
+    "boardValue": "View posts",
+    "votingTitle": "Voting",
+    "votingValue": "Active votings",
+    "ownersTitle": "Owners",
+    "ownersValue": "Manage owners"
+  },
+  "Board": {
+    "title": "Board",
+    "newPost": "New post",
+    "empty": "No posts on the board.",
+    "confirmDelete": "Are you sure you want to delete this post?"
+  },
+  "PostCard": {
+    "pinned": "Pinned",
+    "pin": "Pin",
+    "unpin": "Unpin",
+    "edit": "Edit",
+    "delete": "Delete",
+    "categoryInfo": "Information",
+    "categoryUrgent": "Important",
+    "categoryEvent": "Event",
+    "categoryMaintenance": "Maintenance"
+  },
+  "PostModal": {
+    "newTitle": "New post",
+    "editTitle": "Edit post",
+    "titleLabel": "Title",
+    "categoryLabel": "Category",
+    "contentLabel": "Content",
+    "pinLabel": "Pin post",
+    "create": "Create",
+    "createFailed": "Failed to create post",
+    "editFailed": "Failed to save changes"
+  },
+  "Voting": {
+    "title": "Voting",
+    "newVoting": "New voting",
+    "empty": "No votings have been created yet.",
+    "statusDraft": "Draft",
+    "statusActive": "Active",
+    "statusClosed": "Closed",
+    "from": "From:",
+    "to": "To:",
+    "createdBy": "Created by: {name}",
+    "notFound": "Voting not found.",
+    "castVote": "Cast your vote",
+    "votedFor": "You voted: FOR",
+    "votedAgainst": "You voted: AGAINST",
+    "votedAbstain": "You voted: ABSTAIN",
+    "startVoting": "Start voting",
+    "endVoting": "End voting",
+    "recordPaperVote": "Record paper vote",
+    "delegateVote": "Delegate vote",
+    "titleLabel": "Title",
+    "descriptionLabel": "Description"
+  },
+  "VotingNew": {
+    "title": "New voting",
+    "noPermission": "You do not have permission to create votings.",
+    "titleLabel": "Voting title",
+    "titlePlaceholder": "E.g.: Roof repair of the apartment building",
+    "descriptionLabel": "Description (optional)",
+    "descriptionPlaceholder": "Detailed description of the voting...",
+    "startsAtLabel": "Start",
+    "endsAtLabel": "End",
+    "statusLabel": "Status",
+    "statusDraft": "Draft",
+    "statusActive": "Active (start immediately)",
+    "submit": "Create voting",
+    "submitting": "Creating...",
+    "createFailed": "Failed to create voting"
+  },
+  "VotingResults": {
+    "title": "Results",
+    "for": "FOR",
+    "against": "AGAINST",
+    "abstain": "ABSTAIN",
+    "totalVotes": "Total votes: {count}",
+    "approved": "APPROVED",
+    "notApproved": "NOT APPROVED"
+  },
+  "VoteButton": {
+    "for": "FOR",
+    "against": "AGAINST",
+    "abstain": "ABSTAIN"
+  },
+  "PaperVote": {
+    "title": "Record paper vote",
+    "ownerLabel": "Owner",
+    "ownerPlaceholder": "Select owner",
+    "voteLabel": "Vote",
+    "for": "FOR",
+    "against": "AGAINST",
+    "abstain": "ABSTAIN",
+    "submit": "Record",
+    "submitFailed": "Failed to record vote",
+    "flat": "flat {number}"
+  },
+  "Mandate": {
+    "title": "Power of Attorney",
+    "description": "Delegate your vote to another owner for this voting.",
+    "delegateToLabel": "Delegate to",
+    "ownerPlaceholder": "Select owner",
+    "submitFailed": "Failed to create mandate",
+    "flat": "flat {number}"
+  },
+  "Owners": {
+    "title": "Owners and users",
+    "addUser": "Add user",
+    "newUser": "New user",
+    "empty": "No users.",
+    "noPermission": "You do not have permission to manage owners.",
+    "createFailed": "Failed to create user",
+    "nameLabel": "Name",
+    "emailLabel": "Email",
+    "passwordLabel": "Password",
+    "phoneLabel": "Phone",
+    "roleLabel": "Role",
+    "flatLabel": "Flat",
+    "statusLabel": "Status",
+    "add": "Add",
+    "roleAdmin": "Administrator",
+    "roleOwner": "Owner",
+    "roleTenant": "Tenant",
+    "roleVoteCounter": "Vote counter",
+    "statusActive": "Active",
+    "statusInactive": "Inactive",
+    "userNotFound": "User not found.",
+    "registered": "Registered",
+    "flatDisplay": "Flat {number}, {floor}. floor ({entrance})",
+    "flatDisplayNoFloor": "Flat {number} ({entrance})",
+    "noFlat": "No flat",
+    "deactivate": "Deactivate",
+    "activate": "Activate"
+  },
+  "Settings": {
+    "title": "Settings",
+    "buildingInfo": "Building information",
+    "name": "Name",
+    "address": "Address",
+    "ico": "ICO",
+    "noInfo": "Building information is not available.",
+    "noPermission": "You do not have permission to view settings."
+  }
+}

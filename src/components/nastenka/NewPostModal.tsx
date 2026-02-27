@@ -1,14 +1,16 @@
 "use client";
 
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import type { PostCategory } from "@/types";
 
-const categories: { value: PostCategory; label: string }[] = [
-  { value: "info", label: "Informácia" },
-  { value: "urgent", label: "Dôležité" },
-  { value: "event", label: "Udalosť" },
-  { value: "maintenance", label: "Údržba" },
-];
+const categoryValues: PostCategory[] = ["info", "urgent", "event", "maintenance"];
+const categoryKeys: Record<PostCategory, string> = {
+  info: "categoryInfo",
+  urgent: "categoryUrgent",
+  event: "categoryEvent",
+  maintenance: "categoryMaintenance",
+};
 
 interface NewPostModalProps {
   isOpen: boolean;
@@ -21,6 +23,9 @@ export default function NewPostModal({
   onClose,
   onCreated,
 }: NewPostModalProps) {
+  const t = useTranslations("PostModal");
+  const tPost = useTranslations("PostCard");
+  const tCommon = useTranslations("Common");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -46,7 +51,7 @@ export default function NewPostModal({
 
     if (!res.ok) {
       const data = await res.json();
-      setError(data.error || "Nepodarilo sa vytvoriť príspevok");
+      setError(data.error || t("createFailed"));
       setLoading(false);
       return;
     }
@@ -60,7 +65,7 @@ export default function NewPostModal({
     <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
       <div className="bg-white rounded-2xl w-full max-w-lg p-6">
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-xl font-bold text-gray-900">Nový príspevok</h2>
+          <h2 className="text-xl font-bold text-gray-900">{t("newTitle")}</h2>
           <button
             onClick={onClose}
             className="text-gray-500 hover:text-gray-700 text-2xl leading-none"
@@ -78,7 +83,7 @@ export default function NewPostModal({
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className="block text-base font-medium text-gray-700 mb-1">
-              Nadpis
+              {t("titleLabel")}
             </label>
             <input
               name="title"
@@ -89,15 +94,15 @@ export default function NewPostModal({
 
           <div>
             <label className="block text-base font-medium text-gray-700 mb-1">
-              Kategória
+              {t("categoryLabel")}
             </label>
             <select
               name="category"
               className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
             >
-              {categories.map((c) => (
-                <option key={c.value} value={c.value}>
-                  {c.label}
+              {categoryValues.map((c) => (
+                <option key={c} value={c}>
+                  {tPost(categoryKeys[c])}
                 </option>
               ))}
             </select>
@@ -105,7 +110,7 @@ export default function NewPostModal({
 
           <div>
             <label className="block text-base font-medium text-gray-700 mb-1">
-              Obsah
+              {t("contentLabel")}
             </label>
             <textarea
               name="content"
@@ -121,7 +126,7 @@ export default function NewPostModal({
               type="checkbox"
               className="w-5 h-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
             />
-            Pripnúť príspevok
+            {t("pinLabel")}
           </label>
 
           <div className="flex gap-3 pt-2">
@@ -130,14 +135,14 @@ export default function NewPostModal({
               onClick={onClose}
               className="flex-1 py-3 px-4 text-base font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
             >
-              Zrušiť
+              {tCommon("cancel")}
             </button>
             <button
               type="submit"
               disabled={loading}
               className="flex-1 py-3 px-4 text-base font-medium text-white bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 rounded-lg transition-colors"
             >
-              {loading ? "Ukladám..." : "Vytvoriť"}
+              {loading ? tCommon("saving") : t("create")}
             </button>
           </div>
         </form>

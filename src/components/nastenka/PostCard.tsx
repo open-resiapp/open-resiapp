@@ -1,17 +1,20 @@
+"use client";
+
+import { useTranslations, useFormatter } from "next-intl";
 import type { PostCategory } from "@/types";
 
-const categoryConfig: Record<
-  PostCategory,
-  { label: string; bg: string; text: string }
-> = {
-  info: { label: "Informácia", bg: "bg-blue-100", text: "text-blue-700" },
-  urgent: { label: "Dôležité", bg: "bg-red-100", text: "text-red-700" },
-  event: { label: "Udalosť", bg: "bg-green-100", text: "text-green-700" },
-  maintenance: {
-    label: "Údržba",
-    bg: "bg-yellow-100",
-    text: "text-yellow-700",
-  },
+const categoryKeys: Record<PostCategory, string> = {
+  info: "categoryInfo",
+  urgent: "categoryUrgent",
+  event: "categoryEvent",
+  maintenance: "categoryMaintenance",
+};
+
+const categoryStyles: Record<PostCategory, { bg: string; text: string }> = {
+  info: { bg: "bg-blue-100", text: "text-blue-700" },
+  urgent: { bg: "bg-red-100", text: "text-red-700" },
+  event: { bg: "bg-green-100", text: "text-green-700" },
+  maintenance: { bg: "bg-yellow-100", text: "text-yellow-700" },
 };
 
 interface PostCardProps {
@@ -39,7 +42,9 @@ export default function PostCard({
   onDelete,
   onTogglePin,
 }: PostCardProps) {
-  const cat = categoryConfig[category] || categoryConfig.info;
+  const t = useTranslations("PostCard");
+  const format = useFormatter();
+  const style = categoryStyles[category] || categoryStyles.info;
 
   return (
     <div
@@ -51,13 +56,13 @@ export default function PostCard({
         <div className="flex items-center gap-2 flex-wrap">
           {isPinned && (
             <span className="text-sm font-medium text-blue-600">
-              Pripnuté
+              {t("pinned")}
             </span>
           )}
           <span
-            className={`px-2.5 py-0.5 rounded-full text-sm font-medium ${cat.bg} ${cat.text}`}
+            className={`px-2.5 py-0.5 rounded-full text-sm font-medium ${style.bg} ${style.text}`}
           >
-            {cat.label}
+            {t(categoryKeys[category])}
           </span>
         </div>
 
@@ -67,19 +72,19 @@ export default function PostCard({
               onClick={onTogglePin}
               className="px-3 py-1.5 text-sm font-medium text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
             >
-              {isPinned ? "Odopnúť" : "Pripnúť"}
+              {isPinned ? t("unpin") : t("pin")}
             </button>
             <button
               onClick={onEdit}
               className="px-3 py-1.5 text-sm font-medium text-blue-600 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors"
             >
-              Upraviť
+              {t("edit")}
             </button>
             <button
               onClick={onDelete}
               className="px-3 py-1.5 text-sm font-medium text-red-600 bg-red-50 hover:bg-red-100 rounded-lg transition-colors"
             >
-              Zmazať
+              {t("delete")}
             </button>
           </div>
         )}
@@ -93,7 +98,7 @@ export default function PostCard({
       <div className="flex items-center justify-between text-sm text-gray-500">
         <span>{authorName}</span>
         <time>
-          {new Date(createdAt).toLocaleDateString("sk-SK", {
+          {format.dateTime(new Date(createdAt), {
             day: "numeric",
             month: "long",
             year: "numeric",

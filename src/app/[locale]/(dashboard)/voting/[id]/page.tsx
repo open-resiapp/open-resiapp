@@ -1,8 +1,10 @@
 "use client";
 
 import { useSession } from "next-auth/react";
+import { useTranslations, useFormatter } from "next-intl";
 import { useEffect, useState, useCallback } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
+import { useRouter } from "@/i18n/navigation";
 import VoteButton from "@/components/voting/VoteButton";
 import VotingResults from "@/components/voting/VotingResults";
 import PaperVoteModal from "@/components/voting/PaperVoteModal";
@@ -35,6 +37,10 @@ interface VoteData {
 
 export default function VotingDetailPage() {
   const { data: session } = useSession();
+  const t = useTranslations("Voting");
+  const tNew = useTranslations("VotingNew");
+  const tCommon = useTranslations("Common");
+  const format = useFormatter();
   const params = useParams();
   const router = useRouter();
   const id = params.id as string;
@@ -155,12 +161,12 @@ export default function VotingDetailPage() {
   if (voting404 || !voting) {
     return (
       <div className="text-center py-12">
-        <p className="text-lg text-gray-500 mb-4">Hlasovanie nenájdené.</p>
+        <p className="text-lg text-gray-500 mb-4">{t("notFound")}</p>
         <button
           onClick={() => router.push("/voting")}
           className="text-blue-600 hover:underline text-base"
         >
-          Späť na zoznam
+          {tCommon("backToList")}
         </button>
       </div>
     );
@@ -170,13 +176,20 @@ export default function VotingDetailPage() {
   const isClosed = voting.status === "closed";
   const hasVoted = !!voteData?.userVote;
 
+  const votedChoiceKey =
+    voteData?.userVote?.choice === "za"
+      ? "votedFor"
+      : voteData?.userVote?.choice === "proti"
+      ? "votedAgainst"
+      : "votedAbstain";
+
   return (
     <div className="max-w-2xl mx-auto">
       <button
         onClick={() => router.push("/voting")}
         className="text-blue-600 hover:underline text-base mb-4 inline-block"
       >
-        &larr; Späť na zoznam
+        &larr; {tCommon("backToList")}
       </button>
 
       <div className="bg-white rounded-xl border border-gray-200 p-6 mb-6">
@@ -193,7 +206,11 @@ export default function VotingDetailPage() {
                     : "bg-gray-100 text-gray-700"
                 }`}
               >
-                {isActive ? "Aktívne" : isClosed ? "Ukončené" : "Návrh"}
+                {isActive
+                  ? t("statusActive")
+                  : isClosed
+                  ? t("statusClosed")
+                  : t("statusDraft")}
               </span>
             </div>
 
@@ -205,16 +222,16 @@ export default function VotingDetailPage() {
 
             <div className="flex flex-wrap gap-4 text-sm text-gray-500">
               <span>
-                Od:{" "}
-                {new Date(voting.startsAt).toLocaleDateString("sk-SK", {
+                {t("from")}{" "}
+                {format.dateTime(new Date(voting.startsAt), {
                   day: "numeric",
                   month: "long",
                   year: "numeric",
                 })}
               </span>
               <span>
-                Do:{" "}
-                {new Date(voting.endsAt).toLocaleDateString("sk-SK", {
+                {t("to")}{" "}
+                {format.dateTime(new Date(voting.endsAt), {
                   day: "numeric",
                   month: "long",
                   year: "numeric",
@@ -230,13 +247,13 @@ export default function VotingDetailPage() {
                       onClick={startEditing}
                       className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-base rounded-lg transition-colors"
                     >
-                      Upraviť
+                      {tCommon("edit")}
                     </button>
                     <button
                       onClick={() => handleStatusChange("active")}
                       className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-base rounded-lg transition-colors"
                     >
-                      Spustiť hlasovanie
+                      {t("startVoting")}
                     </button>
                   </>
                 )}
@@ -245,7 +262,7 @@ export default function VotingDetailPage() {
                     onClick={() => handleStatusChange("closed")}
                     className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white text-base rounded-lg transition-colors"
                   >
-                    Ukončiť hlasovanie
+                    {t("endVoting")}
                   </button>
                 )}
               </div>
@@ -255,7 +272,7 @@ export default function VotingDetailPage() {
           <form onSubmit={handleEditSave} className="space-y-4">
             <div>
               <label className="block text-base font-medium text-gray-700 mb-1">
-                Názov
+                {t("titleLabel")}
               </label>
               <input
                 value={editTitle}
@@ -266,7 +283,7 @@ export default function VotingDetailPage() {
             </div>
             <div>
               <label className="block text-base font-medium text-gray-700 mb-1">
-                Popis
+                {t("descriptionLabel")}
               </label>
               <textarea
                 value={editDescription}
@@ -278,7 +295,7 @@ export default function VotingDetailPage() {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label className="block text-base font-medium text-gray-700 mb-1">
-                  Začiatok
+                  {tNew("startsAtLabel")}
                 </label>
                 <input
                   type="datetime-local"
@@ -290,7 +307,7 @@ export default function VotingDetailPage() {
               </div>
               <div>
                 <label className="block text-base font-medium text-gray-700 mb-1">
-                  Koniec
+                  {tNew("endsAtLabel")}
                 </label>
                 <input
                   type="datetime-local"
@@ -307,14 +324,14 @@ export default function VotingDetailPage() {
                 onClick={() => setEditMode(false)}
                 className="px-5 py-3 text-base font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
               >
-                Zrušiť
+                {tCommon("cancel")}
               </button>
               <button
                 type="submit"
                 disabled={editSaving}
                 className="px-5 py-3 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white text-base font-medium rounded-lg transition-colors"
               >
-                {editSaving ? "Ukladám..." : "Uložiť"}
+                {editSaving ? tCommon("saving") : tCommon("save")}
               </button>
             </div>
           </form>
@@ -324,7 +341,7 @@ export default function VotingDetailPage() {
       {/* Voting buttons */}
       {isActive && canVote && !hasVoted && (
         <div className="space-y-3 mb-6">
-          <h3 className="text-lg font-bold text-gray-900">Odovzdajte svoj hlas</h3>
+          <h3 className="text-lg font-bold text-gray-900">{t("castVote")}</h3>
           <VoteButton
             choice="za"
             disabled={castingVote}
@@ -347,13 +364,7 @@ export default function VotingDetailPage() {
       {hasVoted && (
         <div className="bg-blue-50 border border-blue-200 rounded-xl p-6 mb-6 text-center">
           <p className="text-lg font-bold text-blue-700">
-            Hlasovali ste:{" "}
-            {voteData.userVote!.choice === "za"
-              ? "ZA"
-              : voteData.userVote!.choice === "proti"
-              ? "PROTI"
-              : "ZDRŽAL SA"}{" "}
-            ✓
+            {t(votedChoiceKey)} ✓
           </p>
         </div>
       )}
@@ -366,7 +377,7 @@ export default function VotingDetailPage() {
               onClick={() => setShowPaperModal(true)}
               className="px-5 py-3 bg-amber-600 hover:bg-amber-700 text-white text-base font-medium rounded-lg transition-colors"
             >
-              📄 Zaznamenať listinný hlas
+              {t("recordPaperVote")}
             </button>
           )}
           {canMandate && !hasVoted && (
@@ -374,7 +385,7 @@ export default function VotingDetailPage() {
               onClick={() => setShowMandateModal(true)}
               className="px-5 py-3 bg-purple-600 hover:bg-purple-700 text-white text-base font-medium rounded-lg transition-colors"
             >
-              Delegovať hlas
+              {t("delegateVote")}
             </button>
           )}
         </div>

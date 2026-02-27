@@ -1,3 +1,6 @@
+"use client";
+
+import { useTranslations } from "next-intl";
 import type { VotingResults as VotingResultsType } from "@/types";
 
 interface VotingResultsProps {
@@ -36,23 +39,25 @@ export default function VotingResults({
   results,
   totalVotes,
 }: VotingResultsProps) {
+  const t = useTranslations("VotingResults");
+
   return (
     <div className="bg-white rounded-xl border border-gray-200 p-6">
-      <h3 className="text-lg font-bold text-gray-900 mb-4">Výsledky</h3>
+      <h3 className="text-lg font-bold text-gray-900 mb-4">{t("title")}</h3>
 
       <div className="space-y-4 mb-6">
         <ResultBar
-          label="ZA"
+          label={t("for")}
           percent={results.zaPercent}
           color="bg-green-500"
         />
         <ResultBar
-          label="PROTI"
+          label={t("against")}
           percent={results.protiPercent}
           color="bg-red-500"
         />
         <ResultBar
-          label="ZDRŽAL SA"
+          label={t("abstain")}
           percent={results.zdrzalSaPercent}
           color="bg-gray-400"
         />
@@ -60,7 +65,7 @@ export default function VotingResults({
 
       <div className="flex items-center justify-between pt-4 border-t border-gray-200">
         <span className="text-base text-gray-500">
-          Celkom hlasov: {totalVotes}
+          {t("totalVotes", { count: totalVotes })}
         </span>
         <span
           className={`px-4 py-2 rounded-lg text-base font-bold ${
@@ -69,7 +74,7 @@ export default function VotingResults({
               : "bg-red-100 text-red-700"
           }`}
         >
-          {results.passed ? "SCHVÁLENÉ" : "NESCHVÁLENÉ"}
+          {results.passed ? t("approved") : t("notApproved")}
         </span>
       </div>
     </div>

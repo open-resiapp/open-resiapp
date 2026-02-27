@@ -1,7 +1,8 @@
 "use client";
 
 import { useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
+import { useRouter } from "@/i18n/navigation";
 import { useState } from "react";
 import { hasPermission } from "@/lib/permissions";
 import type { UserRole } from "@/types";
@@ -9,6 +10,8 @@ import type { UserRole } from "@/types";
 export default function NovaHlasovaniePage() {
   const { data: session } = useSession();
   const router = useRouter();
+  const t = useTranslations("VotingNew");
+  const tCommon = useTranslations("Common");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -17,7 +20,7 @@ export default function NovaHlasovaniePage() {
   if (!hasPermission(role, "createVoting")) {
     return (
       <div className="text-center py-12 text-gray-500 text-lg">
-        Nemáte oprávnenie vytvárať hlasovania.
+        {t("noPermission")}
       </div>
     );
   }
@@ -43,7 +46,7 @@ export default function NovaHlasovaniePage() {
 
     if (!res.ok) {
       const data = await res.json();
-      setError(data.error || "Nepodarilo sa vytvoriť hlasovanie");
+      setError(data.error || t("createFailed"));
       setLoading(false);
       return;
     }
@@ -58,12 +61,12 @@ export default function NovaHlasovaniePage() {
         onClick={() => router.push("/voting")}
         className="text-blue-600 hover:underline text-base mb-4 inline-block"
       >
-        &larr; Späť na zoznam
+        &larr; {tCommon("backToList")}
       </button>
 
       <div className="bg-white rounded-xl border border-gray-200 p-6">
         <h1 className="text-2xl font-bold text-gray-900 mb-6">
-          Nové hlasovanie
+          {t("title")}
         </h1>
 
         {error && (
@@ -75,32 +78,32 @@ export default function NovaHlasovaniePage() {
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className="block text-base font-medium text-gray-700 mb-1">
-              Názov hlasovania
+              {t("titleLabel")}
             </label>
             <input
               name="title"
               required
               className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
-              placeholder="Napr.: Oprava strechy bytového domu"
+              placeholder={t("titlePlaceholder")}
             />
           </div>
 
           <div>
             <label className="block text-base font-medium text-gray-700 mb-1">
-              Popis (voliteľné)
+              {t("descriptionLabel")}
             </label>
             <textarea
               name="description"
               rows={4}
               className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none resize-vertical"
-              placeholder="Podrobný popis hlasovania..."
+              placeholder={t("descriptionPlaceholder")}
             />
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="block text-base font-medium text-gray-700 mb-1">
-                Začiatok
+                {t("startsAtLabel")}
               </label>
               <input
                 name="startsAt"
@@ -111,7 +114,7 @@ export default function NovaHlasovaniePage() {
             </div>
             <div>
               <label className="block text-base font-medium text-gray-700 mb-1">
-                Koniec
+                {t("endsAtLabel")}
               </label>
               <input
                 name="endsAt"
@@ -124,14 +127,14 @@ export default function NovaHlasovaniePage() {
 
           <div>
             <label className="block text-base font-medium text-gray-700 mb-1">
-              Stav
+              {t("statusLabel")}
             </label>
             <select
               name="status"
               className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
             >
-              <option value="draft">Návrh</option>
-              <option value="active">Aktívne (ihneď spustiť)</option>
+              <option value="draft">{t("statusDraft")}</option>
+              <option value="active">{t("statusActive")}</option>
             </select>
           </div>
 
@@ -141,14 +144,14 @@ export default function NovaHlasovaniePage() {
               onClick={() => router.push("/voting")}
               className="flex-1 py-3 px-4 text-base font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
             >
-              Zrušiť
+              {tCommon("cancel")}
             </button>
             <button
               type="submit"
               disabled={loading}
               className="flex-1 py-3 px-4 text-base font-medium text-white bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 rounded-lg transition-colors"
             >
-              {loading ? "Vytváram..." : "Vytvoriť hlasovanie"}
+              {loading ? t("submitting") : t("submit")}
             </button>
           </div>
         </form>

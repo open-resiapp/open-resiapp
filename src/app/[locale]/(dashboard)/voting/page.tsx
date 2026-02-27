@@ -1,8 +1,9 @@
 "use client";
 
 import { useSession } from "next-auth/react";
+import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import VotingCard from "@/components/voting/VotingCard";
 import { hasPermission } from "@/lib/permissions";
 import type { UserRole, VotingStatus } from "@/types";
@@ -19,6 +20,8 @@ interface VotingData {
 
 export default function HlasovaniePage() {
   const { data: session } = useSession();
+  const t = useTranslations("Voting");
+  const tCommon = useTranslations("Common");
   const [votings, setVotings] = useState<VotingData[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -38,13 +41,13 @@ export default function HlasovaniePage() {
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">Hlasovanie</h1>
+        <h1 className="text-2xl font-bold text-gray-900">{t("title")}</h1>
         {canCreate && (
           <Link
             href="/voting/new"
             className="px-5 py-3 bg-blue-600 hover:bg-blue-700 text-white text-base font-medium rounded-lg transition-colors"
           >
-            Nové hlasovanie
+            {t("newVoting")}
           </Link>
         )}
       </div>
@@ -63,7 +66,7 @@ export default function HlasovaniePage() {
         </div>
       ) : votings.length === 0 ? (
         <div className="text-center py-12 text-gray-500 text-lg">
-          Zatiaľ neboli vytvorené žiadne hlasovania.
+          {t("empty")}
         </div>
       ) : (
         <div className="space-y-4">
@@ -75,7 +78,7 @@ export default function HlasovaniePage() {
               status={v.status}
               startsAt={v.startsAt}
               endsAt={v.endsAt}
-              createdByName={v.createdBy?.name || "Neznámy"}
+              createdByName={v.createdBy?.name || tCommon("unknown")}
             />
           ))}
         </div>

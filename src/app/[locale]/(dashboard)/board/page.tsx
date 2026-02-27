@@ -1,6 +1,7 @@
 "use client";
 
 import { useSession } from "next-auth/react";
+import { useTranslations } from "next-intl";
 import { useEffect, useState, useCallback } from "react";
 import PostCard from "@/components/nastenka/PostCard";
 import NewPostModal from "@/components/nastenka/NewPostModal";
@@ -21,6 +22,8 @@ interface PostData {
 
 export default function NastenkaPage() {
   const { data: session } = useSession();
+  const t = useTranslations("Board");
+  const tCommon = useTranslations("Common");
   const [posts, setPosts] = useState<PostData[]>([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
@@ -44,7 +47,7 @@ export default function NastenkaPage() {
   }, [fetchPosts]);
 
   async function handleDelete(postId: string) {
-    if (!confirm("Naozaj chcete zmazať tento príspevok?")) return;
+    if (!confirm(t("confirmDelete"))) return;
 
     const res = await fetch(`/api/posts/${postId}`, { method: "DELETE" });
     if (res.ok) {
@@ -66,13 +69,13 @@ export default function NastenkaPage() {
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">Nástenka</h1>
+        <h1 className="text-2xl font-bold text-gray-900">{t("title")}</h1>
         {canCreate && (
           <button
             onClick={() => setShowModal(true)}
             className="px-5 py-3 bg-blue-600 hover:bg-blue-700 text-white text-base font-medium rounded-lg transition-colors"
           >
-            Nový príspevok
+            {t("newPost")}
           </button>
         )}
       </div>
@@ -93,7 +96,7 @@ export default function NastenkaPage() {
         </div>
       ) : posts.length === 0 ? (
         <div className="text-center py-12 text-gray-500 text-lg">
-          Žiadne príspevky na nástenke.
+          {t("empty")}
         </div>
       ) : (
         <div className="space-y-4">
@@ -103,7 +106,7 @@ export default function NastenkaPage() {
               title={post.title}
               content={post.content}
               category={post.category}
-              authorName={post.author?.name || "Neznámy"}
+              authorName={post.author?.name || tCommon("unknown")}
               createdAt={post.createdAt}
               isPinned={post.isPinned}
               isAdmin={isAdmin}

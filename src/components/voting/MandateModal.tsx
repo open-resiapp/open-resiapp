@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useTranslations } from "next-intl";
 
 interface Owner {
   id: string;
@@ -23,6 +24,8 @@ export default function MandateModal({
   onClose,
   onCreated,
 }: MandateModalProps) {
+  const t = useTranslations("Mandate");
+  const tCommon = useTranslations("Common");
   const [owners, setOwners] = useState<Owner[]>([]);
   const [selectedOwner, setSelectedOwner] = useState("");
   const [loading, setLoading] = useState(false);
@@ -59,7 +62,7 @@ export default function MandateModal({
 
     if (!res.ok) {
       const data = await res.json();
-      setError(data.error || "Nepodarilo sa vytvoriť splnomocnenie");
+      setError(data.error || t("submitFailed"));
       setLoading(false);
       return;
     }
@@ -73,7 +76,7 @@ export default function MandateModal({
     <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
       <div className="bg-white rounded-2xl w-full max-w-md p-6">
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-xl font-bold text-gray-900">Splnomocnenie</h2>
+          <h2 className="text-xl font-bold text-gray-900">{t("title")}</h2>
           <button
             onClick={onClose}
             className="text-gray-500 hover:text-gray-700 text-2xl leading-none"
@@ -83,7 +86,7 @@ export default function MandateModal({
         </div>
 
         <p className="text-base text-gray-600 mb-4">
-          Delegujte svoj hlas inému vlastníkovi pre toto hlasovanie.
+          {t("description")}
         </p>
 
         {error && (
@@ -95,7 +98,7 @@ export default function MandateModal({
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className="block text-base font-medium text-gray-700 mb-1">
-              Delegovať na
+              {t("delegateToLabel")}
             </label>
             <select
               value={selectedOwner}
@@ -103,10 +106,10 @@ export default function MandateModal({
               required
               className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
             >
-              <option value="">Vyberte vlastníka</option>
+              <option value="">{t("ownerPlaceholder")}</option>
               {owners.map((o) => (
                 <option key={o.id} value={o.id}>
-                  {o.name} (byt {o.flatNumber})
+                  {o.name} ({t("flat", { number: o.flatNumber })})
                 </option>
               ))}
             </select>
@@ -118,14 +121,14 @@ export default function MandateModal({
               onClick={onClose}
               className="flex-1 py-3 px-4 text-base font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
             >
-              Zrušiť
+              {tCommon("cancel")}
             </button>
             <button
               type="submit"
               disabled={loading || !selectedOwner}
               className="flex-1 py-3 px-4 text-base font-medium text-white bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 rounded-lg transition-colors"
             >
-              {loading ? "Ukladám..." : "Potvrdiť"}
+              {loading ? tCommon("saving") : tCommon("confirm")}
             </button>
           </div>
         </form>
