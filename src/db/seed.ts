@@ -7,6 +7,7 @@ import {
   entrances,
   flats,
   users,
+  userFlats,
   votings,
   votes,
   posts,
@@ -25,6 +26,7 @@ async function seed() {
   await db.delete(votes);
   await db.delete(posts);
   await db.delete(votings);
+  await db.delete(userFlats);
   await db.delete(users);
   await db.delete(flats);
   await db.delete(entrances);
@@ -105,12 +107,12 @@ async function seed() {
     .returning();
   console.log("Created admin:", admin.email);
 
-  // 4 owners
+  // 4 owners — Ján Novák gets flat 1 + flat 7 (multi-flat test case)
   const ownerData = [
-    { name: "Ján Novák", email: "jan@test.sk", flatIdx: 0 },
-    { name: "Mária Kováčová", email: "maria@test.sk", flatIdx: 1 },
-    { name: "Peter Horváth", email: "peter@test.sk", flatIdx: 2 },
-    { name: "Anna Szabová", email: "anna@test.sk", flatIdx: 4 },
+    { name: "Ján Novák", email: "jan@test.sk", flatIdxs: [0, 6] },
+    { name: "Mária Kováčová", email: "maria@test.sk", flatIdxs: [1] },
+    { name: "Peter Horváth", email: "peter@test.sk", flatIdxs: [2] },
+    { name: "Anna Szabová", email: "anna@test.sk", flatIdxs: [4] },
   ];
 
   const ownerIds: string[] = [];
@@ -122,12 +124,20 @@ async function seed() {
         email: o.email,
         passwordHash: hash,
         role: "owner",
-        flatId: allFlats[o.flatIdx].id,
+        flatId: allFlats[o.flatIdxs[0]].id, // Phase 1 compat
       })
       .returning();
     ownerIds.push(owner.id);
+
+    // Insert junction rows for all flats
+    await db.insert(userFlats).values(
+      o.flatIdxs.map((idx) => ({
+        userId: owner.id,
+        flatId: allFlats[idx].id,
+      }))
+    );
   }
-  console.log("Created 4 owners");
+  console.log("Created 4 owners (Ján Novák has flats 1 and 7)");
 
   // 2 tenants
   const tenantData = [
@@ -136,11 +146,19 @@ async function seed() {
   ];
 
   for (const t of tenantData) {
-    await db.insert(users).values({
-      name: t.name,
-      email: t.email,
-      passwordHash: hash,
-      role: "tenant",
+    const [tenant] = await db
+      .insert(users)
+      .values({
+        name: t.name,
+        email: t.email,
+        passwordHash: hash,
+        role: "tenant",
+        flatId: allFlats[t.flatIdx].id,
+      })
+      .returning();
+
+    await db.insert(userFlats).values({
+      userId: tenant.id,
       flatId: allFlats[t.flatIdx].id,
     });
   }
@@ -269,6 +287,7 @@ async function seed() {
   console.log("\nSeed complete!");
   console.log("Login: admin@test.sk / Admin123!");
   console.log("Owners: jan@test.sk, maria@test.sk, peter@test.sk, anna@test.sk (all password: Admin123!)");
+  console.log("Note: jan@test.sk owns flat 1 AND flat 7 (multi-flat test)");
 
   await pool.end();
 }

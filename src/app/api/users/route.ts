@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { db } from "@/db";
-import { users, flats } from "@/db/schema";
-import { eq } from "drizzle-orm";
+import { users, flats, entrances, userFlats } from "@/db/schema";
+import { eq, inArray } from "drizzle-orm";
 import { hasPermission } from "@/lib/permissions";
 import bcrypt from "bcrypt";
 import type { UserRole } from "@/types";
@@ -16,7 +16,8 @@ export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
   const roleFilter = searchParams.get("role");
 
-  const result = await db
+  // Get all users
+  const allUsers = await db
     .select({
       id: users.id,
       name: users.name,
@@ -25,12 +26,41 @@ export async function GET(request: NextRequest) {
       role: users.role,
       isActive: users.isActive,
       flatId: users.flatId,
-      flatNumber: flats.flatNumber,
       createdAt: users.createdAt,
     })
     .from(users)
-    .leftJoin(flats, eq(users.flatId, flats.id))
     .where(roleFilter ? eq(users.role, roleFilter as UserRole) : undefined);
+
+  if (allUsers.length === 0) {
+    return NextResponse.json([]);
+  }
+
+  // Get all userFlats with flat + entrance info
+  const userIds = allUsers.map((u) => u.id);
+  const ufRows = await db
+    .select({
+      userId: userFlats.userId,
+      flatId: flats.id,
+      flatNumber: flats.flatNumber,
+      entranceName: entrances.name,
+    })
+    .from(userFlats)
+    .innerJoin(flats, eq(userFlats.flatId, flats.id))
+    .innerJoin(entrances, eq(flats.entranceId, entrances.id))
+    .where(inArray(userFlats.userId, userIds));
+
+  // Build map: userId → flat numbers
+  const userFlatsMap = new Map<string, string[]>();
+  for (const row of ufRows) {
+    const list = userFlatsMap.get(row.userId) || [];
+    list.push(row.flatNumber);
+    userFlatsMap.set(row.userId, list);
+  }
+
+  const result = allUsers.map((u) => ({
+    ...u,
+    flatNumber: userFlatsMap.get(u.id)?.join(", ") || null,
+  }));
 
   return NextResponse.json(result);
 }
@@ -46,7 +76,7 @@ export async function POST(request: NextRequest) {
   }
 
   const body = await request.json();
-  const { name, email, password, phone, role, flatId } = body;
+  const { name, email, password, phone, role, flatId, flatIds } = body;
 
   if (!name || !email || !password) {
     return NextResponse.json(
@@ -71,6 +101,13 @@ export async function POST(request: NextRequest) {
 
   const passwordHash = await bcrypt.hash(password, 12);
 
+  // Resolve flat IDs: prefer flatIds array, fall back to single flatId
+  const resolvedFlatIds: string[] = flatIds?.length
+    ? flatIds
+    : flatId
+      ? [flatId]
+      : [];
+
   const [user] = await db
     .insert(users)
     .values({
@@ -79,7 +116,7 @@ export async function POST(request: NextRequest) {
       passwordHash,
       phone: phone || null,
       role: role || "owner",
-      flatId: flatId || null,
+      flatId: resolvedFlatIds[0] || null, // Phase 1 compat
     })
     .returning({
       id: users.id,
@@ -87,6 +124,16 @@ export async function POST(request: NextRequest) {
       email: users.email,
       role: users.role,
     });
+
+  // Insert junction rows
+  if (resolvedFlatIds.length > 0) {
+    await db.insert(userFlats).values(
+      resolvedFlatIds.map((fid) => ({
+        userId: user.id,
+        flatId: fid,
+      }))
+    );
+  }
 
   return NextResponse.json(user, { status: 201 });
 }

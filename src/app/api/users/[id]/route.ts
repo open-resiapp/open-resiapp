@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { db } from "@/db";
-import { users, flats, entrances } from "@/db/schema";
+import { users, flats, entrances, userFlats } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { hasPermission } from "@/lib/permissions";
 import type { UserRole } from "@/types";
@@ -26,15 +26,9 @@ export async function GET(
       role: users.role,
       isActive: users.isActive,
       flatId: users.flatId,
-      flatNumber: flats.flatNumber,
-      floor: flats.floor,
-      entranceId: flats.entranceId,
-      entranceName: entrances.name,
       createdAt: users.createdAt,
     })
     .from(users)
-    .leftJoin(flats, eq(users.flatId, flats.id))
-    .leftJoin(entrances, eq(flats.entranceId, entrances.id))
     .where(eq(users.id, id))
     .limit(1);
 
@@ -42,7 +36,32 @@ export async function GET(
     return NextResponse.json({ error: "Používateľ nenájdený" }, { status: 404 });
   }
 
-  return NextResponse.json(user);
+  // Get all flats for this user from junction table
+  const userFlatRows = await db
+    .select({
+      flatId: flats.id,
+      flatNumber: flats.flatNumber,
+      floor: flats.floor,
+      entranceId: flats.entranceId,
+      entranceName: entrances.name,
+    })
+    .from(userFlats)
+    .innerJoin(flats, eq(userFlats.flatId, flats.id))
+    .innerJoin(entrances, eq(flats.entranceId, entrances.id))
+    .where(eq(userFlats.userId, id));
+
+  // Backward-compat: single flat fields from first flat
+  const firstFlat = userFlatRows[0] || null;
+
+  return NextResponse.json({
+    ...user,
+    flats: userFlatRows,
+    // Backward-compat fields
+    flatNumber: firstFlat?.flatNumber || null,
+    floor: firstFlat?.floor ?? null,
+    entranceId: firstFlat?.entranceId || null,
+    entranceName: firstFlat?.entranceName || null,
+  });
 }
 
 export async function PATCH(
@@ -66,10 +85,35 @@ export async function PATCH(
   if (body.email !== undefined) updateData.email = body.email;
   if (body.phone !== undefined) updateData.phone = body.phone;
   if (body.role !== undefined) updateData.role = body.role;
-  if (body.flatId !== undefined) updateData.flatId = body.flatId || null;
   if (body.isActive !== undefined) updateData.isActive = body.isActive;
 
-  if (Object.keys(updateData).length === 0) {
+  // Handle flatIds array (new) or flatId (legacy)
+  const hasFlatIds = body.flatIds !== undefined;
+  const hasFlatId = body.flatId !== undefined;
+
+  if (hasFlatIds || hasFlatId) {
+    const resolvedFlatIds: string[] = hasFlatIds
+      ? (body.flatIds || [])
+      : body.flatId
+        ? [body.flatId]
+        : [];
+
+    // Phase 1 compat: keep users.flatId in sync
+    updateData.flatId = resolvedFlatIds[0] || null;
+
+    // Update junction table: delete old, insert new
+    await db.delete(userFlats).where(eq(userFlats.userId, id));
+    if (resolvedFlatIds.length > 0) {
+      await db.insert(userFlats).values(
+        resolvedFlatIds.map((fid: string) => ({
+          userId: id,
+          flatId: fid,
+        }))
+      );
+    }
+  }
+
+  if (Object.keys(updateData).length === 0 && !hasFlatIds && !hasFlatId) {
     return NextResponse.json({ error: "Žiadne údaje na aktualizáciu" }, { status: 400 });
   }
 
@@ -89,19 +133,37 @@ export async function PATCH(
     }
   }
 
-  const [updated] = await db
-    .update(users)
-    .set(updateData)
-    .where(eq(users.id, id))
-    .returning({
-      id: users.id,
-      name: users.name,
-      email: users.email,
-      phone: users.phone,
-      role: users.role,
-      isActive: users.isActive,
-      flatId: users.flatId,
-    });
+  let updated;
+  if (Object.keys(updateData).length > 0) {
+    [updated] = await db
+      .update(users)
+      .set(updateData)
+      .where(eq(users.id, id))
+      .returning({
+        id: users.id,
+        name: users.name,
+        email: users.email,
+        phone: users.phone,
+        role: users.role,
+        isActive: users.isActive,
+        flatId: users.flatId,
+      });
+  } else {
+    // Only flatIds changed, fetch user data
+    [updated] = await db
+      .select({
+        id: users.id,
+        name: users.name,
+        email: users.email,
+        phone: users.phone,
+        role: users.role,
+        isActive: users.isActive,
+        flatId: users.flatId,
+      })
+      .from(users)
+      .where(eq(users.id, id))
+      .limit(1);
+  }
 
   if (!updated) {
     return NextResponse.json({ error: "Používateľ nenájdený" }, { status: 404 });

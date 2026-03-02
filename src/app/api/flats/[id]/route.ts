@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { db } from "@/db";
-import { flats, users } from "@/db/schema";
+import { flats, userFlats } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { hasPermission } from "@/lib/permissions";
 import type { UserRole } from "@/types";
@@ -61,9 +61,9 @@ export async function DELETE(
 
   // Check if flat has assigned users
   const flatUsers = await db
-    .select({ id: users.id })
-    .from(users)
-    .where(eq(users.flatId, id))
+    .select({ id: userFlats.id })
+    .from(userFlats)
+    .where(eq(userFlats.flatId, id))
     .limit(1);
 
   if (flatUsers.length > 0) {

@@ -13,13 +13,11 @@ declare module "next-auth" {
       email: string;
       name: string;
       role: UserRole;
-      flatId: string | null;
     };
   }
 
   interface User {
     role: UserRole;
-    flatId: string | null;
   }
 }
 
@@ -27,7 +25,6 @@ declare module "@auth/core/jwt" {
   interface JWT {
     id: string;
     role: UserRole;
-    flatId: string | null;
   }
 }
 
@@ -67,7 +64,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           email: user.email,
           name: user.name,
           role: user.role,
-          flatId: user.flatId,
         };
       },
     }),
@@ -77,14 +73,12 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       if (user) {
         token.id = user.id as string;
         token.role = user.role;
-        token.flatId = user.flatId;
       }
       return token;
     },
     async session({ session, token }) {
       session.user.id = token.id;
       session.user.role = token.role;
-      session.user.flatId = token.flatId;
       return session;
     },
   },

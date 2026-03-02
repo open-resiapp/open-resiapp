@@ -177,6 +177,9 @@
     "flatDisplay": "Byt {number}, {floor}. poschodie ({entrance})",
     "flatDisplayNoFloor": "Byt {number} ({entrance})",
     "noFlat": "Bez bytu",
+    "flatsLabel": "Byty",
+    "addFlat": "Pridať byt",
+    "removeFlat": "Odobrať byt",
     "deactivate": "Deaktivovať",
     "activate": "Aktivovať",
     "invite": "Pozvať"

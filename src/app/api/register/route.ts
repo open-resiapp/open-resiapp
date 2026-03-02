@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/db";
-import { users, invitations } from "@/db/schema";
+import { users, invitations, userFlats } from "@/db/schema";
 import { eq, and } from "drizzle-orm";
 import bcrypt from "bcrypt";
 
@@ -65,9 +65,17 @@ export async function POST(request: NextRequest) {
       passwordHash,
       phone: phone || null,
       role: invitation.role,
-      flatId: invitation.flatId,
+      flatId: invitation.flatId, // Phase 1 compat
     })
     .returning({ id: users.id });
+
+  // Insert into junction table
+  if (invitation.flatId) {
+    await db.insert(userFlats).values({
+      userId: newUser.id,
+      flatId: invitation.flatId,
+    });
+  }
 
   // Mark invitation as used
   await db

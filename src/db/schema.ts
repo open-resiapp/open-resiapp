@@ -172,6 +172,26 @@ export const documents = pgTable("documents", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
+export const userFlats = pgTable(
+  "user_flats",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    userId: uuid("user_id")
+      .references(() => users.id, { onDelete: "cascade" })
+      .notNull(),
+    flatId: uuid("flat_id")
+      .references(() => flats.id, { onDelete: "cascade" })
+      .notNull(),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+  },
+  (table) => ({
+    userFlatIdx: uniqueIndex("user_flats_user_flat_idx").on(
+      table.userId,
+      table.flatId
+    ),
+  })
+);
+
 export const invitations = pgTable("invitations", {
   id: uuid("id").defaultRandom().primaryKey(),
   token: varchar("token", { length: 64 }).notNull().unique(),
@@ -212,6 +232,7 @@ export const flatsRelations = relations(flats, ({ one, many }) => ({
     references: [entrances.id],
   }),
   users: many(users),
+  userFlats: many(userFlats),
 }));
 
 export const usersRelations = relations(users, ({ one, many }) => ({
@@ -219,6 +240,7 @@ export const usersRelations = relations(users, ({ one, many }) => ({
     fields: [users.flatId],
     references: [flats.id],
   }),
+  userFlats: many(userFlats),
   votes: many(votes),
   createdVotings: many(votings, { relationName: "createdBy" }),
   posts: many(posts),
@@ -305,5 +327,16 @@ export const invitationsRelations = relations(invitations, ({ one }) => ({
     fields: [invitations.createdById],
     references: [users.id],
     relationName: "createdInvitations",
+  }),
+}));
+
+export const userFlatsRelations = relations(userFlats, ({ one }) => ({
+  user: one(users, {
+    fields: [userFlats.userId],
+    references: [users.id],
+  }),
+  flat: one(flats, {
+    fields: [userFlats.flatId],
+    references: [flats.id],
   }),
 }));

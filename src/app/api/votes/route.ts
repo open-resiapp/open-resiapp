@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { db } from "@/db";
-import { votes, votings, users, flats, building } from "@/db/schema";
-import { and, eq } from "drizzle-orm";
+import { votes, votings, users, flats, building, userFlats } from "@/db/schema";
+import { and, eq, inArray } from "drizzle-orm";
 import { hasPermission } from "@/lib/permissions";
-import { generateAuditHash, calculateResults } from "@/lib/voting";
+import { generateAuditHash, calculateResults, aggregateFlatsForVoter } from "@/lib/voting";
 import type { UserRole, VoteChoice, VotingMethod, VoteWithShare } from "@/types";
 
 export async function GET(request: NextRequest) {
@@ -28,7 +28,7 @@ export async function GET(request: NextRequest) {
   const [bld] = await db.select().from(building).limit(1);
   const votingMethod = (bld?.votingMethod ?? "per_share") as VotingMethod;
 
-  // Get votes with flat share info
+  // Get votes with owner info (no flat join)
   const voteRows = await db
     .select({
       id: votes.id,
@@ -38,27 +38,56 @@ export async function GET(request: NextRequest) {
       ownerId: votes.ownerId,
       disputed: votes.disputed,
       ownerName: users.name,
-      shareNumerator: flats.shareNumerator,
-      shareDenominator: flats.shareDenominator,
-      area: flats.area,
     })
     .from(votes)
     .leftJoin(users, eq(votes.ownerId, users.id))
-    .leftJoin(flats, eq(users.flatId, flats.id))
     .where(eq(votes.votingId, votingId));
 
   // Check if current user has voted
   const userVote = voteRows.find((v) => v.ownerId === session.user.id);
 
-  // Calculate weighted results
-  const votesWithShare: VoteWithShare[] = voteRows
-    .filter((v) => v.shareNumerator !== null && v.shareDenominator !== null)
-    .map((v) => ({
-      choice: v.choice as VoteChoice,
-      shareNumerator: v.shareNumerator!,
-      shareDenominator: v.shareDenominator!,
-      area: v.area,
-    }));
+  // Get all flats for all voters via userFlats
+  const voterIds = [...new Set(voteRows.map((v) => v.ownerId))];
+
+  let votesWithShare: VoteWithShare[] = [];
+
+  if (voterIds.length > 0) {
+    const voterFlatRows = await db
+      .select({
+        userId: userFlats.userId,
+        shareNumerator: flats.shareNumerator,
+        shareDenominator: flats.shareDenominator,
+        area: flats.area,
+      })
+      .from(userFlats)
+      .innerJoin(flats, eq(userFlats.flatId, flats.id))
+      .where(inArray(userFlats.userId, voterIds));
+
+    // Group by userId
+    const voterFlatsMap = new Map<
+      string,
+      { shareNumerator: number; shareDenominator: number; area: number | null }[]
+    >();
+    for (const row of voterFlatRows) {
+      const list = voterFlatsMap.get(row.userId) || [];
+      list.push({
+        shareNumerator: row.shareNumerator,
+        shareDenominator: row.shareDenominator,
+        area: row.area,
+      });
+      voterFlatsMap.set(row.userId, list);
+    }
+
+    // Aggregate per voter
+    votesWithShare = voteRows
+      .filter((v) => voterFlatsMap.has(v.ownerId))
+      .map((v) =>
+        aggregateFlatsForVoter(
+          v.choice as VoteChoice,
+          voterFlatsMap.get(v.ownerId)!
+        )
+      );
+  }
 
   const results = calculateResults(votesWithShare, votingMethod);
 

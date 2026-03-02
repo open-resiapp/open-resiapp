@@ -8,6 +8,14 @@ import { Link } from "@/i18n/navigation";
 import { hasPermission } from "@/lib/permissions";
 import type { UserRole } from "@/types";
 
+interface FlatInfo {
+  flatId: string;
+  flatNumber: string;
+  floor: number;
+  entranceId: string;
+  entranceName: string;
+}
+
 interface UserDetail {
   id: string;
   name: string;
@@ -16,6 +24,7 @@ interface UserDetail {
   role: UserRole;
   isActive: boolean;
   flatId: string | null;
+  flats: FlatInfo[];
   flatNumber: string | null;
   floor: number | null;
   entranceId: string | null;
@@ -57,7 +66,7 @@ export default function UserDetailPage() {
   const [editEmail, setEditEmail] = useState("");
   const [editPhone, setEditPhone] = useState("");
   const [editRole, setEditRole] = useState<UserRole>("owner");
-  const [editFlatId, setEditFlatId] = useState("");
+  const [editFlatIds, setEditFlatIds] = useState<string[]>([]);
 
   const role = (session?.user?.role || "owner") as UserRole;
   const canManage = hasPermission(role, "manageUsers");
@@ -96,9 +105,17 @@ export default function UserDetailPage() {
     setEditEmail(user.email);
     setEditPhone(user.phone || "");
     setEditRole(user.role);
-    setEditFlatId(user.flatId || "");
+    setEditFlatIds(user.flats?.map((f) => f.flatId) || []);
     setError("");
     setEditing(true);
+  }
+
+  function toggleFlatId(flatId: string) {
+    setEditFlatIds((prev) =>
+      prev.includes(flatId)
+        ? prev.filter((id) => id !== flatId)
+        : [...prev, flatId]
+    );
   }
 
   async function handleSave(e: React.FormEvent) {
@@ -114,7 +131,7 @@ export default function UserDetailPage() {
         email: editEmail,
         phone: editPhone || null,
         role: editRole,
-        flatId: editFlatId || null,
+        flatIds: editFlatIds,
       }),
     });
 
@@ -176,21 +193,25 @@ export default function UserDetailPage() {
   }
 
   function flatDisplay() {
-    if (!user?.flatNumber) return tCommon("noDash");
-    if (user.floor !== null && user.entranceName) {
-      return t("flatDisplay", {
-        number: user.flatNumber,
-        floor: user.floor,
-        entrance: user.entranceName,
-      });
-    }
-    if (user.entranceName) {
-      return t("flatDisplayNoFloor", {
-        number: user.flatNumber,
-        entrance: user.entranceName,
-      });
-    }
-    return `${t("flatLabel")} ${user.flatNumber}`;
+    if (!user?.flats || user.flats.length === 0) return tCommon("noDash");
+    return user.flats
+      .map((f) => {
+        if (f.floor !== null && f.entranceName) {
+          return t("flatDisplay", {
+            number: f.flatNumber,
+            floor: f.floor,
+            entrance: f.entranceName,
+          });
+        }
+        if (f.entranceName) {
+          return t("flatDisplayNoFloor", {
+            number: f.flatNumber,
+            entrance: f.entranceName,
+          });
+        }
+        return `${t("flatLabel")} ${f.flatNumber}`;
+      })
+      .join(", ");
   }
 
   return (
@@ -234,7 +255,7 @@ export default function UserDetailPage() {
                 <dd className="text-base text-gray-900">{t(roleKeys[user.role])}</dd>
               </div>
               <div>
-                <dt className="text-sm font-medium text-gray-500">{t("flatLabel")}</dt>
+                <dt className="text-sm font-medium text-gray-500">{t("flatsLabel")}</dt>
                 <dd className="text-base text-gray-900">{flatDisplay()}</dd>
               </div>
               <div>
@@ -330,21 +351,31 @@ export default function UserDetailPage() {
             </div>
 
             <div>
-              <label className="block text-base font-medium text-gray-700 mb-1">
-                {t("flatLabel")}
+              <label className="block text-base font-medium text-gray-700 mb-2">
+                {t("flatsLabel")}
               </label>
-              <select
-                value={editFlatId}
-                onChange={(e) => setEditFlatId(e.target.value)}
-                className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
-              >
-                <option value="">{t("noFlat")}</option>
-                {flats.map((f) => (
-                  <option key={f.id} value={f.id}>
-                    {t("flatLabel")} {f.flatNumber} ({f.entranceName})
-                  </option>
-                ))}
-              </select>
+              <div className="border border-gray-300 rounded-lg max-h-60 overflow-y-auto divide-y divide-gray-100">
+                {flats.length === 0 ? (
+                  <p className="px-4 py-3 text-base text-gray-500">{t("noFlat")}</p>
+                ) : (
+                  flats.map((f) => (
+                    <label
+                      key={f.id}
+                      className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 cursor-pointer"
+                    >
+                      <input
+                        type="checkbox"
+                        checked={editFlatIds.includes(f.id)}
+                        onChange={() => toggleFlatId(f.id)}
+                        className="w-5 h-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                      />
+                      <span className="text-base text-gray-900">
+                        {t("flatLabel")} {f.flatNumber} ({f.entranceName})
+                      </span>
+                    </label>
+                  ))
+                )}
+              </div>
             </div>
 
             <div className="flex gap-3 pt-2">

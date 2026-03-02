@@ -177,6 +177,9 @@
     "flatDisplay": "Flat {number}, {floor}. floor ({entrance})",
     "flatDisplayNoFloor": "Flat {number} ({entrance})",
     "noFlat": "No flat",
+    "flatsLabel": "Flats",
+    "addFlat": "Add flat",
+    "removeFlat": "Remove flat",
     "deactivate": "Deactivate",
     "activate": "Activate",
     "invite": "Invite"
