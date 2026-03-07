@@ -1,5 +1,5 @@
 #!/bin/bash
-# BytováApp — Initial Hetzner server setup
+# OpenResiApp — Initial Hetzner server setup
 # Run this ONCE on a fresh Hetzner server as root
 # Usage: ssh root@your-server 'bash -s' < scripts/hetzner-setup.sh
 
@@ -66,9 +66,9 @@ else
 fi
 
 # --- Create backup directory ---
-mkdir -p /backups/bytapp/daily /backups/bytapp/weekly
+mkdir -p /backups/resiapp/daily /backups/resiapp/weekly
 chown -R deploy:deploy /backups
-log "Backup directory created at /backups/bytapp"
+log "Backup directory created at /backups/resiapp"
 
 # --- Docker log rotation ---
 log "Configuring Docker log rotation..."
@@ -85,7 +85,7 @@ systemctl restart docker
 
 # --- Setup backup cron ---
 log "Setting up daily backup cron for deploy user..."
-CRON_LINE="0 3 * * * cd /home/deploy/byt-app && /home/deploy/byt-app/scripts/backup.sh >> /var/log/bytapp-backup.log 2>&1"
+CRON_LINE="0 3 * * * cd /home/deploy/open-resiapp && /home/deploy/open-resiapp/scripts/backup.sh >> /var/log/resiapp-backup.log 2>&1"
 (crontab -u deploy -l 2>/dev/null || true; echo "$CRON_LINE") | sort -u | crontab -u deploy -
 log "Backup cron set: daily at 3:00 AM"
 
@@ -94,11 +94,11 @@ log "=== Setup complete ==="
 log "Next steps:"
 log "  1. Set up Hetzner Cloud Firewall in the console (allow 22, 80, 443)"
 log "  2. SSH in as deploy: ssh deploy@your-server"
-log "  3. Clone your repo: git clone <repo-url> ~/byt-app"
+log "  3. Clone your repo: git clone <repo-url> ~/open-resiapp"
 log "  4. Create .env file: cp .env.example .env && nano .env"
 log "  5. Generate secrets:"
 log "     POSTGRES_PASSWORD: openssl rand -base64 32"
 log "     NEXTAUTH_SECRET: openssl rand -base64 64"
 log "  6. Deploy: docker compose -f docker-compose.prod.yml up -d --build"
-log "  7. Run migrations: docker compose -f docker-compose.prod.yml exec app npx drizzle-kit migrate"
-log "  8. Seed (optional): docker compose -f docker-compose.prod.yml exec app node -e \"require('./drizzle/seed.js')\""
+log "     (Migrations run automatically on startup)"
+log "  7. Seed (optional): docker compose -f docker-compose.prod.yml exec app node -e \"require('./drizzle/seed.js')\""

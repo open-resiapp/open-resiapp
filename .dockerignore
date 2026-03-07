@@ -1,0 +1,27 @@
+node_modules
+.next
+.git
+.gitignore
+
+# Environment files
+.env
+.env.*
+!.env.production.example
+
+# Docker files (not needed inside the image)
+docker-compose*.yml
+Caddyfile*
+
+# Uploads and data
+uploads/
+
+# IDE / OS
+.vscode
+.idea
+*.swp
+.DS_Store
+
+# Docs and scripts
+*.md
+LICENSE
+scripts/

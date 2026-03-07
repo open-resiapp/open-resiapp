@@ -32,7 +32,7 @@ export async function PATCH(request: NextRequest) {
   }
 
   const body = await request.json();
-  const { name, address, ico, votingMethod } = body;
+  const { name, address, ico, votingMethod, legalNotice } = body;
 
   const [existing] = await db.select().from(building).limit(1);
   if (!existing) {
@@ -44,6 +44,7 @@ export async function PATCH(request: NextRequest) {
   if (address !== undefined) updateData.address = address;
   if (ico !== undefined) updateData.ico = ico;
   if (votingMethod !== undefined) updateData.votingMethod = votingMethod;
+  if (legalNotice !== undefined) updateData.legalNotice = legalNotice;
 
   const [updated] = await db
     .update(building)

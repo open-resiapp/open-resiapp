@@ -4,7 +4,7 @@ Project instructions for Claude Code. This file is automatically loaded when wor
 
 ## Project Overview
 
-BytovaApp — open-source web app for managing Slovak residential apartment buildings (bytove domy). Features: announcements board, weighted voting, owner management, documents, role-based access.
+OpenResiApp — open-source web app for managing Slovak residential apartment buildings (bytove domy). Features: announcements board, weighted voting, owner management, documents, role-based access.
 
 ## Tech Stack
 

@@ -6,7 +6,7 @@ import { routing } from "@/i18n/routing";
 import Providers from "@/components/Providers";
 
 export const metadata: Metadata = {
-  title: "BytováApp",
+  title: "OpenResiApp",
   description: "Správa bytového spoločenstva",
 };
 

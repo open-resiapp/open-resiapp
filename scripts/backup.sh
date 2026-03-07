@@ -1,13 +1,13 @@
 #!/bin/bash
-# BytováApp — Database & uploads backup script
+# OpenResiApp — Database & uploads backup script
 # Usage: ./scripts/backup.sh
 # Recommended: run daily via cron
-#   0 3 * * * /path/to/byt-app/scripts/backup.sh >> /var/log/bytapp-backup.log 2>&1
+#   0 3 * * * /path/to/open-resiapp/scripts/backup.sh >> /var/log/resiapp-backup.log 2>&1
 
 set -euo pipefail
 
 # --- Configuration ---
-BACKUP_DIR="${BACKUP_DIR:-/backups/bytapp}"
+BACKUP_DIR="${BACKUP_DIR:-/backups/resiapp}"
 COMPOSE_FILE="${COMPOSE_FILE:-docker-compose.prod.yml}"
 DB_CONTAINER="$(docker compose -f "$COMPOSE_FILE" ps -q db 2>/dev/null || echo "")"
 KEEP_DAILY=7
@@ -34,7 +34,7 @@ mkdir -p "$BACKUP_DIR/daily" "$BACKUP_DIR/weekly"
 log "Starting database backup..."
 DUMP_FILE="$BACKUP_DIR/daily/db_${TIMESTAMP}.sql.gz"
 
-docker exec "$DB_CONTAINER" pg_dump -U postgres --no-owner --clean bytapp \
+docker exec "$DB_CONTAINER" pg_dump -U postgres --no-owner --clean resiapp \
   | gzip > "$DUMP_FILE"
 
 DUMP_SIZE=$(du -h "$DUMP_FILE" | cut -f1)

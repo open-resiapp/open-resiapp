@@ -64,6 +64,7 @@ export default function VotingDetailPage() {
 
   const [voting, setVoting] = useState<VotingDetail | null>(null);
   const [voteData, setVoteData] = useState<VoteData | null>(null);
+  const [legalNotice, setLegalNotice] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [voting404, setVoting404] = useState(false);
   const [castingVote, setCastingVote] = useState(false);
@@ -101,6 +102,13 @@ export default function VotingDetailPage() {
       }
       if (res.ok) {
         setVoting(await res.json());
+      }
+      const buildingRes = await fetch("/api/building");
+      if (buildingRes.ok) {
+        const buildingData = await buildingRes.json();
+        if (buildingData?.legalNotice) {
+          setLegalNotice(buildingData.legalNotice);
+        }
       }
       await fetchVoteData();
       setLoading(false);
@@ -279,6 +287,13 @@ export default function VotingDetailPage() {
               <p className="text-base text-gray-700 mb-4 whitespace-pre-wrap">
                 {voting.description}
               </p>
+            )}
+
+            {legalNotice && (
+              <div className="mb-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                <p className="text-sm font-medium text-blue-800 mb-1">{t("legalNotice")}</p>
+                <p className="text-sm text-blue-700 whitespace-pre-wrap">{legalNotice}</p>
+              </div>
             )}
 
             <div className="flex flex-wrap gap-4 text-sm text-gray-500">

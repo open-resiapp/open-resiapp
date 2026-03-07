@@ -1,4 +1,4 @@
-# BytovaApp
+# OpenResiApp
 
 Open-source web application for managing residential apartment buildings (bytove domy) in Slovakia. Built for building administrators, owners, and tenants to handle voting, announcements, document management, and owner administration.
 
@@ -35,8 +35,8 @@ Open-source web application for managing residential apartment buildings (bytove
 1. Clone the repository:
 
 ```bash
-git clone https://github.com/open-housing/byt-app.git
-cd byt-app
+git clone https://github.com/open-resiapp/open-resiapp.git
+cd open-resiapp
 ```
 
 2. Install dependencies:

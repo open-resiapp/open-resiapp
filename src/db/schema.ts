@@ -69,6 +69,7 @@ export const building = pgTable("building", {
   address: varchar("address", { length: 500 }).notNull(),
   ico: varchar("ico", { length: 20 }),
   votingMethod: votingMethodEnum("voting_method").notNull().default("per_share"),
+  legalNotice: text("legal_notice"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 

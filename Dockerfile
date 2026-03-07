@@ -32,6 +32,9 @@ COPY --from=builder /app/package.json ./package.json
 COPY --from=builder /app/drizzle ./drizzle
 COPY --from=builder /app/drizzle.config.ts ./drizzle.config.ts
 COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/messages ./messages
+
+COPY docker-entrypoint.sh /app/docker-entrypoint.sh
 
 RUN mkdir -p /app/uploads && chown nextjs:nodejs /app/uploads
 
@@ -42,4 +45,4 @@ EXPOSE 3000
 ENV PORT=3000
 ENV HOSTNAME="0.0.0.0"
 
-CMD ["node", "server.js"]
+CMD ["sh", "docker-entrypoint.sh"]

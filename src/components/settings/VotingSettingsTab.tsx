@@ -19,8 +19,11 @@ export default function VotingSettingsTab({ canEdit }: VotingSettingsTabProps) {
   const tc = useTranslations("Common");
   const [currentMethod, setCurrentMethod] = useState<VotingMethod>("per_share");
   const [selectedMethod, setSelectedMethod] = useState<VotingMethod>("per_share");
+  const [legalNotice, setLegalNotice] = useState("");
+  const [savedLegalNotice, setSavedLegalNotice] = useState("");
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [savingNotice, setSavingNotice] = useState(false);
   const [missingAreas, setMissingAreas] = useState(false);
   const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
 
@@ -32,6 +35,10 @@ export default function VotingSettingsTab({ canEdit }: VotingSettingsTabProps) {
       if (building?.votingMethod) {
         setCurrentMethod(building.votingMethod);
         setSelectedMethod(building.votingMethod);
+      }
+      if (building?.legalNotice != null) {
+        setLegalNotice(building.legalNotice);
+        setSavedLegalNotice(building.legalNotice);
       }
       const hasNullAreas = flats.some((f: { area: number | null }) => f.area === null);
       setMissingAreas(hasNullAreas);
@@ -68,6 +75,26 @@ export default function VotingSettingsTab({ canEdit }: VotingSettingsTabProps) {
   }
 
   const hasChanges = selectedMethod !== currentMethod;
+  const hasNoticeChanges = legalNotice !== savedLegalNotice;
+
+  const handleSaveNotice = async () => {
+    setSavingNotice(true);
+    setMessage(null);
+    try {
+      const res = await fetch("/api/building", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ legalNotice: legalNotice || null }),
+      });
+      if (!res.ok) throw new Error();
+      setSavedLegalNotice(legalNotice);
+      setMessage({ type: "success", text: t("legalNoticeSaved") });
+    } catch {
+      setMessage({ type: "error", text: t("legalNoticeSaveFailed") });
+    } finally {
+      setSavingNotice(false);
+    }
+  };
 
   return (
     <div className="bg-white rounded-xl border border-gray-200 p-6">
@@ -133,6 +160,37 @@ export default function VotingSettingsTab({ canEdit }: VotingSettingsTabProps) {
           </button>
         </div>
       )}
+
+      <div className="mt-8 pt-6 border-t border-gray-200">
+        <label className="block text-base font-medium text-gray-900 mb-2">
+          {t("legalNoticeLabel")}
+        </label>
+        <textarea
+          value={legalNotice}
+          onChange={(e) => canEdit && setLegalNotice(e.target.value)}
+          disabled={!canEdit}
+          rows={4}
+          placeholder={t("legalNoticePlaceholder")}
+          className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none resize-vertical disabled:bg-gray-50 disabled:text-gray-500"
+        />
+        {canEdit && hasNoticeChanges && (
+          <div className="flex gap-3 mt-3">
+            <button
+              onClick={handleSaveNotice}
+              disabled={savingNotice}
+              className="px-5 py-3 bg-blue-600 hover:bg-blue-700 text-white text-base font-medium rounded-lg transition-colors disabled:opacity-50"
+            >
+              {savingNotice ? tc("saving") : tc("save")}
+            </button>
+            <button
+              onClick={() => setLegalNotice(savedLegalNotice)}
+              className="px-5 py-3 text-gray-700 hover:text-gray-900 text-base font-medium transition-colors"
+            >
+              {tc("cancel")}
+            </button>
+          </div>
+        )}
+      </div>
     </div>
   );
 }

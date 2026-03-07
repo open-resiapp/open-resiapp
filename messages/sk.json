@@ -25,7 +25,7 @@
     "invalidCredentials": "Nesprávny email alebo heslo."
   },
   "Sidebar": {
-    "appName": "BytováApp",
+    "appName": "OpenResiApp",
     "appDescription": "Správa bytového domu",
     "dashboard": "Dashboard",
     "board": "Nástenka",
@@ -107,7 +107,8 @@
     "meetingOnlyInfo": "Elektronické hlasovanie nie je povolené — hlasovanie prebieha iba na schôdzi.",
     "ownersQuarterInfo": "Hlasovanie iniciované štvrtinou vlastníkov — elektronické hlasovanie nie je povolené.",
     "auditHashLabel": "Audit hash vášho hlasu",
-    "flatHeader": "Byt {number}"
+    "flatHeader": "Byt {number}",
+    "legalNotice": "Právna doložka"
   },
   "VotingNew": {
     "title": "Nové hlasovanie",
@@ -226,7 +227,7 @@
   "Register": {
     "loading": "Načítavam...",
     "title": "Registrácia",
-    "subtitle": "Vytvorte si účet v BytovejApp",
+    "subtitle": "Vytvorte si účet v OpenResiApp",
     "nameLabel": "Meno a priezvisko",
     "emailLabel": "Email",
     "passwordLabel": "Heslo",
@@ -323,7 +324,11 @@
     "votingMethodPerAreaDesc": "Váha hlasu podľa plochy bytu v m².",
     "votingMethodSaved": "Spôsob hlasovania bol uložený.",
     "votingMethodSaveFailed": "Nepodarilo sa uložiť spôsob hlasovania.",
-    "missingAreaWarning": "Niektoré byty nemajú zadanú plochu. Pri hlasovaní podľa plochy sa použije predvolená váha 1."
+    "missingAreaWarning": "Niektoré byty nemajú zadanú plochu. Pri hlasovaní podľa plochy sa použije predvolená váha 1.",
+    "legalNoticeLabel": "Právna doložka",
+    "legalNoticePlaceholder": "Napr.: Hlasovanie podľa §14a zákona č. 182/1993 Z.z. o vlastníctve bytov a nebytových priestorov...",
+    "legalNoticeSaved": "Právna doložka bola uložená.",
+    "legalNoticeSaveFailed": "Nepodarilo sa uložiť právnu doložku."
   },
   "Profile": {
     "title": "Profil",

@@ -61,7 +61,7 @@ export async function sendPasswordReset(params: {
     await transporter.sendMail({
       from: emailFrom,
       to: params.recipientEmail,
-      subject: "Obnovenie hesla — BytováApp",
+      subject: "Obnovenie hesla — OpenResiApp",
       html,
     });
     return true;

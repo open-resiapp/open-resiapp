@@ -25,7 +25,7 @@
     "invalidCredentials": "Invalid email or password."
   },
   "Sidebar": {
-    "appName": "BytováApp",
+    "appName": "OpenResiApp",
     "appDescription": "Building management",
     "dashboard": "Dashboard",
     "board": "Board",
@@ -107,7 +107,8 @@
     "meetingOnlyInfo": "Electronic voting is not allowed — voting takes place at the meeting only.",
     "ownersQuarterInfo": "Voting initiated by quarter of owners — electronic voting is not allowed.",
     "auditHashLabel": "Audit hash of your vote",
-    "flatHeader": "Flat {number}"
+    "flatHeader": "Flat {number}",
+    "legalNotice": "Legal notice"
   },
   "VotingNew": {
     "title": "New voting",
@@ -226,7 +227,7 @@
   "Register": {
     "loading": "Loading...",
     "title": "Registration",
-    "subtitle": "Create your BytovaApp account",
+    "subtitle": "Create your OpenResiApp account",
     "nameLabel": "Full name",
     "emailLabel": "Email",
     "passwordLabel": "Password",
@@ -323,7 +324,11 @@
     "votingMethodPerAreaDesc": "Vote weight based on flat area in m².",
     "votingMethodSaved": "Voting method has been saved.",
     "votingMethodSaveFailed": "Failed to save voting method.",
-    "missingAreaWarning": "Some flats do not have an area set. Default weight of 1 will be used for area-based voting."
+    "missingAreaWarning": "Some flats do not have an area set. Default weight of 1 will be used for area-based voting.",
+    "legalNoticeLabel": "Legal notice",
+    "legalNoticePlaceholder": "E.g.: Voting pursuant to §14a of Act No. 182/1993 Coll. on ownership of apartments and non-residential premises...",
+    "legalNoticeSaved": "Legal notice has been saved.",
+    "legalNoticeSaveFailed": "Failed to save legal notice."
   },
   "Profile": {
     "title": "Profile",

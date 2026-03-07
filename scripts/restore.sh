@@ -1,6 +1,6 @@
 #!/bin/bash
-# BytováApp — Database restore script
-# Usage: ./scripts/restore.sh /backups/bytapp/daily/db_2026-03-04_030000.sql.gz
+# OpenResiApp — Database restore script
+# Usage: ./scripts/restore.sh /backups/resiapp/daily/db_2026-03-04_030000.sql.gz
 
 set -euo pipefail
 
@@ -42,7 +42,7 @@ fi
 # --- Restore ---
 log "Restoring database from: $BACKUP_FILE"
 
-gunzip -c "$BACKUP_FILE" | docker exec -i "$DB_CONTAINER" psql -U postgres -d bytapp --quiet
+gunzip -c "$BACKUP_FILE" | docker exec -i "$DB_CONTAINER" psql -U postgres -d resiapp --quiet
 
 log "Database restore complete."
 log "Restart the app to pick up changes: docker compose -f $COMPOSE_FILE restart app"

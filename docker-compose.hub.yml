@@ -1,3 +1,7 @@
+## OpenResiApp — Docker Hub deployment
+## 1. Copy .env.production.example to .env and fill in values
+## 2. docker compose -f docker-compose.hub.yml up -d
+
 services:
   db:
     image: postgres:16-alpine
@@ -6,8 +10,6 @@ services:
       POSTGRES_DB: resiapp
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-    # No ports exposed — app connects via internal Docker network
-    # For local DB access, use: docker compose exec db psql -U postgres resiapp
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
@@ -22,7 +24,7 @@ services:
         max-file: "3"
 
   app:
-    build: .
+    image: open-resiapp/open-resiapp:latest
     restart: unless-stopped
     depends_on:
       db:
@@ -38,7 +40,7 @@ services:
       SMTP_PORT: ${SMTP_PORT:-587}
       SMTP_USER: ${SMTP_USER:-}
       SMTP_PASS: ${SMTP_PASS:-}
-      EMAIL_FROM: ${EMAIL_FROM:-noreply@mojadas.app}
+      EMAIL_FROM: ${EMAIL_FROM:-noreply@example.com}
       REQUIRE_VOTE_EMAIL: ${REQUIRE_VOTE_EMAIL:-false}
     volumes:
       - uploads:/app/uploads
@@ -55,13 +57,13 @@ services:
       - "80:80"
       - "443:443"
     volumes:
-      - ./Caddyfile.prod:/etc/caddy/Caddyfile
       - caddy_data:/data
       - caddy_config:/config
     environment:
       APP_DOMAIN: ${APP_DOMAIN}
     depends_on:
       - app
+    command: caddy reverse-proxy --from ${APP_DOMAIN} --to app:3000
     logging:
       driver: "json-file"
       options:

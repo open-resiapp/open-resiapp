@@ -41,6 +41,7 @@ async function seed() {
       name: "Bytové spoločenstvo Hlavná 12",
       address: "Hlavná 12, 040 01 Košice",
       ico: "12345678",
+      legalNotice: "Hlasovanie sa riadi ustanoveniami §14a zákona č. 182/1993 Z.z. o vlastníctve bytov a nebytových priestorov v znení neskorších predpisov.",
     })
     .returning();
   console.log("Created building:", bld.name);
