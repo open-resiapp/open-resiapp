@@ -8,6 +8,9 @@ import Providers from "@/components/Providers";
 export const metadata: Metadata = {
   title: "OpenResiApp",
   description: "Správa bytového spoločenstva",
+  icons: {
+    icon: "/icon.svg",
+  },
 };
 
 export function generateStaticParams() {
