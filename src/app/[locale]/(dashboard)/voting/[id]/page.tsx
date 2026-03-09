@@ -135,6 +135,10 @@ export default function VotingDetailPage() {
   async function handleVote(choice: VoteChoice, flatId: string) {
     if (!canVote || voting?.status !== "active") return;
 
+    // Skip if already voted with the same choice
+    const existing = userVotedFlats.find((v) => v.flatId === flatId);
+    if (existing && existing.choice === choice) return;
+
     setCastingVote(true);
     const res = await fetch("/api/votes", {
       method: "POST",
@@ -457,13 +461,7 @@ export default function VotingDetailPage() {
                   {t("flatHeader", { number: flat.flatNumber })}
                 </h3>
 
-                {flatVote ? (
-                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 text-center">
-                    <p className="text-base font-bold text-blue-700">
-                      {t(getChoiceKey(flatVote.choice))} ✓
-                    </p>
-                  </div>
-                ) : votedByOther ? (
+                {votedByOther ? (
                   <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 text-center">
                     <p className="text-base text-amber-700">
                       {t("flatVotedByOther")}
@@ -472,20 +470,25 @@ export default function VotingDetailPage() {
                 ) : (
                   <div className="space-y-2">
                     <p className="text-base text-gray-600 mb-2">
-                      {t("castVote", { flatNumber: flat.flatNumber })}
+                      {flatVote
+                        ? t("changeVoteHint")
+                        : t("castVote", { flatNumber: flat.flatNumber })}
                     </p>
                     <VoteButton
                       choice="za"
+                      selected={flatVote?.choice === "za"}
                       disabled={castingVote}
                       onClick={(choice) => handleVote(choice, flat.flatId)}
                     />
                     <VoteButton
                       choice="proti"
+                      selected={flatVote?.choice === "proti"}
                       disabled={castingVote}
                       onClick={(choice) => handleVote(choice, flat.flatId)}
                     />
                     <VoteButton
                       choice="zdrzal_sa"
+                      selected={flatVote?.choice === "zdrzal_sa"}
                       disabled={castingVote}
                       onClick={(choice) => handleVote(choice, flat.flatId)}
                     />

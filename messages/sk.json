@@ -108,6 +108,7 @@
     "ownersQuarterInfo": "Hlasovanie iniciované štvrtinou vlastníkov — elektronické hlasovanie nie je povolené.",
     "auditHashLabel": "Audit hash vášho hlasu",
     "flatHeader": "Byt {number}",
+    "changeVoteHint": "Kliknutím na inú možnosť zmeníte svoj hlas",
     "legalNotice": "Právna doložka",
     "paperVotePhotos": "Fotografie listinných hlasov"
   },

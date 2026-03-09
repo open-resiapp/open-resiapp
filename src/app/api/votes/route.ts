@@ -201,7 +201,7 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  // Check unique vote per flat (not per owner)
+  // Check if flat already has a vote in this voting
   const existingVote = await db
     .select()
     .from(votes)
@@ -209,10 +209,65 @@ export async function POST(request: NextRequest) {
     .limit(1);
 
   if (existingVote.length > 0) {
-    return NextResponse.json(
-      { error: "Za tento byt už bolo hlasované" },
-      { status: 400 }
-    );
+    const existing = existingVote[0];
+
+    // For electronic votes, only the original voter can change their vote
+    if (!isPaperVote && existing.ownerId !== voterId) {
+      return NextResponse.json(
+        { error: "Za tento byt už hlasoval iný vlastník" },
+        { status: 400 }
+      );
+    }
+
+    // Same choice — no change needed
+    if (existing.choice === choice) {
+      return NextResponse.json({ ...existing, auditHash: existing.auditHash }, { status: 200 });
+    }
+
+    // Update the vote with the new choice
+    const now = new Date();
+    const newAuditHash = generateAuditHash(votingId, voterId, flatId, choice, now);
+
+    const [updated] = await db
+      .update(votes)
+      .set({
+        choice,
+        auditHash: newAuditHash,
+        ...(isPaperVote
+          ? { recordedById: session.user.id, paperPhotoUrl: paperPhotoUrl || null }
+          : {}),
+      })
+      .where(eq(votes.id, existing.id))
+      .returning();
+
+    // Fire-and-forget email for electronic vote changes
+    if (!isPaperVote) {
+      const [voter] = await db
+        .select({ email: users.email, name: users.name })
+        .from(users)
+        .where(eq(users.id, voterId))
+        .limit(1);
+
+      const [flat] = await db
+        .select({ flatNumber: flats.flatNumber })
+        .from(flats)
+        .where(eq(flats.id, flatId))
+        .limit(1);
+
+      if (voter && flat) {
+        sendVoteConfirmation({
+          recipientEmail: voter.email,
+          voterName: voter.name,
+          votingTitle: voting.title,
+          flatNumber: flat.flatNumber,
+          choice,
+          timestamp: now,
+          auditHash: newAuditHash,
+        }).catch(() => {});
+      }
+    }
+
+    return NextResponse.json({ ...updated, auditHash: newAuditHash }, { status: 200 });
   }
 
   const now = new Date();

@@ -108,6 +108,7 @@
     "ownersQuarterInfo": "Voting initiated by quarter of owners — electronic voting is not allowed.",
     "auditHashLabel": "Audit hash of your vote",
     "flatHeader": "Flat {number}",
+    "changeVoteHint": "Click a different option to change your vote",
     "legalNotice": "Legal notice",
     "paperVotePhotos": "Paper ballot photos"
   },
