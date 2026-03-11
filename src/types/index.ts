@@ -15,6 +15,7 @@ import type {
   notificationPreferences,
   externalConnections,
   pairingRequests,
+  consentRecords,
 } from "@/db/schema";
 
 export type Building = InferSelectModel<typeof building>;
@@ -32,6 +33,7 @@ export type PushSubscription = InferSelectModel<typeof pushSubscriptions>;
 export type NotificationPreference = InferSelectModel<typeof notificationPreferences>;
 export type ExternalConnection = InferSelectModel<typeof externalConnections>;
 export type PairingRequest = InferSelectModel<typeof pairingRequests>;
+export type ConsentRecord = InferSelectModel<typeof consentRecords>;
 
 export type UserRole = "admin" | "owner" | "tenant" | "vote_counter" | "caretaker";
 export type ApiKeyPermission = "read" | "read_write" | "full";
@@ -47,6 +49,8 @@ export type VotingMethod = "per_share" | "per_flat" | "per_area";
 export type VotingType = "written" | "meeting";
 export type VotingInitiatedBy = "board" | "owners_quarter";
 export type QuorumType = "simple_present" | "simple_all" | "two_thirds_all";
+export type ConsentType = "data_processing" | "communication";
+export type ConsentAction = "granted" | "withdrawn";
 
 export type SafeUser = Omit<User, "passwordHash">;
 

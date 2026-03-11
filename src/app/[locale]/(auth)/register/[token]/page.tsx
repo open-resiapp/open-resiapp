@@ -29,6 +29,8 @@ export default function RegisterPage() {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
+  const [dataProcessingConsent, setDataProcessingConsent] = useState(false);
+  const [communicationConsent, setCommunicationConsent] = useState(false);
 
   useEffect(() => {
     fetch(`/api/invitations/${token}`)
@@ -59,6 +61,10 @@ export default function RegisterPage() {
         email: formData.get("email"),
         password: formData.get("password"),
         phone: formData.get("phone"),
+        consents: {
+          data_processing: dataProcessingConsent,
+          communication: communicationConsent,
+        },
       }),
     });
 
@@ -197,9 +203,54 @@ export default function RegisterPage() {
           />
         </div>
 
+        {/* Consent section */}
+        <div className="border-t border-gray-200 pt-4 mt-2">
+          <p className="text-base font-medium text-gray-700 mb-3">
+            {t("consentTitle")}
+          </p>
+
+          <label className="flex items-start gap-3 cursor-pointer mb-3">
+            <input
+              type="checkbox"
+              checked={dataProcessingConsent}
+              onChange={(e) => setDataProcessingConsent(e.target.checked)}
+              className="mt-1 w-5 h-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+            />
+            <span className="text-base text-gray-700">
+              {t("dataProcessingConsent")}
+            </span>
+          </label>
+
+          <label className="flex items-start gap-3 cursor-pointer mb-3">
+            <input
+              type="checkbox"
+              checked={communicationConsent}
+              onChange={(e) => setCommunicationConsent(e.target.checked)}
+              className="mt-1 w-5 h-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+            />
+            <span className="text-base text-gray-700">
+              {t("communicationConsent")}
+            </span>
+          </label>
+
+          <Link
+            href="/privacy-policy"
+            target="_blank"
+            className="text-sm text-blue-600 hover:text-blue-700 underline"
+          >
+            {t("privacyPolicyLink")}
+          </Link>
+
+          {!dataProcessingConsent && (
+            <p className="text-sm text-amber-600 mt-2">
+              {t("consentRequired")}
+            </p>
+          )}
+        </div>
+
         <button
           type="submit"
-          disabled={submitting}
+          disabled={submitting || !dataProcessingConsent}
           className="w-full py-3 px-4 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white text-lg font-medium rounded-lg transition-colors"
         >
           {submitting ? t("submitting") : t("submit")}

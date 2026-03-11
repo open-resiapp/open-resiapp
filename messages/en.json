@@ -251,7 +251,12 @@
     "roleOwner": "Owner",
     "roleTenant": "Tenant",
     "roleVoteCounter": "Vote counter",
-    "roleCaretaker": "Caretaker"
+    "roleCaretaker": "Caretaker",
+    "consentTitle": "Data processing consent",
+    "dataProcessingConsent": "I agree to the processing of personal data according to the privacy policy",
+    "communicationConsent": "I agree to receive operational notifications (optional)",
+    "privacyPolicyLink": "Privacy policy",
+    "consentRequired": "Consent to personal data processing is required for registration."
   },
   "Invitations": {
     "title": "Invitation",
@@ -407,5 +412,46 @@
     "prefNewPostDesc": "Get notified when a new post is added to the board.",
     "prefVotingStarted": "New voting",
     "prefVotingStartedDesc": "Get notified when a new voting is started."
+  },
+  "Consent": {
+    "title": "Data processing consent",
+    "subtitle": "Your consent to personal data processing is required to continue.",
+    "dataProcessingLabel": "I agree to the processing of personal data (name, email, phone, ownership share) for the purposes of building management.",
+    "communicationLabel": "I agree to receive operational notifications by email (optional).",
+    "privacyPolicyLink": "Privacy policy",
+    "policyVersion": "Policy version: {version}",
+    "submit": "I agree and continue",
+    "submitting": "Saving...",
+    "submitFailed": "Failed to save consent. Please try again.",
+    "managementTitle": "Data processing consents",
+    "statusGranted": "Granted",
+    "statusNotGranted": "Not granted",
+    "grantedOn": "Granted on {date}",
+    "dataProcessingTitle": "Personal data processing",
+    "communicationTitle": "Operational notifications",
+    "withdraw": "Withdraw",
+    "grant": "Grant",
+    "withdrawWarningTitle": "Withdraw consent",
+    "withdrawDataProcessingWarning": "Withdrawing consent to personal data processing will deactivate your account and you will not be able to sign in.",
+    "withdrawCommunicationWarning": "You will stop receiving operational notifications by email.",
+    "withdrawConfirm": "Withdraw consent",
+    "withdrawCancel": "Cancel",
+    "viewPrivacyPolicy": "View privacy policy"
+  },
+  "PrivacyPolicy": {
+    "title": "Privacy Policy",
+    "version": "Version: {version}",
+    "lastUpdated": "Last updated: {date}",
+    "backToLogin": "Back to sign in",
+    "whatDataTitle": "What data we process",
+    "whatDataContent": "We process personal data of apartment owners necessary for building management: full name, email address, phone number, co-ownership share of common areas.",
+    "purposeTitle": "Purpose of processing",
+    "purposeContent": "We process your personal data for the purposes of building management, including organizing votings, maintaining owner records, communication between owners and the manager, and keeping meeting minutes.",
+    "yourRightsTitle": "Your rights",
+    "yourRightsContent": "You have the right to access, rectify, erase, restrict processing, data portability, and the right to object. You can withdraw your consent at any time in your profile settings.",
+    "retentionTitle": "Data retention",
+    "retentionContent": "We retain personal data for the duration of your apartment ownership and for 5 additional years after it ends, unless a longer archival period is required by law.",
+    "contactTitle": "Contact",
+    "contactContent": "For questions regarding personal data processing, please contact the building manager."
   }
 }

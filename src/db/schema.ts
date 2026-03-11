@@ -74,6 +74,16 @@ export const pairingStatusEnum = pgEnum("pairing_status", [
   "revoked",
 ]);
 
+export const consentTypeEnum = pgEnum("consent_type", [
+  "data_processing",
+  "communication",
+]);
+
+export const consentActionEnum = pgEnum("consent_action", [
+  "granted",
+  "withdrawn",
+]);
+
 // ── Tables ─────────────────────────────────────────────
 
 export const building = pgTable("building", {
@@ -331,6 +341,19 @@ export const pairingRequests = pgTable("pairing_requests", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
+export const consentRecords = pgTable("consent_records", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  userId: uuid("user_id")
+    .references(() => users.id, { onDelete: "cascade" })
+    .notNull(),
+  consentType: consentTypeEnum("consent_type").notNull(),
+  action: consentActionEnum("action").notNull(),
+  policyVersion: varchar("policy_version", { length: 20 }).notNull(),
+  ipAddress: varchar("ip_address", { length: 45 }),
+  userAgent: text("user_agent"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
 // ── Relations ──────────────────────────────────────────
 
 export const buildingRelations = relations(building, ({ many }) => ({
@@ -369,6 +392,7 @@ export const usersRelations = relations(users, ({ one, many }) => ({
   posts: many(posts),
   documents: many(documents),
   pushSubscriptions: many(pushSubscriptions),
+  consentRecords: many(consentRecords),
 }));
 
 export const votingsRelations = relations(votings, ({ one, many }) => ({
@@ -498,6 +522,13 @@ export const pairingRequestsRelations = relations(pairingRequests, ({ one }) => 
   }),
   createdBy: one(users, {
     fields: [pairingRequests.createdById],
+    references: [users.id],
+  }),
+}));
+
+export const consentRecordsRelations = relations(consentRecords, ({ one }) => ({
+  user: one(users, {
+    fields: [consentRecords.userId],
     references: [users.id],
   }),
 }));

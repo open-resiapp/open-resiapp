@@ -251,7 +251,12 @@
     "roleOwner": "Vlastník",
     "roleTenant": "Nájomca",
     "roleVoteCounter": "Zapisovateľ",
-    "roleCaretaker": "Domovník"
+    "roleCaretaker": "Domovník",
+    "consentTitle": "Súhlas so spracovaním údajov",
+    "dataProcessingConsent": "Súhlasím so spracovaním osobných údajov podľa zásad ochrany súkromia",
+    "communicationConsent": "Súhlasím so zasielaním prevádzkových oznámení (voliteľné)",
+    "privacyPolicyLink": "Zásady ochrany súkromia",
+    "consentRequired": "Pre registráciu je potrebný súhlas so spracovaním osobných údajov."
   },
   "Invitations": {
     "title": "Pozvánka",
@@ -407,5 +412,46 @@
     "prefNewPostDesc": "Upozornenie pri pridaní nového príspevku na nástenku.",
     "prefVotingStarted": "Nové hlasovanie",
     "prefVotingStartedDesc": "Upozornenie pri spustení nového hlasovania."
+  },
+  "Consent": {
+    "title": "Súhlas so spracovaním údajov",
+    "subtitle": "Pre pokračovanie je potrebný váš súhlas so spracovaním osobných údajov.",
+    "dataProcessingLabel": "Súhlasím so spracovaním osobných údajov (meno, email, telefón, spoluvlastnícky podiel) na účely správy bytového domu.",
+    "communicationLabel": "Súhlasím so zasielaním prevádzkových oznámení emailom (voliteľné).",
+    "privacyPolicyLink": "Zásady ochrany súkromia",
+    "policyVersion": "Verzia zásad: {version}",
+    "submit": "Súhlasím a pokračujem",
+    "submitting": "Ukladám...",
+    "submitFailed": "Nepodarilo sa uložiť súhlas. Skúste to znova.",
+    "managementTitle": "Súhlasy so spracovaním údajov",
+    "statusGranted": "Udelený",
+    "statusNotGranted": "Neudelený",
+    "grantedOn": "Udelený dňa {date}",
+    "dataProcessingTitle": "Spracovanie osobných údajov",
+    "communicationTitle": "Prevádzkové oznámenia",
+    "withdraw": "Odvolať",
+    "grant": "Udeliť",
+    "withdrawWarningTitle": "Odvolanie súhlasu",
+    "withdrawDataProcessingWarning": "Odvolaním súhlasu so spracovaním osobných údajov bude váš účet deaktivovaný a nebudete sa môcť prihlásiť.",
+    "withdrawCommunicationWarning": "Prestanete dostávať prevádzkové oznámenia emailom.",
+    "withdrawConfirm": "Odvolať súhlas",
+    "withdrawCancel": "Zrušiť",
+    "viewPrivacyPolicy": "Zobraziť zásady ochrany súkromia"
+  },
+  "PrivacyPolicy": {
+    "title": "Zásady ochrany súkromia",
+    "version": "Verzia: {version}",
+    "lastUpdated": "Posledná aktualizácia: {date}",
+    "backToLogin": "Späť na prihlásenie",
+    "whatDataTitle": "Aké údaje spracovávame",
+    "whatDataContent": "Spracovávame osobné údaje vlastníkov bytov potrebné na správu bytového domu: meno a priezvisko, emailová adresa, telefónne číslo, spoluvlastnícky podiel na spoločných častiach domu.",
+    "purposeTitle": "Účel spracovania",
+    "purposeContent": "Vaše osobné údaje spracovávame na účely správy bytového domu, vrátane organizácie hlasovaní, evidencie vlastníkov, komunikácie medzi vlastníkmi a správcom, a vedenia zápisníc zo schôdzí.",
+    "yourRightsTitle": "Vaše práva",
+    "yourRightsContent": "Máte právo na prístup k svojim osobným údajom, ich opravu, výmaz, obmedzenie spracovania, prenosnosť údajov a právo namietať. Súhlas so spracovaním môžete kedykoľvek odvolať v nastaveniach profilu.",
+    "retentionTitle": "Doba uchovávania",
+    "retentionContent": "Osobné údaje uchovávame po dobu trvania vášho vlastníctva bytu a ďalších 5 rokov po jeho skončení, pokiaľ zákon nevyžaduje dlhšiu dobu archivácie.",
+    "contactTitle": "Kontakt",
+    "contactContent": "V prípade otázok ohľadom spracovania osobných údajov kontaktujte správcu bytového domu."
   }
 }

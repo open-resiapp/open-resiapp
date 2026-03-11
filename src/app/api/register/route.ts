@@ -1,16 +1,24 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/db";
-import { users, invitations, userFlats } from "@/db/schema";
+import { users, invitations, userFlats, consentRecords } from "@/db/schema";
 import { eq, and } from "drizzle-orm";
 import bcrypt from "bcrypt";
+import { CURRENT_POLICY_VERSION } from "@/lib/consent";
 
 export async function POST(request: NextRequest) {
   const body = await request.json();
-  const { token, name, email, password, phone } = body;
+  const { token, name, email, password, phone, consents } = body;
 
   if (!token || !name || !email || !password) {
     return NextResponse.json(
       { error: "Meno, email a heslo sú povinné" },
+      { status: 400 }
+    );
+  }
+
+  if (!consents?.data_processing) {
+    return NextResponse.json(
+      { error: "Súhlas so spracovaním osobných údajov je povinný" },
       { status: 400 }
     );
   }
@@ -76,6 +84,34 @@ export async function POST(request: NextRequest) {
       flatId: invitation.flatId,
     });
   }
+
+  // Record consent
+  const ip = request.headers.get("x-forwarded-for") || request.headers.get("x-real-ip");
+  const userAgent = request.headers.get("user-agent");
+
+  const consentValues = [
+    {
+      userId: newUser.id,
+      consentType: "data_processing" as const,
+      action: "granted" as const,
+      policyVersion: CURRENT_POLICY_VERSION,
+      ipAddress: ip?.split(",")[0]?.trim() || null,
+      userAgent,
+    },
+  ];
+
+  if (consents.communication) {
+    consentValues.push({
+      userId: newUser.id,
+      consentType: "communication" as const,
+      action: "granted" as const,
+      policyVersion: CURRENT_POLICY_VERSION,
+      ipAddress: ip?.split(",")[0]?.trim() || null,
+      userAgent,
+    });
+  }
+
+  await db.insert(consentRecords).values(consentValues);
 
   // Mark invitation as used
   await db

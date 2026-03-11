@@ -2,8 +2,11 @@
 
 [![Docker Hub](https://img.shields.io/docker/v/ipk0/open-resiapp?label=Docker%20Hub&sort=semver)](https://hub.docker.com/r/ipk0/open-resiapp)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![GitHub Discussions](https://img.shields.io/github/discussions/open-resiapp/open-resiapp)](https://github.com/open-resiapp/open-resiapp/discussions)
 
 Open-source web application for managing residential apartment buildings (bytove domy) in Slovakia. Built for building administrators, owners, and tenants.
+
+**Self-hosted. Free. No vendor lock-in.** Deploy with one `docker compose up` command and manage your building in minutes.
 
 ## Features
 
@@ -28,6 +31,23 @@ Available on [Docker Hub](https://hub.docker.com/r/ipk0/open-resiapp). Supports 
 ## Quick Deploy (5 minutes)
 
 You need a VPS with Docker installed (any provider — Hetzner, AWS, Azure, DigitalOcean).
+
+### Option A: Automated setup (recommended)
+
+```bash
+mkdir open-resiapp && cd open-resiapp
+curl -O https://raw.githubusercontent.com/open-resiapp/open-resiapp/main/setup.sh
+chmod +x setup.sh
+./setup.sh              # asks domain + building name, generates secrets
+docker compose up -d
+```
+
+The script generates secure passwords, creates `.env` and `docker-compose.yml` — no manual secret management needed.
+
+### Option B: Manual setup
+
+<details>
+<summary>Click to expand manual instructions</summary>
 
 **1. Create `docker-compose.yml`:**
 
@@ -88,9 +108,8 @@ volumes:
 APP_NAME="Bytove spolocenstvo Hlavna 12"
 APP_URL=https://yourdomain.sk
 APP_DOMAIN=yourdomain.sk
-POSTGRES_PASSWORD=changeMe_veryLongPassword123
-NEXTAUTH_SECRET=changeMe_anotherRandomString456
-# Generate secrets: openssl rand -base64 32
+POSTGRES_PASSWORD=$(openssl rand -base64 32 | tr -d '/+=')
+NEXTAUTH_SECRET=$(openssl rand -base64 32 | tr -d '/+=')
 ```
 
 **3. Deploy:**
@@ -99,7 +118,9 @@ NEXTAUTH_SECRET=changeMe_anotherRandomString456
 docker compose up -d
 ```
 
-**4. Create admin account:**
+</details>
+
+### Create admin account
 
 ```bash
 docker compose exec app npx tsx src/scripts/create-admin.ts \
@@ -187,13 +208,22 @@ npm run dev                 # http://localhost:3000
 - **next-intl** (i18n)
 - **Docker** + Caddy
 
+## Community
+
+- **[GitHub Discussions](https://github.com/open-resiapp/open-resiapp/discussions)** — ask questions, share ideas, show your setup
+- **[Issues](https://github.com/open-resiapp/open-resiapp/issues)** — report bugs and track feature requests
+
+We communicate in both Slovak and English. Use whichever you're comfortable with.
+
 ## Contributing
 
-Contributions are welcome!
+Contributions are welcome! Whether it's bug fixes, new features, translations, or documentation — every bit helps.
+
+See **[CONTRIBUTING.md](CONTRIBUTING.md)** for the full guide, or jump straight in:
 
 1. Fork the repository
 2. Create your feature branch (`git checkout -b feature/my-feature`)
-3. Commit your changes
+3. Make your changes (code in English, UI text via translation files)
 4. Open a Pull Request
 
 ## License

@@ -1,0 +1,40 @@
+title: "[Idea] "
+labels: []
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Share your feature idea! This is a space for open discussion before it becomes a formal issue.
+        All ideas are welcome — big or small.
+
+  - type: textarea
+    id: idea
+    attributes:
+      label: What's your idea?
+      description: Describe the feature or improvement you'd like to see.
+    validations:
+      required: true
+
+  - type: textarea
+    id: why
+    attributes:
+      label: Why would this be useful?
+      description: Who benefits and how? Real-world scenarios are great.
+
+  - type: dropdown
+    id: role
+    attributes:
+      label: Who would this help most?
+      multiple: true
+      options:
+        - Building admin (správca)
+        - Flat owner (vlastník)
+        - Tenant (nájomník)
+        - Developer / contributor
+        - Everyone
+
+  - type: textarea
+    id: examples
+    attributes:
+      label: Examples or references
+      description: Screenshots, mockups, links to similar features in other tools, etc.

@@ -1,0 +1,30 @@
+title: "[Show] "
+labels: []
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Running OpenResiApp for your building? Share your experience!
+        We'd love to hear how it's working for you.
+
+  - type: textarea
+    id: setup
+    attributes:
+      label: Your setup
+      description: How are you running OpenResiApp? (hosting, number of flats, how long, etc.)
+    validations:
+      required: true
+
+  - type: textarea
+    id: experience
+    attributes:
+      label: How's it going?
+      description: What works well? What could be better? Any tips for others?
+    validations:
+      required: true
+
+  - type: textarea
+    id: screenshots
+    attributes:
+      label: Screenshots
+      description: Optional — show us your setup!

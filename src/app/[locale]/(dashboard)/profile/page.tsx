@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 import { useState } from "react";
 import PushSubscriptionManager from "@/components/notifications/PushSubscriptionManager";
 import NotificationPreferences from "@/components/notifications/NotificationPreferences";
+import ConsentManagement from "@/components/consent/ConsentManagement";
 import type { UserRole } from "@/types";
 
 const roleKeys: Record<UserRole, string> = {
@@ -164,6 +165,9 @@ export default function ProfilePage() {
           </button>
         </form>
       </div>
+
+      {/* Consent management */}
+      <ConsentManagement />
 
       {/* Notifications card */}
       <div className="bg-white rounded-xl border border-gray-200 p-6">

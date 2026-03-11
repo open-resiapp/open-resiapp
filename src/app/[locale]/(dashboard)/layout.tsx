@@ -7,6 +7,7 @@ import { useEffect, useState } from "react";
 import Sidebar from "@/components/layout/Sidebar";
 import Header from "@/components/layout/Header";
 import ServiceWorkerRegistration from "@/components/ServiceWorkerRegistration";
+import ConsentGate from "@/components/consent/ConsentGate";
 import type { UserRole } from "@/types";
 
 export default function DashboardLayout({
@@ -46,7 +47,9 @@ export default function DashboardLayout({
           userName={session.user.name || ""}
           onMenuToggle={() => setSidebarOpen(!sidebarOpen)}
         />
-        <main className="flex-1 p-4 lg:p-6">{children}</main>
+        <main className="flex-1 p-4 lg:p-6">
+          <ConsentGate>{children}</ConsentGate>
+        </main>
       </div>
     </div>
   );

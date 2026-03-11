@@ -1,0 +1,36 @@
+title: "[Q&A] "
+labels: []
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Ask a question about OpenResiApp — setup, configuration, deployment, usage, or anything else.
+        The community and maintainers will help!
+
+  - type: textarea
+    id: question
+    attributes:
+      label: Your question
+      description: What would you like to know?
+    validations:
+      required: true
+
+  - type: dropdown
+    id: topic
+    attributes:
+      label: Topic area
+      options:
+        - Installation / Docker setup
+        - Configuration / Environment variables
+        - Voting system
+        - User management / Roles
+        - Translations / i18n
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: context
+    attributes:
+      label: Additional context
+      description: Any relevant details — error messages, screenshots, your setup, etc.

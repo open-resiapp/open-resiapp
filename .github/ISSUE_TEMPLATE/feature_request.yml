@@ -1,0 +1,50 @@
+name: Feature Request
+description: Suggest a new feature or improvement
+title: "[Feature]: "
+labels: ["enhancement"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for suggesting a feature! For open-ended ideas and discussion, consider using [GitHub Discussions](https://github.com/open-resiapp/open-resiapp/discussions/categories/feature-requests) instead.
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: What problem does this solve?
+      description: Describe the problem or need this feature addresses.
+      placeholder: "As a building admin, I need to..."
+    validations:
+      required: true
+
+  - type: textarea
+    id: solution
+    attributes:
+      label: Proposed solution
+      description: How do you think this should work?
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: Any other approaches you've thought about?
+
+  - type: dropdown
+    id: role
+    attributes:
+      label: Which role would use this feature?
+      multiple: true
+      options:
+        - Admin (správca)
+        - Owner (vlastník)
+        - Tenant (nájomník)
+        - Vote counter (overovateľ)
+        - All roles
+
+  - type: textarea
+    id: context
+    attributes:
+      label: Additional context
+      description: Screenshots, mockups, links to relevant Slovak legislation, etc.
