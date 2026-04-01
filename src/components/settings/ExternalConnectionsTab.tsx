@@ -26,6 +26,25 @@ interface PendingPairing {
   createdAt: string;
 }
 
+interface AlertData {
+  failedAuth: number;
+  rateLimited: number;
+  lockedPairings: number;
+  totalAlerts: number;
+}
+
+interface LogEntry {
+  id: string;
+  connectionId: string | null;
+  endpoint: string;
+  method: string;
+  ipAddress: string | null;
+  statusCode: number;
+  authResult: string;
+  responseTimeMs: number | null;
+  createdAt: string;
+}
+
 const CONNECTION_TYPES: { value: ConnectionType; labelKey: string }[] = [
   { value: "druzstvo", labelKey: "typeDruzstvo" },
   { value: "energy", labelKey: "typeEnergy" },
@@ -47,11 +66,19 @@ export default function ExternalConnectionsTab() {
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
+  const [alerts, setAlerts] = useState<AlertData | null>(null);
+  const [logs, setLogs] = useState<LogEntry[]>([]);
+  const [logsPage, setLogsPage] = useState(1);
+  const [showLogs, setShowLogs] = useState(false);
 
   // Form state
   const [email, setEmail] = useState("");
   const [connectionType, setConnectionType] = useState<ConnectionType>("druzstvo");
   const [permissions, setPermissions] = useState<ApiKeyPermission>("read");
+
+  // Rotation state
+  const [rotatingId, setRotatingId] = useState<string | null>(null);
+  const [rotationEmail, setRotationEmail] = useState("");
 
   const fetchData = useCallback(async () => {
     try {
@@ -72,9 +99,39 @@ export default function ExternalConnectionsTab() {
     }
   }, []);
 
+  const fetchAlerts = useCallback(async () => {
+    try {
+      const res = await fetch("/api/external-connections/alerts");
+      if (res.ok) {
+        setAlerts(await res.json());
+      }
+    } catch {
+      // silently fail
+    }
+  }, []);
+
+  const fetchLogs = useCallback(async (page: number) => {
+    try {
+      const res = await fetch(`/api/external-connections/logs?page=${page}&limit=20`);
+      if (res.ok) {
+        const data = await res.json();
+        setLogs(data.logs);
+      }
+    } catch {
+      // silently fail
+    }
+  }, []);
+
   useEffect(() => {
     fetchData();
-  }, [fetchData]);
+    fetchAlerts();
+  }, [fetchData, fetchAlerts]);
+
+  useEffect(() => {
+    if (showLogs) {
+      fetchLogs(logsPage);
+    }
+  }, [showLogs, logsPage, fetchLogs]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -121,6 +178,30 @@ export default function ExternalConnectionsTab() {
     }
   };
 
+  const handleRotateKey = async (connId: string) => {
+    if (!rotationEmail) return;
+    setSubmitting(true);
+
+    try {
+      const res = await fetch(`/api/external-connections/${connId}/rotate-key`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: rotationEmail }),
+      });
+
+      if (res.ok) {
+        setSuccessMessage(t("rotationInitiated", { email: rotationEmail }));
+        setRotatingId(null);
+        setRotationEmail("");
+        fetchData();
+      }
+    } catch {
+      // silently fail
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
   const getTypeBadge = (type: string) => {
     const colors: Record<string, string> = {
       druzstvo: "bg-blue-100 text-blue-800",
@@ -153,12 +234,52 @@ export default function ExternalConnectionsTab() {
     });
   };
 
+  const getAuthResultColor = (result: string) => {
+    switch (result) {
+      case "success":
+        return "text-green-700 bg-green-50";
+      case "rate_limited":
+        return "text-yellow-700 bg-yellow-50";
+      case "invalid_key":
+      case "insufficient_permission":
+        return "text-red-700 bg-red-50";
+      default:
+        return "text-gray-700 bg-gray-50";
+    }
+  };
+
   if (loading) {
     return <div className="text-center py-8 text-gray-500">...</div>;
   }
 
   return (
     <div>
+      {/* Alerts Banner */}
+      {alerts && alerts.totalAlerts > 0 && (
+        <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
+          <h3 className="text-base font-semibold text-red-800 mb-2">
+            {t("securityAlerts")}
+          </h3>
+          <ul className="text-sm text-red-700 space-y-1">
+            {alerts.failedAuth > 0 && (
+              <li>
+                {t("alertFailedAuth", { count: alerts.failedAuth })}
+              </li>
+            )}
+            {alerts.rateLimited > 0 && (
+              <li>
+                {t("alertRateLimited", { count: alerts.rateLimited })}
+              </li>
+            )}
+            {alerts.lockedPairings > 0 && (
+              <li>
+                {t("alertLockedPairings", { count: alerts.lockedPairings })}
+              </li>
+            )}
+          </ul>
+        </div>
+      )}
+
       <div className="flex items-center justify-between mb-6">
         <div>
           <h2 className="text-xl font-semibold text-gray-900">
@@ -220,13 +341,52 @@ export default function ExternalConnectionsTab() {
                     </p>
                   </div>
                 </div>
-                <button
-                  onClick={() => handleRevoke(conn.id)}
-                  className="px-4 py-2 text-base text-red-600 hover:text-red-700 hover:bg-red-50 rounded-lg transition-colors"
-                >
-                  {t("revokeConnection")}
-                </button>
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => {
+                      setRotatingId(rotatingId === conn.id ? null : conn.id);
+                      setRotationEmail("");
+                    }}
+                    className="px-4 py-2 text-base text-blue-600 hover:text-blue-700 hover:bg-blue-50 rounded-lg transition-colors"
+                  >
+                    {t("rotateKey")}
+                  </button>
+                  <button
+                    onClick={() => handleRevoke(conn.id)}
+                    className="px-4 py-2 text-base text-red-600 hover:text-red-700 hover:bg-red-50 rounded-lg transition-colors"
+                  >
+                    {t("revokeConnection")}
+                  </button>
+                </div>
               </div>
+              {/* Key Rotation Form */}
+              {rotatingId === conn.id && (
+                <div className="mt-4 p-4 bg-blue-50 rounded-lg border border-blue-200">
+                  <p className="text-sm text-blue-800 mb-3">{t("rotateKeyDescription")}</p>
+                  <div className="flex gap-3">
+                    <input
+                      type="email"
+                      value={rotationEmail}
+                      onChange={(e) => setRotationEmail(e.target.value)}
+                      placeholder={t("connectionEmailPlaceholder")}
+                      className="flex-1 px-4 py-2 text-base border border-blue-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                    />
+                    <button
+                      onClick={() => handleRotateKey(conn.id)}
+                      disabled={submitting || !rotationEmail}
+                      className="px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white text-base font-medium rounded-lg transition-colors disabled:opacity-50"
+                    >
+                      {submitting ? "..." : t("send")}
+                    </button>
+                    <button
+                      onClick={() => setRotatingId(null)}
+                      className="px-4 py-2 text-base text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+                    >
+                      {t("cancel")}
+                    </button>
+                  </div>
+                </div>
+              )}
             </div>
           ))}
 
@@ -268,6 +428,108 @@ export default function ExternalConnectionsTab() {
           )}
         </div>
       )}
+
+      {/* Activity Log Section */}
+      <div className="mt-8">
+        <button
+          onClick={() => setShowLogs(!showLogs)}
+          className="flex items-center gap-2 text-base font-semibold text-gray-700 hover:text-gray-900"
+        >
+          <span>{showLogs ? "\u25BC" : "\u25B6"}</span>
+          {t("activityLog")}
+        </button>
+        {showLogs && (
+          <div className="mt-4">
+            {logs.length === 0 ? (
+              <p className="text-base text-gray-500">{t("noLogs")}</p>
+            ) : (
+              <>
+                <div className="overflow-x-auto">
+                  <table className="w-full text-sm">
+                    <thead>
+                      <tr className="border-b border-gray-200">
+                        <th className="text-left py-2 px-3 font-medium text-gray-600">
+                          {t("logTime")}
+                        </th>
+                        <th className="text-left py-2 px-3 font-medium text-gray-600">
+                          {t("logEndpoint")}
+                        </th>
+                        <th className="text-left py-2 px-3 font-medium text-gray-600">
+                          {t("logMethod")}
+                        </th>
+                        <th className="text-left py-2 px-3 font-medium text-gray-600">
+                          {t("logStatus")}
+                        </th>
+                        <th className="text-left py-2 px-3 font-medium text-gray-600">
+                          {t("logAuthResult")}
+                        </th>
+                        <th className="text-left py-2 px-3 font-medium text-gray-600">
+                          IP
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {logs.map((log) => (
+                        <tr key={log.id} className="border-b border-gray-100">
+                          <td className="py-2 px-3 text-gray-600">
+                            {formatDate(log.createdAt)}
+                          </td>
+                          <td className="py-2 px-3 font-mono text-gray-700">
+                            {log.endpoint}
+                          </td>
+                          <td className="py-2 px-3 text-gray-600">{log.method}</td>
+                          <td className="py-2 px-3">
+                            <span
+                              className={`inline-flex px-2 py-0.5 rounded text-xs font-medium ${
+                                log.statusCode < 400
+                                  ? "bg-green-50 text-green-700"
+                                  : "bg-red-50 text-red-700"
+                              }`}
+                            >
+                              {log.statusCode}
+                            </span>
+                          </td>
+                          <td className="py-2 px-3">
+                            <span
+                              className={`inline-flex px-2 py-0.5 rounded text-xs font-medium ${getAuthResultColor(
+                                log.authResult
+                              )}`}
+                            >
+                              {log.authResult}
+                            </span>
+                          </td>
+                          <td className="py-2 px-3 font-mono text-gray-500 text-xs">
+                            {log.ipAddress || "-"}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+                <div className="flex gap-3 mt-4">
+                  <button
+                    onClick={() => setLogsPage(Math.max(1, logsPage - 1))}
+                    disabled={logsPage <= 1}
+                    className="px-4 py-2 text-sm text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-lg disabled:opacity-50"
+                  >
+                    {t("logPrevPage")}
+                  </button>
+                  <span className="px-4 py-2 text-sm text-gray-500">
+                    {t("logPage", { page: logsPage })}
+                  </span>
+                  <button
+                    onClick={() => setLogsPage(logsPage + 1)}
+                    disabled={logs.length < 20}
+                    className="px-4 py-2 text-sm text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-lg disabled:opacity-50"
+                  >
+                    {t("logNextPage")}
+                  </button>
+                </div>
+              </>
+            )}
+          </div>
+        )}
+      </div>
 
       {/* Add Connection Modal */}
       {showModal && (

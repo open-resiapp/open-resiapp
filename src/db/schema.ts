@@ -72,6 +72,15 @@ export const pairingStatusEnum = pgEnum("pairing_status", [
   "completed",
   "expired",
   "revoked",
+  "locked",
+]);
+
+export const authResultEnum = pgEnum("auth_result", [
+  "success",
+  "invalid_key",
+  "insufficient_permission",
+  "rate_limited",
+  "unauthenticated",
 ]);
 
 export const consentTypeEnum = pgEnum("consent_type", [
@@ -320,6 +329,8 @@ export const externalConnections = pgTable("external_connections", {
   permissions: apiKeyPermissionEnum("permissions").notNull().default("read"),
   isActive: boolean("is_active").notNull().default(true),
   lastUsedAt: timestamp("last_used_at"),
+  previousApiKeyHash: varchar("previous_api_key_hash", { length: 255 }),
+  previousKeyExpiresAt: timestamp("previous_key_expires_at"),
   pairedAt: timestamp("paired_at").defaultNow().notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
@@ -332,9 +343,14 @@ export const pairingRequests = pgTable("pairing_requests", {
   connectionType: varchar("connection_type", { length: 50 }).notNull(),
   permissions: apiKeyPermissionEnum("permissions").notNull().default("read"),
   status: pairingStatusEnum("status").notNull().default("pending"),
+  failedAttempts: integer("failed_attempts").notNull().default(0),
+  lockedAt: timestamp("locked_at"),
   expiresAt: timestamp("expires_at").notNull(),
   completedAt: timestamp("completed_at"),
   connectionId: uuid("connection_id").references(() => externalConnections.id),
+  rotationForConnectionId: uuid("rotation_for_connection_id").references(
+    () => externalConnections.id
+  ),
   createdById: uuid("created_by_id")
     .references(() => users.id)
     .notNull(),
@@ -351,6 +367,19 @@ export const consentRecords = pgTable("consent_records", {
   policyVersion: varchar("policy_version", { length: 20 }).notNull(),
   ipAddress: varchar("ip_address", { length: 45 }),
   userAgent: text("user_agent"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const externalApiLogs = pgTable("external_api_logs", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  connectionId: uuid("connection_id").references(() => externalConnections.id),
+  endpoint: varchar("endpoint", { length: 255 }).notNull(),
+  method: varchar("method", { length: 10 }).notNull(),
+  ipAddress: varchar("ip_address", { length: 45 }),
+  userAgent: text("user_agent"),
+  statusCode: integer("status_code").notNull(),
+  authResult: authResultEnum("auth_result").notNull(),
+  responseTimeMs: integer("response_time_ms"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
@@ -513,6 +542,7 @@ export const userFlatsRelations = relations(userFlats, ({ one }) => ({
 
 export const externalConnectionsRelations = relations(externalConnections, ({ many }) => ({
   pairingRequests: many(pairingRequests),
+  apiLogs: many(externalApiLogs),
 }));
 
 export const pairingRequestsRelations = relations(pairingRequests, ({ one }) => ({
@@ -523,6 +553,13 @@ export const pairingRequestsRelations = relations(pairingRequests, ({ one }) => 
   createdBy: one(users, {
     fields: [pairingRequests.createdById],
     references: [users.id],
+  }),
+}));
+
+export const externalApiLogsRelations = relations(externalApiLogs, ({ one }) => ({
+  connection: one(externalConnections, {
+    fields: [externalApiLogs.connectionId],
+    references: [externalConnections.id],
   }),
 }));
 

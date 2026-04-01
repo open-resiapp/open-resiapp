@@ -71,6 +71,13 @@
       "when": 1773239907621,
       "tag": "0009_known_greymalkin",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1773516736429,
+      "tag": "0010_complete_nebula",
+      "breakpoints": true
     }
   ]
 }

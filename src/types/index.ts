@@ -37,7 +37,7 @@ export type ConsentRecord = InferSelectModel<typeof consentRecords>;
 
 export type UserRole = "admin" | "owner" | "tenant" | "vote_counter" | "caretaker";
 export type ApiKeyPermission = "read" | "read_write" | "full";
-export type PairingStatus = "pending" | "completed" | "expired" | "revoked";
+export type PairingStatus = "pending" | "completed" | "expired" | "revoked" | "locked";
 export type ConnectionType = "druzstvo" | "energy" | "housekeeper" | "other";
 export type NotificationType = "newPost" | "votingStarted";
 export type VoteChoice = "za" | "proti" | "zdrzal_sa";

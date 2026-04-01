@@ -2,7 +2,7 @@
 
 import { useSession } from "next-auth/react";
 import { useTranslations } from "next-intl";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { hasPermission } from "@/lib/permissions";
 import type { UserRole } from "@/types";
 import SettingsTabs, { type SettingsTab } from "@/components/settings/SettingsTabs";
@@ -16,8 +16,20 @@ export default function SettingsPage() {
   const { data: session } = useSession();
   const t = useTranslations("Settings");
   const [activeTab, setActiveTab] = useState<SettingsTab>("building");
+  const [alertCount, setAlertCount] = useState(0);
 
   const role = (session?.user?.role || "owner") as UserRole;
+  const canEdit = hasPermission(role, "manageSettings");
+
+  useEffect(() => {
+    if (!canEdit) return;
+    fetch("/api/external-connections/alerts")
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        if (data) setAlertCount(data.totalAlerts);
+      })
+      .catch(() => {});
+  }, [canEdit]);
 
   if (!hasPermission(role, "viewSettings")) {
     return (
@@ -27,13 +39,11 @@ export default function SettingsPage() {
     );
   }
 
-  const canEdit = hasPermission(role, "manageSettings");
-
   return (
     <div className="max-w-4xl">
       <h1 className="text-2xl font-bold text-gray-900 mb-6">{t("title")}</h1>
 
-      <SettingsTabs activeTab={activeTab} onTabChange={setActiveTab} />
+      <SettingsTabs activeTab={activeTab} onTabChange={setActiveTab} alertCount={alertCount} />
 
       {activeTab === "building" && <BuildingInfoTab canEdit={canEdit} />}
       {activeTab === "entrances" && <EntrancesTab canEdit={canEdit} />}
