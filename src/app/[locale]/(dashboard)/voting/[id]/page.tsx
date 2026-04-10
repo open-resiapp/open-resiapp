@@ -121,9 +121,11 @@ export default function VotingDetailPage() {
       const buildingRes = await fetch("/api/building");
       if (buildingRes.ok) {
         const bldData = await buildingRes.json();
-        setBuildingData({ name: bldData.name, address: bldData.address, ico: bldData.ico });
-        if (bldData?.legalNotice) {
-          setLegalNotice(bldData.legalNotice);
+        if (bldData) {
+          setBuildingData({ name: bldData.name, address: bldData.address, ico: bldData.ico });
+          if (bldData.legalNotice) {
+            setLegalNotice(bldData.legalNotice);
+          }
         }
       }
       await fetchVoteData();

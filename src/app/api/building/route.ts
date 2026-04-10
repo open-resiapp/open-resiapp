@@ -35,8 +35,28 @@ export async function PATCH(request: NextRequest) {
   const { name, address, ico, votingMethod, legalNotice } = body;
 
   const [existing] = await db.select().from(building).limit(1);
+
   if (!existing) {
-    return NextResponse.json({ error: "Budova nenájdená" }, { status: 404 });
+    // Create building if it doesn't exist
+    if (!name || !address) {
+      return NextResponse.json(
+        { error: "Názov a adresa sú povinné" },
+        { status: 400 }
+      );
+    }
+
+    const [created] = await db
+      .insert(building)
+      .values({
+        name,
+        address,
+        ico: ico || null,
+        votingMethod: votingMethod || "per_share",
+        legalNotice: legalNotice || null,
+      })
+      .returning();
+
+    return NextResponse.json(created, { status: 201 });
   }
 
   const updateData: Record<string, unknown> = {};

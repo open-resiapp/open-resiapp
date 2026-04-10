@@ -52,7 +52,10 @@ export default function BuildingInfoTab({ canEdit }: BuildingInfoTabProps) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name, address, ico: ico || null }),
       });
-      if (!res.ok) throw new Error();
+      if (!res.ok) {
+        const data = await res.json().catch(() => null);
+        throw new Error(data?.error || "");
+      }
       const updated = await res.json();
       setBuilding(updated);
       setEditing(false);
@@ -82,8 +85,68 @@ export default function BuildingInfoTab({ canEdit }: BuildingInfoTabProps) {
     );
   }
 
-  if (!building) {
+  if (!building && !canEdit) {
     return <p className="text-base text-gray-500">{t("noInfo")}</p>;
+  }
+
+  if (!building) {
+    return (
+      <div className="bg-white rounded-xl border border-gray-200 p-6">
+        <h2 className="text-lg font-bold text-gray-900 mb-4">{t("buildingInfo")}</h2>
+
+        {message && (
+          <div
+            className={`mb-4 p-3 rounded-lg text-base ${
+              message.type === "success"
+                ? "bg-green-50 text-green-700"
+                : "bg-red-50 text-red-700"
+            }`}
+          >
+            {message.text}
+          </div>
+        )}
+
+        <p className="text-base text-gray-500 mb-4">{t("noInfo")}</p>
+        <div className="space-y-4">
+          <div>
+            <label className="block text-sm text-gray-500 mb-1">{t("name")} *</label>
+            <input
+              type="text"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              required
+              className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+            />
+          </div>
+          <div>
+            <label className="block text-sm text-gray-500 mb-1">{t("address")} *</label>
+            <input
+              type="text"
+              value={address}
+              onChange={(e) => setAddress(e.target.value)}
+              required
+              className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+            />
+          </div>
+          <div>
+            <label className="block text-sm text-gray-500 mb-1">{t("ico")}</label>
+            <input
+              type="text"
+              value={ico}
+              onChange={(e) => setIco(e.target.value)}
+              className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+            />
+          </div>
+          <button
+            onClick={handleSave}
+            disabled={saving || !name || !address}
+            className="px-5 py-3 bg-blue-600 hover:bg-blue-700 text-white text-base font-medium rounded-lg transition-colors disabled:opacity-50"
+          >
+            {saving ? tc("saving") : tc("save")}
+          </button>
+        </div>
+      </div>
+    );
   }
 
   return (
