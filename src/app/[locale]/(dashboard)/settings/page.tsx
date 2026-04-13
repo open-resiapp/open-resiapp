@@ -11,6 +11,7 @@ import EntrancesTab from "@/components/settings/EntrancesTab";
 import FlatsTab from "@/components/settings/FlatsTab";
 import VotingSettingsTab from "@/components/settings/VotingSettingsTab";
 import ExternalConnectionsTab from "@/components/settings/ExternalConnectionsTab";
+import BoardMembersTab from "@/components/settings/BoardMembersTab";
 
 export default function SettingsPage() {
   const { data: session } = useSession();
@@ -49,6 +50,7 @@ export default function SettingsPage() {
       {activeTab === "entrances" && <EntrancesTab canEdit={canEdit} />}
       {activeTab === "flats" && <FlatsTab canEdit={canEdit} />}
       {activeTab === "voting" && <VotingSettingsTab canEdit={canEdit} />}
+      {activeTab === "boardMembers" && <BoardMembersTab canEdit={canEdit} />}
       {activeTab === "connections" && canEdit && <ExternalConnectionsTab />}
     </div>
   );

@@ -9,6 +9,8 @@ interface BuildingInfo {
   address: string;
   ico: string | null;
   votingMethod: string;
+  country: string;
+  governanceModel: string;
 }
 
 interface BuildingInfoTabProps {
@@ -27,6 +29,8 @@ export default function BuildingInfoTab({ canEdit }: BuildingInfoTabProps) {
   const [name, setName] = useState("");
   const [address, setAddress] = useState("");
   const [ico, setIco] = useState("");
+  const [country, setCountry] = useState("sk");
+  const [governanceModel, setGovernanceModel] = useState("chairman_council");
 
   useEffect(() => {
     fetch("/api/building")
@@ -37,6 +41,8 @@ export default function BuildingInfoTab({ canEdit }: BuildingInfoTabProps) {
           setName(data.name);
           setAddress(data.address);
           setIco(data.ico || "");
+          setCountry(data.country || "sk");
+          setGovernanceModel(data.governanceModel || "chairman_council");
         }
         setLoading(false);
       })
@@ -50,7 +56,7 @@ export default function BuildingInfoTab({ canEdit }: BuildingInfoTabProps) {
       const res = await fetch("/api/building", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, address, ico: ico || null }),
+        body: JSON.stringify({ name, address, ico: ico || null, country, governanceModel }),
       });
       if (!res.ok) {
         const data = await res.json().catch(() => null);
@@ -72,6 +78,8 @@ export default function BuildingInfoTab({ canEdit }: BuildingInfoTabProps) {
       setName(building.name);
       setAddress(building.address);
       setIco(building.ico || "");
+      setCountry(building.country || "sk");
+      setGovernanceModel(building.governanceModel || "chairman_council");
     }
     setEditing(false);
   };
@@ -204,6 +212,31 @@ export default function BuildingInfoTab({ canEdit }: BuildingInfoTabProps) {
               className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
             />
           </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm text-gray-500 mb-1">{t("country")}</label>
+              <select
+                value={country}
+                onChange={(e) => setCountry(e.target.value)}
+                className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+              >
+                <option value="sk">{t("countrySk")}</option>
+                <option value="cz">{t("countryCz")}</option>
+              </select>
+            </div>
+            <div>
+              <label className="block text-sm text-gray-500 mb-1">{t("governanceModel")}</label>
+              <select
+                value={governanceModel}
+                onChange={(e) => setGovernanceModel(e.target.value)}
+                className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+              >
+                <option value="chairman_council">{t("governanceChairmanCouncil")}</option>
+                <option value="committee">{t("governanceCommittee")}</option>
+                <option value="chairman_only">{t("governanceChairmanOnly")}</option>
+              </select>
+            </div>
+          </div>
           <div className="flex gap-3 pt-2">
             <button
               onClick={handleSave}
@@ -236,6 +269,22 @@ export default function BuildingInfoTab({ canEdit }: BuildingInfoTabProps) {
               <dd className="text-base text-gray-900">{building.ico}</dd>
             </div>
           )}
+          <div>
+            <dt className="text-sm text-gray-500">{t("country")}</dt>
+            <dd className="text-base text-gray-900">
+              {building.country === "cz" ? t("countryCz") : t("countrySk")}
+            </dd>
+          </div>
+          <div>
+            <dt className="text-sm text-gray-500">{t("governanceModel")}</dt>
+            <dd className="text-base text-gray-900">
+              {building.governanceModel === "committee"
+                ? t("governanceCommittee")
+                : building.governanceModel === "chairman_only"
+                  ? t("governanceChairmanOnly")
+                  : t("governanceChairmanCouncil")}
+            </dd>
+          </div>
         </dl>
       )}
     </div>

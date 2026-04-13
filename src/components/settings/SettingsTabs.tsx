@@ -2,7 +2,7 @@
 
 import { useTranslations } from "next-intl";
 
-export type SettingsTab = "building" | "entrances" | "flats" | "voting" | "connections";
+export type SettingsTab = "building" | "entrances" | "flats" | "voting" | "boardMembers" | "connections";
 
 interface SettingsTabsProps {
   activeTab: SettingsTab;
@@ -10,7 +10,7 @@ interface SettingsTabsProps {
   alertCount?: number;
 }
 
-const tabs: SettingsTab[] = ["building", "entrances", "flats", "voting", "connections"];
+const tabs: SettingsTab[] = ["building", "entrances", "flats", "voting", "boardMembers", "connections"];
 
 export default function SettingsTabs({ activeTab, onTabChange, alertCount }: SettingsTabsProps) {
   const t = useTranslations("Settings");
@@ -20,6 +20,7 @@ export default function SettingsTabs({ activeTab, onTabChange, alertCount }: Set
     entrances: t("tabEntrances"),
     flats: t("tabFlats"),
     voting: t("tabVoting"),
+    boardMembers: t("tabBoardMembers"),
     connections: t("tabConnections"),
   };
 

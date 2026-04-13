@@ -32,7 +32,7 @@ export async function PATCH(request: NextRequest) {
   }
 
   const body = await request.json();
-  const { name, address, ico, votingMethod, legalNotice } = body;
+  const { name, address, ico, votingMethod, legalNotice, country, governanceModel } = body;
 
   const [existing] = await db.select().from(building).limit(1);
 
@@ -65,6 +65,8 @@ export async function PATCH(request: NextRequest) {
   if (ico !== undefined) updateData.ico = ico;
   if (votingMethod !== undefined) updateData.votingMethod = votingMethod;
   if (legalNotice !== undefined) updateData.legalNotice = legalNotice;
+  if (country !== undefined) updateData.country = country;
+  if (governanceModel !== undefined) updateData.governanceModel = governanceModel;
 
   const [updated] = await db
     .update(building)

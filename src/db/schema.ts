@@ -64,6 +64,19 @@ export const quorumTypeEnum = pgEnum("quorum_type", [
 
 export const countryEnum = pgEnum("country", ["sk", "cz"]);
 
+export const governanceModelEnum = pgEnum("governance_model", [
+  "chairman_council",
+  "committee",
+  "chairman_only",
+]);
+
+export const boardMemberRoleEnum = pgEnum("board_member_role", [
+  "chairman",
+  "council_member",
+  "committee_member",
+  "committee_chairman",
+]);
+
 export const apiKeyPermissionEnum = pgEnum("api_key_permission", [
   "read",
   "read_write",
@@ -105,6 +118,7 @@ export const building = pgTable("building", {
   ico: varchar("ico", { length: 20 }),
   votingMethod: votingMethodEnum("voting_method").notNull().default("per_share"),
   country: countryEnum("country").notNull().default("sk"),
+  governanceModel: governanceModelEnum("governance_model").notNull().default("chairman_council"),
   legalNotice: text("legal_notice"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
@@ -387,10 +401,26 @@ export const externalApiLogs = pgTable("external_api_logs", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
+export const boardMembers = pgTable("board_members", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  buildingId: uuid("building_id")
+    .references(() => building.id)
+    .notNull(),
+  userId: uuid("user_id")
+    .references(() => users.id)
+    .notNull(),
+  role: boardMemberRoleEnum("role").notNull(),
+  electedAt: timestamp("elected_at").notNull(),
+  termEndsAt: timestamp("term_ends_at"),
+  isActive: boolean("is_active").notNull().default(true),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
 // ── Relations ──────────────────────────────────────────
 
 export const buildingRelations = relations(building, ({ many }) => ({
   entrances: many(entrances),
+  boardMembers: many(boardMembers),
 }));
 
 export const entrancesRelations = relations(entrances, ({ one, many }) => ({
@@ -570,6 +600,17 @@ export const externalApiLogsRelations = relations(externalApiLogs, ({ one }) => 
 export const consentRecordsRelations = relations(consentRecords, ({ one }) => ({
   user: one(users, {
     fields: [consentRecords.userId],
+    references: [users.id],
+  }),
+}));
+
+export const boardMembersRelations = relations(boardMembers, ({ one }) => ({
+  building: one(building, {
+    fields: [boardMembers.buildingId],
+    references: [building.id],
+  }),
+  user: one(users, {
+    fields: [boardMembers.userId],
     references: [users.id],
   }),
 }));
