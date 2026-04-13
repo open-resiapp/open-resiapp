@@ -210,6 +210,7 @@ const quorumTypeLabels: Record<QuorumType, string> = {
   simple_present: "Nadpolovičná väčšina prítomných",
   simple_all: "Nadpolovičná väčšina všetkých",
   two_thirds_all: "Dvojtretinová väčšina všetkých",
+  all_unanimous: "Súhlas všetkých (100%)",
 };
 
 export interface VoteRowPDF {
