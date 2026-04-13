@@ -40,7 +40,8 @@
   },
   "LanguageSwitcher": {
     "sk": "SK",
-    "en": "EN"
+    "en": "EN",
+    "cs": "CZ"
   },
   "Dashboard": {
     "welcome": "Vitajte, {name}",

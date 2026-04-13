@@ -61,6 +61,8 @@ export const quorumTypeEnum = pgEnum("quorum_type", [
   "two_thirds_all",
 ]);
 
+export const countryEnum = pgEnum("country", ["sk", "cz"]);
+
 export const apiKeyPermissionEnum = pgEnum("api_key_permission", [
   "read",
   "read_write",
@@ -101,6 +103,7 @@ export const building = pgTable("building", {
   address: varchar("address", { length: 500 }).notNull(),
   ico: varchar("ico", { length: 20 }),
   votingMethod: votingMethodEnum("voting_method").notNull().default("per_share"),
+  country: countryEnum("country").notNull().default("sk"),
   legalNotice: text("legal_notice"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
