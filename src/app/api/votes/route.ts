@@ -6,7 +6,8 @@ import { and, eq } from "drizzle-orm";
 import { hasPermission } from "@/lib/permissions";
 import { generateAuditHash, calculateResults } from "@/lib/voting";
 import { sendVoteConfirmation } from "@/lib/email";
-import type { UserRole, VoteChoice, VotingMethod, VoteWithShare, QuorumType } from "@/types";
+import { isElectronicVotingBlocked } from "@/lib/voting-rules";
+import type { UserRole, VoteChoice, VotingMethod, VoteWithShare, QuorumType, Country } from "@/types";
 
 export async function GET(request: NextRequest) {
   const session = await auth();
@@ -25,9 +26,10 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: "Nemáte oprávnenie" }, { status: 403 });
   }
 
-  // Fetch building voting method
+  // Fetch building voting method and country
   const [bld] = await db.select().from(building).limit(1);
   const votingMethod = (bld?.votingMethod ?? "per_share") as VotingMethod;
+  const country = (bld?.country ?? "sk") as Country;
 
   // Fetch voting details for quorum type
   const [voting] = await db
@@ -96,7 +98,7 @@ export async function GET(request: NextRequest) {
     }
   }
 
-  const results = calculateResults(votesWithShare, votingMethod, quorumType, totalPossibleWeight);
+  const results = calculateResults(votesWithShare, votingMethod, quorumType, totalPossibleWeight, { country });
 
   // Find which flats the current user has voted for in this voting
   const userVotedFlats = voteRows
@@ -166,18 +168,17 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  // Block electronic votes for meeting-type votings
-  if (!isPaperVote && voting.votingType === "meeting") {
-    return NextResponse.json(
-      { error: "Elektronické hlasovanie nie je povolené pre hlasovanie na schôdzi" },
-      { status: 400 }
-    );
-  }
+  // Fetch building country for voting rules
+  const [voteBld] = await db.select({ country: building.country }).from(building).limit(1);
+  const voteCountry = (voteBld?.country ?? "sk") as Country;
 
-  // Block electronic votes when initiated by owners_quarter
-  if (!isPaperVote && voting.initiatedBy === "owners_quarter") {
+  // Block electronic votes based on country-specific rules
+  if (!isPaperVote && isElectronicVotingBlocked(voteCountry, voting.votingType, voting.initiatedBy)) {
     return NextResponse.json(
-      { error: "Elektronické hlasovanie nie je povolené pre hlasovanie iniciované štvrtinou vlastníkov" },
+      { error: voting.votingType === "meeting"
+          ? "Elektronické hlasovanie nie je povolené pre hlasovanie na schôdzi"
+          : "Elektronické hlasovanie nie je povolené pre hlasovanie iniciované štvrtinou vlastníkov"
+      },
       { status: 400 }
     );
   }

@@ -1,10 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { db } from "@/db";
-import { votings, users } from "@/db/schema";
+import { votings, users, building } from "@/db/schema";
 import { desc, eq } from "drizzle-orm";
 import { hasPermission } from "@/lib/permissions";
-import type { UserRole } from "@/types";
+import { validatePerRollamDuration } from "@/lib/voting-rules";
+import type { UserRole, Country } from "@/types";
 
 export async function GET() {
   const session = await auth();
@@ -54,6 +55,26 @@ export async function POST(request: NextRequest) {
       { error: "Nadpis, začiatok a koniec sú povinné" },
       { status: 400 }
     );
+  }
+
+  // Fetch building country for voting rules
+  const [bld] = await db.select({ country: building.country }).from(building).limit(1);
+  const country = (bld?.country ?? "sk") as Country;
+
+  // Validate per rollam minimum duration (CZ: 15 days)
+  const resolvedVotingType = votingType || "written";
+  if (resolvedVotingType === "written") {
+    const minEnd = validatePerRollamDuration(
+      country,
+      new Date(startsAt),
+      new Date(endsAt)
+    );
+    if (minEnd) {
+      return NextResponse.json(
+        { error: `Písomné hlasovanie musí trvať minimálne 15 dní. Najskorší koniec: ${minEnd.toISOString().split("T")[0]}` },
+        { status: 400 }
+      );
+    }
   }
 
   const [voting] = await db

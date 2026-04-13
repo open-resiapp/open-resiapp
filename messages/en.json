@@ -135,6 +135,7 @@
     "quorumSimplePresent": "Simple majority of present",
     "quorumSimpleAll": "Simple majority of all",
     "quorumTwoThirdsAll": "Two-thirds majority of all",
+    "quorumAllUnanimous": "Unanimous consent (100%)",
     "meetingNote": "Meeting voting does not allow electronic votes.",
     "ownersQuarterNote": "Voting initiated by quarter of owners does not allow electronic votes.",
     "submit": "Create voting",
@@ -153,7 +154,8 @@
     "quorumNotReached": "QUORUM NOT REACHED",
     "quorumSimplePresent": "Simple majority of present",
     "quorumSimpleAll": "Simple majority of all",
-    "quorumTwoThirdsAll": "Two-thirds majority of all"
+    "quorumTwoThirdsAll": "Two-thirds majority of all",
+    "quorumAllUnanimous": "Unanimous consent (100%)"
   },
   "VoteButton": {
     "for": "FOR",

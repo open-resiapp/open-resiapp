@@ -135,6 +135,7 @@
     "quorumSimplePresent": "Nadpoloviční většina přítomných",
     "quorumSimpleAll": "Nadpoloviční většina všech",
     "quorumTwoThirdsAll": "Dvoutřetinová většina všech",
+    "quorumAllUnanimous": "Souhlas všech (100%)",
     "meetingNote": "Při hlasování na shromáždění není možné elektronické hlasování.",
     "ownersQuarterNote": "Při hlasování iniciovaném čtvrtinou vlastníků není možné elektronické hlasování.",
     "submit": "Vytvořit hlasování",
@@ -153,7 +154,8 @@
     "quorumNotReached": "KVÓRUM NEDOSAŽENO",
     "quorumSimplePresent": "Nadpoloviční většina přítomných",
     "quorumSimpleAll": "Nadpoloviční většina všech",
-    "quorumTwoThirdsAll": "Dvoutřetinová většina všech"
+    "quorumTwoThirdsAll": "Dvoutřetinová většina všech",
+    "quorumAllUnanimous": "Souhlas všech (100%)"
   },
   "VoteButton": {
     "for": "PRO",

@@ -12,6 +12,7 @@ const quorumKeys: Record<QuorumType, string> = {
   simple_present: "quorumSimplePresent",
   simple_all: "quorumSimpleAll",
   two_thirds_all: "quorumTwoThirdsAll",
+  all_unanimous: "quorumAllUnanimous",
 };
 
 function ResultBar({

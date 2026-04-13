@@ -186,6 +186,7 @@ export default function NovaHlasovaniePage() {
               <option value="simple_all">{t("quorumSimpleAll")}</option>
               <option value="simple_present">{t("quorumSimplePresent")}</option>
               <option value="two_thirds_all">{t("quorumTwoThirdsAll")}</option>
+              <option value="all_unanimous">{t("quorumAllUnanimous")}</option>
             </select>
           </div>
 

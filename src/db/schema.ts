@@ -59,6 +59,7 @@ export const quorumTypeEnum = pgEnum("quorum_type", [
   "simple_present",
   "simple_all",
   "two_thirds_all",
+  "all_unanimous",
 ]);
 
 export const countryEnum = pgEnum("country", ["sk", "cz"]);

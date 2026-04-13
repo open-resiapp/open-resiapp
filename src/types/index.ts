@@ -48,7 +48,8 @@ export type InvitationStatus = "pending" | "used" | "expired";
 export type VotingMethod = "per_share" | "per_flat" | "per_area";
 export type VotingType = "written" | "meeting";
 export type VotingInitiatedBy = "board" | "owners_quarter";
-export type QuorumType = "simple_present" | "simple_all" | "two_thirds_all";
+export type QuorumType = "simple_present" | "simple_all" | "two_thirds_all" | "all_unanimous";
+export type Country = "sk" | "cz";
 export type ConsentType = "data_processing" | "communication";
 export type ConsentAction = "granted" | "withdrawn";
 

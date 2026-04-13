@@ -1,5 +1,7 @@
 import { createHash } from "crypto";
 import type { VoteChoice, VoteWithShare, VotingMethod, VotingResults, QuorumType } from "@/types";
+import type { Country } from "@/lib/voting-rules";
+import { getVotingRules } from "@/lib/voting-rules";
 
 function getWeight(vote: VoteWithShare, method: VotingMethod): number {
   switch (method) {
@@ -13,12 +15,21 @@ function getWeight(vote: VoteWithShare, method: VotingMethod): number {
   }
 }
 
+export interface CalculateResultsOptions {
+  country?: Country;
+  totalFlats?: number;
+}
+
 export function calculateResults(
   votes: VoteWithShare[],
   method: VotingMethod = "per_share",
   quorumType: QuorumType = "simple_all",
-  totalPossibleWeight: number = 0
+  totalPossibleWeight: number = 0,
+  options: CalculateResultsOptions = {}
 ): VotingResults {
+  const { country = "sk", totalFlats = 0 } = options;
+  const rules = getVotingRules(country);
+
   let zaWeight = 0;
   let protiWeight = 0;
   let zdrzalSaWeight = 0;
@@ -30,6 +41,15 @@ export function calculateResults(
     if (vote.choice === "za") zaWeight += weight;
     if (vote.choice === "proti") protiWeight += weight;
     if (vote.choice === "zdrzal_sa") zdrzalSaWeight += weight;
+  }
+
+  // CZ per rollam: silence = nesúhlas (non-voters count as "proti")
+  if (rules.silenceIsNo && totalPossibleWeight > 0) {
+    const nonVotedWeight = totalPossibleWeight - totalWeight;
+    if (nonVotedWeight > 0) {
+      protiWeight += nonVotedWeight;
+      totalWeight = totalPossibleWeight;
+    }
   }
 
   let passed = false;
@@ -50,6 +70,12 @@ export function calculateResults(
       // Passed if za >= 66.7% of ALL flat weight
       quorumReached =
         totalPossibleWeight > 0 && zaWeight >= (totalPossibleWeight * 2) / 3;
+      passed = quorumReached;
+      break;
+    case "all_unanimous":
+      // Passed only if ALL weight voted za (100%)
+      quorumReached =
+        totalPossibleWeight > 0 && zaWeight === totalPossibleWeight;
       passed = quorumReached;
       break;
   }

@@ -1,0 +1,1 @@
+ALTER TYPE "public"."quorum_type" ADD VALUE 'all_unanimous';
