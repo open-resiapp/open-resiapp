@@ -24,6 +24,7 @@ interface PostCardProps {
   authorName: string;
   createdAt: string;
   isPinned: boolean;
+  entranceName?: string | null;
   isAdmin?: boolean;
   onEdit?: () => void;
   onDelete?: () => void;
@@ -37,6 +38,7 @@ export default function PostCard({
   authorName,
   createdAt,
   isPinned,
+  entranceName,
   isAdmin,
   onEdit,
   onDelete,
@@ -64,6 +66,11 @@ export default function PostCard({
           >
             {t(categoryKeys[category])}
           </span>
+          {entranceName && (
+            <span className="px-2.5 py-0.5 rounded-full text-sm font-medium bg-gray-100 text-gray-600">
+              {entranceName}
+            </span>
+          )}
         </div>
 
         {isAdmin && (

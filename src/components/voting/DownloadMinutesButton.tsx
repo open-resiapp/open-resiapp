@@ -39,6 +39,7 @@ interface DownloadMinutesButtonProps {
   };
   building: BuildingInfo;
   legalNotice: string | null;
+  entranceName?: string | null;
 }
 
 export default function DownloadMinutesButton({
@@ -47,6 +48,7 @@ export default function DownloadMinutesButton({
   voteData,
   building,
   legalNotice,
+  entranceName,
 }: DownloadMinutesButtonProps) {
   const t = useTranslations("VotingMinutes");
   const [generating, setGenerating] = useState(false);
@@ -93,6 +95,7 @@ export default function DownloadMinutesButton({
           legalNotice={legalNotice}
           qrDataUrl={qrDataUrl}
           generatedAt={generatedAt}
+          entranceName={entranceName}
         />
       );
 

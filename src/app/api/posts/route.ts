@@ -1,24 +1,35 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { db } from "@/db";
-import { posts, users } from "@/db/schema";
-import { desc, eq, isNull, or } from "drizzle-orm";
+import { posts, users, userFlats, flats, entrances } from "@/db/schema";
+import { desc, eq, inArray, isNull, or } from "drizzle-orm";
 import { hasPermission } from "@/lib/permissions";
 import { sendPushToAll } from "@/lib/push";
 import type { UserRole } from "@/types";
 
-export async function GET(request: NextRequest) {
+export async function GET() {
   const session = await auth();
   if (!session) {
     return NextResponse.json({ error: "Neautorizovaný prístup" }, { status: 401 });
   }
 
-  const { searchParams } = new URL(request.url);
-  const entranceId = searchParams.get("entranceId");
+  const role = session.user.role as UserRole;
+  let conditions;
 
-  const conditions = entranceId
-    ? or(isNull(posts.entranceId), eq(posts.entranceId, entranceId))
-    : undefined;
+  // Non-admins only see building-wide posts + posts for their entrances
+  if (role !== "admin") {
+    const userEntrances = await db
+      .select({ entranceId: flats.entranceId })
+      .from(userFlats)
+      .innerJoin(flats, eq(userFlats.flatId, flats.id))
+      .where(eq(userFlats.userId, session.user.id));
+
+    const entranceIds = [...new Set(userEntrances.map((e) => e.entranceId))];
+
+    conditions = entranceIds.length > 0
+      ? or(isNull(posts.entranceId), inArray(posts.entranceId, entranceIds))
+      : isNull(posts.entranceId);
+  }
 
   const result = await db
     .select({
@@ -30,6 +41,7 @@ export async function GET(request: NextRequest) {
       createdAt: posts.createdAt,
       updatedAt: posts.updatedAt,
       entranceId: posts.entranceId,
+      entranceName: entrances.name,
       author: {
         id: users.id,
         name: users.name,
@@ -37,6 +49,7 @@ export async function GET(request: NextRequest) {
     })
     .from(posts)
     .leftJoin(users, eq(posts.authorId, users.id))
+    .leftJoin(entrances, eq(posts.entranceId, entrances.id))
     .where(conditions)
     .orderBy(desc(posts.isPinned), desc(posts.createdAt));
 

@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { db } from "@/db";
-import { votings, users } from "@/db/schema";
+import { votings, users, entrances } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { hasPermission } from "@/lib/permissions";
 import { sendPushToAll } from "@/lib/push";
@@ -31,6 +31,8 @@ export async function GET(
       endsAt: votings.endsAt,
       createdAt: votings.createdAt,
       voteCounterId: votings.voteCounterId,
+      entranceId: votings.entranceId,
+      entranceName: entrances.name,
       createdBy: {
         id: users.id,
         name: users.name,
@@ -38,6 +40,7 @@ export async function GET(
     })
     .from(votings)
     .leftJoin(users, eq(votings.createdById, users.id))
+    .leftJoin(entrances, eq(votings.entranceId, entrances.id))
     .where(eq(votings.id, id))
     .limit(1);
 
@@ -74,6 +77,7 @@ export async function PATCH(
   if (body.votingType !== undefined) updateData.votingType = body.votingType;
   if (body.initiatedBy !== undefined) updateData.initiatedBy = body.initiatedBy;
   if (body.quorumType !== undefined) updateData.quorumType = body.quorumType;
+  if (body.entranceId !== undefined) updateData.entranceId = body.entranceId || null;
 
   const [updated] = await db
     .update(votings)

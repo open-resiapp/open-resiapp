@@ -13,6 +13,7 @@ interface VotingData {
   title: string;
   status: VotingStatus;
   votingType?: VotingType;
+  entranceName?: string | null;
   startsAt: string;
   endsAt: string;
   createdAt: string;
@@ -78,6 +79,7 @@ export default function HlasovaniePage() {
               title={v.title}
               status={v.status}
               votingType={v.votingType}
+              entranceName={v.entranceName}
               startsAt={v.startsAt}
               endsAt={v.endsAt}
               createdByName={v.createdBy?.name || tCommon("unknown")}

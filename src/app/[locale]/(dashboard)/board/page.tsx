@@ -17,7 +17,13 @@ interface PostData {
   isPinned: boolean;
   createdAt: string;
   entranceId: string | null;
+  entranceName: string | null;
   author: { id: string; name: string } | null;
+}
+
+interface Entrance {
+  id: string;
+  name: string;
 }
 
 export default function NastenkaPage() {
@@ -28,6 +34,7 @@ export default function NastenkaPage() {
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [editingPost, setEditingPost] = useState<PostData | null>(null);
+  const [entrances, setEntrances] = useState<Entrance[]>([]);
 
   const role = (session?.user?.role || "owner") as UserRole;
   const canCreate = hasPermission(role, "createPost");
@@ -44,7 +51,13 @@ export default function NastenkaPage() {
 
   useEffect(() => {
     fetchPosts();
-  }, [fetchPosts]);
+    if (isAdmin) {
+      fetch("/api/entrances")
+        .then((r) => r.json())
+        .then((data) => setEntrances(data))
+        .catch(() => {});
+    }
+  }, [fetchPosts, isAdmin]);
 
   async function handleDelete(postId: string) {
     if (!confirm(t("confirmDelete"))) return;
@@ -110,6 +123,7 @@ export default function NastenkaPage() {
               authorName={post.author?.name || tCommon("unknown")}
               createdAt={post.createdAt}
               isPinned={post.isPinned}
+              entranceName={post.entranceName}
               isAdmin={isAdmin}
               onEdit={() => setEditingPost(post)}
               onDelete={() => handleDelete(post.id)}
@@ -123,6 +137,7 @@ export default function NastenkaPage() {
         isOpen={showModal}
         onClose={() => setShowModal(false)}
         onCreated={fetchPosts}
+        entrances={entrances}
       />
 
       {editingPost && (

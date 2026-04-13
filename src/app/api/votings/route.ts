@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { db } from "@/db";
-import { votings, users, building } from "@/db/schema";
-import { desc, eq } from "drizzle-orm";
+import { votings, users, building, entrances, userFlats, flats } from "@/db/schema";
+import { desc, eq, inArray, isNull, or } from "drizzle-orm";
 import { hasPermission } from "@/lib/permissions";
 import { validatePerRollamDuration } from "@/lib/voting-rules";
 import type { UserRole, Country } from "@/types";
@@ -11,6 +11,24 @@ export async function GET() {
   const session = await auth();
   if (!session) {
     return NextResponse.json({ error: "Neautorizovaný prístup" }, { status: 401 });
+  }
+
+  const role = session.user.role as UserRole;
+  let conditions;
+
+  // Non-admins only see building-wide votings + votings for their entrances
+  if (role !== "admin") {
+    const userEntrances = await db
+      .select({ entranceId: flats.entranceId })
+      .from(userFlats)
+      .innerJoin(flats, eq(userFlats.flatId, flats.id))
+      .where(eq(userFlats.userId, session.user.id));
+
+    const entranceIds = [...new Set(userEntrances.map((e) => e.entranceId))];
+
+    conditions = entranceIds.length > 0
+      ? or(isNull(votings.entranceId), inArray(votings.entranceId, entranceIds))
+      : isNull(votings.entranceId);
   }
 
   const result = await db
@@ -25,6 +43,8 @@ export async function GET() {
       startsAt: votings.startsAt,
       endsAt: votings.endsAt,
       createdAt: votings.createdAt,
+      entranceId: votings.entranceId,
+      entranceName: entrances.name,
       createdBy: {
         id: users.id,
         name: users.name,
@@ -32,6 +52,8 @@ export async function GET() {
     })
     .from(votings)
     .leftJoin(users, eq(votings.createdById, users.id))
+    .leftJoin(entrances, eq(votings.entranceId, entrances.id))
+    .where(conditions)
     .orderBy(desc(votings.createdAt));
 
   return NextResponse.json(result);
@@ -48,7 +70,7 @@ export async function POST(request: NextRequest) {
   }
 
   const body = await request.json();
-  const { title, description, startsAt, endsAt, status, votingType, initiatedBy, quorumType } = body;
+  const { title, description, startsAt, endsAt, status, votingType, initiatedBy, quorumType, entranceId } = body;
 
   if (!title || !startsAt || !endsAt) {
     return NextResponse.json(
@@ -89,6 +111,7 @@ export async function POST(request: NextRequest) {
       startsAt: new Date(startsAt),
       endsAt: new Date(endsAt),
       createdById: session.user.id,
+      entranceId: entranceId || null,
     })
     .returning();
 

@@ -56,7 +56,9 @@
     "title": "Nástenka",
     "newPost": "Nový príspevok",
     "empty": "Žiadne príspevky na nástenke.",
-    "confirmDelete": "Naozaj chcete zmazať tento príspevok?"
+    "confirmDelete": "Naozaj chcete zmazať tento príspevok?",
+    "scopeAll": "Celá bytovka",
+    "scopeEntrance": "Vchod"
   },
   "PostCard": {
     "pinned": "Pripnuté",
@@ -138,6 +140,8 @@
     "quorumAllUnanimous": "Súhlas všetkých (100%)",
     "meetingNote": "Pri hlasovaní na schôdzi nie je možné elektronické hlasovanie.",
     "ownersQuarterNote": "Pri hlasovaní iniciovanom štvrtinou vlastníkov nie je možné elektronické hlasovanie.",
+    "entranceScopeLabel": "Rozsah hlasovania",
+    "scopeAll": "Celá bytovka",
     "submit": "Vytvoriť hlasovanie",
     "submitting": "Vytváram...",
     "createFailed": "Nepodarilo sa vytvoriť hlasovanie"

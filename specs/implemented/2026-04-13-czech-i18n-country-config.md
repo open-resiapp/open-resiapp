@@ -1,7 +1,7 @@
 ---
 spec_id: BYT-20260413-002
 title: "Česká lokalizácia a country config na úrovni budovy"
-status: idea
+status: implemented
 created: 2026-04-13
 updated: 2026-04-13
 author: "OpenResiApp"

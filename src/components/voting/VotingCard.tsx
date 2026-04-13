@@ -21,6 +21,7 @@ interface VotingCardProps {
   title: string;
   status: VotingStatus;
   votingType?: VotingType;
+  entranceName?: string | null;
   startsAt: string;
   endsAt: string;
   createdByName: string;
@@ -31,6 +32,7 @@ export default function VotingCard({
   title,
   status,
   votingType,
+  entranceName,
   startsAt,
   endsAt,
   createdByName,
@@ -45,7 +47,14 @@ export default function VotingCard({
       className="block bg-white rounded-xl border border-gray-200 p-6 hover:shadow-md transition-shadow"
     >
       <div className="flex items-start justify-between gap-4 mb-3">
-        <h3 className="text-lg font-semibold text-gray-900">{title}</h3>
+        <div>
+          <h3 className="text-lg font-semibold text-gray-900">{title}</h3>
+          {entranceName && (
+            <span className="inline-block mt-1 px-2.5 py-0.5 rounded-full text-sm font-medium bg-gray-100 text-gray-600">
+              {entranceName}
+            </span>
+          )}
+        </div>
         <div className="flex gap-2 flex-shrink-0">
           {votingType && (
             <span

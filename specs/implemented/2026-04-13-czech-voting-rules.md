@@ -1,7 +1,7 @@
 ---
 spec_id: BYT-20260413-003
 title: "České hlasovacie pravidlá — country-aware voting"
-status: idea
+status: implemented
 created: 2026-04-13
 updated: 2026-04-13
 author: "OpenResiApp"

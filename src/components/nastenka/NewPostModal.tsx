@@ -12,19 +12,27 @@ const categoryKeys: Record<PostCategory, string> = {
   maintenance: "categoryMaintenance",
 };
 
+interface Entrance {
+  id: string;
+  name: string;
+}
+
 interface NewPostModalProps {
   isOpen: boolean;
   onClose: () => void;
   onCreated: () => void;
+  entrances?: Entrance[];
 }
 
 export default function NewPostModal({
   isOpen,
   onClose,
   onCreated,
+  entrances,
 }: NewPostModalProps) {
   const t = useTranslations("PostModal");
   const tPost = useTranslations("PostCard");
+  const tBoard = useTranslations("Board");
   const tCommon = useTranslations("Common");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -46,6 +54,7 @@ export default function NewPostModal({
         content: formData.get("content"),
         category: formData.get("category"),
         isPinned: formData.get("isPinned") === "on",
+        entranceId: formData.get("entranceId") || null,
       }),
     });
 
@@ -107,6 +116,25 @@ export default function NewPostModal({
               ))}
             </select>
           </div>
+
+          {entrances && entrances.length > 0 && (
+            <div>
+              <label className="block text-base font-medium text-gray-700 mb-1">
+                {tBoard("scopeEntrance")}
+              </label>
+              <select
+                name="entranceId"
+                className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+              >
+                <option value="">{tBoard("scopeAll")}</option>
+                {entrances.map((e) => (
+                  <option key={e.id} value={e.id}>
+                    {e.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
 
           <div>
             <label className="block text-base font-medium text-gray-700 mb-1">

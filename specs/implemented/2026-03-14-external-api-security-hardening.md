@@ -1,12 +1,12 @@
 ---
 spec_id: BYT-20260314-001
 title: "External API security hardening"
-status: in_progress
+status: implemented
 created: 2026-03-14
 updated: 2026-03-14
 author: "bytove-druzstvo"
 owner: ""
-last_verified: 2026-03-14
+last_verified: 2026-04-13
 project_type: other
 depends_on: []
 related_handoffs: [bytove-druzstvo-to-byt-app-20260314-001]

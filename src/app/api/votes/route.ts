@@ -31,10 +31,11 @@ export async function GET(request: NextRequest) {
   const votingMethod = (bld?.votingMethod ?? "per_share") as VotingMethod;
   const country = (bld?.country ?? "sk") as Country;
 
-  // Fetch voting details for quorum type
+  // Fetch voting details for quorum type and entrance scope
   const [voting] = await db
     .select({
       quorumType: votings.quorumType,
+      entranceId: votings.entranceId,
     })
     .from(votings)
     .where(eq(votings.id, votingId))
@@ -73,14 +74,18 @@ export async function GET(request: NextRequest) {
     area: v.area,
   }));
 
-  // Calculate total possible weight from all flats in the building
-  const allFlats = await db
+  // Calculate total possible weight — scoped to entrance if voting is entrance-scoped
+  const allFlatsQuery = db
     .select({
       shareNumerator: flats.shareNumerator,
       shareDenominator: flats.shareDenominator,
       area: flats.area,
     })
     .from(flats);
+
+  const allFlats = voting.entranceId
+    ? await allFlatsQuery.where(eq(flats.entranceId, voting.entranceId))
+    : await allFlatsQuery;
 
   let totalPossibleWeight = 0;
   for (const f of allFlats) {
@@ -200,6 +205,22 @@ export async function POST(request: NextRequest) {
       { error: "Vlastník nevlastní tento byt" },
       { status: 400 }
     );
+  }
+
+  // Validate flat belongs to the voting's entrance (if entrance-scoped)
+  if (voting.entranceId) {
+    const [flat] = await db
+      .select({ entranceId: flats.entranceId })
+      .from(flats)
+      .where(eq(flats.id, flatId))
+      .limit(1);
+
+    if (flat?.entranceId !== voting.entranceId) {
+      return NextResponse.json(
+        { error: "Tento byt nie je v hlasovanom vchode" },
+        { status: 403 }
+      );
+    }
   }
 
   // Check if flat already has a vote in this voting

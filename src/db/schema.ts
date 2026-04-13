@@ -178,6 +178,7 @@ export const votings = pgTable("votings", {
   initiatedBy: votingInitiatedByEnum("initiated_by").notNull().default("board"),
   quorumType: quorumTypeEnum("quorum_type").notNull().default("simple_all"),
   voteCounterId: uuid("vote_counter_id").references(() => users.id),
+  entranceId: uuid("entrance_id").references(() => entrances.id),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
@@ -430,6 +431,7 @@ export const entrancesRelations = relations(entrances, ({ one, many }) => ({
   }),
   flats: many(flats),
   posts: many(posts),
+  votings: many(votings),
   documents: many(documents),
 }));
 
@@ -467,6 +469,10 @@ export const votingsRelations = relations(votings, ({ one, many }) => ({
   voteCounter: one(users, {
     fields: [votings.voteCounterId],
     references: [users.id],
+  }),
+  entrance: one(entrances, {
+    fields: [votings.entranceId],
+    references: [entrances.id],
   }),
   votes: many(votes),
   mandates: many(mandates),

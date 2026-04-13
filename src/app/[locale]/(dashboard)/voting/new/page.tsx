@@ -3,9 +3,14 @@
 import { useSession } from "next-auth/react";
 import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { hasPermission } from "@/lib/permissions";
 import type { UserRole } from "@/types";
+
+interface Entrance {
+  id: string;
+  name: string;
+}
 
 export default function NovaHlasovaniePage() {
   const { data: session } = useSession();
@@ -16,8 +21,16 @@ export default function NovaHlasovaniePage() {
   const [error, setError] = useState("");
   const [votingType, setVotingType] = useState("written");
   const [initiatedBy, setInitiatedBy] = useState("board");
+  const [entrances, setEntrances] = useState<Entrance[]>([]);
 
   const role = (session?.user?.role || "owner") as UserRole;
+
+  useEffect(() => {
+    fetch("/api/entrances")
+      .then((r) => r.json())
+      .then((data) => setEntrances(data))
+      .catch(() => {});
+  }, []);
 
   if (!hasPermission(role, "createVoting")) {
     return (
@@ -49,6 +62,7 @@ export default function NovaHlasovaniePage() {
         votingType: formData.get("votingType"),
         initiatedBy: formData.get("initiatedBy"),
         quorumType: formData.get("quorumType"),
+        entranceId: formData.get("entranceId") || null,
       }),
     });
 
@@ -189,6 +203,26 @@ export default function NovaHlasovaniePage() {
               <option value="all_unanimous">{t("quorumAllUnanimous")}</option>
             </select>
           </div>
+
+          {/* Entrance scope */}
+          {entrances.length > 0 && (
+            <div>
+              <label className="block text-base font-medium text-gray-700 mb-1">
+                {t("entranceScopeLabel")}
+              </label>
+              <select
+                name="entranceId"
+                className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+              >
+                <option value="">{t("scopeAll")}</option>
+                {entrances.map((e) => (
+                  <option key={e.id} value={e.id}>
+                    {e.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
 
           <div>
             <label className="block text-base font-medium text-gray-700 mb-1">

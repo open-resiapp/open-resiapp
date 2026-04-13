@@ -56,7 +56,9 @@
     "title": "Board",
     "newPost": "New post",
     "empty": "No posts on the board.",
-    "confirmDelete": "Are you sure you want to delete this post?"
+    "confirmDelete": "Are you sure you want to delete this post?",
+    "scopeAll": "Whole building",
+    "scopeEntrance": "Entrance"
   },
   "PostCard": {
     "pinned": "Pinned",
@@ -138,6 +140,8 @@
     "quorumAllUnanimous": "Unanimous consent (100%)",
     "meetingNote": "Meeting voting does not allow electronic votes.",
     "ownersQuarterNote": "Voting initiated by quarter of owners does not allow electronic votes.",
+    "entranceScopeLabel": "Voting scope",
+    "scopeAll": "Whole building",
     "submit": "Create voting",
     "submitting": "Creating...",
     "createFailed": "Failed to create voting"

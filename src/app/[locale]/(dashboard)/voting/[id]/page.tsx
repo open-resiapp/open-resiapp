@@ -32,6 +32,8 @@ interface VotingDetail {
   startsAt: string;
   endsAt: string;
   voteCounterId: string | null;
+  entranceId: string | null;
+  entranceName: string | null;
   createdBy: { id: string; name: string } | null;
 }
 
@@ -273,7 +275,13 @@ export default function VotingDetailPage() {
           <>
             <div className="flex items-start justify-between gap-4 mb-4">
               <h1 className="text-2xl font-bold text-gray-900">{voting.title}</h1>
-              <div className="flex gap-2 flex-shrink-0">
+              <div className="flex gap-2 flex-shrink-0 flex-wrap">
+                {/* Entrance badge */}
+                {voting.entranceName && (
+                  <span className="px-3 py-1 rounded-full text-sm font-medium whitespace-nowrap bg-gray-100 text-gray-600">
+                    {voting.entranceName}
+                  </span>
+                )}
                 {/* Voting type badge */}
                 <span
                   className={`px-3 py-1 rounded-full text-sm font-medium whitespace-nowrap ${
@@ -551,6 +559,7 @@ export default function VotingDetailPage() {
             voteData={voteData}
             building={buildingData}
             legalNotice={legalNotice}
+            entranceName={voting.entranceName}
           />
         </div>
       )}

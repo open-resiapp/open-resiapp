@@ -255,6 +255,7 @@ interface VotingMinutesPDFProps {
   legalNotice: string | null;
   qrDataUrl: string | null;
   generatedAt: string;
+  entranceName?: string | null;
 }
 
 function formatDate(iso: string): string {
@@ -286,6 +287,7 @@ export default function VotingMinutesPDF({
   legalNotice,
   qrDataUrl,
   generatedAt,
+  entranceName,
 }: VotingMinutesPDFProps) {
   return (
     <Document>
@@ -300,6 +302,11 @@ export default function VotingMinutesPDF({
         {/* Title */}
         <Text style={styles.title}>ZÁPISNICA Z HLASOVANIA</Text>
         <Text style={styles.subtitle}>{voting.title}</Text>
+        {entranceName && (
+          <Text style={{ fontSize: 10, textAlign: "center" as const, marginBottom: 16, color: "#555" }}>
+            Hlasovanie pre vchod: {entranceName}
+          </Text>
+        )}
 
         {/* Metadata */}
         <View style={styles.section}>
