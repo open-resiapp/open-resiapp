@@ -73,3 +73,10 @@ jedného vchodu (oprava strechy, výťah, schodisko).
 - Právne: per-entrance hlasovanie je podmnožina písomného hlasovania,
   rovnaké pravidlá podľa §14a zák. 182/1993 Z.z.
 - NULL entrance_id = backward compatible so všetkými existujúcimi záznamami
+
+### 2026-04-17 – zdieľaný `EntranceScopePicker`
+RES-20260417-001 (community foundation) buildne shared komponent
+`src/components/shared/EntranceScopePicker.tsx`. Táto spec ho bude
+REUSOVAŤ namiesto vlastného pickera. Ak voting potrebuje extra
+constraints (napr. disable "Celá bytovka" pre owner so bytom len
+v 1 vchode), pridať ako prop, nie vlastný komponent.

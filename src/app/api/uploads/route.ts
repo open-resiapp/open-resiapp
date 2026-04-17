@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
-import { hasPermission } from "@/lib/permissions";
+import { hasPermission, type Permission } from "@/lib/permissions";
 import type { UserRole } from "@/types";
 import { writeFile, mkdir } from "fs/promises";
 import path from "path";
@@ -10,19 +10,29 @@ import { getUploadsDir } from "@/lib/uploads";
 const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp"];
 const MAX_SIZE = 10 * 1024 * 1024; // 10MB
 
+const categoryPermissions: Record<string, Permission> = {
+  "paper-votes": "recordPaperVote",
+  "community-posts": "uploadCommunityPhoto",
+};
+
 export async function POST(request: NextRequest) {
   const session = await auth();
   if (!session) {
     return NextResponse.json({ error: "Neautorizovaný prístup" }, { status: 401 });
   }
 
-  if (!hasPermission(session.user.role as UserRole, "recordPaperVote")) {
-    return NextResponse.json({ error: "Nemáte oprávnenie" }, { status: 403 });
-  }
-
   const formData = await request.formData();
   const file = formData.get("file") as File | null;
   const category = (formData.get("category") as string) || "paper-votes";
+
+  const requiredPermission = categoryPermissions[category];
+  if (!requiredPermission) {
+    return NextResponse.json({ error: "Neznáma kategória" }, { status: 400 });
+  }
+
+  if (!hasPermission(session.user.role as UserRole, requiredPermission)) {
+    return NextResponse.json({ error: "Nemáte oprávnenie" }, { status: 403 });
+  }
 
   if (!file) {
     return NextResponse.json({ error: "Súbor je povinný" }, { status: 400 });

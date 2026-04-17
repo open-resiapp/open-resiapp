@@ -30,6 +30,7 @@
     "dashboard": "Dashboard",
     "board": "Nástenka",
     "voting": "Hlasovanie",
+    "community": "Komunita",
     "owners": "Vlastníci",
     "settings": "Nastavenia"
   },
@@ -513,5 +514,67 @@
     "retentionContent": "Osobné údaje uchovávame po dobu trvania vášho vlastníctva bytu a ďalších 5 rokov po jeho skončení, pokiaľ zákon nevyžaduje dlhšiu dobu archivácie.",
     "contactTitle": "Kontakt",
     "contactContent": "V prípade otázok ohľadom spracovania osobných údajov kontaktujte správcu bytového domu."
+  },
+  "Community": {
+    "landing": {
+      "title": "Komunita",
+      "subtitle": "Susedský priestor – predávajte, pomáhajte si a stretávajte sa."
+    },
+    "tiles": {
+      "marketplace": {
+        "title": "Burza",
+        "desc": "Predávam, darujem, požičiam alebo hľadám."
+      },
+      "help": {
+        "title": "Susedská pomoc",
+        "desc": "Prosím o pomoc alebo ponúkam pomoc susedom."
+      },
+      "events": {
+        "title": "Udalosti",
+        "desc": "Grilovačky, brigády, spoločné stretnutia."
+      },
+      "directory": {
+        "title": "Adresár",
+        "desc": "Kontakty a zručnosti susedov, ktorí to chcú zdieľať."
+      }
+    },
+    "type": {
+      "sale": "Predám",
+      "free": "Darujem",
+      "borrow": "Požičiam / Hľadám",
+      "help_request": "Prosím o pomoc",
+      "help_offer": "Ponúkam pomoc",
+      "event": "Udalosť"
+    },
+    "status": {
+      "resolved": "Vyriešené",
+      "expired": "Skončilo"
+    },
+    "scopeAll": "Celá bytovka",
+    "markResolved": "Označiť ako vyriešené",
+    "delete": "Zmazať",
+    "respondTitle": "Napísať reakciu",
+    "respondPlaceholder": "Dobrý deň, mám záujem o...",
+    "send": "Odoslať",
+    "sending": "Odosielam...",
+    "cancel": "Zrušiť",
+    "noResponses": "Zatiaľ žiadne reakcie.",
+    "empty": "Zatiaľ žiadne príspevky. Buď prvý!",
+    "addPost": "Pridať príspevok",
+    "photoTooLarge": "Fotka je príliš veľká (max 5 MB).",
+    "photoUploadFailed": "Nahrávanie fotky zlyhalo.",
+    "titleAndContentRequired": "Nadpis a obsah sú povinné.",
+    "eventNeedsDateAndLocation": "Udalosť musí mať dátum a miesto.",
+    "uploading": "Nahrávam...",
+    "form": {
+      "type": "Typ príspevku",
+      "title": "Nadpis",
+      "content": "Obsah",
+      "eventDate": "Dátum a čas",
+      "eventLocation": "Miesto",
+      "entrance": "Vchod",
+      "photo": "Fotka (voliteľné)",
+      "submit": "Zverejniť"
+    }
   }
 }

@@ -109,6 +109,21 @@ export const consentActionEnum = pgEnum("consent_action", [
   "withdrawn",
 ]);
 
+export const communityPostTypeEnum = pgEnum("community_post_type", [
+  "sale",
+  "free",
+  "borrow",
+  "help_request",
+  "help_offer",
+  "event",
+]);
+
+export const communityPostStatusEnum = pgEnum("community_post_status", [
+  "active",
+  "resolved",
+  "expired",
+]);
+
 // ── Tables ─────────────────────────────────────────────
 
 export const building = pgTable("building", {
@@ -120,6 +135,9 @@ export const building = pgTable("building", {
   country: countryEnum("country").notNull().default("sk"),
   governanceModel: governanceModelEnum("governance_model").notNull().default("chairman_council"),
   legalNotice: text("legal_notice"),
+  communityCrossEntranceVisible: boolean("community_cross_entrance_visible")
+    .notNull()
+    .default(false),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
@@ -402,6 +420,36 @@ export const externalApiLogs = pgTable("external_api_logs", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
+export const communityPosts = pgTable("community_posts", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  type: communityPostTypeEnum("type").notNull(),
+  status: communityPostStatusEnum("status").notNull().default("active"),
+  title: varchar("title", { length: 255 }).notNull(),
+  content: text("content").notNull(),
+  photoUrl: varchar("photo_url", { length: 1000 }),
+  authorId: uuid("author_id")
+    .references(() => users.id)
+    .notNull(),
+  eventDate: timestamp("event_date"),
+  eventLocation: varchar("event_location", { length: 255 }),
+  entranceId: uuid("entrance_id").references(() => entrances.id),
+  expiresAt: timestamp("expires_at"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+export const communityResponses = pgTable("community_responses", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  postId: uuid("post_id")
+    .references(() => communityPosts.id, { onDelete: "cascade" })
+    .notNull(),
+  authorId: uuid("author_id")
+    .references(() => users.id)
+    .notNull(),
+  content: text("content").notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
 export const boardMembers = pgTable("board_members", {
   id: uuid("id").primaryKey().defaultRandom(),
   buildingId: uuid("building_id")
@@ -617,6 +665,29 @@ export const boardMembersRelations = relations(boardMembers, ({ one }) => ({
   }),
   user: one(users, {
     fields: [boardMembers.userId],
+    references: [users.id],
+  }),
+}));
+
+export const communityPostsRelations = relations(communityPosts, ({ one, many }) => ({
+  author: one(users, {
+    fields: [communityPosts.authorId],
+    references: [users.id],
+  }),
+  entrance: one(entrances, {
+    fields: [communityPosts.entranceId],
+    references: [entrances.id],
+  }),
+  responses: many(communityResponses),
+}));
+
+export const communityResponsesRelations = relations(communityResponses, ({ one }) => ({
+  post: one(communityPosts, {
+    fields: [communityResponses.postId],
+    references: [communityPosts.id],
+  }),
+  author: one(users, {
+    fields: [communityResponses.authorId],
     references: [users.id],
   }),
 }));

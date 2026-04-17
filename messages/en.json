@@ -30,6 +30,7 @@
     "dashboard": "Dashboard",
     "board": "Board",
     "voting": "Voting",
+    "community": "Community",
     "owners": "Owners",
     "settings": "Settings"
   },
@@ -513,5 +514,67 @@
     "retentionContent": "We retain personal data for the duration of your apartment ownership and for 5 additional years after it ends, unless a longer archival period is required by law.",
     "contactTitle": "Contact",
     "contactContent": "For questions regarding personal data processing, please contact the building manager."
+  },
+  "Community": {
+    "landing": {
+      "title": "Community",
+      "subtitle": "A neighborly space — trade, help each other, and meet up."
+    },
+    "tiles": {
+      "marketplace": {
+        "title": "Marketplace",
+        "desc": "Sell, give away, lend, or look for something."
+      },
+      "help": {
+        "title": "Neighborly help",
+        "desc": "Ask for help or offer help to neighbors."
+      },
+      "events": {
+        "title": "Events",
+        "desc": "BBQs, cleanups, neighborly get-togethers."
+      },
+      "directory": {
+        "title": "Directory",
+        "desc": "Contacts and skills from neighbors who choose to share."
+      }
+    },
+    "type": {
+      "sale": "For sale",
+      "free": "Free",
+      "borrow": "Borrow / Looking for",
+      "help_request": "Need help",
+      "help_offer": "Offering help",
+      "event": "Event"
+    },
+    "status": {
+      "resolved": "Resolved",
+      "expired": "Ended"
+    },
+    "scopeAll": "Whole building",
+    "markResolved": "Mark as resolved",
+    "delete": "Delete",
+    "respondTitle": "Write a response",
+    "respondPlaceholder": "Hi, I'm interested in...",
+    "send": "Send",
+    "sending": "Sending...",
+    "cancel": "Cancel",
+    "noResponses": "No responses yet.",
+    "empty": "No posts yet. Be the first!",
+    "addPost": "Add post",
+    "photoTooLarge": "Photo is too large (max 5 MB).",
+    "photoUploadFailed": "Photo upload failed.",
+    "titleAndContentRequired": "Title and content are required.",
+    "eventNeedsDateAndLocation": "Event needs a date and location.",
+    "uploading": "Uploading...",
+    "form": {
+      "type": "Post type",
+      "title": "Title",
+      "content": "Content",
+      "eventDate": "Date and time",
+      "eventLocation": "Location",
+      "entrance": "Entrance",
+      "photo": "Photo (optional)",
+      "submit": "Publish"
+    }
   }
 }

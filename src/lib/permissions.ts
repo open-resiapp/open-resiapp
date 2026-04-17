@@ -13,6 +13,16 @@ const permissions = {
   viewSettings: ["admin", "caretaker"],
   manageSettings: ["admin"],
   manageApiKeys: ["admin"],
+  viewCommunity: ["admin", "owner", "tenant"],
+  createCommunityPost: ["admin", "owner", "tenant"],
+  respondToCommunityPost: ["admin", "owner", "tenant"],
+  resolveOwnCommunityPost: ["admin", "owner", "tenant"],
+  deleteOwnCommunityPost: ["admin", "owner", "tenant"],
+  moderateCommunityResponse: ["admin"],
+  uploadCommunityPhoto: ["admin", "owner", "tenant"],
+  changeCrossEntranceVisibility: ["admin"],
+  editOwnDirectory: ["admin", "owner", "tenant"],
+  viewDirectory: ["admin", "owner", "tenant"],
 } as const;
 
 export type Permission = keyof typeof permissions;
