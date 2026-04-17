@@ -1,7 +1,7 @@
 ---
 spec_id: RES-20260417-001
 title: "Community foundation – schema, API, permissions, navigation"
-status: in_progress
+status: implemented
 created: 2026-04-17
 updated: 2026-04-17
 author: "open-housing"

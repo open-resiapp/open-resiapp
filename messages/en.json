@@ -590,6 +590,22 @@
         "free": "Free",
         "borrow": "Borrow / Looking for"
       }
+    },
+    "help": {
+      "title": "Neighborly help",
+      "subtitle": "Ask for help or offer help to neighbors.",
+      "newPost": "New post",
+      "imInterested": "I'm interested",
+      "willHelp": "I'll help",
+      "showArchived": "Show resolved / ended",
+      "confirmResolve": "Mark as resolved?",
+      "confirmDelete": "Really delete this post?",
+      "empty": "No one needs help or is offering help yet. Be the first!",
+      "tabs": {
+        "all": "All",
+        "request": "Need help",
+        "offer": "Offering help"
+      }
     }
   }
 }

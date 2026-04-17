@@ -590,6 +590,22 @@
         "free": "Darujem",
         "borrow": "Požičiam / Hľadám"
       }
+    },
+    "help": {
+      "title": "Susedská pomoc",
+      "subtitle": "Prosím o pomoc alebo ponúkam pomoc susedom.",
+      "newPost": "Nový príspevok",
+      "imInterested": "Mám záujem",
+      "willHelp": "Rád pomôžem",
+      "showArchived": "Zobraziť vyriešené / skončené",
+      "confirmResolve": "Označiť ako vyriešené?",
+      "confirmDelete": "Naozaj zmazať tento príspevok?",
+      "empty": "Zatiaľ nikto nepotrebuje pomoc ani neponúka pomoc. Buď prvý!",
+      "tabs": {
+        "all": "Všetko",
+        "request": "Prosím o pomoc",
+        "offer": "Ponúkam pomoc"
+      }
     }
   }
 }
