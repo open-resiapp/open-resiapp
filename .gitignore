@@ -45,3 +45,7 @@ next-env.d.ts
 # backups
 /backups
 borg-key-export-*.txt
+
+# personal / server-local compose overrides (not for upstream)
+docker-compose.own.yml
+docker-compose.*.local.yml
