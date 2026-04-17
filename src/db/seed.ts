@@ -12,6 +12,10 @@ import {
   votes,
   mandates,
   posts,
+  communityPosts,
+  communityResponses,
+  eventRsvps,
+  directoryEntries,
 } from "./schema";
 import { generateAuditHash } from "../lib/voting";
 
@@ -24,6 +28,10 @@ async function seed() {
   console.log("Seeding database...");
 
   // Clear existing data (in reverse FK order)
+  await db.delete(eventRsvps);
+  await db.delete(communityResponses);
+  await db.delete(communityPosts);
+  await db.delete(directoryEntries);
   await db.delete(votes);
   await db.delete(mandates);
   await db.delete(posts);
@@ -148,6 +156,7 @@ async function seed() {
     { name: "Eva Veľká", email: "eva@test.sk", flatIdx: 5 },
   ];
 
+  const tenantIds: string[] = [];
   for (const t of tenantData) {
     const [tenant] = await db
       .insert(users)
@@ -159,6 +168,7 @@ async function seed() {
         flatId: allFlats[t.flatIdx].id,
       })
       .returning();
+    tenantIds.push(tenant.id);
 
     await db.insert(userFlats).values({
       userId: tenant.id,
@@ -327,6 +337,125 @@ async function seed() {
     });
   }
   console.log("Created 5 posts");
+
+  // Community posts
+  const thirtyDays = 30 * 24 * 60 * 60 * 1000;
+  const communityPostData = [
+    {
+      type: "sale" as const,
+      title: "Detská postieľka IKEA",
+      content: "Zachovalá, 3 roky stará. Matrac v cene. Cena dohodou.",
+      authorId: ownerIds[0],
+      entranceId: entranceA.id,
+    },
+    {
+      type: "free" as const,
+      title: "Knihy — vezmite zadarmo",
+      content: "Rôzne žánre, detektívky, historické romány. Cca 30 kusov.",
+      authorId: ownerIds[1],
+      entranceId: null,
+    },
+    {
+      type: "borrow" as const,
+      title: "Hľadám parkovacie miesto",
+      content: "Dlhodobý prenájom parkovacieho miesta. Byt 5, vchod B.",
+      authorId: ownerIds[3],
+      entranceId: entranceB.id,
+    },
+    {
+      type: "help_request" as const,
+      title: "Zalievanie kvetov počas dovolenky",
+      content: "Prosím o zalievanie kvetov 15.-22. júla. Kľúč nechám u suseda.",
+      authorId: ownerIds[1],
+      entranceId: entranceA.id,
+    },
+    {
+      type: "help_offer" as const,
+      title: "Ponúkam IT pomoc starším susedom",
+      content: "Nastavenie telefónu, emailu, wifi. Rád pomôžem po práci.",
+      authorId: tenantIds[0],
+      entranceId: null,
+    },
+    {
+      type: "event" as const,
+      title: "Spoločná grilovačka",
+      content: "Prineste si jedlo a pitie. Gril a uhlie zabezpečené.",
+      authorId: ownerIds[1],
+      entranceId: entranceB.id,
+      eventDate: new Date(now.getTime() + 14 * 24 * 60 * 60 * 1000),
+      eventLocation: "Dvorček za Vchodom B",
+    },
+    {
+      type: "event" as const,
+      title: "Brigáda – upratanie dvora",
+      content: "Jarné upratovanie, hrabanie lístia, drobné opravy. Občerstvenie zabezpečené.",
+      authorId: admin.id,
+      entranceId: null,
+      eventDate: new Date(now.getTime() + 28 * 24 * 60 * 60 * 1000),
+      eventLocation: "Pred vchodom A",
+    },
+  ];
+
+  const createdCommunityPosts = [];
+  for (const p of communityPostData) {
+    const [post] = await db
+      .insert(communityPosts)
+      .values({
+        ...p,
+        expiresAt: new Date(now.getTime() + thirtyDays),
+      })
+      .returning();
+    createdCommunityPosts.push(post);
+  }
+  console.log("Created 7 community posts (3 marketplace, 2 help, 2 events)");
+
+  // A couple of RSVPs on the grilovačka
+  const grilovacka = createdCommunityPosts.find((p) => p.title === "Spoločná grilovačka");
+  if (grilovacka) {
+    await db.insert(eventRsvps).values([
+      { postId: grilovacka.id, userId: ownerIds[0], status: "yes" },
+      { postId: grilovacka.id, userId: ownerIds[2], status: "yes" },
+      { postId: grilovacka.id, userId: tenantIds[0], status: "maybe" },
+    ]);
+    console.log("Added 3 RSVPs on grilovačka");
+  }
+
+  // One response on the marketplace post
+  const postiel = createdCommunityPosts.find((p) => p.title === "Detská postieľka IKEA");
+  if (postiel) {
+    await db.insert(communityResponses).values({
+      postId: postiel.id,
+      authorId: ownerIds[2],
+      content: "Dobrý deň, mám záujem. Je ešte dostupná?",
+    });
+    console.log("Added 1 response on marketplace post");
+  }
+
+  // Directory entries (opt-in) — Ján shares phone + skills, Tomáš shares email + note
+  await db.insert(directoryEntries).values([
+    {
+      userId: ownerIds[0],
+      sharePhone: true,
+      shareEmail: false,
+      note: "Rád pomôžem so záhradou",
+      skills: "elektrikár, záhrada",
+    },
+    {
+      userId: tenantIds[0],
+      sharePhone: false,
+      shareEmail: true,
+      note: "IT a technika pre starších",
+      skills: "IT, telefóny, wifi",
+    },
+    {
+      userId: ownerIds[1],
+      sharePhone: true,
+      shareEmail: true,
+      note: null,
+      skills: "pečenie, krajčírka",
+    },
+  ]);
+  console.log("Created 3 directory entries");
 
   console.log("\nSeed complete!");
   console.log("Login: admin@test.sk / Admin123!");

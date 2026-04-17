@@ -1,7 +1,7 @@
 ---
 spec_id: RES-20260417-005
 title: "Community directory – /komunita/adresar"
-status: spec
+status: in_progress
 created: 2026-04-17
 updated: 2026-04-17
 author: "open-housing"

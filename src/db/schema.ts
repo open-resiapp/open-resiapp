@@ -453,6 +453,20 @@ export const communityResponses = pgTable("community_responses", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
+export const directoryEntries = pgTable("directory_entries", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  userId: uuid("user_id")
+    .references(() => users.id, { onDelete: "cascade" })
+    .notNull()
+    .unique(),
+  sharePhone: boolean("share_phone").notNull().default(false),
+  shareEmail: boolean("share_email").notNull().default(false),
+  note: varchar("note", { length: 255 }),
+  skills: varchar("skills", { length: 500 }),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
 export const eventRsvps = pgTable(
   "event_rsvps",
   {
@@ -724,6 +738,13 @@ export const eventRsvpsRelations = relations(eventRsvps, ({ one }) => ({
   }),
   user: one(users, {
     fields: [eventRsvps.userId],
+    references: [users.id],
+  }),
+}));
+
+export const directoryEntriesRelations = relations(directoryEntries, ({ one }) => ({
+  user: one(users, {
+    fields: [directoryEntries.userId],
     references: [users.id],
   }),
 }));

@@ -607,6 +607,28 @@
         "offer": "Ponúkam pomoc"
       }
     },
+    "directory": {
+      "title": "Adresár",
+      "subtitle": "Kontakty a zručnosti susedov, ktorí to chcú zdieľať.",
+      "editMine": "Upraviť môj záznam",
+      "editTitle": "Môj záznam v adresári",
+      "sharePhone": "Zdieľať telefónne číslo",
+      "shareEmail": "Zdieľať email",
+      "note": "Poznámka",
+      "notePlaceholder": "napr. Rada pomôžem so záhradou",
+      "skills": "Zručnosti",
+      "skillsPlaceholder": "napr. elektrikár, IT",
+      "removeFully": "Odstrániť môj záznam úplne",
+      "confirmDelete": "Naozaj odstrániť môj záznam z adresára?",
+      "save": "Uložiť",
+      "saving": "Ukladám...",
+      "cancel": "Zrušiť",
+      "searchPlaceholder": "Hľadať (meno, byt, zručnosti)",
+      "empty": "Zatiaľ nikto nezdieľa kontakt. Pridaj sa prvý!",
+      "flat": "Byt",
+      "adminDelete": "Zmazať (admin)",
+      "adminConfirmDelete": "Zmazať záznam pre {name}?"
+    },
     "events": {
       "title": "Udalosti",
       "subtitle": "Grilovačky, brigády, spoločné stretnutia.",

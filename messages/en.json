@@ -607,6 +607,28 @@
         "offer": "Offering help"
       }
     },
+    "directory": {
+      "title": "Directory",
+      "subtitle": "Contacts and skills from neighbors who choose to share.",
+      "editMine": "Edit my entry",
+      "editTitle": "My directory entry",
+      "sharePhone": "Share phone number",
+      "shareEmail": "Share email",
+      "note": "Note",
+      "notePlaceholder": "e.g. Happy to help with gardening",
+      "skills": "Skills",
+      "skillsPlaceholder": "e.g. electrician, IT",
+      "removeFully": "Remove my entry entirely",
+      "confirmDelete": "Really remove my entry from the directory?",
+      "save": "Save",
+      "saving": "Saving...",
+      "cancel": "Cancel",
+      "searchPlaceholder": "Search (name, flat, skills)",
+      "empty": "No one is sharing contacts yet. Be the first!",
+      "flat": "Flat",
+      "adminDelete": "Delete (admin)",
+      "adminConfirmDelete": "Delete entry for {name}?"
+    },
     "events": {
       "title": "Events",
       "subtitle": "BBQs, cleanups, neighborly get-togethers.",

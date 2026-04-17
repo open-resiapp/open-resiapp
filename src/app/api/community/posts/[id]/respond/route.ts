@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { db } from "@/db";
-import { communityPosts, communityResponses } from "@/db/schema";
+import { communityPosts, communityResponses, users } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { hasPermission } from "@/lib/permissions";
+import { sendCommunityResponseNotification } from "@/lib/email";
 import type { UserRole } from "@/types";
 
 export async function POST(
@@ -45,6 +46,32 @@ export async function POST(
       content: content.trim(),
     })
     .returning();
+
+  if (post.authorId !== session.user.id) {
+    const [author] = await db
+      .select({ email: users.email, name: users.name })
+      .from(users)
+      .where(eq(users.id, post.authorId))
+      .limit(1);
+    const [responder] = await db
+      .select({ name: users.name })
+      .from(users)
+      .where(eq(users.id, session.user.id))
+      .limit(1);
+
+    if (author?.email && responder?.name) {
+      const appUrl =
+        process.env.NEXTAUTH_URL?.replace(/\/$/, "") || "http://localhost:3000";
+      sendCommunityResponseNotification({
+        recipientEmail: author.email,
+        recipientName: author.name,
+        responderName: responder.name,
+        postTitle: post.title,
+        postUrl: `${appUrl}/komunita`,
+        responseContent: content.trim(),
+      }).catch(() => {});
+    }
+  }
 
   return NextResponse.json(response, { status: 201 });
 }

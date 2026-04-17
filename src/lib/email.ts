@@ -127,6 +127,63 @@ export async function sendPairingInvitation(params: {
   }
 }
 
+export async function sendCommunityResponseNotification(params: {
+  recipientEmail: string;
+  recipientName: string;
+  responderName: string;
+  postTitle: string;
+  postUrl: string;
+  responseContent: string;
+}): Promise<boolean> {
+  const transporter = getTransporter();
+
+  if (!transporter) {
+    console.warn(
+      "[email] SMTP not configured — skipping community response notification"
+    );
+    return false;
+  }
+
+  const safePreview =
+    params.responseContent.length > 240
+      ? params.responseContent.slice(0, 240) + "…"
+      : params.responseContent;
+
+  const html = `
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+      <h2 style="color: #1d4ed8;">Nová reakcia na váš príspevok</h2>
+      <p>Vážený/á <strong>${params.recipientName}</strong>,</p>
+      <p><strong>${params.responderName}</strong> reagoval/a na váš príspevok:</p>
+      <p style="font-weight: bold; color: #111827;">${params.postTitle}</p>
+      <blockquote style="margin: 16px 0; padding: 12px 16px; background-color: #f3f4f6; border-left: 4px solid #2563eb; border-radius: 4px; color: #374151;">
+        ${safePreview.replace(/\n/g, "<br/>")}
+      </blockquote>
+      <div style="margin: 24px 0; text-align: center;">
+        <a href="${params.postUrl}"
+           style="display: inline-block; padding: 12px 32px; background-color: #2563eb; color: #ffffff; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 16px;">
+          Zobraziť príspevok
+        </a>
+      </div>
+      <p style="color: #6b7280; font-size: 14px;">
+        Odpovedať môžete priamo v aplikácii.
+      </p>
+    </div>
+  `;
+
+  try {
+    await transporter.sendMail({
+      from: emailFrom,
+      to: params.recipientEmail,
+      subject: `Nová reakcia — ${params.postTitle}`,
+      html,
+    });
+    return true;
+  } catch (error) {
+    console.error("[email] Failed to send community response notification:", error);
+    return false;
+  }
+}
+
 export async function sendVoteConfirmation(params: {
   recipientEmail: string;
   voterName: string;
