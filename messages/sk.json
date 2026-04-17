@@ -51,7 +51,11 @@
     "votingTitle": "Hlasovanie",
     "votingValue": "Aktívne hlasovania",
     "ownersTitle": "Vlastníci",
-    "ownersValue": "Správa vlastníkov"
+    "ownersValue": "Správa vlastníkov",
+    "upcomingEvents": "Nadchádzajúce udalosti",
+    "viewAll": "Zobraziť všetky",
+    "loadingEvents": "Načítavam udalosti...",
+    "noUpcomingEvents": "Žiadne nadchádzajúce udalosti."
   },
   "Board": {
     "title": "Nástenka",

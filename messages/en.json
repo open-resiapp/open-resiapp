@@ -45,6 +45,10 @@
     "cs": "CZ"
   },
   "Dashboard": {
+    "upcomingEvents": "Upcoming events",
+    "viewAll": "View all",
+    "loadingEvents": "Loading events...",
+    "noUpcomingEvents": "No upcoming events.",
     "welcome": "Welcome, {name}",
     "boardTitle": "Board",
     "boardValue": "View posts",
