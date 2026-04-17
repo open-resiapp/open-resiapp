@@ -1,7 +1,7 @@
 ---
 spec_id: RES-20260417-002
 title: "Community marketplace – /komunita/burza"
-status: spec
+status: in_progress
 created: 2026-04-17
 updated: 2026-04-17
 author: "open-housing"

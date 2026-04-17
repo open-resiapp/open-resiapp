@@ -575,6 +575,21 @@
       "entrance": "Entrance",
       "photo": "Photo (optional)",
       "submit": "Publish"
+    },
+    "marketplace": {
+      "title": "Marketplace",
+      "subtitle": "Sell, give away, lend, or look for something.",
+      "newPost": "New post",
+      "imInterested": "I'm interested",
+      "showArchived": "Show resolved / ended",
+      "confirmResolve": "Mark as resolved?",
+      "confirmDelete": "Really delete this post?",
+      "tabs": {
+        "all": "All",
+        "sale": "For sale",
+        "free": "Free",
+        "borrow": "Borrow / Looking for"
+      }
     }
   }
 }

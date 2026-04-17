@@ -575,6 +575,21 @@
       "entrance": "Vchod",
       "photo": "Fotka (voliteľné)",
       "submit": "Zverejniť"
+    },
+    "marketplace": {
+      "title": "Burza",
+      "subtitle": "Predám, darujem, požičiam alebo hľadám.",
+      "newPost": "Nový príspevok",
+      "imInterested": "Mám záujem",
+      "showArchived": "Zobraziť vyriešené / skončené",
+      "confirmResolve": "Označiť ako vyriešené?",
+      "confirmDelete": "Naozaj zmazať tento príspevok?",
+      "tabs": {
+        "all": "Všetko",
+        "sale": "Predám",
+        "free": "Darujem",
+        "borrow": "Požičiam / Hľadám"
+      }
     }
   }
 }
