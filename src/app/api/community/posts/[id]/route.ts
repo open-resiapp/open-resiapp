@@ -1,8 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { db } from "@/db";
-import { communityPosts, communityResponses, users, entrances } from "@/db/schema";
-import { eq, asc } from "drizzle-orm";
+import {
+  communityPosts,
+  communityResponses,
+  users,
+  entrances,
+  eventRsvps,
+} from "@/db/schema";
+import { and, eq, asc, sql } from "drizzle-orm";
 import { hasPermission } from "@/lib/permissions";
 import type { UserRole } from "@/types";
 
@@ -75,7 +81,34 @@ export async function GET(
     .where(eq(communityResponses.postId, id))
     .orderBy(asc(communityResponses.createdAt));
 
-  return NextResponse.json({ ...row, responses });
+  let rsvp: {
+    yes: number;
+    maybe: number;
+    no: number;
+    myRsvp: "yes" | "maybe" | "no" | null;
+  } | null = null;
+
+  if (row.type === "event") {
+    const counts = await db
+      .select({
+        status: eventRsvps.status,
+        count: sql<number>`count(*)::int`,
+      })
+      .from(eventRsvps)
+      .where(eq(eventRsvps.postId, id))
+      .groupBy(eventRsvps.status);
+
+    const [mine] = await db
+      .select({ status: eventRsvps.status })
+      .from(eventRsvps)
+      .where(and(eq(eventRsvps.postId, id), eq(eventRsvps.userId, session.user.id)))
+      .limit(1);
+
+    rsvp = { yes: 0, maybe: 0, no: 0, myRsvp: mine?.status ?? null };
+    for (const row of counts) rsvp[row.status] = row.count;
+  }
+
+  return NextResponse.json({ ...row, responses, rsvp });
 }
 
 export async function PATCH(

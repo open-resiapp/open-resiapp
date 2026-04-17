@@ -606,6 +606,23 @@
         "request": "Prosím o pomoc",
         "offer": "Ponúkam pomoc"
       }
+    },
+    "events": {
+      "title": "Udalosti",
+      "subtitle": "Grilovačky, brigády, spoločné stretnutia.",
+      "newEvent": "Nová udalosť",
+      "confirmDelete": "Naozaj zmazať túto udalosť?",
+      "empty": "Žiadne udalosti.",
+      "counts": "{yes, plural, =0 {Zatiaľ nikto} one {# áno} few {# áno} other {# áno}} · {maybe} možno · {no} nie",
+      "tabs": {
+        "upcoming": "Nadchádzajúce",
+        "past": "Ukončené"
+      },
+      "rsvp": {
+        "yes": "Zúčastním sa",
+        "maybe": "Možno",
+        "no": "Nezúčastním sa"
+      }
     }
   }
 }

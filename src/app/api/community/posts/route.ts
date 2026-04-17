@@ -8,8 +8,9 @@ import {
   flats,
   entrances,
   building,
+  eventRsvps,
 } from "@/db/schema";
-import { and, desc, eq, gt, inArray, isNull, or, asc } from "drizzle-orm";
+import { and, desc, eq, gt, inArray, isNull, or, asc, sql } from "drizzle-orm";
 import { hasPermission } from "@/lib/permissions";
 import type { UserRole } from "@/types";
 
@@ -102,7 +103,55 @@ export async function GET(request: NextRequest) {
       isEventType ? asc(communityPosts.eventDate) : desc(communityPosts.createdAt)
     );
 
-  return NextResponse.json(result);
+  const eventIds = result.filter((p) => p.type === "event").map((p) => p.id);
+  const rsvpMap = new Map<
+    string,
+    { yes: number; maybe: number; no: number; myRsvp: "yes" | "maybe" | "no" | null }
+  >();
+
+  if (eventIds.length > 0) {
+    const counts = await db
+      .select({
+        postId: eventRsvps.postId,
+        status: eventRsvps.status,
+        count: sql<number>`count(*)::int`,
+      })
+      .from(eventRsvps)
+      .where(inArray(eventRsvps.postId, eventIds))
+      .groupBy(eventRsvps.postId, eventRsvps.status);
+
+    const mine = await db
+      .select({ postId: eventRsvps.postId, status: eventRsvps.status })
+      .from(eventRsvps)
+      .where(
+        and(
+          inArray(eventRsvps.postId, eventIds),
+          eq(eventRsvps.userId, session.user.id)
+        )
+      );
+
+    for (const id of eventIds) {
+      rsvpMap.set(id, { yes: 0, maybe: 0, no: 0, myRsvp: null });
+    }
+    for (const row of counts) {
+      const bucket = rsvpMap.get(row.postId);
+      if (bucket) bucket[row.status] = row.count;
+    }
+    for (const row of mine) {
+      const bucket = rsvpMap.get(row.postId);
+      if (bucket) bucket.myRsvp = row.status;
+    }
+  }
+
+  const enriched = result.map((p) => {
+    if (p.type === "event") {
+      const r = rsvpMap.get(p.id);
+      return { ...p, rsvp: r || { yes: 0, maybe: 0, no: 0, myRsvp: null } };
+    }
+    return p;
+  });
+
+  return NextResponse.json(enriched);
 }
 
 export async function POST(request: NextRequest) {

@@ -8,6 +8,7 @@ import {
   timestamp,
   pgEnum,
   uniqueIndex,
+  unique,
 } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
 
@@ -123,6 +124,8 @@ export const communityPostStatusEnum = pgEnum("community_post_status", [
   "resolved",
   "expired",
 ]);
+
+export const rsvpStatusEnum = pgEnum("rsvp_status", ["yes", "no", "maybe"]);
 
 // ── Tables ─────────────────────────────────────────────
 
@@ -450,6 +453,28 @@ export const communityResponses = pgTable("community_responses", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
+export const eventRsvps = pgTable(
+  "event_rsvps",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    postId: uuid("post_id")
+      .references(() => communityPosts.id, { onDelete: "cascade" })
+      .notNull(),
+    userId: uuid("user_id")
+      .references(() => users.id, { onDelete: "cascade" })
+      .notNull(),
+    status: rsvpStatusEnum("status").notNull(),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at").defaultNow().notNull(),
+  },
+  (table) => ({
+    postUserUnique: unique("event_rsvps_post_user_idx").on(
+      table.postId,
+      table.userId
+    ),
+  })
+);
+
 export const boardMembers = pgTable("board_members", {
   id: uuid("id").primaryKey().defaultRandom(),
   buildingId: uuid("building_id")
@@ -688,6 +713,17 @@ export const communityResponsesRelations = relations(communityResponses, ({ one 
   }),
   author: one(users, {
     fields: [communityResponses.authorId],
+    references: [users.id],
+  }),
+}));
+
+export const eventRsvpsRelations = relations(eventRsvps, ({ one }) => ({
+  post: one(communityPosts, {
+    fields: [eventRsvps.postId],
+    references: [communityPosts.id],
+  }),
+  user: one(users, {
+    fields: [eventRsvps.userId],
     references: [users.id],
   }),
 }));
