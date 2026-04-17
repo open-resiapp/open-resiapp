@@ -12,13 +12,14 @@ interface Tile {
 }
 
 const tiles: Tile[] = [
-  {
-    href: "/komunita/burza",
-    titleKey: "tiles.marketplace.title",
-    descKey: "tiles.marketplace.desc",
-    icon: "🏷️",
-    bg: "bg-blue-50 hover:bg-blue-100",
-  },
+  // Marketplace hidden for now — re-enable when ready
+  // {
+  //   href: "/komunita/burza",
+  //   titleKey: "tiles.marketplace.title",
+  //   descKey: "tiles.marketplace.desc",
+  //   icon: "🏷️",
+  //   bg: "bg-blue-50 hover:bg-blue-100",
+  // },
   {
     href: "/komunita/pomoc",
     titleKey: "tiles.help.title",
