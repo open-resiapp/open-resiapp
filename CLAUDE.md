@@ -41,6 +41,7 @@ messages/
 - Schema changes always via `drizzle-kit generate` — never manual SQL
 - Query functions in `lib/db/`, not inline in server actions
 - Commit migrations together with schema changes
+- Every `references(...)` in schema MUST specify `onDelete` — default is almost never correct. Use `cascade` for owned children, `set null` for soft links, `restrict` only when an intentional hard block.
 
 ### Auth
 - Session check via `auth()` in server components / server actions
@@ -50,6 +51,13 @@ messages/
 - Docker image → Docker Hub → Railway
 - Caddy as reverse proxy
 - Env vars: never commit `.env`, keep `.env.example` up to date
+
+### UI patterns
+- Multi-state user choice (RSVP yes/maybe/no, vote for/against/abstain, status filters): use explicit per-state buttons. Avoid implicit toggles where one button cycles values.
+- Reuse shared card components (e.g., `PostCard`) by injecting feature-specific children. New bespoke card per feature requires explicit justification — visual mocks alone are not enough.
+
+### Specs
+- A spec that introduces a per-user mutable record (RSVP, opt-in entry, subscription, draft) must explicitly cover the undo/delete path in Approach and Acceptance Criteria — not only create/update.
 
 ## Common commands
 ```bash
