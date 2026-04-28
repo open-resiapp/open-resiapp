@@ -1,12 +1,12 @@
 ---
 spec_id: RES-20260312-001
 title: "Voting/posting per entrance"
-status: idea
+status: implemented
 created: 2026-03-12
-updated: 2026-03-12
+updated: 2026-04-28
 author: "open-housing"
-owner: ""
-last_verified: 2026-03-12
+owner: "filipvnencak"
+last_verified: 2026-04-28
 project_type: feature
 depends_on: []
 related_handoffs: []
@@ -53,14 +53,22 @@ entranceId: uuid('entrance_id')
 - Vlastník vidí len relevantné záznamy (filtrované)
 
 ## Acceptance Criteria
-- [ ] Admin môže vytvoriť hlasovanie pre konkrétny vchod
-- [ ] Hlasovať môžu len vlastníci daného vchodu
-- [ ] Výsledky a podiely sú relatívne k vchodu, nie celej bytovke
-- [ ] Admin môže vytvoriť post pre konkrétny vchod
-- [ ] Vlastníci vidia posty svojho vchodu + posty pre celú bytovku
-- [ ] Nájomcovia rovnako (viditeľnosť)
-- [ ] Zápisnica PDF jasne uvádza: "Hlasovanie pre Vchod A"
-- [ ] Migrácia je non-breaking (existujúce záznamy = NULL = building-wide)
+- [x] Admin môže vytvoriť hlasovanie pre konkrétny vchod
+      → `src/app/[locale]/(dashboard)/voting/new/page.tsx` (entrance dropdown)
+- [x] Hlasovať môžu len vlastníci daného vchodu
+      → `src/app/api/votes/route.ts` (flat-in-entrance check)
+- [x] Výsledky a podiely sú relatívne k vchodu, nie celej bytovke
+      → `src/app/api/votes/route.ts` (totalPossibleWeight scoped na entranceId)
+- [x] Admin môže vytvoriť post pre konkrétny vchod
+      → `src/components/nastenka/NewPostModal.tsx`
+- [x] Vlastníci vidia posty svojho vchodu + posty pre celú bytovku
+      → `src/app/api/posts/route.ts` (filter `isNull(entranceId) OR inArray(...)`)
+- [x] Nájomcovia rovnako (viditeľnosť)
+      → tenants sú v `userFlats` (viď `src/db/seed.ts`), filter platí rovnako
+- [x] Zápisnica PDF jasne uvádza: "Hlasovanie pre Vchod A"
+      → `src/components/voting/VotingMinutesPDF.tsx:307`
+- [x] Migrácia je non-breaking (existujúce záznamy = NULL = building-wide)
+      → `entranceId` je nullable na `votings`/`posts`
 
 ## Project Context
 Bytové spoločenstvo môže mať viacero vchodov (napr. Hlavná 12, 14, 16)
@@ -80,3 +88,16 @@ RES-20260417-001 (community foundation) buildne shared komponent
 REUSOVAŤ namiesto vlastného pickera. Ak voting potrebuje extra
 constraints (napr. disable "Celá bytovka" pre owner so bytom len
 v 1 vchode), pridať ako prop, nie vlastný komponent.
+
+### 2026-04-28 – verified, promoted idea → implemented
+Spec preskočila `spec` aj `in_progress` stavy — funkcionalita
+landla inkrementálne počas community foundation prác (RES-20260417-001+)
+a rôznych voting refactorov. Pri audite zistené, že všetky AC sú
+hotové: schema, migrations, API filters (votings + posts), vote-cast
+validation (flat-in-entrance), totalPossibleWeight scoping, voting
+create form picker, voting card + detail badges, PDF zápisnica
+("Hlasovanie pre vchod"), nástenka NewPostModal + PostCard badge.
+EntranceScopePicker existuje v `src/components/community/`, voting
+form má vlastný inline `<select>` namiesto reuse — drobný drift,
+nie blocker. Pri ďalšej úprave voting formu zvážiť refactor na
+zdieľaný picker.

@@ -1,7 +1,7 @@
 ---
 spec_id: RES-20260417-006
 title: "Community email notifications + auto-expiration"
-status: in_progress
+status: implemented
 created: 2026-04-17
 updated: 2026-04-28
 author: "open-housing"

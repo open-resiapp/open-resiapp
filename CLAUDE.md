@@ -36,16 +36,21 @@ messages/
 - ALL user-facing strings via `useTranslations()` / `getTranslations()`
 - Never hardcode text in components
 - Add new keys to both `sk.json` and `en.json`
+- Email copy: any new function in `src/lib/email.ts` sources strings via `getTranslations({ locale, namespace: "Email" })` against `messages/{locale}.json`, and accepts an optional `locale?: string` param (default `routing.defaultLocale`). Pre-existing SK-hardcoded emails (`sendPasswordReset`, `sendPairingInvitation`, `sendVoteConfirmation`) are tech debt — do not copy that pattern.
 
 ### Database
 - Schema changes always via `drizzle-kit generate` — never manual SQL
 - Query functions in `lib/db/`, not inline in server actions
 - Commit migrations together with schema changes
 - Every `references(...)` in schema MUST specify `onDelete` — default is almost never correct. Use `cascade` for owned children, `set null` for soft links, `restrict` only when an intentional hard block.
+- Per-(post, recipient) email tracking — throttle, dedupe, suppression — lives in a single `*_notifications_sent` table with a `kind` enum, not a purpose-specific table per email type. One index pattern, one mental model.
 
 ### Auth
 - Session check via `auth()` in server components / server actions
 - Protected routes via middleware (`matcher` in `middleware.ts`)
+
+### Route handlers
+- `app/**/route.ts` files may export only HTTP method handlers (`GET`, `POST`, etc.) and Next.js-recognized config (`runtime`, `dynamic`, `revalidate`). Module-level state (in-memory caches, last-run snapshots, singletons) lives in `src/lib/*` and is imported by the route — exporting anything else triggers a build-time error.
 
 ### Deployment
 - Docker image → Docker Hub → Railway
