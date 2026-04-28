@@ -9,6 +9,7 @@ import {
   pgEnum,
   uniqueIndex,
   unique,
+  index,
 } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
 
@@ -126,6 +127,11 @@ export const communityPostStatusEnum = pgEnum("community_post_status", [
 ]);
 
 export const rsvpStatusEnum = pgEnum("rsvp_status", ["yes", "no", "maybe"]);
+
+export const communityNotificationKindEnum = pgEnum(
+  "community_notification_kind",
+  ["response", "expiry_reminder", "event_reminder"]
+);
 
 // ── Tables ─────────────────────────────────────────────
 
@@ -485,6 +491,36 @@ export const eventRsvps = pgTable(
     postUserUnique: unique("event_rsvps_post_user_idx").on(
       table.postId,
       table.userId
+    ),
+  })
+);
+
+export const communityNotificationsSent = pgTable(
+  "community_notifications_sent",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    postId: uuid("post_id")
+      .references(() => communityPosts.id, { onDelete: "cascade" })
+      .notNull(),
+    recipientId: uuid("recipient_id")
+      .references(() => users.id, { onDelete: "cascade" })
+      .notNull(),
+    kind: communityNotificationKindEnum("kind").notNull(),
+    responderId: uuid("responder_id").references(() => users.id, {
+      onDelete: "set null",
+    }),
+    sentAt: timestamp("sent_at").defaultNow().notNull(),
+  },
+  (table) => ({
+    lookupIdx: index("community_notifications_sent_lookup_idx").on(
+      table.postId,
+      table.recipientId,
+      table.kind
+    ),
+    responderIdx: index("community_notifications_sent_responder_idx").on(
+      table.postId,
+      table.responderId,
+      table.kind
     ),
   })
 );

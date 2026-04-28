@@ -184,6 +184,112 @@ export async function sendCommunityResponseNotification(params: {
   }
 }
 
+export async function sendPostExpiryReminder(params: {
+  recipientEmail: string;
+  recipientName: string;
+  postTitle: string;
+  postUrl: string;
+  expiresAt: Date;
+}): Promise<boolean> {
+  const transporter = getTransporter();
+
+  if (!transporter) {
+    console.warn(
+      "[email] SMTP not configured — skipping post expiry reminder"
+    );
+    return false;
+  }
+
+  const expiresLabel = params.expiresAt.toLocaleDateString("sk-SK");
+
+  const html = `
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+      <h2 style="color: #1d4ed8;">Váš príspevok čoskoro vyprší</h2>
+      <p>Vážený/á <strong>${params.recipientName}</strong>,</p>
+      <p>Váš príspevok <strong>${params.postTitle}</strong> bude označený ako neaktívny dňa <strong>${expiresLabel}</strong>.</p>
+      <p>Ak je téma stále aktuálna, môžete príspevok predĺžiť alebo upraviť v aplikácii.</p>
+      <div style="margin: 24px 0; text-align: center;">
+        <a href="${params.postUrl}"
+           style="display: inline-block; padding: 12px 32px; background-color: #2563eb; color: #ffffff; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 16px;">
+          Spravovať príspevok
+        </a>
+      </div>
+    </div>
+  `;
+
+  try {
+    await transporter.sendMail({
+      from: emailFrom,
+      to: params.recipientEmail,
+      subject: `Príspevok čoskoro vyprší — ${params.postTitle}`,
+      html,
+    });
+    return true;
+  } catch (error) {
+    console.error("[email] Failed to send post expiry reminder:", error);
+    return false;
+  }
+}
+
+export async function sendEventReminder(params: {
+  recipientEmail: string;
+  recipientName: string;
+  eventTitle: string;
+  eventDate: Date;
+  eventLocation: string | null;
+  postUrl: string;
+}): Promise<boolean> {
+  const transporter = getTransporter();
+
+  if (!transporter) {
+    console.warn(
+      "[email] SMTP not configured — skipping event reminder"
+    );
+    return false;
+  }
+
+  const dateLabel = params.eventDate.toLocaleString("sk-SK", {
+    dateStyle: "full",
+    timeStyle: "short",
+  });
+
+  const locationBlock = params.eventLocation
+    ? `<p style="margin: 4px 0;"><strong>Miesto:</strong> ${params.eventLocation}</p>`
+    : "";
+
+  const html = `
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+      <h2 style="color: #1d4ed8;">Pripomienka udalosti</h2>
+      <p>Vážený/á <strong>${params.recipientName}</strong>,</p>
+      <p>Zajtra sa koná udalosť, na ktorú ste sa prihlásili:</p>
+      <div style="margin: 16px 0; padding: 16px; background-color: #f3f4f6; border-radius: 8px;">
+        <p style="margin: 4px 0; font-weight: bold; font-size: 18px; color: #111827;">${params.eventTitle}</p>
+        <p style="margin: 4px 0;"><strong>Kedy:</strong> ${dateLabel}</p>
+        ${locationBlock}
+      </div>
+      <div style="margin: 24px 0; text-align: center;">
+        <a href="${params.postUrl}"
+           style="display: inline-block; padding: 12px 32px; background-color: #2563eb; color: #ffffff; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 16px;">
+          Detail udalosti
+        </a>
+      </div>
+    </div>
+  `;
+
+  try {
+    await transporter.sendMail({
+      from: emailFrom,
+      to: params.recipientEmail,
+      subject: `Pripomienka — ${params.eventTitle}`,
+      html,
+    });
+    return true;
+  } catch (error) {
+    console.error("[email] Failed to send event reminder:", error);
+    return false;
+  }
+}
+
 export async function sendVoteConfirmation(params: {
   recipientEmail: string;
   voterName: string;

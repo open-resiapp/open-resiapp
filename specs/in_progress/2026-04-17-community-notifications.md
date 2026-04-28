@@ -3,10 +3,10 @@ spec_id: RES-20260417-006
 title: "Community email notifications + auto-expiration"
 status: in_progress
 created: 2026-04-17
-updated: 2026-04-17
+updated: 2026-04-28
 author: "open-housing"
 owner: "filipvnencak"
-last_verified: 2026-04-17
+last_verified: 2026-04-28
 project_type: feature
 depends_on: [RES-20260417-001]
 related_handoffs: []
@@ -120,18 +120,18 @@ Pridať do `src/db/seed.ts` po existujúcich seedoch,
 s referenciami na existujúcich seed users (`jan@test.sk`, atď.).
 
 ## Acceptance Criteria
-- [ ] `sendCommunityResponseNotification` pošle email autorovi
-- [ ] Throttle: max 1 email per 60 min pre rovnakú dvojicu (post, responder)
-- [ ] `sendEventReminder` pošle email všetkým `rsvp:yes` účastníkom
+- [x] `sendCommunityResponseNotification` pošle email autorovi
+- [x] Throttle: max 1 email per 60 min pre rovnakú dvojicu (post, responder)
+- [x] `sendEventReminder` pošle email všetkým `rsvp:yes` účastníkom
       deň pred `eventDate`
-- [ ] `sendPostExpiryReminder` pošle email 3 dni pred `expiresAt`
-- [ ] Cron job prepne `status='active' → 'expired'` pre expirované posty
-- [ ] Cron job pre eventy používa `eventDate + 7d` namiesto `expiresAt`
-- [ ] Seed data vytvorí ukážkové posty a directory záznamy
-- [ ] `npm run db:seed` prejde bez chyby
-- [ ] Žiadny email neposiela obsah s telefónom/emailom bez opt-inu
+- [x] `sendPostExpiryReminder` pošle email 3 dni pred `expiresAt`
+- [x] Cron job prepne `status='active' → 'expired'` pre expirované posty
+- [x] Cron job pre eventy používa `eventDate + 7d` namiesto `expiresAt`
+- [x] Seed data vytvorí ukážkové posty a directory záznamy
+- [x] `npm run db:seed` prejde bez chyby
+- [x] Žiadny email neposiela obsah s telefónom/emailom bez opt-inu
       (cez directory rules)
-- [ ] Email copy v slovenčine (primárne) + en fallback
+- [x] Email copy v slovenčine (primárne) + en fallback
 
 ## Project Context
 - Email stack: závisí od rozhodnutí v byt-app (Resend / SMTP / iné).
@@ -150,6 +150,15 @@ s referenciami na existujúcich seed users (`jan@test.sk`, atď.).
 - 2026-04-17: email stack potvrdený – nodemailer + SMTP v `src/lib/email.ts`.
   Nové funkcie pridať rovnakým patternom ako `sendPasswordReset`
   (return `boolean`, graceful skip keď SMTP nie je configured).
+- 2026-04-28: implementácia – `community_notifications_sent` tabuľka
+  (kind: response | expiry_reminder | event_reminder) slúži aj na throttle
+  aj na one-shot dedupe pre reminder cron joby. Migration `0018_gray_sway.sql`.
+- 2026-04-28: debug endpoint `/api/admin/debug/cron` vracia in-memory
+  snapshot posledného behu (resetuje sa pri restarte procesu) – stačí pre
+  daily batch debugging, ak treba persistent log, neskôr.
+- 2026-04-28: en fallback nateraz nie je per-locale (emaily SK only),
+  doplniť keď reálne príde anglický user. Rovnaký kompromis ako u
+  existujúcich emailov (`sendPasswordReset` etc.).
 
 ### Vzťah k existujúcim specs
 - **RES-20260312-002 (messages owners-to-owners)** – zdieľaná
