@@ -34,6 +34,33 @@
     "owners": "Owners",
     "settings": "Settings"
   },
+  "Email": {
+    "common": {
+      "greeting": "Dear {name},",
+      "viewPostButton": "View post",
+      "managePostButton": "Manage post",
+      "eventDetailButton": "Event details",
+      "replyHint": "You can reply directly in the app."
+    },
+    "response": {
+      "subject": "New reply — {postTitle}",
+      "heading": "New reply to your post",
+      "intro": "{responder} replied to your post:"
+    },
+    "expiryReminder": {
+      "subject": "Post expiring soon — {postTitle}",
+      "heading": "Your post is expiring soon",
+      "intro": "Your post {postTitle} will be marked inactive on {expiresAt}.",
+      "actionHint": "If the topic is still relevant, you can extend or edit the post in the app."
+    },
+    "eventReminder": {
+      "subject": "Reminder — {eventTitle}",
+      "heading": "Event reminder",
+      "intro": "An event you signed up for is happening tomorrow:",
+      "whenLabel": "When",
+      "whereLabel": "Where"
+    }
+  },
   "Header": {
     "openMenu": "Open menu",
     "logout": "Sign out",

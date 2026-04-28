@@ -1,10 +1,31 @@
 import nodemailer from "nodemailer";
+import { getTranslations } from "next-intl/server";
+import { routing } from "@/i18n/routing";
 
 const smtpHost = process.env.SMTP_HOST;
 const smtpPort = parseInt(process.env.SMTP_PORT || "587", 10);
 const smtpUser = process.env.SMTP_USER;
 const smtpPass = process.env.SMTP_PASS;
 const emailFrom = process.env.EMAIL_FROM || "noreply@mojabytovka.sk";
+
+type EmailLocale = (typeof routing.locales)[number];
+
+function resolveLocale(input?: string): EmailLocale {
+  if (input && (routing.locales as readonly string[]).includes(input)) {
+    return input as EmailLocale;
+  }
+  return routing.defaultLocale as EmailLocale;
+}
+
+const BCP47_BY_LOCALE: Record<EmailLocale, string> = {
+  sk: "sk-SK",
+  en: "en-GB",
+  cs: "cs-CZ",
+};
+
+function bcp47(locale: EmailLocale): string {
+  return BCP47_BY_LOCALE[locale];
+}
 
 function getTransporter() {
   if (!smtpHost || !smtpUser || !smtpPass) {
@@ -134,6 +155,7 @@ export async function sendCommunityResponseNotification(params: {
   postTitle: string;
   postUrl: string;
   responseContent: string;
+  locale?: string;
 }): Promise<boolean> {
   const transporter = getTransporter();
 
@@ -144,6 +166,10 @@ export async function sendCommunityResponseNotification(params: {
     return false;
   }
 
+  const locale = resolveLocale(params.locale);
+  const tCommon = await getTranslations({ locale, namespace: "Email.common" });
+  const t = await getTranslations({ locale, namespace: "Email.response" });
+
   const safePreview =
     params.responseContent.length > 240
       ? params.responseContent.slice(0, 240) + "…"
@@ -151,9 +177,9 @@ export async function sendCommunityResponseNotification(params: {
 
   const html = `
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-      <h2 style="color: #1d4ed8;">Nová reakcia na váš príspevok</h2>
-      <p>Vážený/á <strong>${params.recipientName}</strong>,</p>
-      <p><strong>${params.responderName}</strong> reagoval/a na váš príspevok:</p>
+      <h2 style="color: #1d4ed8;">${t("heading")}</h2>
+      <p>${tCommon("greeting", { name: params.recipientName })}</p>
+      <p>${t("intro", { responder: params.responderName })}</p>
       <p style="font-weight: bold; color: #111827;">${params.postTitle}</p>
       <blockquote style="margin: 16px 0; padding: 12px 16px; background-color: #f3f4f6; border-left: 4px solid #2563eb; border-radius: 4px; color: #374151;">
         ${safePreview.replace(/\n/g, "<br/>")}
@@ -161,11 +187,11 @@ export async function sendCommunityResponseNotification(params: {
       <div style="margin: 24px 0; text-align: center;">
         <a href="${params.postUrl}"
            style="display: inline-block; padding: 12px 32px; background-color: #2563eb; color: #ffffff; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 16px;">
-          Zobraziť príspevok
+          ${tCommon("viewPostButton")}
         </a>
       </div>
       <p style="color: #6b7280; font-size: 14px;">
-        Odpovedať môžete priamo v aplikácii.
+        ${tCommon("replyHint")}
       </p>
     </div>
   `;
@@ -174,7 +200,7 @@ export async function sendCommunityResponseNotification(params: {
     await transporter.sendMail({
       from: emailFrom,
       to: params.recipientEmail,
-      subject: `Nová reakcia — ${params.postTitle}`,
+      subject: t("subject", { postTitle: params.postTitle }),
       html,
     });
     return true;
@@ -190,6 +216,7 @@ export async function sendPostExpiryReminder(params: {
   postTitle: string;
   postUrl: string;
   expiresAt: Date;
+  locale?: string;
 }): Promise<boolean> {
   const transporter = getTransporter();
 
@@ -200,18 +227,22 @@ export async function sendPostExpiryReminder(params: {
     return false;
   }
 
-  const expiresLabel = params.expiresAt.toLocaleDateString("sk-SK");
+  const locale = resolveLocale(params.locale);
+  const tCommon = await getTranslations({ locale, namespace: "Email.common" });
+  const t = await getTranslations({ locale, namespace: "Email.expiryReminder" });
+
+  const expiresLabel = params.expiresAt.toLocaleDateString(bcp47(locale));
 
   const html = `
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-      <h2 style="color: #1d4ed8;">Váš príspevok čoskoro vyprší</h2>
-      <p>Vážený/á <strong>${params.recipientName}</strong>,</p>
-      <p>Váš príspevok <strong>${params.postTitle}</strong> bude označený ako neaktívny dňa <strong>${expiresLabel}</strong>.</p>
-      <p>Ak je téma stále aktuálna, môžete príspevok predĺžiť alebo upraviť v aplikácii.</p>
+      <h2 style="color: #1d4ed8;">${t("heading")}</h2>
+      <p>${tCommon("greeting", { name: params.recipientName })}</p>
+      <p>${t("intro", { postTitle: params.postTitle, expiresAt: expiresLabel })}</p>
+      <p>${t("actionHint")}</p>
       <div style="margin: 24px 0; text-align: center;">
         <a href="${params.postUrl}"
            style="display: inline-block; padding: 12px 32px; background-color: #2563eb; color: #ffffff; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 16px;">
-          Spravovať príspevok
+          ${tCommon("managePostButton")}
         </a>
       </div>
     </div>
@@ -221,7 +252,7 @@ export async function sendPostExpiryReminder(params: {
     await transporter.sendMail({
       from: emailFrom,
       to: params.recipientEmail,
-      subject: `Príspevok čoskoro vyprší — ${params.postTitle}`,
+      subject: t("subject", { postTitle: params.postTitle }),
       html,
     });
     return true;
@@ -238,6 +269,7 @@ export async function sendEventReminder(params: {
   eventDate: Date;
   eventLocation: string | null;
   postUrl: string;
+  locale?: string;
 }): Promise<boolean> {
   const transporter = getTransporter();
 
@@ -248,29 +280,33 @@ export async function sendEventReminder(params: {
     return false;
   }
 
-  const dateLabel = params.eventDate.toLocaleString("sk-SK", {
+  const locale = resolveLocale(params.locale);
+  const tCommon = await getTranslations({ locale, namespace: "Email.common" });
+  const t = await getTranslations({ locale, namespace: "Email.eventReminder" });
+
+  const dateLabel = params.eventDate.toLocaleString(bcp47(locale), {
     dateStyle: "full",
     timeStyle: "short",
   });
 
   const locationBlock = params.eventLocation
-    ? `<p style="margin: 4px 0;"><strong>Miesto:</strong> ${params.eventLocation}</p>`
+    ? `<p style="margin: 4px 0;"><strong>${t("whereLabel")}:</strong> ${params.eventLocation}</p>`
     : "";
 
   const html = `
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-      <h2 style="color: #1d4ed8;">Pripomienka udalosti</h2>
-      <p>Vážený/á <strong>${params.recipientName}</strong>,</p>
-      <p>Zajtra sa koná udalosť, na ktorú ste sa prihlásili:</p>
+      <h2 style="color: #1d4ed8;">${t("heading")}</h2>
+      <p>${tCommon("greeting", { name: params.recipientName })}</p>
+      <p>${t("intro")}</p>
       <div style="margin: 16px 0; padding: 16px; background-color: #f3f4f6; border-radius: 8px;">
         <p style="margin: 4px 0; font-weight: bold; font-size: 18px; color: #111827;">${params.eventTitle}</p>
-        <p style="margin: 4px 0;"><strong>Kedy:</strong> ${dateLabel}</p>
+        <p style="margin: 4px 0;"><strong>${t("whenLabel")}:</strong> ${dateLabel}</p>
         ${locationBlock}
       </div>
       <div style="margin: 24px 0; text-align: center;">
         <a href="${params.postUrl}"
            style="display: inline-block; padding: 12px 32px; background-color: #2563eb; color: #ffffff; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 16px;">
-          Detail udalosti
+          ${tCommon("eventDetailButton")}
         </a>
       </div>
     </div>
@@ -280,7 +316,7 @@ export async function sendEventReminder(params: {
     await transporter.sendMail({
       from: emailFrom,
       to: params.recipientEmail,
-      subject: `Pripomienka — ${params.eventTitle}`,
+      subject: t("subject", { eventTitle: params.eventTitle }),
       html,
     });
     return true;

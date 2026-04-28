@@ -156,9 +156,13 @@ s referenciami na existujúcich seed users (`jan@test.sk`, atď.).
 - 2026-04-28: debug endpoint `/api/admin/debug/cron` vracia in-memory
   snapshot posledného behu (resetuje sa pri restarte procesu) – stačí pre
   daily batch debugging, ak treba persistent log, neskôr.
-- 2026-04-28: en fallback nateraz nie je per-locale (emaily SK only),
-  doplniť keď reálne príde anglický user. Rovnaký kompromis ako u
-  existujúcich emailov (`sendPasswordReset` etc.).
+- 2026-04-28: emaily komunitných notifikácií idú cez `next-intl`
+  (`getTranslations({ locale })`) – `Email` namespace v
+  `messages/{sk,en,cs}.json`. Default locale z `routing.defaultLocale`
+  (env `LANGUAGE`), opt-in override cez `locale?: string` parameter
+  email funkcie. Existujúce emaily (`sendPasswordReset`, pairing,
+  vote confirmation) zostávajú SK-hardcoded – migrácia neskôr ako
+  separátna úloha, aby PR ostal vertical-slice.
 
 ### Vzťah k existujúcim specs
 - **RES-20260312-002 (messages owners-to-owners)** – zdieľaná

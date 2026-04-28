@@ -34,6 +34,33 @@
     "owners": "Vlastníci",
     "settings": "Nastavenia"
   },
+  "Email": {
+    "common": {
+      "greeting": "Vážený/á {name},",
+      "viewPostButton": "Zobraziť príspevok",
+      "managePostButton": "Spravovať príspevok",
+      "eventDetailButton": "Detail udalosti",
+      "replyHint": "Odpovedať môžete priamo v aplikácii."
+    },
+    "response": {
+      "subject": "Nová reakcia — {postTitle}",
+      "heading": "Nová reakcia na váš príspevok",
+      "intro": "{responder} reagoval/a na váš príspevok:"
+    },
+    "expiryReminder": {
+      "subject": "Príspevok čoskoro vyprší — {postTitle}",
+      "heading": "Váš príspevok čoskoro vyprší",
+      "intro": "Váš príspevok {postTitle} bude označený ako neaktívny dňa {expiresAt}.",
+      "actionHint": "Ak je téma stále aktuálna, môžete príspevok predĺžiť alebo upraviť v aplikácii."
+    },
+    "eventReminder": {
+      "subject": "Pripomienka — {eventTitle}",
+      "heading": "Pripomienka udalosti",
+      "intro": "Zajtra sa koná udalosť, na ktorú ste sa prihlásili:",
+      "whenLabel": "Kedy",
+      "whereLabel": "Miesto"
+    }
+  },
   "Header": {
     "openMenu": "Otvoriť menu",
     "logout": "Odhlásiť sa",
