@@ -12,6 +12,7 @@ import {
 } from "@/db/schema";
 import { and, desc, eq, gt, inArray, isNull, or, asc, sql } from "drizzle-orm";
 import { hasPermission } from "@/lib/permissions";
+import { dispatchHook } from "@/lib/modules/dispatch";
 import type { UserRole } from "@/types";
 
 const POST_TTL_DAYS = 30;
@@ -204,6 +205,16 @@ export async function POST(request: NextRequest) {
       expiresAt,
     })
     .returning();
+
+  dispatchHook("onPostCreate", {
+    id: post.id,
+    communityId: post.entranceId ?? "",
+    authorId: post.authorId,
+    type: post.type,
+    title: post.title,
+    body: post.content,
+    createdAt: post.createdAt,
+  }).catch((err) => console.error("[modules] onPostCreate failed:", err));
 
   return NextResponse.json(post, { status: 201 });
 }

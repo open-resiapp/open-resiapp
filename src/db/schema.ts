@@ -133,6 +133,12 @@ export const communityNotificationKindEnum = pgEnum(
   ["response", "expiry_reminder", "event_reminder"]
 );
 
+export const moduleStatusEnum = pgEnum("module_status", [
+  "enabled",
+  "disabled",
+  "failed",
+]);
+
 // ── Tables ─────────────────────────────────────────────
 
 export const building = pgTable("building", {
@@ -521,6 +527,42 @@ export const communityNotificationsSent = pgTable(
       table.postId,
       table.responderId,
       table.kind
+    ),
+  })
+);
+
+export const coreModules = pgTable("core_modules", {
+  name: varchar("name", { length: 100 }).primaryKey(),
+  version: varchar("version", { length: 50 }).notNull(),
+  status: moduleStatusEnum("status").notNull().default("enabled"),
+  failureCount: integer("failure_count").notNull().default(0),
+  lastFailureAt: timestamp("last_failure_at"),
+  lastFailureMessage: text("last_failure_message"),
+  installPath: text("install_path").notNull(),
+  installedAt: timestamp("installed_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+export const coreModuleGrants = pgTable(
+  "core_module_grants",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    buildingId: uuid("building_id")
+      .references(() => building.id, { onDelete: "cascade" })
+      .notNull(),
+    moduleName: varchar("module_name", { length: 100 })
+      .references(() => coreModules.name, { onDelete: "cascade" })
+      .notNull(),
+    permissions: text("permissions").array().notNull(),
+    grantedAt: timestamp("granted_at").defaultNow().notNull(),
+    grantedById: uuid("granted_by_id").references(() => users.id, {
+      onDelete: "set null",
+    }),
+  },
+  (table) => ({
+    buildingModuleIdx: uniqueIndex("core_module_grants_building_module_idx").on(
+      table.buildingId,
+      table.moduleName
     ),
   })
 );

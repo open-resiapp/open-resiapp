@@ -134,6 +134,13 @@
       "when": 1777352613363,
       "tag": "0018_gray_sway",
       "breakpoints": true
+    },
+    {
+      "idx": 19,
+      "version": "7",
+      "when": 1777489829335,
+      "tag": "0019_rare_millenium_guard",
+      "breakpoints": true
     }
   ]
 }

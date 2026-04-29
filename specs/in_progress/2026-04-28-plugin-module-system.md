@@ -1,12 +1,12 @@
 ---
 spec_id: RES-20260428-002
 title: "Plugin/Module System"
-status: spec
+status: in_progress
 created: 2026-04-28
-updated: 2026-04-28
+updated: 2026-04-29
 author: "open-housing"
 owner: "filipvnencak"
-last_verified: 2026-04-28
+last_verified: 2026-04-29
 project_type: architecture
 depends_on: [RES-20260417-001]
 related_handoffs: []
@@ -293,6 +293,12 @@ Uninstall reverses 6a–6d, calling `onUninstall(ctx)` first.
 
 ## Notes
 
+- 2026-04-29: Decided observational hooks for v1 (cancel deferred to a real use case).
+- 2026-04-29: Decided per-community grants table (`coreModuleGrants.buildingId`) with one community per instance today; cloud per-tenant inherits naturally, self-host treats single building as global.
+- 2026-04-29: `<Slot>` ships as an RSC. The dashboard root + dashboard layout are `"use client"`, so slot rendering lands first in the server-rendered admin pages (Phase 7). A client-side bridge (server action returning loaders + dynamic-import map) is deferred until a module needs to inject into the client dashboard.
+- 2026-04-29: SDK lives at `src/lib/modules/sdk/` and is reachable via the `@open-housing/sdk` tsconfig path alias. Real npm publish deferred to the Phase-2 marketplace work.
+- 2026-04-29: Install path = admin uploads zip via `/settings/modules`. Host unzips with `adm-zip`, stages under `modules/.staging/{stagingId}/`, shows perm diff, then moves to `modules/{name}/` on approve. GitHub release URL install deferred — same staging contract, just a different fetch source.
+- 2026-04-29: Build-time AST import check is module-author tooling, not host responsibility. Host enforces isolation at runtime (SDK permission gates + table-prefix on writes). The host-side lint rule blocks `@/*` and `src/**` imports inside `modules/**`.
 - Open question: should domain hooks be **observational only** or **cancellable** (return `false` to abort core action)? Lean observational for v1 — simpler, fewer foot-guns; revisit when a real cancel use case shows up.
 - Open question: per-community vs global enable. Cloud needs per-community; self-hosted likely wants global. Decide the data model before the SDK ships so we don't break compat.
 - True sandboxing (vm2 / isolated-vm / WASM / iframe for UI) deferred to Phase 2. Track as a separate spec when the marketplace work begins.

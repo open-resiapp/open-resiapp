@@ -1,3 +1,25 @@
 {
-  "extends": ["next/core-web-vitals", "next/typescript"]
+  "extends": ["next/core-web-vitals", "next/typescript"],
+  "overrides": [
+    {
+      "files": ["modules/**/*.{ts,tsx,js,jsx}"],
+      "rules": {
+        "no-restricted-imports": [
+          "error",
+          {
+            "patterns": [
+              {
+                "group": ["@/*"],
+                "message": "Modules must not import core internals — use @open-housing/sdk only."
+              },
+              {
+                "group": ["src/**", "../../src/**", "../../../src/**"],
+                "message": "Modules must not import core source — use @open-housing/sdk only."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ]
 }

@@ -5,6 +5,7 @@ import { posts, users, userFlats, flats, entrances } from "@/db/schema";
 import { desc, eq, inArray, isNull, or } from "drizzle-orm";
 import { hasPermission } from "@/lib/permissions";
 import { sendPushToAll } from "@/lib/push";
+import { dispatchHook } from "@/lib/modules/dispatch";
 import type { UserRole } from "@/types";
 
 export async function GET() {
@@ -92,6 +93,16 @@ export async function POST(request: NextRequest) {
     { title: "Nový príspevok", body: title, url: "/board" },
     "newPost"
   ).catch(() => {});
+
+  dispatchHook("onPostCreate", {
+    id: post.id,
+    communityId: post.entranceId ?? "",
+    authorId: post.authorId,
+    type: post.category,
+    title: post.title,
+    body: post.content,
+    createdAt: post.createdAt,
+  }).catch((err) => console.error("[modules] onPostCreate failed:", err));
 
   return NextResponse.json(post, { status: 201 });
 }

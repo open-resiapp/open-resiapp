@@ -7,6 +7,7 @@ import { hasPermission } from "@/lib/permissions";
 import { generateAuditHash, calculateResults } from "@/lib/voting";
 import { sendVoteConfirmation } from "@/lib/email";
 import { isElectronicVotingBlocked } from "@/lib/voting-rules";
+import { dispatchHook } from "@/lib/modules/dispatch";
 import type { UserRole, VoteChoice, VotingMethod, VoteWithShare, QuorumType, Country } from "@/types";
 
 export async function GET(request: NextRequest) {
@@ -343,6 +344,14 @@ export async function POST(request: NextRequest) {
         return vote;
       });
 
+      dispatchHook("onVoteCreate", {
+        id: result.id,
+        votingId: result.votingId,
+        memberId: result.ownerId,
+        choice: result.choice,
+        createdAt: result.createdAt,
+      }).catch((err) => console.error("[modules] onVoteCreate failed:", err));
+
       return NextResponse.json(result, { status: 201 });
     } catch {
       return NextResponse.json(
@@ -394,6 +403,14 @@ export async function POST(request: NextRequest) {
         });
       }
     }
+
+    dispatchHook("onVoteCreate", {
+      id: vote.id,
+      votingId: vote.votingId,
+      memberId: vote.ownerId,
+      choice: vote.choice,
+      createdAt: vote.createdAt,
+    }).catch((err) => console.error("[modules] onVoteCreate failed:", err));
 
     return NextResponse.json({ ...vote, auditHash }, { status: 201 });
   }

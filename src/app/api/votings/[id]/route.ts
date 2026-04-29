@@ -5,6 +5,7 @@ import { votings, users, entrances } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { hasPermission } from "@/lib/permissions";
 import { sendPushToAll } from "@/lib/push";
+import { dispatchHook } from "@/lib/modules/dispatch";
 import type { UserRole } from "@/types";
 
 export async function GET(
@@ -87,6 +88,15 @@ export async function PATCH(
 
   if (!updated) {
     return NextResponse.json({ error: "Hlasovanie nenájdené" }, { status: 404 });
+  }
+
+  if (body.status === "closed") {
+    dispatchHook("onVoteClose", {
+      id: updated.id,
+      communityId: updated.entranceId ?? "",
+      title: updated.title,
+      status: updated.status,
+    }).catch((err) => console.error("[modules] onVoteClose failed:", err));
   }
 
   // Send push notification when voting becomes active

@@ -83,6 +83,17 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       return session;
     },
   },
+  events: {
+    async signIn({ user }) {
+      if (!user?.id || !user.email) return;
+      const { dispatchHook } = await import("@/lib/modules/dispatch");
+      await dispatchHook("onUserLogin", {
+        id: user.id,
+        email: user.email,
+        loggedInAt: new Date(),
+      }).catch((err) => console.error("[modules] onUserLogin failed:", err));
+    },
+  },
   pages: {
     signIn: "/login",
   },

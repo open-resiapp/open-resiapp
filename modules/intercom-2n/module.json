@@ -1,0 +1,10 @@
+{
+  "name": "intercom-2n",
+  "version": "1.0.0",
+  "description": "2N intercom integration (reference skeleton)",
+  "author": "open-housing",
+  "entry": "dist/index.js",
+  "permissions": ["db:write", "ui:inject", "hardware:access"],
+  "uiSlots": ["dashboard.widgets"],
+  "minCoreVersion": "0.1.0"
+}

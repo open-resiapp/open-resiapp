@@ -24,6 +24,9 @@
     "paths": {
       "@/*": [
         "./src/*"
+      ],
+      "@open-housing/sdk": [
+        "./src/lib/modules/sdk/index.ts"
       ]
     },
     "target": "ES2017"
