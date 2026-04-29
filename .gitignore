@@ -49,3 +49,6 @@ borg-key-export-*.txt
 # personal / server-local compose overrides (not for upstream)
 docker-compose.own.yml
 docker-compose.*.local.yml
+
+# module staging dir — populated when admin uploads a module zip
+/modules/.staging/
