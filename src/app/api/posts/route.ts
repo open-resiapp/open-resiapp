@@ -1,8 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { db } from "@/db";
-import { posts, users, userFlats, flats, entrances } from "@/db/schema";
-import { desc, eq, inArray, isNull, or } from "drizzle-orm";
+import {
+  posts,
+  users,
+  entrances,
+  building,
+  entities,
+  memberships,
+} from "@/db/schema";
+import { desc, eq, sql } from "drizzle-orm";
 import { hasPermission } from "@/lib/permissions";
 import { sendPushToAll } from "@/lib/push";
 import { dispatchHook } from "@/lib/modules/dispatch";
@@ -15,24 +22,14 @@ export async function GET() {
   }
 
   const role = session.user.role as UserRole;
-  let conditions;
+  const userId = session.user.id;
+  const isAdmin = role === "admin";
 
-  // Non-admins only see building-wide posts + posts for their entrances
-  if (role !== "admin") {
-    const userEntrances = await db
-      .select({ entranceId: flats.entranceId })
-      .from(userFlats)
-      .innerJoin(flats, eq(userFlats.flatId, flats.id))
-      .where(eq(userFlats.userId, session.user.id));
-
-    const entranceIds = [...new Set(userEntrances.map((e) => e.entranceId))];
-
-    conditions = entranceIds.length > 0
-      ? or(isNull(posts.entranceId), inArray(posts.entranceId, entranceIds))
-      : isNull(posts.entranceId);
-  }
-
-  const result = await db
+  // Visibility rule (RES-20260501-002): post P is visible iff the
+  // viewer holds an active membership at an entity that overlaps P's
+  // entity along the materialized path (ancestor / equal / descendant).
+  // Admin bypasses the filter.
+  const baseQuery = db
     .select({
       id: posts.id,
       title: posts.title,
@@ -42,6 +39,7 @@ export async function GET() {
       createdAt: posts.createdAt,
       updatedAt: posts.updatedAt,
       entranceId: posts.entranceId,
+      entityId: posts.entityId,
       entranceName: entrances.name,
       author: {
         id: users.id,
@@ -50,9 +48,23 @@ export async function GET() {
     })
     .from(posts)
     .leftJoin(users, eq(posts.authorId, users.id))
-    .leftJoin(entrances, eq(posts.entranceId, entrances.id))
-    .where(conditions)
-    .orderBy(desc(posts.isPinned), desc(posts.createdAt));
+    .leftJoin(entrances, eq(posts.entranceId, entrances.id));
+
+  const result = isAdmin
+    ? await baseQuery.orderBy(desc(posts.isPinned), desc(posts.createdAt))
+    : await baseQuery
+        .where(
+          sql`EXISTS (
+            SELECT 1
+            FROM ${memberships} m
+            JOIN ${entities} me ON me.id = m.entity_id
+            JOIN ${entities} pe ON pe.id = ${posts.entityId}
+            WHERE m.user_id = ${userId}
+              AND m.status = 'active'
+              AND (pe.path LIKE me.path || '%' OR me.path LIKE pe.path || '%')
+          )`
+        )
+        .orderBy(desc(posts.isPinned), desc(posts.createdAt));
 
   return NextResponse.json(result);
 }
@@ -77,6 +89,18 @@ export async function POST(request: NextRequest) {
     );
   }
 
+  // Phase 4 dual-run: dual-write entity_id; NULL entrance_id = building-wide
+  // → root entity.
+  let postEntityId: string | null = entranceId || null;
+  if (postEntityId === null) {
+    const [root] = await db
+      .select({ id: building.id })
+      .from(building)
+      .orderBy(building.createdAt)
+      .limit(1);
+    postEntityId = root?.id ?? null;
+  }
+
   const [post] = await db
     .insert(posts)
     .values({
@@ -85,6 +109,7 @@ export async function POST(request: NextRequest) {
       category: category || "info",
       authorId: session.user.id,
       entranceId: entranceId || null,
+      entityId: postEntityId,
       isPinned: isPinned || false,
     })
     .returning();

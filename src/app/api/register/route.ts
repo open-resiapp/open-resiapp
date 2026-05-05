@@ -1,6 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/db";
-import { users, invitations, userFlats, consentRecords } from "@/db/schema";
+import {
+  users,
+  invitations,
+  userFlats,
+  consentRecords,
+  memberships,
+} from "@/db/schema";
 import { eq, and } from "drizzle-orm";
 import bcrypt from "bcrypt";
 import { CURRENT_POLICY_VERSION } from "@/lib/consent";
@@ -83,6 +89,19 @@ export async function POST(request: NextRequest) {
       userId: newUser.id,
       flatId: invitation.flatId,
     });
+
+    // Phase 4 dual-run: mirror to memberships (flat.id == entity.id).
+    await db
+      .insert(memberships)
+      .values({
+        userId: newUser.id,
+        entityId: invitation.flatId,
+        role: invitation.role as typeof memberships.$inferInsert.role,
+        status: "active",
+      })
+      .onConflictDoNothing({
+        target: [memberships.userId, memberships.entityId],
+      });
   }
 
   // Record consent

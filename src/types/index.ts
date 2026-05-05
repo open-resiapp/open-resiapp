@@ -4,9 +4,6 @@ import type {
   entrances,
   flats,
   users,
-  votings,
-  votes,
-  mandates,
   posts,
   documents,
   invitations,
@@ -18,6 +15,11 @@ import type {
   consentRecords,
   boardMembers,
 } from "@/db/schema";
+import type {
+  votings,
+  votes,
+  mandates,
+} from "@modules/voting/src/db/schema";
 
 export type Building = InferSelectModel<typeof building>;
 export type Entrance = InferSelectModel<typeof entrances>;

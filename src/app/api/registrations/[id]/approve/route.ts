@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { and, eq } from "drizzle-orm";
 import { auth } from "@/lib/auth";
 import { db } from "@/db";
-import { users, flats, userFlats } from "@/db/schema";
+import { users, flats, userFlats, memberships } from "@/db/schema";
 import { hasPermission } from "@/lib/permissions";
 import type { UserRole } from "@/types";
 
@@ -92,6 +92,21 @@ export async function POST(
     if (existingLink.length === 0) {
       await tx.insert(userFlats).values({ userId: id, flatId });
     }
+
+    // Phase 4 dual-run: mirror to memberships (entity_id = flat_id since
+    // the 0023 backfill reused flat ids as entity ids). The role enum
+    // values match 1:1 between users.role and membership_role.
+    await tx
+      .insert(memberships)
+      .values({
+        userId: id,
+        entityId: flatId,
+        role: role as typeof memberships.$inferInsert.role,
+        status: "active",
+      })
+      .onConflictDoNothing({
+        target: [memberships.userId, memberships.entityId],
+      });
   });
 
   return NextResponse.json({ success: true });

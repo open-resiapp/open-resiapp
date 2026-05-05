@@ -1,7 +1,12 @@
 import { createHash } from "crypto";
-import type { VoteChoice, VoteWithShare, VotingMethod, VotingResults, QuorumType } from "@/types";
-import type { Country } from "@/lib/voting-rules";
-import { getVotingRules } from "@/lib/voting-rules";
+import type {
+  VoteChoice,
+  VoteWithShare,
+  VotingMethod,
+  VotingResults,
+  QuorumType,
+} from "@/types";
+import { getVotingRules, type Country } from "../rules";
 
 function getWeight(vote: VoteWithShare, method: VotingMethod): number {
   switch (method) {
@@ -27,7 +32,7 @@ export function calculateResults(
   totalPossibleWeight: number = 0,
   options: CalculateResultsOptions = {}
 ): VotingResults {
-  const { country = "sk", totalFlats = 0 } = options;
+  const { country = "sk" } = options;
   const rules = getVotingRules(country);
 
   let zaWeight = 0;
@@ -120,7 +125,7 @@ export function aggregateFlatsForVoter(
   }
 
   // Sum share fractions: all denominators are 10000 in this project,
-  // but handle general case correctly
+  // but handle general case correctly.
   let totalNumerator = 0;
   let commonDenominator = voterFlats[0].shareDenominator;
   const allSameDenom = voterFlats.every(

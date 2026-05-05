@@ -45,6 +45,7 @@ services:
       CRON_SECRET: ${CRON_SECRET}
     volumes:
       - uploads:/app/uploads
+      - backups:/app/backups
     logging:
       driver: "json-file"
       options:
@@ -91,5 +92,6 @@ services:
 volumes:
   postgres_data:
   uploads:
+  backups:
   caddy_data:
   caddy_config:

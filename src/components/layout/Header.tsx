@@ -4,6 +4,7 @@ import { signOut } from "next-auth/react";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
+import EntitySwitcher from "@/components/layout/EntitySwitcher";
 
 export default function Header({
   userName,
@@ -44,6 +45,7 @@ export default function Header({
         ) : null}
 
         <div className="flex items-center gap-4 ml-auto">
+          <EntitySwitcher />
           <LanguageSwitcher />
           {showProfileLink ? (
             <Link

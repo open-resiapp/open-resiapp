@@ -11,12 +11,16 @@ interface NavItem {
   labelKey: string;
   icon: string;
   permission?: Parameters<typeof hasPermission>[1];
+  // When set, the nav item is hidden unless the named module is
+  // installed and enabled (core_modules.status = 'enabled'). The
+  // Sidebar fetches the enabled set from /api/session/enabled-modules.
+  requiresModule?: string;
 }
 
 const navItems: NavItem[] = [
   { href: "/", labelKey: "dashboard", icon: "📊" },
   { href: "/board", labelKey: "board", icon: "📋" },
-  { href: "/voting", labelKey: "voting", icon: "🗳️" },
+  { href: "/voting", labelKey: "voting", icon: "🗳️", requiresModule: "voting" },
   { href: "/komunita", labelKey: "community", icon: "🏘️", permission: "viewCommunity" },
   { href: "/owners", labelKey: "owners", icon: "👥", permission: "manageUsers" },
   { href: "/settings", labelKey: "settings", icon: "⚙️", permission: "viewSettings" },
@@ -34,6 +38,7 @@ export default function Sidebar({
   const t = useTranslations("Sidebar");
   const pathname = usePathname();
   const [buildingName, setBuildingName] = useState<string | null>(null);
+  const [enabledModules, setEnabledModules] = useState<Set<string> | null>(null);
 
   useEffect(() => {
     fetch("/api/building")
@@ -44,9 +49,23 @@ export default function Sidebar({
       .catch(() => {});
   }, []);
 
-  const visibleItems = navItems.filter(
-    (item) => !item.permission || hasPermission(role, item.permission)
-  );
+  useEffect(() => {
+    fetch("/api/session/enabled-modules")
+      .then((r) => (r.ok ? r.json() : []))
+      .then((names: string[]) => setEnabledModules(new Set(names)))
+      .catch(() => setEnabledModules(new Set()));
+  }, []);
+
+  const visibleItems = navItems.filter((item) => {
+    if (item.permission && !hasPermission(role, item.permission)) return false;
+    if (item.requiresModule) {
+      // Hide module-gated items until the fetch resolves to avoid
+      // flashing a link the user can't follow.
+      if (enabledModules === null) return false;
+      if (!enabledModules.has(item.requiresModule)) return false;
+    }
+    return true;
+  });
 
   return (
     <>

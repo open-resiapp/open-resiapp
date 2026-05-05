@@ -39,6 +39,7 @@ export async function POST(request: NextRequest) {
       token,
       role,
       flatId: flatId || null,
+      entityId: flatId || null,
       expiresAt,
       createdById: session.user.id,
     })

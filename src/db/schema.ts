@@ -10,8 +10,9 @@ import {
   uniqueIndex,
   unique,
   index,
+  type AnyPgColumn,
 } from "drizzle-orm/pg-core";
-import { relations } from "drizzle-orm";
+import { relations, sql } from "drizzle-orm";
 
 // ── Enums ──────────────────────────────────────────────
 
@@ -29,19 +30,8 @@ export const userStatusEnum = pgEnum("user_status", [
   "rejected",
 ]);
 
-export const voteChoiceEnum = pgEnum("vote_choice", [
-  "za",
-  "proti",
-  "zdrzal_sa",
-]);
-
-export const voteTypeEnum = pgEnum("vote_type", ["electronic", "paper"]);
-
-export const votingStatusEnum = pgEnum("voting_status", [
-  "draft",
-  "active",
-  "closed",
-]);
+// voteChoiceEnum, voteTypeEnum, votingStatusEnum moved to
+// modules/voting/src/db/schema.ts under RES-20260505-001.
 
 export const postCategoryEnum = pgEnum("post_category", [
   "info",
@@ -56,19 +46,8 @@ export const votingMethodEnum = pgEnum("voting_method", [
   "per_area",
 ]);
 
-export const votingTypeEnum = pgEnum("voting_type", ["written", "meeting"]);
-
-export const votingInitiatedByEnum = pgEnum("voting_initiated_by", [
-  "board",
-  "owners_quarter",
-]);
-
-export const quorumTypeEnum = pgEnum("quorum_type", [
-  "simple_present",
-  "simple_all",
-  "two_thirds_all",
-  "all_unanimous",
-]);
+// votingTypeEnum, votingInitiatedByEnum, quorumTypeEnum moved to
+// modules/voting/src/db/schema.ts under RES-20260505-001.
 
 export const countryEnum = pgEnum("country", ["sk", "cz"]);
 
@@ -150,6 +129,44 @@ export const moduleStatusEnum = pgEnum("module_status", [
   "failed",
 ]);
 
+export const entityKindEnum = pgEnum("entity_kind", [
+  "housing_community",
+  "housing_block",
+  "housing_entrance",
+  "housing_unit",
+  "generic_group",
+]);
+
+export const platformRoleEnum = pgEnum("platform_role", [
+  "member",
+  "superadmin",
+]);
+
+export const membershipRoleEnum = pgEnum("membership_role", [
+  "admin",
+  "owner",
+  "tenant",
+  "vote_counter",
+  "caretaker",
+]);
+
+export const membershipStatusEnum = pgEnum("membership_status", [
+  "pending",
+  "active",
+  "archived",
+]);
+
+export const entityAuditActionEnum = pgEnum("entity_audit_action", [
+  "entity.create",
+  "entity.set_parent",
+  "entity.set_kind",
+  "entity.archive",
+  "entity.hard_delete",
+  "membership.create",
+  "membership.update_role",
+  "membership.remove",
+]);
+
 // ── Tables ─────────────────────────────────────────────
 
 export const building = pgTable("building", {
@@ -190,6 +207,125 @@ export const flats = pgTable("flats", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
+// ── Entity model (RES-20260501-002) ──────────────────────
+// Self-referencing tree of typed containers. Replaces the rigid
+// building → entrance → flat hierarchy with an n-ary tree of
+// entities discriminated by `kind`. Path traversal logic lives
+// in src/lib/entity-tree.ts; nothing else parses `path`.
+
+export const entities = pgTable(
+  "entities",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    parentId: uuid("parent_id").references(
+      (): AnyPgColumn => entities.id,
+      { onDelete: "restrict" }
+    ),
+    kind: entityKindEnum("kind").notNull(),
+    name: varchar("name", { length: 255 }).notNull(),
+    path: text("path").notNull(),
+    depth: integer("depth").notNull().default(0),
+    rootId: uuid("root_id").notNull(),
+    archivedAt: timestamp("archived_at"),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+  },
+  (table) => ({
+    parentIdx: index("entities_parent_idx").on(table.parentId),
+    rootIdx: index("entities_root_idx").on(table.rootId),
+    kindIdx: index("entities_kind_idx").on(table.kind),
+    archivedIdx: index("entities_archived_idx").on(table.archivedAt),
+    pathIdx: index("entities_path_idx").using(
+      "btree",
+      sql`${table.path} text_pattern_ops`
+    ),
+  })
+);
+
+// 1:1 extension data for housing roots (community / block).
+// Required when entities.kind in ('housing_community', 'housing_block').
+export const housingRootData = pgTable("housing_root_data", {
+  entityId: uuid("entity_id")
+    .primaryKey()
+    .references(() => entities.id, { onDelete: "cascade" }),
+  address: varchar("address", { length: 500 }).notNull(),
+  ico: varchar("ico", { length: 20 }),
+  votingMethod: votingMethodEnum("voting_method")
+    .notNull()
+    .default("per_share"),
+  country: countryEnum("country").notNull().default("sk"),
+  governanceModel: governanceModelEnum("governance_model")
+    .notNull()
+    .default("chairman_council"),
+  legalNotice: text("legal_notice"),
+  communityCrossEntranceVisible: boolean("community_cross_entrance_visible")
+    .notNull()
+    .default(false),
+});
+
+// 1:1 extension data for housing units (flats).
+// Required when entities.kind = 'housing_unit'.
+export const housingUnitData = pgTable("housing_unit_data", {
+  entityId: uuid("entity_id")
+    .primaryKey()
+    .references(() => entities.id, { onDelete: "cascade" }),
+  flatNumber: varchar("flat_number", { length: 20 }).notNull(),
+  floor: integer("floor").notNull().default(0),
+  shareNumerator: integer("share_numerator").notNull(),
+  shareDenominator: integer("share_denominator").notNull(),
+  area: integer("area"),
+});
+
+// User ↔ entity link with per-membership role and voting weight.
+// Replaces users.flatId + userFlats once the migration ships.
+export const memberships = pgTable(
+  "memberships",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    userId: uuid("user_id")
+      .references(() => users.id, { onDelete: "cascade" })
+      .notNull(),
+    entityId: uuid("entity_id")
+      .references(() => entities.id, { onDelete: "restrict" })
+      .notNull(),
+    role: membershipRoleEnum("role").notNull().default("owner"),
+    weight: integer("weight").notNull().default(1),
+    status: membershipStatusEnum("status").notNull().default("active"),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+  },
+  (table) => ({
+    userEntityIdx: uniqueIndex("memberships_user_entity_idx").on(
+      table.userId,
+      table.entityId
+    ),
+    entityIdx: index("memberships_entity_idx").on(table.entityId),
+    userIdx: index("memberships_user_idx").on(table.userId),
+  })
+);
+
+// Audit trail for every operator-side mutation of the entity tree
+// or memberships. Survives entity / actor deletion via set null FKs.
+export const entityAuditLog = pgTable(
+  "entity_audit_log",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    actorUserId: uuid("actor_user_id").references(() => users.id, {
+      onDelete: "set null",
+    }),
+    action: entityAuditActionEnum("action").notNull(),
+    entityId: uuid("entity_id").references(() => entities.id, {
+      onDelete: "set null",
+    }),
+    beforeJson: text("before_json"),
+    afterJson: text("after_json"),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+  },
+  (table) => ({
+    entityIdx: index("entity_audit_entity_idx").on(table.entityId),
+    actionIdx: index("entity_audit_action_idx").on(table.action),
+    actorIdx: index("entity_audit_actor_idx").on(table.actorUserId),
+  })
+);
+
 export const users = pgTable(
   "users",
   {
@@ -199,6 +335,7 @@ export const users = pgTable(
     name: varchar("name", { length: 255 }).notNull(),
     phone: varchar("phone", { length: 30 }),
     role: userRoleEnum("role").notNull().default("owner"),
+    platformRole: platformRoleEnum("platform_role").notNull().default("member"),
     flatId: uuid("flat_id").references(() => flats.id),
     isActive: boolean("is_active").notNull().default(true),
     status: userStatusEnum("status").notNull().default("active"),
@@ -211,86 +348,8 @@ export const users = pgTable(
   })
 );
 
-export const votings = pgTable("votings", {
-  id: uuid("id").primaryKey().defaultRandom(),
-  title: varchar("title", { length: 500 }).notNull(),
-  description: text("description"),
-  status: votingStatusEnum("status").notNull().default("draft"),
-  startsAt: timestamp("starts_at").notNull(),
-  endsAt: timestamp("ends_at").notNull(),
-  createdById: uuid("created_by_id")
-    .references(() => users.id)
-    .notNull(),
-  votingType: votingTypeEnum("voting_type").notNull().default("written"),
-  initiatedBy: votingInitiatedByEnum("initiated_by").notNull().default("board"),
-  quorumType: quorumTypeEnum("quorum_type").notNull().default("simple_all"),
-  voteCounterId: uuid("vote_counter_id").references(() => users.id),
-  entranceId: uuid("entrance_id").references(() => entrances.id),
-  createdAt: timestamp("created_at").defaultNow().notNull(),
-});
-
-export const votes = pgTable(
-  "votes",
-  {
-    id: uuid("id").primaryKey().defaultRandom(),
-    votingId: uuid("voting_id")
-      .references(() => votings.id)
-      .notNull(),
-    ownerId: uuid("owner_id")
-      .references(() => users.id)
-      .notNull(),
-    flatId: uuid("flat_id")
-      .references(() => flats.id)
-      .notNull(),
-    choice: voteChoiceEnum("choice").notNull(),
-    voteType: voteTypeEnum("vote_type").notNull().default("electronic"),
-    recordedById: uuid("recorded_by_id").references(() => users.id),
-    paperPhotoUrl: varchar("paper_photo_url", { length: 1000 }),
-    auditHash: varchar("audit_hash", { length: 64 }).notNull(),
-    disputed: boolean("disputed").notNull().default(false),
-    disputeNote: text("dispute_note"),
-    createdAt: timestamp("created_at").defaultNow().notNull(),
-  },
-  (table) => ({
-    votingFlatIdx: uniqueIndex("votes_voting_flat_idx").on(
-      table.votingId,
-      table.flatId
-    ),
-  })
-);
-
-export const mandates = pgTable(
-  "mandates",
-  {
-    id: uuid("id").primaryKey().defaultRandom(),
-    votingId: uuid("voting_id")
-      .references(() => votings.id)
-      .notNull(),
-    fromOwnerId: uuid("from_owner_id")
-      .references(() => users.id)
-      .notNull(),
-    fromFlatId: uuid("from_flat_id")
-      .references(() => flats.id)
-      .notNull(),
-    toOwnerId: uuid("to_owner_id")
-      .references(() => users.id)
-      .notNull(),
-    paperDocumentConfirmed: boolean("paper_document_confirmed")
-      .notNull()
-      .default(false),
-    verifiedByAdminId: uuid("verified_by_admin_id").references(() => users.id),
-    verificationDate: timestamp("verification_date"),
-    verificationNote: text("verification_note"),
-    isActive: boolean("is_active").notNull().default(true),
-    createdAt: timestamp("created_at").defaultNow().notNull(),
-  },
-  (table) => ({
-    votingFlatIdx: uniqueIndex("mandates_voting_flat_idx").on(
-      table.votingId,
-      table.fromFlatId
-    ),
-  })
-);
+// votings, votes, mandates moved to modules/voting/src/db/schema.ts
+// under RES-20260505-001.
 
 export const posts = pgTable("posts", {
   id: uuid("id").primaryKey().defaultRandom(),
@@ -301,6 +360,9 @@ export const posts = pgTable("posts", {
     .references(() => users.id)
     .notNull(),
   entranceId: uuid("entrance_id").references(() => entrances.id),
+  entityId: uuid("entity_id").references(() => entities.id, {
+    onDelete: "restrict",
+  }),
   isPinned: boolean("is_pinned").notNull().default(false),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
@@ -314,6 +376,9 @@ export const documents = pgTable("documents", {
     .references(() => users.id)
     .notNull(),
   entranceId: uuid("entrance_id").references(() => entrances.id),
+  entityId: uuid("entity_id").references(() => entities.id, {
+    onDelete: "restrict",
+  }),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
@@ -373,6 +438,9 @@ export const invitations = pgTable("invitations", {
   token: varchar("token", { length: 64 }).notNull().unique(),
   role: userRoleEnum("role").notNull().default("owner"),
   flatId: uuid("flat_id").references(() => flats.id, { onDelete: "set null" }),
+  entityId: uuid("entity_id").references(() => entities.id, {
+    onDelete: "set null",
+  }),
   status: varchar("status", { length: 20 }).notNull().default("pending"),
   expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
   usedByUserId: uuid("used_by_user_id").references(() => users.id, {
@@ -500,6 +568,9 @@ export const communityPosts = pgTable("community_posts", {
   eventDate: timestamp("event_date"),
   eventLocation: varchar("event_location", { length: 255 }),
   entranceId: uuid("entrance_id").references(() => entrances.id),
+  entityId: uuid("entity_id").references(() => entities.id, {
+    onDelete: "restrict",
+  }),
   expiresAt: timestamp("expires_at"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
@@ -610,6 +681,9 @@ export const coreModuleGrants = pgTable(
     buildingId: uuid("building_id")
       .references(() => building.id, { onDelete: "cascade" })
       .notNull(),
+    entityId: uuid("entity_id").references(() => entities.id, {
+      onDelete: "cascade",
+    }),
     moduleName: varchar("module_name", { length: 100 })
       .references(() => coreModules.name, { onDelete: "cascade" })
       .notNull(),
@@ -632,6 +706,9 @@ export const boardMembers = pgTable("board_members", {
   buildingId: uuid("building_id")
     .references(() => building.id)
     .notNull(),
+  entityId: uuid("entity_id").references(() => entities.id, {
+    onDelete: "cascade",
+  }),
   userId: uuid("user_id")
     .references(() => users.id)
     .notNull(),
@@ -656,7 +733,7 @@ export const entrancesRelations = relations(entrances, ({ one, many }) => ({
   }),
   flats: many(flats),
   posts: many(posts),
-  votings: many(votings),
+  // Voting back-references moved with the voting module schema.
   documents: many(documents),
 }));
 
@@ -667,8 +744,7 @@ export const flatsRelations = relations(flats, ({ one, many }) => ({
   }),
   users: many(users),
   userFlats: many(userFlats),
-  votes: many(votes),
-  mandates: many(mandates),
+  // Voting back-references moved with the voting module schema.
 }));
 
 export const usersRelations = relations(users, ({ one, many }) => ({
@@ -677,69 +753,15 @@ export const usersRelations = relations(users, ({ one, many }) => ({
     references: [flats.id],
   }),
   userFlats: many(userFlats),
-  votes: many(votes),
-  createdVotings: many(votings, { relationName: "createdBy" }),
+  // Voting back-references moved with the voting module schema.
   posts: many(posts),
   documents: many(documents),
   pushSubscriptions: many(pushSubscriptions),
   consentRecords: many(consentRecords),
 }));
 
-export const votingsRelations = relations(votings, ({ one, many }) => ({
-  createdBy: one(users, {
-    fields: [votings.createdById],
-    references: [users.id],
-    relationName: "createdBy",
-  }),
-  voteCounter: one(users, {
-    fields: [votings.voteCounterId],
-    references: [users.id],
-  }),
-  entrance: one(entrances, {
-    fields: [votings.entranceId],
-    references: [entrances.id],
-  }),
-  votes: many(votes),
-  mandates: many(mandates),
-}));
-
-export const votesRelations = relations(votes, ({ one }) => ({
-  voting: one(votings, {
-    fields: [votes.votingId],
-    references: [votings.id],
-  }),
-  owner: one(users, {
-    fields: [votes.ownerId],
-    references: [users.id],
-  }),
-  flat: one(flats, {
-    fields: [votes.flatId],
-    references: [flats.id],
-  }),
-  recordedBy: one(users, {
-    fields: [votes.recordedById],
-    references: [users.id],
-  }),
-}));
-
-export const mandatesRelations = relations(mandates, ({ one }) => ({
-  voting: one(votings, {
-    fields: [mandates.votingId],
-    references: [votings.id],
-  }),
-  fromOwner: one(users, {
-    fields: [mandates.fromOwnerId],
-    references: [users.id],
-  }),
-  fromFlat: one(flats, {
-    fields: [mandates.fromFlatId],
-    references: [flats.id],
-  }),
-  toOwner: one(users, {
-    fields: [mandates.toOwnerId],
-    references: [users.id],
-  }),
-}));
+// votingsRelations, votesRelations, mandatesRelations moved to
+// modules/voting/src/db/schema.ts under RES-20260505-001.
 
 export const postsRelations = relations(posts, ({ one }) => ({
   author: one(users, {
@@ -904,5 +926,61 @@ export const directoryEntriesRelations = relations(directoryEntries, ({ one }) =
   user: one(users, {
     fields: [directoryEntries.userId],
     references: [users.id],
+  }),
+}));
+
+// ── Entity model relations (RES-20260501-002) ────────────
+
+export const entitiesRelations = relations(entities, ({ one, many }) => ({
+  parent: one(entities, {
+    fields: [entities.parentId],
+    references: [entities.id],
+    relationName: "entityParent",
+  }),
+  children: many(entities, { relationName: "entityParent" }),
+  memberships: many(memberships),
+  housingRoot: one(housingRootData, {
+    fields: [entities.id],
+    references: [housingRootData.entityId],
+  }),
+  housingUnit: one(housingUnitData, {
+    fields: [entities.id],
+    references: [housingUnitData.entityId],
+  }),
+}));
+
+export const housingRootDataRelations = relations(housingRootData, ({ one }) => ({
+  entity: one(entities, {
+    fields: [housingRootData.entityId],
+    references: [entities.id],
+  }),
+}));
+
+export const housingUnitDataRelations = relations(housingUnitData, ({ one }) => ({
+  entity: one(entities, {
+    fields: [housingUnitData.entityId],
+    references: [entities.id],
+  }),
+}));
+
+export const membershipsRelations = relations(memberships, ({ one }) => ({
+  user: one(users, {
+    fields: [memberships.userId],
+    references: [users.id],
+  }),
+  entity: one(entities, {
+    fields: [memberships.entityId],
+    references: [entities.id],
+  }),
+}));
+
+export const entityAuditLogRelations = relations(entityAuditLog, ({ one }) => ({
+  actor: one(users, {
+    fields: [entityAuditLog.actorUserId],
+    references: [users.id],
+  }),
+  entity: one(entities, {
+    fields: [entityAuditLog.entityId],
+    references: [entities.id],
   }),
 }));

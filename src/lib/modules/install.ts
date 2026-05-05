@@ -28,6 +28,7 @@ import {
   getModule,
   type LoadedModule,
 } from "./registry";
+import { assertNotBundled } from "./bootstrap-bundled";
 
 const STAGING_DIR = path.join(MODULES_DIR, ".staging");
 
@@ -217,6 +218,7 @@ export async function finalizeInstall(
       .insert(coreModuleGrants)
       .values({
         buildingId: b.id,
+        entityId: b.id,
         moduleName: manifest.name,
         permissions: approvedPermissions,
         grantedById: approverUserId,
@@ -265,6 +267,12 @@ export async function finalizeInstall(
 // ── Uninstall ───────────────────────────────────────────
 
 export async function uninstallModule(name: string): Promise<void> {
+  // Bundled modules (voting, etc.) are part of the app distribution and
+  // cannot be removed via the standard uninstall flow. The voting module
+  // additionally has SK §14a retention requirements and exposes a
+  // separate operator purge endpoint per RES-20260505-001.
+  assertNotBundled(name);
+
   const loaded = getModule(name);
   const [row] = await db
     .select({ installPath: coreModules.installPath })

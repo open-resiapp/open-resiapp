@@ -4,11 +4,11 @@ import { db } from "@/db";
 import {
   communityPosts,
   users,
-  userFlats,
-  flats,
   entrances,
   building,
   eventRsvps,
+  entities,
+  memberships,
 } from "@/db/schema";
 import { and, desc, eq, gt, inArray, isNull, or, asc, sql } from "drizzle-orm";
 import { hasPermission } from "@/lib/permissions";
@@ -57,17 +57,20 @@ export async function GET(request: NextRequest) {
     const crossVisible = buildingRow?.communityCrossEntranceVisible ?? false;
 
     if (!crossVisible) {
-      const userEntrances = await db
-        .select({ entranceId: flats.entranceId })
-        .from(userFlats)
-        .innerJoin(flats, eq(userFlats.flatId, flats.id))
-        .where(eq(userFlats.userId, session.user.id));
-
-      const entranceIds = [...new Set(userEntrances.map((e) => e.entranceId))];
+      // Visibility rule (RES-20260501-002): community post P is visible
+      // iff the viewer holds an active membership at an entity that
+      // overlaps P's entity along the materialized path.
+      const userId = session.user.id;
       conditions.push(
-        entranceIds.length > 0
-          ? or(isNull(communityPosts.entranceId), inArray(communityPosts.entranceId, entranceIds))
-          : isNull(communityPosts.entranceId)
+        sql`EXISTS (
+          SELECT 1
+          FROM ${memberships} m
+          JOIN ${entities} me ON me.id = m.entity_id
+          JOIN ${entities} pe ON pe.id = ${communityPosts.entityId}
+          WHERE m.user_id = ${userId}
+            AND m.status = 'active'
+            AND (pe.path LIKE me.path || '%' OR me.path LIKE pe.path || '%')
+        )`
       );
     }
   }
@@ -191,6 +194,18 @@ export async function POST(request: NextRequest) {
 
   const expiresAt = new Date(Date.now() + POST_TTL_DAYS * 24 * 60 * 60 * 1000);
 
+  // Phase 4 dual-run: dual-write entity_id; NULL entrance_id = community-wide
+  // → root entity.
+  let cpEntityId: string | null = entranceId || null;
+  if (cpEntityId === null) {
+    const [root] = await db
+      .select({ id: building.id })
+      .from(building)
+      .orderBy(building.createdAt)
+      .limit(1);
+    cpEntityId = root?.id ?? null;
+  }
+
   const [post] = await db
     .insert(communityPosts)
     .values({
@@ -202,6 +217,7 @@ export async function POST(request: NextRequest) {
       eventDate: eventDate ? new Date(eventDate) : null,
       eventLocation: eventLocation || null,
       entranceId: entranceId || null,
+      entityId: cpEntityId,
       expiresAt,
     })
     .returning();

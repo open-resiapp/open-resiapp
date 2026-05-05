@@ -3,7 +3,7 @@
 import { useSession } from "next-auth/react";
 import { useTranslations } from "next-intl";
 import { useState, useEffect } from "react";
-import { Link } from "@/i18n/navigation";
+import { useSearchParams } from "next/navigation";
 import { hasPermission } from "@/lib/permissions";
 import type { UserRole } from "@/types";
 import SettingsTabs, { type SettingsTab } from "@/components/settings/SettingsTabs";
@@ -14,10 +14,23 @@ import VotingSettingsTab from "@/components/settings/VotingSettingsTab";
 import ExternalConnectionsTab from "@/components/settings/ExternalConnectionsTab";
 import BoardMembersTab from "@/components/settings/BoardMembersTab";
 
+const VALID_TABS: ReadonlyArray<SettingsTab> = [
+  "building",
+  "entrances",
+  "flats",
+  "voting",
+  "boardMembers",
+  "connections",
+];
+
 export default function SettingsPage() {
   const { data: session } = useSession();
   const t = useTranslations("Settings");
-  const [activeTab, setActiveTab] = useState<SettingsTab>("building");
+  const searchParams = useSearchParams();
+  const initialTab =
+    (VALID_TABS.find((x) => x === searchParams.get("tab")) as SettingsTab) ??
+    "building";
+  const [activeTab, setActiveTab] = useState<SettingsTab>(initialTab);
   const [alertCount, setAlertCount] = useState(0);
 
   const role = (session?.user?.role || "owner") as UserRole;
@@ -45,17 +58,15 @@ export default function SettingsPage() {
     <div className="max-w-4xl">
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-bold text-gray-900">{t("title")}</h1>
-        {hasPermission(role, "manageUsers") && (
-          <Link
-            href="/settings/registration-qr"
-            className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-base font-medium rounded-lg transition-colors"
-          >
-            {t("registrationQrLink")}
-          </Link>
-        )}
       </div>
 
-      <SettingsTabs activeTab={activeTab} onTabChange={setActiveTab} alertCount={alertCount} />
+      <SettingsTabs
+        activeTab={activeTab}
+        onTabChange={setActiveTab}
+        alertCount={alertCount}
+        showModules={hasPermission(role, "manageSettings")}
+        showRegistrationQr={hasPermission(role, "manageUsers")}
+      />
 
       {activeTab === "building" && <BuildingInfoTab canEdit={canEdit} />}
       {activeTab === "entrances" && <EntrancesTab canEdit={canEdit} />}

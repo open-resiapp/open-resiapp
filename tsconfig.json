@@ -27,6 +27,9 @@
       ],
       "@open-housing/sdk": [
         "./src/lib/modules/sdk/index.ts"
+      ],
+      "@modules/*": [
+        "./modules/*"
       ]
     },
     "target": "ES2017"

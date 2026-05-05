@@ -16,6 +16,7 @@ import {
 } from "./sdk";
 import { CORE_VERSION } from "./core-version";
 import { registerModule, type LoadedModule } from "./registry";
+import { bootstrapBundledModules } from "./bootstrap-bundled";
 
 export const MODULES_DIR =
   process.env.OPEN_HOUSING_MODULES_DIR ??
@@ -113,12 +114,29 @@ export async function loadAllModules(): Promise<LoadedModule[]> {
     return [];
   }
 
-  const loaded: LoadedModule[] = [];
+  // First pass: read every valid manifest. Bundled modules need their
+  // install state seeded BEFORE the per-module load loop checks it.
+  const manifests: ModuleManifest[] = [];
+  const dirByName = new Map<string, string>();
   for (const sub of dirs) {
     const dir = path.join(MODULES_DIR, sub);
     const m = await readManifest(dir);
     if (!m) continue;
-    const { manifest } = m;
+    manifests.push(m.manifest);
+    dirByName.set(m.manifest.name, dir);
+  }
+
+  // Auto-enable bundled modules on housing tenants. Idempotent.
+  try {
+    await bootstrapBundledModules(manifests);
+  } catch (err) {
+    console.warn("[modules] bootstrap of bundled modules failed:", err);
+  }
+
+  const loaded: LoadedModule[] = [];
+  for (const manifest of manifests) {
+    const dir = dirByName.get(manifest.name);
+    if (!dir) continue;
 
     if (compareSemver(CORE_VERSION, manifest.minCoreVersion) < 0) {
       console.warn(

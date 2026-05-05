@@ -6,6 +6,7 @@ import { useTranslations } from "next-intl";
 import QRCode from "qrcode";
 import { hasPermission } from "@/lib/permissions";
 import type { UserRole } from "@/types";
+import SettingsTabs from "@/components/settings/SettingsTabs";
 
 interface ActiveToken {
   id: string;
@@ -130,8 +131,14 @@ export default function RegistrationQrPage() {
   }
 
   return (
-    <div className="max-w-3xl">
-      <h1 className="text-2xl font-bold text-gray-900 mb-2">{t("title")}</h1>
+    <div className="max-w-4xl">
+      <h1 className="text-2xl font-bold text-gray-900 mb-6">{t("title")}</h1>
+      <SettingsTabs
+        activeTab={null}
+        onTabChange={() => {}}
+        showModules={hasPermission(role, "manageSettings")}
+        showRegistrationQr={canManage}
+      />
       <p className="text-base text-gray-500 mb-6">{t("subtitle")}</p>
 
       {error && (

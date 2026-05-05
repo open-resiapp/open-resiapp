@@ -22,6 +22,10 @@ WORKDIR /app
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
 
+# postgresql-client provides pg_dump for the pre-migration backup step
+# in docker-entrypoint.sh. Match the server major version (16).
+RUN apk add --no-cache postgresql16-client
+
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
 
@@ -40,6 +44,7 @@ COPY --from=builder /app/src/lib ./src/lib
 COPY docker-entrypoint.sh /app/docker-entrypoint.sh
 
 RUN mkdir -p /app/uploads && chown nextjs:nodejs /app/uploads
+RUN mkdir -p /app/backups && chown nextjs:nodejs /app/backups
 
 USER nextjs
 

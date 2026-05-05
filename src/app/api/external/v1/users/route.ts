@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/db";
-import { users, flats, userFlats } from "@/db/schema";
+import { users, flats, userFlats, memberships } from "@/db/schema";
 import { eq, inArray } from "drizzle-orm";
 import { withExternalAuth } from "@/lib/external-auth";
 import type { ValidatedApiKey } from "@/lib/api-keys";
@@ -101,6 +101,17 @@ async function handlePost(request: NextRequest, _apiKey: ValidatedApiKey) {
       flatIds.map((fid: string) => ({
         userId: newUser.id,
         flatId: fid,
+      }))
+    );
+
+    // Phase 4 dual-run: mirror to memberships.
+    const userRole = (role || "owner") as typeof memberships.$inferInsert.role;
+    await db.insert(memberships).values(
+      flatIds.map((fid: string) => ({
+        userId: newUser.id,
+        entityId: fid,
+        role: userRole,
+        status: "active" as const,
       }))
     );
   }

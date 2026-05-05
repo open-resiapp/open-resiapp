@@ -14,6 +14,12 @@ export default async function ModulesAdminPage() {
     redirect("/");
   }
 
+  const role = session.user.role as UserRole;
   const installed = await listInstalledModules();
-  return <ModulesAdminClient installed={installed} />;
+  return (
+    <ModulesAdminClient
+      installed={installed}
+      canManageUsers={hasPermission(role, "manageUsers")}
+    />
+  );
 }

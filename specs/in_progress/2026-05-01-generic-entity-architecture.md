@@ -1,12 +1,12 @@
 ---
 spec_id: RES-20260501-002
 title: "Generalize building model into a flexible Entity primitive"
-status: spec
+status: in_progress
 created: 2026-05-01
-updated: 2026-05-04
+updated: 2026-05-05
 author: open-housing
 owner: open-housing
-last_verified: 2026-05-01
+last_verified: 2026-05-05
 project_type: other
 depends_on: []
 related_handoffs: []

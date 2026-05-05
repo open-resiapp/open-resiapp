@@ -1,0 +1,14 @@
+{
+  "name": "voting",
+  "version": "1.0.0",
+  "description": "Slovak/Czech HOA-compliant voting (free, bundled).",
+  "author": "open-housing",
+  "entry": "dist/index.js",
+  "permissions": [
+    "db:read",
+    "db:write",
+    "ui:inject"
+  ],
+  "uiSlots": ["sidebar.items", "dashboard.widgets"],
+  "minCoreVersion": "0.1.0"
+}

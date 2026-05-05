@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/db";
-import { users, flats, votings, posts, entrances } from "@/db/schema";
+import { users, flats, posts, entrances } from "@/db/schema";
+import { votings } from "@modules/voting/src/db/schema";
 import { count, eq } from "drizzle-orm";
 import { withExternalAuth } from "@/lib/external-auth";
 

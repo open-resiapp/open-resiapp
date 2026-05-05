@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/db";
-import { users, flats, userFlats } from "@/db/schema";
+import { users, flats, userFlats, memberships } from "@/db/schema";
 import { eq, inArray } from "drizzle-orm";
 import { withExternalAuth } from "@/lib/external-auth";
 import type { ValidatedApiKey } from "@/lib/api-keys";
@@ -93,6 +93,28 @@ async function handlePatch(
         .update(users)
         .set({ flatId: flatIds[0] })
         .where(eq(users.id, id));
+    }
+
+    // Phase 4 dual-run: mirror to memberships (flat.id == entity.id).
+    const [userRow] = await db
+      .select({ role: users.role })
+      .from(users)
+      .where(eq(users.id, id))
+      .limit(1);
+    const userRole = userRow?.role as
+      | typeof memberships.$inferInsert.role
+      | undefined;
+
+    await db.delete(memberships).where(eq(memberships.userId, id));
+    if (flatIds.length > 0 && userRole) {
+      await db.insert(memberships).values(
+        flatIds.map((fid: string) => ({
+          userId: id,
+          entityId: fid,
+          role: userRole,
+          status: "active" as const,
+        }))
+      );
     }
   }
 

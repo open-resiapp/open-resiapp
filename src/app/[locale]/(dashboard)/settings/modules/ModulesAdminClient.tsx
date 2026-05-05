@@ -10,6 +10,7 @@ import {
   uninstallAction,
   uploadModuleAction,
 } from "./actions";
+import SettingsTabs from "@/components/settings/SettingsTabs";
 
 interface StagedView {
   stagingId: string;
@@ -23,9 +24,10 @@ interface StagedView {
 
 interface Props {
   installed: InstalledModuleView[];
+  canManageUsers?: boolean;
 }
 
-export default function ModulesAdminClient({ installed }: Props) {
+export default function ModulesAdminClient({ installed, canManageUsers }: Props) {
   const [staged, setStaged] = useState<StagedView | null>(null);
   const [approved, setApproved] = useState<Set<Permission>>(new Set());
   const [error, setError] = useState<string | null>(null);
@@ -101,8 +103,14 @@ export default function ModulesAdminClient({ installed }: Props) {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 max-w-4xl">
       <h1 className="text-2xl font-bold text-gray-900">Modules</h1>
+      <SettingsTabs
+        activeTab={null}
+        onTabChange={() => {}}
+        showModules
+        showRegistrationQr={canManageUsers}
+      />
 
       {error && (
         <div className="rounded border border-red-300 bg-red-50 p-3 text-sm text-red-700">

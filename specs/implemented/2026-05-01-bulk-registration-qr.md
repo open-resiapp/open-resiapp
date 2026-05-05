@@ -1,7 +1,7 @@
 ---
 spec_id: RES-20260501-001
 title: "Bulk self-registration via QR code with admin approval"
-status: in_progress
+status: implemented
 created: 2026-05-01
 updated: 2026-05-05
 author: open-housing

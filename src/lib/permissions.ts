@@ -26,6 +26,11 @@ const permissions = {
 } as const;
 
 export type Permission = keyof typeof permissions;
+export const PERMISSIONS_TABLE = permissions;
+
+// Pure static API — no DB, no server-only deps. Safe to import from
+// client components. Entity-aware variants live in
+// `src/lib/permissions-entity.ts` and pull the DB.
 
 export function hasPermission(role: UserRole, permission: Permission): boolean {
   return (permissions[permission] as readonly string[]).includes(role);

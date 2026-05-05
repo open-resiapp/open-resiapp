@@ -67,6 +67,7 @@ export async function POST(request: NextRequest) {
     .insert(boardMembers)
     .values({
       buildingId: bld.id,
+      entityId: bld.id,
       userId,
       role,
       electedAt: new Date(electedAt),

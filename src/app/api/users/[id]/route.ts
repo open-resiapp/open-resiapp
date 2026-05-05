@@ -1,8 +1,17 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { db } from "@/db";
-import { users, flats, entrances, userFlats, votes, posts, documents, mandates, votings } from "@/db/schema";
-import { eq, or } from "drizzle-orm";
+import {
+  users,
+  flats,
+  entrances,
+  userFlats,
+  posts,
+  documents,
+  memberships,
+} from "@/db/schema";
+import { votes, mandates, votings } from "@modules/voting/src/db/schema";
+import { and, eq, inArray, or } from "drizzle-orm";
 import { hasPermission } from "@/lib/permissions";
 import type { UserRole } from "@/types";
 
@@ -108,6 +117,53 @@ export async function PATCH(
         resolvedFlatIds.map((fid: string) => ({
           userId: id,
           flatId: fid,
+        }))
+      );
+    }
+
+    // Phase 4 dual-run: mirror to memberships at the housing_unit
+    // entity ids (flat.id == entity.id thanks to the 0023 backfill).
+    // Resolve membership role from the new role (if updating) or the
+    // existing user's role.
+    const resolvedRole = (updateData.role ??
+      (
+        await db
+          .select({ role: users.role })
+          .from(users)
+          .where(eq(users.id, id))
+          .limit(1)
+      )[0]?.role) as typeof memberships.$inferInsert.role | undefined;
+
+    // Drop existing housing-unit memberships for this user that are
+    // not in the new set; insert any missing.
+    const existingMemberships = await db
+      .select({ entityId: memberships.entityId })
+      .from(memberships)
+      .where(eq(memberships.userId, id));
+
+    const wantSet = new Set(resolvedFlatIds);
+    const haveSet = new Set(existingMemberships.map((m) => m.entityId));
+
+    const toRemove = [...haveSet].filter((eid) => !wantSet.has(eid));
+    const toAdd = [...wantSet].filter((eid) => !haveSet.has(eid));
+
+    if (toRemove.length > 0) {
+      await db
+        .delete(memberships)
+        .where(
+          and(
+            eq(memberships.userId, id),
+            inArray(memberships.entityId, toRemove)
+          )
+        );
+    }
+    if (toAdd.length > 0 && resolvedRole) {
+      await db.insert(memberships).values(
+        toAdd.map((eid) => ({
+          userId: id,
+          entityId: eid,
+          role: resolvedRole,
+          status: "active" as const,
         }))
       );
     }

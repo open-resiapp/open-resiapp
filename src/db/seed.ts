@@ -8,16 +8,18 @@ import {
   flats,
   users,
   userFlats,
-  votings,
-  votes,
-  mandates,
   posts,
   communityPosts,
   communityResponses,
   eventRsvps,
   directoryEntries,
 } from "./schema";
-import { generateAuditHash } from "../lib/voting";
+import {
+  votings,
+  votes,
+  mandates,
+} from "@modules/voting/src/db/schema";
+import { generateAuditHash } from "@modules/voting/src/engine";
 
 async function seed() {
   const pool = new Pool({
