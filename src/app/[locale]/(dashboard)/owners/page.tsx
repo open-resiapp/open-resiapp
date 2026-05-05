@@ -4,6 +4,7 @@ import { useSession } from "next-auth/react";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import { Link } from "@/i18n/navigation";
+import PendingCountBadge from "@/components/owners/PendingCountBadge";
 import { hasPermission } from "@/lib/permissions";
 import InvitationModal from "@/components/owners/InvitationModal";
 import type { UserRole } from "@/types";
@@ -98,6 +99,13 @@ export default function VlastniciPage() {
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-bold text-gray-900">{t("title")}</h1>
         <div className="flex gap-3">
+          <Link
+            href="/owners/pending"
+            className="inline-flex items-center gap-2 px-5 py-3 bg-amber-600 hover:bg-amber-700 text-white text-base font-medium rounded-lg transition-colors"
+          >
+            {t("pendingRegistrations")}
+            <PendingCountBadge />
+          </Link>
           <button
             onClick={() => setShowInviteModal(true)}
             className="px-5 py-3 bg-green-600 hover:bg-green-700 text-white text-base font-medium rounded-lg transition-colors"

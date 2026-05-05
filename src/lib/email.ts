@@ -326,6 +326,129 @@ export async function sendEventReminder(params: {
   }
 }
 
+export async function sendQrRegistrationVerify(params: {
+  recipientEmail: string;
+  recipientName: string;
+  verifyUrl: string;
+  expiryHours: number;
+  locale?: string;
+}): Promise<boolean> {
+  const transporter = getTransporter();
+
+  if (!transporter) {
+    console.warn(
+      "[email] SMTP not configured — skipping QR registration verify email"
+    );
+    console.log(
+      "[email] Verify URL for",
+      params.recipientEmail,
+      ":",
+      params.verifyUrl
+    );
+    return false;
+  }
+
+  const locale = resolveLocale(params.locale);
+  const tCommon = await getTranslations({ locale, namespace: "Email.common" });
+  const t = await getTranslations({
+    locale,
+    namespace: "Email.qrRegistrationVerify",
+  });
+
+  const html = `
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+      <h2 style="color: #1d4ed8;">${t("heading")}</h2>
+      <p>${tCommon("greeting", { name: params.recipientName })}</p>
+      <p>${t("intro")}</p>
+      <div style="margin: 24px 0; text-align: center;">
+        <a href="${params.verifyUrl}"
+           style="display: inline-block; padding: 12px 32px; background-color: #2563eb; color: #ffffff; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 16px;">
+          ${t("button")}
+        </a>
+      </div>
+      <p style="color: #6b7280; font-size: 14px;">
+        ${t("expiryNote", { hours: params.expiryHours })}
+      </p>
+      <p style="color: #6b7280; font-size: 12px; margin-top: 32px; border-top: 1px solid #e5e7eb; padding-top: 16px;">
+        ${t("fallback")}<br/>
+        <span style="word-break: break-all;">${params.verifyUrl}</span>
+      </p>
+    </div>
+  `;
+
+  try {
+    await transporter.sendMail({
+      from: emailFrom,
+      to: params.recipientEmail,
+      subject: t("subject"),
+      html,
+    });
+    return true;
+  } catch (error) {
+    console.error("[email] Failed to send QR registration verify email:", error);
+    return false;
+  }
+}
+
+export async function sendQrRegistrationPendingAdmin(params: {
+  recipientEmail: string;
+  recipientName: string;
+  pendingName: string;
+  pendingEmail: string;
+  queueUrl: string;
+  locale?: string;
+}): Promise<boolean> {
+  const transporter = getTransporter();
+
+  if (!transporter) {
+    console.warn(
+      "[email] SMTP not configured — skipping QR registration admin notification"
+    );
+    return false;
+  }
+
+  const locale = resolveLocale(params.locale);
+  const tCommon = await getTranslations({ locale, namespace: "Email.common" });
+  const t = await getTranslations({
+    locale,
+    namespace: "Email.qrRegistrationPendingAdmin",
+  });
+
+  const html = `
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+      <h2 style="color: #1d4ed8;">${t("heading")}</h2>
+      <p>${tCommon("greeting", { name: params.recipientName })}</p>
+      <p>${t("intro")}</p>
+      <div style="margin: 16px 0; padding: 16px; background-color: #f3f4f6; border-radius: 8px;">
+        <p style="margin: 4px 0;"><strong>${t("nameLabel")}:</strong> ${params.pendingName}</p>
+        <p style="margin: 4px 0;"><strong>${t("emailLabel")}:</strong> ${params.pendingEmail}</p>
+      </div>
+      <div style="margin: 24px 0; text-align: center;">
+        <a href="${params.queueUrl}"
+           style="display: inline-block; padding: 12px 32px; background-color: #2563eb; color: #ffffff; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 16px;">
+          ${t("button")}
+        </a>
+      </div>
+    </div>
+  `;
+
+  try {
+    await transporter.sendMail({
+      from: emailFrom,
+      to: params.recipientEmail,
+      subject: t("subject", { name: params.pendingName }),
+      html,
+    });
+    return true;
+  } catch (error) {
+    console.error(
+      "[email] Failed to send QR registration admin notification:",
+      error
+    );
+    return false;
+  }
+}
+
 export async function sendVoteConfirmation(params: {
   recipientEmail: string;
   voterName: string;

@@ -23,6 +23,12 @@ export const userRoleEnum = pgEnum("user_role", [
   "caretaker",
 ]);
 
+export const userStatusEnum = pgEnum("user_status", [
+  "pending",
+  "active",
+  "rejected",
+]);
+
 export const voteChoiceEnum = pgEnum("vote_choice", [
   "za",
   "proti",
@@ -130,7 +136,12 @@ export const rsvpStatusEnum = pgEnum("rsvp_status", ["yes", "no", "maybe"]);
 
 export const communityNotificationKindEnum = pgEnum(
   "community_notification_kind",
-  ["response", "expiry_reminder", "event_reminder"]
+  [
+    "response",
+    "expiry_reminder",
+    "event_reminder",
+    "pending_registration_admin",
+  ]
 );
 
 export const moduleStatusEnum = pgEnum("module_status", [
@@ -190,10 +201,13 @@ export const users = pgTable(
     role: userRoleEnum("role").notNull().default("owner"),
     flatId: uuid("flat_id").references(() => flats.id),
     isActive: boolean("is_active").notNull().default(true),
+    status: userStatusEnum("status").notNull().default("active"),
+    emailVerifiedAt: timestamp("email_verified_at", { withTimezone: true }),
     createdAt: timestamp("created_at").defaultNow().notNull(),
   },
   (table) => ({
     emailIdx: uniqueIndex("users_email_idx").on(table.email),
+    statusIdx: index("users_status_idx").on(table.status),
   })
 );
 
@@ -372,6 +386,44 @@ export const invitations = pgTable("invitations", {
     .notNull(),
 });
 
+export const registrationTokens = pgTable(
+  "registration_tokens",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    token: varchar("token", { length: 64 }).notNull().unique(),
+    isActive: boolean("is_active").notNull().default(true),
+    createdById: uuid("created_by_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+    rotatedAt: timestamp("rotated_at", { withTimezone: true }),
+  },
+  (table) => ({
+    activeIdx: index("registration_tokens_active_idx").on(table.isActive),
+  })
+);
+
+export const emailVerifications = pgTable(
+  "email_verifications",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    userId: uuid("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    token: varchar("token", { length: 64 }).notNull().unique(),
+    expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
+    verifiedAt: timestamp("verified_at", { withTimezone: true }),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+  },
+  (table) => ({
+    userIdx: index("email_verifications_user_idx").on(table.userId),
+  })
+);
+
 export const externalConnections = pgTable("external_connections", {
   id: uuid("id").primaryKey().defaultRandom(),
   name: varchar("name", { length: 255 }).notNull(),
@@ -505,9 +557,12 @@ export const communityNotificationsSent = pgTable(
   "community_notifications_sent",
   {
     id: uuid("id").primaryKey().defaultRandom(),
-    postId: uuid("post_id")
-      .references(() => communityPosts.id, { onDelete: "cascade" })
-      .notNull(),
+    postId: uuid("post_id").references(() => communityPosts.id, {
+      onDelete: "cascade",
+    }),
+    subjectUserId: uuid("subject_user_id").references(() => users.id, {
+      onDelete: "cascade",
+    }),
     recipientId: uuid("recipient_id")
       .references(() => users.id, { onDelete: "cascade" })
       .notNull(),
@@ -526,6 +581,11 @@ export const communityNotificationsSent = pgTable(
     responderIdx: index("community_notifications_sent_responder_idx").on(
       table.postId,
       table.responderId,
+      table.kind
+    ),
+    subjectIdx: index("community_notifications_sent_subject_idx").on(
+      table.subjectUserId,
+      table.recipientId,
       table.kind
     ),
   })
@@ -719,6 +779,26 @@ export const invitationsRelations = relations(invitations, ({ one }) => ({
     relationName: "createdInvitations",
   }),
 }));
+
+export const registrationTokensRelations = relations(
+  registrationTokens,
+  ({ one }) => ({
+    createdBy: one(users, {
+      fields: [registrationTokens.createdById],
+      references: [users.id],
+    }),
+  })
+);
+
+export const emailVerificationsRelations = relations(
+  emailVerifications,
+  ({ one }) => ({
+    user: one(users, {
+      fields: [emailVerifications.userId],
+      references: [users.id],
+    }),
+  })
+);
 
 export const pushSubscriptionsRelations = relations(pushSubscriptions, ({ one }) => ({
   user: one(users, {

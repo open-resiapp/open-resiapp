@@ -2,14 +2,18 @@
 
 import { signIn } from "next-auth/react";
 import { useRouter } from "@/i18n/navigation";
+import { useSearchParams } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
 
 export default function LoginPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const t = useTranslations("Auth");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+
+  const verifyState = searchParams.get("verify");
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -41,6 +45,22 @@ export default function LoginPage() {
         <h1 className="text-2xl font-bold text-gray-900">{t("title")}</h1>
         <p className="text-gray-600 mt-2 text-base">{t("subtitle")}</p>
       </div>
+
+      {verifyState === "ok" && (
+        <div className="bg-green-50 text-green-700 border border-green-200 px-4 py-3 rounded-lg text-base mb-4">
+          {t("verifyOk")}
+        </div>
+      )}
+      {verifyState === "expired" && (
+        <div className="bg-amber-50 text-amber-800 border border-amber-200 px-4 py-3 rounded-lg text-base mb-4">
+          {t("verifyExpired")}
+        </div>
+      )}
+      {verifyState === "not_found" && (
+        <div className="bg-amber-50 text-amber-800 border border-amber-200 px-4 py-3 rounded-lg text-base mb-4">
+          {t("verifyInvalid")}
+        </div>
+      )}
 
       <form onSubmit={handleSubmit} className="space-y-6">
         {error && (

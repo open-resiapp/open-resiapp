@@ -4,7 +4,7 @@ import bcrypt from "bcrypt";
 import { eq } from "drizzle-orm";
 import { db } from "@/db";
 import { users } from "@/db/schema";
-import type { UserRole } from "@/types";
+import type { UserRole, UserStatus } from "@/types";
 
 declare module "next-auth" {
   interface Session {
@@ -13,11 +13,13 @@ declare module "next-auth" {
       email: string;
       name: string;
       role: UserRole;
+      status: UserStatus;
     };
   }
 
   interface User {
     role: UserRole;
+    status: UserStatus;
   }
 }
 
@@ -25,6 +27,7 @@ declare module "@auth/core/jwt" {
   interface JWT {
     id: string;
     role: UserRole;
+    status: UserStatus;
   }
 }
 
@@ -51,7 +54,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           .where(eq(users.email, email))
           .limit(1);
 
-        if (!user || !user.isActive) {
+        if (!user || !user.isActive || user.status === "rejected") {
           return null;
         }
 
@@ -65,21 +68,37 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           email: user.email,
           name: user.name,
           role: user.role,
+          status: user.status,
         };
       },
     }),
   ],
   callbacks: {
-    async jwt({ token, user }) {
+    async jwt({ token, user, trigger }) {
       if (user) {
         token.id = user.id as string;
         token.role = user.role;
+        token.status = user.status;
+      }
+      const shouldRefresh =
+        token.id && (trigger === "update" || token.status === "pending");
+      if (shouldRefresh) {
+        const [fresh] = await db
+          .select({ role: users.role, status: users.status })
+          .from(users)
+          .where(eq(users.id, token.id))
+          .limit(1);
+        if (fresh) {
+          token.role = fresh.role;
+          token.status = fresh.status;
+        }
       }
       return token;
     },
     async session({ session, token }) {
       session.user.id = token.id;
       session.user.role = token.role;
+      session.user.status = token.status;
       return session;
     },
   },

@@ -141,6 +141,20 @@
       "when": 1777489829335,
       "tag": "0019_rare_millenium_guard",
       "breakpoints": true
+    },
+    {
+      "idx": 20,
+      "version": "7",
+      "when": 1777963803512,
+      "tag": "0020_parched_vindicator",
+      "breakpoints": true
+    },
+    {
+      "idx": 21,
+      "version": "7",
+      "when": 1777963890801,
+      "tag": "0021_mixed_true_believers",
+      "breakpoints": true
     }
   ]
 }

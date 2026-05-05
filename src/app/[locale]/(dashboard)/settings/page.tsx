@@ -3,6 +3,7 @@
 import { useSession } from "next-auth/react";
 import { useTranslations } from "next-intl";
 import { useState, useEffect } from "react";
+import { Link } from "@/i18n/navigation";
 import { hasPermission } from "@/lib/permissions";
 import type { UserRole } from "@/types";
 import SettingsTabs, { type SettingsTab } from "@/components/settings/SettingsTabs";
@@ -42,7 +43,17 @@ export default function SettingsPage() {
 
   return (
     <div className="max-w-4xl">
-      <h1 className="text-2xl font-bold text-gray-900 mb-6">{t("title")}</h1>
+      <div className="flex items-center justify-between mb-6">
+        <h1 className="text-2xl font-bold text-gray-900">{t("title")}</h1>
+        {hasPermission(role, "manageUsers") && (
+          <Link
+            href="/settings/registration-qr"
+            className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-base font-medium rounded-lg transition-colors"
+          >
+            {t("registrationQrLink")}
+          </Link>
+        )}
+      </div>
 
       <SettingsTabs activeTab={activeTab} onTabChange={setActiveTab} alertCount={alertCount} />
 

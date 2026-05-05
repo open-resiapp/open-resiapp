@@ -1,4 +1,4 @@
-import type { UserRole } from "@/types";
+import type { UserRole, UserStatus } from "@/types";
 
 const permissions = {
   createPost: ["admin", "caretaker"],
@@ -35,4 +35,17 @@ export function getPermissions(role: UserRole): Permission[] {
   return (Object.keys(permissions) as Permission[]).filter((p) =>
     hasPermission(role, p)
   );
+}
+
+export function isUserActive(user: { status?: UserStatus } | null | undefined): boolean {
+  return user?.status === "active";
+}
+
+export function hasPermissionForUser(
+  user: { role: UserRole; status: UserStatus } | null | undefined,
+  permission: Permission
+): boolean {
+  if (!user) return false;
+  if (user.status !== "active") return false;
+  return hasPermission(user.role, permission);
 }

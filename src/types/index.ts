@@ -40,6 +40,7 @@ export type GovernanceModel = "chairman_council" | "committee" | "chairman_only"
 export type BoardMemberRole = "chairman" | "council_member" | "committee_member" | "committee_chairman";
 
 export type UserRole = "admin" | "owner" | "tenant" | "vote_counter" | "caretaker";
+export type UserStatus = "pending" | "active" | "rejected";
 export type ApiKeyPermission = "read" | "read_write" | "full";
 export type PairingStatus = "pending" | "completed" | "expired" | "revoked" | "locked";
 export type ConnectionType = "druzstvo" | "energy" | "housekeeper" | "other";

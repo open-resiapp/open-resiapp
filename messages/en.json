@@ -22,7 +22,28 @@
     "passwordLabel": "Password",
     "submit": "Sign in",
     "submitting": "Signing in...",
-    "invalidCredentials": "Invalid email or password."
+    "invalidCredentials": "Invalid email or password.",
+    "verifyOk": "Email successfully verified. Your request is now waiting for an admin to review it.",
+    "verifyExpired": "This verification link has expired. Please register again.",
+    "verifyInvalid": "This verification link is invalid or already used."
+  },
+  "RegisterQr": {
+    "title": "Registration",
+    "subtitle": "Fill out the form — an admin will review your request.",
+    "loading": "Loading…",
+    "invalidTitle": "This registration link is no longer valid",
+    "invalidBody": "Please contact your building admin for a new QR code.",
+    "approvalNotice": "After you submit, we will send you a verification email. Once verified, an admin will review your request.",
+    "nameLabel": "Full name",
+    "emailLabel": "Email",
+    "passwordLabel": "Password",
+    "phoneLabel": "Phone",
+    "submit": "Submit request",
+    "submitting": "Submitting…",
+    "submitError": "Could not submit your request",
+    "successTitle": "Check your email",
+    "successBody": "We sent you a verification link. Open it and an admin will review your request afterwards.",
+    "goToLogin": "Back to sign in"
   },
   "Sidebar": {
     "appName": "OpenResiApp",
@@ -33,6 +54,18 @@
     "community": "Community",
     "owners": "Owners",
     "settings": "Settings"
+  },
+  "CommunityInfo": {
+    "pendingHeading": "Your registration is awaiting approval",
+    "pendingBody": "Once your email is verified, an admin will review your request. After approval you will get access to voting and the rest of the app.",
+    "boardHeading": "Board members",
+    "boardEmpty": "Board members have not been published yet.",
+    "role": {
+      "chairman": "Chairman",
+      "council_member": "Council member",
+      "committee_member": "Committee member",
+      "committee_chairman": "Committee chairman"
+    }
   },
   "Email": {
     "common": {
@@ -59,6 +92,22 @@
       "intro": "An event you signed up for is happening tomorrow:",
       "whenLabel": "When",
       "whereLabel": "Where"
+    },
+    "qrRegistrationVerify": {
+      "subject": "Verify your email address",
+      "heading": "Verify your email address",
+      "intro": "Welcome! To finish your registration, click the button below to confirm your email address. After verification, an admin will review your request.",
+      "button": "Verify email",
+      "expiryNote": "This link is valid for {hours} hours.",
+      "fallback": "If the button does not work, copy this link into your browser:"
+    },
+    "qrRegistrationPendingAdmin": {
+      "subject": "New registration request — {name}",
+      "heading": "New registration request",
+      "intro": "A new user has verified their email and is waiting for approval:",
+      "nameLabel": "Name",
+      "emailLabel": "Email",
+      "button": "Open registration queue"
     }
   },
   "Header": {
@@ -227,8 +276,46 @@
     "submitFailed": "Failed to create mandate",
     "flat": "flat {number}"
   },
+  "PendingRegistrations": {
+    "title": "Pending registrations",
+    "subtitle": "Requests from users who registered via the QR code.",
+    "noPermission": "You do not have permission to manage registrations.",
+    "verifiedHeading": "Verified requests ({count})",
+    "verifiedEmpty": "No verified requests.",
+    "unverifiedHeading": "Awaiting email verification ({count})",
+    "unverifiedEmpty": "No unverified requests.",
+    "nameLabel": "Name",
+    "emailLabel": "Email",
+    "phoneLabel": "Phone",
+    "submittedLabel": "Submitted",
+    "approve": "Approve",
+    "reject": "Reject",
+    "approveTitle": "Approve request",
+    "flatLabel": "Flat",
+    "flatPlaceholder": "Select a flat…",
+    "flatRequired": "Select a flat for the user.",
+    "roleLabel": "Role",
+    "confirmReject": "Reject the request from {name}?"
+  },
+  "RegistrationQr": {
+    "title": "Bulk registration via QR",
+    "subtitle": "Print the QR code and post it in the building. Residents scan it and fill out the registration form — you then review the request in the pending registrations section.",
+    "noPermission": "You do not have permission to manage the registration link.",
+    "noActive": "No active registration link has been generated yet.",
+    "generate": "Generate link",
+    "urlLabel": "URL",
+    "createdLabel": "Created",
+    "print": "Print QR",
+    "rotate": "Rotate token",
+    "disable": "Disable registration",
+    "confirmRotate": "Rotating the token will immediately invalidate the old QR code. Continue?",
+    "confirmDisable": "After disabling, nobody will be able to submit a request via QR. Continue?",
+    "printTitle": "Building app registration",
+    "printSubtitle": "Scan the QR code with your phone and fill out the registration form."
+  },
   "Owners": {
     "title": "Owners and users",
+    "pendingRegistrations": "Pending requests",
     "addUser": "Add user",
     "newUser": "New user",
     "empty": "No users.",
@@ -322,6 +409,7 @@
   "Settings": {
     "title": "Settings",
     "noPermission": "You do not have permission to view settings.",
+    "registrationQrLink": "Registration QR",
     "tabBuilding": "Building",
     "tabEntrances": "Entrances",
     "tabFlats": "Flats",

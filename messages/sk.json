@@ -22,7 +22,28 @@
     "passwordLabel": "Heslo",
     "submit": "Prihlásiť sa",
     "submitting": "Prihlasujem...",
-    "invalidCredentials": "Nesprávny email alebo heslo."
+    "invalidCredentials": "Nesprávny email alebo heslo.",
+    "verifyOk": "Email úspešne overený. Vaša žiadosť čaká na schválenie správcom.",
+    "verifyExpired": "Platnosť overovacieho odkazu vypršala. Skúste sa zaregistrovať znova.",
+    "verifyInvalid": "Overovací odkaz je neplatný alebo už bol použitý."
+  },
+  "RegisterQr": {
+    "title": "Registrácia",
+    "subtitle": "Vyplňte formulár — vašu žiadosť posúdi správca bytovky.",
+    "loading": "Načítavam…",
+    "invalidTitle": "Tento registračný odkaz už nie je platný",
+    "invalidBody": "Kontaktujte prosím správcu bytovky pre nový QR kód.",
+    "approvalNotice": "Po odoslaní vám pošleme overovací email. Po jeho potvrdení vašu žiadosť posúdi správca bytovky.",
+    "nameLabel": "Meno a priezvisko",
+    "emailLabel": "Email",
+    "passwordLabel": "Heslo",
+    "phoneLabel": "Telefón",
+    "submit": "Odoslať žiadosť",
+    "submitting": "Odosielam…",
+    "submitError": "Žiadosť sa nepodarilo odoslať",
+    "successTitle": "Skontrolujte si email",
+    "successBody": "Poslali sme vám overovací odkaz. Otvorte ho a vašu žiadosť potom posúdi správca bytovky.",
+    "goToLogin": "Späť na prihlásenie"
   },
   "Sidebar": {
     "appName": "OpenResiApp",
@@ -33,6 +54,18 @@
     "community": "Komunita",
     "owners": "Vlastníci",
     "settings": "Nastavenia"
+  },
+  "CommunityInfo": {
+    "pendingHeading": "Vaša registrácia čaká na schválenie",
+    "pendingBody": "Po overení emailu posúdi vašu žiadosť správca bytovky. Po schválení získate prístup k hlasovaniam a celej aplikácii.",
+    "boardHeading": "Členovia výboru",
+    "boardEmpty": "Členovia výboru zatiaľ nie sú zverejnení.",
+    "role": {
+      "chairman": "Predseda",
+      "council_member": "Člen rady",
+      "committee_member": "Člen komisie",
+      "committee_chairman": "Predseda komisie"
+    }
   },
   "Email": {
     "common": {
@@ -59,6 +92,22 @@
       "intro": "Zajtra sa koná udalosť, na ktorú ste sa prihlásili:",
       "whenLabel": "Kedy",
       "whereLabel": "Miesto"
+    },
+    "qrRegistrationVerify": {
+      "subject": "Overte svoju emailovú adresu",
+      "heading": "Overenie emailovej adresy",
+      "intro": "Vitajte! Pre dokončenie registrácie kliknite na tlačidlo nižšie a potvrďte svoju emailovú adresu. Po overení vašu žiadosť posúdi správca bytovky.",
+      "button": "Overiť email",
+      "expiryNote": "Odkaz je platný {hours} hodín.",
+      "fallback": "Ak tlačidlo nefunguje, skopírujte tento odkaz do prehliadača:"
+    },
+    "qrRegistrationPendingAdmin": {
+      "subject": "Nová žiadosť o registráciu — {name}",
+      "heading": "Nová žiadosť o registráciu",
+      "intro": "Nový používateľ overil svoj email a čaká na schválenie:",
+      "nameLabel": "Meno",
+      "emailLabel": "Email",
+      "button": "Otvoriť rad žiadostí"
     }
   },
   "Header": {
@@ -227,8 +276,46 @@
     "submitFailed": "Nepodarilo sa vytvoriť splnomocnenie",
     "flat": "byt {number}"
   },
+  "PendingRegistrations": {
+    "title": "Čakajúce registrácie",
+    "subtitle": "Žiadosti od používateľov, ktorí sa zaregistrovali cez QR kód.",
+    "noPermission": "Nemáte oprávnenie spravovať registrácie.",
+    "verifiedHeading": "Overené žiadosti ({count})",
+    "verifiedEmpty": "Žiadne overené žiadosti.",
+    "unverifiedHeading": "Čakajú na overenie emailu ({count})",
+    "unverifiedEmpty": "Žiadne neoverené žiadosti.",
+    "nameLabel": "Meno",
+    "emailLabel": "Email",
+    "phoneLabel": "Telefón",
+    "submittedLabel": "Odoslané",
+    "approve": "Schváliť",
+    "reject": "Zamietnuť",
+    "approveTitle": "Schváliť žiadosť",
+    "flatLabel": "Byt",
+    "flatPlaceholder": "Vyberte byt…",
+    "flatRequired": "Vyberte byt pre používateľa.",
+    "roleLabel": "Rola",
+    "confirmReject": "Naozaj chcete zamietnuť žiadosť používateľa {name}?"
+  },
+  "RegistrationQr": {
+    "title": "Hromadná registrácia cez QR",
+    "subtitle": "Vytlačte QR kód a vyveste ho v bytovke. Záujemcovia o registráciu sa naskenujú a vyplnia formulár — žiadosť potom posúdite v sekcii čakajúcich registrácií.",
+    "noPermission": "Nemáte oprávnenie spravovať registračný odkaz.",
+    "noActive": "Zatiaľ nie je vygenerovaný žiadny aktívny registračný odkaz.",
+    "generate": "Vygenerovať odkaz",
+    "urlLabel": "URL adresa",
+    "createdLabel": "Vytvorené",
+    "print": "Vytlačiť QR",
+    "rotate": "Obnoviť token",
+    "disable": "Vypnúť registráciu",
+    "confirmRotate": "Po obnovení tokenu prestane starý QR kód fungovať. Pokračovať?",
+    "confirmDisable": "Po vypnutí už nikto nebude môcť odoslať žiadosť cez QR. Pokračovať?",
+    "printTitle": "Registrácia do bytovej aplikácie",
+    "printSubtitle": "Naskenujte QR kód mobilom a vyplňte registračný formulár."
+  },
   "Owners": {
     "title": "Vlastníci a užívatelia",
+    "pendingRegistrations": "Čakajúce žiadosti",
     "addUser": "Pridať používateľa",
     "newUser": "Nový používateľ",
     "empty": "Žiadni používatelia.",
@@ -322,6 +409,7 @@
   "Settings": {
     "title": "Nastavenia",
     "noPermission": "Nemáte oprávnenie na zobrazenie nastavení.",
+    "registrationQrLink": "Registračný QR",
     "tabBuilding": "Budova",
     "tabEntrances": "Vchody",
     "tabFlats": "Byty",
