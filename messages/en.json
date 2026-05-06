@@ -121,17 +121,14 @@
     "cs": "CZ"
   },
   "Dashboard": {
+    "welcome": "Welcome, {name}",
+    "recentPosts": "Recent posts",
+    "loadingPosts": "Loading posts...",
+    "noPosts": "No posts on the board.",
     "upcomingEvents": "Upcoming events",
     "viewAll": "View all",
     "loadingEvents": "Loading events...",
-    "noUpcomingEvents": "No upcoming events.",
-    "welcome": "Welcome, {name}",
-    "boardTitle": "Board",
-    "boardValue": "View posts",
-    "votingTitle": "Voting",
-    "votingValue": "Active votings",
-    "ownersTitle": "Owners",
-    "ownersValue": "Manage owners"
+    "noUpcomingEvents": "No upcoming events."
   },
   "Board": {
     "title": "Board",

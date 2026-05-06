@@ -4,30 +4,9 @@ import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import { useTranslations, useFormatter } from "next-intl";
 import { Link } from "@/i18n/navigation";
+import PostCard from "@/components/nastenka/PostCard";
 import { hasPermission } from "@/lib/permissions";
-import type { UserRole } from "@/types";
-
-function StatCard({
-  title,
-  value,
-  href,
-  color,
-}: {
-  title: string;
-  value: string;
-  href: string;
-  color: string;
-}) {
-  return (
-    <Link
-      href={href}
-      className="bg-white rounded-xl border border-gray-200 p-6 hover:shadow-md transition-shadow"
-    >
-      <div className={`text-sm font-medium ${color} mb-1`}>{title}</div>
-      <div className="text-2xl font-bold text-gray-900">{value}</div>
-    </Link>
-  );
-}
+import type { UserRole, PostCategory } from "@/types";
 
 interface EventData {
   id: string;
@@ -38,16 +17,38 @@ interface EventData {
   rsvp?: { yes: number; maybe: number; no: number };
 }
 
+interface PostData {
+  id: string;
+  title: string;
+  content: string;
+  category: PostCategory;
+  isPinned: boolean;
+  createdAt: string;
+  entranceName: string | null;
+  author: { id: string; name: string } | null;
+}
+
 export default function DashboardPage() {
   const { data: session } = useSession();
   const t = useTranslations("Dashboard");
   const tEvents = useTranslations("Community.events");
+  const tCommon = useTranslations("Common");
   const format = useFormatter();
   const role = (session?.user?.role || "owner") as UserRole;
   const [events, setEvents] = useState<EventData[]>([]);
   const [loadingEvents, setLoadingEvents] = useState(true);
+  const [posts, setPosts] = useState<PostData[]>([]);
+  const [loadingPosts, setLoadingPosts] = useState(true);
 
   const canSeeCommunity = hasPermission(role, "viewCommunity");
+
+  useEffect(() => {
+    fetch("/api/posts")
+      .then((r) => (r.ok ? r.json() : []))
+      .then((data: PostData[]) => setPosts(data.slice(0, 3)))
+      .catch(() => {})
+      .finally(() => setLoadingPosts(false));
+  }, []);
 
   useEffect(() => {
     if (!canSeeCommunity) {
@@ -73,30 +74,42 @@ export default function DashboardPage() {
         {t("welcome", { name: session?.user?.name ?? "" })}
       </h1>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        <StatCard
-          title={t("boardTitle")}
-          value={t("boardValue")}
-          href="/board"
-          color="text-blue-600"
-        />
+      <section>
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-lg font-semibold text-gray-900">
+            {t("recentPosts")}
+          </h2>
+          <Link
+            href="/board"
+            className="text-sm text-blue-600 hover:underline"
+          >
+            {t("viewAll")}
+          </Link>
+        </div>
 
-        <StatCard
-          title={t("votingTitle")}
-          value={t("votingValue")}
-          href="/voting"
-          color="text-green-600"
-        />
-
-        {hasPermission(role, "manageUsers") && (
-          <StatCard
-            title={t("ownersTitle")}
-            value={t("ownersValue")}
-            href="/owners"
-            color="text-purple-600"
-          />
+        {loadingPosts ? (
+          <p className="text-sm text-gray-500">{t("loadingPosts")}</p>
+        ) : posts.length === 0 ? (
+          <div className="bg-white border border-dashed border-gray-300 rounded-xl p-6 text-center">
+            <p className="text-sm text-gray-600">{t("noPosts")}</p>
+          </div>
+        ) : (
+          <div className="space-y-4">
+            {posts.map((post) => (
+              <PostCard
+                key={post.id}
+                title={post.title}
+                content={post.content}
+                category={post.category}
+                authorName={post.author?.name || tCommon("unknown")}
+                createdAt={post.createdAt}
+                isPinned={post.isPinned}
+                entranceName={post.entranceName}
+              />
+            ))}
+          </div>
         )}
-      </div>
+      </section>
 
       {canSeeCommunity && (
         <section className="mt-8">

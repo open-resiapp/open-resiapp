@@ -121,12 +121,13 @@
   },
   "Dashboard": {
     "welcome": "Vítejte, {name}",
-    "boardTitle": "Nástěnka",
-    "boardValue": "Zobrazit příspěvky",
-    "votingTitle": "Hlasování",
-    "votingValue": "Aktivní hlasování",
-    "ownersTitle": "Vlastníci",
-    "ownersValue": "Správa vlastníků"
+    "recentPosts": "Nejnovější příspěvky",
+    "loadingPosts": "Načítám příspěvky...",
+    "noPosts": "Žádné příspěvky na nástěnce.",
+    "upcomingEvents": "Nadcházející události",
+    "viewAll": "Zobrazit všechny",
+    "loadingEvents": "Načítám události...",
+    "noUpcomingEvents": "Žádné nadcházející události."
   },
   "Board": {
     "title": "Nástěnka",
@@ -628,5 +629,25 @@
     "retentionContent": "Osobní údaje uchováváme po dobu trvání vašeho vlastnictví jednotky a dalších 5 let po jeho skončení, pokud zákon nevyžaduje delší dobu archivace.",
     "contactTitle": "Kontakt",
     "contactContent": "V případě dotazů ohledně zpracování osobních údajů kontaktujte správce bytového domu."
+  },
+  "Community": {
+    "events": {
+      "title": "Události",
+      "subtitle": "Grilování, brigády, společná setkání.",
+      "newEvent": "Nová událost",
+      "addComment": "Přidat komentář",
+      "confirmDelete": "Opravdu smazat tuto událost?",
+      "empty": "Žádné události.",
+      "counts": "{yes, plural, =0 {Zatím nikdo} one {# ano} few {# ano} other {# ano}} · {maybe} možná · {no} ne",
+      "tabs": {
+        "upcoming": "Nadcházející",
+        "past": "Ukončené"
+      },
+      "rsvp": {
+        "yes": "Zúčastním se",
+        "maybe": "Možná",
+        "no": "Nezúčastním se"
+      }
+    }
   }
 }
