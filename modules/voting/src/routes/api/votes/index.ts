@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { db } from "@/db";
-import { users, flats, building, userFlats } from "@/db/schema";
+import { users, flats, building, memberships } from "@/db/schema";
 import { votes, votings } from "@modules/voting/src/db/schema";
 import { and, eq } from "drizzle-orm";
 import { hasPermission } from "@/lib/permissions";
@@ -112,15 +112,22 @@ export async function GET(request: NextRequest) {
     .filter((v) => v.ownerId === session.user.id)
     .map((v) => ({ flatId: v.flatId, choice: v.choice }));
 
-  // Get all flats the current user owns (for flat selector UI)
+  // Phase 9.1e: read current user's flats via memberships at
+  // housing_unit entities (legacy userFlats no longer populated for
+  // newly-registered users).
   const currentUserFlats = await db
     .select({
-      flatId: userFlats.flatId,
+      flatId: memberships.entityId,
       flatNumber: flats.flatNumber,
     })
-    .from(userFlats)
-    .innerJoin(flats, eq(userFlats.flatId, flats.id))
-    .where(eq(userFlats.userId, session.user.id));
+    .from(memberships)
+    .innerJoin(flats, eq(flats.id, memberships.entityId))
+    .where(
+      and(
+        eq(memberships.userId, session.user.id),
+        eq(memberships.status, "active")
+      )
+    );
 
   return NextResponse.json({
     votes: voteRows,
@@ -190,14 +197,16 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  // Validate voter owns the flat
+  // Phase 9.1e: validate ownership via memberships (housing_unit
+  // entity id == flat id thanks to the 0023 backfill).
   const [ownerFlat] = await db
-    .select()
-    .from(userFlats)
+    .select({ id: memberships.id })
+    .from(memberships)
     .where(
       and(
-        eq(userFlats.userId, voterId),
-        eq(userFlats.flatId, flatId)
+        eq(memberships.userId, voterId),
+        eq(memberships.entityId, flatId),
+        eq(memberships.status, "active")
       )
     )
     .limit(1);
