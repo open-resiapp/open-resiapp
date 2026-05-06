@@ -754,6 +754,7 @@
       "title": "Udalosti",
       "subtitle": "Grilovačky, brigády, spoločné stretnutia.",
       "newEvent": "Nová udalosť",
+      "addComment": "Pridať komentár",
       "confirmDelete": "Naozaj zmazať túto udalosť?",
       "empty": "Žiadne udalosti.",
       "counts": "{yes, plural, =0 {Zatiaľ nikto} one {# áno} few {# áno} other {# áno}} · {maybe} možno · {no} nie",

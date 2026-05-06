@@ -8,6 +8,10 @@ import PostCard, {
   type CommunityPostType,
   type CommunityPostStatus,
 } from "@/components/community/PostCard";
+import ResponseModal from "@/components/community/ResponseModal";
+import ResponseList, {
+  type CommunityResponse,
+} from "@/components/community/ResponseList";
 import type { UserRole } from "@/types";
 
 type RsvpStatus = "yes" | "no" | "maybe";
@@ -33,6 +37,7 @@ interface PostData {
     no: number;
     myRsvp: RsvpStatus | null;
   };
+  responseCount?: number;
 }
 
 type TabValue = "upcoming" | "past";
@@ -45,6 +50,60 @@ export default function EventsPage() {
   const [posts, setPosts] = useState<PostData[]>([]);
   const [loading, setLoading] = useState(true);
   const [tab, setTab] = useState<TabValue>("upcoming");
+  const [respondTo, setRespondTo] = useState<PostData | null>(null);
+  const [expanded, setExpanded] = useState<Record<string, CommunityResponse[] | "loading" | undefined>>({});
+
+  async function toggleResponses(postId: string) {
+    const current = expanded[postId];
+    if (current && current !== "loading") {
+      setExpanded((prev) => {
+        const next = { ...prev };
+        delete next[postId];
+        return next;
+      });
+      return;
+    }
+    setExpanded((prev) => ({ ...prev, [postId]: "loading" }));
+    try {
+      const res = await fetch(`/api/community/posts/${postId}`);
+      if (!res.ok) {
+        setExpanded((prev) => {
+          const next = { ...prev };
+          delete next[postId];
+          return next;
+        });
+        return;
+      }
+      const body = (await res.json()) as { responses?: CommunityResponse[] };
+      setExpanded((prev) => ({ ...prev, [postId]: body.responses ?? [] }));
+    } catch {
+      setExpanded((prev) => {
+        const next = { ...prev };
+        delete next[postId];
+        return next;
+      });
+    }
+  }
+
+  async function handleRespond(content: string) {
+    if (!respondTo) return;
+    const res = await fetch(`/api/community/posts/${respondTo.id}/respond`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ content }),
+    });
+    if (res.ok) {
+      // Refresh expanded responses if open and refetch the list to bump
+      // the response count.
+      const postId = respondTo.id;
+      if (expanded[postId]) {
+        setExpanded((prev) => ({ ...prev, [postId]: undefined }));
+        await toggleResponses(postId);
+      }
+      fetchPosts();
+      setRespondTo(null);
+    }
+  }
 
   const role = (session?.user?.role || "owner") as UserRole;
   const userId = session?.user?.id;
@@ -209,12 +268,51 @@ export default function EventsPage() {
                       />
                     </div>
                   )}
+                  <div className="border-t border-gray-100 pt-3 flex items-center justify-between gap-3">
+                    {(post.responseCount ?? 0) > 0 ? (
+                      <button
+                        onClick={() => toggleResponses(post.id)}
+                        className="text-sm text-blue-600 hover:text-blue-700 font-medium"
+                      >
+                        {expanded[post.id]
+                          ? t("hideResponses")
+                          : t("showResponses", { count: post.responseCount ?? 0 })}
+                      </button>
+                    ) : (
+                      <span className="text-sm text-gray-500">
+                        {t("noResponses")}
+                      </span>
+                    )}
+                    {!isAuthor && (
+                      <button
+                        onClick={() => setRespondTo(post)}
+                        className="text-sm text-blue-600 hover:text-blue-700 font-medium"
+                      >
+                        {tEvents("addComment")}
+                      </button>
+                    )}
+                  </div>
+                  {expanded[post.id] === "loading" && (
+                    <p className="text-sm text-gray-500">{tCommon("loading")}</p>
+                  )}
+                  {Array.isArray(expanded[post.id]) && (
+                    <ResponseList
+                      responses={expanded[post.id] as CommunityResponse[]}
+                      isAdmin={canManage}
+                    />
+                  )}
                 </div>
               </PostCard>
             );
           })}
         </div>
       )}
+
+      <ResponseModal
+        open={respondTo !== null}
+        onClose={() => setRespondTo(null)}
+        onSubmit={handleRespond}
+      />
     </div>
   );
 }

@@ -754,6 +754,7 @@
       "title": "Events",
       "subtitle": "BBQs, cleanups, neighborly get-togethers.",
       "newEvent": "New event",
+      "addComment": "Add comment",
       "confirmDelete": "Really delete this event?",
       "empty": "No events yet.",
       "counts": "{yes, plural, =0 {No one yet} other {# yes}} · {maybe} maybe · {no} no",
