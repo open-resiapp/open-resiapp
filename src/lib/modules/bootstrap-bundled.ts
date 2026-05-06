@@ -134,14 +134,13 @@ async function ensureGrantsForHousingRoots(
     await db
       .insert(coreModuleGrants)
       .values({
-        buildingId: entity.id,
         entityId: entity.id,
         moduleName: manifest.name,
         permissions: manifest.permissions,
         grantedById: null, // System-granted; null indicates auto-bootstrap.
       })
       .onConflictDoNothing({
-        target: [coreModuleGrants.buildingId, coreModuleGrants.moduleName],
+        target: [coreModuleGrants.entityId, coreModuleGrants.moduleName],
       });
   }
 }

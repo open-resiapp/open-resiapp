@@ -26,7 +26,7 @@ export async function GET(
       isPinned: posts.isPinned,
       createdAt: posts.createdAt,
       updatedAt: posts.updatedAt,
-      entranceId: posts.entranceId,
+      entityId: posts.entityId,
       author: {
         id: users.id,
         name: users.name,

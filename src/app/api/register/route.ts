@@ -81,13 +81,14 @@ export async function POST(request: NextRequest) {
     })
     .returning({ id: users.id });
 
-  // Phase 9.1d: only memberships — legacy userFlats write removed.
-  if (invitation.flatId) {
+  // Phase 9.1d: only memberships — legacy userFlats / users.flatId
+  // writes are gone. invitations.entityId carries the housing_unit id.
+  if (invitation.entityId) {
     await db
       .insert(memberships)
       .values({
         userId: newUser.id,
-        entityId: invitation.flatId,
+        entityId: invitation.entityId,
         role: invitation.role as typeof memberships.$inferInsert.role,
         status: "active",
       })

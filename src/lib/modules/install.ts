@@ -217,14 +217,13 @@ export async function finalizeInstall(
     await db
       .insert(coreModuleGrants)
       .values({
-        buildingId: root.id,
         entityId: root.id,
         moduleName: manifest.name,
         permissions: approvedPermissions,
         grantedById: approverUserId,
       })
       .onConflictDoUpdate({
-        target: [coreModuleGrants.buildingId, coreModuleGrants.moduleName],
+        target: [coreModuleGrants.entityId, coreModuleGrants.moduleName],
         set: {
           permissions: approvedPermissions,
           grantedById: approverUserId,

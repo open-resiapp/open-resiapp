@@ -38,7 +38,6 @@ export async function GET() {
       isPinned: posts.isPinned,
       createdAt: posts.createdAt,
       updatedAt: posts.updatedAt,
-      entranceId: posts.entranceId,
       entityId: posts.entityId,
       entranceName: entrance.name,
       author: {
@@ -48,7 +47,7 @@ export async function GET() {
     })
     .from(posts)
     .leftJoin(users, eq(posts.authorId, users.id))
-    .leftJoin(entrance, eq(entrance.id, posts.entranceId));
+    .leftJoin(entrance, eq(entrance.id, posts.entityId));
 
   const result = isAdmin
     ? await baseQuery.orderBy(desc(posts.isPinned), desc(posts.createdAt))
@@ -97,6 +96,10 @@ export async function POST(request: NextRequest) {
     postEntityId = root?.id ?? null;
   }
 
+  if (!postEntityId) {
+    return NextResponse.json({ error: "Žiadne community root nie je nastavené" }, { status: 500 });
+  }
+
   const [post] = await db
     .insert(posts)
     .values({
@@ -104,7 +107,6 @@ export async function POST(request: NextRequest) {
       content,
       category: category || "info",
       authorId: session.user.id,
-      entranceId: entranceId || null,
       entityId: postEntityId,
       isPinned: isPinned || false,
     })
@@ -117,7 +119,7 @@ export async function POST(request: NextRequest) {
 
   dispatchHook("onPostCreate", {
     id: post.id,
-    communityId: post.entranceId ?? "",
+    communityId: post.entityId ?? "",
     authorId: post.authorId,
     type: post.category,
     title: post.title,

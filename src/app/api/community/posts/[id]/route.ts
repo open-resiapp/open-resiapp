@@ -47,7 +47,7 @@ export async function GET(
       photoUrl: communityPosts.photoUrl,
       eventDate: communityPosts.eventDate,
       eventLocation: communityPosts.eventLocation,
-      entranceId: communityPosts.entranceId,
+      entityId: communityPosts.entityId,
       entranceName: entrance.name,
       expiresAt: communityPosts.expiresAt,
       createdAt: communityPosts.createdAt,
@@ -59,7 +59,7 @@ export async function GET(
     })
     .from(communityPosts)
     .leftJoin(users, eq(communityPosts.authorId, users.id))
-    .leftJoin(entrance, eq(entrance.id, communityPosts.entranceId))
+    .leftJoin(entrance, eq(entrance.id, communityPosts.entityId))
     .where(eq(communityPosts.id, id))
     .limit(1);
 

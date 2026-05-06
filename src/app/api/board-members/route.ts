@@ -67,7 +67,6 @@ export async function POST(request: NextRequest) {
   const [member] = await db
     .insert(boardMembers)
     .values({
-      buildingId: bld.id,
       entityId: bld.id,
       userId,
       role,

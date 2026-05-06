@@ -24,7 +24,7 @@ export async function GET(
       entranceName: entrance.name,
     })
     .from(invitations)
-    .leftJoin(flat, eq(flat.id, invitations.flatId))
+    .leftJoin(flat, eq(flat.id, invitations.entityId))
     .leftJoin(housingUnitData, eq(housingUnitData.entityId, flat.id))
     .leftJoin(entrance, eq(entrance.id, flat.parentId))
     .where(eq(invitations.token, token))

@@ -12,7 +12,7 @@ async function handler(_request: NextRequest) {
       content: posts.content,
       category: posts.category,
       isPinned: posts.isPinned,
-      entranceId: posts.entranceId,
+      entityId: posts.entityId,
       authorId: posts.authorId,
       authorName: users.name,
       createdAt: posts.createdAt,

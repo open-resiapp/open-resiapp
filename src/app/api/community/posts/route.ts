@@ -101,7 +101,7 @@ export async function GET(request: NextRequest) {
       photoUrl: communityPosts.photoUrl,
       eventDate: communityPosts.eventDate,
       eventLocation: communityPosts.eventLocation,
-      entranceId: communityPosts.entranceId,
+      entityId: communityPosts.entityId,
       entranceName: entrance.name,
       expiresAt: communityPosts.expiresAt,
       createdAt: communityPosts.createdAt,
@@ -113,7 +113,7 @@ export async function GET(request: NextRequest) {
     })
     .from(communityPosts)
     .leftJoin(users, eq(communityPosts.authorId, users.id))
-    .leftJoin(entrance, eq(entrance.id, communityPosts.entranceId))
+    .leftJoin(entrance, eq(entrance.id, communityPosts.entityId))
     .where(where)
     .orderBy(
       isEventType ? asc(communityPosts.eventDate) : desc(communityPosts.createdAt)
@@ -234,6 +234,10 @@ export async function POST(request: NextRequest) {
     cpEntityId = root?.id ?? null;
   }
 
+  if (!cpEntityId) {
+    return NextResponse.json({ error: "Žiadne community root nie je nastavené" }, { status: 500 });
+  }
+
   const [post] = await db
     .insert(communityPosts)
     .values({
@@ -244,7 +248,6 @@ export async function POST(request: NextRequest) {
       authorId: session.user.id,
       eventDate: eventDate ? new Date(eventDate) : null,
       eventLocation: eventLocation || null,
-      entranceId: entranceId || null,
       entityId: cpEntityId,
       expiresAt,
     })
@@ -252,7 +255,7 @@ export async function POST(request: NextRequest) {
 
   dispatchHook("onPostCreate", {
     id: post.id,
-    communityId: post.entranceId ?? "",
+    communityId: post.entityId ?? "",
     authorId: post.authorId,
     type: post.type,
     title: post.title,
