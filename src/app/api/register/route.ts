@@ -3,7 +3,6 @@ import { db } from "@/db";
 import {
   users,
   invitations,
-  userFlats,
   consentRecords,
   memberships,
 } from "@/db/schema";
@@ -79,18 +78,11 @@ export async function POST(request: NextRequest) {
       passwordHash,
       phone: phone || null,
       role: invitation.role,
-      flatId: invitation.flatId, // Phase 1 compat
     })
     .returning({ id: users.id });
 
-  // Insert into junction table
+  // Phase 9.1d: only memberships — legacy userFlats write removed.
   if (invitation.flatId) {
-    await db.insert(userFlats).values({
-      userId: newUser.id,
-      flatId: invitation.flatId,
-    });
-
-    // Phase 4 dual-run: mirror to memberships (flat.id == entity.id).
     await db
       .insert(memberships)
       .values({

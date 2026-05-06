@@ -1,10 +1,16 @@
 import { NextRequest, NextResponse } from "next/server";
+import { and, eq, inArray, isNull } from "drizzle-orm";
+import bcrypt from "bcrypt";
+
 import { db } from "@/db";
-import { users, flats, userFlats, memberships } from "@/db/schema";
-import { eq, inArray } from "drizzle-orm";
+import {
+  users,
+  memberships,
+  entities,
+  housingUnitData,
+} from "@/db/schema";
 import { withExternalAuth } from "@/lib/external-auth";
 import type { ValidatedApiKey } from "@/lib/api-keys";
-import bcrypt from "bcrypt";
 
 async function handleGet(_request: NextRequest) {
   const allUsers = await db
@@ -23,17 +29,26 @@ async function handleGet(_request: NextRequest) {
     return NextResponse.json([]);
   }
 
-  // Get flat assignments
+  // Phase 9.1c: read flat assignments via memberships → housing_unit
+  // entities → housing_unit_data.
   const userIds = allUsers.map((u) => u.id);
   const ufRows = await db
     .select({
-      userId: userFlats.userId,
-      flatId: userFlats.flatId,
-      flatNumber: flats.flatNumber,
+      userId: memberships.userId,
+      flatId: entities.id,
+      flatNumber: housingUnitData.flatNumber,
     })
-    .from(userFlats)
-    .innerJoin(flats, eq(userFlats.flatId, flats.id))
-    .where(inArray(userFlats.userId, userIds));
+    .from(memberships)
+    .innerJoin(entities, eq(memberships.entityId, entities.id))
+    .innerJoin(housingUnitData, eq(housingUnitData.entityId, entities.id))
+    .where(
+      and(
+        inArray(memberships.userId, userIds),
+        eq(memberships.status, "active"),
+        eq(entities.kind, "housing_unit"),
+        isNull(entities.archivedAt)
+      )
+    );
 
   const flatsByUser = new Map<string, { flatId: string; flatNumber: string }[]>();
   for (const row of ufRows) {
@@ -85,7 +100,6 @@ async function handlePost(request: NextRequest, _apiKey: ValidatedApiKey) {
       passwordHash,
       phone: phone || null,
       role: role || "owner",
-      flatId: flatIds?.[0] || null,
     })
     .returning({
       id: users.id,
@@ -95,16 +109,8 @@ async function handlePost(request: NextRequest, _apiKey: ValidatedApiKey) {
       createdAt: users.createdAt,
     });
 
-  // Assign flats
+  // Phase 9.1d: only memberships — legacy userFlats write removed.
   if (flatIds && flatIds.length > 0) {
-    await db.insert(userFlats).values(
-      flatIds.map((fid: string) => ({
-        userId: newUser.id,
-        flatId: fid,
-      }))
-    );
-
-    // Phase 4 dual-run: mirror to memberships.
     const userRole = (role || "owner") as typeof memberships.$inferInsert.role;
     await db.insert(memberships).values(
       flatIds.map((fid: string) => ({

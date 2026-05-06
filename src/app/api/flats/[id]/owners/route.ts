@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
+import { and, eq } from "drizzle-orm";
+
 import { auth } from "@/lib/auth";
 import { db } from "@/db";
-import { userFlats, users } from "@/db/schema";
-import { eq } from "drizzle-orm";
+import { memberships, users } from "@/db/schema";
 
 export async function GET(
   _request: NextRequest,
@@ -15,14 +16,19 @@ export async function GET(
 
   const { id } = await params;
 
+  // Phase 9.1b: read owners via memberships at the housing_unit entity
+  // (entity.id == flat.id from the 0023 backfill, so the path param
+  // continues to work with no client change).
   const result = await db
     .select({
       userId: users.id,
       userName: users.name,
     })
-    .from(userFlats)
-    .innerJoin(users, eq(userFlats.userId, users.id))
-    .where(eq(userFlats.flatId, id));
+    .from(memberships)
+    .innerJoin(users, eq(memberships.userId, users.id))
+    .where(
+      and(eq(memberships.entityId, id), eq(memberships.status, "active"))
+    );
 
   return NextResponse.json(result);
 }

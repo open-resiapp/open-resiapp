@@ -1,9 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
+import { aliasedTable, and, asc, eq, isNull } from "drizzle-orm";
+
 import { auth } from "@/lib/auth";
 import { db } from "@/db";
-import { flats, entrances, userFlats } from "@/db/schema";
-import { eq } from "drizzle-orm";
+import { entities, housingUnitData } from "@/db/schema";
 import { hasPermission } from "@/lib/permissions";
+import { createEntity } from "@/lib/entity-tree";
+import { recordEntityAudit } from "@/lib/entity-audit";
+import { listUserFlats } from "@/lib/legacy-compat";
 import type { UserRole } from "@/types";
 
 export async function GET(request: NextRequest) {
@@ -15,39 +19,41 @@ export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
   const userId = searchParams.get("userId");
 
-  // If userId is provided, return flats for that user
+  // Phase 9.1c: if userId is provided, return the user's flats via
+  // memberships → housing_unit entities.
   if (userId) {
-    const result = await db
-      .select({
-        flatId: flats.id,
-        flatNumber: flats.flatNumber,
-        floor: flats.floor,
-        entranceName: entrances.name,
-      })
-      .from(userFlats)
-      .innerJoin(flats, eq(userFlats.flatId, flats.id))
-      .leftJoin(entrances, eq(flats.entranceId, entrances.id))
-      .where(eq(userFlats.userId, userId))
-      .orderBy(flats.flatNumber);
-
-    return NextResponse.json(result);
+    const userFlatRows = await listUserFlats(userId);
+    return NextResponse.json(
+      userFlatRows.map((r) => ({
+        flatId: r.flatId,
+        flatNumber: r.flatNumber,
+        floor: r.floor,
+        entranceName: r.entranceName,
+      }))
+    );
   }
 
-  // Default: return all flats
+  // Phase 9.1d: list all housing_unit entities with their data + parent
+  // entrance name. Replaces the legacy flats + entrances join.
+  const entrance = aliasedTable(entities, "entrance");
   const result = await db
     .select({
-      id: flats.id,
-      flatNumber: flats.flatNumber,
-      floor: flats.floor,
-      area: flats.area,
-      shareNumerator: flats.shareNumerator,
-      shareDenominator: flats.shareDenominator,
-      entranceId: flats.entranceId,
-      entranceName: entrances.name,
+      id: entities.id,
+      flatNumber: housingUnitData.flatNumber,
+      floor: housingUnitData.floor,
+      area: housingUnitData.area,
+      shareNumerator: housingUnitData.shareNumerator,
+      shareDenominator: housingUnitData.shareDenominator,
+      entranceId: entities.parentId,
+      entranceName: entrance.name,
     })
-    .from(flats)
-    .leftJoin(entrances, eq(flats.entranceId, entrances.id))
-    .orderBy(entrances.name, flats.flatNumber);
+    .from(entities)
+    .innerJoin(housingUnitData, eq(housingUnitData.entityId, entities.id))
+    .leftJoin(entrance, eq(entrance.id, entities.parentId))
+    .where(
+      and(eq(entities.kind, "housing_unit"), isNull(entities.archivedAt))
+    )
+    .orderBy(asc(entrance.name), asc(housingUnitData.flatNumber));
 
   return NextResponse.json(result);
 }
@@ -72,17 +78,46 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  const [flat] = await db
-    .insert(flats)
-    .values({
-      entranceId,
-      flatNumber,
-      floor: floor ?? 0,
-      area: area || null,
+  // Phase 9.1d: create the housing_unit entity + housing_unit_data only.
+  // Legacy flats table write removed; entity tree is canonical.
+  const entity = await createEntity({
+    parentId: entranceId,
+    kind: "housing_unit",
+    name: flatNumber,
+  });
+  recordEntityAudit({
+    action: "entity.create",
+    actorUserId: session.user.id,
+    entityId: entity.id,
+    after: {
+      kind: entity.kind,
+      name: entity.name,
+      parentId: entity.parentId,
       shareNumerator,
       shareDenominator,
-    })
-    .returning();
+    },
+  });
 
-  return NextResponse.json(flat, { status: 201 });
+  await db.insert(housingUnitData).values({
+    entityId: entity.id,
+    flatNumber,
+    floor: floor ?? 0,
+    shareNumerator,
+    shareDenominator,
+    area: area ?? null,
+  });
+
+  return NextResponse.json(
+    {
+      id: entity.id,
+      entranceId: entity.parentId,
+      flatNumber,
+      floor: floor ?? 0,
+      area: area ?? null,
+      shareNumerator,
+      shareDenominator,
+      createdAt: entity.createdAt,
+    },
+    { status: 201 }
+  );
 }

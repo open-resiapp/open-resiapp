@@ -66,7 +66,7 @@ export default function MandateModal({
     }
   }, [isOpen]);
 
-  // When flat is selected, find the owner via userFlats
+  // When flat is selected, find the owner via memberships at the flat entity
   useEffect(() => {
     if (selectedFlat) {
       fetch(`/api/flats/${selectedFlat}/owners`)

@@ -1,6 +1,6 @@
 import "server-only";
 
-import { and, desc, eq, isNull, sql } from "drizzle-orm";
+import { and, desc, eq, inArray, isNull, sql } from "drizzle-orm";
 import { db } from "@/db";
 import {
   entities,
@@ -78,7 +78,7 @@ export async function getAncestors(entityId: string) {
   const rows = await db
     .select()
     .from(entities)
-    .where(sql`${entities.id} = ANY(${ancestorIds}::uuid[])`);
+    .where(inArray(entities.id, ancestorIds));
   const byId = new Map(rows.map((r) => [r.id, r]));
   return ancestorIds.map((id) => byId.get(id)).filter((r): r is NonNullable<typeof r> => r !== undefined);
 }
@@ -146,7 +146,7 @@ export async function getEffectiveRole(
       and(
         eq(memberships.userId, userId),
         eq(memberships.status, "active"),
-        sql`${memberships.entityId} = ANY(${ancestorIds}::uuid[])`
+        inArray(memberships.entityId, ancestorIds)
       )
     );
   if (rows.length === 0) return null;
@@ -292,7 +292,7 @@ export async function archiveEntity(entityId: string): Promise<void> {
   await db
     .update(entities)
     .set({ archivedAt: new Date() })
-    .where(sql`${entities.id} = ANY(${ids}::uuid[])`);
+    .where(inArray(entities.id, ids));
 }
 
 export async function unarchiveEntity(entityId: string): Promise<void> {
@@ -323,7 +323,7 @@ export async function listUserRoots(userId: string) {
     .from(entities)
     .where(
       and(
-        sql`${entities.id} = ANY(${rootIds}::uuid[])`,
+        inArray(entities.id, rootIds),
         isNull(entities.archivedAt)
       )
     )

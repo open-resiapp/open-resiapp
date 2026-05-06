@@ -1,10 +1,16 @@
 import { NextRequest, NextResponse } from "next/server";
+import { aliasedTable, and, eq, inArray, isNull } from "drizzle-orm";
+import bcrypt from "bcrypt";
+
 import { auth } from "@/lib/auth";
 import { db } from "@/db";
-import { users, flats, entrances, userFlats } from "@/db/schema";
-import { eq, inArray } from "drizzle-orm";
+import {
+  users,
+  memberships,
+  entities,
+  housingUnitData,
+} from "@/db/schema";
 import { hasPermission } from "@/lib/permissions";
-import bcrypt from "bcrypt";
 import type { UserRole } from "@/types";
 
 export async function GET(request: NextRequest) {
@@ -35,19 +41,35 @@ export async function GET(request: NextRequest) {
     return NextResponse.json([]);
   }
 
-  // Get all userFlats with flat + entrance info
+  // Phase 9.1c: read flat assignments via memberships → housing_unit
+  // entities → housing_unit_data. Drops the legacy userFlats join.
   const userIds = allUsers.map((u) => u.id);
-  const ufRows = await db
+  const entrance = aliasedTable(entities, "entrance");
+  type UfRow = {
+    userId: string;
+    flatId: string;
+    flatNumber: string;
+    entranceName: string | null;
+  };
+  const ufRows: UfRow[] = await db
     .select({
-      userId: userFlats.userId,
-      flatId: flats.id,
-      flatNumber: flats.flatNumber,
-      entranceName: entrances.name,
+      userId: memberships.userId,
+      flatId: entities.id,
+      flatNumber: housingUnitData.flatNumber,
+      entranceName: entrance.name,
     })
-    .from(userFlats)
-    .innerJoin(flats, eq(userFlats.flatId, flats.id))
-    .innerJoin(entrances, eq(flats.entranceId, entrances.id))
-    .where(inArray(userFlats.userId, userIds));
+    .from(memberships)
+    .innerJoin(entities, eq(memberships.entityId, entities.id))
+    .innerJoin(housingUnitData, eq(housingUnitData.entityId, entities.id))
+    .leftJoin(entrance, eq(entrance.id, entities.parentId))
+    .where(
+      and(
+        inArray(memberships.userId, userIds),
+        eq(memberships.status, "active"),
+        eq(entities.kind, "housing_unit"),
+        isNull(entities.archivedAt)
+      )
+    );
 
   // Build map: userId → flat numbers
   const userFlatsMap = new Map<string, string[]>();
@@ -116,7 +138,6 @@ export async function POST(request: NextRequest) {
       passwordHash,
       phone: phone || null,
       role: role || "owner",
-      flatId: resolvedFlatIds[0] || null, // Phase 1 compat
     })
     .returning({
       id: users.id,
@@ -125,14 +146,22 @@ export async function POST(request: NextRequest) {
       role: users.role,
     });
 
-  // Insert junction rows
+  // Phase 9.1d: only memberships — legacy userFlats write removed.
   if (resolvedFlatIds.length > 0) {
-    await db.insert(userFlats).values(
-      resolvedFlatIds.map((fid) => ({
-        userId: user.id,
-        flatId: fid,
-      }))
-    );
+    const userRole = (role || "owner") as typeof memberships.$inferInsert.role;
+    await db
+      .insert(memberships)
+      .values(
+        resolvedFlatIds.map((fid) => ({
+          userId: user.id,
+          entityId: fid,
+          role: userRole,
+          status: "active" as const,
+        }))
+      )
+      .onConflictDoNothing({
+        target: [memberships.userId, memberships.entityId],
+      });
   }
 
   return NextResponse.json(user, { status: 201 });

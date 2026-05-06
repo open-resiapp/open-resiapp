@@ -1,10 +1,11 @@
 import { getTranslations } from "next-intl/server";
 import { and, eq } from "drizzle-orm";
 import { db } from "@/db";
-import { building, boardMembers, users } from "@/db/schema";
+import { boardMembers, users } from "@/db/schema";
 import { auth } from "@/lib/auth";
 import { redirect } from "@/i18n/navigation";
 import PendingStatusPoller from "@/components/community-info/PendingStatusPoller";
+import { getCommunityRoot } from "@/lib/legacy-compat";
 
 export default async function CommunityInfoPage() {
   const session = await auth();
@@ -12,7 +13,7 @@ export default async function CommunityInfoPage() {
 
   const t = await getTranslations("CommunityInfo");
 
-  const [buildingRow] = await db.select().from(building).limit(1);
+  const buildingRow = await getCommunityRoot();
 
   const board = buildingRow
     ? await db
@@ -25,7 +26,7 @@ export default async function CommunityInfoPage() {
         .innerJoin(users, eq(boardMembers.userId, users.id))
         .where(
           and(
-            eq(boardMembers.buildingId, buildingRow.id),
+            eq(boardMembers.entityId, buildingRow.id),
             eq(boardMembers.isActive, true)
           )
         )

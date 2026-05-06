@@ -17,22 +17,32 @@ import {
 } from "./sdk";
 import { tablePrefixFor, migrationsTableFor } from "./sdk";
 import { registerModule, type LoadedModule } from "./registry";
-import type { building as buildingTable } from "@/db/schema";
 
 // Read-only whitelist of core tables exposed via sdk.db.read. Each entry
-// declares the table + columns a module is allowed to read.
+// declares the table + columns a module is allowed to read. After
+// RES-20260501-002, the canonical surface is entities + housing_*_data;
+// the legacy `building` / `entrances` / `flats` aliases are kept for
+// modules built against the older spec until they migrate.
 const CORE_READ_WHITELIST: Record<string, ReadonlySet<string>> = {
-  building: new Set(["id", "name", "country"]),
-  users: new Set(["id", "email", "name", "role", "is_active", "flat_id"]),
-  entrances: new Set(["id", "name", "building_id"]),
-  flats: new Set(["id", "flat_number", "entrance_id"]),
+  entities: new Set(["id", "parent_id", "kind", "name", "path", "depth", "root_id", "archived_at"]),
+  housing_root_data: new Set(["entity_id", "address", "ico", "voting_method", "country", "governance_model"]),
+  housing_unit_data: new Set(["entity_id", "flat_number", "floor", "share_numerator", "share_denominator", "area"]),
+  memberships: new Set(["id", "user_id", "entity_id", "role", "weight", "status"]),
+  users: new Set(["id", "email", "name", "platform_role", "is_active"]),
 };
+
+// Shape every module gets as `community` — matches SDK's Community DTO.
+export interface CommunityRow {
+  id: string;
+  name: string;
+  country: "sk" | "cz";
+}
 
 // Per-module SDK constructed at hook-call time. Closes over the LoadedModule
 // (for grants) and the active community.
 export function buildContextFor(
   mod: LoadedModule,
-  communityRow: typeof buildingTable.$inferSelect
+  communityRow: CommunityRow
 ): ModuleContext {
   const community: SdkCommunity = {
     id: communityRow.id,
@@ -192,9 +202,29 @@ function makeSDK(mod: LoadedModule, community: SdkCommunity): ModuleSDK {
         return community;
       },
       async member(userId): Promise<SdkMember | null> {
+        // Phase 9.1d: role no longer lives on users; resolve the
+        // strongest membership role within the active community.
         const res = await getPool().query(
-          `SELECT id, email, name, role FROM users WHERE id = $1 LIMIT 1`,
-          [userId]
+          `SELECT u.id, u.email, u.name,
+                  COALESCE(
+                    (SELECT m.role FROM memberships m
+                     JOIN entities e ON e.id = m.entity_id
+                     WHERE m.user_id = u.id
+                       AND m.status = 'active'
+                       AND e.root_id = $2
+                     ORDER BY
+                       CASE m.role
+                         WHEN 'admin' THEN 4
+                         WHEN 'owner' THEN 3
+                         WHEN 'vote_counter' THEN 2
+                         WHEN 'caretaker' THEN 1
+                         ELSE 0
+                       END DESC
+                     LIMIT 1),
+                    'owner'
+                  ) AS role
+           FROM users u WHERE u.id = $1 LIMIT 1`,
+          [userId, community.id]
         );
         if (res.rowCount === 0) return null;
         const r = res.rows[0];

@@ -5,10 +5,10 @@ import {
   communityPosts,
   communityResponses,
   users,
-  entrances,
+  entities,
   eventRsvps,
 } from "@/db/schema";
-import { and, eq, asc, sql } from "drizzle-orm";
+import { aliasedTable, and, eq, asc, sql } from "drizzle-orm";
 import { hasPermission } from "@/lib/permissions";
 import type { UserRole } from "@/types";
 
@@ -36,6 +36,7 @@ export async function GET(
 
   const { id } = await params;
 
+  const entrance = aliasedTable(entities, "entrance");
   const [row] = await db
     .select({
       id: communityPosts.id,
@@ -47,7 +48,7 @@ export async function GET(
       eventDate: communityPosts.eventDate,
       eventLocation: communityPosts.eventLocation,
       entranceId: communityPosts.entranceId,
-      entranceName: entrances.name,
+      entranceName: entrance.name,
       expiresAt: communityPosts.expiresAt,
       createdAt: communityPosts.createdAt,
       updatedAt: communityPosts.updatedAt,
@@ -58,7 +59,7 @@ export async function GET(
     })
     .from(communityPosts)
     .leftJoin(users, eq(communityPosts.authorId, users.id))
-    .leftJoin(entrances, eq(communityPosts.entranceId, entrances.id))
+    .leftJoin(entrance, eq(entrance.id, communityPosts.entranceId))
     .where(eq(communityPosts.id, id))
     .limit(1);
 

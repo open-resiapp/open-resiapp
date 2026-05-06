@@ -5,13 +5,13 @@ import { and, eq, inArray, isNull } from "drizzle-orm";
 
 import { db } from "@/db";
 import {
-  building,
   coreModules,
   coreModuleGrants,
   entities,
 } from "@/db/schema";
 import type { ModuleManifest } from "./sdk";
 import { MODULES_DIR } from "./loader";
+import { listCommunityRoots } from "@/lib/legacy-compat";
 
 // Modules shipped in-tree. Each entry declares the entity kinds that
 // should auto-enable the module on first app start. For non-matching
@@ -112,16 +112,12 @@ async function ensureGrantsForHousingRoots(
   manifest: ModuleManifest,
   config: BundledModuleConfig
 ): Promise<void> {
-  // During Phase 4 dual-run, core_module_grants.building_id is still the
-  // primary FK and it equals the root entity_id (0023 backfill reused
-  // building.id as entity.id). So we iterate buildings, look up the
-  // matching root entity for kind filtering, and insert with both columns
-  // pointing at the same UUID. Phase 9 drops building_id and the lookup
-  // collapses to entities only.
-  const buildings = await db.select({ id: building.id }).from(building);
-  if (buildings.length === 0) return;
+  // Phase 9.1d: iterate root entities directly via the compat helper.
+  // Single-tenant: one root. Cloud per-tenant: also one root per process.
+  const communityRoots = await listCommunityRoots();
+  if (communityRoots.length === 0) return;
 
-  const rootIds = buildings.map((b) => b.id);
+  const rootIds = communityRoots.map((r) => r.id);
   const rootEntities = await db
     .select({ id: entities.id, kind: entities.kind })
     .from(entities)

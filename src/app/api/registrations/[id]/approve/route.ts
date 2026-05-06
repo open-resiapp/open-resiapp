@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { and, eq } from "drizzle-orm";
 import { auth } from "@/lib/auth";
 import { db } from "@/db";
-import { users, flats, userFlats, memberships } from "@/db/schema";
+import { users, memberships, entities } from "@/db/schema";
 import { hasPermission } from "@/lib/permissions";
 import type { UserRole } from "@/types";
 
@@ -63,10 +63,11 @@ export async function POST(
     );
   }
 
+  // Phase 9.1d: existence check via the housing_unit entity.
   const [flat] = await db
-    .select({ id: flats.id })
-    .from(flats)
-    .where(eq(flats.id, flatId))
+    .select({ id: entities.id })
+    .from(entities)
+    .where(and(eq(entities.id, flatId), eq(entities.kind, "housing_unit")))
     .limit(1);
 
   if (!flat) {
@@ -79,23 +80,11 @@ export async function POST(
       .set({
         status: "active",
         role,
-        flatId,
       })
       .where(eq(users.id, id));
 
-    const existingLink = await tx
-      .select({ id: userFlats.id })
-      .from(userFlats)
-      .where(and(eq(userFlats.userId, id), eq(userFlats.flatId, flatId)))
-      .limit(1);
-
-    if (existingLink.length === 0) {
-      await tx.insert(userFlats).values({ userId: id, flatId });
-    }
-
-    // Phase 4 dual-run: mirror to memberships (entity_id = flat_id since
-    // the 0023 backfill reused flat ids as entity ids). The role enum
-    // values match 1:1 between users.role and membership_role.
+    // Phase 9.1d: memberships single source of truth — userFlats /
+    // users.flatId writes removed.
     await tx
       .insert(memberships)
       .values({

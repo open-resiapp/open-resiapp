@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { db } from "@/db";
-import { boardMembers, building, users } from "@/db/schema";
-import { and, eq } from "drizzle-orm";
+import { boardMembers, users } from "@/db/schema";
+import { eq } from "drizzle-orm";
 import { hasPermission } from "@/lib/permissions";
+import { getCommunityRoot } from "@/lib/legacy-compat";
 import type { UserRole } from "@/types";
 
 export async function GET() {
@@ -12,7 +13,7 @@ export async function GET() {
     return NextResponse.json({ error: "Neautorizovaný prístup" }, { status: 401 });
   }
 
-  const [bld] = await db.select().from(building).limit(1);
+  const bld = await getCommunityRoot();
   if (!bld) {
     return NextResponse.json({ members: [], governanceModel: "chairman_council" });
   }
@@ -30,7 +31,7 @@ export async function GET() {
     })
     .from(boardMembers)
     .leftJoin(users, eq(boardMembers.userId, users.id))
-    .where(eq(boardMembers.buildingId, bld.id));
+    .where(eq(boardMembers.entityId, bld.id));
 
   return NextResponse.json({
     members,
@@ -58,7 +59,7 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  const [bld] = await db.select().from(building).limit(1);
+  const bld = await getCommunityRoot();
   if (!bld) {
     return NextResponse.json({ error: "Budova neexistuje" }, { status: 400 });
   }

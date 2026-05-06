@@ -1,7 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
+import { and, eq, isNull } from "drizzle-orm";
+
 import { db } from "@/db";
-import { users, flats, userFlats, memberships } from "@/db/schema";
-import { eq, inArray } from "drizzle-orm";
+import {
+  users,
+  memberships,
+  entities,
+  housingUnitData,
+} from "@/db/schema";
 import { withExternalAuth } from "@/lib/external-auth";
 import type { ValidatedApiKey } from "@/lib/api-keys";
 
@@ -30,15 +36,24 @@ async function handleGet(
     return NextResponse.json({ error: "User not found" }, { status: 404 });
   }
 
-  // Get flat assignments
+  // Phase 9.1c: read flat assignments via memberships → housing_unit
+  // entities → housing_unit_data.
   const ufRows = await db
     .select({
-      flatId: userFlats.flatId,
-      flatNumber: flats.flatNumber,
+      flatId: entities.id,
+      flatNumber: housingUnitData.flatNumber,
     })
-    .from(userFlats)
-    .innerJoin(flats, eq(userFlats.flatId, flats.id))
-    .where(eq(userFlats.userId, user.id));
+    .from(memberships)
+    .innerJoin(entities, eq(memberships.entityId, entities.id))
+    .innerJoin(housingUnitData, eq(housingUnitData.entityId, entities.id))
+    .where(
+      and(
+        eq(memberships.userId, user.id),
+        eq(memberships.status, "active"),
+        eq(entities.kind, "housing_unit"),
+        isNull(entities.archivedAt)
+      )
+    );
 
   return NextResponse.json({
     ...user,
@@ -75,27 +90,9 @@ async function handlePatch(
     await db.update(users).set(updateData).where(eq(users.id, id));
   }
 
-  // Update flat assignments if provided
+  // Phase 9.1d: memberships are authoritative. Replace the user's
+  // membership set with the new flat list.
   if (flatIds !== undefined) {
-    // Remove existing
-    await db.delete(userFlats).where(eq(userFlats.userId, id));
-
-    if (flatIds.length > 0) {
-      await db.insert(userFlats).values(
-        flatIds.map((fid: string) => ({
-          userId: id,
-          flatId: fid,
-        }))
-      );
-
-      // Update primary flatId
-      await db
-        .update(users)
-        .set({ flatId: flatIds[0] })
-        .where(eq(users.id, id));
-    }
-
-    // Phase 4 dual-run: mirror to memberships (flat.id == entity.id).
     const [userRow] = await db
       .select({ role: users.role })
       .from(users)

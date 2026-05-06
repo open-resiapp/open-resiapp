@@ -1,11 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { db } from "@/db";
-import { externalConnections, pairingRequests, building } from "@/db/schema";
+import { externalConnections, pairingRequests } from "@/db/schema";
 import { desc, eq, or } from "drizzle-orm";
 import { hasPermission } from "@/lib/permissions";
 import { createPairingRequest } from "@/lib/pairing";
 import { sendPairingInvitation } from "@/lib/email";
+import { getCommunityRoot } from "@/lib/legacy-compat";
 import type { UserRole, ApiKeyPermission, ConnectionType } from "@/types";
 
 export async function GET() {
@@ -86,8 +87,8 @@ export async function POST(request: NextRequest) {
       createdById: session.user!.id!,
     });
 
-    // Get building info for the email
-    const [buildingInfo] = await db.select().from(building).limit(1);
+    // Get community root info for the email
+    const buildingInfo = await getCommunityRoot();
     const buildingName = buildingInfo?.name || "OpenResiApp";
     const buildingUrl = process.env.NEXTAUTH_URL || process.env.APP_URL || "http://localhost:3000";
 

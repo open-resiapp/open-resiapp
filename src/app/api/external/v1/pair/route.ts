@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { db } from "@/db";
-import { building } from "@/db/schema";
 import { completePairing } from "@/lib/pairing";
+import { getCommunityRoot } from "@/lib/legacy-compat";
 import { checkRateLimit, RATE_LIMITS, getClientIp } from "@/lib/rate-limiter";
 import { logExternalApiRequest } from "@/lib/audit-log";
 import {
@@ -84,8 +83,8 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: result.error }, { status: 400 });
     }
 
-    // Return building info
-    const [buildingInfo] = await db.select().from(building).limit(1);
+    // Return community root info
+    const buildingInfo = await getCommunityRoot();
 
     logExternalApiRequest({
       connectionId: result.connectionId,

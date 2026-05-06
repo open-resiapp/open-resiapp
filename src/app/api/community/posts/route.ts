@@ -4,13 +4,23 @@ import { db } from "@/db";
 import {
   communityPosts,
   users,
-  entrances,
-  building,
   eventRsvps,
   entities,
   memberships,
 } from "@/db/schema";
-import { and, desc, eq, gt, inArray, isNull, or, asc, sql } from "drizzle-orm";
+import { getCommunityRoot } from "@/lib/legacy-compat";
+import {
+  aliasedTable,
+  and,
+  desc,
+  eq,
+  gt,
+  inArray,
+  isNull,
+  or,
+  asc,
+  sql,
+} from "drizzle-orm";
 import { hasPermission } from "@/lib/permissions";
 import { dispatchHook } from "@/lib/modules/dispatch";
 import type { UserRole } from "@/types";
@@ -53,7 +63,7 @@ export async function GET(request: NextRequest) {
   }
 
   if (role !== "admin") {
-    const [buildingRow] = await db.select().from(building).limit(1);
+    const buildingRow = await getCommunityRoot();
     const crossVisible = buildingRow?.communityCrossEntranceVisible ?? false;
 
     if (!crossVisible) {
@@ -78,6 +88,7 @@ export async function GET(request: NextRequest) {
   const where = conditions.length > 0 ? and(...(conditions as never[])) : undefined;
 
   const isEventType = typeParam === "event";
+  const entrance = aliasedTable(entities, "entrance");
 
   const result = await db
     .select({
@@ -90,7 +101,7 @@ export async function GET(request: NextRequest) {
       eventDate: communityPosts.eventDate,
       eventLocation: communityPosts.eventLocation,
       entranceId: communityPosts.entranceId,
-      entranceName: entrances.name,
+      entranceName: entrance.name,
       expiresAt: communityPosts.expiresAt,
       createdAt: communityPosts.createdAt,
       updatedAt: communityPosts.updatedAt,
@@ -101,7 +112,7 @@ export async function GET(request: NextRequest) {
     })
     .from(communityPosts)
     .leftJoin(users, eq(communityPosts.authorId, users.id))
-    .leftJoin(entrances, eq(communityPosts.entranceId, entrances.id))
+    .leftJoin(entrance, eq(entrance.id, communityPosts.entranceId))
     .where(where)
     .orderBy(
       isEventType ? asc(communityPosts.eventDate) : desc(communityPosts.createdAt)
@@ -194,15 +205,10 @@ export async function POST(request: NextRequest) {
 
   const expiresAt = new Date(Date.now() + POST_TTL_DAYS * 24 * 60 * 60 * 1000);
 
-  // Phase 4 dual-run: dual-write entity_id; NULL entrance_id = community-wide
-  // → root entity.
+  // Phase 9.1d: NULL entranceId = community-wide → root entity.
   let cpEntityId: string | null = entranceId || null;
   if (cpEntityId === null) {
-    const [root] = await db
-      .select({ id: building.id })
-      .from(building)
-      .orderBy(building.createdAt)
-      .limit(1);
+    const root = await getCommunityRoot();
     cpEntityId = root?.id ?? null;
   }
 

@@ -4,15 +4,14 @@ import { db } from "@/db";
 import {
   posts,
   users,
-  entrances,
-  building,
   entities,
   memberships,
 } from "@/db/schema";
-import { desc, eq, sql } from "drizzle-orm";
+import { aliasedTable, desc, eq, sql } from "drizzle-orm";
 import { hasPermission } from "@/lib/permissions";
 import { sendPushToAll } from "@/lib/push";
 import { dispatchHook } from "@/lib/modules/dispatch";
+import { getCommunityRoot } from "@/lib/legacy-compat";
 import type { UserRole } from "@/types";
 
 export async function GET() {
@@ -29,6 +28,7 @@ export async function GET() {
   // viewer holds an active membership at an entity that overlaps P's
   // entity along the materialized path (ancestor / equal / descendant).
   // Admin bypasses the filter.
+  const entrance = aliasedTable(entities, "entrance");
   const baseQuery = db
     .select({
       id: posts.id,
@@ -40,7 +40,7 @@ export async function GET() {
       updatedAt: posts.updatedAt,
       entranceId: posts.entranceId,
       entityId: posts.entityId,
-      entranceName: entrances.name,
+      entranceName: entrance.name,
       author: {
         id: users.id,
         name: users.name,
@@ -48,7 +48,7 @@ export async function GET() {
     })
     .from(posts)
     .leftJoin(users, eq(posts.authorId, users.id))
-    .leftJoin(entrances, eq(posts.entranceId, entrances.id));
+    .leftJoin(entrance, eq(entrance.id, posts.entranceId));
 
   const result = isAdmin
     ? await baseQuery.orderBy(desc(posts.isPinned), desc(posts.createdAt))
@@ -89,15 +89,11 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  // Phase 4 dual-run: dual-write entity_id; NULL entrance_id = building-wide
-  // → root entity.
+  // Phase 9.1d: NULL entranceId means building-wide → resolve via the
+  // root entity (single-tenant assumption).
   let postEntityId: string | null = entranceId || null;
   if (postEntityId === null) {
-    const [root] = await db
-      .select({ id: building.id })
-      .from(building)
-      .orderBy(building.createdAt)
-      .limit(1);
+    const root = await getCommunityRoot();
     postEntityId = root?.id ?? null;
   }
 

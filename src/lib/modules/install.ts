@@ -7,11 +7,11 @@ import path from "path";
 
 import { db } from "@/db";
 import {
-  building,
   coreModuleGrants,
   coreModules,
 } from "@/db/schema";
 import { eq } from "drizzle-orm";
+import { getCommunityRoot, listCommunityRoots } from "@/lib/legacy-compat";
 
 import {
   compareSemver,
@@ -211,14 +211,14 @@ export async function finalizeInstall(
       },
     });
 
-  // Persist grant per building (single building today, but honor per-community).
-  const buildings = await db.select({ id: building.id }).from(building);
-  for (const b of buildings) {
+  // Persist grant per community root (housing_community / housing_block).
+  const communityRoots = await listCommunityRoots();
+  for (const root of communityRoots) {
     await db
       .insert(coreModuleGrants)
       .values({
-        buildingId: b.id,
-        entityId: b.id,
+        buildingId: root.id,
+        entityId: root.id,
         moduleName: manifest.name,
         permissions: approvedPermissions,
         grantedById: approverUserId,
@@ -238,7 +238,7 @@ export async function finalizeInstall(
   await loadAllModules();
   const loaded = getModule(manifest.name);
   if (loaded?.definition.onInstall) {
-    const [communityRow] = await db.select().from(building).limit(1);
+    const communityRow = await getCommunityRoot();
     if (communityRow) {
       try {
         await Promise.race([
@@ -296,7 +296,7 @@ export async function uninstallModule(name: string): Promise<void> {
 
 async function runOnUninstallSafe(loaded: LoadedModule): Promise<void> {
   if (!loaded.definition.onUninstall) return;
-  const [communityRow] = await db.select().from(building).limit(1);
+  const communityRow = await getCommunityRoot();
   if (!communityRow) return;
   try {
     await Promise.race([

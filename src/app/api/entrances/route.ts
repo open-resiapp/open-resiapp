@@ -1,9 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { db } from "@/db";
-import { entrances, building, flats } from "@/db/schema";
-import { eq, sql } from "drizzle-orm";
+import { aliasedTable, and, eq, isNull, sql } from "drizzle-orm";
+
+import { entities } from "@/db/schema";
 import { hasPermission } from "@/lib/permissions";
+import { createEntity } from "@/lib/entity-tree";
+import { recordEntityAudit } from "@/lib/entity-audit";
+import { getCommunityRoot } from "@/lib/legacy-compat";
 import type { UserRole } from "@/types";
 
 export async function GET() {
@@ -12,19 +16,32 @@ export async function GET() {
     return NextResponse.json({ error: "Neautorizovaný prístup" }, { status: 401 });
   }
 
+  // Phase 9.1d: list housing_entrance entities with their child
+  // housing_unit count.
+  const child = aliasedTable(entities, "child");
   const result = await db
     .select({
-      id: entrances.id,
-      name: entrances.name,
-      streetNumber: entrances.streetNumber,
-      buildingId: entrances.buildingId,
-      createdAt: entrances.createdAt,
-      flatCount: sql<number>`count(${flats.id})::int`,
+      id: entities.id,
+      name: entities.name,
+      streetNumber: sql<string | null>`NULL`,
+      buildingId: entities.parentId,
+      createdAt: entities.createdAt,
+      flatCount: sql<number>`count(${child.id})::int`,
     })
-    .from(entrances)
-    .leftJoin(flats, eq(flats.entranceId, entrances.id))
-    .groupBy(entrances.id)
-    .orderBy(entrances.name);
+    .from(entities)
+    .leftJoin(
+      child,
+      and(
+        eq(child.parentId, entities.id),
+        eq(child.kind, "housing_unit"),
+        isNull(child.archivedAt)
+      )
+    )
+    .where(
+      and(eq(entities.kind, "housing_entrance"), isNull(entities.archivedAt))
+    )
+    .groupBy(entities.id)
+    .orderBy(entities.name);
 
   return NextResponse.json(result);
 }
@@ -46,19 +63,40 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Názov je povinný" }, { status: 400 });
   }
 
-  const [bld] = await db.select().from(building).limit(1);
+  const bld = await getCommunityRoot();
   if (!bld) {
     return NextResponse.json({ error: "Budova nenájdená" }, { status: 404 });
   }
 
-  const [entrance] = await db
-    .insert(entrances)
-    .values({
-      buildingId: bld.id,
-      name,
+  // Phase 9.1d/e: create the housing_entrance entity. The legacy
+  // entrances table write is gone — the entity tree is canonical.
+  // streetNumber has no entity-side counterpart yet; if needed, a
+  // housing_entrance_data extension table can ship later.
+  const entity = await createEntity({
+    parentId: bld.id,
+    kind: "housing_entrance",
+    name,
+  });
+  recordEntityAudit({
+    action: "entity.create",
+    actorUserId: session.user.id,
+    entityId: entity.id,
+    after: {
+      kind: entity.kind,
+      name: entity.name,
+      parentId: entity.parentId,
       streetNumber: streetNumber || null,
-    })
-    .returning();
+    },
+  });
 
-  return NextResponse.json(entrance, { status: 201 });
+  return NextResponse.json(
+    {
+      id: entity.id,
+      buildingId: entity.parentId,
+      name: entity.name,
+      streetNumber: streetNumber || null,
+      createdAt: entity.createdAt,
+    },
+    { status: 201 }
+  );
 }

@@ -1,139 +1,171 @@
 # Phase 9 cutover plan — drop legacy schema
 
-**Status:** prep only. Do NOT run until the Phase 6/7/8 deploy has been
-in production for at least 14 days, the dual-write data has been
-spot-checked across every affected table, and a full pg_dump exists.
+**Status:** prep + compat layer ready. Destructive migration NOT
+generated. Sequence the chunks below across multiple deploys.
 
-## Pre-cutover checks
+## Audit — 31 files reading legacy tables
 
-Run before generating the migration:
+```
+A. Building reads (single-tenant root config)
+   - src/app/api/building/route.ts                     → getCommunityRoot()
+   - src/app/api/manifest/route.ts                     → getCommunityRoot()
+   - src/app/api/external/v1/building/route.ts         → getCommunityRoot() + listEntrances()
+   - src/app/api/external-connections/route.ts         → getCommunityRoot()
+   - src/app/[locale]/(dashboard)/community-info/page.tsx → getCommunityRoot()
+
+B. Entrance / flat CRUD (will become operator-only via /api/admin/entities)
+   - src/app/api/entrances/route.ts                    → /api/admin/entities (kind=housing_entrance)
+   - src/app/api/entrances/[id]/route.ts
+   - src/app/api/flats/route.ts                        → /api/admin/entities (kind=housing_unit)
+   - src/app/api/flats/[id]/route.ts
+   - src/app/api/flats/[id]/owners/route.ts            → listSubtreeMemberships() filtered to housing_unit
+   - src/app/api/external/v1/flats/route.ts            → re-derive from entities + housing_unit_data
+   - src/app/api/external/v1/stats/route.ts            → count via entities (kind filter)
+
+C. User-flat link (replaced by memberships)
+   - src/app/api/users/route.ts                        → listUserFlats() + memberships
+   - src/app/api/users/[id]/route.ts                   → already partly switched in 6f; complete the user.flatId/role removal
+   - src/app/api/external/v1/users/route.ts            → memberships
+   - src/app/api/external/v1/users/[id]/route.ts       → memberships
+   - src/app/api/external/v1/pair/route.ts             → memberships
+   - src/app/api/register/route.ts                     → memberships only
+   - src/app/api/registrations/[id]/approve/route.ts   → memberships only
+   - src/app/api/invitations/[token]/route.ts          → entityId reference
+
+D. Posts / community / nav (visibility filters already entity-aware in 6c/6d)
+   - src/app/api/posts/route.ts                        → drop entrances leftJoin
+   - src/app/api/community/posts/route.ts              → drop entrances leftJoin
+   - src/app/api/community/posts/[id]/route.ts
+   - src/app/api/community/directory/route.ts          → memberships
+
+E. Module system (still references building.id as community marker)
+   - src/lib/modules/install.ts                        → swap building.id for root entity id from getCommunityRoot()
+   - src/lib/modules/loader.ts
+   - src/lib/modules/sdk-runtime.ts
+   - src/lib/modules/dispatch.ts
+   - src/lib/modules/bootstrap-bundled.ts              → already uses entities; tighten away from building
+
+F. Board members
+   - src/app/api/board-members/route.ts                → drop building.id read; entityId already populated
+
+G. Type re-exports
+   - src/types/index.ts                                → drop Building/Entrance/Flat InferSelectModel exports
+```
+
+## Compat layer ready
+
+`src/lib/legacy-compat.ts` exports drop-in helpers:
+- `getCommunityRoot()` → replaces `db.select().from(building).limit(1)`
+- `listCommunityRoots()` → replaces full `building` listing
+- `listEntrances(rootId)` → replaces `entrances` per-building reads
+- `getFlatById(flatId)` / `listFlatsForEntrance(entranceId)` → replace `flats` reads
+- `listUserFlats(userId)` → replaces `userFlats→flats` joins
+- `getUserPrimaryRole(userId)` → replaces direct `users.role` reads
+- `getPrimaryFlatId(userId)` → replaces direct `users.flatId` reads
+
+Mechanical migration path: each call site in the audit above changes
+`from "@/db/schema"` import to `from "@/lib/legacy-compat"` and swaps
+the Drizzle query for the helper call. Once every call site goes
+through the shim file, the underlying tables can be dropped without
+touching call sites again.
+
+## Chunked deploy plan
+
+Each chunk is a separate PR + deploy + 24h soak before the next.
+
+1. **9.1a** — building reads → compat layer (5 files in section A).
+   Verify dashboard / manifest still render. No schema change.
+2. **9.1b** — entrance / flat CRUD → admin entities API (section B,
+   ~7 files). UI surfaces become read-only on user side; operator gets
+   `pnpm entity-admin` instead. No schema change.
+3. **9.1c** — user-flat link → memberships only (section C, ~8 files).
+   Drop `users.flatId` writes; keep column for now.
+4. **9.1d** — module system + posts cleanup (D + E + F, ~9 files).
+   No schema change.
+5. **9.1e** — drop dual-write blocks across the 8 INSERT sites from
+   Phase 6a. Now every new row writes only `entity_id`.
+6. **9.2a** — pre-cutover sanity checks (5 SQL queries below).
+7. **9.2b** — destructive migration: drop legacy columns, drop legacy
+   tables in this order: `user_flats` → `flats` → `entrances` → `building`,
+   drop `userRoleEnum`, drop `users.role` and `users.flatId` columns.
+   **No rollback** beyond the pg_dump from the entrypoint.
+8. **9.2c** — drop `src/lib/legacy-compat.ts` and `UserRole` type.
+
+## Pre-cutover sanity checks
+
+Run before chunk 9.2b. Every count must be 0.
 
 ```sql
--- 1. Every voting must have a non-null entity_id matching its entrance_id
+-- 1. Voting refs vs. entities
 SELECT count(*) FROM mod_voting_votings
 WHERE entity_id IS NULL
    OR (entrance_id IS NOT NULL AND entity_id <> entrance_id);
--- Expected: 0
 
--- 2. Every vote / mandate has entity_id == flat_id
 SELECT count(*) FROM mod_voting_votes
 WHERE entity_id IS NULL OR entity_id <> flat_id;
+
 SELECT count(*) FROM mod_voting_mandates
 WHERE from_entity_id IS NULL OR from_entity_id <> from_flat_id;
--- Expected: 0 / 0
 
--- 3. Every post / document / community_post / board_member /
---    core_module_grant has entity_id populated
+-- 2. Posts / documents / community / boards / grants
 SELECT 'posts' AS t, count(*) FROM posts WHERE entity_id IS NULL
 UNION ALL SELECT 'documents', count(*) FROM documents WHERE entity_id IS NULL
 UNION ALL SELECT 'community_posts', count(*) FROM community_posts WHERE entity_id IS NULL
 UNION ALL SELECT 'board_members', count(*) FROM board_members WHERE entity_id IS NULL
 UNION ALL SELECT 'core_module_grants', count(*) FROM core_module_grants WHERE entity_id IS NULL;
--- Expected: 0 across the board
 
--- 4. Every active user with a flat has a matching membership
+-- 3. Memberships fully cover users.flat_id
 SELECT count(*) FROM users u
 LEFT JOIN memberships m
   ON m.user_id = u.id AND m.entity_id = u.flat_id AND m.status = 'active'
 WHERE u.flat_id IS NOT NULL AND m.id IS NULL;
--- Expected: 0
 
--- 5. user_flats fully mirrored in memberships
+-- 4. user_flats fully mirrored in memberships
 SELECT count(*) FROM user_flats uf
 LEFT JOIN memberships m
   ON m.user_id = uf.user_id AND m.entity_id = uf.flat_id AND m.status = 'active'
 WHERE m.id IS NULL;
--- Expected: 0
 ```
 
-If any check returns a nonzero count, abort and run a backfill before
-proceeding.
+If any check returns > 0, abort and run a backfill before proceeding.
 
-## Code prep (PR before the destructive deploy)
+## Destructive migration outline (chunk 9.2b)
 
-These edits replace the remaining legacy reads with entity / membership
-reads. They land in a separate PR ahead of the migration so the running
-app can survive the column drops.
-
-1. **`hasPermissionForUser(user, perm)` callers** — replace with
-   `requireEntityPermission(userId, entityId, perm)`. Every server
-   action / route handler that currently reads `session.user.role` for
-   gating gains an `entityId` parameter (current entity from the cookie
-   resolver added in Phase 8).
-2. **`users.role` reads** — drop the column. All role logic flows from
-   `memberships.role` resolved via the entity. `users.platformRole`
-   stays for the cross-tenant superadmin marker.
-3. **`users.flatId` reads** — replace with a `memberships` query
-   filtered to `kind = 'housing_unit'`. There can be N flats per user;
-   any UI surface that assumes a single flat needs an explicit pick.
-4. **`userFlats` reads** — every join becomes a `memberships` join with
-   `housing_unit_data` for share/area/floor.
-5. **`flats` reads** — replace with `entities + housing_unit_data`.
-6. **`entrances` reads** — replace with `entities` filtered to
-   `kind = 'housing_entrance'`. Display name lives on `entities.name`.
-7. **`building` reads** — replace with the root entity row + the
-   `housing_root_data` extension table for ICO / address / voting
-   method / governance model / country / cross-entrance flag.
-8. **Dual-write hot paths** — drop the legacy column writes. Search for
-   `// Phase 4 dual-run` comments in `/api/posts`, `/api/community/posts`,
-   `/api/votings`, `/api/votes`, `/api/mandates`, `/api/board-members`,
-   `/api/invitations`, `/api/registrations/[id]/approve`, `/api/register`,
-   `/api/users/[id]`, `/api/external/v1/users`, `/api/external/v1/users/[id]`,
-   `src/lib/modules/install.ts`. Each comment marks a write to remove.
-9. **`/api/flats/*`, `/api/entrances/*`** — repoint to the operator-only
-   admin entities API. The end-user UI shouldn't have CRUD on these
-   anyway; if any settings page still does, redirect it to a read-only
-   tree view.
-10. **External API contract** — `/api/external/v1/flats`,
-    `/api/external/v1/building`, `/api/external/v1/users`. Decide
-    per-endpoint whether to keep the legacy response shape (re-derive
-    from entities) or version-bump to v2 with an entity payload. Until
-    that decision, keep the v1 shape and re-derive.
-11. **`UserRole` type** — remove. Replace with `MembershipRole` from
-    `entity-tree`.
-
-## Migration SQL outline
-
-Generate via `pnpm db:generate` after the schema edits below:
+Generated by `pnpm db:generate` after schema.ts edits below land:
 
 ```ts
-// src/db/schema.ts — drop legacy columns / tables
-// users — remove role + flatId columns
-// votings — drop entranceId; make entityId NOT NULL
-// votes — drop flatId; make entityId NOT NULL
-// mandates — drop fromFlatId; make fromEntityId NOT NULL
-// posts / documents / communityPosts — drop entranceId; entityId NOT NULL
-// invitations — drop flatId
-// boardMembers — drop buildingId; make entityId NOT NULL
-// coreModuleGrants — drop buildingId; make entityId NOT NULL
-// userFlats table — DROP
-// flats table — DROP
-// entrances table — DROP
-// building table — DROP
-// userRoleEnum — DROP TYPE
+// src/db/schema.ts — Phase 9.2 edits
+// users
+//   - drop `role: userRoleEnum(...)`
+//   - drop `flatId: uuid("flat_id").references(() => flats.id)`
+// votings
+//   - drop `entranceId: uuid("entrance_id").references(...)`
+//   - mark `entityId` NOT NULL
+// votes / mandates / posts / documents / community_posts /
+// invitations / board_members / core_module_grants
+//   - drop the matching legacy FK column, mark entity_id NOT NULL
+// table drops (in dependency order):
+//   - user_flats     → DROP TABLE
+//   - flats          → DROP TABLE
+//   - entrances      → DROP TABLE
+//   - building       → DROP TABLE
+// enum drops:
+//   - DROP TYPE user_role
 ```
 
-Drizzle-kit will generate a destructive migration. Review carefully —
-**there is no rollback** beyond the pre-cutover pg_dump.
-
-## Cutover order on deploy day
-
-1. Take a fresh `pg_dump --format=custom`.
-2. Deploy the code-prep PR (entity-only reads + dual-write removal).
-3. Wait 24h for soak.
-4. Run the destructive migration via `pnpm db:migrate`.
-5. Smoke-test voting create/cast, post create, member assign,
-   admin entity tree.
-6. If anything regresses, restore from the dump.
+Drizzle-kit will generate a destructive migration. Review before
+applying. **There is no rollback** beyond restoring the pg_dump created
+by the entrypoint pre-migration backup step.
 
 ## Acceptance criteria
 
-- [ ] 5 sanity SQL queries return 0 before the destructive deploy.
-- [ ] All `// Phase 4 dual-run` comments are removed from src/.
-- [ ] `users.role`, `users.flatId`, `user_flats`, `flats`, `entrances`,
-      `building`, `userRoleEnum` no longer exist in the schema.
+- [ ] All 31 files migrated to legacy-compat or admin entities API.
+- [ ] All `// Phase 4 dual-run` comments removed from src/.
+- [ ] All sanity SQL queries return 0.
+- [ ] Schema no longer references `users.role`, `users.flatId`,
+      `user_flats`, `flats`, `entrances`, `building`, `userRoleEnum`.
 - [ ] Every legacy FK column on the 9 dual-run tables is dropped and
-      its `entity_id`/`from_entity_id` counterpart is `NOT NULL`.
-- [ ] `pnpm dev` boots, voting flow runs end-to-end, all routes return
-      identical data shape to pre-deploy.
+      its entity_id counterpart is NOT NULL.
+- [ ] `pnpm dev` boots, voting flow runs end-to-end, no API responses
+      change shape from current dual-run state.
 - [ ] Rollback procedure documented with exact restore commands.

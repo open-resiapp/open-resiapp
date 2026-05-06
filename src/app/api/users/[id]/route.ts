@@ -3,15 +3,13 @@ import { auth } from "@/lib/auth";
 import { db } from "@/db";
 import {
   users,
-  flats,
-  entrances,
-  userFlats,
   posts,
   documents,
   memberships,
 } from "@/db/schema";
 import { votes, mandates, votings } from "@modules/voting/src/db/schema";
 import { and, eq, inArray, or } from "drizzle-orm";
+import { listUserFlats } from "@/lib/legacy-compat";
 import { hasPermission } from "@/lib/permissions";
 import type { UserRole } from "@/types";
 
@@ -45,19 +43,9 @@ export async function GET(
     return NextResponse.json({ error: "Používateľ nenájdený" }, { status: 404 });
   }
 
-  // Get all flats for this user from junction table
-  const userFlatRows = await db
-    .select({
-      flatId: flats.id,
-      flatNumber: flats.flatNumber,
-      floor: flats.floor,
-      entranceId: flats.entranceId,
-      entranceName: entrances.name,
-    })
-    .from(userFlats)
-    .innerJoin(flats, eq(userFlats.flatId, flats.id))
-    .innerJoin(entrances, eq(flats.entranceId, entrances.id))
-    .where(eq(userFlats.userId, id));
+  // Phase 9.1c: read user's flats via memberships → housing_unit
+  // entities → housing_unit_data + parent (entrance) entity.
+  const userFlatRows = await listUserFlats(id);
 
   // Backward-compat: single flat fields from first flat
   const firstFlat = userFlatRows[0] || null;
@@ -107,22 +95,7 @@ export async function PATCH(
         ? [body.flatId]
         : [];
 
-    // Phase 1 compat: keep users.flatId in sync
-    updateData.flatId = resolvedFlatIds[0] || null;
-
-    // Update junction table: delete old, insert new
-    await db.delete(userFlats).where(eq(userFlats.userId, id));
-    if (resolvedFlatIds.length > 0) {
-      await db.insert(userFlats).values(
-        resolvedFlatIds.map((fid: string) => ({
-          userId: id,
-          flatId: fid,
-        }))
-      );
-    }
-
-    // Phase 4 dual-run: mirror to memberships at the housing_unit
-    // entity ids (flat.id == entity.id thanks to the 0023 backfill).
+    // Phase 9.1d: memberships are the single source of truth.
     // Resolve membership role from the new role (if updating) or the
     // existing user's role.
     const resolvedRole = (updateData.role ??
@@ -300,9 +273,8 @@ export async function DELETE(
     );
   }
 
-  // Clean up userFlats junction table, then delete user
-  // (invitations.createdById cascades, invitations.usedByUserId sets null)
-  await db.delete(userFlats).where(eq(userFlats.userId, id));
+  // Phase 9.1d: memberships have ON DELETE CASCADE on user_id, so
+  // deleting the user removes all of them automatically.
   await db.delete(users).where(eq(users.id, id));
 
   return NextResponse.json({ success: true });

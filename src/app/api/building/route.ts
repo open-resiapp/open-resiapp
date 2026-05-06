@@ -1,9 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
+import { eq } from "drizzle-orm";
+
 import { auth } from "@/lib/auth";
 import { db } from "@/db";
-import { building } from "@/db/schema";
-import { eq } from "drizzle-orm";
+import { entities, housingRootData } from "@/db/schema";
 import { hasPermission } from "@/lib/permissions";
+import { createEntity } from "@/lib/entity-tree";
+import { getCommunityRoot } from "@/lib/legacy-compat";
 import type { UserRole } from "@/types";
 
 export async function GET() {
@@ -12,13 +15,8 @@ export async function GET() {
     return NextResponse.json({ error: "Neautorizovaný prístup" }, { status: 401 });
   }
 
-  const [result] = await db.select().from(building).limit(1);
-
-  if (!result) {
-    return NextResponse.json(null);
-  }
-
-  return NextResponse.json(result);
+  const root = await getCommunityRoot();
+  return NextResponse.json(root ?? null);
 }
 
 export async function PATCH(request: NextRequest) {
@@ -34,45 +32,55 @@ export async function PATCH(request: NextRequest) {
   const body = await request.json();
   const { name, address, ico, votingMethod, legalNotice, country, governanceModel } = body;
 
-  const [existing] = await db.select().from(building).limit(1);
+  // Phase 9.1d: building lives as root entity + housing_root_data.
+  const existing = await getCommunityRoot();
 
   if (!existing) {
-    // Create building if it doesn't exist
+    // Bootstrap: create the root entity and its extension data.
     if (!name || !address) {
       return NextResponse.json(
         { error: "Názov a adresa sú povinné" },
         { status: 400 }
       );
     }
-
-    const [created] = await db
-      .insert(building)
-      .values({
-        name,
-        address,
-        ico: ico || null,
-        votingMethod: votingMethod || "per_share",
-        legalNotice: legalNotice || null,
-      })
-      .returning();
-
+    const root = await createEntity({
+      parentId: null,
+      kind: "housing_community",
+      name,
+    });
+    await db.insert(housingRootData).values({
+      entityId: root.id,
+      address,
+      ico: ico || null,
+      votingMethod: votingMethod || "per_share",
+      country: country || "sk",
+      governanceModel: governanceModel || "chairman_council",
+      legalNotice: legalNotice || null,
+    });
+    const created = await getCommunityRoot();
     return NextResponse.json(created, { status: 201 });
   }
 
-  const updateData: Record<string, unknown> = {};
-  if (name !== undefined) updateData.name = name;
-  if (address !== undefined) updateData.address = address;
-  if (ico !== undefined) updateData.ico = ico;
-  if (votingMethod !== undefined) updateData.votingMethod = votingMethod;
-  if (legalNotice !== undefined) updateData.legalNotice = legalNotice;
-  if (country !== undefined) updateData.country = country;
-  if (governanceModel !== undefined) updateData.governanceModel = governanceModel;
+  if (name !== undefined) {
+    await db
+      .update(entities)
+      .set({ name })
+      .where(eq(entities.id, existing.id));
+  }
+  const housingUpdate: Record<string, unknown> = {};
+  if (address !== undefined) housingUpdate.address = address;
+  if (ico !== undefined) housingUpdate.ico = ico;
+  if (votingMethod !== undefined) housingUpdate.votingMethod = votingMethod;
+  if (legalNotice !== undefined) housingUpdate.legalNotice = legalNotice;
+  if (country !== undefined) housingUpdate.country = country;
+  if (governanceModel !== undefined) housingUpdate.governanceModel = governanceModel;
+  if (Object.keys(housingUpdate).length > 0) {
+    await db
+      .update(housingRootData)
+      .set(housingUpdate)
+      .where(eq(housingRootData.entityId, existing.id));
+  }
 
-  const [updated] = await db
-    .update(building)
-    .set(updateData)
-    .where(eq(building.id, existing.id))
-    .returning();
-
+  const updated = await getCommunityRoot();
   return NextResponse.json(updated);
 }

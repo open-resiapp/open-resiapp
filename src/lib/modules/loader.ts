@@ -5,7 +5,7 @@ import path from "path";
 import { pathToFileURL } from "url";
 
 import { db } from "@/db";
-import { coreModules, coreModuleGrants, building } from "@/db/schema";
+import { coreModules, coreModuleGrants } from "@/db/schema";
 import { eq } from "drizzle-orm";
 
 import {
@@ -17,6 +17,8 @@ import {
 import { CORE_VERSION } from "./core-version";
 import { registerModule, type LoadedModule } from "./registry";
 import { bootstrapBundledModules } from "./bootstrap-bundled";
+import { getCommunityRoot } from "@/lib/legacy-compat";
+import type { CommunityRow } from "./sdk-runtime";
 
 export const MODULES_DIR =
   process.env.OPEN_HOUSING_MODULES_DIR ??
@@ -177,10 +179,10 @@ export async function callOnAppStart(
   loaded: LoadedModule[],
   buildContext: (
     mod: LoadedModule,
-    communityRow: typeof building.$inferSelect
+    communityRow: CommunityRow
   ) => Parameters<NonNullable<ModuleDefinition["onAppStart"]>>[0]
 ): Promise<void> {
-  const [communityRow] = await db.select().from(building).limit(1);
+  const communityRow = await getCommunityRoot();
   if (!communityRow) return;
   for (const mod of loaded) {
     if (!mod.definition.onAppStart) continue;

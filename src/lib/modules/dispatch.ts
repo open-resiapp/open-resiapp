@@ -1,18 +1,16 @@
 import "server-only";
 
-import { db } from "@/db";
-import { building } from "@/db/schema";
-
 import type { DomainHooks } from "./sdk";
 import { runHook } from "./registry";
 import { buildContextFor } from "./sdk-runtime";
 import { markModuleFailed } from "./state";
+import { getCommunityRoot } from "@/lib/legacy-compat";
 
 export async function dispatchHook<K extends keyof DomainHooks>(
   hook: K,
   payload: Parameters<DomainHooks[K]>[0]
 ): Promise<void> {
-  const [communityRow] = await db.select().from(building).limit(1);
+  const communityRow = await getCommunityRoot();
   if (!communityRow) return;
   await runHook(
     hook,
