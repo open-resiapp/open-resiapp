@@ -1,12 +1,12 @@
 ---
 spec_id: RES-20260428-002
 title: "Plugin/Module System"
-status: in_progress
+status: implemented
 created: 2026-04-28
-updated: 2026-04-29
+updated: 2026-05-06
 author: "open-housing"
 owner: "filipvnencak"
-last_verified: 2026-04-29
+last_verified: 2026-05-06
 project_type: architecture
 depends_on: [RES-20260417-001]
 related_handoffs: []

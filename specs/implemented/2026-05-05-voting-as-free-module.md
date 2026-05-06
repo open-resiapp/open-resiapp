@@ -1,12 +1,12 @@
 ---
 spec_id: RES-20260505-001
 title: "Extract voting into a free bundled module"
-status: in_progress
+status: implemented
 created: 2026-05-05
-updated: 2026-05-05
+updated: 2026-05-06
 author: open-housing
 owner: open-housing
-last_verified: 2026-05-05
+last_verified: 2026-05-06
 project_type: other
 depends_on: [RES-20260428-002, RES-20260501-002]
 related_handoffs: []
