@@ -10,16 +10,10 @@ import {
 } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
 
-// Module schema imports core symbols (entities, users, flats, entrances)
-// directly from the core schema. This is allowed during the dual-run
-// (RES-20260505-001 §"Code move and import contract") and replaced by
-// SDK-mediated reads after the SDK delta on RES-20260428-002 lands.
-import {
-  entities,
-  users,
-  flats,
-  entrances,
-} from "@/db/schema";
+// Module schema imports core symbols (entities, users) directly from
+// the core schema. Phase 9.2 dropped the legacy entrances/flats tables;
+// scope + share data live on entities + housing_unit_data now.
+import { entities, users } from "@/db/schema";
 
 // ── Enums ──────────────────────────────────────────────
 // votingMethodEnum stays in core (it's a property of the housing root,
@@ -60,8 +54,6 @@ export const quorumTypeEnum = pgEnum("mod_voting_quorum_type", [
 ]);
 
 // ── Tables ─────────────────────────────────────────────
-// Tables retain their legacy names (`votings`, `votes`, `mandates`)
-// during dual-run. VM-6 renames them to `mod_voting_*`.
 
 export const votings = pgTable("mod_voting_votings", {
   id: uuid("id").primaryKey().defaultRandom(),
@@ -77,12 +69,9 @@ export const votings = pgTable("mod_voting_votings", {
   initiatedBy: votingInitiatedByEnum("initiated_by").notNull().default("board"),
   quorumType: quorumTypeEnum("quorum_type").notNull().default("simple_all"),
   voteCounterId: uuid("vote_counter_id").references(() => users.id),
-  entranceId: uuid("entrance_id").references(() => entrances.id),
-  // Phase 4 dual-run: nullable until backfill completes; Phase 6 switches
-  // reads/writes here; Phase 9 drops entranceId and makes this NOT NULL.
-  entityId: uuid("entity_id").references(() => entities.id, {
-    onDelete: "restrict",
-  }),
+  entityId: uuid("entity_id")
+    .references(() => entities.id, { onDelete: "restrict" })
+    .notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
@@ -96,12 +85,9 @@ export const votes = pgTable(
     ownerId: uuid("owner_id")
       .references(() => users.id)
       .notNull(),
-    flatId: uuid("flat_id")
-      .references(() => flats.id)
+    entityId: uuid("entity_id")
+      .references(() => entities.id, { onDelete: "restrict" })
       .notNull(),
-    entityId: uuid("entity_id").references(() => entities.id, {
-      onDelete: "restrict",
-    }),
     choice: voteChoiceEnum("choice").notNull(),
     voteType: voteTypeEnum("vote_type").notNull().default("electronic"),
     recordedById: uuid("recorded_by_id").references(() => users.id),
@@ -112,9 +98,9 @@ export const votes = pgTable(
     createdAt: timestamp("created_at").defaultNow().notNull(),
   },
   (table) => ({
-    votingFlatIdx: uniqueIndex("mod_voting_votes_voting_flat_idx").on(
+    votingEntityIdx: uniqueIndex("mod_voting_votes_voting_entity_idx").on(
       table.votingId,
-      table.flatId
+      table.entityId
     ),
   })
 );
@@ -129,12 +115,9 @@ export const mandates = pgTable(
     fromOwnerId: uuid("from_owner_id")
       .references(() => users.id)
       .notNull(),
-    fromFlatId: uuid("from_flat_id")
-      .references(() => flats.id)
+    fromEntityId: uuid("from_entity_id")
+      .references(() => entities.id, { onDelete: "restrict" })
       .notNull(),
-    fromEntityId: uuid("from_entity_id").references(() => entities.id, {
-      onDelete: "restrict",
-    }),
     toOwnerId: uuid("to_owner_id")
       .references(() => users.id)
       .notNull(),
@@ -148,9 +131,9 @@ export const mandates = pgTable(
     createdAt: timestamp("created_at").defaultNow().notNull(),
   },
   (table) => ({
-    votingFlatIdx: uniqueIndex("mod_voting_mandates_voting_flat_idx").on(
+    votingEntityIdx: uniqueIndex("mod_voting_mandates_voting_entity_idx").on(
       table.votingId,
-      table.fromFlatId
+      table.fromEntityId
     ),
   })
 );
@@ -167,9 +150,9 @@ export const votingsRelations = relations(votings, ({ one, many }) => ({
     fields: [votings.voteCounterId],
     references: [users.id],
   }),
-  entrance: one(entrances, {
-    fields: [votings.entranceId],
-    references: [entrances.id],
+  entity: one(entities, {
+    fields: [votings.entityId],
+    references: [entities.id],
   }),
   votes: many(votes),
   mandates: many(mandates),
@@ -184,9 +167,9 @@ export const votesRelations = relations(votes, ({ one }) => ({
     fields: [votes.ownerId],
     references: [users.id],
   }),
-  flat: one(flats, {
-    fields: [votes.flatId],
-    references: [flats.id],
+  entity: one(entities, {
+    fields: [votes.entityId],
+    references: [entities.id],
   }),
   recordedBy: one(users, {
     fields: [votes.recordedById],
@@ -203,9 +186,9 @@ export const mandatesRelations = relations(mandates, ({ one }) => ({
     fields: [mandates.fromOwnerId],
     references: [users.id],
   }),
-  fromFlat: one(flats, {
-    fields: [mandates.fromFlatId],
-    references: [flats.id],
+  fromEntity: one(entities, {
+    fields: [mandates.fromEntityId],
+    references: [entities.id],
   }),
   toOwner: one(users, {
     fields: [mandates.toOwnerId],

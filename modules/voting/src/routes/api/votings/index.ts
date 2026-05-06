@@ -1,16 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
+import { aliasedTable, desc, eq, sql } from "drizzle-orm";
+
 import { auth } from "@/lib/auth";
 import { db } from "@/db";
-import {
-  users,
-  building,
-  entrances,
-  entities,
-  memberships,
-} from "@/db/schema";
+import { users, entities, memberships } from "@/db/schema";
 import { votings } from "@modules/voting/src/db/schema";
-import { and, desc, eq, sql } from "drizzle-orm";
 import { hasPermission } from "@/lib/permissions";
+import { getCommunityRoot } from "@/lib/legacy-compat";
 import { validatePerRollamDuration } from "@modules/voting/src/rules";
 import type { UserRole, Country } from "@/types";
 
@@ -24,14 +20,10 @@ export async function GET() {
 
   // Visibility rule (RES-20260501-002): a user sees a voting V iff they
   // hold an active membership M whose entity is anywhere on the path
-  // overlap with V.entity (M is ancestor, equal, or descendant of V).
-  //  - Admin at root sees every voting in the subtree.
-  //  - Owner at flat sees community-wide and entrance-wide votings that
-  //    cover their flat.
-  // Implemented via two LIKE checks on materialized paths: V's entity
-  // path starts with M's entity path, or vice versa.
+  // overlap with V.entity (ancestor / equal / descendant).
   const userId = session.user.id;
   const isAdmin = role === "admin";
+  const entrance = aliasedTable(entities, "entrance");
 
   const baseQuery = db
     .select({
@@ -45,9 +37,8 @@ export async function GET() {
       startsAt: votings.startsAt,
       endsAt: votings.endsAt,
       createdAt: votings.createdAt,
-      entranceId: votings.entranceId,
       entityId: votings.entityId,
-      entranceName: entrances.name,
+      entranceName: entrance.name,
       createdBy: {
         id: users.id,
         name: users.name,
@@ -55,7 +46,7 @@ export async function GET() {
     })
     .from(votings)
     .leftJoin(users, eq(votings.createdById, users.id))
-    .leftJoin(entrances, eq(votings.entranceId, entrances.id));
+    .leftJoin(entrance, eq(entrance.id, votings.entityId));
 
   const result = isAdmin
     ? await baseQuery.orderBy(desc(votings.createdAt))
@@ -87,7 +78,7 @@ export async function POST(request: NextRequest) {
   }
 
   const body = await request.json();
-  const { title, description, startsAt, endsAt, status, votingType, initiatedBy, quorumType, entranceId } = body;
+  const { title, description, startsAt, endsAt, status, votingType, initiatedBy, quorumType, entityId } = body;
 
   if (!title || !startsAt || !endsAt) {
     return NextResponse.json(
@@ -96,11 +87,11 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  // Fetch building country for voting rules
-  const [bld] = await db.select({ country: building.country }).from(building).limit(1);
-  const country = (bld?.country ?? "sk") as Country;
+  // Phase 9.2: read country from the root entity's housing_root_data
+  // via the legacy-compat helper. Falls back to "sk" if no root.
+  const root = await getCommunityRoot();
+  const country = (root?.country ?? "sk") as Country;
 
-  // Validate per rollam minimum duration (CZ: 15 days)
   const resolvedVotingType = votingType || "written";
   if (resolvedVotingType === "written") {
     const minEnd = validatePerRollamDuration(
@@ -116,19 +107,15 @@ export async function POST(request: NextRequest) {
     }
   }
 
-  // Phase 4 dual-run: dual-write entity_id alongside legacy entrance_id.
-  // entrance.id == entity.id thanks to the 0023 backfill, so the entrance_id
-  // value works directly as entity_id. NULL (= building-wide scope) maps to
-  // the single root entity.
-  let scopeEntityId: string | null = entranceId || null;
-  if (scopeEntityId === null) {
-    const [root] = await db
-      .select({ id: building.id })
-      .from(building)
-      .orderBy(building.createdAt)
-      .limit(1);
-    scopeEntityId = root?.id ?? null;
-  }
+  // Scope: explicit entityId from body, or default to the root entity
+  // (community-wide vote). Legacy `entranceId` body field is accepted
+  // and treated as entityId for backward compatibility with older
+  // clients.
+  const scopeEntityId =
+    (typeof entityId === "string" && entityId) ||
+    body.entranceId ||
+    root?.id ||
+    null;
 
   const [voting] = await db
     .insert(votings)
@@ -142,7 +129,6 @@ export async function POST(request: NextRequest) {
       startsAt: new Date(startsAt),
       endsAt: new Date(endsAt),
       createdById: session.user.id,
-      entranceId: entranceId || null,
       entityId: scopeEntityId,
     })
     .returning();

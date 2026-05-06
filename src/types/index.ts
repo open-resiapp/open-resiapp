@@ -1,19 +1,19 @@
 import type { InferSelectModel } from "drizzle-orm";
 import type {
-  building,
-  entrances,
-  flats,
   users,
   posts,
   documents,
   invitations,
-  userFlats,
   pushSubscriptions,
   notificationPreferences,
   externalConnections,
   pairingRequests,
   consentRecords,
   boardMembers,
+  entities,
+  housingRootData,
+  housingUnitData,
+  memberships,
 } from "@/db/schema";
 import type {
   votings,
@@ -21,9 +21,19 @@ import type {
   mandates,
 } from "@modules/voting/src/db/schema";
 
-export type Building = InferSelectModel<typeof building>;
-export type Entrance = InferSelectModel<typeof entrances>;
-export type Flat = InferSelectModel<typeof flats>;
+// Phase 9.2 type aliases — Building/Entrance/Flat/UserFlat are now
+// derived from the entity tree. Legacy callers keep the same TS names
+// so call-site signatures don't churn until they're rewritten.
+export type Entity = InferSelectModel<typeof entities>;
+export type HousingRootData = InferSelectModel<typeof housingRootData>;
+export type HousingUnitData = InferSelectModel<typeof housingUnitData>;
+export type Membership = InferSelectModel<typeof memberships>;
+
+export type Building = Entity & HousingRootData;
+export type Entrance = Entity;
+export type Flat = Entity & HousingUnitData;
+export type UserFlat = { userId: string; flatId: string };
+
 export type User = InferSelectModel<typeof users>;
 export type Voting = InferSelectModel<typeof votings>;
 export type Vote = InferSelectModel<typeof votes>;
@@ -31,7 +41,6 @@ export type Mandate = InferSelectModel<typeof mandates>;
 export type Post = InferSelectModel<typeof posts>;
 export type Document = InferSelectModel<typeof documents>;
 export type Invitation = InferSelectModel<typeof invitations>;
-export type UserFlat = InferSelectModel<typeof userFlats>;
 export type PushSubscription = InferSelectModel<typeof pushSubscriptions>;
 export type NotificationPreference = InferSelectModel<typeof notificationPreferences>;
 export type ExternalConnection = InferSelectModel<typeof externalConnections>;

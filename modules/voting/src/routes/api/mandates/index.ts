@@ -1,10 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
-import { auth } from "@/lib/auth";
-import { db } from "@/db";
-import { users, flats } from "@/db/schema";
-import { mandates, votings } from "@modules/voting/src/db/schema";
 import { and, eq } from "drizzle-orm";
 import { alias } from "drizzle-orm/pg-core";
+
+import { auth } from "@/lib/auth";
+import { db } from "@/db";
+import { users, housingUnitData } from "@/db/schema";
+import { mandates, votings } from "@modules/voting/src/db/schema";
 import { hasPermission } from "@/lib/permissions";
 import type { UserRole } from "@/types";
 
@@ -29,11 +30,13 @@ export async function GET(request: NextRequest) {
   const toOwner = alias(users, "toOwner");
   const verifiedByAdmin = alias(users, "verifiedByAdmin");
 
+  // Phase 9.2: flat number now comes from housing_unit_data joined
+  // on the mandate's from_entity_id (== flat entity id).
   const rows = await db
     .select({
       id: mandates.id,
       fromOwnerName: fromOwner.name,
-      fromFlatNumber: flats.flatNumber,
+      fromFlatNumber: housingUnitData.flatNumber,
       toOwnerName: toOwner.name,
       paperDocumentConfirmed: mandates.paperDocumentConfirmed,
       verifiedByAdminName: verifiedByAdmin.name,
@@ -45,7 +48,7 @@ export async function GET(request: NextRequest) {
     .from(mandates)
     .leftJoin(fromOwner, eq(mandates.fromOwnerId, fromOwner.id))
     .leftJoin(toOwner, eq(mandates.toOwnerId, toOwner.id))
-    .leftJoin(flats, eq(mandates.fromFlatId, flats.id))
+    .leftJoin(housingUnitData, eq(housingUnitData.entityId, mandates.fromEntityId))
     .leftJoin(verifiedByAdmin, eq(mandates.verifiedByAdminId, verifiedByAdmin.id))
     .where(eq(mandates.votingId, votingId));
 
@@ -58,37 +61,36 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Neautorizovaný prístup" }, { status: 401 });
   }
 
-  // Only admin can create mandates
   if (!hasPermission(session.user.role as UserRole, "grantMandate")) {
-    return NextResponse.json({ error: "Iba administrátor môže vytvárať splnomocnenia" }, { status: 403 });
+    return NextResponse.json(
+      { error: "Iba administrátor môže vytvárať splnomocnenia" },
+      { status: 403 }
+    );
   }
 
   const body = await request.json();
-  const {
-    votingId,
-    fromFlatId,
-    fromOwnerId,
-    toOwnerId,
-    paperDocumentConfirmed,
-    verificationNote,
-  } = body;
+  // Accept either fromEntityId (canonical) or legacy fromFlatId from older
+  // clients — both refer to the housing_unit entity id.
+  const fromEntityId = body.fromEntityId ?? body.fromFlatId;
+  const { votingId, fromOwnerId, toOwnerId, paperDocumentConfirmed, verificationNote } = body;
 
-  if (!votingId || !fromFlatId || !fromOwnerId || !toOwnerId) {
+  if (!votingId || !fromEntityId || !fromOwnerId || !toOwnerId) {
     return NextResponse.json(
-      { error: "votingId, fromFlatId, fromOwnerId a toOwnerId sú povinné" },
+      { error: "votingId, fromEntityId, fromOwnerId a toOwnerId sú povinné" },
       { status: 400 }
     );
   }
 
-  // Require paper document confirmation
   if (!paperDocumentConfirmed) {
     return NextResponse.json(
-      { error: "Splnomocnenie vyžaduje potvrdenie listinného dokumentu s úradne osvedčeným podpisom" },
+      {
+        error:
+          "Splnomocnenie vyžaduje potvrdenie listinného dokumentu s úradne osvedčeným podpisom",
+      },
       { status: 400 }
     );
   }
 
-  // Check voting is active
   const [voting] = await db
     .select()
     .from(votings)
@@ -102,14 +104,14 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  // Check if mandate already exists for this flat in this voting
+  // Check if mandate already exists for this flat in this voting.
   const existing = await db
     .select()
     .from(mandates)
     .where(
       and(
         eq(mandates.votingId, votingId),
-        eq(mandates.fromFlatId, fromFlatId),
+        eq(mandates.fromEntityId, fromEntityId),
         eq(mandates.isActive, true)
       )
     )
@@ -122,7 +124,7 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  // Chain mandate validation: check if toOwnerId already delegated from another flat
+  // Chain check.
   const chainCheck = await db
     .select()
     .from(mandates)
@@ -137,7 +139,10 @@ export async function POST(request: NextRequest) {
 
   if (chainCheck.length > 0) {
     return NextResponse.json(
-      { error: "Príjemca splnomocnenia už delegoval svoj hlas — reťazenie splnomocnení nie je povolené" },
+      {
+        error:
+          "Príjemca splnomocnenia už delegoval svoj hlas — reťazenie splnomocnení nie je povolené",
+      },
       { status: 400 }
     );
   }
@@ -147,8 +152,7 @@ export async function POST(request: NextRequest) {
     .values({
       votingId,
       fromOwnerId,
-      fromFlatId,
-      fromEntityId: fromFlatId,
+      fromEntityId,
       toOwnerId,
       paperDocumentConfirmed: true,
       verifiedByAdminId: session.user.id,

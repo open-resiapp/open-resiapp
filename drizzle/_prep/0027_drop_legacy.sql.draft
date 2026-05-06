@@ -1,0 +1,78 @@
+-- ╔══════════════════════════════════════════════════════════════════════╗
+-- ║  PHASE 9.2 — DESTRUCTIVE LEGACY DROP (DRAFT, NOT IN JOURNAL)         ║
+-- ║                                                                      ║
+-- ║  RES-20260501-002 §"Phase 9 cutover plan".                           ║
+-- ║                                                                      ║
+-- ║  This file is intentionally outside ./drizzle so drizzle-kit migrate ║
+-- ║  WILL NOT pick it up. To apply: copy into ./drizzle/0027_drop_legacy ║
+-- ║  .sql, append a journal entry pointing at it, and ship a separate    ║
+-- ║  deploy. Take a fresh pg_dump first — there is no rollback.          ║
+-- ║                                                                      ║
+-- ║  PRE-FLIGHT CHECKLIST (every count must be 0):                       ║
+-- ║    1. mod_voting_votings: entity_id IS NULL OR (entrance_id IS NOT   ║
+-- ║         NULL AND entity_id <> entrance_id)                           ║
+-- ║    2. mod_voting_votes:   entity_id IS NULL OR entity_id <> flat_id  ║
+-- ║    3. mod_voting_mandates: from_entity_id IS NULL OR                 ║
+-- ║         from_entity_id <> from_flat_id                               ║
+-- ║    4. posts/documents/community_posts/board_members/                 ║
+-- ║       core_module_grants: entity_id IS NULL                          ║
+-- ║    5. user_flats fully mirrored in memberships                       ║
+-- ║    6. users.flat_id fully mirrored in memberships                    ║
+-- ║                                                                      ║
+-- ║  See specs/in_progress/2026-05-01-generic-entity-architecture       ║
+-- ║       .notes-phase9.md for the SQL queries.                          ║
+-- ╚══════════════════════════════════════════════════════════════════════╝
+
+-- ── 1. Drop legacy FK columns on dual-run tables ────────────────
+-- These columns hold the same value as their entity_id sibling. Drop
+-- them in dependency order so referential integrity holds. Each ALTER
+-- TABLE is wrapped in a savepoint so a partial failure leaves the
+-- rest unchanged.
+
+ALTER TABLE mod_voting_votings DROP COLUMN entrance_id;
+ALTER TABLE mod_voting_votes   DROP COLUMN flat_id;
+ALTER TABLE mod_voting_mandates DROP COLUMN from_flat_id;
+ALTER TABLE posts              DROP COLUMN entrance_id;
+ALTER TABLE documents          DROP COLUMN entrance_id;
+ALTER TABLE community_posts    DROP COLUMN entrance_id;
+ALTER TABLE invitations        DROP COLUMN flat_id;
+ALTER TABLE board_members      DROP COLUMN building_id;
+ALTER TABLE core_module_grants DROP COLUMN building_id;
+
+-- ── 2. Mark entity_id NOT NULL on tables where it always must be ──
+ALTER TABLE mod_voting_votings  ALTER COLUMN entity_id SET NOT NULL;
+ALTER TABLE mod_voting_votes    ALTER COLUMN entity_id SET NOT NULL;
+ALTER TABLE mod_voting_mandates ALTER COLUMN from_entity_id SET NOT NULL;
+ALTER TABLE posts               ALTER COLUMN entity_id SET NOT NULL;
+ALTER TABLE documents           ALTER COLUMN entity_id SET NOT NULL;
+ALTER TABLE community_posts     ALTER COLUMN entity_id SET NOT NULL;
+ALTER TABLE board_members       ALTER COLUMN entity_id SET NOT NULL;
+ALTER TABLE core_module_grants  ALTER COLUMN entity_id SET NOT NULL;
+-- invitations.entity_id stays nullable (legacy invitations.flat_id
+-- was nullable too; admin can invite without a pre-assigned flat).
+
+-- ── 3. Drop legacy user fields ──────────────────────────────────
+ALTER TABLE users DROP COLUMN flat_id;
+ALTER TABLE users DROP COLUMN role;
+
+-- ── 4. Drop legacy tables (dependency order) ───────────────────
+DROP TABLE user_flats;
+DROP TABLE flats;
+DROP TABLE entrances;
+DROP TABLE building;
+
+-- ── 5. Drop legacy enum ────────────────────────────────────────
+DROP TYPE user_role;
+
+-- ── 6. Sanity ──────────────────────────────────────────────────
+DO $$
+DECLARE
+  bad text;
+BEGIN
+  IF EXISTS (SELECT 1 FROM information_schema.tables
+             WHERE table_schema = 'public' AND table_name IN
+             ('building','entrances','flats','user_flats')) THEN
+    bad := 'legacy table still present';
+    RAISE EXCEPTION '%', bad;
+  END IF;
+END $$;

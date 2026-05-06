@@ -16,6 +16,9 @@ import { relations, sql } from "drizzle-orm";
 
 // ── Enums ──────────────────────────────────────────────
 
+// userRoleEnum + users.role kept as denormalized cache (Phase 9.2
+// dropped its FK to legacy `flats` but the column itself stays for
+// fast hasPermission() checks at the route layer).
 export const userRoleEnum = pgEnum("user_role", [
   "admin",
   "owner",
@@ -169,43 +172,8 @@ export const entityAuditActionEnum = pgEnum("entity_audit_action", [
 
 // ── Tables ─────────────────────────────────────────────
 
-export const building = pgTable("building", {
-  id: uuid("id").primaryKey().defaultRandom(),
-  name: varchar("name", { length: 255 }).notNull(),
-  address: varchar("address", { length: 500 }).notNull(),
-  ico: varchar("ico", { length: 20 }),
-  votingMethod: votingMethodEnum("voting_method").notNull().default("per_share"),
-  country: countryEnum("country").notNull().default("sk"),
-  governanceModel: governanceModelEnum("governance_model").notNull().default("chairman_council"),
-  legalNotice: text("legal_notice"),
-  communityCrossEntranceVisible: boolean("community_cross_entrance_visible")
-    .notNull()
-    .default(false),
-  createdAt: timestamp("created_at").defaultNow().notNull(),
-});
-
-export const entrances = pgTable("entrances", {
-  id: uuid("id").primaryKey().defaultRandom(),
-  buildingId: uuid("building_id")
-    .references(() => building.id)
-    .notNull(),
-  name: varchar("name", { length: 100 }).notNull(),
-  streetNumber: varchar("street_number", { length: 20 }),
-  createdAt: timestamp("created_at").defaultNow().notNull(),
-});
-
-export const flats = pgTable("flats", {
-  id: uuid("id").primaryKey().defaultRandom(),
-  entranceId: uuid("entrance_id")
-    .references(() => entrances.id)
-    .notNull(),
-  flatNumber: varchar("flat_number", { length: 20 }).notNull(),
-  floor: integer("floor").notNull().default(0),
-  shareNumerator: integer("share_numerator").notNull(),
-  shareDenominator: integer("share_denominator").notNull(),
-  area: integer("area"),
-  createdAt: timestamp("created_at").defaultNow().notNull(),
-});
+// Phase 9.2: legacy `building`, `entrances`, `flats` tables dropped.
+// All shape lives in entities + housing_root_data + housing_unit_data.
 
 // ── Entity model (RES-20260501-002) ──────────────────────
 // Self-referencing tree of typed containers. Replaces the rigid
@@ -336,7 +304,6 @@ export const users = pgTable(
     phone: varchar("phone", { length: 30 }),
     role: userRoleEnum("role").notNull().default("owner"),
     platformRole: platformRoleEnum("platform_role").notNull().default("member"),
-    flatId: uuid("flat_id").references(() => flats.id),
     isActive: boolean("is_active").notNull().default(true),
     status: userStatusEnum("status").notNull().default("active"),
     emailVerifiedAt: timestamp("email_verified_at", { withTimezone: true }),
@@ -359,10 +326,9 @@ export const posts = pgTable("posts", {
   authorId: uuid("author_id")
     .references(() => users.id)
     .notNull(),
-  entranceId: uuid("entrance_id").references(() => entrances.id),
-  entityId: uuid("entity_id").references(() => entities.id, {
-    onDelete: "restrict",
-  }),
+  entityId: uuid("entity_id")
+    .references(() => entities.id, { onDelete: "restrict" })
+    .notNull(),
   isPinned: boolean("is_pinned").notNull().default(false),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
@@ -375,32 +341,13 @@ export const documents = pgTable("documents", {
   uploadedById: uuid("uploaded_by_id")
     .references(() => users.id)
     .notNull(),
-  entranceId: uuid("entrance_id").references(() => entrances.id),
-  entityId: uuid("entity_id").references(() => entities.id, {
-    onDelete: "restrict",
-  }),
+  entityId: uuid("entity_id")
+    .references(() => entities.id, { onDelete: "restrict" })
+    .notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
-export const userFlats = pgTable(
-  "user_flats",
-  {
-    id: uuid("id").primaryKey().defaultRandom(),
-    userId: uuid("user_id")
-      .references(() => users.id, { onDelete: "cascade" })
-      .notNull(),
-    flatId: uuid("flat_id")
-      .references(() => flats.id, { onDelete: "cascade" })
-      .notNull(),
-    createdAt: timestamp("created_at").defaultNow().notNull(),
-  },
-  (table) => ({
-    userFlatIdx: uniqueIndex("user_flats_user_flat_idx").on(
-      table.userId,
-      table.flatId
-    ),
-  })
-);
+// Phase 9.2: legacy `user_flats` table dropped — replaced by memberships.
 
 export const pushSubscriptions = pgTable(
   "push_subscriptions",
@@ -437,7 +384,6 @@ export const invitations = pgTable("invitations", {
   id: uuid("id").defaultRandom().primaryKey(),
   token: varchar("token", { length: 64 }).notNull().unique(),
   role: userRoleEnum("role").notNull().default("owner"),
-  flatId: uuid("flat_id").references(() => flats.id, { onDelete: "set null" }),
   entityId: uuid("entity_id").references(() => entities.id, {
     onDelete: "set null",
   }),
@@ -567,10 +513,9 @@ export const communityPosts = pgTable("community_posts", {
     .notNull(),
   eventDate: timestamp("event_date"),
   eventLocation: varchar("event_location", { length: 255 }),
-  entranceId: uuid("entrance_id").references(() => entrances.id),
-  entityId: uuid("entity_id").references(() => entities.id, {
-    onDelete: "restrict",
-  }),
+  entityId: uuid("entity_id")
+    .references(() => entities.id, { onDelete: "restrict" })
+    .notNull(),
   expiresAt: timestamp("expires_at"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
@@ -678,12 +623,9 @@ export const coreModuleGrants = pgTable(
   "core_module_grants",
   {
     id: uuid("id").primaryKey().defaultRandom(),
-    buildingId: uuid("building_id")
-      .references(() => building.id, { onDelete: "cascade" })
+    entityId: uuid("entity_id")
+      .references(() => entities.id, { onDelete: "cascade" })
       .notNull(),
-    entityId: uuid("entity_id").references(() => entities.id, {
-      onDelete: "cascade",
-    }),
     moduleName: varchar("module_name", { length: 100 })
       .references(() => coreModules.name, { onDelete: "cascade" })
       .notNull(),
@@ -694,8 +636,8 @@ export const coreModuleGrants = pgTable(
     }),
   },
   (table) => ({
-    buildingModuleIdx: uniqueIndex("core_module_grants_building_module_idx").on(
-      table.buildingId,
+    entityModuleIdx: uniqueIndex("core_module_grants_entity_module_idx").on(
+      table.entityId,
       table.moduleName
     ),
   })
@@ -703,12 +645,9 @@ export const coreModuleGrants = pgTable(
 
 export const boardMembers = pgTable("board_members", {
   id: uuid("id").primaryKey().defaultRandom(),
-  buildingId: uuid("building_id")
-    .references(() => building.id)
+  entityId: uuid("entity_id")
+    .references(() => entities.id, { onDelete: "cascade" })
     .notNull(),
-  entityId: uuid("entity_id").references(() => entities.id, {
-    onDelete: "cascade",
-  }),
   userId: uuid("user_id")
     .references(() => users.id)
     .notNull(),
@@ -720,57 +659,26 @@ export const boardMembers = pgTable("board_members", {
 });
 
 // ── Relations ──────────────────────────────────────────
+// Phase 9.2: dropped buildingRelations, entrancesRelations,
+// flatsRelations, userFlatsRelations. Entity tree (entities +
+// housing_*_data + memberships) is canonical.
 
-export const buildingRelations = relations(building, ({ many }) => ({
-  entrances: many(entrances),
-  boardMembers: many(boardMembers),
-}));
-
-export const entrancesRelations = relations(entrances, ({ one, many }) => ({
-  building: one(building, {
-    fields: [entrances.buildingId],
-    references: [building.id],
-  }),
-  flats: many(flats),
-  posts: many(posts),
-  // Voting back-references moved with the voting module schema.
-  documents: many(documents),
-}));
-
-export const flatsRelations = relations(flats, ({ one, many }) => ({
-  entrance: one(entrances, {
-    fields: [flats.entranceId],
-    references: [entrances.id],
-  }),
-  users: many(users),
-  userFlats: many(userFlats),
-  // Voting back-references moved with the voting module schema.
-}));
-
-export const usersRelations = relations(users, ({ one, many }) => ({
-  flat: one(flats, {
-    fields: [users.flatId],
-    references: [flats.id],
-  }),
-  userFlats: many(userFlats),
-  // Voting back-references moved with the voting module schema.
+export const usersRelations = relations(users, ({ many }) => ({
   posts: many(posts),
   documents: many(documents),
   pushSubscriptions: many(pushSubscriptions),
   consentRecords: many(consentRecords),
+  memberships: many(memberships),
 }));
-
-// votingsRelations, votesRelations, mandatesRelations moved to
-// modules/voting/src/db/schema.ts under RES-20260505-001.
 
 export const postsRelations = relations(posts, ({ one }) => ({
   author: one(users, {
     fields: [posts.authorId],
     references: [users.id],
   }),
-  entrance: one(entrances, {
-    fields: [posts.entranceId],
-    references: [entrances.id],
+  entity: one(entities, {
+    fields: [posts.entityId],
+    references: [entities.id],
   }),
 }));
 
@@ -779,16 +687,16 @@ export const documentsRelations = relations(documents, ({ one }) => ({
     fields: [documents.uploadedById],
     references: [users.id],
   }),
-  entrance: one(entrances, {
-    fields: [documents.entranceId],
-    references: [entrances.id],
+  entity: one(entities, {
+    fields: [documents.entityId],
+    references: [entities.id],
   }),
 }));
 
 export const invitationsRelations = relations(invitations, ({ one }) => ({
-  flat: one(flats, {
-    fields: [invitations.flatId],
-    references: [flats.id],
+  entity: one(entities, {
+    fields: [invitations.entityId],
+    references: [entities.id],
   }),
   usedBy: one(users, {
     fields: [invitations.usedByUserId],
@@ -836,17 +744,6 @@ export const notificationPreferencesRelations = relations(notificationPreference
   }),
 }));
 
-export const userFlatsRelations = relations(userFlats, ({ one }) => ({
-  user: one(users, {
-    fields: [userFlats.userId],
-    references: [users.id],
-  }),
-  flat: one(flats, {
-    fields: [userFlats.flatId],
-    references: [flats.id],
-  }),
-}));
-
 export const externalConnectionsRelations = relations(externalConnections, ({ many }) => ({
   pairingRequests: many(pairingRequests),
   apiLogs: many(externalApiLogs),
@@ -878,9 +775,9 @@ export const consentRecordsRelations = relations(consentRecords, ({ one }) => ({
 }));
 
 export const boardMembersRelations = relations(boardMembers, ({ one }) => ({
-  building: one(building, {
-    fields: [boardMembers.buildingId],
-    references: [building.id],
+  entity: one(entities, {
+    fields: [boardMembers.entityId],
+    references: [entities.id],
   }),
   user: one(users, {
     fields: [boardMembers.userId],
@@ -893,9 +790,9 @@ export const communityPostsRelations = relations(communityPosts, ({ one, many })
     fields: [communityPosts.authorId],
     references: [users.id],
   }),
-  entrance: one(entrances, {
-    fields: [communityPosts.entranceId],
-    references: [entrances.id],
+  entity: one(entities, {
+    fields: [communityPosts.entityId],
+    references: [entities.id],
   }),
   responses: many(communityResponses),
 }));

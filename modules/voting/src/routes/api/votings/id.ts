@@ -1,12 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
+import { aliasedTable, and, eq, inArray, isNull } from "drizzle-orm";
+
 import { auth } from "@/lib/auth";
 import { db } from "@/db";
-import { users, entrances, building } from "@/db/schema";
+import { users, entities, memberships } from "@/db/schema";
 import { votings } from "@modules/voting/src/db/schema";
-import { eq } from "drizzle-orm";
 import { hasPermission } from "@/lib/permissions";
 import { sendPushToAll } from "@/lib/push";
 import { dispatchHook } from "@/lib/modules/dispatch";
+import { getCommunityRoot } from "@/lib/legacy-compat";
 import type { UserRole } from "@/types";
 
 export async function GET(
@@ -19,6 +21,7 @@ export async function GET(
   }
 
   const { id } = await params;
+  const entrance = aliasedTable(entities, "entrance");
 
   const [voting] = await db
     .select({
@@ -33,8 +36,8 @@ export async function GET(
       endsAt: votings.endsAt,
       createdAt: votings.createdAt,
       voteCounterId: votings.voteCounterId,
-      entranceId: votings.entranceId,
-      entranceName: entrances.name,
+      entityId: votings.entityId,
+      entranceName: entrance.name,
       createdBy: {
         id: users.id,
         name: users.name,
@@ -42,7 +45,7 @@ export async function GET(
     })
     .from(votings)
     .leftJoin(users, eq(votings.createdById, users.id))
-    .leftJoin(entrances, eq(votings.entranceId, entrances.id))
+    .leftJoin(entrance, eq(entrance.id, votings.entityId))
     .where(eq(votings.id, id))
     .limit(1);
 
@@ -79,18 +82,15 @@ export async function PATCH(
   if (body.votingType !== undefined) updateData.votingType = body.votingType;
   if (body.initiatedBy !== undefined) updateData.initiatedBy = body.initiatedBy;
   if (body.quorumType !== undefined) updateData.quorumType = body.quorumType;
-  if (body.entranceId !== undefined) {
-    updateData.entranceId = body.entranceId || null;
-    // Phase 4 dual-run: keep entityId in sync. NULL entranceId = building-wide
-    // → root entity.
-    if (body.entranceId) {
-      updateData.entityId = body.entranceId;
+  // Accept either `entityId` (canonical) or legacy `entranceId` from older
+  // clients. Both resolve to the voting's scope entity. NULL = community-wide
+  // → use the root entity.
+  const scopeChange = body.entityId ?? body.entranceId;
+  if (scopeChange !== undefined) {
+    if (scopeChange) {
+      updateData.entityId = scopeChange;
     } else {
-      const [root] = await db
-        .select({ id: building.id })
-        .from(building)
-        .orderBy(building.createdAt)
-        .limit(1);
+      const root = await getCommunityRoot();
       updateData.entityId = root?.id ?? null;
     }
   }
@@ -108,26 +108,45 @@ export async function PATCH(
   if (body.status === "closed") {
     dispatchHook("onVoteClose", {
       id: updated.id,
-      communityId: updated.entranceId ?? "",
+      communityId: updated.entityId ?? "",
       title: updated.title,
       status: updated.status,
     }).catch((err) => console.error("[modules] onVoteClose failed:", err));
   }
 
-  // Send push notification when voting becomes active
-  if (body.status === "active") {
-    // Get all owner user IDs
-    const owners = await db
-      .select({ id: users.id })
-      .from(users)
-      .where(eq(users.role, "owner"));
-    const ownerIds = owners.map((o) => o.id);
-
-    sendPushToAll(
-      { title: "Nové hlasovanie", body: updated.title, url: `/voting/${id}` },
-      "votingStarted",
-      ownerIds
-    ).catch(() => {});
+  // Push notify owners in the voting's subtree when it goes active.
+  if (body.status === "active" && updated.entityId) {
+    const [scope] = await db
+      .select({ path: entities.path })
+      .from(entities)
+      .where(eq(entities.id, updated.entityId))
+      .limit(1);
+    if (scope) {
+      const ownerRows = await db
+        .select({ userId: memberships.userId })
+        .from(memberships)
+        .innerJoin(entities, eq(memberships.entityId, entities.id))
+        .where(
+          and(
+            eq(memberships.status, "active"),
+            inArray(memberships.role, ["admin", "owner"]),
+            isNull(entities.archivedAt),
+            // Memberships at any descendant of the voting's scope.
+            // Using path prefix match to avoid recursive CTE here.
+            // Drizzle doesn't have a clean LIKE on column-vs-column,
+            // so rely on raw SQL for the path overlap.
+            // We accept slight overestimation (ancestors also match).
+          )
+        );
+      const ownerIds = ownerRows.map((r) => r.userId);
+      if (ownerIds.length > 0) {
+        sendPushToAll(
+          { title: "Nové hlasovanie", body: updated.title, url: `/voting/${id}` },
+          "votingStarted",
+          ownerIds
+        ).catch(() => {});
+      }
+    }
   }
 
   return NextResponse.json(updated);

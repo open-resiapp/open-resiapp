@@ -32,7 +32,6 @@ export async function GET(
       phone: users.phone,
       role: users.role,
       isActive: users.isActive,
-      flatId: users.flatId,
       createdAt: users.createdAt,
     })
     .from(users)
@@ -175,7 +174,6 @@ export async function PATCH(
         phone: users.phone,
         role: users.role,
         isActive: users.isActive,
-        flatId: users.flatId,
       });
   } else {
     // Only flatIds changed, fetch user data
@@ -187,7 +185,6 @@ export async function PATCH(
         phone: users.phone,
         role: users.role,
         isActive: users.isActive,
-        flatId: users.flatId,
       })
       .from(users)
       .where(eq(users.id, id))

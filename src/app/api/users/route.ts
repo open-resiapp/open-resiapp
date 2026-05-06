@@ -31,7 +31,6 @@ export async function GET(request: NextRequest) {
       phone: users.phone,
       role: users.role,
       isActive: users.isActive,
-      flatId: users.flatId,
       createdAt: users.createdAt,
     })
     .from(users)
