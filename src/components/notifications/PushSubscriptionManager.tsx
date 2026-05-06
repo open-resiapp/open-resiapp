@@ -60,8 +60,20 @@ export default function PushSubscriptionManager() {
         return;
       }
 
-      const vapidKey = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY;
-      if (!vapidKey) {
+      // Fetch VAPID public key at runtime — avoids baking it into the
+      // JS bundle so cloud tenants can ship per-tenant keys without
+      // rebuilding the image.
+      const keyRes = await fetch("/api/push/public-key");
+      if (!keyRes.ok) {
+        console.error(
+          "[push] VAPID key endpoint returned",
+          keyRes.status,
+          "— push not configured on this server"
+        );
+        return;
+      }
+      const { publicKey } = (await keyRes.json()) as { publicKey?: string };
+      if (!publicKey) {
         console.error("[push] VAPID public key not configured");
         return;
       }
@@ -69,7 +81,7 @@ export default function PushSubscriptionManager() {
       const reg = await navigator.serviceWorker.ready;
       const sub = await reg.pushManager.subscribe({
         userVisibleOnly: true,
-        applicationServerKey: urlBase64ToUint8Array(vapidKey),
+        applicationServerKey: urlBase64ToUint8Array(publicKey),
       });
 
       const subJson = sub.toJSON();
