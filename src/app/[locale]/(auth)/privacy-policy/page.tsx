@@ -14,26 +14,26 @@ export default function PrivacyPolicyPage() {
   ];
 
   return (
-    <div className="bg-white rounded-2xl shadow-lg p-8 max-w-2xl mx-auto">
-      <h1 className="text-2xl font-bold text-gray-900 mb-2">{t("title")}</h1>
-      <p className="text-sm text-gray-500 mb-6">
+    <div className="bg-white rounded-2xl shadow-lg p-8 max-w-2xl mx-auto dark:bg-gray-900 dark:shadow-black/40">
+      <h1 className="text-2xl font-bold text-gray-900 mb-2 dark:text-gray-100">{t("title")}</h1>
+      <p className="text-sm text-gray-500 mb-6 dark:text-gray-400">
         {t("version", { version: CURRENT_POLICY_VERSION })}
       </p>
 
       <div className="space-y-6">
         {sections.map((section) => (
           <div key={section.title}>
-            <h2 className="text-lg font-semibold text-gray-900 mb-2">
+            <h2 className="text-lg font-semibold text-gray-900 mb-2 dark:text-gray-100">
               {section.title}
             </h2>
-            <p className="text-base text-gray-700 leading-relaxed">
+            <p className="text-base text-gray-700 leading-relaxed dark:text-gray-200">
               {section.content}
             </p>
           </div>
         ))}
       </div>
 
-      <div className="mt-8 pt-6 border-t border-gray-200">
+      <div className="mt-8 pt-6 border-t border-gray-200 dark:border-gray-700">
         <Link
           href="/login"
           className="inline-block px-5 py-3 bg-blue-600 hover:bg-blue-700 text-white text-base font-medium rounded-lg transition-colors"

@@ -55,7 +55,7 @@ export default function RegistrationQrPage() {
 
   if (!canManage) {
     return (
-      <div className="text-center py-12 text-gray-500 text-lg">
+      <div className="text-center py-12 text-gray-500 text-lg dark:text-gray-400">
         {t("noPermission")}
       </div>
     );
@@ -132,28 +132,28 @@ export default function RegistrationQrPage() {
 
   return (
     <div className="max-w-4xl">
-      <h1 className="text-2xl font-bold text-gray-900 mb-6">{t("title")}</h1>
+      <h1 className="text-2xl font-bold text-gray-900 mb-6 dark:text-gray-100">{t("title")}</h1>
       <SettingsTabs
         activeTab={null}
         onTabChange={() => {}}
         showModules={hasPermission(role, "manageSettings")}
         showRegistrationQr={canManage}
       />
-      <p className="text-base text-gray-500 mb-6">{t("subtitle")}</p>
+      <p className="text-base text-gray-500 mb-6 dark:text-gray-400">{t("subtitle")}</p>
 
       {error && (
-        <div className="bg-red-50 text-red-700 px-4 py-3 rounded-lg text-base mb-4">
+        <div className="bg-red-50 text-red-700 px-4 py-3 rounded-lg text-base mb-4 dark:bg-red-900/30 dark:text-red-200">
           {error}
         </div>
       )}
 
       {loading ? (
-        <div className="bg-white rounded-xl border border-gray-200 p-6 animate-pulse">
-          <div className="h-40 bg-gray-200 rounded" />
+        <div className="bg-white rounded-xl border border-gray-200 p-6 animate-pulse dark:bg-gray-800 dark:border-gray-700">
+          <div className="h-40 bg-gray-200 rounded dark:bg-gray-700" />
         </div>
       ) : !active ? (
-        <div className="bg-white rounded-xl border border-gray-200 p-6">
-          <p className="text-base text-gray-700 mb-4">{t("noActive")}</p>
+        <div className="bg-white rounded-xl border border-gray-200 p-6 dark:bg-gray-800 dark:border-gray-700">
+          <p className="text-base text-gray-700 mb-4 dark:text-gray-200">{t("noActive")}</p>
           <button
             onClick={() => handleGenerate(false)}
             disabled={busy}
@@ -163,36 +163,36 @@ export default function RegistrationQrPage() {
           </button>
         </div>
       ) : (
-        <div className="bg-white rounded-xl border border-gray-200 p-6 space-y-6">
+        <div className="bg-white rounded-xl border border-gray-200 p-6 space-y-6 dark:bg-gray-800 dark:border-gray-700">
           <div className="flex flex-col sm:flex-row gap-6 items-start">
             {qrDataUrl && (
               <img
                 src={qrDataUrl}
                 alt="QR"
-                className="w-48 h-48 rounded border border-gray-200"
+                className="w-48 h-48 rounded border border-gray-200 bg-white dark:border-gray-700"
               />
             )}
             <div className="flex-1 min-w-0 space-y-3">
               <div>
-                <p className="text-sm font-medium text-gray-500">
+                <p className="text-sm font-medium text-gray-500 dark:text-gray-400">
                   {t("urlLabel")}
                 </p>
-                <p className="text-base text-gray-900 break-all">
+                <p className="text-base text-gray-900 break-all dark:text-gray-100">
                   {active.url}
                 </p>
               </div>
               <div>
-                <p className="text-sm font-medium text-gray-500">
+                <p className="text-sm font-medium text-gray-500 dark:text-gray-400">
                   {t("createdLabel")}
                 </p>
-                <p className="text-base text-gray-700">
+                <p className="text-base text-gray-700 dark:text-gray-200">
                   {new Date(active.createdAt).toLocaleString()}
                 </p>
               </div>
             </div>
           </div>
 
-          <div className="flex flex-wrap gap-3 border-t border-gray-200 pt-4">
+          <div className="flex flex-wrap gap-3 border-t border-gray-200 pt-4 dark:border-gray-700">
             <button
               onClick={handlePrint}
               disabled={!qrDataUrl}

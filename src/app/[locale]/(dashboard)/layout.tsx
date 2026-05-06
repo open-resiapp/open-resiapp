@@ -39,8 +39,8 @@ export default function DashboardLayout({
 
   if (!session) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="text-lg text-gray-500">{t("loading")}</div>
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-950">
+        <div className="text-lg text-gray-500 dark:text-gray-400">{t("loading")}</div>
       </div>
     );
   }
@@ -48,7 +48,7 @@ export default function DashboardLayout({
   const isPending = session.user.status === "pending";
 
   return (
-    <div className="min-h-screen bg-gray-50 flex">
+    <div className="min-h-screen bg-gray-50 flex dark:bg-gray-950">
       <ServiceWorkerRegistration />
       {!isPending && (
         <Sidebar

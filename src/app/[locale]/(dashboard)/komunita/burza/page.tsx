@@ -108,15 +108,15 @@ export default function MarketplacePage() {
     <div className="max-w-4xl mx-auto">
       <div className="mb-6 flex items-start justify-between gap-4 flex-wrap">
         <div>
-          <div className="text-sm text-gray-500 mb-1">
+          <div className="text-sm text-gray-500 mb-1 dark:text-gray-400">
             <Link href="/komunita" className="hover:underline">
               {t("landing.title")}
             </Link>
             {" / "}
             <span>{tMarket("title")}</span>
           </div>
-          <h1 className="text-2xl font-bold text-gray-900">{tMarket("title")}</h1>
-          <p className="text-base text-gray-600 mt-1">{tMarket("subtitle")}</p>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">{tMarket("title")}</h1>
+          <p className="text-base text-gray-600 mt-1 dark:text-gray-300">{tMarket("subtitle")}</p>
         </div>
         <Link
           href="/komunita/burza/novy"
@@ -134,7 +134,7 @@ export default function MarketplacePage() {
             className={`px-4 py-2 text-sm font-medium rounded-lg whitespace-nowrap ${
               tab === item.value
                 ? "bg-blue-600 text-white"
-                : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                : "bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600"
             }`}
           >
             {tMarket(item.labelKey)}
@@ -142,21 +142,21 @@ export default function MarketplacePage() {
         ))}
       </div>
 
-      <label className="mb-4 inline-flex items-center gap-2 text-sm text-gray-600">
+      <label className="mb-4 inline-flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
         <input
           type="checkbox"
           checked={showArchived}
           onChange={(e) => setShowArchived(e.target.checked)}
-          className="rounded border-gray-300"
+          className="rounded border-gray-300 dark:border-gray-600 dark:bg-gray-800"
         />
         {tMarket("showArchived")}
       </label>
 
       {loading ? (
-        <p className="text-gray-500">{tCommon("loading")}</p>
+        <p className="text-gray-500 dark:text-gray-400">{tCommon("loading")}</p>
       ) : posts.length === 0 ? (
-        <div className="bg-white border border-dashed border-gray-300 rounded-xl p-10 text-center">
-          <p className="text-gray-600 mb-4">{t("empty")}</p>
+        <div className="bg-white border border-dashed border-gray-300 rounded-xl p-10 text-center dark:bg-gray-800 dark:border-gray-700">
+          <p className="text-gray-600 mb-4 dark:text-gray-300">{t("empty")}</p>
           <Link
             href="/komunita/burza/novy"
             className="inline-block px-4 py-2 text-base font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg"

@@ -96,8 +96,8 @@ export default function EntrancesTab({ canEdit }: EntrancesTabProps) {
   if (loading) {
     return (
       <div className="animate-pulse space-y-4">
-        <div className="h-8 bg-gray-200 rounded w-1/3" />
-        <div className="h-32 bg-gray-200 rounded" />
+        <div className="h-8 bg-gray-200 rounded w-1/3 dark:bg-gray-700" />
+        <div className="h-32 bg-gray-200 rounded dark:bg-gray-700" />
       </div>
     );
   }
@@ -105,7 +105,7 @@ export default function EntrancesTab({ canEdit }: EntrancesTabProps) {
   return (
     <div>
       <div className="flex items-center justify-between mb-4">
-        <h2 className="text-lg font-bold text-gray-900">{t("entrances")}</h2>
+        <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100">{t("entrances")}</h2>
         {canEdit && !showForm && (
           <button
             onClick={() => { resetForm(); setShowForm(true); }}
@@ -119,7 +119,7 @@ export default function EntrancesTab({ canEdit }: EntrancesTabProps) {
       {message && (
         <div
           className={`mb-4 p-3 rounded-lg text-base ${
-            message.type === "success" ? "bg-green-50 text-green-700" : "bg-red-50 text-red-700"
+            message.type === "success" ? "bg-green-50 text-green-700 dark:bg-green-900/30 dark:text-green-200" : "bg-red-50 text-red-700 dark:bg-red-900/30 dark:text-red-200"
           }`}
         >
           {message.text}
@@ -127,27 +127,27 @@ export default function EntrancesTab({ canEdit }: EntrancesTabProps) {
       )}
 
       {showForm && canEdit && (
-        <div className="bg-white rounded-xl border border-gray-200 p-6 mb-4">
-          <h3 className="text-base font-bold text-gray-900 mb-4">
+        <div className="bg-white rounded-xl border border-gray-200 p-6 mb-4 dark:bg-gray-800 dark:border-gray-700">
+          <h3 className="text-base font-bold text-gray-900 mb-4 dark:text-gray-100">
             {editingId ? t("editEntrance") : t("addEntrance")}
           </h3>
           <div className="space-y-4">
             <div>
-              <label className="block text-sm text-gray-500 mb-1">{t("entranceName")}</label>
+              <label className="block text-sm text-gray-500 mb-1 dark:text-gray-400">{t("entranceName")}</label>
               <input
                 type="text"
                 value={formName}
                 onChange={(e) => setFormName(e.target.value)}
-                className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none dark:bg-gray-900 dark:border-gray-700 dark:text-gray-100"
               />
             </div>
             <div>
-              <label className="block text-sm text-gray-500 mb-1">{t("streetNumber")}</label>
+              <label className="block text-sm text-gray-500 mb-1 dark:text-gray-400">{t("streetNumber")}</label>
               <input
                 type="text"
                 value={formStreetNumber}
                 onChange={(e) => setFormStreetNumber(e.target.value)}
-                className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none dark:bg-gray-900 dark:border-gray-700 dark:text-gray-100"
               />
             </div>
             <div className="flex gap-3">
@@ -160,7 +160,7 @@ export default function EntrancesTab({ canEdit }: EntrancesTabProps) {
               </button>
               <button
                 onClick={resetForm}
-                className="px-5 py-3 text-gray-700 hover:text-gray-900 text-base font-medium transition-colors"
+                className="px-5 py-3 text-gray-700 hover:text-gray-900 text-base font-medium transition-colors dark:text-gray-200 dark:hover:text-gray-100"
               >
                 {tc("cancel")}
               </button>
@@ -170,17 +170,17 @@ export default function EntrancesTab({ canEdit }: EntrancesTabProps) {
       )}
 
       {entrances.length === 0 ? (
-        <p className="text-base text-gray-500">{t("noEntrances")}</p>
+        <p className="text-base text-gray-500 dark:text-gray-400">{t("noEntrances")}</p>
       ) : (
         <div className="space-y-3">
           {entrances.map((entrance) => (
             <div
               key={entrance.id}
-              className="bg-white rounded-xl border border-gray-200 p-4 flex items-center justify-between"
+              className="bg-white rounded-xl border border-gray-200 p-4 flex items-center justify-between dark:bg-gray-800 dark:border-gray-700"
             >
               <div>
-                <p className="text-base font-medium text-gray-900">{entrance.name}</p>
-                <p className="text-sm text-gray-500">
+                <p className="text-base font-medium text-gray-900 dark:text-gray-100">{entrance.name}</p>
+                <p className="text-sm text-gray-500 dark:text-gray-400">
                   {entrance.streetNumber && `${t("streetNumber")}: ${entrance.streetNumber} · `}
                   {t("flatCount")}: {entrance.flatCount}
                 </p>
@@ -189,13 +189,13 @@ export default function EntrancesTab({ canEdit }: EntrancesTabProps) {
                 <div className="flex gap-2">
                   <button
                     onClick={() => handleEdit(entrance)}
-                    className="px-4 py-2 text-base text-blue-600 hover:text-blue-700 font-medium transition-colors"
+                    className="px-4 py-2 text-base text-blue-600 hover:text-blue-700 font-medium transition-colors dark:text-blue-400 dark:hover:text-blue-300"
                   >
                     {tc("edit")}
                   </button>
                   <button
                     onClick={() => handleDelete(entrance.id)}
-                    className="px-4 py-2 text-base text-red-600 hover:text-red-700 font-medium transition-colors"
+                    className="px-4 py-2 text-base text-red-600 hover:text-red-700 font-medium transition-colors dark:text-red-400 dark:hover:text-red-300"
                   >
                     {tc("delete")}
                   </button>

@@ -83,7 +83,7 @@ export default function NastenkaPage() {
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">{t("title")}</h1>
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">{t("title")}</h1>
         {canCreate && (
           <button
             onClick={() => setShowModal(true)}
@@ -99,17 +99,17 @@ export default function NastenkaPage() {
           {[1, 2, 3].map((i) => (
             <div
               key={i}
-              className="bg-white rounded-xl border border-gray-200 p-6 animate-pulse"
+              className="bg-white rounded-xl border border-gray-200 p-6 animate-pulse dark:bg-gray-800 dark:border-gray-700"
             >
-              <div className="h-4 bg-gray-200 rounded w-1/4 mb-3" />
-              <div className="h-5 bg-gray-200 rounded w-3/4 mb-2" />
-              <div className="h-4 bg-gray-200 rounded w-full mb-1" />
-              <div className="h-4 bg-gray-200 rounded w-2/3" />
+              <div className="h-4 bg-gray-200 rounded w-1/4 mb-3 dark:bg-gray-700" />
+              <div className="h-5 bg-gray-200 rounded w-3/4 mb-2 dark:bg-gray-700" />
+              <div className="h-4 bg-gray-200 rounded w-full mb-1 dark:bg-gray-700" />
+              <div className="h-4 bg-gray-200 rounded w-2/3 dark:bg-gray-700" />
             </div>
           ))}
         </div>
       ) : posts.length === 0 ? (
-        <div className="text-center py-12 text-gray-500 text-lg">
+        <div className="text-center py-12 text-gray-500 text-lg dark:text-gray-400">
           {t("empty")}
         </div>
       ) : (

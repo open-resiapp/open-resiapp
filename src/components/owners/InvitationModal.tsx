@@ -94,19 +94,19 @@ export default function InvitationModal({
 
   return (
     <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-      <div className="bg-white rounded-2xl w-full max-w-md p-6 max-h-[90vh] overflow-y-auto">
+      <div className="bg-white rounded-2xl w-full max-w-md p-6 max-h-[90vh] overflow-y-auto dark:bg-gray-800">
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-xl font-bold text-gray-900">{t("title")}</h2>
+          <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">{t("title")}</h2>
           <button
             onClick={onClose}
-            className="text-gray-500 hover:text-gray-700 text-2xl leading-none"
+            className="text-gray-500 hover:text-gray-700 text-2xl leading-none dark:text-gray-400 dark:hover:text-gray-200"
           >
             &times;
           </button>
         </div>
 
         {error && (
-          <div className="bg-red-50 text-red-700 px-4 py-3 rounded-lg text-base mb-4">
+          <div className="bg-red-50 text-red-700 px-4 py-3 rounded-lg text-base mb-4 dark:bg-red-900/30 dark:text-red-200">
             {error}
           </div>
         )}
@@ -114,13 +114,13 @@ export default function InvitationModal({
         {!generatedUrl ? (
           <form onSubmit={handleGenerate} className="space-y-4">
             <div>
-              <label className="block text-base font-medium text-gray-700 mb-1">
+              <label className="block text-base font-medium text-gray-700 mb-1 dark:text-gray-200">
                 {t("roleLabel")}
               </label>
               <select
                 value={role}
                 onChange={(e) => setRole(e.target.value)}
-                className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none dark:bg-gray-900 dark:border-gray-700 dark:text-gray-100"
               >
                 <option value="owner">{t("roleOwner")}</option>
                 <option value="tenant">{t("roleTenant")}</option>
@@ -130,13 +130,13 @@ export default function InvitationModal({
             </div>
 
             <div>
-              <label className="block text-base font-medium text-gray-700 mb-1">
+              <label className="block text-base font-medium text-gray-700 mb-1 dark:text-gray-200">
                 {t("flatLabel")}
               </label>
               <select
                 value={flatId}
                 onChange={(e) => setFlatId(e.target.value)}
-                className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none dark:bg-gray-900 dark:border-gray-700 dark:text-gray-100"
               >
                 <option value="">{t("noFlat")}</option>
                 {flats.map((f) => (
@@ -149,13 +149,13 @@ export default function InvitationModal({
             </div>
 
             <div>
-              <label className="block text-base font-medium text-gray-700 mb-1">
+              <label className="block text-base font-medium text-gray-700 mb-1 dark:text-gray-200">
                 {t("expiryLabel")}
               </label>
               <select
                 value={expiresInDays}
                 onChange={(e) => setExpiresInDays(Number(e.target.value))}
-                className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none dark:bg-gray-900 dark:border-gray-700 dark:text-gray-100"
               >
                 <option value={7}>{t("days7")}</option>
                 <option value={14}>{t("days14")}</option>
@@ -167,7 +167,7 @@ export default function InvitationModal({
               <button
                 type="button"
                 onClick={onClose}
-                className="flex-1 py-3 px-4 text-base font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
+                className="flex-1 py-3 px-4 text-base font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors dark:text-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600"
               >
                 {tCommon("cancel")}
               </button>
@@ -182,12 +182,12 @@ export default function InvitationModal({
           </form>
         ) : (
           <div className="space-y-4">
-            <p className="text-base font-medium text-green-700 bg-green-50 px-4 py-3 rounded-lg">
+            <p className="text-base font-medium text-green-700 bg-green-50 px-4 py-3 rounded-lg dark:bg-green-900/30 dark:text-green-200">
               {t("linkReady")}
             </p>
 
-            <div className="bg-gray-50 border border-gray-200 rounded-lg p-3">
-              <p className="text-sm text-gray-600 break-all">{generatedUrl}</p>
+            <div className="bg-gray-50 border border-gray-200 rounded-lg p-3 dark:bg-gray-900 dark:border-gray-700">
+              <p className="text-sm text-gray-600 break-all dark:text-gray-300">{generatedUrl}</p>
             </div>
 
             <button
@@ -199,13 +199,13 @@ export default function InvitationModal({
 
             {qrDataUrl && (
               <div className="text-center">
-                <p className="text-base font-medium text-gray-700 mb-2">
+                <p className="text-base font-medium text-gray-700 mb-2 dark:text-gray-200">
                   {t("qrCode")}
                 </p>
                 <img
                   src={qrDataUrl}
                   alt="QR Code"
-                  className="mx-auto rounded-lg border border-gray-200"
+                  className="mx-auto rounded-lg border border-gray-200 bg-white dark:border-gray-700"
                   width={256}
                   height={256}
                 />
@@ -214,7 +214,7 @@ export default function InvitationModal({
 
             <button
               onClick={onClose}
-              className="w-full py-3 px-4 text-base font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
+              className="w-full py-3 px-4 text-base font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors dark:text-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600"
             >
               {t("close")}
             </button>

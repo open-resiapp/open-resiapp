@@ -159,15 +159,15 @@ export default function EventsPage() {
     <div className="max-w-4xl mx-auto">
       <div className="mb-6 flex items-start justify-between gap-4 flex-wrap">
         <div>
-          <div className="text-sm text-gray-500 mb-1">
+          <div className="text-sm text-gray-500 mb-1 dark:text-gray-400">
             <Link href="/komunita" className="hover:underline">
               {t("landing.title")}
             </Link>
             {" / "}
             <span>{tEvents("title")}</span>
           </div>
-          <h1 className="text-2xl font-bold text-gray-900">{tEvents("title")}</h1>
-          <p className="text-base text-gray-600 mt-1">{tEvents("subtitle")}</p>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">{tEvents("title")}</h1>
+          <p className="text-base text-gray-600 mt-1 dark:text-gray-300">{tEvents("subtitle")}</p>
         </div>
         <Link
           href="/komunita/udalosti/nova"
@@ -183,7 +183,7 @@ export default function EventsPage() {
           className={`px-4 py-2 text-sm font-medium rounded-lg ${
             tab === "upcoming"
               ? "bg-blue-600 text-white"
-              : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+              : "bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600"
           }`}
         >
           {tEvents("tabs.upcoming")}
@@ -193,7 +193,7 @@ export default function EventsPage() {
           className={`px-4 py-2 text-sm font-medium rounded-lg ${
             tab === "past"
               ? "bg-blue-600 text-white"
-              : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+              : "bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600"
           }`}
         >
           {tEvents("tabs.past")}
@@ -201,10 +201,10 @@ export default function EventsPage() {
       </div>
 
       {loading ? (
-        <p className="text-gray-500">{tCommon("loading")}</p>
+        <p className="text-gray-500 dark:text-gray-400">{tCommon("loading")}</p>
       ) : filtered.length === 0 ? (
-        <div className="bg-white border border-dashed border-gray-300 rounded-xl p-10 text-center">
-          <p className="text-gray-600 mb-4">{tEvents("empty")}</p>
+        <div className="bg-white border border-dashed border-gray-300 rounded-xl p-10 text-center dark:bg-gray-800 dark:border-gray-700">
+          <p className="text-gray-600 mb-4 dark:text-gray-300">{tEvents("empty")}</p>
           {tab === "upcoming" && (
             <Link
               href="/komunita/udalosti/nova"
@@ -239,7 +239,7 @@ export default function EventsPage() {
                 onDelete={canManage ? () => handleDelete(post) : undefined}
               >
                 <div className="space-y-3">
-                  <div className="text-sm text-gray-600">
+                  <div className="text-sm text-gray-600 dark:text-gray-300">
                     {tEvents("counts", {
                       yes: rsvp.yes,
                       maybe: rsvp.maybe,
@@ -268,32 +268,32 @@ export default function EventsPage() {
                       />
                     </div>
                   )}
-                  <div className="border-t border-gray-100 pt-3 flex items-center justify-between gap-3">
+                  <div className="border-t border-gray-100 pt-3 flex items-center justify-between gap-3 dark:border-gray-700">
                     {(post.responseCount ?? 0) > 0 ? (
                       <button
                         onClick={() => toggleResponses(post.id)}
-                        className="text-sm text-blue-600 hover:text-blue-700 font-medium"
+                        className="text-sm text-blue-600 hover:text-blue-700 font-medium dark:text-blue-400 dark:hover:text-blue-300"
                       >
                         {expanded[post.id]
                           ? t("hideResponses")
                           : t("showResponses", { count: post.responseCount ?? 0 })}
                       </button>
                     ) : (
-                      <span className="text-sm text-gray-500">
+                      <span className="text-sm text-gray-500 dark:text-gray-400">
                         {t("noResponses")}
                       </span>
                     )}
                     {!isAuthor && (
                       <button
                         onClick={() => setRespondTo(post)}
-                        className="text-sm text-blue-600 hover:text-blue-700 font-medium"
+                        className="text-sm text-blue-600 hover:text-blue-700 font-medium dark:text-blue-400 dark:hover:text-blue-300"
                       >
                         {tEvents("addComment")}
                       </button>
                     )}
                   </div>
                   {expanded[post.id] === "loading" && (
-                    <p className="text-sm text-gray-500">{tCommon("loading")}</p>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">{tCommon("loading")}</p>
                   )}
                   {Array.isArray(expanded[post.id]) && (
                     <ResponseList
@@ -331,15 +331,15 @@ function RsvpButton({
   const toneMap: Record<typeof tone, { active: string; idle: string }> = {
     green: {
       active: "bg-green-600 text-white",
-      idle: "bg-green-50 text-green-700 hover:bg-green-100",
+      idle: "bg-green-50 text-green-700 hover:bg-green-100 dark:bg-green-900/30 dark:text-green-200 dark:hover:bg-green-900/50",
     },
     yellow: {
       active: "bg-yellow-500 text-white",
-      idle: "bg-yellow-50 text-yellow-700 hover:bg-yellow-100",
+      idle: "bg-yellow-50 text-yellow-700 hover:bg-yellow-100 dark:bg-yellow-900/30 dark:text-yellow-200 dark:hover:bg-yellow-900/50",
     },
     gray: {
       active: "bg-gray-600 text-white",
-      idle: "bg-gray-100 text-gray-700 hover:bg-gray-200",
+      idle: "bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600",
     },
   };
   const styles = toneMap[tone];

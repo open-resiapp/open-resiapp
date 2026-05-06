@@ -72,42 +72,42 @@ export default function NewPostModal({
 
   return (
     <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-      <div className="bg-white rounded-2xl w-full max-w-lg p-6">
+      <div className="bg-white rounded-2xl w-full max-w-lg p-6 dark:bg-gray-800">
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-xl font-bold text-gray-900">{t("newTitle")}</h2>
+          <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">{t("newTitle")}</h2>
           <button
             onClick={onClose}
-            className="text-gray-500 hover:text-gray-700 text-2xl leading-none"
+            className="text-gray-500 hover:text-gray-700 text-2xl leading-none dark:text-gray-400 dark:hover:text-gray-200"
           >
             &times;
           </button>
         </div>
 
         {error && (
-          <div className="bg-red-50 text-red-700 px-4 py-3 rounded-lg text-base mb-4">
+          <div className="bg-red-50 text-red-700 px-4 py-3 rounded-lg text-base mb-4 dark:bg-red-900/30 dark:text-red-200">
             {error}
           </div>
         )}
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-base font-medium text-gray-700 mb-1">
+            <label className="block text-base font-medium text-gray-700 mb-1 dark:text-gray-200">
               {t("titleLabel")}
             </label>
             <input
               name="title"
               required
-              className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+              className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none dark:bg-gray-900 dark:border-gray-700 dark:text-gray-100"
             />
           </div>
 
           <div>
-            <label className="block text-base font-medium text-gray-700 mb-1">
+            <label className="block text-base font-medium text-gray-700 mb-1 dark:text-gray-200">
               {t("categoryLabel")}
             </label>
             <select
               name="category"
-              className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+              className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none dark:bg-gray-900 dark:border-gray-700 dark:text-gray-100"
             >
               {categoryValues.map((c) => (
                 <option key={c} value={c}>
@@ -119,12 +119,12 @@ export default function NewPostModal({
 
           {entrances && entrances.length > 0 && (
             <div>
-              <label className="block text-base font-medium text-gray-700 mb-1">
+              <label className="block text-base font-medium text-gray-700 mb-1 dark:text-gray-200">
                 {tBoard("scopeEntrance")}
               </label>
               <select
                 name="entranceId"
-                className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none dark:bg-gray-900 dark:border-gray-700 dark:text-gray-100"
               >
                 <option value="">{tBoard("scopeAll")}</option>
                 {entrances.map((e) => (
@@ -137,22 +137,22 @@ export default function NewPostModal({
           )}
 
           <div>
-            <label className="block text-base font-medium text-gray-700 mb-1">
+            <label className="block text-base font-medium text-gray-700 mb-1 dark:text-gray-200">
               {t("contentLabel")}
             </label>
             <textarea
               name="content"
               required
               rows={5}
-              className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none resize-vertical"
+              className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none resize-vertical dark:bg-gray-900 dark:border-gray-700 dark:text-gray-100"
             />
           </div>
 
-          <label className="flex items-center gap-2 text-base text-gray-700">
+          <label className="flex items-center gap-2 text-base text-gray-700 dark:text-gray-200">
             <input
               name="isPinned"
               type="checkbox"
-              className="w-5 h-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+              className="w-5 h-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-900"
             />
             {t("pinLabel")}
           </label>
@@ -161,7 +161,7 @@ export default function NewPostModal({
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 py-3 px-4 text-base font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
+              className="flex-1 py-3 px-4 text-base font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors dark:text-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600"
             >
               {tCommon("cancel")}
             </button>

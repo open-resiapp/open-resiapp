@@ -82,8 +82,8 @@ function ToggleRow({
   return (
     <div className="flex items-center justify-between">
       <div>
-        <p className="text-base font-medium text-gray-900">{label}</p>
-        <p className="text-sm text-gray-500">{description}</p>
+        <p className="text-base font-medium text-gray-900 dark:text-gray-100">{label}</p>
+        <p className="text-sm text-gray-500 dark:text-gray-400">{description}</p>
       </div>
       <button
         type="button"
@@ -91,7 +91,7 @@ function ToggleRow({
         aria-checked={checked}
         onClick={onChange}
         className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors ${
-          checked ? "bg-blue-600" : "bg-gray-200"
+          checked ? "bg-blue-600" : "bg-gray-200 dark:bg-gray-600"
         }`}
       >
         <span

@@ -94,55 +94,55 @@ export default function BuildingInfoTab({ canEdit }: BuildingInfoTabProps) {
   }
 
   if (!building && !canEdit) {
-    return <p className="text-base text-gray-500">{t("noInfo")}</p>;
+    return <p className="text-base text-gray-500 dark:text-gray-400">{t("noInfo")}</p>;
   }
 
   if (!building) {
     return (
-      <div className="bg-white rounded-xl border border-gray-200 p-6">
-        <h2 className="text-lg font-bold text-gray-900 mb-4">{t("buildingInfo")}</h2>
+      <div className="bg-white rounded-xl border border-gray-200 p-6 dark:bg-gray-800 dark:border-gray-700">
+        <h2 className="text-lg font-bold text-gray-900 mb-4 dark:text-gray-100">{t("buildingInfo")}</h2>
 
         {message && (
           <div
             className={`mb-4 p-3 rounded-lg text-base ${
               message.type === "success"
-                ? "bg-green-50 text-green-700"
-                : "bg-red-50 text-red-700"
+                ? "bg-green-50 text-green-700 dark:bg-green-900/30 dark:text-green-200"
+                : "bg-red-50 text-red-700 dark:bg-red-900/30 dark:text-red-200"
             }`}
           >
             {message.text}
           </div>
         )}
 
-        <p className="text-base text-gray-500 mb-4">{t("noInfo")}</p>
+        <p className="text-base text-gray-500 mb-4 dark:text-gray-400">{t("noInfo")}</p>
         <div className="space-y-4">
           <div>
-            <label className="block text-sm text-gray-500 mb-1">{t("name")} *</label>
+            <label className="block text-sm text-gray-500 mb-1 dark:text-gray-400">{t("name")} *</label>
             <input
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
               required
-              className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+              className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none dark:bg-gray-900 dark:border-gray-700 dark:text-gray-100"
             />
           </div>
           <div>
-            <label className="block text-sm text-gray-500 mb-1">{t("address")} *</label>
+            <label className="block text-sm text-gray-500 mb-1 dark:text-gray-400">{t("address")} *</label>
             <input
               type="text"
               value={address}
               onChange={(e) => setAddress(e.target.value)}
               required
-              className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+              className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none dark:bg-gray-900 dark:border-gray-700 dark:text-gray-100"
             />
           </div>
           <div>
-            <label className="block text-sm text-gray-500 mb-1">{t("ico")}</label>
+            <label className="block text-sm text-gray-500 mb-1 dark:text-gray-400">{t("ico")}</label>
             <input
               type="text"
               value={ico}
               onChange={(e) => setIco(e.target.value)}
-              className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+              className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none dark:bg-gray-900 dark:border-gray-700 dark:text-gray-100"
             />
           </div>
           <button
@@ -158,13 +158,13 @@ export default function BuildingInfoTab({ canEdit }: BuildingInfoTabProps) {
   }
 
   return (
-    <div className="bg-white rounded-xl border border-gray-200 p-6">
+    <div className="bg-white rounded-xl border border-gray-200 p-6 dark:bg-gray-800 dark:border-gray-700">
       <div className="flex items-center justify-between mb-4">
-        <h2 className="text-lg font-bold text-gray-900">{t("buildingInfo")}</h2>
+        <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100">{t("buildingInfo")}</h2>
         {canEdit && !editing && (
           <button
             onClick={() => setEditing(true)}
-            className="px-4 py-2 text-base text-blue-600 hover:text-blue-700 font-medium transition-colors"
+            className="px-4 py-2 text-base text-blue-600 hover:text-blue-700 font-medium transition-colors dark:text-blue-400 dark:hover:text-blue-300"
           >
             {tc("edit")}
           </button>
@@ -186,50 +186,50 @@ export default function BuildingInfoTab({ canEdit }: BuildingInfoTabProps) {
       {editing ? (
         <div className="space-y-4">
           <div>
-            <label className="block text-sm text-gray-500 mb-1">{t("name")}</label>
+            <label className="block text-sm text-gray-500 mb-1 dark:text-gray-400">{t("name")}</label>
             <input
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+              className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none dark:bg-gray-900 dark:border-gray-700 dark:text-gray-100"
             />
           </div>
           <div>
-            <label className="block text-sm text-gray-500 mb-1">{t("address")}</label>
+            <label className="block text-sm text-gray-500 mb-1 dark:text-gray-400">{t("address")}</label>
             <input
               type="text"
               value={address}
               onChange={(e) => setAddress(e.target.value)}
-              className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+              className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none dark:bg-gray-900 dark:border-gray-700 dark:text-gray-100"
             />
           </div>
           <div>
-            <label className="block text-sm text-gray-500 mb-1">{t("ico")}</label>
+            <label className="block text-sm text-gray-500 mb-1 dark:text-gray-400">{t("ico")}</label>
             <input
               type="text"
               value={ico}
               onChange={(e) => setIco(e.target.value)}
-              className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+              className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none dark:bg-gray-900 dark:border-gray-700 dark:text-gray-100"
             />
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm text-gray-500 mb-1">{t("country")}</label>
+              <label className="block text-sm text-gray-500 mb-1 dark:text-gray-400">{t("country")}</label>
               <select
                 value={country}
                 onChange={(e) => setCountry(e.target.value)}
-                className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none dark:bg-gray-900 dark:border-gray-700 dark:text-gray-100"
               >
                 <option value="sk">{t("countrySk")}</option>
                 <option value="cz">{t("countryCz")}</option>
               </select>
             </div>
             <div>
-              <label className="block text-sm text-gray-500 mb-1">{t("governanceModel")}</label>
+              <label className="block text-sm text-gray-500 mb-1 dark:text-gray-400">{t("governanceModel")}</label>
               <select
                 value={governanceModel}
                 onChange={(e) => setGovernanceModel(e.target.value)}
-                className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none dark:bg-gray-900 dark:border-gray-700 dark:text-gray-100"
               >
                 <option value="chairman_council">{t("governanceChairmanCouncil")}</option>
                 <option value="committee">{t("governanceCommittee")}</option>
@@ -247,7 +247,7 @@ export default function BuildingInfoTab({ canEdit }: BuildingInfoTabProps) {
             </button>
             <button
               onClick={handleCancel}
-              className="px-5 py-3 text-gray-700 hover:text-gray-900 text-base font-medium transition-colors"
+              className="px-5 py-3 text-gray-700 hover:text-gray-900 text-base font-medium transition-colors dark:text-gray-200 dark:hover:text-gray-100"
             >
               {tc("cancel")}
             </button>
@@ -256,28 +256,28 @@ export default function BuildingInfoTab({ canEdit }: BuildingInfoTabProps) {
       ) : (
         <dl className="space-y-3">
           <div>
-            <dt className="text-sm text-gray-500">{t("name")}</dt>
-            <dd className="text-base text-gray-900">{building.name}</dd>
+            <dt className="text-sm text-gray-500 dark:text-gray-400">{t("name")}</dt>
+            <dd className="text-base text-gray-900 dark:text-gray-100">{building.name}</dd>
           </div>
           <div>
-            <dt className="text-sm text-gray-500">{t("address")}</dt>
-            <dd className="text-base text-gray-900">{building.address}</dd>
+            <dt className="text-sm text-gray-500 dark:text-gray-400">{t("address")}</dt>
+            <dd className="text-base text-gray-900 dark:text-gray-100">{building.address}</dd>
           </div>
           {building.ico && (
             <div>
-              <dt className="text-sm text-gray-500">{t("ico")}</dt>
-              <dd className="text-base text-gray-900">{building.ico}</dd>
+              <dt className="text-sm text-gray-500 dark:text-gray-400">{t("ico")}</dt>
+              <dd className="text-base text-gray-900 dark:text-gray-100">{building.ico}</dd>
             </div>
           )}
           <div>
-            <dt className="text-sm text-gray-500">{t("country")}</dt>
-            <dd className="text-base text-gray-900">
+            <dt className="text-sm text-gray-500 dark:text-gray-400">{t("country")}</dt>
+            <dd className="text-base text-gray-900 dark:text-gray-100">
               {building.country === "cz" ? t("countryCz") : t("countrySk")}
             </dd>
           </div>
           <div>
-            <dt className="text-sm text-gray-500">{t("governanceModel")}</dt>
-            <dd className="text-base text-gray-900">
+            <dt className="text-sm text-gray-500 dark:text-gray-400">{t("governanceModel")}</dt>
+            <dd className="text-base text-gray-900 dark:text-gray-100">
               {building.governanceModel === "committee"
                 ? t("governanceCommittee")
                 : building.governanceModel === "chairman_only"

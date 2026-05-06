@@ -190,7 +190,7 @@ export default function UserDetailPage() {
 
   if (!canManage) {
     return (
-      <div className="text-center py-12 text-gray-500 text-lg">
+      <div className="text-center py-12 text-gray-500 text-lg dark:text-gray-400">
         {t("noPermission")}
       </div>
     );
@@ -199,9 +199,9 @@ export default function UserDetailPage() {
   if (loading) {
     return (
       <div className="max-w-2xl mx-auto animate-pulse space-y-4">
-        <div className="h-6 bg-gray-200 rounded w-1/4" />
-        <div className="h-8 bg-gray-200 rounded w-2/3" />
-        <div className="h-48 bg-gray-200 rounded" />
+        <div className="h-6 bg-gray-200 rounded w-1/4 dark:bg-gray-700" />
+        <div className="h-8 bg-gray-200 rounded w-2/3 dark:bg-gray-700" />
+        <div className="h-48 bg-gray-200 rounded dark:bg-gray-700" />
       </div>
     );
   }
@@ -209,8 +209,8 @@ export default function UserDetailPage() {
   if (notFound || !user) {
     return (
       <div className="text-center py-12">
-        <p className="text-lg text-gray-500 mb-4">{t("userNotFound")}</p>
-        <Link href="/owners" className="text-blue-600 hover:underline text-base">
+        <p className="text-lg text-gray-500 mb-4 dark:text-gray-400">{t("userNotFound")}</p>
+        <Link href="/owners" className="text-blue-600 hover:underline text-base dark:text-blue-400">
           {tCommon("backToList")}
         </Link>
       </div>
@@ -243,20 +243,20 @@ export default function UserDetailPage() {
     <div className="max-w-2xl mx-auto">
       <Link
         href="/owners"
-        className="text-blue-600 hover:underline text-base mb-4 inline-block"
+        className="text-blue-600 hover:underline text-base mb-4 inline-block dark:text-blue-400"
       >
         &larr; {tCommon("backToList")}
       </Link>
 
-      <div className="bg-white rounded-xl border border-gray-200 p-6 mb-6">
+      <div className="bg-white rounded-xl border border-gray-200 p-6 mb-6 dark:bg-gray-800 dark:border-gray-700">
         <div className="flex items-start justify-between gap-4 mb-6">
-          <h1 className="text-2xl font-bold text-gray-900">{user.name}</h1>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">{user.name}</h1>
           <div className="flex items-center gap-3">
             <span
               className={`px-2.5 py-0.5 rounded-full text-sm font-medium ${
                 user.isActive
-                  ? "bg-green-100 text-green-700"
-                  : "bg-red-100 text-red-700"
+                  ? "bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-200"
+                  : "bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-200"
               }`}
             >
               {user.isActive ? t("statusActive") : t("statusInactive")}
@@ -268,24 +268,24 @@ export default function UserDetailPage() {
           <>
             <dl className="space-y-4">
               <div>
-                <dt className="text-sm font-medium text-gray-500">{t("emailLabel")}</dt>
-                <dd className="text-base text-gray-900">{user.email}</dd>
+                <dt className="text-sm font-medium text-gray-500 dark:text-gray-400">{t("emailLabel")}</dt>
+                <dd className="text-base text-gray-900 dark:text-gray-100">{user.email}</dd>
               </div>
               <div>
-                <dt className="text-sm font-medium text-gray-500">{t("phoneLabel")}</dt>
-                <dd className="text-base text-gray-900">{user.phone || tCommon("noDash")}</dd>
+                <dt className="text-sm font-medium text-gray-500 dark:text-gray-400">{t("phoneLabel")}</dt>
+                <dd className="text-base text-gray-900 dark:text-gray-100">{user.phone || tCommon("noDash")}</dd>
               </div>
               <div>
-                <dt className="text-sm font-medium text-gray-500">{t("roleLabel")}</dt>
-                <dd className="text-base text-gray-900">{t(roleKeys[user.role])}</dd>
+                <dt className="text-sm font-medium text-gray-500 dark:text-gray-400">{t("roleLabel")}</dt>
+                <dd className="text-base text-gray-900 dark:text-gray-100">{t(roleKeys[user.role])}</dd>
               </div>
               <div>
-                <dt className="text-sm font-medium text-gray-500">{t("flatsLabel")}</dt>
-                <dd className="text-base text-gray-900">{flatDisplay()}</dd>
+                <dt className="text-sm font-medium text-gray-500 dark:text-gray-400">{t("flatsLabel")}</dt>
+                <dd className="text-base text-gray-900 dark:text-gray-100">{flatDisplay()}</dd>
               </div>
               <div>
-                <dt className="text-sm font-medium text-gray-500">{t("registered")}</dt>
-                <dd className="text-base text-gray-900">
+                <dt className="text-sm font-medium text-gray-500 dark:text-gray-400">{t("registered")}</dt>
+                <dd className="text-base text-gray-900 dark:text-gray-100">
                   {format.dateTime(new Date(user.createdAt), {
                     day: "numeric",
                     month: "long",
@@ -295,7 +295,7 @@ export default function UserDetailPage() {
               </div>
             </dl>
 
-            <div className="flex gap-3 mt-6 pt-6 border-t border-gray-200">
+            <div className="flex gap-3 mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
               <button
                 onClick={startEditing}
                 className="px-5 py-3 bg-blue-600 hover:bg-blue-700 text-white text-base font-medium rounded-lg transition-colors"
@@ -307,8 +307,8 @@ export default function UserDetailPage() {
                 disabled={saving}
                 className={`px-5 py-3 text-base font-medium rounded-lg transition-colors ${
                   user.isActive
-                    ? "bg-red-100 hover:bg-red-200 text-red-700"
-                    : "bg-green-100 hover:bg-green-200 text-green-700"
+                    ? "bg-red-100 hover:bg-red-200 text-red-700 dark:bg-red-900/40 dark:hover:bg-red-900/60 dark:text-red-200"
+                    : "bg-green-100 hover:bg-green-200 text-green-700 dark:bg-green-900/40 dark:hover:bg-green-900/60 dark:text-green-200"
                 }`}
               >
                 {user.isActive ? t("deactivate") : t("activate")}
@@ -327,25 +327,25 @@ export default function UserDetailPage() {
         ) : (
           <form onSubmit={handleSave} className="space-y-4">
             {error && (
-              <div className="bg-red-50 text-red-700 px-4 py-3 rounded-lg text-base">
+              <div className="bg-red-50 text-red-700 px-4 py-3 rounded-lg text-base dark:bg-red-900/30 dark:text-red-200">
                 {error}
               </div>
             )}
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="block text-base font-medium text-gray-700 mb-1">
+                <label className="block text-base font-medium text-gray-700 mb-1 dark:text-gray-200">
                   {t("nameLabel")}
                 </label>
                 <input
                   value={editName}
                   onChange={(e) => setEditName(e.target.value)}
                   required
-                  className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                  className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none dark:bg-gray-900 dark:border-gray-700 dark:text-gray-100"
                 />
               </div>
               <div>
-                <label className="block text-base font-medium text-gray-700 mb-1">
+                <label className="block text-base font-medium text-gray-700 mb-1 dark:text-gray-200">
                   {t("emailLabel")}
                 </label>
                 <input
@@ -353,27 +353,27 @@ export default function UserDetailPage() {
                   value={editEmail}
                   onChange={(e) => setEditEmail(e.target.value)}
                   required
-                  className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                  className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none dark:bg-gray-900 dark:border-gray-700 dark:text-gray-100"
                 />
               </div>
               <div>
-                <label className="block text-base font-medium text-gray-700 mb-1">
+                <label className="block text-base font-medium text-gray-700 mb-1 dark:text-gray-200">
                   {t("phoneLabel")}
                 </label>
                 <input
                   value={editPhone}
                   onChange={(e) => setEditPhone(e.target.value)}
-                  className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                  className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none dark:bg-gray-900 dark:border-gray-700 dark:text-gray-100"
                 />
               </div>
               <div>
-                <label className="block text-base font-medium text-gray-700 mb-1">
+                <label className="block text-base font-medium text-gray-700 mb-1 dark:text-gray-200">
                   {t("roleLabel")}
                 </label>
                 <select
                   value={editRole}
                   onChange={(e) => setEditRole(e.target.value as UserRole)}
-                  className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                  className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none dark:bg-gray-900 dark:border-gray-700 dark:text-gray-100"
                 >
                   <option value="owner">{t("roleOwner")}</option>
                   <option value="tenant">{t("roleTenant")}</option>
@@ -385,25 +385,25 @@ export default function UserDetailPage() {
             </div>
 
             <div>
-              <label className="block text-base font-medium text-gray-700 mb-2">
+              <label className="block text-base font-medium text-gray-700 mb-2 dark:text-gray-200">
                 {t("flatsLabel")}
               </label>
-              <div className="border border-gray-300 rounded-lg max-h-60 overflow-y-auto divide-y divide-gray-100">
+              <div className="border border-gray-300 rounded-lg max-h-60 overflow-y-auto divide-y divide-gray-100 dark:border-gray-700 dark:divide-gray-700">
                 {flats.length === 0 ? (
-                  <p className="px-4 py-3 text-base text-gray-500">{t("noFlat")}</p>
+                  <p className="px-4 py-3 text-base text-gray-500 dark:text-gray-400">{t("noFlat")}</p>
                 ) : (
                   flats.map((f) => (
                     <label
                       key={f.id}
-                      className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 cursor-pointer"
+                      className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 cursor-pointer dark:hover:bg-gray-700/50"
                     >
                       <input
                         type="checkbox"
                         checked={editFlatIds.includes(f.id)}
                         onChange={() => toggleFlatId(f.id)}
-                        className="w-5 h-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                        className="w-5 h-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-900"
                       />
-                      <span className="text-base text-gray-900">
+                      <span className="text-base text-gray-900 dark:text-gray-100">
                         {t("flatLabel")} {f.flatNumber} ({f.entranceName})
                       </span>
                     </label>
@@ -416,7 +416,7 @@ export default function UserDetailPage() {
               <button
                 type="button"
                 onClick={() => setEditing(false)}
-                className="px-5 py-3 text-base font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
+                className="px-5 py-3 text-base font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors dark:text-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600"
               >
                 {tCommon("cancel")}
               </button>
@@ -434,19 +434,19 @@ export default function UserDetailPage() {
 
       {showDeleteModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-xl border border-gray-200 p-6 max-w-md w-full">
-            <h2 className="text-xl font-bold text-gray-900 mb-2">
+          <div className="bg-white rounded-xl border border-gray-200 p-6 max-w-md w-full dark:bg-gray-800 dark:border-gray-700">
+            <h2 className="text-xl font-bold text-gray-900 mb-2 dark:text-gray-100">
               {t("deleteUser")}
             </h2>
-            <p className="text-base text-gray-600 mb-1">
+            <p className="text-base text-gray-600 mb-1 dark:text-gray-300">
               {t("confirmDeleteUser", { name: user.name })}
             </p>
-            <p className="text-sm text-red-600 mb-4">
+            <p className="text-sm text-red-600 mb-4 dark:text-red-400">
               {t("deleteWarning")}
             </p>
 
             {deleteError && (
-              <div className="bg-red-50 text-red-700 px-4 py-3 rounded-lg text-base mb-4">
+              <div className="bg-red-50 text-red-700 px-4 py-3 rounded-lg text-base mb-4 dark:bg-red-900/30 dark:text-red-200">
                 {deleteError}
               </div>
             )}
@@ -455,7 +455,7 @@ export default function UserDetailPage() {
               <button
                 onClick={() => setShowDeleteModal(false)}
                 disabled={deleting}
-                className="px-5 py-3 text-base font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
+                className="px-5 py-3 text-base font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors dark:text-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600"
               >
                 {tCommon("cancel")}
               </button>

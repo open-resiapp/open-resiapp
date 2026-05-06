@@ -60,8 +60,8 @@ export default function DirectoryEditModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-      <div className="bg-white rounded-xl w-full max-w-lg p-6">
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">{t("editTitle")}</h3>
+      <div className="bg-white rounded-xl w-full max-w-lg p-6 dark:bg-gray-800">
+        <h3 className="text-lg font-semibold text-gray-900 mb-4 dark:text-gray-100">{t("editTitle")}</h3>
 
         <div className="space-y-4">
           <label className="flex items-center gap-3">
@@ -71,9 +71,9 @@ export default function DirectoryEditModal({
               onChange={(e) =>
                 setValues({ ...values, sharePhone: e.target.checked })
               }
-              className="rounded border-gray-300"
+              className="rounded border-gray-300 dark:border-gray-600 dark:bg-gray-900"
             />
-            <span className="text-base text-gray-700">{t("sharePhone")}</span>
+            <span className="text-base text-gray-700 dark:text-gray-200">{t("sharePhone")}</span>
           </label>
 
           <label className="flex items-center gap-3">
@@ -83,13 +83,13 @@ export default function DirectoryEditModal({
               onChange={(e) =>
                 setValues({ ...values, shareEmail: e.target.checked })
               }
-              className="rounded border-gray-300"
+              className="rounded border-gray-300 dark:border-gray-600 dark:bg-gray-900"
             />
-            <span className="text-base text-gray-700">{t("shareEmail")}</span>
+            <span className="text-base text-gray-700 dark:text-gray-200">{t("shareEmail")}</span>
           </label>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-gray-700 mb-1 dark:text-gray-200">
               {t("note")}
             </label>
             <input
@@ -98,12 +98,12 @@ export default function DirectoryEditModal({
               onChange={(e) => setValues({ ...values, note: e.target.value })}
               maxLength={255}
               placeholder={t("notePlaceholder")}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-base"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-base dark:bg-gray-900 dark:border-gray-700 dark:text-gray-100 dark:placeholder-gray-500"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="block text-sm font-medium text-gray-700 mb-1 dark:text-gray-200">
               {t("skills")}
             </label>
             <input
@@ -112,7 +112,7 @@ export default function DirectoryEditModal({
               onChange={(e) => setValues({ ...values, skills: e.target.value })}
               maxLength={500}
               placeholder={t("skillsPlaceholder")}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-base"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-base dark:bg-gray-900 dark:border-gray-700 dark:text-gray-100 dark:placeholder-gray-500"
             />
           </div>
         </div>
@@ -122,7 +122,7 @@ export default function DirectoryEditModal({
             <button
               onClick={handleDelete}
               disabled={submitting}
-              className="px-4 py-2 text-sm font-medium text-red-600 bg-red-50 hover:bg-red-100 rounded-lg"
+              className="px-4 py-2 text-sm font-medium text-red-600 bg-red-50 hover:bg-red-100 rounded-lg dark:text-red-300 dark:bg-red-900/30 dark:hover:bg-red-900/50"
             >
               {t("removeFully")}
             </button>
@@ -133,7 +133,7 @@ export default function DirectoryEditModal({
             <button
               onClick={onClose}
               disabled={submitting}
-              className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg"
+              className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg dark:text-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600"
             >
               {t("cancel")}
             </button>

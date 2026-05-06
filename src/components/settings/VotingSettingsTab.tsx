@@ -68,8 +68,8 @@ export default function VotingSettingsTab({ canEdit }: VotingSettingsTabProps) {
   if (loading) {
     return (
       <div className="animate-pulse space-y-4">
-        <div className="h-8 bg-gray-200 rounded w-1/3" />
-        <div className="h-32 bg-gray-200 rounded" />
+        <div className="h-8 bg-gray-200 rounded w-1/3 dark:bg-gray-700" />
+        <div className="h-32 bg-gray-200 rounded dark:bg-gray-700" />
       </div>
     );
   }
@@ -97,13 +97,13 @@ export default function VotingSettingsTab({ canEdit }: VotingSettingsTabProps) {
   };
 
   return (
-    <div className="bg-white rounded-xl border border-gray-200 p-6">
-      <h2 className="text-lg font-bold text-gray-900 mb-4">{t("votingSettings")}</h2>
+    <div className="bg-white rounded-xl border border-gray-200 p-6 dark:bg-gray-800 dark:border-gray-700">
+      <h2 className="text-lg font-bold text-gray-900 mb-4 dark:text-gray-100">{t("votingSettings")}</h2>
 
       {message && (
         <div
           className={`mb-4 p-3 rounded-lg text-base ${
-            message.type === "success" ? "bg-green-50 text-green-700" : "bg-red-50 text-red-700"
+            message.type === "success" ? "bg-green-50 text-green-700 dark:bg-green-900/30 dark:text-green-200" : "bg-red-50 text-red-700 dark:bg-red-900/30 dark:text-red-200"
           }`}
         >
           {message.text}
@@ -116,8 +116,8 @@ export default function VotingSettingsTab({ canEdit }: VotingSettingsTabProps) {
             key={method.value}
             className={`flex items-start gap-3 p-4 rounded-lg border cursor-pointer transition-colors ${
               selectedMethod === method.value
-                ? "border-blue-500 bg-blue-50"
-                : "border-gray-200 hover:border-gray-300"
+                ? "border-blue-500 bg-blue-50 dark:bg-blue-900/30"
+                : "border-gray-200 hover:border-gray-300 dark:border-gray-700 dark:hover:border-gray-600"
             } ${!canEdit ? "cursor-default" : ""}`}
           >
             <input
@@ -130,15 +130,15 @@ export default function VotingSettingsTab({ canEdit }: VotingSettingsTabProps) {
               className="mt-1 h-4 w-4 text-blue-600"
             />
             <div>
-              <p className="text-base font-medium text-gray-900">{t(method.labelKey)}</p>
-              <p className="text-sm text-gray-500 mt-0.5">{t(method.descKey)}</p>
+              <p className="text-base font-medium text-gray-900 dark:text-gray-100">{t(method.labelKey)}</p>
+              <p className="text-sm text-gray-500 mt-0.5 dark:text-gray-400">{t(method.descKey)}</p>
             </div>
           </label>
         ))}
       </div>
 
       {selectedMethod === "per_area" && missingAreas && (
-        <div className="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg text-base text-yellow-700">
+        <div className="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg text-base text-yellow-700 dark:bg-yellow-900/30 dark:border-yellow-800 dark:text-yellow-200">
           {t("missingAreaWarning")}
         </div>
       )}
@@ -154,15 +154,15 @@ export default function VotingSettingsTab({ canEdit }: VotingSettingsTabProps) {
           </button>
           <button
             onClick={() => setSelectedMethod(currentMethod)}
-            className="px-5 py-3 text-gray-700 hover:text-gray-900 text-base font-medium transition-colors"
+            className="px-5 py-3 text-gray-700 hover:text-gray-900 text-base font-medium transition-colors dark:text-gray-200 dark:hover:text-gray-100"
           >
             {tc("cancel")}
           </button>
         </div>
       )}
 
-      <div className="mt-8 pt-6 border-t border-gray-200">
-        <label className="block text-base font-medium text-gray-900 mb-2">
+      <div className="mt-8 pt-6 border-t border-gray-200 dark:border-gray-700">
+        <label className="block text-base font-medium text-gray-900 mb-2 dark:text-gray-100">
           {t("legalNoticeLabel")}
         </label>
         <textarea
@@ -171,7 +171,7 @@ export default function VotingSettingsTab({ canEdit }: VotingSettingsTabProps) {
           disabled={!canEdit}
           rows={4}
           placeholder={t("legalNoticePlaceholder")}
-          className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none resize-vertical disabled:bg-gray-50 disabled:text-gray-500"
+          className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none resize-vertical disabled:bg-gray-50 disabled:text-gray-500 dark:bg-gray-900 dark:border-gray-700 dark:text-gray-100 dark:disabled:bg-gray-800 dark:disabled:text-gray-500"
         />
         {canEdit && hasNoticeChanges && (
           <div className="flex gap-3 mt-3">
@@ -184,7 +184,7 @@ export default function VotingSettingsTab({ canEdit }: VotingSettingsTabProps) {
             </button>
             <button
               onClick={() => setLegalNotice(savedLegalNotice)}
-              className="px-5 py-3 text-gray-700 hover:text-gray-900 text-base font-medium transition-colors"
+              className="px-5 py-3 text-gray-700 hover:text-gray-900 text-base font-medium transition-colors dark:text-gray-200 dark:hover:text-gray-100"
             >
               {tc("cancel")}
             </button>

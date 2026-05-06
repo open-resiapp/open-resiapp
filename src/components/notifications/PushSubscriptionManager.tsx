@@ -135,11 +135,11 @@ export default function PushSubscriptionManager() {
           <p className="text-base font-medium text-gray-900">
             {t("pushNotifications")}
           </p>
-          <p className="text-sm text-gray-500">{t("pushUnsupported")}</p>
+          <p className="text-sm text-gray-500 dark:text-gray-400">{t("pushUnsupported")}</p>
         </div>
         <button
           disabled
-          className="px-5 py-3 text-base font-medium rounded-lg bg-gray-100 text-gray-400 cursor-not-allowed"
+          className="px-5 py-3 text-base font-medium rounded-lg bg-gray-100 text-gray-400 cursor-not-allowed dark:bg-gray-700 dark:text-gray-500"
         >
           {t("enable")}
         </button>
@@ -150,10 +150,10 @@ export default function PushSubscriptionManager() {
   return (
     <div className="flex items-center justify-between">
       <div>
-        <p className="text-base font-medium text-gray-900">
+        <p className="text-base font-medium text-gray-900 dark:text-gray-100">
           {t("pushNotifications")}
         </p>
-        <p className="text-sm text-gray-500">
+        <p className="text-sm text-gray-500 dark:text-gray-400">
           {denied
             ? t("pushDenied")
             : subscribed
@@ -166,7 +166,7 @@ export default function PushSubscriptionManager() {
         disabled={loading || denied}
         className={`px-5 py-3 text-base font-medium rounded-lg transition-colors ${
           subscribed
-            ? "bg-gray-200 hover:bg-gray-300 text-gray-700"
+            ? "bg-gray-200 hover:bg-gray-300 text-gray-700 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-gray-200"
             : "bg-blue-600 hover:bg-blue-700 text-white"
         } disabled:opacity-50`}
       >

@@ -34,7 +34,7 @@ export default function NovaHlasovaniePage() {
 
   if (!hasPermission(role, "createVoting")) {
     return (
-      <div className="text-center py-12 text-gray-500 text-lg">
+      <div className="text-center py-12 text-gray-500 text-lg dark:text-gray-400">
         {t("noPermission")}
       </div>
     );
@@ -81,82 +81,82 @@ export default function NovaHlasovaniePage() {
     <div className="max-w-2xl mx-auto">
       <button
         onClick={() => router.push("/voting")}
-        className="text-blue-600 hover:underline text-base mb-4 inline-block"
+        className="text-blue-600 hover:underline text-base mb-4 inline-block dark:text-blue-400"
       >
         &larr; {tCommon("backToList")}
       </button>
 
-      <div className="bg-white rounded-xl border border-gray-200 p-6">
-        <h1 className="text-2xl font-bold text-gray-900 mb-6">
+      <div className="bg-white rounded-xl border border-gray-200 p-6 dark:bg-gray-800 dark:border-gray-700">
+        <h1 className="text-2xl font-bold text-gray-900 mb-6 dark:text-gray-100">
           {t("title")}
         </h1>
 
         {error && (
-          <div className="bg-red-50 text-red-700 px-4 py-3 rounded-lg text-base mb-4">
+          <div className="bg-red-50 text-red-700 px-4 py-3 rounded-lg text-base mb-4 dark:bg-red-900/30 dark:text-red-200">
             {error}
           </div>
         )}
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-base font-medium text-gray-700 mb-1">
+            <label className="block text-base font-medium text-gray-700 mb-1 dark:text-gray-200">
               {t("titleLabel")}
             </label>
             <input
               name="title"
               required
-              className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+              className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none dark:bg-gray-900 dark:border-gray-700 dark:text-gray-100"
               placeholder={t("titlePlaceholder")}
             />
           </div>
 
           <div>
-            <label className="block text-base font-medium text-gray-700 mb-1">
+            <label className="block text-base font-medium text-gray-700 mb-1 dark:text-gray-200">
               {t("descriptionLabel")}
             </label>
             <textarea
               name="description"
               rows={4}
-              className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none resize-vertical"
+              className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none resize-vertical dark:bg-gray-900 dark:border-gray-700 dark:text-gray-100"
               placeholder={t("descriptionPlaceholder")}
             />
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-base font-medium text-gray-700 mb-1">
+              <label className="block text-base font-medium text-gray-700 mb-1 dark:text-gray-200">
                 {t("startsAtLabel")}
               </label>
               <input
                 name="startsAt"
                 type="datetime-local"
                 required
-                className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none dark:bg-gray-900 dark:border-gray-700 dark:text-gray-100"
               />
             </div>
             <div>
-              <label className="block text-base font-medium text-gray-700 mb-1">
+              <label className="block text-base font-medium text-gray-700 mb-1 dark:text-gray-200">
                 {t("endsAtLabel")}
               </label>
               <input
                 name="endsAt"
                 type="datetime-local"
                 required
-                className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none dark:bg-gray-900 dark:border-gray-700 dark:text-gray-100"
               />
             </div>
           </div>
 
           {/* Voting Type */}
           <div>
-            <label className="block text-base font-medium text-gray-700 mb-1">
+            <label className="block text-base font-medium text-gray-700 mb-1 dark:text-gray-200">
               {t("votingTypeLabel")}
             </label>
             <select
               name="votingType"
               value={votingType}
               onChange={(e) => setVotingType(e.target.value)}
-              className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+              className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none dark:bg-gray-900 dark:border-gray-700 dark:text-gray-100"
             >
               <option value="written">{t("votingTypeWritten")}</option>
               <option value="meeting">{t("votingTypeMeeting")}</option>
@@ -165,14 +165,14 @@ export default function NovaHlasovaniePage() {
 
           {/* Initiated By */}
           <div>
-            <label className="block text-base font-medium text-gray-700 mb-1">
+            <label className="block text-base font-medium text-gray-700 mb-1 dark:text-gray-200">
               {t("initiatedByLabel")}
             </label>
             <select
               name="initiatedBy"
               value={initiatedBy}
               onChange={(e) => setInitiatedBy(e.target.value)}
-              className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+              className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none dark:bg-gray-900 dark:border-gray-700 dark:text-gray-100"
             >
               <option value="board">{t("initiatedByBoard")}</option>
               <option value="owners_quarter">{t("initiatedByOwnersQuarter")}</option>
@@ -181,7 +181,7 @@ export default function NovaHlasovaniePage() {
 
           {/* Restriction note */}
           {showRestrictionNote && (
-            <div className="bg-amber-50 border border-amber-200 rounded-lg px-4 py-3 text-base text-amber-800">
+            <div className="bg-amber-50 border border-amber-200 rounded-lg px-4 py-3 text-base text-amber-800 dark:bg-amber-900/30 dark:border-amber-800 dark:text-amber-200">
               {votingType === "meeting"
                 ? t("meetingNote")
                 : t("ownersQuarterNote")}
@@ -190,12 +190,12 @@ export default function NovaHlasovaniePage() {
 
           {/* Quorum Type */}
           <div>
-            <label className="block text-base font-medium text-gray-700 mb-1">
+            <label className="block text-base font-medium text-gray-700 mb-1 dark:text-gray-200">
               {t("quorumTypeLabel")}
             </label>
             <select
               name="quorumType"
-              className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+              className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none dark:bg-gray-900 dark:border-gray-700 dark:text-gray-100"
             >
               <option value="simple_all">{t("quorumSimpleAll")}</option>
               <option value="simple_present">{t("quorumSimplePresent")}</option>
@@ -207,12 +207,12 @@ export default function NovaHlasovaniePage() {
           {/* Entrance scope */}
           {entrances.length > 0 && (
             <div>
-              <label className="block text-base font-medium text-gray-700 mb-1">
+              <label className="block text-base font-medium text-gray-700 mb-1 dark:text-gray-200">
                 {t("entranceScopeLabel")}
               </label>
               <select
                 name="entranceId"
-                className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none dark:bg-gray-900 dark:border-gray-700 dark:text-gray-100"
               >
                 <option value="">{t("scopeAll")}</option>
                 {entrances.map((e) => (
@@ -225,12 +225,12 @@ export default function NovaHlasovaniePage() {
           )}
 
           <div>
-            <label className="block text-base font-medium text-gray-700 mb-1">
+            <label className="block text-base font-medium text-gray-700 mb-1 dark:text-gray-200">
               {t("statusLabel")}
             </label>
             <select
               name="status"
-              className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+              className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none dark:bg-gray-900 dark:border-gray-700 dark:text-gray-100"
             >
               <option value="draft">{t("statusDraft")}</option>
               <option value="active">{t("statusActive")}</option>
@@ -241,7 +241,7 @@ export default function NovaHlasovaniePage() {
             <button
               type="button"
               onClick={() => router.push("/voting")}
-              className="flex-1 py-3 px-4 text-base font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
+              className="flex-1 py-3 px-4 text-base font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors dark:text-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600"
             >
               {tCommon("cancel")}
             </button>

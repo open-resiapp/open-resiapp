@@ -37,9 +37,9 @@ export default function SettingsTabs({
 
   const baseClass =
     "whitespace-nowrap py-3 px-1 border-b-2 text-base font-medium transition-colors relative";
-  const activeClass = "border-blue-600 text-blue-600";
+  const activeClass = "border-blue-600 text-blue-600 dark:text-blue-400 dark:border-blue-400";
   const inactiveClass =
-    "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300";
+    "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-200 dark:hover:border-gray-600";
 
   const pathname = usePathname();
   const onModulesPage = pathname?.startsWith("/settings/modules") ?? false;
@@ -51,7 +51,7 @@ export default function SettingsTabs({
   const onSettingsRoot = pathname === "/settings";
 
   return (
-    <div className="border-b border-gray-200 mb-6">
+    <div className="border-b border-gray-200 mb-6 dark:border-gray-700">
       <nav className="-mb-px flex space-x-6 overflow-x-auto" aria-label="Tabs">
         {tabs.map((tab) => {
           const isActive = onSettingsRoot && activeTab === tab;

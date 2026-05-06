@@ -62,8 +62,8 @@ export default function ConsentManagement() {
 
   return (
     <>
-      <div className="bg-white rounded-xl border border-gray-200 p-6">
-        <h2 className="text-lg font-semibold text-gray-900 mb-4">
+      <div className="bg-white rounded-xl border border-gray-200 p-6 dark:bg-gray-800 dark:border-gray-700">
+        <h2 className="text-lg font-semibold text-gray-900 mb-4 dark:text-gray-100">
           {t("managementTitle")}
         </h2>
 
@@ -75,22 +75,22 @@ export default function ConsentManagement() {
             return (
               <div
                 key={key}
-                className="flex items-center justify-between py-3 border-b border-gray-100 last:border-0"
+                className="flex items-center justify-between py-3 border-b border-gray-100 last:border-0 dark:border-gray-700"
               >
                 <div>
-                  <p className="text-base font-medium text-gray-900">{label}</p>
+                  <p className="text-base font-medium text-gray-900 dark:text-gray-100">{label}</p>
                   <div className="flex items-center gap-2 mt-1">
                     <span
                       className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-sm font-medium ${
                         isGranted
-                          ? "bg-green-100 text-green-800"
-                          : "bg-gray-100 text-gray-600"
+                          ? "bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-200"
+                          : "bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300"
                       }`}
                     >
                       {isGranted ? t("statusGranted") : t("statusNotGranted")}
                     </span>
                     {isGranted && consent.createdAt && (
-                      <span className="text-sm text-gray-500">
+                      <span className="text-sm text-gray-500 dark:text-gray-400">
                         {t("grantedOn", {
                           date: new Date(consent.createdAt).toLocaleDateString(),
                         })}
@@ -109,8 +109,8 @@ export default function ConsentManagement() {
                   }}
                   className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
                     isGranted
-                      ? "text-red-600 hover:bg-red-50 border border-red-200"
-                      : "text-blue-600 hover:bg-blue-50 border border-blue-200"
+                      ? "text-red-600 hover:bg-red-50 border border-red-200 dark:text-red-300 dark:border-red-800 dark:hover:bg-red-900/30"
+                      : "text-blue-600 hover:bg-blue-50 border border-blue-200 dark:text-blue-300 dark:border-blue-800 dark:hover:bg-blue-900/30"
                   }`}
                 >
                   {isGranted ? t("withdraw") : t("grant")}
@@ -120,11 +120,11 @@ export default function ConsentManagement() {
           })}
         </div>
 
-        <div className="mt-4 pt-4 border-t border-gray-100">
+        <div className="mt-4 pt-4 border-t border-gray-100 dark:border-gray-700">
           <Link
             href="/privacy-policy"
             target="_blank"
-            className="text-sm text-blue-600 hover:text-blue-700 underline"
+            className="text-sm text-blue-600 hover:text-blue-700 underline dark:text-blue-400 dark:hover:text-blue-300"
           >
             {t("viewPrivacyPolicy")}
           </Link>
@@ -134,11 +134,11 @@ export default function ConsentManagement() {
       {/* Withdraw confirmation dialog */}
       {withdrawType && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-xl p-6 max-w-md w-full">
-            <h3 className="text-lg font-semibold text-gray-900 mb-3">
+          <div className="bg-white rounded-xl p-6 max-w-md w-full dark:bg-gray-800">
+            <h3 className="text-lg font-semibold text-gray-900 mb-3 dark:text-gray-100">
               {t("withdrawWarningTitle")}
             </h3>
-            <p className="text-base text-gray-700 mb-6">
+            <p className="text-base text-gray-700 mb-6 dark:text-gray-200">
               {withdrawType === "data_processing"
                 ? t("withdrawDataProcessingWarning")
                 : t("withdrawCommunicationWarning")}
@@ -146,7 +146,7 @@ export default function ConsentManagement() {
             <div className="flex gap-3 justify-end">
               <button
                 onClick={() => setWithdrawType(null)}
-                className="px-4 py-2 text-base font-medium text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+                className="px-4 py-2 text-base font-medium text-gray-700 hover:bg-gray-100 rounded-lg transition-colors dark:text-gray-200 dark:hover:bg-gray-700"
               >
                 {t("withdrawCancel")}
               </button>

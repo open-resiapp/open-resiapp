@@ -144,15 +144,15 @@ export default function HelpPage() {
     <div className="max-w-4xl mx-auto">
       <div className="mb-6 flex items-start justify-between gap-4 flex-wrap">
         <div>
-          <div className="text-sm text-gray-500 mb-1">
+          <div className="text-sm text-gray-500 mb-1 dark:text-gray-400">
             <Link href="/komunita" className="hover:underline">
               {t("landing.title")}
             </Link>
             {" / "}
             <span>{tHelp("title")}</span>
           </div>
-          <h1 className="text-2xl font-bold text-gray-900">{tHelp("title")}</h1>
-          <p className="text-base text-gray-600 mt-1">{tHelp("subtitle")}</p>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">{tHelp("title")}</h1>
+          <p className="text-base text-gray-600 mt-1 dark:text-gray-300">{tHelp("subtitle")}</p>
         </div>
         <Link
           href="/komunita/pomoc/novy"
@@ -170,7 +170,7 @@ export default function HelpPage() {
             className={`px-4 py-2 text-sm font-medium rounded-lg whitespace-nowrap ${
               tab === item.value
                 ? "bg-blue-600 text-white"
-                : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                : "bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600"
             }`}
           >
             {tHelp(item.labelKey)}
@@ -178,21 +178,21 @@ export default function HelpPage() {
         ))}
       </div>
 
-      <label className="mb-4 inline-flex items-center gap-2 text-sm text-gray-600">
+      <label className="mb-4 inline-flex items-center gap-2 text-sm text-gray-600 dark:text-gray-300">
         <input
           type="checkbox"
           checked={showArchived}
           onChange={(e) => setShowArchived(e.target.checked)}
-          className="rounded border-gray-300"
+          className="rounded border-gray-300 dark:border-gray-600 dark:bg-gray-800"
         />
         {tHelp("showArchived")}
       </label>
 
       {loading ? (
-        <p className="text-gray-500">{tCommon("loading")}</p>
+        <p className="text-gray-500 dark:text-gray-400">{tCommon("loading")}</p>
       ) : posts.length === 0 ? (
-        <div className="bg-white border border-dashed border-gray-300 rounded-xl p-10 text-center">
-          <p className="text-gray-600 mb-4">{tHelp("empty")}</p>
+        <div className="bg-white border border-dashed border-gray-300 rounded-xl p-10 text-center dark:bg-gray-800 dark:border-gray-700">
+          <p className="text-gray-600 mb-4 dark:text-gray-300">{tHelp("empty")}</p>
           <Link
             href="/komunita/pomoc/novy"
             className="inline-block px-4 py-2 text-base font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg"
@@ -232,17 +232,17 @@ export default function HelpPage() {
                   </button>
                 )}
                 {(post.responseCount ?? 0) > 0 && (
-                  <div className="mt-3 border-t border-gray-100 pt-3">
+                  <div className="mt-3 border-t border-gray-100 pt-3 dark:border-gray-700">
                     <button
                       onClick={() => toggleResponses(post.id)}
-                      className="text-sm text-blue-600 hover:text-blue-700 font-medium"
+                      className="text-sm text-blue-600 hover:text-blue-700 font-medium dark:text-blue-400 dark:hover:text-blue-300"
                     >
                       {expanded[post.id]
                         ? t("hideResponses")
                         : t("showResponses", { count: post.responseCount ?? 0 })}
                     </button>
                     {expanded[post.id] === "loading" && (
-                      <p className="text-sm text-gray-500 mt-2">{tCommon("loading")}</p>
+                      <p className="text-sm text-gray-500 mt-2 dark:text-gray-400">{tCommon("loading")}</p>
                     )}
                     {Array.isArray(expanded[post.id]) && (
                       <div className="mt-3">

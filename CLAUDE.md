@@ -52,6 +52,9 @@ messages/
 ### Route handlers
 - `app/**/route.ts` files may export only HTTP method handlers (`GET`, `POST`, etc.) and Next.js-recognized config (`runtime`, `dynamic`, `revalidate`). Module-level state (in-memory caches, last-run snapshots, singletons) lives in `src/lib/*` and is imported by the route — exporting anything else triggers a build-time error.
 
+### Library modules
+- When a `src/lib/*.ts` module mixes server-only APIs (`next/headers`, `cookies()`, `headers()`, DB drivers) with constants/types imported by client components, split it: `foo.ts` (types + constants, client-safe) and `foo.server.ts` (server APIs, with `import "server-only"` at the top). Without the split, anything importing the constants drags `next/headers` into the client bundle and the build errors with "You're importing a component that needs next/headers".
+
 ### Deployment
 - Docker image → Docker Hub → Railway
 - Caddy as reverse proxy
@@ -61,8 +64,13 @@ messages/
 - Multi-state user choice (RSVP yes/maybe/no, vote for/against/abstain, status filters): use explicit per-state buttons. Avoid implicit toggles where one button cycles values.
 - Reuse shared card components (e.g., `PostCard`) by injecting feature-specific children. New bespoke card per feature requires explicit justification — visual mocks alone are not enough.
 
+### Cross-cutting changes (theming, accessibility, i18n rollout)
+- Don't bound the spec to a "key surfaces" list. Either commit to full-app coverage in the same spike or create an explicit follow-up backlog (one ticket per remaining surface) that ships alongside. A bounded list creates a long tail of "still white / still untranslated" reports because users navigate the whole app, not just listed routes.
+
 ### Specs
 - A spec that introduces a per-user mutable record (RSVP, opt-in entry, subscription, draft) must explicitly cover the undo/delete path in Approach and Acceptance Criteria — not only create/update.
+- When a spec references a list pulled from MEMORY.md (locales, installed modules, entity kinds, role enum, schema tables), verify against current code (`messages/`, `modules/`, `src/types`, schema files) before writing the spec body. Memory drifts; lists are the most common drift surface.
+- Cross-cutting visual specs (theming, RTL, accessibility audit, locale rollout under SSR/RSC) must include a "FOUC / navigation flicker" subsection in Approach, covering: (a) **persistence channel** — server-readable (cookie, URL param, header) so the server paints the resolved state on first render; localStorage is server-invisible and flickers on every RSC nav; (b) **canvas painting** — how `<html>` itself is painted, not just `<body>` (the html background shows through between paints); (c) **pre-paint resolution** — for values the server can't know (e.g. `prefers-color-scheme`), how they're applied before first paint via an idempotent inline script that no-ops when the server already painted correctly; (d) **flash-free verification** — how RSC navigation is exercised during testing. AC must mirror these as testable bullets.
 
 ## Common commands
 ```bash

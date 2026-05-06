@@ -75,20 +75,20 @@ export default function RegisterQrPage() {
 
   if (loading) {
     return (
-      <div className="bg-white rounded-2xl shadow-lg p-8 text-center">
-        <p className="text-base text-gray-500">{t("loading")}</p>
+      <div className="bg-white rounded-2xl shadow-lg p-8 text-center dark:bg-gray-900 dark:shadow-black/40">
+        <p className="text-base text-gray-500 dark:text-gray-400">{t("loading")}</p>
       </div>
     );
   }
 
   if (!info?.valid) {
     return (
-      <div className="bg-white rounded-2xl shadow-lg p-8 text-center">
+      <div className="bg-white rounded-2xl shadow-lg p-8 text-center dark:bg-gray-900 dark:shadow-black/40">
         <div className="text-5xl mb-4">&#x26A0;</div>
-        <h1 className="text-xl font-bold text-gray-900 mb-2">
+        <h1 className="text-xl font-bold text-gray-900 mb-2 dark:text-gray-100">
           {t("invalidTitle")}
         </h1>
-        <p className="text-base text-gray-600 mb-4">{t("invalidBody")}</p>
+        <p className="text-base text-gray-600 mb-4 dark:text-gray-300">{t("invalidBody")}</p>
         <Link
           href="/login"
           className="inline-block mt-2 px-5 py-3 bg-blue-600 hover:bg-blue-700 text-white text-base font-medium rounded-lg transition-colors"
@@ -101,12 +101,12 @@ export default function RegisterQrPage() {
 
   if (success) {
     return (
-      <div className="bg-white rounded-2xl shadow-lg p-8 text-center">
+      <div className="bg-white rounded-2xl shadow-lg p-8 text-center dark:bg-gray-900 dark:shadow-black/40">
         <div className="text-5xl mb-4">&#x2709;</div>
-        <h1 className="text-xl font-bold text-gray-900 mb-2">
+        <h1 className="text-xl font-bold text-gray-900 mb-2 dark:text-gray-100">
           {t("successTitle")}
         </h1>
-        <p className="text-base text-gray-600 mb-4">{t("successBody")}</p>
+        <p className="text-base text-gray-600 mb-4 dark:text-gray-300">{t("successBody")}</p>
         <Link
           href="/login"
           className="inline-block px-5 py-3 bg-blue-600 hover:bg-blue-700 text-white text-base font-medium rounded-lg transition-colors"
@@ -118,48 +118,48 @@ export default function RegisterQrPage() {
   }
 
   return (
-    <div className="bg-white rounded-2xl shadow-lg p-8">
+    <div className="bg-white rounded-2xl shadow-lg p-8 dark:bg-gray-900 dark:shadow-black/40">
       <div className="text-center mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">{t("title")}</h1>
-        <p className="text-gray-600 mt-2 text-base">{t("subtitle")}</p>
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">{t("title")}</h1>
+        <p className="text-gray-600 mt-2 text-base dark:text-gray-300">{t("subtitle")}</p>
       </div>
 
-      <div className="bg-amber-50 border border-amber-200 rounded-lg px-4 py-3 text-base text-amber-900 mb-6">
+      <div className="bg-amber-50 border border-amber-200 rounded-lg px-4 py-3 text-base text-amber-900 mb-6 dark:bg-amber-900/30 dark:border-amber-800 dark:text-amber-100">
         {t("approvalNotice")}
       </div>
 
       {error && (
-        <div className="bg-red-50 text-red-700 px-4 py-3 rounded-lg text-base mb-4">
+        <div className="bg-red-50 text-red-700 px-4 py-3 rounded-lg text-base mb-4 dark:bg-red-900/30 dark:text-red-200">
           {error}
         </div>
       )}
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label className="block text-base font-medium text-gray-700 mb-1">
+          <label className="block text-base font-medium text-gray-700 mb-1 dark:text-gray-200">
             {t("nameLabel")}
           </label>
           <input
             name="name"
             required
-            className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+            className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none dark:bg-gray-800 dark:border-gray-700 dark:text-gray-100"
           />
         </div>
 
         <div>
-          <label className="block text-base font-medium text-gray-700 mb-1">
+          <label className="block text-base font-medium text-gray-700 mb-1 dark:text-gray-200">
             {t("emailLabel")}
           </label>
           <input
             name="email"
             type="email"
             required
-            className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+            className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none dark:bg-gray-800 dark:border-gray-700 dark:text-gray-100"
           />
         </div>
 
         <div>
-          <label className="block text-base font-medium text-gray-700 mb-1">
+          <label className="block text-base font-medium text-gray-700 mb-1 dark:text-gray-200">
             {t("passwordLabel")}
           </label>
           <input
@@ -168,23 +168,23 @@ export default function RegisterQrPage() {
             required
             minLength={6}
             autoComplete="new-password"
-            className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+            className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none dark:bg-gray-800 dark:border-gray-700 dark:text-gray-100"
           />
         </div>
 
         <div>
-          <label className="block text-base font-medium text-gray-700 mb-1">
+          <label className="block text-base font-medium text-gray-700 mb-1 dark:text-gray-200">
             {t("phoneLabel")}
           </label>
           <input
             name="phone"
             type="tel"
-            className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+            className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none dark:bg-gray-800 dark:border-gray-700 dark:text-gray-100"
           />
         </div>
 
-        <div className="border-t border-gray-200 pt-4 mt-2">
-          <p className="text-base font-medium text-gray-700 mb-3">
+        <div className="border-t border-gray-200 pt-4 mt-2 dark:border-gray-700">
+          <p className="text-base font-medium text-gray-700 mb-3 dark:text-gray-200">
             {tRegister("consentTitle")}
           </p>
 
@@ -193,9 +193,9 @@ export default function RegisterQrPage() {
               type="checkbox"
               checked={dataProcessingConsent}
               onChange={(e) => setDataProcessingConsent(e.target.checked)}
-              className="mt-1 w-5 h-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+              className="mt-1 w-5 h-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-800"
             />
-            <span className="text-base text-gray-700">
+            <span className="text-base text-gray-700 dark:text-gray-200">
               {tRegister("dataProcessingConsent")}
             </span>
           </label>
@@ -205,9 +205,9 @@ export default function RegisterQrPage() {
               type="checkbox"
               checked={communicationConsent}
               onChange={(e) => setCommunicationConsent(e.target.checked)}
-              className="mt-1 w-5 h-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+              className="mt-1 w-5 h-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-800"
             />
-            <span className="text-base text-gray-700">
+            <span className="text-base text-gray-700 dark:text-gray-200">
               {tRegister("communicationConsent")}
             </span>
           </label>
@@ -215,13 +215,13 @@ export default function RegisterQrPage() {
           <Link
             href="/privacy-policy"
             target="_blank"
-            className="text-sm text-blue-600 hover:text-blue-700 underline"
+            className="text-sm text-blue-600 hover:text-blue-700 underline dark:text-blue-400 dark:hover:text-blue-300"
           >
             {tRegister("privacyPolicyLink")}
           </Link>
 
           {!dataProcessingConsent && (
-            <p className="text-sm text-amber-600 mt-2">
+            <p className="text-sm text-amber-600 mt-2 dark:text-amber-300">
               {tRegister("consentRequired")}
             </p>
           )}
@@ -230,7 +230,7 @@ export default function RegisterQrPage() {
         <button
           type="submit"
           disabled={submitting || !dataProcessingConsent}
-          className="w-full py-3 px-4 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white text-lg font-medium rounded-lg transition-colors"
+          className="w-full py-3 px-4 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white text-lg font-medium rounded-lg transition-colors dark:disabled:bg-blue-800"
         >
           {submitting ? t("submitting") : t("submit")}
         </button>

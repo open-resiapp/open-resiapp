@@ -120,6 +120,12 @@
     "en": "EN",
     "cs": "CZ"
   },
+  "ThemeToggle": {
+    "label": "Vzhľad",
+    "light": "Svetlý",
+    "dark": "Tmavý",
+    "system": "Systém"
+  },
   "Dashboard": {
     "welcome": "Vitajte, {name}",
     "recentPosts": "Najnovšie príspevky",

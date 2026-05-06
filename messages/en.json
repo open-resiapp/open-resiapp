@@ -120,6 +120,12 @@
     "en": "EN",
     "cs": "CZ"
   },
+  "ThemeToggle": {
+    "label": "Appearance",
+    "light": "Light",
+    "dark": "Dark",
+    "system": "System"
+  },
   "Dashboard": {
     "welcome": "Welcome, {name}",
     "recentPosts": "Recent posts",

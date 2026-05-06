@@ -166,35 +166,35 @@ export default function PaperVoteModal({
 
   return (
     <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-      <div className="bg-white rounded-2xl w-full max-w-md p-6 max-h-[90vh] overflow-y-auto">
+      <div className="bg-white rounded-2xl w-full max-w-md p-6 max-h-[90vh] overflow-y-auto dark:bg-gray-800">
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-xl font-bold text-gray-900">
+          <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">
             {t("title")}
           </h2>
           <button
             onClick={onClose}
-            className="text-gray-500 hover:text-gray-700 text-2xl leading-none"
+            className="text-gray-500 hover:text-gray-700 text-2xl leading-none dark:text-gray-400 dark:hover:text-gray-200"
           >
             &times;
           </button>
         </div>
 
         {error && (
-          <div className="bg-red-50 text-red-700 px-4 py-3 rounded-lg text-base mb-4">
+          <div className="bg-red-50 text-red-700 px-4 py-3 rounded-lg text-base mb-4 dark:bg-red-900/30 dark:text-red-200">
             {error}
           </div>
         )}
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-base font-medium text-gray-700 mb-1">
+            <label className="block text-base font-medium text-gray-700 mb-1 dark:text-gray-200">
               {t("ownerLabel")}
             </label>
             <select
               value={selectedOwner}
               onChange={(e) => setSelectedOwner(e.target.value)}
               required
-              className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+              className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none dark:bg-gray-900 dark:border-gray-700 dark:text-gray-100"
             >
               <option value="">{t("ownerPlaceholder")}</option>
               {owners.map((o) => (
@@ -207,14 +207,14 @@ export default function PaperVoteModal({
 
           {ownerFlats.length > 1 && (
             <div>
-              <label className="block text-base font-medium text-gray-700 mb-1">
+              <label className="block text-base font-medium text-gray-700 mb-1 dark:text-gray-200">
                 {t("flatLabel")}
               </label>
               <select
                 value={selectedFlat}
                 onChange={(e) => setSelectedFlat(e.target.value)}
                 required
-                className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none dark:bg-gray-900 dark:border-gray-700 dark:text-gray-100"
               >
                 <option value="">{t("flatPlaceholder")}</option>
                 {ownerFlats.map((f) => (
@@ -227,7 +227,7 @@ export default function PaperVoteModal({
           )}
 
           <div>
-            <label className="block text-base font-medium text-gray-700 mb-2">
+            <label className="block text-base font-medium text-gray-700 mb-2 dark:text-gray-200">
               {t("voteLabel")}
             </label>
             <div className="space-y-2">
@@ -236,8 +236,8 @@ export default function PaperVoteModal({
                   key={c}
                   className={`flex items-center gap-3 p-3 border rounded-lg cursor-pointer transition-colors ${
                     selectedChoice === c
-                      ? "border-blue-500 bg-blue-50"
-                      : "border-gray-200 hover:bg-gray-50"
+                      ? "border-blue-500 bg-blue-50 dark:bg-blue-900/30"
+                      : "border-gray-200 hover:bg-gray-50 dark:border-gray-700 dark:hover:bg-gray-700/50"
                   }`}
                 >
                   <input
@@ -250,7 +250,7 @@ export default function PaperVoteModal({
                     }
                     className="w-5 h-5 text-blue-600"
                   />
-                  <span className="text-base font-medium">{t(choiceKeys[c])}</span>
+                  <span className="text-base font-medium dark:text-gray-100">{t(choiceKeys[c])}</span>
                 </label>
               ))}
             </div>
@@ -258,7 +258,7 @@ export default function PaperVoteModal({
 
           {/* Photo upload */}
           <div>
-            <label className="block text-base font-medium text-gray-700 mb-1">
+            <label className="block text-base font-medium text-gray-700 mb-1 dark:text-gray-200">
               {t("photoLabel")}
             </label>
             <input
@@ -266,14 +266,14 @@ export default function PaperVoteModal({
               type="file"
               accept="image/jpeg,image/png,image/webp"
               onChange={handleFileChange}
-              className="w-full text-base text-gray-700 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-base file:font-medium file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+              className="w-full text-base text-gray-700 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-base file:font-medium file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 dark:text-gray-200 dark:file:bg-blue-900/40 dark:file:text-blue-200 dark:hover:file:bg-blue-900/60"
             />
             {photoPreview && (
               <div className="mt-2 relative inline-block">
                 <img
                   src={photoPreview}
                   alt="Preview"
-                  className="max-h-40 rounded-lg border border-gray-200"
+                  className="max-h-40 rounded-lg border border-gray-200 dark:border-gray-700"
                 />
                 <button
                   type="button"
@@ -290,7 +290,7 @@ export default function PaperVoteModal({
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 py-3 px-4 text-base font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
+              className="flex-1 py-3 px-4 text-base font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors dark:text-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600"
             >
               {tCommon("cancel")}
             </button>

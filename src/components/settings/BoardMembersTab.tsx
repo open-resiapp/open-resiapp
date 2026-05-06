@@ -136,8 +136,8 @@ export default function BoardMembersTab({ canEdit }: BoardMembersTabProps) {
   if (loading) {
     return (
       <div className="animate-pulse space-y-4">
-        <div className="h-8 bg-gray-200 rounded w-1/3" />
-        <div className="h-32 bg-gray-200 rounded" />
+        <div className="h-8 bg-gray-200 rounded w-1/3 dark:bg-gray-700" />
+        <div className="h-32 bg-gray-200 rounded dark:bg-gray-700" />
       </div>
     );
   }
@@ -146,11 +146,11 @@ export default function BoardMembersTab({ canEdit }: BoardMembersTabProps) {
 
   return (
     <div className="space-y-6">
-      <div className="bg-white rounded-xl border border-gray-200 p-6">
+      <div className="bg-white rounded-xl border border-gray-200 p-6 dark:bg-gray-800 dark:border-gray-700">
         <div className="flex items-center justify-between mb-4">
           <div>
-            <h2 className="text-lg font-bold text-gray-900">{t("title")}</h2>
-            <p className="text-sm text-gray-500 mt-1">
+            <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100">{t("title")}</h2>
+            <p className="text-sm text-gray-500 mt-1 dark:text-gray-400">
               {t(`model_${governanceModel}`)}
             </p>
           </div>
@@ -168,8 +168,8 @@ export default function BoardMembersTab({ canEdit }: BoardMembersTabProps) {
           <div
             className={`mb-4 p-3 rounded-lg text-base ${
               message.type === "success"
-                ? "bg-green-50 text-green-700"
-                : "bg-red-50 text-red-700"
+                ? "bg-green-50 text-green-700 dark:bg-green-900/30 dark:text-green-200"
+                : "bg-red-50 text-red-700 dark:bg-red-900/30 dark:text-red-200"
             }`}
           >
             {message.text}
@@ -178,14 +178,14 @@ export default function BoardMembersTab({ canEdit }: BoardMembersTabProps) {
 
         {/* Add form */}
         {adding && (
-          <div className="bg-gray-50 rounded-lg p-4 mb-4 space-y-3">
+          <div className="bg-gray-50 rounded-lg p-4 mb-4 space-y-3 dark:bg-gray-900/40">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
-                <label className="block text-sm text-gray-500 mb-1">{t("userLabel")}</label>
+                <label className="block text-sm text-gray-500 mb-1 dark:text-gray-400">{t("userLabel")}</label>
                 <select
                   value={userId}
                   onChange={(e) => setUserId(e.target.value)}
-                  className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                  className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none dark:bg-gray-900 dark:border-gray-700 dark:text-gray-100"
                 >
                   <option value="">{t("selectUser")}</option>
                   {users.map((u) => (
@@ -196,11 +196,11 @@ export default function BoardMembersTab({ canEdit }: BoardMembersTabProps) {
                 </select>
               </div>
               <div>
-                <label className="block text-sm text-gray-500 mb-1">{t("roleLabel")}</label>
+                <label className="block text-sm text-gray-500 mb-1 dark:text-gray-400">{t("roleLabel")}</label>
                 <select
                   value={role}
                   onChange={(e) => setRole(e.target.value as BoardMemberRole)}
-                  className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                  className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none dark:bg-gray-900 dark:border-gray-700 dark:text-gray-100"
                 >
                   {availableRoles.map((r) => (
                     <option key={r} value={r}>
@@ -212,21 +212,21 @@ export default function BoardMembersTab({ canEdit }: BoardMembersTabProps) {
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
-                <label className="block text-sm text-gray-500 mb-1">{t("electedAtLabel")}</label>
+                <label className="block text-sm text-gray-500 mb-1 dark:text-gray-400">{t("electedAtLabel")}</label>
                 <input
                   type="date"
                   value={electedAt}
                   onChange={(e) => setElectedAt(e.target.value)}
-                  className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                  className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none dark:bg-gray-900 dark:border-gray-700 dark:text-gray-100"
                 />
               </div>
               <div>
-                <label className="block text-sm text-gray-500 mb-1">{t("termEndsAtLabel")}</label>
+                <label className="block text-sm text-gray-500 mb-1 dark:text-gray-400">{t("termEndsAtLabel")}</label>
                 <input
                   type="date"
                   value={termEndsAt}
                   onChange={(e) => setTermEndsAt(e.target.value)}
-                  className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                  className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none dark:bg-gray-900 dark:border-gray-700 dark:text-gray-100"
                 />
               </div>
             </div>
@@ -240,7 +240,7 @@ export default function BoardMembersTab({ canEdit }: BoardMembersTabProps) {
               </button>
               <button
                 onClick={() => setAdding(false)}
-                className="px-5 py-3 text-gray-700 hover:text-gray-900 text-base font-medium transition-colors"
+                className="px-5 py-3 text-gray-700 hover:text-gray-900 text-base font-medium transition-colors dark:text-gray-200 dark:hover:text-gray-100"
               >
                 {tc("cancel")}
               </button>
@@ -250,34 +250,34 @@ export default function BoardMembersTab({ canEdit }: BoardMembersTabProps) {
 
         {/* Members list */}
         {activeMembers.length === 0 ? (
-          <p className="text-base text-gray-500">{t("noMembers")}</p>
+          <p className="text-base text-gray-500 dark:text-gray-400">{t("noMembers")}</p>
         ) : (
           <div className="space-y-3">
             {activeMembers.map((member) => (
               <div
                 key={member.id}
-                className="flex items-center justify-between p-4 bg-gray-50 rounded-lg"
+                className="flex items-center justify-between p-4 bg-gray-50 rounded-lg dark:bg-gray-900/40"
               >
                 <div>
                   <div className="flex items-center gap-2">
-                    <span className="text-base font-medium text-gray-900">
+                    <span className="text-base font-medium text-gray-900 dark:text-gray-100">
                       {member.userName || member.userEmail}
                     </span>
-                    <span className="px-2 py-0.5 text-xs font-medium bg-blue-100 text-blue-700 rounded">
+                    <span className="px-2 py-0.5 text-xs font-medium bg-blue-100 text-blue-700 rounded dark:bg-blue-900/40 dark:text-blue-200">
                       {t(`role_${member.role}`)}
                     </span>
                     {isTermExpired(member.termEndsAt) && (
-                      <span className="px-2 py-0.5 text-xs font-medium bg-red-100 text-red-700 rounded">
+                      <span className="px-2 py-0.5 text-xs font-medium bg-red-100 text-red-700 rounded dark:bg-red-900/40 dark:text-red-200">
                         {t("termExpired")}
                       </span>
                     )}
                     {isTermExpiring(member.termEndsAt) && !isTermExpired(member.termEndsAt) && (
-                      <span className="px-2 py-0.5 text-xs font-medium bg-amber-100 text-amber-700 rounded">
+                      <span className="px-2 py-0.5 text-xs font-medium bg-amber-100 text-amber-700 rounded dark:bg-amber-900/40 dark:text-amber-200">
                         {t("termExpiring")}
                       </span>
                     )}
                   </div>
-                  <div className="text-sm text-gray-500 mt-1">
+                  <div className="text-sm text-gray-500 mt-1 dark:text-gray-400">
                     {t("electedOn", {
                       date: new Date(member.electedAt).toLocaleDateString(),
                     })}
@@ -295,7 +295,7 @@ export default function BoardMembersTab({ canEdit }: BoardMembersTabProps) {
                 {canEdit && (
                   <button
                     onClick={() => handleRemove(member.id)}
-                    className="text-sm text-red-600 hover:text-red-700 font-medium"
+                    className="text-sm text-red-600 hover:text-red-700 font-medium dark:text-red-400 dark:hover:text-red-300"
                   >
                     {t("remove")}
                   </button>

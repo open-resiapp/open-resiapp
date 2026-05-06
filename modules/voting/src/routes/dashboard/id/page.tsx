@@ -205,9 +205,9 @@ export default function VotingDetailPage() {
   if (loading) {
     return (
       <div className="animate-pulse space-y-4">
-        <div className="h-8 bg-gray-200 rounded w-2/3" />
-        <div className="h-4 bg-gray-200 rounded w-full" />
-        <div className="h-32 bg-gray-200 rounded" />
+        <div className="h-8 bg-gray-200 rounded w-2/3 dark:bg-gray-700" />
+        <div className="h-4 bg-gray-200 rounded w-full dark:bg-gray-700" />
+        <div className="h-32 bg-gray-200 rounded dark:bg-gray-700" />
       </div>
     );
   }
@@ -215,10 +215,10 @@ export default function VotingDetailPage() {
   if (voting404 || !voting) {
     return (
       <div className="text-center py-12">
-        <p className="text-lg text-gray-500 mb-4">{t("notFound")}</p>
+        <p className="text-lg text-gray-500 mb-4 dark:text-gray-400">{t("notFound")}</p>
         <button
           onClick={() => router.push("/voting")}
-          className="text-blue-600 hover:underline text-base"
+          className="text-blue-600 hover:underline text-base dark:text-blue-400"
         >
           {tCommon("backToList")}
         </button>
@@ -265,20 +265,20 @@ export default function VotingDetailPage() {
     <div className="max-w-2xl mx-auto">
       <button
         onClick={() => router.push("/voting")}
-        className="text-blue-600 hover:underline text-base mb-4 inline-block"
+        className="text-blue-600 hover:underline text-base mb-4 inline-block dark:text-blue-400"
       >
         &larr; {tCommon("backToList")}
       </button>
 
-      <div className="bg-white rounded-xl border border-gray-200 p-6 mb-6">
+      <div className="bg-white rounded-xl border border-gray-200 p-6 mb-6 dark:bg-gray-800 dark:border-gray-700">
         {!editMode ? (
           <>
             <div className="flex items-start justify-between gap-4 mb-4">
-              <h1 className="text-2xl font-bold text-gray-900">{voting.title}</h1>
+              <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">{voting.title}</h1>
               <div className="flex gap-2 flex-shrink-0 flex-wrap">
                 {/* Entrance badge */}
                 {voting.entranceName && (
-                  <span className="px-3 py-1 rounded-full text-sm font-medium whitespace-nowrap bg-gray-100 text-gray-600">
+                  <span className="px-3 py-1 rounded-full text-sm font-medium whitespace-nowrap bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300">
                     {voting.entranceName}
                   </span>
                 )}
@@ -286,8 +286,8 @@ export default function VotingDetailPage() {
                 <span
                   className={`px-3 py-1 rounded-full text-sm font-medium whitespace-nowrap ${
                     voting.votingType === "meeting"
-                      ? "bg-purple-100 text-purple-700"
-                      : "bg-blue-100 text-blue-700"
+                      ? "bg-purple-100 text-purple-700 dark:bg-purple-900/40 dark:text-purple-200"
+                      : "bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-200"
                   }`}
                 >
                   {voting.votingType === "meeting"
@@ -298,10 +298,10 @@ export default function VotingDetailPage() {
                 <span
                   className={`px-3 py-1 rounded-full text-sm font-medium whitespace-nowrap ${
                     isActive
-                      ? "bg-green-100 text-green-700"
+                      ? "bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-200"
                       : isClosed
-                      ? "bg-red-100 text-red-700"
-                      : "bg-gray-100 text-gray-700"
+                      ? "bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-200"
+                      : "bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-300"
                   }`}
                 >
                   {isActive
@@ -314,19 +314,19 @@ export default function VotingDetailPage() {
             </div>
 
             {voting.description && (
-              <p className="text-base text-gray-700 mb-4 whitespace-pre-wrap">
+              <p className="text-base text-gray-700 mb-4 whitespace-pre-wrap dark:text-gray-200">
                 {voting.description}
               </p>
             )}
 
             {legalNotice && (
-              <div className="mb-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-                <p className="text-sm font-medium text-blue-800 mb-1">{t("legalNotice")}</p>
-                <p className="text-sm text-blue-700 whitespace-pre-wrap">{legalNotice}</p>
+              <div className="mb-4 p-4 bg-blue-50 border border-blue-200 rounded-lg dark:bg-blue-900/30 dark:border-blue-800">
+                <p className="text-sm font-medium text-blue-800 mb-1 dark:text-blue-200">{t("legalNotice")}</p>
+                <p className="text-sm text-blue-700 whitespace-pre-wrap dark:text-blue-200">{legalNotice}</p>
               </div>
             )}
 
-            <div className="flex flex-wrap gap-4 text-sm text-gray-500">
+            <div className="flex flex-wrap gap-4 text-sm text-gray-500 dark:text-gray-400">
               <span>
                 {t("from")}{" "}
                 {format.dateTime(new Date(voting.startsAt), {
@@ -346,7 +346,7 @@ export default function VotingDetailPage() {
             </div>
 
             {canManage && (
-              <div className="flex gap-2 mt-4 pt-4 border-t border-gray-200">
+              <div className="flex gap-2 mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
                 {voting.status === "draft" && (
                   <>
                     <button
@@ -377,30 +377,30 @@ export default function VotingDetailPage() {
         ) : (
           <form onSubmit={handleEditSave} className="space-y-4">
             <div>
-              <label className="block text-base font-medium text-gray-700 mb-1">
+              <label className="block text-base font-medium text-gray-700 mb-1 dark:text-gray-200">
                 {t("titleLabel")}
               </label>
               <input
                 value={editTitle}
                 onChange={(e) => setEditTitle(e.target.value)}
                 required
-                className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none dark:bg-gray-900 dark:border-gray-700 dark:text-gray-100"
               />
             </div>
             <div>
-              <label className="block text-base font-medium text-gray-700 mb-1">
+              <label className="block text-base font-medium text-gray-700 mb-1 dark:text-gray-200">
                 {t("descriptionLabel")}
               </label>
               <textarea
                 value={editDescription}
                 onChange={(e) => setEditDescription(e.target.value)}
                 rows={3}
-                className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none resize-vertical"
+                className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none resize-vertical dark:bg-gray-900 dark:border-gray-700 dark:text-gray-100"
               />
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="block text-base font-medium text-gray-700 mb-1">
+                <label className="block text-base font-medium text-gray-700 mb-1 dark:text-gray-200">
                   {tNew("startsAtLabel")}
                 </label>
                 <input
@@ -408,11 +408,11 @@ export default function VotingDetailPage() {
                   value={editStartsAt}
                   onChange={(e) => setEditStartsAt(e.target.value)}
                   required
-                  className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                  className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none dark:bg-gray-900 dark:border-gray-700 dark:text-gray-100"
                 />
               </div>
               <div>
-                <label className="block text-base font-medium text-gray-700 mb-1">
+                <label className="block text-base font-medium text-gray-700 mb-1 dark:text-gray-200">
                   {tNew("endsAtLabel")}
                 </label>
                 <input
@@ -420,7 +420,7 @@ export default function VotingDetailPage() {
                   value={editEndsAt}
                   onChange={(e) => setEditEndsAt(e.target.value)}
                   required
-                  className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                  className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none dark:bg-gray-900 dark:border-gray-700 dark:text-gray-100"
                 />
               </div>
             </div>
@@ -428,7 +428,7 @@ export default function VotingDetailPage() {
               <button
                 type="button"
                 onClick={() => setEditMode(false)}
-                className="px-5 py-3 text-base font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
+                className="px-5 py-3 text-base font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors dark:text-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600"
               >
                 {tCommon("cancel")}
               </button>
@@ -446,8 +446,8 @@ export default function VotingDetailPage() {
 
       {/* Meeting / owners_quarter info message */}
       {isActive && isMeetingOrOwnersQuarter && canVote && (
-        <div className="bg-amber-50 border border-amber-200 rounded-xl p-6 mb-6 text-center">
-          <p className="text-base text-amber-800">
+        <div className="bg-amber-50 border border-amber-200 rounded-xl p-6 mb-6 text-center dark:bg-amber-900/30 dark:border-amber-800">
+          <p className="text-base text-amber-800 dark:text-amber-200">
             {voting.votingType === "meeting"
               ? t("meetingOnlyInfo")
               : t("ownersQuarterInfo")}
@@ -465,21 +465,21 @@ export default function VotingDetailPage() {
             return (
               <div
                 key={flat.flatId}
-                className="bg-white rounded-xl border border-gray-200 p-6"
+                className="bg-white rounded-xl border border-gray-200 p-6 dark:bg-gray-800 dark:border-gray-700"
               >
-                <h3 className="text-lg font-bold text-gray-900 mb-3">
+                <h3 className="text-lg font-bold text-gray-900 mb-3 dark:text-gray-100">
                   {t("flatHeader", { number: flat.flatNumber })}
                 </h3>
 
                 {votedByOther ? (
-                  <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 text-center">
-                    <p className="text-base text-amber-700">
+                  <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 text-center dark:bg-amber-900/30 dark:border-amber-800">
+                    <p className="text-base text-amber-700 dark:text-amber-200">
                       {t("flatVotedByOther")}
                     </p>
                   </div>
                 ) : (
                   <div className="space-y-2">
-                    <p className="text-base text-gray-600 mb-2">
+                    <p className="text-base text-gray-600 mb-2 dark:text-gray-300">
                       {flatVote
                         ? t("changeVoteHint")
                         : t("castVote", { flatNumber: flat.flatNumber })}
@@ -512,9 +512,9 @@ export default function VotingDetailPage() {
 
       {/* Audit hash display */}
       {lastAuditHash && (
-        <div className="bg-gray-50 border border-gray-200 rounded-xl p-4 mb-6">
-          <p className="text-sm text-gray-500 mb-1">{t("auditHashLabel")}</p>
-          <p className="text-xs font-mono text-gray-700 break-all">
+        <div className="bg-gray-50 border border-gray-200 rounded-xl p-4 mb-6 dark:bg-gray-800 dark:border-gray-700">
+          <p className="text-sm text-gray-500 mb-1 dark:text-gray-400">{t("auditHashLabel")}</p>
+          <p className="text-xs font-mono text-gray-700 break-all dark:text-gray-200">
             {lastAuditHash}
           </p>
         </div>
@@ -566,8 +566,8 @@ export default function VotingDetailPage() {
 
       {/* Paper vote photos */}
       {canManage && voteData && voteData.votes.some((v) => v.paperPhotoUrl) && (
-        <div className="bg-white rounded-xl border border-gray-200 p-6 mt-6">
-          <h3 className="text-lg font-bold text-gray-900 mb-4">
+        <div className="bg-white rounded-xl border border-gray-200 p-6 mt-6 dark:bg-gray-800 dark:border-gray-700">
+          <h3 className="text-lg font-bold text-gray-900 mb-4 dark:text-gray-100">
             {t("paperVotePhotos")}
           </h3>
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
@@ -579,14 +579,14 @@ export default function VotingDetailPage() {
                   href={v.paperPhotoUrl!}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="block border border-gray-200 rounded-lg overflow-hidden hover:border-blue-400 transition-colors"
+                  className="block border border-gray-200 rounded-lg overflow-hidden hover:border-blue-400 transition-colors dark:border-gray-700 dark:hover:border-blue-500"
                 >
                   <img
                     src={v.paperPhotoUrl!}
                     alt={`${v.ownerName} - ${v.flatNumber}`}
                     className="w-full h-32 object-cover"
                   />
-                  <div className="p-2 text-sm text-gray-600">
+                  <div className="p-2 text-sm text-gray-600 dark:text-gray-300">
                     {v.ownerName} &middot; {t("flatHeader", { number: v.flatNumber })}
                   </div>
                 </a>

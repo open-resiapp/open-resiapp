@@ -74,49 +74,49 @@ export default function ProfilePage() {
 
   return (
     <div className="max-w-2xl mx-auto space-y-6">
-      <h1 className="text-2xl font-bold text-gray-900">{t("title")}</h1>
+      <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">{t("title")}</h1>
 
       {/* User info card */}
-      <div className="bg-white rounded-xl border border-gray-200 p-6">
-        <h2 className="text-lg font-semibold text-gray-900 mb-4">
+      <div className="bg-white rounded-xl border border-gray-200 p-6 dark:bg-gray-800 dark:border-gray-700">
+        <h2 className="text-lg font-semibold text-gray-900 mb-4 dark:text-gray-100">
           {t("userInfo")}
         </h2>
         <dl className="space-y-4">
           <div>
-            <dt className="text-sm font-medium text-gray-500">{t("nameLabel")}</dt>
-            <dd className="text-base text-gray-900">{session.user.name}</dd>
+            <dt className="text-sm font-medium text-gray-500 dark:text-gray-400">{t("nameLabel")}</dt>
+            <dd className="text-base text-gray-900 dark:text-gray-100">{session.user.name}</dd>
           </div>
           <div>
-            <dt className="text-sm font-medium text-gray-500">{t("emailLabel")}</dt>
-            <dd className="text-base text-gray-900">{session.user.email}</dd>
+            <dt className="text-sm font-medium text-gray-500 dark:text-gray-400">{t("emailLabel")}</dt>
+            <dd className="text-base text-gray-900 dark:text-gray-100">{session.user.email}</dd>
           </div>
           <div>
-            <dt className="text-sm font-medium text-gray-500">{t("roleLabel")}</dt>
-            <dd className="text-base text-gray-900">{t(roleKeys[role])}</dd>
+            <dt className="text-sm font-medium text-gray-500 dark:text-gray-400">{t("roleLabel")}</dt>
+            <dd className="text-base text-gray-900 dark:text-gray-100">{t(roleKeys[role])}</dd>
           </div>
         </dl>
       </div>
 
       {/* Change password card */}
-      <div className="bg-white rounded-xl border border-gray-200 p-6">
-        <h2 className="text-lg font-semibold text-gray-900 mb-4">
+      <div className="bg-white rounded-xl border border-gray-200 p-6 dark:bg-gray-800 dark:border-gray-700">
+        <h2 className="text-lg font-semibold text-gray-900 mb-4 dark:text-gray-100">
           {t("changePassword")}
         </h2>
 
         <form onSubmit={handleChangePassword} className="space-y-4">
           {error && (
-            <div className="bg-red-50 text-red-700 px-4 py-3 rounded-lg text-base">
+            <div className="bg-red-50 text-red-700 px-4 py-3 rounded-lg text-base dark:bg-red-900/30 dark:text-red-200">
               {error}
             </div>
           )}
           {success && (
-            <div className="bg-green-50 text-green-700 px-4 py-3 rounded-lg text-base">
+            <div className="bg-green-50 text-green-700 px-4 py-3 rounded-lg text-base dark:bg-green-900/30 dark:text-green-200">
               {success}
             </div>
           )}
 
           <div>
-            <label className="block text-base font-medium text-gray-700 mb-1">
+            <label className="block text-base font-medium text-gray-700 mb-1 dark:text-gray-200">
               {t("currentPassword")}
             </label>
             <input
@@ -124,12 +124,12 @@ export default function ProfilePage() {
               value={currentPassword}
               onChange={(e) => setCurrentPassword(e.target.value)}
               required
-              className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+              className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none dark:bg-gray-900 dark:border-gray-700 dark:text-gray-100"
             />
           </div>
 
           <div>
-            <label className="block text-base font-medium text-gray-700 mb-1">
+            <label className="block text-base font-medium text-gray-700 mb-1 dark:text-gray-200">
               {t("newPassword")}
             </label>
             <input
@@ -138,12 +138,12 @@ export default function ProfilePage() {
               onChange={(e) => setNewPassword(e.target.value)}
               required
               minLength={6}
-              className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+              className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none dark:bg-gray-900 dark:border-gray-700 dark:text-gray-100"
             />
           </div>
 
           <div>
-            <label className="block text-base font-medium text-gray-700 mb-1">
+            <label className="block text-base font-medium text-gray-700 mb-1 dark:text-gray-200">
               {t("confirmPassword")}
             </label>
             <input
@@ -152,7 +152,7 @@ export default function ProfilePage() {
               onChange={(e) => setConfirmPassword(e.target.value)}
               required
               minLength={6}
-              className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+              className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none dark:bg-gray-900 dark:border-gray-700 dark:text-gray-100"
             />
           </div>
 
@@ -170,13 +170,13 @@ export default function ProfilePage() {
       <ConsentManagement />
 
       {/* Notifications card */}
-      <div className="bg-white rounded-xl border border-gray-200 p-6">
-        <h2 className="text-lg font-semibold text-gray-900 mb-4">
+      <div className="bg-white rounded-xl border border-gray-200 p-6 dark:bg-gray-800 dark:border-gray-700">
+        <h2 className="text-lg font-semibold text-gray-900 mb-4 dark:text-gray-100">
           {t("notifications")}
         </h2>
         <div className="space-y-6">
           <PushSubscriptionManager />
-          <hr className="border-gray-200" />
+          <hr className="border-gray-200 dark:border-gray-700" />
           <NotificationPreferences />
         </div>
       </div>

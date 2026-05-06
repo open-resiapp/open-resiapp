@@ -62,10 +62,10 @@ export default function PostCard({
 
   return (
     <div
-      className={`bg-white rounded-xl border p-6 ${
+      className={`bg-white rounded-xl border p-6 dark:bg-gray-800 ${
         status === "resolved" || status === "expired"
-          ? "border-gray-200 opacity-70"
-          : "border-gray-200"
+          ? "border-gray-200 opacity-70 dark:border-gray-700"
+          : "border-gray-200 dark:border-gray-700"
       }`}
     >
       <div className="flex items-start justify-between gap-4 mb-3 flex-wrap">
@@ -76,12 +76,12 @@ export default function PostCard({
             {style.icon} {t(`type.${type}`)}
           </span>
           {entranceName && (
-            <span className="px-2.5 py-0.5 rounded-full text-sm font-medium bg-gray-100 text-gray-600">
+            <span className="px-2.5 py-0.5 rounded-full text-sm font-medium bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300">
               {entranceName}
             </span>
           )}
           {status !== "active" && (
-            <span className="px-2.5 py-0.5 rounded-full text-sm font-medium bg-gray-200 text-gray-700">
+            <span className="px-2.5 py-0.5 rounded-full text-sm font-medium bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-200">
               {t(`status.${status}`)}
             </span>
           )}
@@ -93,7 +93,7 @@ export default function PostCard({
             {onResolve && status === "active" && (
               <button
                 onClick={onResolve}
-                className="px-3 py-1.5 text-sm font-medium text-green-700 bg-green-50 hover:bg-green-100 rounded-lg transition-colors"
+                className="px-3 py-1.5 text-sm font-medium text-green-700 bg-green-50 hover:bg-green-100 rounded-lg transition-colors dark:text-green-300 dark:bg-green-900/40 dark:hover:bg-green-900/60"
               >
                 {t("markResolved")}
               </button>
@@ -102,7 +102,7 @@ export default function PostCard({
             {onDelete && (
               <button
                 onClick={onDelete}
-                className="px-3 py-1.5 text-sm font-medium text-red-600 bg-red-50 hover:bg-red-100 rounded-lg transition-colors"
+                className="px-3 py-1.5 text-sm font-medium text-red-600 bg-red-50 hover:bg-red-100 rounded-lg transition-colors dark:text-red-300 dark:bg-red-900/40 dark:hover:bg-red-900/60"
               >
                 {t("delete")}
               </button>
@@ -111,8 +111,8 @@ export default function PostCard({
         )}
       </div>
 
-      <h3 className="text-lg font-semibold text-gray-900 mb-2">{title}</h3>
-      <p className="text-base text-gray-700 whitespace-pre-wrap mb-3">{content}</p>
+      <h3 className="text-lg font-semibold text-gray-900 mb-2 dark:text-gray-100">{title}</h3>
+      <p className="text-base text-gray-700 whitespace-pre-wrap mb-3 dark:text-gray-200">{content}</p>
 
       {photoUrl && (
         <div className="mb-3">
@@ -126,7 +126,7 @@ export default function PostCard({
       )}
 
       {type === "event" && eventDate && (
-        <div className="mb-3 text-sm text-gray-700">
+        <div className="mb-3 text-sm text-gray-700 dark:text-gray-200">
           <div className="font-medium">
             {format.dateTime(new Date(eventDate), {
               weekday: "short",
@@ -137,18 +137,18 @@ export default function PostCard({
               minute: "2-digit",
             })}
           </div>
-          {eventLocation && <div className="text-gray-500">{eventLocation}</div>}
+          {eventLocation && <div className="text-gray-500 dark:text-gray-400">{eventLocation}</div>}
         </div>
       )}
 
-      <div className="flex items-center justify-between text-sm text-gray-500">
+      <div className="flex items-center justify-between text-sm text-gray-500 dark:text-gray-400">
         <span>{authorName}</span>
         <time>
           {format.relativeTime(new Date(createdAt), new Date())}
         </time>
       </div>
 
-      {children && <div className="mt-4 pt-4 border-t border-gray-100">{children}</div>}
+      {children && <div className="mt-4 pt-4 border-t border-gray-100 dark:border-gray-700">{children}</div>}
     </div>
   );
 }

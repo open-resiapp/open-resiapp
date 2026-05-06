@@ -139,8 +139,8 @@ export default function FlatsTab({ canEdit }: FlatsTabProps) {
   if (loading) {
     return (
       <div className="animate-pulse space-y-4">
-        <div className="h-8 bg-gray-200 rounded w-1/3" />
-        <div className="h-32 bg-gray-200 rounded" />
+        <div className="h-8 bg-gray-200 rounded w-1/3 dark:bg-gray-700" />
+        <div className="h-32 bg-gray-200 rounded dark:bg-gray-700" />
       </div>
     );
   }
@@ -148,7 +148,7 @@ export default function FlatsTab({ canEdit }: FlatsTabProps) {
   return (
     <div>
       <div className="flex items-center justify-between mb-4">
-        <h2 className="text-lg font-bold text-gray-900">{t("flats")}</h2>
+        <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100">{t("flats")}</h2>
         {canEdit && !showForm && (
           <button
             onClick={() => { resetForm(); setShowForm(true); }}
@@ -162,7 +162,7 @@ export default function FlatsTab({ canEdit }: FlatsTabProps) {
       {message && (
         <div
           className={`mb-4 p-3 rounded-lg text-base ${
-            message.type === "success" ? "bg-green-50 text-green-700" : "bg-red-50 text-red-700"
+            message.type === "success" ? "bg-green-50 text-green-700 dark:bg-green-900/30 dark:text-green-200" : "bg-red-50 text-red-700 dark:bg-red-900/30 dark:text-red-200"
           }`}
         >
           {message.text}
@@ -170,17 +170,17 @@ export default function FlatsTab({ canEdit }: FlatsTabProps) {
       )}
 
       {showForm && canEdit && (
-        <div className="bg-white rounded-xl border border-gray-200 p-6 mb-4">
-          <h3 className="text-base font-bold text-gray-900 mb-4">
+        <div className="bg-white rounded-xl border border-gray-200 p-6 mb-4 dark:bg-gray-800 dark:border-gray-700">
+          <h3 className="text-base font-bold text-gray-900 mb-4 dark:text-gray-100">
             {editingId ? t("editFlat") : t("addFlat")}
           </h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm text-gray-500 mb-1">{t("entrance")}</label>
+              <label className="block text-sm text-gray-500 mb-1 dark:text-gray-400">{t("entrance")}</label>
               <select
                 value={formEntranceId}
                 onChange={(e) => setFormEntranceId(e.target.value)}
-                className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none dark:bg-gray-900 dark:border-gray-700 dark:text-gray-100"
               >
                 <option value="">—</option>
                 {entrances.map((e) => (
@@ -189,48 +189,48 @@ export default function FlatsTab({ canEdit }: FlatsTabProps) {
               </select>
             </div>
             <div>
-              <label className="block text-sm text-gray-500 mb-1">{t("flatNumber")}</label>
+              <label className="block text-sm text-gray-500 mb-1 dark:text-gray-400">{t("flatNumber")}</label>
               <input
                 type="text"
                 value={formFlatNumber}
                 onChange={(e) => setFormFlatNumber(e.target.value)}
-                className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none dark:bg-gray-900 dark:border-gray-700 dark:text-gray-100"
               />
             </div>
             <div>
-              <label className="block text-sm text-gray-500 mb-1">{t("floor")}</label>
+              <label className="block text-sm text-gray-500 mb-1 dark:text-gray-400">{t("floor")}</label>
               <input
                 type="number"
                 value={formFloor}
                 onChange={(e) => setFormFloor(e.target.value)}
-                className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none dark:bg-gray-900 dark:border-gray-700 dark:text-gray-100"
               />
             </div>
             <div>
-              <label className="block text-sm text-gray-500 mb-1">{t("area")}</label>
+              <label className="block text-sm text-gray-500 mb-1 dark:text-gray-400">{t("area")}</label>
               <input
                 type="number"
                 value={formArea}
                 onChange={(e) => setFormArea(e.target.value)}
-                className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none dark:bg-gray-900 dark:border-gray-700 dark:text-gray-100"
               />
             </div>
             <div>
-              <label className="block text-sm text-gray-500 mb-1">{t("shareNumerator")}</label>
+              <label className="block text-sm text-gray-500 mb-1 dark:text-gray-400">{t("shareNumerator")}</label>
               <input
                 type="number"
                 value={formShareNum}
                 onChange={(e) => setFormShareNum(e.target.value)}
-                className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none dark:bg-gray-900 dark:border-gray-700 dark:text-gray-100"
               />
             </div>
             <div>
-              <label className="block text-sm text-gray-500 mb-1">{t("shareDenominator")}</label>
+              <label className="block text-sm text-gray-500 mb-1 dark:text-gray-400">{t("shareDenominator")}</label>
               <input
                 type="number"
                 value={formShareDen}
                 onChange={(e) => setFormShareDen(e.target.value)}
-                className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none dark:bg-gray-900 dark:border-gray-700 dark:text-gray-100"
               />
             </div>
           </div>
@@ -244,7 +244,7 @@ export default function FlatsTab({ canEdit }: FlatsTabProps) {
             </button>
             <button
               onClick={resetForm}
-              className="px-5 py-3 text-gray-700 hover:text-gray-900 text-base font-medium transition-colors"
+              className="px-5 py-3 text-gray-700 hover:text-gray-900 text-base font-medium transition-colors dark:text-gray-200 dark:hover:text-gray-100"
             >
               {tc("cancel")}
             </button>
@@ -253,43 +253,43 @@ export default function FlatsTab({ canEdit }: FlatsTabProps) {
       )}
 
       {flatsList.length === 0 ? (
-        <p className="text-base text-gray-500">{t("noFlats")}</p>
+        <p className="text-base text-gray-500 dark:text-gray-400">{t("noFlats")}</p>
       ) : (
         <div className="space-y-6">
           {Object.entries(flatsByEntrance).map(([entranceName, flats]) => (
             <div key={entranceName}>
-              <h3 className="text-base font-semibold text-gray-700 mb-2">{entranceName}</h3>
-              <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+              <h3 className="text-base font-semibold text-gray-700 mb-2 dark:text-gray-200">{entranceName}</h3>
+              <div className="bg-white rounded-xl border border-gray-200 overflow-hidden dark:bg-gray-800 dark:border-gray-700">
                 <table className="w-full text-base">
                   <thead>
-                    <tr className="border-b border-gray-200 bg-gray-50">
-                      <th className="text-left px-4 py-3 font-medium text-gray-500">{t("flatNumber")}</th>
-                      <th className="text-left px-4 py-3 font-medium text-gray-500">{t("floor")}</th>
-                      <th className="text-left px-4 py-3 font-medium text-gray-500">{t("area")}</th>
-                      <th className="text-left px-4 py-3 font-medium text-gray-500">{t("shareNumerator")}/{t("shareDenominator")}</th>
+                    <tr className="border-b border-gray-200 bg-gray-50 dark:border-gray-700 dark:bg-gray-900">
+                      <th className="text-left px-4 py-3 font-medium text-gray-500 dark:text-gray-400">{t("flatNumber")}</th>
+                      <th className="text-left px-4 py-3 font-medium text-gray-500 dark:text-gray-400">{t("floor")}</th>
+                      <th className="text-left px-4 py-3 font-medium text-gray-500 dark:text-gray-400">{t("area")}</th>
+                      <th className="text-left px-4 py-3 font-medium text-gray-500 dark:text-gray-400">{t("shareNumerator")}/{t("shareDenominator")}</th>
                       {canEdit && (
-                        <th className="text-right px-4 py-3 font-medium text-gray-500"></th>
+                        <th className="text-right px-4 py-3 font-medium text-gray-500 dark:text-gray-400"></th>
                       )}
                     </tr>
                   </thead>
                   <tbody>
                     {flats.map((flat) => (
-                      <tr key={flat.id} className="border-b border-gray-100 last:border-0">
-                        <td className="px-4 py-3 text-gray-900">{flat.flatNumber}</td>
-                        <td className="px-4 py-3 text-gray-900">{flat.floor}</td>
-                        <td className="px-4 py-3 text-gray-900">{flat.area !== null ? `${flat.area} m²` : "—"}</td>
-                        <td className="px-4 py-3 text-gray-900">{flat.shareNumerator}/{flat.shareDenominator}</td>
+                      <tr key={flat.id} className="border-b border-gray-100 last:border-0 dark:border-gray-700">
+                        <td className="px-4 py-3 text-gray-900 dark:text-gray-100">{flat.flatNumber}</td>
+                        <td className="px-4 py-3 text-gray-900 dark:text-gray-100">{flat.floor}</td>
+                        <td className="px-4 py-3 text-gray-900 dark:text-gray-100">{flat.area !== null ? `${flat.area} m²` : "—"}</td>
+                        <td className="px-4 py-3 text-gray-900 dark:text-gray-100">{flat.shareNumerator}/{flat.shareDenominator}</td>
                         {canEdit && (
                           <td className="px-4 py-3 text-right">
                             <button
                               onClick={() => handleEdit(flat)}
-                              className="text-blue-600 hover:text-blue-700 font-medium mr-3"
+                              className="text-blue-600 hover:text-blue-700 font-medium mr-3 dark:text-blue-400 dark:hover:text-blue-300"
                             >
                               {tc("edit")}
                             </button>
                             <button
                               onClick={() => handleDelete(flat.id)}
-                              className="text-red-600 hover:text-red-700 font-medium"
+                              className="text-red-600 hover:text-red-700 font-medium dark:text-red-400 dark:hover:text-red-300"
                             >
                               {tc("delete")}
                             </button>

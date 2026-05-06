@@ -70,28 +70,28 @@ export default function DashboardPage() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold text-gray-900 mb-6">
+      <h1 className="text-2xl font-bold text-gray-900 mb-6 dark:text-gray-100">
         {t("welcome", { name: session?.user?.name ?? "" })}
       </h1>
 
       <section>
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-lg font-semibold text-gray-900">
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
             {t("recentPosts")}
           </h2>
           <Link
             href="/board"
-            className="text-sm text-blue-600 hover:underline"
+            className="text-sm text-blue-600 hover:underline dark:text-blue-400"
           >
             {t("viewAll")}
           </Link>
         </div>
 
         {loadingPosts ? (
-          <p className="text-sm text-gray-500">{t("loadingPosts")}</p>
+          <p className="text-sm text-gray-500 dark:text-gray-400">{t("loadingPosts")}</p>
         ) : posts.length === 0 ? (
-          <div className="bg-white border border-dashed border-gray-300 rounded-xl p-6 text-center">
-            <p className="text-sm text-gray-600">{t("noPosts")}</p>
+          <div className="bg-white border border-dashed border-gray-300 rounded-xl p-6 text-center dark:bg-gray-800 dark:border-gray-700">
+            <p className="text-sm text-gray-600 dark:text-gray-300">{t("noPosts")}</p>
           </div>
         ) : (
           <div className="space-y-4">
@@ -114,22 +114,22 @@ export default function DashboardPage() {
       {canSeeCommunity && (
         <section className="mt-8">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold text-gray-900">
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
               {t("upcomingEvents")}
             </h2>
             <Link
               href="/komunita/udalosti"
-              className="text-sm text-blue-600 hover:underline"
+              className="text-sm text-blue-600 hover:underline dark:text-blue-400"
             >
               {t("viewAll")}
             </Link>
           </div>
 
           {loadingEvents ? (
-            <p className="text-sm text-gray-500">{t("loadingEvents")}</p>
+            <p className="text-sm text-gray-500 dark:text-gray-400">{t("loadingEvents")}</p>
           ) : events.length === 0 ? (
-            <div className="bg-white border border-dashed border-gray-300 rounded-xl p-6 text-center">
-              <p className="text-sm text-gray-600 mb-3">
+            <div className="bg-white border border-dashed border-gray-300 rounded-xl p-6 text-center dark:bg-gray-800 dark:border-gray-700">
+              <p className="text-sm text-gray-600 mb-3 dark:text-gray-300">
                 {t("noUpcomingEvents")}
               </p>
               <Link
@@ -145,12 +145,12 @@ export default function DashboardPage() {
                 <Link
                   key={event.id}
                   href="/komunita/udalosti"
-                  className="bg-white rounded-xl border border-gray-200 p-5 hover:shadow-md transition-shadow block"
+                  className="bg-white rounded-xl border border-gray-200 p-5 hover:shadow-md transition-shadow block dark:bg-gray-800 dark:border-gray-700"
                 >
                   <div className="flex items-center gap-2 mb-2">
                     <span className="text-2xl">📅</span>
                     {event.eventDate && (
-                      <span className="text-sm font-medium text-pink-700">
+                      <span className="text-sm font-medium text-pink-700 dark:text-pink-300">
                         {format.dateTime(new Date(event.eventDate), {
                           weekday: "short",
                           day: "numeric",
@@ -159,16 +159,16 @@ export default function DashboardPage() {
                       </span>
                     )}
                   </div>
-                  <h3 className="text-base font-semibold text-gray-900 mb-1 line-clamp-2">
+                  <h3 className="text-base font-semibold text-gray-900 mb-1 line-clamp-2 dark:text-gray-100">
                     {event.title}
                   </h3>
                   {event.eventLocation && (
-                    <p className="text-sm text-gray-600 mb-2 line-clamp-1">
+                    <p className="text-sm text-gray-600 mb-2 line-clamp-1 dark:text-gray-300">
                       {event.eventLocation}
                     </p>
                   )}
                   {event.rsvp && (
-                    <p className="text-sm text-gray-500">
+                    <p className="text-sm text-gray-500 dark:text-gray-400">
                       {tEvents("counts", {
                         yes: event.rsvp.yes,
                         maybe: event.rsvp.maybe,

@@ -1,6 +1,22 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* Paint the canvas (html) itself, not just <body>. Without this, the browser
+   shows its default white background during route transitions before body
+   paints, which looks like a flash of white between dark pages. */
+html {
+  background-color: #ffffff;
+  color-scheme: light;
+}
+
+html.dark {
+  background-color: #111827; /* gray-900 */
+  color-scheme: dark;
+}
+
 body {
   font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
   font-size: 16px;
+  @apply bg-white text-gray-900 dark:bg-gray-900 dark:text-gray-100;
 }

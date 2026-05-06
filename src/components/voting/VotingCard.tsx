@@ -11,9 +11,9 @@ const statusKeys: Record<VotingStatus, string> = {
 };
 
 const statusStyles: Record<VotingStatus, { bg: string; text: string }> = {
-  draft: { bg: "bg-gray-100", text: "text-gray-700" },
-  active: { bg: "bg-green-100", text: "text-green-700" },
-  closed: { bg: "bg-red-100", text: "text-red-700" },
+  draft: { bg: "bg-gray-100 dark:bg-gray-700", text: "text-gray-700 dark:text-gray-200" },
+  active: { bg: "bg-green-100 dark:bg-green-900/40", text: "text-green-700 dark:text-green-200" },
+  closed: { bg: "bg-red-100 dark:bg-red-900/40", text: "text-red-700 dark:text-red-200" },
 };
 
 interface VotingCardProps {
@@ -44,13 +44,13 @@ export default function VotingCard({
   return (
     <Link
       href={`/voting/${id}`}
-      className="block bg-white rounded-xl border border-gray-200 p-6 hover:shadow-md transition-shadow"
+      className="block bg-white rounded-xl border border-gray-200 p-6 hover:shadow-md transition-shadow dark:bg-gray-800 dark:border-gray-700"
     >
       <div className="flex items-start justify-between gap-4 mb-3">
         <div>
-          <h3 className="text-lg font-semibold text-gray-900">{title}</h3>
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">{title}</h3>
           {entranceName && (
-            <span className="inline-block mt-1 px-2.5 py-0.5 rounded-full text-sm font-medium bg-gray-100 text-gray-600">
+            <span className="inline-block mt-1 px-2.5 py-0.5 rounded-full text-sm font-medium bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300">
               {entranceName}
             </span>
           )}
@@ -60,8 +60,8 @@ export default function VotingCard({
             <span
               className={`px-3 py-1 rounded-full text-sm font-medium whitespace-nowrap ${
                 votingType === "meeting"
-                  ? "bg-purple-100 text-purple-700"
-                  : "bg-blue-100 text-blue-700"
+                  ? "bg-purple-100 text-purple-700 dark:bg-purple-900/40 dark:text-purple-200"
+                  : "bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-200"
               }`}
             >
               {votingType === "meeting" ? t("typeMeeting") : t("typeWritten")}
@@ -75,7 +75,7 @@ export default function VotingCard({
         </div>
       </div>
 
-      <div className="flex flex-wrap gap-4 text-sm text-gray-500">
+      <div className="flex flex-wrap gap-4 text-sm text-gray-500 dark:text-gray-400">
         <span>
           {t("from")}{" "}
           {format.dateTime(new Date(startsAt), {

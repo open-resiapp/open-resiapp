@@ -119,6 +119,12 @@
     "en": "EN",
     "cs": "CZ"
   },
+  "ThemeToggle": {
+    "label": "Vzhled",
+    "light": "Světlý",
+    "dark": "Tmavý",
+    "system": "Systém"
+  },
   "Dashboard": {
     "welcome": "Vítejte, {name}",
     "recentPosts": "Nejnovější příspěvky",

@@ -51,12 +51,12 @@ export default function ConsentForm({ onSuccess, policyVersion }: ConsentFormPro
 
   return (
     <div className="max-w-lg mx-auto">
-      <div className="bg-white rounded-xl border border-gray-200 p-6">
-        <h2 className="text-xl font-bold text-gray-900 mb-2">{t("title")}</h2>
-        <p className="text-base text-gray-600 mb-6">{t("subtitle")}</p>
+      <div className="bg-white rounded-xl border border-gray-200 p-6 dark:bg-gray-800 dark:border-gray-700">
+        <h2 className="text-xl font-bold text-gray-900 mb-2 dark:text-gray-100">{t("title")}</h2>
+        <p className="text-base text-gray-600 mb-6 dark:text-gray-300">{t("subtitle")}</p>
 
         {error && (
-          <div className="bg-red-50 text-red-700 px-4 py-3 rounded-lg text-base mb-4">
+          <div className="bg-red-50 text-red-700 px-4 py-3 rounded-lg text-base mb-4 dark:bg-red-900/30 dark:text-red-200">
             {error}
           </div>
         )}
@@ -67,9 +67,9 @@ export default function ConsentForm({ onSuccess, policyVersion }: ConsentFormPro
               type="checkbox"
               checked={dataProcessing}
               onChange={(e) => setDataProcessing(e.target.checked)}
-              className="mt-1 w-5 h-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+              className="mt-1 w-5 h-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-900"
             />
-            <span className="text-base text-gray-700">
+            <span className="text-base text-gray-700 dark:text-gray-200">
               {t("dataProcessingLabel")}
             </span>
           </label>
@@ -79,18 +79,18 @@ export default function ConsentForm({ onSuccess, policyVersion }: ConsentFormPro
               type="checkbox"
               checked={communication}
               onChange={(e) => setCommunication(e.target.checked)}
-              className="mt-1 w-5 h-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+              className="mt-1 w-5 h-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-900"
             />
-            <span className="text-base text-gray-700">
+            <span className="text-base text-gray-700 dark:text-gray-200">
               {t("communicationLabel")}
             </span>
           </label>
 
-          <div className="flex items-center gap-2 text-sm text-gray-500">
+          <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
             <Link
               href="/privacy-policy"
               target="_blank"
-              className="text-blue-600 hover:text-blue-700 underline"
+              className="text-blue-600 hover:text-blue-700 underline dark:text-blue-400 dark:hover:text-blue-300"
             >
               {t("privacyPolicyLink")}
             </Link>

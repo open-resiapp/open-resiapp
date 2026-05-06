@@ -43,7 +43,7 @@ export default function VlastniciPage() {
 
   if (!hasPermission(role, "manageUsers")) {
     return (
-      <div className="text-center py-12 text-gray-500 text-lg">
+      <div className="text-center py-12 text-gray-500 text-lg dark:text-gray-400">
         {t("noPermission")}
       </div>
     );
@@ -97,7 +97,7 @@ export default function VlastniciPage() {
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">{t("title")}</h1>
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">{t("title")}</h1>
         <div className="flex gap-3">
           <Link
             href="/owners/pending"
@@ -122,66 +122,66 @@ export default function VlastniciPage() {
       </div>
 
       {showForm && (
-        <div className="bg-white rounded-xl border border-gray-200 p-6 mb-6">
-          <h2 className="text-lg font-bold text-gray-900 mb-4">
+        <div className="bg-white rounded-xl border border-gray-200 p-6 mb-6 dark:bg-gray-800 dark:border-gray-700">
+          <h2 className="text-lg font-bold text-gray-900 mb-4 dark:text-gray-100">
             {t("newUser")}
           </h2>
           {formError && (
-            <div className="bg-red-50 text-red-700 px-4 py-3 rounded-lg text-base mb-4">
+            <div className="bg-red-50 text-red-700 px-4 py-3 rounded-lg text-base mb-4 dark:bg-red-900/30 dark:text-red-200">
               {formError}
             </div>
           )}
           <form onSubmit={handleAddUser} className="space-y-4">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="block text-base font-medium text-gray-700 mb-1">
+                <label className="block text-base font-medium text-gray-700 mb-1 dark:text-gray-200">
                   {t("nameLabel")}
                 </label>
                 <input
                   name="name"
                   required
-                  className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                  className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none dark:bg-gray-900 dark:border-gray-700 dark:text-gray-100"
                 />
               </div>
               <div>
-                <label className="block text-base font-medium text-gray-700 mb-1">
+                <label className="block text-base font-medium text-gray-700 mb-1 dark:text-gray-200">
                   {t("emailLabel")}
                 </label>
                 <input
                   name="email"
                   type="email"
                   required
-                  className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                  className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none dark:bg-gray-900 dark:border-gray-700 dark:text-gray-100"
                 />
               </div>
               <div>
-                <label className="block text-base font-medium text-gray-700 mb-1">
+                <label className="block text-base font-medium text-gray-700 mb-1 dark:text-gray-200">
                   {t("passwordLabel")}
                 </label>
                 <input
                   name="password"
                   type="password"
                   required
-                  className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                  className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none dark:bg-gray-900 dark:border-gray-700 dark:text-gray-100"
                 />
               </div>
               <div>
-                <label className="block text-base font-medium text-gray-700 mb-1">
+                <label className="block text-base font-medium text-gray-700 mb-1 dark:text-gray-200">
                   {t("phoneLabel")}
                 </label>
                 <input
                   name="phone"
-                  className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                  className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none dark:bg-gray-900 dark:border-gray-700 dark:text-gray-100"
                 />
               </div>
             </div>
             <div>
-              <label className="block text-base font-medium text-gray-700 mb-1">
+              <label className="block text-base font-medium text-gray-700 mb-1 dark:text-gray-200">
                 {t("roleLabel")}
               </label>
               <select
                 name="role"
-                className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none"
+                className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none dark:bg-gray-900 dark:border-gray-700 dark:text-gray-100"
               >
                 <option value="owner">{t("roleOwner")}</option>
                 <option value="tenant">{t("roleTenant")}</option>
@@ -202,63 +202,63 @@ export default function VlastniciPage() {
       )}
 
       {loading ? (
-        <div className="bg-white rounded-xl border border-gray-200 p-6 animate-pulse">
+        <div className="bg-white rounded-xl border border-gray-200 p-6 animate-pulse dark:bg-gray-800 dark:border-gray-700">
           <div className="space-y-3">
             {[1, 2, 3].map((i) => (
-              <div key={i} className="h-12 bg-gray-200 rounded" />
+              <div key={i} className="h-12 bg-gray-200 rounded dark:bg-gray-700" />
             ))}
           </div>
         </div>
       ) : usersList.length === 0 ? (
-        <div className="text-center py-12 text-gray-500 text-lg">
+        <div className="text-center py-12 text-gray-500 text-lg dark:text-gray-400">
           {t("empty")}
         </div>
       ) : (
-        <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+        <div className="bg-white rounded-xl border border-gray-200 overflow-hidden dark:bg-gray-800 dark:border-gray-700">
           <div className="overflow-x-auto">
             <table className="w-full">
-              <thead className="bg-gray-50 border-b border-gray-200">
+              <thead className="bg-gray-50 border-b border-gray-200 dark:bg-gray-900 dark:border-gray-700">
                 <tr>
-                  <th className="text-left px-6 py-3 text-sm font-medium text-gray-500">
+                  <th className="text-left px-6 py-3 text-sm font-medium text-gray-500 dark:text-gray-400">
                     {t("nameLabel")}
                   </th>
-                  <th className="text-left px-6 py-3 text-sm font-medium text-gray-500">
+                  <th className="text-left px-6 py-3 text-sm font-medium text-gray-500 dark:text-gray-400">
                     {t("emailLabel")}
                   </th>
-                  <th className="text-left px-6 py-3 text-sm font-medium text-gray-500">
+                  <th className="text-left px-6 py-3 text-sm font-medium text-gray-500 dark:text-gray-400">
                     {t("flatLabel")}
                   </th>
-                  <th className="text-left px-6 py-3 text-sm font-medium text-gray-500">
+                  <th className="text-left px-6 py-3 text-sm font-medium text-gray-500 dark:text-gray-400">
                     {t("roleLabel")}
                   </th>
-                  <th className="text-left px-6 py-3 text-sm font-medium text-gray-500">
+                  <th className="text-left px-6 py-3 text-sm font-medium text-gray-500 dark:text-gray-400">
                     {t("statusLabel")}
                   </th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-200">
+              <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
                 {usersList.map((u) => (
-                  <tr key={u.id} className="hover:bg-gray-50">
-                    <td className="px-6 py-4 text-base text-gray-900">
-                      <Link href={`/owners/${u.id}`} className="text-blue-600 hover:underline">
+                  <tr key={u.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/50">
+                    <td className="px-6 py-4 text-base text-gray-900 dark:text-gray-100">
+                      <Link href={`/owners/${u.id}`} className="text-blue-600 hover:underline dark:text-blue-400">
                         {u.name}
                       </Link>
                     </td>
-                    <td className="px-6 py-4 text-base text-gray-600">
+                    <td className="px-6 py-4 text-base text-gray-600 dark:text-gray-300">
                       {u.email}
                     </td>
-                    <td className="px-6 py-4 text-base text-gray-600">
+                    <td className="px-6 py-4 text-base text-gray-600 dark:text-gray-300">
                       {u.flatNumber || tCommon("noDash")}
                     </td>
-                    <td className="px-6 py-4 text-base text-gray-600">
+                    <td className="px-6 py-4 text-base text-gray-600 dark:text-gray-300">
                       {t(roleKeys[u.role])}
                     </td>
                     <td className="px-6 py-4">
                       <span
                         className={`px-2.5 py-0.5 rounded-full text-sm font-medium ${
                           u.isActive
-                            ? "bg-green-100 text-green-700"
-                            : "bg-red-100 text-red-700"
+                            ? "bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-200"
+                            : "bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-200"
                         }`}
                       >
                         {u.isActive ? t("statusActive") : t("statusInactive")}
