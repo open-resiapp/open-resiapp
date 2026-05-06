@@ -9,6 +9,9 @@ import PostCard, {
   type CommunityPostStatus,
 } from "@/components/community/PostCard";
 import ResponseModal from "@/components/community/ResponseModal";
+import ResponseList, {
+  type CommunityResponse,
+} from "@/components/community/ResponseList";
 import type { UserRole } from "@/types";
 
 interface PostData {
@@ -26,6 +29,7 @@ interface PostData {
   createdAt: string;
   updatedAt: string;
   author: { id: string; name: string } | null;
+  responseCount?: number;
 }
 
 type TabValue = "all" | "help_request" | "help_offer";
@@ -48,6 +52,41 @@ export default function HelpPage() {
   const [tab, setTab] = useState<TabValue>("all");
   const [showArchived, setShowArchived] = useState(false);
   const [respondTo, setRespondTo] = useState<PostData | null>(null);
+  // Per-post: cached response list once expanded.
+  const [expanded, setExpanded] = useState<Record<string, CommunityResponse[] | "loading" | undefined>>({});
+
+  async function toggleResponses(postId: string) {
+    const current = expanded[postId];
+    if (current && current !== "loading") {
+      // Collapse — drop cached responses.
+      setExpanded((prev) => {
+        const next = { ...prev };
+        delete next[postId];
+        return next;
+      });
+      return;
+    }
+    setExpanded((prev) => ({ ...prev, [postId]: "loading" }));
+    try {
+      const res = await fetch(`/api/community/posts/${postId}`);
+      if (!res.ok) {
+        setExpanded((prev) => {
+          const next = { ...prev };
+          delete next[postId];
+          return next;
+        });
+        return;
+      }
+      const body = (await res.json()) as { responses?: CommunityResponse[] };
+      setExpanded((prev) => ({ ...prev, [postId]: body.responses ?? [] }));
+    } catch {
+      setExpanded((prev) => {
+        const next = { ...prev };
+        delete next[postId];
+        return next;
+      });
+    }
+  }
 
   const role = (session?.user?.role || "owner") as UserRole;
   const userId = session?.user?.id;
@@ -184,13 +223,36 @@ export default function HelpPage() {
                 onResolve={canManage ? () => handleResolve(post) : undefined}
                 onDelete={canManage ? () => handleDelete(post) : undefined}
               >
-                {post.status === "active" && (
+                {post.status === "active" && !isAuthor && (
                   <button
                     onClick={() => setRespondTo(post)}
                     className="w-full px-4 py-2 text-base font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg"
                   >
                     {tHelp(ctaKey)}
                   </button>
+                )}
+                {(post.responseCount ?? 0) > 0 && (
+                  <div className="mt-3 border-t border-gray-100 pt-3">
+                    <button
+                      onClick={() => toggleResponses(post.id)}
+                      className="text-sm text-blue-600 hover:text-blue-700 font-medium"
+                    >
+                      {expanded[post.id]
+                        ? t("hideResponses")
+                        : t("showResponses", { count: post.responseCount ?? 0 })}
+                    </button>
+                    {expanded[post.id] === "loading" && (
+                      <p className="text-sm text-gray-500 mt-2">{tCommon("loading")}</p>
+                    )}
+                    {Array.isArray(expanded[post.id]) && (
+                      <div className="mt-3">
+                        <ResponseList
+                          responses={expanded[post.id] as CommunityResponse[]}
+                          isAdmin={canManage}
+                        />
+                      </div>
+                    )}
+                  </div>
                 )}
               </PostCard>
             );

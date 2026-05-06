@@ -87,9 +87,10 @@ export default function PostCard({
           )}
         </div>
 
-        {canManage && status === "active" && (
+        {canManage && (
           <div className="flex items-center gap-2 flex-shrink-0">
-            {onResolve && (
+            {/* Resolve makes sense only on active posts. */}
+            {onResolve && status === "active" && (
               <button
                 onClick={onResolve}
                 className="px-3 py-1.5 text-sm font-medium text-green-700 bg-green-50 hover:bg-green-100 rounded-lg transition-colors"
@@ -97,6 +98,7 @@ export default function PostCard({
                 {t("markResolved")}
               </button>
             )}
+            {/* Delete is always available to author/admin — clean up at any state. */}
             {onDelete && (
               <button
                 onClick={onDelete}

@@ -38,6 +38,14 @@ export async function POST(
     return NextResponse.json({ error: "Príspevok neexistuje" }, { status: 404 });
   }
 
+  // Block self-response — the author already knows what they posted.
+  if (post.authorId === session.user.id) {
+    return NextResponse.json(
+      { error: "Nemôžete reagovať na vlastný príspevok" },
+      { status: 400 }
+    );
+  }
+
   const body = await request.json();
   const { content } = body;
 

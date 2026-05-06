@@ -3,6 +3,7 @@ import { auth } from "@/lib/auth";
 import { db } from "@/db";
 import {
   communityPosts,
+  communityResponses,
   users,
   eventRsvps,
   entities,
@@ -118,6 +119,22 @@ export async function GET(request: NextRequest) {
       isEventType ? asc(communityPosts.eventDate) : desc(communityPosts.createdAt)
     );
 
+  // Response counts — useful for help/marketplace cards so authors see
+  // how many neighbours reacted at a glance.
+  const postIds = result.map((p) => p.id);
+  const responseCountMap = new Map<string, number>();
+  if (postIds.length > 0) {
+    const rows = await db
+      .select({
+        postId: communityResponses.postId,
+        count: sql<number>`count(*)::int`,
+      })
+      .from(communityResponses)
+      .where(inArray(communityResponses.postId, postIds))
+      .groupBy(communityResponses.postId);
+    for (const r of rows) responseCountMap.set(r.postId, r.count);
+  }
+
   const eventIds = result.filter((p) => p.type === "event").map((p) => p.id);
   const rsvpMap = new Map<
     string,
@@ -159,11 +176,16 @@ export async function GET(request: NextRequest) {
   }
 
   const enriched = result.map((p) => {
+    const responseCount = responseCountMap.get(p.id) ?? 0;
     if (p.type === "event") {
       const r = rsvpMap.get(p.id);
-      return { ...p, rsvp: r || { yes: 0, maybe: 0, no: 0, myRsvp: null } };
+      return {
+        ...p,
+        responseCount,
+        rsvp: r || { yes: 0, maybe: 0, no: 0, myRsvp: null },
+      };
     }
-    return p;
+    return { ...p, responseCount };
   });
 
   return NextResponse.json(enriched);

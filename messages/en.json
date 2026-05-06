@@ -678,6 +678,8 @@
     "sending": "Sending...",
     "cancel": "Cancel",
     "noResponses": "No responses yet.",
+    "showResponses": "Show responses ({count})",
+    "hideResponses": "Hide responses",
     "empty": "No posts yet. Be the first!",
     "addPost": "Add post",
     "photoTooLarge": "Photo is too large (max 5 MB).",

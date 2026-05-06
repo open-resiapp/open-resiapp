@@ -678,6 +678,8 @@
     "sending": "Odosielam...",
     "cancel": "Zrušiť",
     "noResponses": "Zatiaľ žiadne reakcie.",
+    "showResponses": "Zobraziť reakcie ({count})",
+    "hideResponses": "Skryť reakcie",
     "empty": "Zatiaľ žiadne príspevky. Buď prvý!",
     "addPost": "Pridať príspevok",
     "photoTooLarge": "Fotka je príliš veľká (max 5 MB).",
