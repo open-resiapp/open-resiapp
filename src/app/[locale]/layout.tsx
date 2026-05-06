@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { NextIntlClientProvider, hasLocale } from "next-intl";
 import { getMessages } from "next-intl/server";
 import { notFound } from "next/navigation";
@@ -12,6 +12,10 @@ export const metadata: Metadata = {
     icon: "/icon.svg",
   },
   manifest: "/api/manifest",
+};
+
+// Next.js 16: themeColor moved out of metadata to viewport export.
+export const viewport: Viewport = {
   themeColor: "#2563eb",
 };
 
