@@ -560,6 +560,7 @@
     "pushEnabled": "Notifications are enabled on this device.",
     "pushDisabled": "Notifications are disabled on this device.",
     "pushDenied": "Notifications were blocked. Enable them in your browser settings.",
+    "pushUnsupported": "This browser does not support push notifications. Try installing the app to your home screen (Add to Home Screen) or use another browser.",
     "enable": "Enable",
     "disable": "Disable",
     "prefNewPost": "New posts",

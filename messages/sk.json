@@ -560,6 +560,7 @@
     "pushEnabled": "Notifikácie sú zapnuté na tomto zariadení.",
     "pushDisabled": "Notifikácie sú vypnuté na tomto zariadení.",
     "pushDenied": "Notifikácie boli zablokované. Povoľte ich v nastaveniach prehliadača.",
+    "pushUnsupported": "Tento prehliadač nepodporuje push notifikácie. Skús appku nainštalovať na plochu (Pridať na úvodnú obrazovku) alebo použi iný prehliadač.",
     "enable": "Zapnúť",
     "disable": "Vypnúť",
     "prefNewPost": "Nové príspevky",

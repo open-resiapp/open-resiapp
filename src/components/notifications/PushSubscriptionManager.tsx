@@ -128,7 +128,24 @@ export default function PushSubscriptionManager() {
     }
   }
 
-  if (!supported) return null;
+  if (!supported) {
+    return (
+      <div className="flex items-center justify-between">
+        <div>
+          <p className="text-base font-medium text-gray-900">
+            {t("pushNotifications")}
+          </p>
+          <p className="text-sm text-gray-500">{t("pushUnsupported")}</p>
+        </div>
+        <button
+          disabled
+          className="px-5 py-3 text-base font-medium rounded-lg bg-gray-100 text-gray-400 cursor-not-allowed"
+        >
+          {t("enable")}
+        </button>
+      </div>
+    );
+  }
 
   return (
     <div className="flex items-center justify-between">
