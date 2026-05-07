@@ -6,6 +6,7 @@ import { useState } from "react";
 import PushSubscriptionManager from "@/components/notifications/PushSubscriptionManager";
 import NotificationPreferences from "@/components/notifications/NotificationPreferences";
 import ConsentManagement from "@/components/consent/ConsentManagement";
+import ThemeToggle from "@/components/ThemeToggle";
 import type { UserRole } from "@/types";
 
 const roleKeys: Record<UserRole, string> = {
@@ -164,6 +165,14 @@ export default function ProfilePage() {
             {saving ? t("changing") : t("changePasswordButton")}
           </button>
         </form>
+      </div>
+
+      {/* Appearance */}
+      <div className="bg-white rounded-xl border border-gray-200 p-6 dark:bg-gray-800 dark:border-gray-700">
+        <h2 className="text-lg font-semibold text-gray-900 mb-4 dark:text-gray-100">
+          {t("appearance")}
+        </h2>
+        <ThemeToggle />
       </div>
 
       {/* Consent management */}

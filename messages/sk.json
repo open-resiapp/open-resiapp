@@ -556,7 +556,8 @@
     "roleTenant": "Nájomca",
     "roleVoteCounter": "Zapisovateľ",
     "roleCaretaker": "Domovník",
-    "notifications": "Notifikácie"
+    "notifications": "Notifikácie",
+    "appearance": "Vzhľad"
   },
   "Notifications": {
     "pushNotifications": "Push notifikácie",

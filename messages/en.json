@@ -556,7 +556,8 @@
     "roleTenant": "Tenant",
     "roleVoteCounter": "Vote counter",
     "roleCaretaker": "Caretaker",
-    "notifications": "Notifications"
+    "notifications": "Notifications",
+    "appearance": "Appearance"
   },
   "Notifications": {
     "pushNotifications": "Push notifications",
