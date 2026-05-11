@@ -38,6 +38,13 @@ export async function PATCH(request: NextRequest) {
     return NextResponse.json({ error: "Používateľ nenájdený" }, { status: 404 });
   }
 
+  if (!user.passwordHash) {
+    return NextResponse.json(
+      { error: "Účet ešte nie je aktivovaný" },
+      { status: 400 }
+    );
+  }
+
   const isValid = await bcrypt.compare(currentPassword, user.passwordHash);
   if (!isValid) {
     return NextResponse.json(

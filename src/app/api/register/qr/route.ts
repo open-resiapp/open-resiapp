@@ -111,13 +111,15 @@ export async function POST(request: NextRequest) {
   const verification = await createEmailVerification(newUser.id);
   const resolvedLocale = pickLocale(locale);
 
-  await sendQrRegistrationVerify({
-    recipientEmail: newUser.email,
-    recipientName: newUser.name,
-    verifyUrl: buildVerificationUrl(verification.token, resolvedLocale),
-    expiryHours: 24,
-    locale: resolvedLocale,
-  });
+  if (newUser.email) {
+    await sendQrRegistrationVerify({
+      recipientEmail: newUser.email,
+      recipientName: newUser.name,
+      verifyUrl: buildVerificationUrl(verification.token, resolvedLocale),
+      expiryHours: 24,
+      locale: resolvedLocale,
+    });
+  }
 
   return NextResponse.json(
     {

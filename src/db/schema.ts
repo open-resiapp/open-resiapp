@@ -257,6 +257,18 @@ export const memberships = pgTable(
       .notNull(),
     role: membershipRoleEnum("role").notNull().default("owner"),
     weight: integer("weight").notNull().default(1),
+    // Owner's share of the unit (rational). For sole owners = 1/1; for BSM
+    // co-owners = 1/2 + 1/2; for heirs of differing shares = e.g. 1/4 + 1/4 + 1/2.
+    // Sum across active memberships per unit MUST equal 1/1 (enforced at the
+    // application level, not via SQL CHECK).
+    // Used by the voting engine refactor (BYT-20260511-001) to resolve
+    // multi-owner unit votes per §14 ods. 4 zák. 182/1993 Z.z.
+    ownerUnitShareNumerator: integer("owner_unit_share_numerator")
+      .notNull()
+      .default(1),
+    ownerUnitShareDenominator: integer("owner_unit_share_denominator")
+      .notNull()
+      .default(1),
     status: membershipStatusEnum("status").notNull().default("active"),
     createdAt: timestamp("created_at").defaultNow().notNull(),
   },
@@ -298,8 +310,12 @@ export const users = pgTable(
   "users",
   {
     id: uuid("id").primaryKey().defaultRandom(),
-    email: varchar("email", { length: 255 }).notNull(),
-    passwordHash: varchar("password_hash", { length: 255 }).notNull(),
+    // Nullable since BYT-20260508-003 (easy-import): shell users seeded
+    // from a Kataster LV have no email until pairing fills it in.
+    email: varchar("email", { length: 255 }),
+    // Nullable for the same reason — shell users have no login until
+    // they're paired and set a password.
+    passwordHash: varchar("password_hash", { length: 255 }),
     name: varchar("name", { length: 255 }).notNull(),
     phone: varchar("phone", { length: 30 }),
     role: userRoleEnum("role").notNull().default("owner"),
@@ -310,7 +326,10 @@ export const users = pgTable(
     createdAt: timestamp("created_at").defaultNow().notNull(),
   },
   (table) => ({
-    emailIdx: uniqueIndex("users_email_idx").on(table.email),
+    // Partial unique index — multiple shell users with NULL email may coexist.
+    emailIdx: uniqueIndex("users_email_idx")
+      .on(table.email)
+      .where(sql`${table.email} IS NOT NULL`),
     statusIdx: index("users_status_idx").on(table.status),
   })
 );

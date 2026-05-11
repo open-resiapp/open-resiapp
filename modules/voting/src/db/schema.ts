@@ -7,8 +7,9 @@ import {
   timestamp,
   pgEnum,
   uniqueIndex,
+  check,
 } from "drizzle-orm/pg-core";
-import { relations } from "drizzle-orm";
+import { relations, sql } from "drizzle-orm";
 
 // Module schema imports core symbols (entities, users) directly from
 // the core schema. Phase 9.2 dropped the legacy entrances/flats tables;
@@ -101,6 +102,10 @@ export const votes = pgTable(
     votingEntityIdx: uniqueIndex("mod_voting_votes_voting_entity_idx").on(
       table.votingId,
       table.entityId
+    ),
+    paperPhotoRequired: check(
+      "mod_voting_votes_paper_photo_required",
+      sql`vote_type != 'paper' OR paper_photo_url IS NOT NULL`
     ),
   })
 );

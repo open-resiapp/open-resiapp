@@ -211,6 +211,12 @@ export async function POST(request: NextRequest) {
   const voterId = isPaperVote ? ownerId : session.user.id;
 
   if (isPaperVote) {
+    if (!paperPhotoUrl) {
+      return NextResponse.json(
+        { error: "PAPER_PHOTO_REQUIRED" },
+        { status: 400 }
+      );
+    }
     if (!hasPermission(session.user.role as UserRole, "recordPaperVote")) {
       return NextResponse.json(
         { error: "Nemáte oprávnenie zapisovať listinné hlasy" },
@@ -356,7 +362,7 @@ export async function POST(request: NextRequest) {
         .where(eq(users.id, voterId))
         .limit(1);
       const flatNumber = await loadFlatNumber(flatId);
-      if (voter && flatNumber) {
+      if (voter?.email && flatNumber) {
         sendVoteConfirmation({
           recipientEmail: voter.email,
           voterName: voter.name,
@@ -403,6 +409,11 @@ export async function POST(request: NextRequest) {
           .where(eq(housingUnitData.entityId, flatId))
           .limit(1);
 
+        if (!voter.email) {
+          // Shell user with no email — skip the confirmation email.
+          // (sendVoteConfirmation has nowhere to send.)
+          return vote;
+        }
         const emailSent = await sendVoteConfirmation({
           recipientEmail: voter.email,
           voterName: voter.name,
@@ -453,7 +464,7 @@ export async function POST(request: NextRequest) {
         .where(eq(users.id, voterId))
         .limit(1);
       const flatNumber = await loadFlatNumber(flatId);
-      if (voter && flatNumber) {
+      if (voter?.email && flatNumber) {
         sendVoteConfirmation({
           recipientEmail: voter.email,
           voterName: voter.name,

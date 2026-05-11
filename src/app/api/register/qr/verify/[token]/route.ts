@@ -57,13 +57,15 @@ async function notifyAdminsOfPending(userId: string) {
       kind: "pending_registration_admin",
     });
 
-    await sendQrRegistrationPendingAdmin({
-      recipientEmail: admin.email,
-      recipientName: admin.name,
-      pendingName: pendingUser.name,
-      pendingEmail: pendingUser.email,
-      queueUrl,
-    });
+    if (admin.email) {
+      await sendQrRegistrationPendingAdmin({
+        recipientEmail: admin.email,
+        recipientName: admin.name,
+        pendingName: pendingUser.name,
+        pendingEmail: pendingUser.email ?? "",
+        queueUrl,
+      });
+    }
   }
 }
 

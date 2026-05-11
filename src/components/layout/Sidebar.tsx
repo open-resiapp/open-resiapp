@@ -23,6 +23,7 @@ const navItems: NavItem[] = [
   { href: "/voting", labelKey: "voting", icon: "🗳️", requiresModule: "voting" },
   { href: "/komunita", labelKey: "community", icon: "🏘️", permission: "viewCommunity" },
   { href: "/owners", labelKey: "owners", icon: "👥", permission: "manageUsers" },
+  { href: "/admin/import", labelKey: "import", icon: "📥", permission: "manageSettings" },
   { href: "/settings", labelKey: "settings", icon: "⚙️", permission: "viewSettings" },
 ];
 

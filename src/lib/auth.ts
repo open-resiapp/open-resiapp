@@ -1,7 +1,7 @@
 import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import bcrypt from "bcrypt";
-import { eq } from "drizzle-orm";
+import { and, eq, isNotNull } from "drizzle-orm";
 import { db } from "@/db";
 import { users } from "@/db/schema";
 import type { UserRole, UserStatus } from "@/types";
@@ -51,10 +51,16 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         const [user] = await db
           .select()
           .from(users)
-          .where(eq(users.email, email))
+          .where(and(eq(users.email, email), isNotNull(users.email)))
           .limit(1);
 
         if (!user || !user.isActive || user.status === "rejected") {
+          return null;
+        }
+
+        // Shell users (imported from a Kataster LV before pairing) have
+        // no password hash and cannot sign in via credentials.
+        if (!user.passwordHash) {
           return null;
         }
 
@@ -63,9 +69,12 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           return null;
         }
 
+        // user.email is non-null here: the credentials provider only matches
+        // users whose email equals the input, so the column is guaranteed
+        // non-null at this point.
         return {
           id: user.id,
-          email: user.email,
+          email: user.email!,
           name: user.name,
           role: user.role,
           status: user.status,

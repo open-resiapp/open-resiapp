@@ -107,7 +107,10 @@ export default function PaperVoteModal({
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!selectedOwner || !selectedChoice || !selectedFlat) return;
+    if (!selectedOwner || !selectedChoice || !selectedFlat || !photoFile) {
+      if (!photoFile) setError(t("photoRequired"));
+      return;
+    }
 
     setLoading(true);
     setError("");
@@ -150,7 +153,10 @@ export default function PaperVoteModal({
 
     if (!res.ok) {
       const data = await res.json();
-      setError(data.error || t("submitFailed"));
+      const code = data.error;
+      setError(
+        code === "PAPER_PHOTO_REQUIRED" ? t("photoRequired") : code || t("submitFailed")
+      );
       setLoading(false);
       return;
     }
@@ -266,6 +272,7 @@ export default function PaperVoteModal({
               type="file"
               accept="image/jpeg,image/png,image/webp"
               onChange={handleFileChange}
+              required
               className="w-full text-base text-gray-700 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-base file:font-medium file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 dark:text-gray-200 dark:file:bg-blue-900/40 dark:file:text-blue-200 dark:hover:file:bg-blue-900/60"
             />
             {photoPreview && (
@@ -296,7 +303,7 @@ export default function PaperVoteModal({
             </button>
             <button
               type="submit"
-              disabled={loading || !selectedOwner || !selectedChoice || !selectedFlat}
+              disabled={loading || !selectedOwner || !selectedChoice || !selectedFlat || !photoFile}
               className="flex-1 py-3 px-4 text-base font-medium text-white bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 rounded-lg transition-colors"
             >
               {loading ? tCommon("saving") : t("submit")}
