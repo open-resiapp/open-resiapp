@@ -32,18 +32,19 @@ function bcp47(locale: EmailLocale): string {
 // modules talk to email exclusively through the SDK and these names
 // become private again.
 export function getTransporter() {
-  if (!smtpHost || !smtpUser || !smtpPass) {
+  if (!smtpHost) {
     return null;
   }
+
+  const auth = smtpUser && smtpPass
+    ? { user: smtpUser, pass: smtpPass }
+    : undefined;
 
   return nodemailer.createTransport({
     host: smtpHost,
     port: smtpPort,
     secure: smtpPort === 465,
-    auth: {
-      user: smtpUser,
-      pass: smtpPass,
-    },
+    auth,
   });
 }
 
@@ -457,3 +458,64 @@ export async function sendQrRegistrationPendingAdmin(params: {
 
 // sendVoteConfirmation moved to modules/voting/src/email/ under
 // RES-20260505-001. Importers now read it from the voting module.
+
+export async function sendClaimShellInvitation(params: {
+  recipientEmail: string;
+  recipientName: string;
+  claimUrl: string;
+  expiryDays: number;
+  locale?: string;
+}): Promise<boolean> {
+  const transporter = getTransporter();
+
+  if (!transporter) {
+    console.warn(
+      "[email] SMTP not configured — skipping shell-claim invitation"
+    );
+    console.log(
+      "[email] Claim URL for",
+      params.recipientEmail,
+      ":",
+      params.claimUrl
+    );
+    return false;
+  }
+
+  const locale = resolveLocale(params.locale);
+  const tCommon = await getTranslations({ locale, namespace: "Email.common" });
+  const t = await getTranslations({ locale, namespace: "Email.claimShell" });
+
+  const html = `
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+      <h2 style="color: #1d4ed8;">${t("heading")}</h2>
+      <p>${tCommon("greeting", { name: params.recipientName })}</p>
+      <p>${t("intro")}</p>
+      <div style="margin: 24px 0; text-align: center;">
+        <a href="${params.claimUrl}"
+           style="display: inline-block; padding: 12px 32px; background-color: #2563eb; color: #ffffff; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 16px;">
+          ${t("button")}
+        </a>
+      </div>
+      <p style="color: #6b7280; font-size: 14px;">
+        ${t("expiryNote", { days: params.expiryDays })}
+      </p>
+      <p style="color: #6b7280; font-size: 12px; margin-top: 32px; border-top: 1px solid #e5e7eb; padding-top: 16px;">
+        ${t("fallback")}<br/>
+        <span style="word-break: break-all;">${params.claimUrl}</span>
+      </p>
+    </div>
+  `;
+
+  try {
+    await transporter.sendMail({
+      from: emailFrom,
+      to: params.recipientEmail,
+      subject: t("subject"),
+      html,
+    });
+    return true;
+  } catch (error) {
+    console.error("[email] Failed to send claim invitation:", error);
+    return false;
+  }
+}

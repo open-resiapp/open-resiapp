@@ -1,6 +1,6 @@
 import "server-only";
 
-import { isNotNull } from "drizzle-orm";
+import { and, eq, isNotNull, isNull, sql } from "drizzle-orm";
 
 import { db } from "@/db";
 import {
@@ -16,6 +16,50 @@ import { buildPath } from "@/lib/entity-tree";
 import type { ImportRow } from "./types";
 import { ownerCommunityShare } from "./validate";
 
+export class DuplicateCommunityError extends Error {
+  constructor(
+    public existingId: string,
+    public name: string,
+    public address: string
+  ) {
+    super(
+      `Community "${name}" at "${address}" already exists (entityId ${existingId})`
+    );
+    this.name = "DuplicateCommunityError";
+  }
+}
+
+/**
+ * Lookup any active housing_community with a name OR address matching the
+ * given import. Either match counts as a duplicate — the seeder refuses
+ * to create a second one without the admin explicitly archiving the
+ * existing root first.
+ *
+ * Returns `null` when nothing matches.
+ */
+export async function findExistingCommunity(
+  name: string,
+  address: string
+): Promise<{ id: string; name: string; address: string } | null> {
+  const rows = await db
+    .select({
+      id: entities.id,
+      name: entities.name,
+      address: housingRootData.address,
+    })
+    .from(entities)
+    .innerJoin(housingRootData, eq(housingRootData.entityId, entities.id))
+    .where(
+      and(
+        eq(entities.kind, "housing_community"),
+        isNull(entities.archivedAt),
+        sql`(LOWER(${entities.name}) = LOWER(${name}) OR LOWER(${housingRootData.address}) = LOWER(${address}))`
+      )
+    )
+    .limit(1);
+  return rows[0] ?? null;
+}
+
 // Project-wide scale for integer memberships.weight.
 // See spec BYT-20260508-003 "Approach §4" — pin to a single constant.
 const WEIGHT_SCALE = 1_000_000n;
@@ -29,6 +73,14 @@ const blockKey = (r: ImportRow) => r.block_name ?? "";
 export interface SeedInput {
   rows: ImportRow[];
   actorUserId: string;
+  /**
+   * When provided, the seeder skips community creation and attaches all
+   * new entities under this existing root. Blocks and entrances are reused
+   * by name when they already exist; units are skipped when an entity with
+   * the same (block, entrance, unit_number) is already present. This makes
+   * re-imports an idempotent append rather than a hard failure.
+   */
+  existingCommunityId?: string;
 }
 
 export interface SeedResult {
@@ -53,44 +105,122 @@ export async function seedImport(input: SeedInput): Promise<SeedResult> {
   }
   const first = input.rows[0];
 
+  // Duplicate guard only applies when CREATING a community — skip when the
+  // caller is intentionally attaching to an existing one.
+  if (!input.existingCommunityId) {
+    const existing = await findExistingCommunity(
+      first.community_name,
+      first.community_address
+    );
+    if (existing) {
+      throw new DuplicateCommunityError(
+        existing.id,
+        existing.name,
+        existing.address
+      );
+    }
+  }
+
   return db.transaction(async (tx) => {
     // ── 1. Community root ───────────────────────────────
-    const communityId = crypto.randomUUID();
-    const communityPath = buildPath(null, communityId);
+    let communityId: string;
+    let communityPath: string;
 
-    await tx.insert(entities).values({
-      id: communityId,
-      parentId: null,
-      kind: "housing_community",
-      name: first.community_name,
-      path: communityPath,
-      depth: 0,
-      rootId: communityId,
-    });
+    if (input.existingCommunityId) {
+      // Reuse the existing community root. Look up its path so child
+      // entities below get correct path / depth.
+      const [existing] = await tx
+        .select({ id: entities.id, path: entities.path })
+        .from(entities)
+        .where(eq(entities.id, input.existingCommunityId))
+        .limit(1);
+      if (!existing) {
+        throw new Error(
+          `existingCommunityId ${input.existingCommunityId} not found`
+        );
+      }
+      communityId = existing.id;
+      communityPath = existing.path;
+    } else {
+      communityId = crypto.randomUUID();
+      communityPath = buildPath(null, communityId);
 
-    await tx.insert(housingRootData).values({
-      entityId: communityId,
-      address: first.community_address,
-      ico: first.community_ico ?? null,
-      votingMethod: first.voting_method,
-      country: first.country,
-    });
-
-    await tx.insert(entityAuditLog).values({
-      actorUserId: input.actorUserId,
-      action: "entity.create",
-      entityId: communityId,
-      afterJson: JSON.stringify({
+      await tx.insert(entities).values({
+        id: communityId,
+        parentId: null,
         kind: "housing_community",
         name: first.community_name,
-      }),
-    });
+        path: communityPath,
+        depth: 0,
+        rootId: communityId,
+      });
 
-    // ── 2. Blocks (optional) ────────────────────────────
+      await tx.insert(housingRootData).values({
+        entityId: communityId,
+        address: first.community_address,
+        ico: first.community_ico ?? null,
+        votingMethod: first.voting_method,
+        country: first.country,
+      });
+
+      await tx.insert(entityAuditLog).values({
+        actorUserId: input.actorUserId,
+        action: "entity.create",
+        entityId: communityId,
+        afterJson: JSON.stringify({
+          kind: "housing_community",
+          name: first.community_name,
+        }),
+      });
+    }
+
+    // Pre-load existing child entities under this community so the seeder
+    // can reuse blocks/entrances and skip units that already exist.
+    const existingChildren = input.existingCommunityId
+      ? await tx
+          .select({
+            id: entities.id,
+            parentId: entities.parentId,
+            kind: entities.kind,
+            name: entities.name,
+            path: entities.path,
+            depth: entities.depth,
+          })
+          .from(entities)
+          .where(
+            and(
+              eq(entities.rootId, communityId),
+              isNull(entities.archivedAt)
+            )
+          )
+      : [];
+    const existingByKindAndKey = new Map<string, (typeof existingChildren)[number]>();
+    // Key formats:
+    //   block:   "block|<name>"
+    //   entrance:"entrance|<parentId>|<name>"
+    //   unit:    "unit|<parentId>|<flatNumber>"
+    // Unit names follow the seeder's "Byt <N>" convention; we also keep a
+    // secondary lookup of unit flat-numbers by joining housing_unit_data.
+    for (const e of existingChildren) {
+      if (e.kind === "housing_block") {
+        existingByKindAndKey.set(`block|${e.name}`, e);
+      } else if (e.kind === "housing_entrance" && e.parentId) {
+        existingByKindAndKey.set(`entrance|${e.parentId}|${e.name}`, e);
+      } else if (e.kind === "housing_unit" && e.parentId) {
+        existingByKindAndKey.set(`unit|${e.parentId}|${e.name}`, e);
+      }
+    }
+
+    // ── 2. Blocks (optional) — reuse if already present ─
     const blockIdByName = new Map<string, string>();
     for (const r of input.rows) {
       const k = blockKey(r);
       if (k === "" || blockIdByName.has(k)) continue;
+      const existing = existingByKindAndKey.get(`block|${r.block_name}`);
+      if (existing) {
+        blockIdByName.set(k, existing.id);
+        continue;
+      }
       const blockId = crypto.randomUUID();
       const blockPath = buildPath(communityPath, blockId);
       await tx.insert(entities).values({
@@ -111,7 +241,7 @@ export async function seedImport(input: SeedInput): Promise<SeedResult> {
       blockIdByName.set(k, blockId);
     }
 
-    // ── 3. Entrances (optional) ─────────────────────────
+    // ── 3. Entrances (optional) — reuse if already present
     interface EntranceCtx {
       id: string;
       path: string;
@@ -129,6 +259,18 @@ export async function seedImport(input: SeedInput): Promise<SeedResult> {
         : { id: communityId, path: communityPath, depth: 0 };
       // Reconstruct parent path if it came from a block (we didn't store it).
       const parentPath = parent.path ?? buildPath(communityPath, parent.id);
+
+      const existing = existingByKindAndKey.get(
+        `entrance|${parent.id}|${r.entrance_label}`
+      );
+      if (existing) {
+        entranceCtxByKey.set(k, {
+          id: existing.id,
+          path: existing.path,
+          depth: existing.depth,
+        });
+        continue;
+      }
 
       const entranceId = crypto.randomUUID();
       const entrancePath = buildPath(parentPath, entranceId);
@@ -184,6 +326,21 @@ export async function seedImport(input: SeedInput): Promise<SeedResult> {
         parentId = blockId;
         parentPath = buildPath(communityPath, blockId);
         parentDepth = 1;
+      }
+
+      // Skip if a unit with the same parent + flat number is already in the
+      // tree (re-import is idempotent — adds new units, leaves existing ones
+      // untouched).
+      const existingUnit = existingByKindAndKey.get(
+        `unit|${parentId}|Byt ${r.unit_number}`
+      );
+      if (existingUnit) {
+        unitCtxByKey.set(k, {
+          id: existingUnit.id,
+          path: existingUnit.path,
+          depth: existingUnit.depth,
+        });
+        continue;
       }
 
       const unitId = crypto.randomUUID();
@@ -275,6 +432,22 @@ export async function seedImport(input: SeedInput): Promise<SeedResult> {
         });
         if (emailKey) emailLookup.set(emailKey, userId);
         ownersCreated += 1;
+      }
+
+      // Skip membership creation if (user, unit) already exists — re-imports
+      // on a unit that already has owners shouldn't duplicate the link.
+      if (input.existingCommunityId) {
+        const [dup] = await tx
+          .select({ id: memberships.id })
+          .from(memberships)
+          .where(
+            and(
+              eq(memberships.userId, userId),
+              eq(memberships.entityId, ctx.id)
+            )
+          )
+          .limit(1);
+        if (dup) continue;
       }
 
       const shareOfCommunity = ownerCommunityShare(r);

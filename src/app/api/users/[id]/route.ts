@@ -32,6 +32,8 @@ export async function GET(
       phone: users.phone,
       role: users.role,
       isActive: users.isActive,
+      passwordHash: users.passwordHash,
+      status: users.status,
       createdAt: users.createdAt,
     })
     .from(users)
@@ -42,6 +44,8 @@ export async function GET(
     return NextResponse.json({ error: "Používateľ nenájdený" }, { status: 404 });
   }
 
+  const isShell = user.passwordHash === null;
+
   // Phase 9.1c: read user's flats via memberships → housing_unit
   // entities → housing_unit_data + parent (entrance) entity.
   const userFlatRows = await listUserFlats(id);
@@ -49,8 +53,13 @@ export async function GET(
   // Backward-compat: single flat fields from first flat
   const firstFlat = userFlatRows[0] || null;
 
+  // passwordHash is internal — strip before returning.
+  const { passwordHash: _ignored, ...safeUser } = user;
+  void _ignored;
+
   return NextResponse.json({
-    ...user,
+    ...safeUser,
+    isShell,
     flats: userFlatRows,
     // Backward-compat fields
     flatNumber: firstFlat?.flatNumber || null,

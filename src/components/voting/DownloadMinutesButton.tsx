@@ -6,6 +6,7 @@ import type { VotingResults, QuorumType } from "@/types";
 
 interface VoteRow {
   id: string;
+  flatId: string;
   ownerName: string | null;
   flatNumber: string;
   choice: string;
@@ -28,6 +29,7 @@ interface BuildingInfo {
   name: string;
   address: string;
   ico: string | null;
+  country?: "sk" | "cz";
 }
 
 interface DownloadMinutesButtonProps {
@@ -85,6 +87,13 @@ export default function DownloadMinutesButton({
         minute: "2-digit",
       });
 
+      const flatNumbersByUnitId: Record<string, string> = {};
+      for (const v of voteData.votes) {
+        if (!flatNumbersByUnitId[v.flatId]) {
+          flatNumbersByUnitId[v.flatId] = v.flatNumber;
+        }
+      }
+
       const doc = (
         <VotingMinutesPDF
           building={building}
@@ -96,6 +105,8 @@ export default function DownloadMinutesButton({
           qrDataUrl={qrDataUrl}
           generatedAt={generatedAt}
           entranceName={entranceName}
+          country={building.country}
+          flatNumbersByUnitId={flatNumbersByUnitId}
         />
       );
 

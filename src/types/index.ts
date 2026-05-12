@@ -78,6 +78,55 @@ export interface VoteWithShare {
   area: number | null;
 }
 
+/**
+ * BYT-20260511-001: full ownership context for a single vote so the engine
+ * can group by unit and resolve multi-owner cases per §14 ods. 4 zák.
+ * 182/1993 Z.z. (Slovak HOA law) / §1187 CZ Civil Code.
+ *
+ * One row per (voter, unit). Multiple rows for the same unit are co-owners.
+ */
+export interface VoteWithOwnership {
+  unitEntityId: string;
+  userId: string;
+  userName: string | null;
+  choice: VoteChoice;
+  // Unit-level (constant across all co-owners of one unit).
+  unitShareNumerator: number;
+  unitShareDenominator: number;
+  area: number | null;
+  // Owner-level (varies per co-owner; sum across active memberships = 1/1).
+  ownerUnitShareNumerator: number;
+  ownerUnitShareDenominator: number;
+}
+
+export type UnitResolutionRationale =
+  | "single_owner"
+  | "unanimous"
+  | "majority_share"
+  | "tie_abstain"
+  | "no_quorum_within_unit";
+
+export interface UnitResolutionBreakdownEntry {
+  userId: string;
+  userName: string | null;
+  choice: VoteChoice;
+  ownerShareNumerator: number;
+  ownerShareDenominator: number;
+}
+
+export interface UnitResolution {
+  unitEntityId: string;
+  /** Final stance attributed to the unit as a whole. */
+  resolved: VoteChoice;
+  rationale: UnitResolutionRationale;
+  /** Per-co-owner detail; one entry per co-owner who cast any choice. */
+  breakdown: UnitResolutionBreakdownEntry[];
+  /** Unit's voting weight under the chosen voting method (float). */
+  unitWeight: number;
+  /** True iff > 1 co-owner has an active membership on this unit. */
+  hasMultipleOwners: boolean;
+}
+
 export interface VotingResults {
   za: number;
   proti: number;
@@ -90,4 +139,10 @@ export interface VotingResults {
   quorumReached: boolean;
   quorumType: QuorumType;
   totalPossibleWeight: number;
+  /**
+   * Per-unit resolution detail. Omitted in legacy callers that only consume
+   * the aggregate totals. Always present when calculateResults is fed
+   * VoteWithOwnership[] (BYT-20260511-001 path).
+   */
+  unitBreakdowns?: UnitResolution[];
 }

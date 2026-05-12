@@ -8,6 +8,7 @@ import Sidebar from "@/components/layout/Sidebar";
 import Header from "@/components/layout/Header";
 import ServiceWorkerRegistration from "@/components/ServiceWorkerRegistration";
 import ConsentGate from "@/components/consent/ConsentGate";
+import ShareSumInvariantBanner from "@/components/admin/ShareSumInvariantBanner";
 import type { UserRole } from "@/types";
 
 const PENDING_ALLOWED_PATH = "/community-info";
@@ -65,6 +66,7 @@ export default function DashboardLayout({
           showProfileLink={!isPending}
         />
         <main className="flex-1 p-4 lg:p-6">
+          {!isPending && <ShareSumInvariantBanner />}
           {isPending ? children : <ConsentGate>{children}</ConsentGate>}
         </main>
       </div>

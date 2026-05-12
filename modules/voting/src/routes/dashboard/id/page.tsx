@@ -80,7 +80,7 @@ export default function VotingDetailPage() {
 
   const [voting, setVoting] = useState<VotingDetail | null>(null);
   const [voteData, setVoteData] = useState<VoteData | null>(null);
-  const [buildingData, setBuildingData] = useState<{ name: string; address: string; ico: string | null } | null>(null);
+  const [buildingData, setBuildingData] = useState<{ name: string; address: string; ico: string | null; country?: "sk" | "cz" } | null>(null);
   const [legalNotice, setLegalNotice] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [voting404, setVoting404] = useState(false);
@@ -124,7 +124,12 @@ export default function VotingDetailPage() {
       if (buildingRes.ok) {
         const bldData = await buildingRes.json();
         if (bldData) {
-          setBuildingData({ name: bldData.name, address: bldData.address, ico: bldData.ico });
+          setBuildingData({
+            name: bldData.name,
+            address: bldData.address,
+            ico: bldData.ico,
+            country: bldData.country,
+          });
           if (bldData.legalNotice) {
             setLegalNotice(bldData.legalNotice);
           }
@@ -547,6 +552,10 @@ export default function VotingDetailPage() {
         <VotingResults
           results={voteData.results}
           totalVotes={voteData.totalVotes}
+          flatNumbers={Object.fromEntries(
+            voteData.votes.map((v) => [v.flatId, v.flatNumber])
+          )}
+          country={buildingData?.country ?? "sk"}
         />
       )}
 

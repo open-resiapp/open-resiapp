@@ -1,54 +1,55 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
+
 import { hasPermission } from "@/lib/permissions";
 import type { UserRole } from "@/types";
-import PendingApprovalModal from "@/components/owners/PendingApprovalModal";
+import ShellClaimDialog from "@/components/owners/ShellClaimDialog";
+import ShellMergeDialog from "@/components/owners/ShellMergeDialog";
 
-interface PendingUser {
+interface ShellUser {
   id: string;
   name: string;
-  email: string;
-  phone: string | null;
-  emailVerifiedAt: string | null;
-  createdAt: string;
+  email: string | null;
+  flatNumber: string | null;
+  shareNumerator: number;
+  shareDenominator: number;
+  hasOpenInvite: boolean;
 }
 
-interface PendingResponse {
-  verified: PendingUser[];
-  unverified: PendingUser[];
-}
+type DialogState =
+  | { kind: "none" }
+  | { kind: "claim"; shell: ShellUser; mode: "email" | "qr" }
+  | { kind: "merge"; shell: ShellUser };
 
-export default function PendingRegistrationsPage() {
+export default function PendingShellUsersPage() {
   const { data: session } = useSession();
-  const t = useTranslations("PendingRegistrations");
+  const t = useTranslations("Owners.pending");
   const tCommon = useTranslations("Common");
-
-  const [data, setData] = useState<PendingResponse>({
-    verified: [],
-    unverified: [],
-  });
+  const locale = useLocale();
+  const [shells, setShells] = useState<ShellUser[]>([]);
   const [loading, setLoading] = useState(true);
-  const [selected, setSelected] = useState<PendingUser | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  const [filter, setFilter] = useState("");
+  const [dialog, setDialog] = useState<DialogState>({ kind: "none" });
 
   const role = (session?.user?.role || "owner") as UserRole;
   const canManage = hasPermission(role, "manageUsers");
 
-  const fetchPending = useCallback(async () => {
+  const fetchShells = useCallback(async () => {
     setLoading(true);
-    const res = await fetch("/api/registrations/pending");
+    const res = await fetch("/api/admin/shell-users");
     if (res.ok) {
-      setData(await res.json());
+      const body = (await res.json()) as { shells: ShellUser[] };
+      setShells(body.shells);
     }
     setLoading(false);
   }, []);
 
   useEffect(() => {
-    if (canManage) fetchPending();
-  }, [canManage, fetchPending]);
+    if (canManage) fetchShells();
+  }, [canManage, fetchShells]);
 
   if (!canManage) {
     return (
@@ -58,65 +59,34 @@ export default function PendingRegistrationsPage() {
     );
   }
 
-  async function handleReject(user: PendingUser) {
-    if (!confirm(t("confirmReject", { name: user.name }))) return;
-    setError(null);
-    const res = await fetch(`/api/registrations/${user.id}/reject`, {
-      method: "POST",
-    });
-    if (!res.ok) {
-      const body = await res.json().catch(() => ({}));
-      setError(body.error || tCommon("saveFailed"));
-      return;
-    }
-    fetchPending();
-  }
-
-  function renderRow(user: PendingUser, isVerified: boolean) {
-    return (
-      <tr key={user.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/50">
-        <td className="px-6 py-4 text-base text-gray-900 font-medium dark:text-gray-100">
-          {user.name}
-        </td>
-        <td className="px-6 py-4 text-base text-gray-600 dark:text-gray-300">{user.email}</td>
-        <td className="px-6 py-4 text-base text-gray-600 dark:text-gray-300">
-          {user.phone || tCommon("noDash")}
-        </td>
-        <td className="px-6 py-4 text-base text-gray-600 dark:text-gray-300">
-          {new Date(user.createdAt).toLocaleString()}
-        </td>
-        <td className="px-6 py-4">
-          {isVerified && (
-            <div className="flex gap-2 justify-end">
-              <button
-                onClick={() => setSelected(user)}
-                className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-medium rounded-lg transition-colors"
-              >
-                {t("approve")}
-              </button>
-              <button
-                onClick={() => handleReject(user)}
-                className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white text-sm font-medium rounded-lg transition-colors"
-              >
-                {t("reject")}
-              </button>
-            </div>
-          )}
-        </td>
-      </tr>
-    );
-  }
+  const filtered = filter.trim()
+    ? shells.filter(
+        (s) =>
+          s.name.toLowerCase().includes(filter.toLowerCase()) ||
+          (s.flatNumber ?? "").toLowerCase().includes(filter.toLowerCase())
+      )
+    : shells;
 
   return (
-    <div className="max-w-5xl">
-      <h1 className="text-2xl font-bold text-gray-900 mb-2 dark:text-gray-100">{t("title")}</h1>
-      <p className="text-base text-gray-500 mb-6 dark:text-gray-400">{t("subtitle")}</p>
+    <div className="max-w-6xl">
+      <div className="flex items-center justify-between mb-2">
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+          {t("title")}
+        </h1>
+      </div>
+      <p className="text-base text-gray-500 mb-6 dark:text-gray-400">
+        {t("counter", { count: shells.length })}
+      </p>
 
-      {error && (
-        <div className="bg-red-50 text-red-700 px-4 py-3 rounded-lg text-base mb-4 dark:bg-red-900/30 dark:text-red-200">
-          {error}
-        </div>
-      )}
+      <div className="mb-4">
+        <input
+          type="text"
+          value={filter}
+          onChange={(e) => setFilter(e.target.value)}
+          placeholder={t("filterPlaceholder")}
+          className="w-full max-w-sm px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none dark:bg-gray-900 dark:border-gray-700 dark:text-gray-100"
+        />
+      </div>
 
       {loading ? (
         <div className="bg-white rounded-xl border border-gray-200 p-6 animate-pulse dark:bg-gray-800 dark:border-gray-700">
@@ -126,85 +96,110 @@ export default function PendingRegistrationsPage() {
             ))}
           </div>
         </div>
+      ) : filtered.length === 0 ? (
+        <div className="text-center py-12 text-gray-500 text-lg dark:text-gray-400">
+          {t("empty")}
+        </div>
       ) : (
-        <>
-          <section className="mb-8">
-            <h2 className="text-lg font-semibold text-gray-900 mb-3 dark:text-gray-100">
-              {t("verifiedHeading", { count: data.verified.length })}
-            </h2>
-            {data.verified.length === 0 ? (
-              <p className="text-base text-gray-500 dark:text-gray-400">{t("verifiedEmpty")}</p>
-            ) : (
-              <div className="bg-white rounded-xl border border-gray-200 overflow-hidden dark:bg-gray-800 dark:border-gray-700">
-                <table className="w-full">
-                  <thead className="bg-gray-50 border-b border-gray-200 dark:bg-gray-900 dark:border-gray-700">
-                    <tr>
-                      <th className="text-left px-6 py-3 text-sm font-medium text-gray-500 dark:text-gray-400">
-                        {t("nameLabel")}
-                      </th>
-                      <th className="text-left px-6 py-3 text-sm font-medium text-gray-500 dark:text-gray-400">
-                        {t("emailLabel")}
-                      </th>
-                      <th className="text-left px-6 py-3 text-sm font-medium text-gray-500 dark:text-gray-400">
-                        {t("phoneLabel")}
-                      </th>
-                      <th className="text-left px-6 py-3 text-sm font-medium text-gray-500 dark:text-gray-400">
-                        {t("submittedLabel")}
-                      </th>
-                      <th />
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
-                    {data.verified.map((u) => renderRow(u, true))}
-                  </tbody>
-                </table>
-              </div>
-            )}
-          </section>
-
-          <section>
-            <h2 className="text-lg font-semibold text-gray-900 mb-3 dark:text-gray-100">
-              {t("unverifiedHeading", { count: data.unverified.length })}
-            </h2>
-            {data.unverified.length === 0 ? (
-              <p className="text-base text-gray-500 dark:text-gray-400">{t("unverifiedEmpty")}</p>
-            ) : (
-              <div className="bg-white rounded-xl border border-gray-200 overflow-hidden dark:bg-gray-800 dark:border-gray-700">
-                <table className="w-full">
-                  <thead className="bg-gray-50 border-b border-gray-200 dark:bg-gray-900 dark:border-gray-700">
-                    <tr>
-                      <th className="text-left px-6 py-3 text-sm font-medium text-gray-500 dark:text-gray-400">
-                        {t("nameLabel")}
-                      </th>
-                      <th className="text-left px-6 py-3 text-sm font-medium text-gray-500 dark:text-gray-400">
-                        {t("emailLabel")}
-                      </th>
-                      <th className="text-left px-6 py-3 text-sm font-medium text-gray-500 dark:text-gray-400">
-                        {t("phoneLabel")}
-                      </th>
-                      <th className="text-left px-6 py-3 text-sm font-medium text-gray-500 dark:text-gray-400">
-                        {t("submittedLabel")}
-                      </th>
-                      <th />
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
-                    {data.unverified.map((u) => renderRow(u, false))}
-                  </tbody>
-                </table>
-              </div>
-            )}
-          </section>
-        </>
+        <div className="bg-white rounded-xl border border-gray-200 overflow-hidden dark:bg-gray-800 dark:border-gray-700">
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead className="bg-gray-50 border-b border-gray-200 dark:bg-gray-900 dark:border-gray-700">
+                <tr>
+                  <th className="text-left px-6 py-3 text-sm font-medium text-gray-500 dark:text-gray-400">
+                    {t("nameLabel")}
+                  </th>
+                  <th className="text-left px-6 py-3 text-sm font-medium text-gray-500 dark:text-gray-400">
+                    {t("flatLabel")}
+                  </th>
+                  <th className="text-left px-6 py-3 text-sm font-medium text-gray-500 dark:text-gray-400">
+                    {t("shareLabel")}
+                  </th>
+                  <th className="text-left px-6 py-3 text-sm font-medium text-gray-500 dark:text-gray-400">
+                    {t("emailLabel")}
+                  </th>
+                  <th />
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
+                {filtered.map((s) => (
+                  <tr
+                    key={s.id}
+                    className="hover:bg-gray-50 dark:hover:bg-gray-700/50"
+                  >
+                    <td className="px-6 py-4 text-base text-gray-900 font-medium dark:text-gray-100">
+                      {s.name}
+                    </td>
+                    <td className="px-6 py-4 text-base text-gray-600 dark:text-gray-300">
+                      {s.flatNumber || tCommon("noDash")}
+                    </td>
+                    <td className="px-6 py-4 text-base text-gray-600 dark:text-gray-300">
+                      {s.shareNumerator}/{s.shareDenominator}
+                    </td>
+                    <td className="px-6 py-4 text-base text-gray-600 dark:text-gray-300">
+                      {s.email ?? (
+                        <span className="text-amber-600 dark:text-amber-400">
+                          {t("emailMissing")}
+                        </span>
+                      )}
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="flex gap-2 justify-end flex-wrap">
+                        <button
+                          onClick={() =>
+                            setDialog({ kind: "claim", shell: s, mode: "email" })
+                          }
+                          className="px-3 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors"
+                        >
+                          {s.email ? t("sendInvitation") : t("addEmailAndInvite")}
+                        </button>
+                        <button
+                          onClick={() =>
+                            setDialog({ kind: "claim", shell: s, mode: "qr" })
+                          }
+                          className="px-3 py-2 bg-gray-200 hover:bg-gray-300 text-gray-800 text-sm font-medium rounded-lg transition-colors dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-gray-100"
+                        >
+                          {t("showQr")}
+                        </button>
+                        <button
+                          onClick={() =>
+                            setDialog({ kind: "merge", shell: s })
+                          }
+                          className="px-3 py-2 bg-amber-600 hover:bg-amber-700 text-white text-sm font-medium rounded-lg transition-colors"
+                        >
+                          {t("assignExisting")}
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
       )}
 
-      {selected && (
-        <PendingApprovalModal
-          user={selected}
-          onClose={() => setSelected(null)}
-          onApproved={() => {
-            setSelected(null);
-            fetchPending();
+      {dialog.kind === "claim" && (
+        <ShellClaimDialog
+          shellId={dialog.shell.id}
+          shellName={dialog.shell.name}
+          existingEmail={dialog.shell.email}
+          mode={dialog.mode}
+          locale={locale}
+          onClose={() => {
+            setDialog({ kind: "none" });
+            fetchShells();
+          }}
+        />
+      )}
+
+      {dialog.kind === "merge" && (
+        <ShellMergeDialog
+          shellId={dialog.shell.id}
+          shellName={dialog.shell.name}
+          onClose={() => {
+            setDialog({ kind: "none" });
+            fetchShells();
           }}
         />
       )}

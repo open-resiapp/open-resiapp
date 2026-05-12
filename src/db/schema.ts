@@ -168,6 +168,8 @@ export const entityAuditActionEnum = pgEnum("entity_audit_action", [
   "membership.create",
   "membership.update_role",
   "membership.remove",
+  "user.claim_shell",
+  "user.merge_shell",
 ]);
 
 // ── Tables ─────────────────────────────────────────────
@@ -399,25 +401,40 @@ export const notificationPreferences = pgTable("notification_preferences", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
-export const invitations = pgTable("invitations", {
-  id: uuid("id").defaultRandom().primaryKey(),
-  token: varchar("token", { length: 64 }).notNull().unique(),
-  role: userRoleEnum("role").notNull().default("owner"),
-  entityId: uuid("entity_id").references(() => entities.id, {
-    onDelete: "set null",
-  }),
-  status: varchar("status", { length: 20 }).notNull().default("pending"),
-  expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
-  usedByUserId: uuid("used_by_user_id").references(() => users.id, {
-    onDelete: "set null",
-  }),
-  createdById: uuid("created_by_id")
-    .notNull()
-    .references(() => users.id, { onDelete: "cascade" }),
-  createdAt: timestamp("created_at", { withTimezone: true })
-    .defaultNow()
-    .notNull(),
-});
+export const invitations = pgTable(
+  "invitations",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    token: varchar("token", { length: 64 }).notNull().unique(),
+    role: userRoleEnum("role").notNull().default("owner"),
+    entityId: uuid("entity_id").references(() => entities.id, {
+      onDelete: "set null",
+    }),
+    status: varchar("status", { length: 20 }).notNull().default("pending"),
+    expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
+    usedByUserId: uuid("used_by_user_id").references(() => users.id, {
+      onDelete: "set null",
+    }),
+    createdById: uuid("created_by_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    // BYT-20260512-001: when set, claiming the token promotes this shell
+    // user in place (preserving its memberships) instead of creating a new
+    // user row.
+    targetShellUserId: uuid("target_shell_user_id").references(
+      () => users.id,
+      { onDelete: "cascade" }
+    ),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+  },
+  (table) => ({
+    targetShellIdx: index("invitations_target_shell_idx")
+      .on(table.targetShellUserId)
+      .where(sql`${table.targetShellUserId} IS NOT NULL`),
+  })
+);
 
 export const registrationTokens = pgTable(
   "registration_tokens",

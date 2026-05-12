@@ -7,6 +7,14 @@ export interface ColumnDef {
   key: string;
   label: string; // header shown in template + grid
   required: boolean;
+  /**
+   * Where this field is captured in the wizard:
+   *   "community" → entered once in the Community panel; the seeder splats
+   *                 the same value onto every row before persisting. Not
+   *                 shown in the per-row grid.
+   *   "row"       → per-row data, shown as a column in the grid.
+   */
+  scope: "community" | "row";
   // Excel cell format hint:
   //   "text"   → `@` (forces text, prevents Excel auto-converting 1/96 to a date)
   //   "int"    → general integer
@@ -22,6 +30,7 @@ const COMMON_HEAD: ColumnDef[] = [
     key: "community_name",
     label: "community_name",
     required: true,
+    scope: "community",
     excelFormat: "string",
     comment: "Názov bytového domu (rovnaký na každom riadku).",
   },
@@ -29,6 +38,7 @@ const COMMON_HEAD: ColumnDef[] = [
     key: "community_address",
     label: "community_address",
     required: true,
+    scope: "community",
     excelFormat: "string",
     comment: "Ulica + mesto. Z LV: 'Popis stavby' bez čísla vchodu.",
   },
@@ -36,6 +46,7 @@ const COMMON_HEAD: ColumnDef[] = [
     key: "community_ico",
     label: "community_ico",
     required: false,
+    scope: "community",
     excelFormat: "string",
     comment: "IČO SVB, ak je pridelené (voliteľné).",
   },
@@ -43,6 +54,7 @@ const COMMON_HEAD: ColumnDef[] = [
     key: "country",
     label: "country",
     required: true,
+    scope: "community",
     excelFormat: "enum",
     enumOptions: ["sk", "cz"],
     comment: "Krajina — sk alebo cz.",
@@ -51,6 +63,7 @@ const COMMON_HEAD: ColumnDef[] = [
     key: "voting_method",
     label: "voting_method",
     required: true,
+    scope: "community",
     excelFormat: "enum",
     enumOptions: ["per_share", "per_flat", "per_area"],
     comment: "Spôsob hlasovania.",
@@ -59,6 +72,7 @@ const COMMON_HEAD: ColumnDef[] = [
     key: "supisne_cislo",
     label: "supisne_cislo",
     required: false,
+    scope: "community",
     excelFormat: "string",
     comment: "Súpisné číslo stavby (z LV).",
   },
@@ -68,6 +82,7 @@ const BLOCK_COL: ColumnDef = {
   key: "block_name",
   label: "block_name",
   required: true,
+  scope: "row",
   excelFormat: "string",
   comment: "Názov bloku, napr. 'Blok A'.",
 };
@@ -76,6 +91,7 @@ const ENTRANCE_COL: ColumnDef = {
   key: "entrance_label",
   label: "entrance_label",
   required: true,
+  scope: "row",
   excelFormat: "string",
   comment: "Označenie vchodu, napr. '1' alebo 'Štúrova 12'.",
 };
@@ -85,6 +101,7 @@ const UNIT_AND_OWNER: ColumnDef[] = [
     key: "unit_number",
     label: "unit_number",
     required: true,
+    scope: "row",
     excelFormat: "string",
     comment: "Číslo bytu z LV.",
   },
@@ -92,6 +109,7 @@ const UNIT_AND_OWNER: ColumnDef[] = [
     key: "unit_floor",
     label: "unit_floor",
     required: true,
+    scope: "row",
     excelFormat: "string",
     comment: "Poschodie. 'prízemie' alebo '0', '1', '2', …",
   },
@@ -99,6 +117,7 @@ const UNIT_AND_OWNER: ColumnDef[] = [
     key: "unit_area_m2",
     label: "unit_area_m2",
     required: false,
+    scope: "row",
     excelFormat: "int",
     comment: "Výmera bytu v m². V LV nie je — voliteľné, doplníte neskôr.",
   },
@@ -106,6 +125,7 @@ const UNIT_AND_OWNER: ColumnDef[] = [
     key: "unit_share_numerator",
     label: "unit_share_numerator",
     required: true,
+    scope: "row",
     excelFormat: "text",
     comment: "Čitateľ podielu BYTU na komunite. Z LV: 'Podiel priestoru ... k pozemku' (napr. 1 z '1/96').",
   },
@@ -113,6 +133,7 @@ const UNIT_AND_OWNER: ColumnDef[] = [
     key: "unit_share_denominator",
     label: "unit_share_denominator",
     required: true,
+    scope: "row",
     excelFormat: "text",
     comment: "Menovateľ podielu BYTU na komunite (napr. 96 z '1/96').",
   },
@@ -120,6 +141,7 @@ const UNIT_AND_OWNER: ColumnDef[] = [
     key: "owner_name",
     label: "owner_name",
     required: true,
+    scope: "row",
     excelFormat: "string",
     comment: "Meno a priezvisko vlastníka (z LV).",
   },
@@ -127,6 +149,7 @@ const UNIT_AND_OWNER: ColumnDef[] = [
     key: "owner_address",
     label: "owner_address",
     required: false,
+    scope: "row",
     excelFormat: "string",
     comment: "Trvalý pobyt vlastníka (z LV). Voliteľné.",
   },
@@ -134,6 +157,7 @@ const UNIT_AND_OWNER: ColumnDef[] = [
     key: "owner_email",
     label: "owner_email",
     required: false,
+    scope: "row",
     excelFormat: "string",
     comment: "Email vlastníka. Ak chýba, vytvorí sa pending účet bez prihlásenia.",
   },
@@ -141,6 +165,7 @@ const UNIT_AND_OWNER: ColumnDef[] = [
     key: "owner_phone",
     label: "owner_phone",
     required: false,
+    scope: "row",
     excelFormat: "string",
     comment: "Telefón vlastníka. Voliteľné.",
   },
@@ -148,6 +173,7 @@ const UNIT_AND_OWNER: ColumnDef[] = [
     key: "owner_unit_share_numerator",
     label: "owner_unit_share_numerator",
     required: true,
+    scope: "row",
     excelFormat: "text",
     comment: "Čitateľ podielu vlastníka na BYTE. Z LV 'Spoluvlastnícky podiel' (napr. 1 z '1/2'). Sole owner = 1.",
   },
@@ -155,6 +181,7 @@ const UNIT_AND_OWNER: ColumnDef[] = [
     key: "owner_unit_share_denominator",
     label: "owner_unit_share_denominator",
     required: true,
+    scope: "row",
     excelFormat: "text",
     comment: "Menovateľ podielu vlastníka na BYTE. Sole owner = 1.",
   },
@@ -169,6 +196,16 @@ export function columnsForStructure(s: StructureVariant): ColumnDef[] {
     case "community_block_entrance_unit":
       return [...COMMON_HEAD, BLOCK_COL, ENTRANCE_COL, ...UNIT_AND_OWNER];
   }
+}
+
+/** Columns shown in the per-row grid (community-level fields filtered out). */
+export function rowColumns(s: StructureVariant): ColumnDef[] {
+  return columnsForStructure(s).filter((c) => c.scope === "row");
+}
+
+/** Community-level columns shown in the Community form above the grid. */
+export function communityColumns(s: StructureVariant): ColumnDef[] {
+  return columnsForStructure(s).filter((c) => c.scope === "community");
 }
 
 export function sampleRow(s: StructureVariant): Record<string, string> {

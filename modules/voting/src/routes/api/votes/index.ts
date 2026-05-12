@@ -15,7 +15,7 @@ import type {
   UserRole,
   VoteChoice,
   VotingMethod,
-  VoteWithShare,
+  VoteWithOwnership,
   QuorumType,
   Country,
 } from "@/types";
@@ -56,7 +56,8 @@ export async function GET(request: NextRequest) {
   const quorumType = (voting?.quorumType ?? "simple_all") as QuorumType;
 
   // Vote rows joined with the housing_unit entity + housing_unit_data
-  // for share/area data, and the voter's user record.
+  // for share/area data, the voter's user record, and the voter's
+  // membership on the unit for the owner-of-unit share (BYT-20260511-001).
   type VoteRow = {
     id: string;
     choice: "za" | "proti" | "zdrzal_sa";
@@ -72,6 +73,8 @@ export async function GET(request: NextRequest) {
     shareNumerator: number;
     shareDenominator: number;
     area: number | null;
+    ownerUnitShareNumerator: number | null;
+    ownerUnitShareDenominator: number | null;
   };
   const voteRows: VoteRow[] = await db
     .select({
@@ -89,17 +92,35 @@ export async function GET(request: NextRequest) {
       shareNumerator: housingUnitData.shareNumerator,
       shareDenominator: housingUnitData.shareDenominator,
       area: housingUnitData.area,
+      ownerUnitShareNumerator: memberships.ownerUnitShareNumerator,
+      ownerUnitShareDenominator: memberships.ownerUnitShareDenominator,
     })
     .from(votes)
     .leftJoin(users, eq(votes.ownerId, users.id))
     .innerJoin(housingUnitData, eq(housingUnitData.entityId, votes.entityId))
+    .leftJoin(
+      memberships,
+      and(
+        eq(memberships.entityId, votes.entityId),
+        eq(memberships.userId, votes.ownerId),
+        eq(memberships.status, "active")
+      )
+    )
     .where(eq(votes.votingId, votingId));
 
-  const votesWithShare: VoteWithShare[] = voteRows.map((v) => ({
+  const votesWithOwnership: VoteWithOwnership[] = voteRows.map((v) => ({
+    unitEntityId: v.flatId,
+    userId: v.ownerId,
+    userName: v.ownerName,
     choice: v.choice as VoteChoice,
-    shareNumerator: v.shareNumerator,
-    shareDenominator: v.shareDenominator,
+    unitShareNumerator: v.shareNumerator,
+    unitShareDenominator: v.shareDenominator,
     area: v.area,
+    // If the membership row is gone (legacy paper vote on an archived
+    // ownership, etc.), fall back to whole-unit share so the vote still
+    // counts and the engine treats it as a single-owner case.
+    ownerUnitShareNumerator: v.ownerUnitShareNumerator ?? 1,
+    ownerUnitShareDenominator: v.ownerUnitShareDenominator ?? 1,
   }));
 
   // Total possible weight: sum housing_unit_data over every housing_unit
@@ -152,7 +173,7 @@ export async function GET(request: NextRequest) {
   }
 
   const results = calculateResults(
-    votesWithShare,
+    votesWithOwnership,
     votingMethod,
     quorumType,
     totalPossibleWeight,

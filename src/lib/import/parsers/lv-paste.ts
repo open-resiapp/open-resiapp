@@ -44,30 +44,34 @@ export function parseLvText(text: string): DraftRow[] {
 function parseLvHeader(text: string): LvHeader {
   const header: LvHeader = {};
 
-  // "Súpisné číslo" inside a "Stavby" table — first occurrence of a 4-digit
-  // value labelled "Súpisné číslo" near the top.
-  const supisneMatch = text.match(/Súpisné[^\d]{0,40}(\d{2,6})/);
+  // Súpisné číslo near the top — look in the LV preamble only.
+  const preamble = text.slice(0, 4000);
+  const supisneMatch = preamble.match(/Súpisné[^\d]{0,40}(\d{2,6})/);
   if (supisneMatch) header.supisne = supisneMatch[1];
 
-  // "Popis stavby" line gives the street + entrance numbers, e.g.:
-  //   "blok Báryum, Dostojevského 1,3,5,7,9,11"
-  const popisMatch = text.match(/Popis stavby[\s\S]{0,200}?\n([^\n]+)\n/);
-  if (popisMatch) {
-    // Trim trailing entrance enumeration to keep only "<descriptor> <street>".
-    let line = popisMatch[1].trim();
-    // Strip a trailing comma-separated list of digits at the end.
-    line = line.replace(/\s*[\d,\s]+$/, "");
-    header.communityAddress = line || undefined;
+  // "Popis stavby" content. In the Stavby table, the row contains:
+  //   <Súpisné> <Parcela> <Druh stavby code> <Popis stavby text>
+  // After unpdf flattens, this looks like:
+  //   "... Popis stavby Druh chránenej nehnuteľnosti Umiestnenie stavby 2514 2993/650 9 blok Báryum, Dostojevského 1,3,5,7,9,11 ..."
+  // The Popis content is the substring matching "blok\s+<Name>,\s+<Street>"
+  // followed by a comma-separated digit list.
+  const blokMatch = preamble.match(
+    /blok\s+(\p{Lu}\p{L}+(?:\s+\p{Lu}\p{L}+)?)\s*,\s*(\p{Lu}\p{L}+(?:\s+\p{L}+)*)/u
+  );
+  if (blokMatch) {
+    const blockName = blokMatch[1];
+    const street = blokMatch[2];
+    header.communityAddress = `${street}, blok ${blockName}`;
   }
 
-  const obecMatch = text.match(/Obec\s*:\s*\d+\s+([^\n]+?)\s*Dátum/);
+  const obecMatch = preamble.match(/Obec\s*:?\s*\d+\s+([^\n]+?)(?=\s+(?:Dátum|Katastrálne))/);
   if (obecMatch) header.obec = obecMatch[1].trim();
 
   if (header.communityAddress && header.obec) {
     header.communityAddress = `${header.communityAddress}, ${header.obec}`;
   }
 
-  const parcelaMatch = text.match(/(\d+\/\d+)\s+\d+\s+Zastavaná/);
+  const parcelaMatch = preamble.match(/(\d+\/\d+)\s+\d+\s+Zastavaná/);
   if (parcelaMatch) header.parcela = parcelaMatch[1];
 
   return header;
@@ -85,34 +89,35 @@ function splitUnitBlocks(text: string): string[] {
 // ── Single unit block ────────────────────────────────────
 
 function parseUnitBlock(block: string, header: LvHeader): DraftRow[] {
-  const lines = block.split("\n").map((l) => l.trim());
+  // Field extraction is done via free-form regex search on the whole block
+  // rather than the previous line-anchored approach — pdf-extracted text
+  // collapses each label and its value onto the same line ("Vchod (číslo) 1
+  // Poschodie prízemie Číslo bytu 1 …"), defeating the `lineAfter` helper.
+  // The regex `\s*\n?\s*` between label and value matches either layout
+  // (paste-from-text with newlines or pdf-extract with spaces).
+  const vchod = block.match(/Vchod\s*\(číslo\)\s*\n?\s*(\S+)/i)?.[1];
+  const poschodieRaw = block.match(/Poschodie\s*\n?\s*(\S+)/i)?.[1];
+  const cisloBytu = block.match(/Číslo bytu\s*\n?\s*(\d+\w?)/i)?.[1];
 
-  const vchod = lineAfter(lines, /^Vchod\s*\(číslo\)$/);
-  const poschodieRaw = lineAfter(lines, /^Poschodie$/);
-  const cisloBytu = lineAfter(lines, /^Číslo bytu$/);
-  const supisne = lineAfter(lines, /^Súpisné číslo$/) ?? header.supisne;
+  // Unit's share of community: the fraction after the "Podiel priestoru …
+  // spoluvlastnícky podiel k pozemku" header.
+  const unitShareMatch = block.match(
+    /spoluvlastnícky podiel k pozemku\s*\n?\s*(\d+)\s*\/\s*(\d+)/i
+  );
+  const unitShareNum = unitShareMatch ? Number(unitShareMatch[1]) : undefined;
+  const unitShareDen = unitShareMatch ? Number(unitShareMatch[2]) : undefined;
 
-  // Unit's share of community appears as the first standalone fraction after
-  // the multi-line "Podiel priestoru ... spoluvlastnícky podiel k pozemku".
-  let unitShareNum: number | undefined;
-  let unitShareDen: number | undefined;
-  const podielIdx = lines.findIndex((l) => /^Podiel priestoru/.test(l));
-  if (podielIdx >= 0) {
-    for (let i = podielIdx + 1; i < Math.min(lines.length, podielIdx + 10); i++) {
-      const m = lines[i].match(/^(\d+)\s*\/\s*(\d+)$/);
-      if (m) {
-        unitShareNum = Number(m[1]);
-        unitShareDen = Number(m[2]);
-        break;
-      }
-    }
-  }
+  // Súpisné číslo from the unit row; falls back to the LV header value.
+  const supisneMatch = block.match(/Súpisné číslo\s*\n?\s*(\d{2,6})/i);
+  const supisne = supisneMatch?.[1] ?? header.supisne;
 
-  // Owner section: between the "Spoluvlastnícky\npodiel" header and the
-  // closing "Správca - Neevidovaní" sentinel.
+  // Owner section: between the "Spoluvlastnícky podiel" header and the
+  // closing "Správca - Neevidovaní" sentinel. The `\s+` tolerates either
+  // newline-separated (text paste from a PDF viewer) or space-separated
+  // (unpdf's mergePages output) layouts.
   const ownersText = sliceBetween(
     block,
-    /Spoluvlastnícky\s*\n\s*podiel\s*\n/,
+    /Spoluvlastnícky\s+podiel\s+/,
     /Správca\s*-/
   );
 
@@ -156,101 +161,185 @@ interface RawOwner {
 }
 
 function parseOwnerLines(text: string): RawOwner[] {
-  // Coalesce wrapped owner blocks: a logical owner record starts with
-  //   `<poradove>\s+<name+address+dob+share>` possibly spread across many
-  //   physical lines, until a share `\d+/\d+` is seen at the END of a line.
-  const physicalLines = text
-    .split("\n")
-    .map((l) => l.trim())
-    .filter((l) => l !== "");
-  const owners: RawOwner[] = [];
-  let buf: string[] = [];
-  for (const line of physicalLines) {
-    // Stop accumulating into the current owner when we hit a non-owner section.
-    if (
-      /^Titul nadobudnutia/i.test(line) ||
-      /^Iné údaje/i.test(line) ||
-      /^Poznámky/i.test(line)
-    ) {
-      // Reset — anything after "Titul nadobudnutia" until the next owner
-      // start (a fresh `^\d+\s+\D` line) is contract metadata.
-      buf = [];
+  // Two-pass algorithm hardened against pdftotext's tendency to flatten
+  // owner records and their contract metadata onto a single line.
+  //
+  //  PASS 1 — strip contract metadata. Inside every physical line, cut
+  //  at the first occurrence of a boundary marker
+  //  (Titul nadobudnutia | Iné údaje | Poznámky | Správca | Iná oprávnená).
+  //  This removes contract references like "R 418/13" before share
+  //  detection — the previous regex was lazy-anchored to end-of-line and
+  //  happily grabbed those as the owner's share.
+  //
+  //  PASS 2 — split the cleaned text into BLOCKS separated by the same
+  //  boundary markers (when those markers occupy whole lines). A block
+  //  is an owner record IFF it contains a "Dátum narodenia:" marker.
+  //  This rules out page footers, contract leftovers, and noise that
+  //  happen to start with a digit.
+  //
+  //  Per block: the share is the LAST `\d+/\d+` token at end of block.
+  //  The leading poradové č. is stripped from the name blob.
+  // Boundary phrases with their known fixed-value form. We replace each
+  // *whole phrase* (keyword + canonical value) with a sentinel, preserving
+  // any text that follows on the same physical line — this is critical
+  // because pdf-extracted text frequently glues a boundary like
+  // "Poznámky: Bez zápisu" to the start of the NEXT owner record on the
+  // same line (e.g. "Poznámky: Bez zápisu 107 Štolc Ondrej r. Štolc…").
+  // For "Titul nadobudnutia:" we cannot enumerate the value (contract
+  // identifiers vary), but everything from "Titul…" up to the next "Iné
+  // údaje:" is contract metadata that we want to discard — the simplest
+  // safe rule is: replace just the keyword, let the block-DOB filter drop
+  // the chunk because it won't contain a DOB.
+  const PHRASE_BOUNDARIES: Array<{ re: RegExp; replacement: string }> = [
+    { re: /Iné údaje:\s*Bez zápisu/gi, replacement: "\n__BOUNDARY__\n" },
+    { re: /Poznámky:\s*Bez zápisu/gi, replacement: "\n__BOUNDARY__\n" },
+    {
+      re: /Správca\s*-\s*Neevidovaní/gi,
+      replacement: "\n__BOUNDARY__\n",
+    },
+    {
+      re: /Iná oprávnená osoba\s*-\s*Neevidovaní/gi,
+      replacement: "\n__BOUNDARY__\n",
+    },
+    { re: /Titul nadobudnutia:/gi, replacement: "\n__BOUNDARY__\nTitul:" },
+  ];
+  let pre = text;
+  for (const { re, replacement } of PHRASE_BOUNDARIES) {
+    pre = pre.replace(re, replacement);
+  }
+  // Also drop "X z N" page-footer fragments that occasionally leak in
+  // between owner records — these are page numbers from the original PDF.
+  pre = pre.replace(/\b\d{1,3}\s*z\s*\d{1,3}\b/g, " ");
+  const lines = pre.split("\n").map((l) => l.trim());
+
+  // Pass 2 — group lines into blocks split by boundary sentinels.
+  const blocks: string[][] = [];
+  let current: string[] = [];
+  for (const line of lines) {
+    if (line === "__BOUNDARY__") {
+      if (current.length > 0) {
+        blocks.push(current);
+        current = [];
+      }
       continue;
     }
-    buf.push(line);
-    const joined = buf.join(" ");
-    const match = joined.match(
-      /^(\d{1,3})\s+(.+?)\s+(\d+)\s*\/\s*(\d+)\s*$/
-    );
-    if (match) {
-      const owner = extractOwner(match[2], Number(match[3]), Number(match[4]));
-      if (owner) owners.push(...owner);
-      buf = [];
-    }
+    if (line === "") continue;
+    current.push(line);
   }
+  if (current.length > 0) blocks.push(current);
+
+  // For each block, treat as an owner record iff it contains a DOB marker.
+  const owners: RawOwner[] = [];
+  for (const blockLines of blocks) {
+    const blockText = blockLines.join(" ").trim();
+    if (!/Dátum narodenia:/i.test(blockText)) continue;
+
+    // Share = LAST `\d+/\d+` token, anchored to end. If the block doesn't
+    // end with a share, skip — something unexpected.
+    const shareMatch = blockText.match(/(\d+)\s*\/\s*(\d+)\s*$/);
+    if (!shareMatch) continue;
+    const shareNum = Number(shareMatch[1]);
+    const shareDen = Number(shareMatch[2]);
+    if (shareNum <= 0 || shareDen <= 0) continue;
+    // Sanity guard: real owner shares have small denominators (≤ 1000).
+    // Cadastre files we've seen use denominators up to ~192 (1/192 for
+    // BSM-of-1/96). Reject anything huge that's almost certainly a
+    // contract identifier leaked through.
+    if (shareDen > 1000) continue;
+
+    let nameBlob = blockText.slice(0, blockText.length - shareMatch[0].length).trim();
+    // Strip leading poradové č. (with or without trailing dot).
+    const m = nameBlob.match(/^\d{1,3}\s+(.+)$/);
+    if (m) nameBlob = m[1];
+
+    const owner = extractOwner(nameBlob, shareNum, shareDen);
+    if (owner) owners.push(...owner);
+  }
+
   return owners;
 }
 
 /**
- * Convert one matched owner blob into one or two RawOwner records.
- * BSM rows (containing "BSM" and two capitalised tokens joined by " a ")
- * yield two owners each at half the listed share.
+ * Convert one owner blob into one or two RawOwner records. BSM (spousal
+ * co-ownership) is detected on the FULL pre-DOB string and split BEFORE
+ * the name/address heuristic — otherwise the title token "Ing." followed
+ * by " a Alena" would be absorbed into the address (real bug observed
+ * on byt 76 of LV č. 3182).
  */
 function extractOwner(
   blob: string,
   shareNum: number,
   shareDen: number
 ): RawOwner[] | null {
-  // Split name+address from DOB / other delimiters.
-  // The reliable delimiter is ", Dátum narodenia:" — content before is
-  // name + address; content after is DOB(s) + miscellaneous.
-  const splitIdx = blob.indexOf(", Dátum narodenia:");
-  const before = (splitIdx >= 0 ? blob.slice(0, splitIdx) : blob).trim();
-  // Heuristic: name + first-address are separated by the FIRST comma that
-  // precedes a number (street number, PSČ, etc.). Names with titles and
-  // maiden names contain commas, e.g. "Mgr. r. Truchanová, Popradská 6".
-  // Safer: address = everything from the first ", " followed by a token
-  // that looks like a street (Capitalised word + number, or just digits).
-  const nameAddressSplit = before.match(
-    /^(.+?),\s+([A-ZČĎŠŽÁÄÍÉÚÝÔŇŠŤŠ][^,]*?(?:\s+\d|\s+č\.|\s+PSČ).*|.+?\d.*)$/u
-  );
-  let name = before;
-  let address: string | undefined;
-  if (nameAddressSplit) {
-    name = nameAddressSplit[1].trim();
-    address = nameAddressSplit[2].trim();
-    // Strip a trailing ", SR" if address ends with it.
-    address = address.replace(/,\s*SR$/i, "").trim();
+  // BSM detection must test the FULL blob — the marker (", BSM" or trailing
+  // BSM) sits AFTER the DOB section in the LV format
+  // ("…, SR, Dátum narodenia: 10.11.1949, Dátum narodenia: 24.02.1958, BSM").
+  // The earlier version tested `cleaned` (DOB stripped) and missed every
+  // BSM case.
+  const hasBsmMarker =
+    /(?:^|[,\s])BSM(?:$|[,\s])/.test(blob);
+
+  // Strip the DOB tail. Everything before ", Dátum narodenia:" is name+address.
+  const dobIdx = blob.indexOf(", Dátum narodenia:");
+  let cleaned = (dobIdx >= 0 ? blob.slice(0, dobIdx) : blob).trim();
+
+  // Country marker at the end ("…, SR") — never part of the address.
+  cleaned = cleaned.replace(/,\s*SR\s*$/i, "").trim();
+
+  // BSM split: detect " a " followed by an uppercase token. Use the LAST
+  // such occurrence, since title commas can introduce false " a " matches
+  // earlier (e.g. "Mgr. r. Truchanová" — no " a " there but be defensive).
+  const bsmSplit = hasBsmMarker ? lastBsmSplit(cleaned) : null;
+  if (bsmSplit) {
+    const leftParts = splitNameAddress(bsmSplit.left);
+    const rightParts = splitNameAddress(bsmSplit.right);
+    // BSM = shared address. Prefer the right side (it usually carries the
+    // address fragment after the joint name).
+    const shared = rightParts.address ?? leftParts.address;
+    return [
+      { name: leftParts.name, address: shared, shareNum, shareDen: shareDen * 2 },
+      { name: rightParts.name, address: shared, shareNum, shareDen: shareDen * 2 },
+    ];
   }
 
-  // BSM detection: blob contains ", BSM" AND name has " a " between two
-  // capitalised tokens.
-  const isBsm = /(?:^|[,\s])BSM(?:\s|$|,)/.test(blob);
-  const hasTwoNames = /\b[A-ZČĎŠŽÁÄÍÉÚÝÔŇŠŤŠ][\p{L}\-]+\s+[a-záäčďéíĺľňóôŕšťúýž]+\s+[A-ZČĎŠŽÁÄÍÉÚÝÔŇŠŤŠ][\p{L}\-]+/u.test(name);
-  if (isBsm && hasTwoNames) {
-    const split = splitBsmName(name);
-    if (split) {
-      // Halve the share for BSM split.
-      return [
-        { name: split[0], address, shareNum, shareDen: shareDen * 2 },
-        { name: split[1], address, shareNum, shareDen: shareDen * 2 },
-      ];
-    }
-  }
-
-  return [{ name, address, shareNum, shareDen }];
+  const parts = splitNameAddress(cleaned);
+  return [{ name: parts.name, address: parts.address, shareNum, shareDen }];
 }
 
-function splitBsmName(name: string): [string, string] | null {
-  // Format: "<Last1 First1 [r. Maiden1] [Titles]> a <Last2 First2 [r. Maiden2] [Titles]>"
-  // Try splitting on " a " preceded by a token that ends a name; reject splits
-  // that fall inside "r. Maiden, … a …" (rare).
-  const idx = name.search(/\s+a\s+[A-ZČĎŠŽÁÄÍÉÚÝÔŇŠŤŠ]/u);
-  if (idx < 0) return null;
-  const left = name.slice(0, idx).trim();
-  const right = name.slice(idx + 3).trim();
+function lastBsmSplit(
+  s: string
+): { left: string; right: string } | null {
+  // Find the LAST " a <Uppercase>..." position so titles like ", Ing." that
+  // precede the conjunction stay with the first spouse.
+  const re = /\s+a\s+\p{Lu}/gu;
+  let lastIdx = -1;
+  let m: RegExpExecArray | null;
+  while ((m = re.exec(s)) !== null) {
+    lastIdx = m.index;
+  }
+  if (lastIdx < 0) return null;
+  const left = s.slice(0, lastIdx).trim().replace(/,\s*$/, "").trim();
+  const right = s.slice(lastIdx + 3).trim(); // 3 = length of " a "
   if (!left || !right) return null;
-  return [left, right];
+  return { left, right };
+}
+
+function splitNameAddress(s: string): { name: string; address?: string } {
+  // Address detection: the first comma whose suffix looks like a street.
+  // A street suffix typically contains a digit (house number), a postal
+  // code, or starts with "PSČ".
+  for (let i = 0; i < s.length; i++) {
+    if (s[i] !== ",") continue;
+    const after = s.slice(i + 1).trim();
+    if (!after) continue;
+    if (/\d/.test(after) || /^PSČ/i.test(after) || /^\d{3}\s\d{2}/.test(after)) {
+      return {
+        name: s.slice(0, i).trim(),
+        address: after.replace(/,\s*SR\s*$/i, "").trim(),
+      };
+    }
+  }
+  return { name: s.trim() };
 }
 
 // ── Helpers ──────────────────────────────────────────────

@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { asc, eq } from "drizzle-orm";
+import { and, asc, eq, isNotNull } from "drizzle-orm";
 import { auth } from "@/lib/auth";
 import { db } from "@/db";
 import { users } from "@/db/schema";
@@ -18,6 +18,9 @@ export async function GET() {
     return NextResponse.json({ error: "Nemáte oprávnenie" }, { status: 403 });
   }
 
+  // Filter out shell users (passwordHash IS NULL). Shells are handled
+  // by /api/admin/shell-users + the dedicated pending shell-users page
+  // (BYT-20260512-001). Only bulk-QR self-registrants appear here.
   const rows = await db
     .select({
       id: users.id,
@@ -28,7 +31,7 @@ export async function GET() {
       createdAt: users.createdAt,
     })
     .from(users)
-    .where(eq(users.status, "pending"))
+    .where(and(eq(users.status, "pending"), isNotNull(users.passwordHash)))
     .orderBy(asc(users.createdAt));
 
   const verified = rows.filter((r) => r.emailVerifiedAt !== null);

@@ -1,12 +1,12 @@
 ---
 spec_id: BYT-20260508-003
 title: "Easy Import bytov a vlastníkov"
-status: in_progress
+status: implemented
 created: 2026-05-08
-updated: 2026-05-11
+updated: 2026-05-12
 author: byt-app
 owner: byt-app
-last_verified: 2026-05-11
+last_verified: 2026-05-12
 project_type: other
 depends_on: []
 related_handoffs: []

@@ -1,12 +1,14 @@
 "use client";
 
 import { useSession } from "next-auth/react";
-import { useTranslations, useFormatter } from "next-intl";
+import { useLocale, useTranslations, useFormatter } from "next-intl";
 import { useEffect, useState, useCallback } from "react";
 import { useParams } from "next/navigation";
 import { Link, useRouter } from "@/i18n/navigation";
 import { hasPermission } from "@/lib/permissions";
 import type { UserRole } from "@/types";
+import ShellClaimDialog from "@/components/owners/ShellClaimDialog";
+import ShellMergeDialog from "@/components/owners/ShellMergeDialog";
 
 interface FlatInfo {
   flatId: string;
@@ -19,10 +21,11 @@ interface FlatInfo {
 interface UserDetail {
   id: string;
   name: string;
-  email: string;
+  email: string | null;
   phone: string | null;
   role: UserRole;
   isActive: boolean;
+  isShell: boolean;
   flatId: string | null;
   flats: FlatInfo[];
   flatNumber: string | null;
@@ -46,13 +49,21 @@ const roleKeys: Record<UserRole, string> = {
   caretaker: "roleCaretaker",
 };
 
+type ShellDialog =
+  | { kind: "none" }
+  | { kind: "claim"; mode: "email" | "qr" }
+  | { kind: "merge" };
+
 export default function UserDetailPage() {
   const { data: session } = useSession();
   const t = useTranslations("Owners");
+  const tShell = useTranslations("Owners.pending");
   const tCommon = useTranslations("Common");
   const format = useFormatter();
+  const locale = useLocale();
   const params = useParams();
   const id = params.id as string;
+  const [shellDialog, setShellDialog] = useState<ShellDialog>({ kind: "none" });
 
   const [user, setUser] = useState<UserDetail | null>(null);
   const [loading, setLoading] = useState(true);
@@ -107,7 +118,7 @@ export default function UserDetailPage() {
   function startEditing() {
     if (!user) return;
     setEditName(user.name);
-    setEditEmail(user.email);
+    setEditEmail(user.email ?? "");
     setEditPhone(user.phone || "");
     setEditRole(user.role);
     setEditFlatIds(user.flats?.map((f) => f.flatId) || []);
@@ -248,6 +259,39 @@ export default function UserDetailPage() {
         &larr; {tCommon("backToList")}
       </Link>
 
+      {user.isShell && (
+        <div className="bg-amber-50 border border-amber-300 rounded-xl p-5 mb-4 dark:bg-amber-900/30 dark:border-amber-700">
+          <p className="text-base font-medium text-amber-900 dark:text-amber-100 mb-1">
+            {tShell("shellBannerTitle")}
+          </p>
+          <p className="text-sm text-amber-800 dark:text-amber-200 mb-3">
+            {tShell("shellBannerHint")}
+          </p>
+          <div className="flex gap-2 flex-wrap">
+            <button
+              onClick={() => setShellDialog({ kind: "claim", mode: "email" })}
+              className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors"
+            >
+              {user.email
+                ? tShell("sendInvitation")
+                : tShell("addEmailAndInvite")}
+            </button>
+            <button
+              onClick={() => setShellDialog({ kind: "claim", mode: "qr" })}
+              className="px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-800 text-sm font-medium rounded-lg transition-colors dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-gray-100"
+            >
+              {tShell("showQr")}
+            </button>
+            <button
+              onClick={() => setShellDialog({ kind: "merge" })}
+              className="px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white text-sm font-medium rounded-lg transition-colors"
+            >
+              {tShell("assignExisting")}
+            </button>
+          </div>
+        </div>
+      )}
+
       <div className="bg-white rounded-xl border border-gray-200 p-6 mb-6 dark:bg-gray-800 dark:border-gray-700">
         <div className="flex items-start justify-between gap-4 mb-6">
           <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">{user.name}</h1>
@@ -269,7 +313,7 @@ export default function UserDetailPage() {
             <dl className="space-y-4">
               <div>
                 <dt className="text-sm font-medium text-gray-500 dark:text-gray-400">{t("emailLabel")}</dt>
-                <dd className="text-base text-gray-900 dark:text-gray-100">{user.email}</dd>
+                <dd className="text-base text-gray-900 dark:text-gray-100">{user.email || tCommon("noDash")}</dd>
               </div>
               <div>
                 <dt className="text-sm font-medium text-gray-500 dark:text-gray-400">{t("phoneLabel")}</dt>
@@ -431,6 +475,31 @@ export default function UserDetailPage() {
           </form>
         )}
       </div>
+
+      {shellDialog.kind === "claim" && (
+        <ShellClaimDialog
+          shellId={user.id}
+          shellName={user.name}
+          existingEmail={user.email}
+          mode={shellDialog.mode}
+          locale={locale}
+          onClose={() => {
+            setShellDialog({ kind: "none" });
+            fetchUser();
+          }}
+        />
+      )}
+
+      {shellDialog.kind === "merge" && (
+        <ShellMergeDialog
+          shellId={user.id}
+          shellName={user.name}
+          onClose={() => {
+            setShellDialog({ kind: "none" });
+            fetchUser();
+          }}
+        />
+      )}
 
       {showDeleteModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">

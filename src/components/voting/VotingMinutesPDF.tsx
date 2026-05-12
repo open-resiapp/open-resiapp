@@ -146,6 +146,33 @@ const styles = StyleSheet.create({
   mandateText: {
     fontSize: 9,
   },
+  unitBreakdownBlock: {
+    marginBottom: 6,
+    padding: 6,
+    backgroundColor: "#f9fafb",
+    borderRadius: 2,
+    borderLeftWidth: 2,
+    borderLeftColor: "#9ca3af",
+  },
+  unitBreakdownHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginBottom: 3,
+    fontSize: 10,
+    fontWeight: 700,
+  },
+  unitBreakdownOwner: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    fontSize: 9,
+    paddingVertical: 1,
+  },
+  unitBreakdownRationale: {
+    fontSize: 8,
+    fontStyle: "italic",
+    color: "#555",
+    marginTop: 3,
+  },
   legalNotice: {
     marginTop: 16,
     padding: 10,
@@ -256,7 +283,32 @@ interface VotingMinutesPDFProps {
   qrDataUrl: string | null;
   generatedAt: string;
   entranceName?: string | null;
+  country?: "sk" | "cz";
+  /** unitEntityId → flat number, used to render multi-owner breakdown. */
+  flatNumbersByUnitId?: Record<string, string>;
 }
+
+const choiceLabelsResolution: Record<string, string> = {
+  za: "ZA",
+  proti: "PROTI",
+  zdrzal_sa: "ZDRŽAL SA",
+};
+
+const rationaleLabels: Record<string, string> = {
+  single_owner: "Jediný vlastník",
+  unanimous: "Jednomyseľný hlas všetkých spoluvlastníkov",
+  majority_share: "Väčšina spoluvlastníckych podielov",
+  tie_abstain: "Rovnosť podielov — byt sa zdržal podľa §14 ods. 4 zák. 182/1993 Z.z.",
+  no_quorum_within_unit: "Bez vyjadrenia spoluvlastníkov",
+};
+
+const rationaleLabelsCZ: Record<string, string> = {
+  single_owner: "Jediný vlastník",
+  unanimous: "Jednomyslný hlas všech spoluvlastníků",
+  majority_share: "Většina spoluvlastnických podílů",
+  tie_abstain: "Rovnost podílů — jednotka se zdržela podle §1187 zák. č. 89/2012 Sb.",
+  no_quorum_within_unit: "Žádný spoluvlastník nehlasoval",
+};
 
 function formatDate(iso: string): string {
   const d = new Date(iso);
@@ -288,7 +340,12 @@ export default function VotingMinutesPDF({
   qrDataUrl,
   generatedAt,
   entranceName,
+  country = "sk",
+  flatNumbersByUnitId = {},
 }: VotingMinutesPDFProps) {
+  const multiOwnerBreakdowns =
+    results.unitBreakdowns?.filter((u) => u.hasMultipleOwners) ?? [];
+  const rationaleSet = country === "cz" ? rationaleLabelsCZ : rationaleLabels;
   return (
     <Document>
       <Page size="A4" style={styles.page}>
@@ -410,6 +467,46 @@ export default function VotingMinutesPDF({
             </View>
           ))}
         </View>
+
+        {/* Multi-owner breakdown */}
+        {multiOwnerBreakdowns.length > 0 && (
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>
+              Byty s viacerými spoluvlastníkmi
+            </Text>
+            {multiOwnerBreakdowns.map((u) => {
+              const flatNumber = flatNumbersByUnitId[u.unitEntityId];
+              return (
+                <View
+                  key={u.unitEntityId}
+                  style={styles.unitBreakdownBlock}
+                  wrap={false}
+                >
+                  <View style={styles.unitBreakdownHeader}>
+                    <Text>
+                      Byt {flatNumber ?? u.unitEntityId.slice(0, 8)}
+                    </Text>
+                    <Text>
+                      Výsledok bytu: {choiceLabelsResolution[u.resolved]}
+                    </Text>
+                  </View>
+                  {u.breakdown.map((b, i) => (
+                    <View key={i} style={styles.unitBreakdownOwner}>
+                      <Text>
+                        {b.userName ?? "Spoluvlastník"} (podiel{" "}
+                        {b.ownerShareNumerator}/{b.ownerShareDenominator})
+                      </Text>
+                      <Text>{choiceLabelsResolution[b.choice]}</Text>
+                    </View>
+                  ))}
+                  <Text style={styles.unitBreakdownRationale}>
+                    {rationaleSet[u.rationale]}
+                  </Text>
+                </View>
+              );
+            })}
+          </View>
+        )}
 
         {/* Mandates */}
         {mandateRows.length > 0 && (

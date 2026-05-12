@@ -6,6 +6,11 @@ import type { StructureVariant } from "../types";
 /**
  * Build an XLSX template as a `Uint8Array` ready for `Response`.
  *
+ * If `dataRows` is omitted, exports a one-row sample template. If provided,
+ * exports those rows as the dataset — used by the wizard's "Download as
+ * XLSX" affordance so the admin can take their pasted-and-parsed LV into
+ * Excel for review/edit and bring it back via Upload.
+ *
  * Trade-off note: the open-source `xlsx` build does not write data-validation
  * dropdowns or per-cell comments via its high-level API. We still set:
  *   - column widths
@@ -15,13 +20,28 @@ import type { StructureVariant } from "../types";
  * if customers ask. The text-format hint already covers the worst Excel
  * footgun (date auto-conversion of fractions).
  */
-export function generateXlsxTemplate(structure: StructureVariant): Uint8Array {
+export function generateXlsxTemplate(
+  structure: StructureVariant,
+  dataRows?: Array<Record<string, string | number | undefined>>
+): Uint8Array {
   const cols = columnsForStructure(structure);
   const headers = cols.map((c) => c.label);
-  const sample = sampleRow(structure);
-  const sampleArr = cols.map((c) => sample[c.key] ?? "");
 
-  const aoa: (string | number)[][] = [headers, sampleArr];
+  const aoa: (string | number)[][] = [headers];
+  if (dataRows && dataRows.length > 0) {
+    for (const r of dataRows) {
+      aoa.push(
+        cols.map((c) => {
+          const v = r[c.key];
+          if (v === undefined || v === null) return "";
+          return typeof v === "number" ? v : String(v);
+        })
+      );
+    }
+  } else {
+    const sample = sampleRow(structure);
+    aoa.push(cols.map((c) => sample[c.key] ?? ""));
+  }
   const ws = XLSX.utils.aoa_to_sheet(aoa);
 
   // Freeze header row.

@@ -101,6 +101,12 @@ export default function VlastniciPage() {
         <div className="flex gap-3">
           <Link
             href="/owners/pending"
+            className="inline-flex items-center gap-2 px-5 py-3 bg-blue-700 hover:bg-blue-800 text-white text-base font-medium rounded-lg transition-colors"
+          >
+            {t("pendingShellUsers")}
+          </Link>
+          <Link
+            href="/owners/pending-registrations"
             className="inline-flex items-center gap-2 px-5 py-3 bg-amber-600 hover:bg-amber-700 text-white text-base font-medium rounded-lg transition-colors"
           >
             {t("pendingRegistrations")}
