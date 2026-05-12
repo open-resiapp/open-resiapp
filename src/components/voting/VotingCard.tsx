@@ -44,7 +44,7 @@ export default function VotingCard({
   return (
     <Link
       href={`/voting/${id}`}
-      className="block bg-white rounded-xl border border-gray-200 p-6 hover:shadow-md transition-shadow dark:bg-gray-800 dark:border-gray-700"
+      className="block bg-white rounded-2xl p-5 sm:p-6 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all dark:bg-gray-800 dark:shadow-black/40"
     >
       <div className="flex items-start justify-between gap-4 mb-3">
         <div>

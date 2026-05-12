@@ -127,7 +127,7 @@ export default function EntrancesTab({ canEdit }: EntrancesTabProps) {
       )}
 
       {showForm && canEdit && (
-        <div className="bg-white rounded-xl border border-gray-200 p-6 mb-4 dark:bg-gray-800 dark:border-gray-700">
+        <div className="bg-white rounded-2xl shadow-sm p-6 mb-4 dark:bg-gray-800 dark:shadow-black/40">
           <h3 className="text-base font-bold text-gray-900 mb-4 dark:text-gray-100">
             {editingId ? t("editEntrance") : t("addEntrance")}
           </h3>
@@ -176,7 +176,7 @@ export default function EntrancesTab({ canEdit }: EntrancesTabProps) {
           {entrances.map((entrance) => (
             <div
               key={entrance.id}
-              className="bg-white rounded-xl border border-gray-200 p-4 flex items-center justify-between dark:bg-gray-800 dark:border-gray-700"
+              className="bg-white rounded-2xl shadow-sm p-4 flex items-center justify-between dark:bg-gray-800 dark:shadow-black/40"
             >
               <div>
                 <p className="text-base font-medium text-gray-900 dark:text-gray-100">{entrance.name}</p>

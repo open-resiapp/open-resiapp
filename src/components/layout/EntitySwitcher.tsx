@@ -71,7 +71,7 @@ export default function EntitySwitcher() {
         value={current ?? ""}
         onChange={handleChange}
         disabled={isPending}
-        className="text-sm border border-gray-300 rounded px-2 py-1 bg-white text-gray-900 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-100"
+        className="text-sm border border-gray-300 rounded px-2 py-1 bg-white text-gray-900 dark:bg-gray-800 dark:shadow-black/40 dark:text-gray-100"
         aria-label="Active entity"
       >
         {roots.map((r) => (

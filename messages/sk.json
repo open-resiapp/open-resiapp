@@ -717,7 +717,9 @@
     "roleVoteCounter": "Zapisovateľ",
     "roleCaretaker": "Domovník",
     "notifications": "Notifikácie",
-    "appearance": "Vzhľad"
+    "appearance": "Vzhľad",
+    "theme": "Téma",
+    "language": "Jazyk"
   },
   "Notifications": {
     "pushNotifications": "Push notifikácie",

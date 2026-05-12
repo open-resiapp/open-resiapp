@@ -2,6 +2,62 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
+/* ─────────────────────────────────────────────────────────────────
+   MONO PALETTE — single source of truth.
+   Tailwind's gray/blue/green/red shades are remapped to mono tokens
+   so existing utility classes (bg-blue-600, border-gray-200, etc.)
+   immediately pick up the new palette without touching components.
+   ───────────────────────────────────────────────────────────────── */
+@theme {
+  /* GRAY — neutrals */
+  --color-gray-50:  #fafafa;
+  --color-gray-100: #f5f5f5;
+  --color-gray-200: #e5e5e5;
+  --color-gray-300: #d6d6d6;
+  --color-gray-400: #a8a8a8;
+  --color-gray-500: #7a7a7a;
+  --color-gray-600: #525252;
+  --color-gray-700: #2a2a2a;
+  --color-gray-800: #141414;
+  --color-gray-900: #0a0a0a;
+
+  /* BLUE → PRIMARY (ink black) */
+  --color-blue-50:  #f5f5f5;
+  --color-blue-100: #ebebeb;
+  --color-blue-200: #d6d6d6;
+  --color-blue-300: #9a9a9a;
+  --color-blue-400: #4a4a4a;
+  --color-blue-500: #1a1a1a;
+  --color-blue-600: #0a0a0a;
+  --color-blue-700: #000000;
+  --color-blue-800: #1a1a1a;
+  --color-blue-900: #0a0a0a;
+
+  /* GREEN → APPROVE (lifted forest) */
+  --color-green-50:  #ecf2ee;
+  --color-green-100: #dde7e0;
+  --color-green-200: #c0d4c8;
+  --color-green-300: #9ec0ad;
+  --color-green-400: #6a9c84;
+  --color-green-500: #4f8568;
+  --color-green-600: #3f7257;
+  --color-green-700: #2f5d48;
+  --color-green-800: #224938;
+  --color-green-900: #1c3a2d;
+
+  /* RED → REJECT (lifted brick) */
+  --color-red-50:  #f5e8e8;
+  --color-red-100: #eedcdc;
+  --color-red-200: #e0c2c2;
+  --color-red-300: #c79898;
+  --color-red-400: #b86060;
+  --color-red-500: #b03838;
+  --color-red-600: #a13838;
+  --color-red-700: #823030;
+  --color-red-800: #5a2424;
+  --color-red-900: #401818;
+}
+
 /* Paint the canvas (html) itself, not just <body>. Without this, the browser
    shows its default white background during route transitions before body
    paints, which looks like a flash of white between dark pages. */
@@ -11,7 +67,7 @@ html {
 }
 
 html.dark {
-  background-color: #111827; /* gray-900 */
+  background-color: #0a0a0a;
   color-scheme: dark;
 }
 

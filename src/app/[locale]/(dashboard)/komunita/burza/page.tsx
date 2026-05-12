@@ -155,7 +155,7 @@ export default function MarketplacePage() {
       {loading ? (
         <p className="text-gray-500 dark:text-gray-400">{tCommon("loading")}</p>
       ) : posts.length === 0 ? (
-        <div className="bg-white border border-dashed border-gray-300 rounded-xl p-10 text-center dark:bg-gray-800 dark:border-gray-700">
+        <div className="bg-white border border-dashed border-gray-300 rounded-xl p-10 text-center dark:bg-gray-800 dark:shadow-black/40">
           <p className="text-gray-600 mb-4 dark:text-gray-300">{t("empty")}</p>
           <Link
             href="/komunita/burza/novy"

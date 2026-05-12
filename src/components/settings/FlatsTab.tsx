@@ -170,7 +170,7 @@ export default function FlatsTab({ canEdit }: FlatsTabProps) {
       )}
 
       {showForm && canEdit && (
-        <div className="bg-white rounded-xl border border-gray-200 p-6 mb-4 dark:bg-gray-800 dark:border-gray-700">
+        <div className="bg-white rounded-2xl shadow-sm p-6 mb-4 dark:bg-gray-800 dark:shadow-black/40">
           <h3 className="text-base font-bold text-gray-900 mb-4 dark:text-gray-100">
             {editingId ? t("editFlat") : t("addFlat")}
           </h3>
@@ -259,7 +259,7 @@ export default function FlatsTab({ canEdit }: FlatsTabProps) {
           {Object.entries(flatsByEntrance).map(([entranceName, flats]) => (
             <div key={entranceName}>
               <h3 className="text-base font-semibold text-gray-700 mb-2 dark:text-gray-200">{entranceName}</h3>
-              <div className="bg-white rounded-xl border border-gray-200 overflow-hidden dark:bg-gray-800 dark:border-gray-700">
+              <div className="bg-white rounded-2xl shadow-sm overflow-hidden dark:bg-gray-800 dark:shadow-black/40">
                 <table className="w-full text-base">
                   <thead>
                     <tr className="border-b border-gray-200 bg-gray-50 dark:border-gray-700 dark:bg-gray-900">

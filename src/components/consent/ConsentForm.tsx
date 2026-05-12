@@ -51,7 +51,7 @@ export default function ConsentForm({ onSuccess, policyVersion }: ConsentFormPro
 
   return (
     <div className="max-w-lg mx-auto">
-      <div className="bg-white rounded-xl border border-gray-200 p-6 dark:bg-gray-800 dark:border-gray-700">
+      <div className="bg-white rounded-2xl shadow-sm p-6 dark:bg-gray-800 dark:shadow-black/40">
         <h2 className="text-xl font-bold text-gray-900 mb-2 dark:text-gray-100">{t("title")}</h2>
         <p className="text-base text-gray-600 mb-6 dark:text-gray-300">{t("subtitle")}</p>
 

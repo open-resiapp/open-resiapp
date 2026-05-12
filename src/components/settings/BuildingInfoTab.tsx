@@ -99,7 +99,7 @@ export default function BuildingInfoTab({ canEdit }: BuildingInfoTabProps) {
 
   if (!building) {
     return (
-      <div className="bg-white rounded-xl border border-gray-200 p-6 dark:bg-gray-800 dark:border-gray-700">
+      <div className="bg-white rounded-2xl shadow-sm p-6 dark:bg-gray-800 dark:shadow-black/40">
         <h2 className="text-lg font-bold text-gray-900 mb-4 dark:text-gray-100">{t("buildingInfo")}</h2>
 
         {message && (
@@ -158,7 +158,7 @@ export default function BuildingInfoTab({ canEdit }: BuildingInfoTabProps) {
   }
 
   return (
-    <div className="bg-white rounded-xl border border-gray-200 p-6 dark:bg-gray-800 dark:border-gray-700">
+    <div className="bg-white rounded-2xl shadow-sm p-6 dark:bg-gray-800 dark:shadow-black/40">
       <div className="flex items-center justify-between mb-4">
         <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100">{t("buildingInfo")}</h2>
         {canEdit && !editing && (

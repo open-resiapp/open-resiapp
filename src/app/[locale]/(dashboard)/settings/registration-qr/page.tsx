@@ -148,11 +148,11 @@ export default function RegistrationQrPage() {
       )}
 
       {loading ? (
-        <div className="bg-white rounded-xl border border-gray-200 p-6 animate-pulse dark:bg-gray-800 dark:border-gray-700">
+        <div className="bg-white rounded-2xl shadow-sm p-6 animate-pulse dark:bg-gray-800 dark:shadow-black/40">
           <div className="h-40 bg-gray-200 rounded dark:bg-gray-700" />
         </div>
       ) : !active ? (
-        <div className="bg-white rounded-xl border border-gray-200 p-6 dark:bg-gray-800 dark:border-gray-700">
+        <div className="bg-white rounded-2xl shadow-sm p-6 dark:bg-gray-800 dark:shadow-black/40">
           <p className="text-base text-gray-700 mb-4 dark:text-gray-200">{t("noActive")}</p>
           <button
             onClick={() => handleGenerate(false)}
@@ -163,7 +163,7 @@ export default function RegistrationQrPage() {
           </button>
         </div>
       ) : (
-        <div className="bg-white rounded-xl border border-gray-200 p-6 space-y-6 dark:bg-gray-800 dark:border-gray-700">
+        <div className="bg-white rounded-2xl shadow-sm p-6 space-y-6 dark:bg-gray-800 dark:shadow-black/40">
           <div className="flex flex-col sm:flex-row gap-6 items-start">
             {qrDataUrl && (
               <img

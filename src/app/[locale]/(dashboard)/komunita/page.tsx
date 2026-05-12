@@ -58,7 +58,7 @@ export default function CommunityLandingPage() {
           <Link
             key={tile.href}
             href={tile.href}
-            className={`${tile.bg} rounded-xl border border-gray-200 p-6 transition-colors block dark:border-gray-700`}
+            className={`${tile.bg} rounded-2xl shadow-sm p-6 transition-colors block dark:border-gray-700`}
           >
             <div className="text-4xl mb-3">{tile.icon}</div>
             <h2 className="text-lg font-semibold text-gray-900 mb-1 dark:text-gray-100">

@@ -3,7 +3,6 @@
 import { signOut } from "next-auth/react";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
-import LanguageSwitcher from "@/components/LanguageSwitcher";
 import EntitySwitcher from "@/components/layout/EntitySwitcher";
 
 export default function Header({
@@ -20,12 +19,12 @@ export default function Header({
   const t = useTranslations("Header");
 
   return (
-    <header className="bg-white border-b border-gray-200 px-4 lg:px-6 py-4 dark:bg-gray-900 dark:border-gray-800">
-      <div className="flex items-center justify-between">
+    <header className="bg-white px-4 lg:px-6 py-3 dark:bg-gray-900">
+      <div className="flex items-center justify-between gap-3">
         {showMenu && onMenuToggle ? (
           <button
             onClick={onMenuToggle}
-            className="lg:hidden p-2 text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-gray-100"
+            className="lg:hidden flex items-center justify-center w-10 h-10 rounded-full text-gray-700 hover:bg-gray-100 transition-colors dark:text-gray-200 dark:hover:bg-gray-800"
             aria-label={t("openMenu")}
           >
             <svg
@@ -44,23 +43,22 @@ export default function Header({
           </button>
         ) : null}
 
-        <div className="flex items-center gap-4 ml-auto">
+        <div className="flex items-center gap-2 sm:gap-3 ml-auto min-w-0">
           <EntitySwitcher />
-          <LanguageSwitcher />
           {showProfileLink ? (
             <Link
               href="/profile"
-              className="text-base text-gray-700 hover:text-blue-600 transition-colors dark:text-gray-200 dark:hover:text-blue-400"
+              className="inline-flex items-center h-10 px-3 sm:px-4 rounded-full text-sm font-medium text-gray-700 hover:bg-gray-100 transition-colors dark:text-gray-200 dark:hover:bg-gray-800 truncate max-w-[8rem] sm:max-w-none"
               title={t("profile")}
             >
               {userName}
             </Link>
           ) : (
-            <span className="text-base text-gray-700 dark:text-gray-200">{userName}</span>
+            <span className="text-sm text-gray-700 truncate max-w-[8rem] dark:text-gray-200">{userName}</span>
           )}
           <button
             onClick={() => signOut({ callbackUrl: "/login" })}
-            className="px-4 py-2 text-base text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors dark:text-gray-300 dark:hover:text-gray-100 dark:hover:bg-gray-800"
+            className="inline-flex items-center h-10 px-3 sm:px-4 text-sm font-medium text-gray-700 hover:bg-gray-100 rounded-full transition-colors dark:text-gray-200 dark:hover:bg-gray-800"
           >
             {t("logout")}
           </button>

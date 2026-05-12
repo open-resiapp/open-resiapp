@@ -9,24 +9,33 @@ const choiceKeys: Record<VoteChoice, string> = {
   zdrzal_sa: "abstain",
 };
 
+const choiceGlyphs: Record<VoteChoice, string> = {
+  za: "✓",
+  proti: "✕",
+  zdrzal_sa: "○",
+};
+
 const choiceStyles: Record<
   VoteChoice,
-  { bg: string; hoverBg: string; activeBg: string }
+  { hoverBg: string; activeBg: string; activeText: string; glyph: string }
 > = {
   za: {
-    bg: "bg-green-600",
-    hoverBg: "hover:bg-green-700",
-    activeBg: "bg-green-700 ring-4 ring-green-200",
+    hoverBg: "hover:bg-green-600 hover:text-white",
+    activeBg: "bg-green-600 text-white",
+    activeText: "text-green-700 dark:text-green-200",
+    glyph: "bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-200",
   },
   proti: {
-    bg: "bg-red-600",
-    hoverBg: "hover:bg-red-700",
-    activeBg: "bg-red-700 ring-4 ring-red-200",
+    hoverBg: "hover:bg-red-600 hover:text-white",
+    activeBg: "bg-red-600 text-white",
+    activeText: "text-red-700 dark:text-red-200",
+    glyph: "bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-200",
   },
   zdrzal_sa: {
-    bg: "bg-gray-500",
-    hoverBg: "hover:bg-gray-600",
-    activeBg: "bg-gray-600 ring-4 ring-gray-200",
+    hoverBg: "hover:bg-gray-500 hover:text-white",
+    activeBg: "bg-gray-500 text-white",
+    activeText: "text-gray-700 dark:text-gray-200",
+    glyph: "bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-200",
   },
 };
 
@@ -47,19 +56,36 @@ export default function VoteButton({
   const config = choiceStyles[choice];
   const label = t(choiceKeys[choice]);
 
+  const baseClasses =
+    "group flex w-full flex-col items-center justify-center gap-2 rounded-2xl px-3 py-4 text-sm font-semibold transition-colors sm:text-base";
+
+  let stateClasses: string;
+  if (disabled) {
+    stateClasses = "bg-gray-100 text-gray-400 cursor-not-allowed dark:bg-gray-800 dark:text-gray-600";
+  } else if (selected) {
+    stateClasses = config.activeBg;
+  } else {
+    stateClasses = `bg-gray-50 dark:bg-gray-800/60 ${config.activeText} ${config.hoverBg}`;
+  }
+
+  const glyphClasses = disabled
+    ? "bg-gray-200 text-gray-400 dark:bg-gray-700 dark:text-gray-500"
+    : selected
+    ? "bg-white/20 text-white"
+    : `${config.glyph} group-hover:bg-white/20 group-hover:text-white`;
+
   return (
     <button
       onClick={() => onClick(choice)}
       disabled={disabled}
-      className={`w-full py-4 px-6 text-xl font-bold text-white rounded-xl transition-all ${
-        selected
-          ? config.activeBg
-          : disabled
-          ? "bg-gray-300 cursor-not-allowed"
-          : `${config.bg} ${config.hoverBg}`
-      }`}
+      className={`${baseClasses} ${stateClasses}`}
     >
-      {selected ? `${label} ✓` : label}
+      <span
+        className={`flex h-9 w-9 items-center justify-center rounded-full text-base font-bold transition-colors ${glyphClasses}`}
+      >
+        {choiceGlyphs[choice]}
+      </span>
+      <span>{label}</span>
     </button>
   );
 }

@@ -99,7 +99,7 @@ export default function NastenkaPage() {
           {[1, 2, 3].map((i) => (
             <div
               key={i}
-              className="bg-white rounded-xl border border-gray-200 p-6 animate-pulse dark:bg-gray-800 dark:border-gray-700"
+              className="bg-white rounded-2xl shadow-sm p-6 animate-pulse dark:bg-gray-800 dark:shadow-black/40"
             >
               <div className="h-4 bg-gray-200 rounded w-1/4 mb-3 dark:bg-gray-700" />
               <div className="h-5 bg-gray-200 rounded w-3/4 mb-2 dark:bg-gray-700" />

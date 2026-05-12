@@ -128,7 +128,7 @@ export default function VlastniciPage() {
       </div>
 
       {showForm && (
-        <div className="bg-white rounded-xl border border-gray-200 p-6 mb-6 dark:bg-gray-800 dark:border-gray-700">
+        <div className="bg-white rounded-2xl shadow-sm p-6 mb-6 dark:bg-gray-800 dark:shadow-black/40">
           <h2 className="text-lg font-bold text-gray-900 mb-4 dark:text-gray-100">
             {t("newUser")}
           </h2>
@@ -208,7 +208,7 @@ export default function VlastniciPage() {
       )}
 
       {loading ? (
-        <div className="bg-white rounded-xl border border-gray-200 p-6 animate-pulse dark:bg-gray-800 dark:border-gray-700">
+        <div className="bg-white rounded-2xl shadow-sm p-6 animate-pulse dark:bg-gray-800 dark:shadow-black/40">
           <div className="space-y-3">
             {[1, 2, 3].map((i) => (
               <div key={i} className="h-12 bg-gray-200 rounded dark:bg-gray-700" />
@@ -220,7 +220,7 @@ export default function VlastniciPage() {
           {t("empty")}
         </div>
       ) : (
-        <div className="bg-white rounded-xl border border-gray-200 overflow-hidden dark:bg-gray-800 dark:border-gray-700">
+        <div className="bg-white rounded-2xl shadow-sm overflow-hidden dark:bg-gray-800 dark:shadow-black/40">
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead className="bg-gray-50 border-b border-gray-200 dark:bg-gray-900 dark:border-gray-700">

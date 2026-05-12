@@ -10,24 +10,42 @@ export default function LanguageSwitcher() {
   const router = useRouter();
 
   function handleChange(newLocale: string) {
+    // localStorage mirrors the NEXT_LOCALE cookie that next-intl sets so the
+    // choice survives cookie clears and is readable from client code.
+    if (typeof window !== "undefined") {
+      try {
+        window.localStorage.setItem("locale", newLocale);
+      } catch {
+        // ignore quota / private-mode errors
+      }
+    }
     router.replace(pathname, { locale: newLocale as (typeof routing.locales)[number] });
   }
 
   return (
-    <div className="flex items-center gap-1">
-      {routing.locales.map((loc) => (
-        <button
-          key={loc}
-          onClick={() => handleChange(loc)}
-          className={`px-2 py-1 text-sm font-medium rounded transition-colors ${
-            locale === loc
-              ? "bg-blue-100 text-blue-700"
-              : "text-gray-500 hover:text-gray-700 hover:bg-gray-100"
-          }`}
-        >
-          {loc.toUpperCase()}
-        </button>
-      ))}
+    <div
+      className="inline-flex items-center gap-0.5 p-1 rounded-full bg-gray-100 dark:bg-gray-800"
+      role="group"
+      aria-label="Language"
+    >
+      {routing.locales.map((loc) => {
+        const active = locale === loc;
+        return (
+          <button
+            key={loc}
+            type="button"
+            onClick={() => handleChange(loc)}
+            aria-pressed={active}
+            className={`min-w-[40px] px-3 py-1.5 text-sm font-semibold rounded-full transition-colors ${
+              active
+                ? "bg-gray-900 text-white shadow-sm dark:bg-white dark:text-gray-900"
+                : "text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100"
+            }`}
+          >
+            {loc.toUpperCase()}
+          </button>
+        );
+      })}
     </div>
   );
 }

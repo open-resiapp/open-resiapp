@@ -129,7 +129,7 @@ export default function PendingRegistrationsPage() {
       )}
 
       {loading ? (
-        <div className="bg-white rounded-xl border border-gray-200 p-6 animate-pulse dark:bg-gray-800 dark:border-gray-700">
+        <div className="bg-white rounded-2xl shadow-sm p-6 animate-pulse dark:bg-gray-800 dark:shadow-black/40">
           <div className="space-y-3">
             {[1, 2, 3].map((i) => (
               <div
@@ -153,7 +153,7 @@ export default function PendingRegistrationsPage() {
             return (
               <div
                 key={r.id}
-                className="bg-white rounded-xl border border-gray-200 p-5 dark:bg-gray-800 dark:border-gray-700"
+                className="bg-white rounded-2xl shadow-sm p-5 dark:bg-gray-800 dark:shadow-black/40"
               >
                 <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 mb-4">
                   <div>

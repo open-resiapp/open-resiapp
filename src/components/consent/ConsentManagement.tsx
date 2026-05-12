@@ -62,7 +62,7 @@ export default function ConsentManagement() {
 
   return (
     <>
-      <div className="bg-white rounded-xl border border-gray-200 p-6 dark:bg-gray-800 dark:border-gray-700">
+      <div className="bg-white rounded-2xl shadow-sm p-6 dark:bg-gray-800 dark:shadow-black/40">
         <h2 className="text-lg font-semibold text-gray-900 mb-4 dark:text-gray-100">
           {t("managementTitle")}
         </h2>

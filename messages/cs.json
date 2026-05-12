@@ -715,7 +715,10 @@
     "roleTenant": "Nájemce",
     "roleVoteCounter": "Zapisovatel",
     "roleCaretaker": "Domovník",
-    "notifications": "Notifikace"
+    "notifications": "Notifikace",
+    "appearance": "Vzhled",
+    "theme": "Téma",
+    "language": "Jazyk"
   },
   "Notifications": {
     "pushNotifications": "Push notifikace",

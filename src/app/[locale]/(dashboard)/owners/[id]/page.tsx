@@ -292,7 +292,7 @@ export default function UserDetailPage() {
         </div>
       )}
 
-      <div className="bg-white rounded-xl border border-gray-200 p-6 mb-6 dark:bg-gray-800 dark:border-gray-700">
+      <div className="bg-white rounded-2xl shadow-sm p-6 mb-6 dark:bg-gray-800 dark:shadow-black/40">
         <div className="flex items-start justify-between gap-4 mb-6">
           <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">{user.name}</h1>
           <div className="flex items-center gap-3">
@@ -503,7 +503,7 @@ export default function UserDetailPage() {
 
       {showDeleteModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-xl border border-gray-200 p-6 max-w-md w-full dark:bg-gray-800 dark:border-gray-700">
+          <div className="bg-white rounded-2xl shadow-sm p-6 max-w-md w-full dark:bg-gray-800 dark:shadow-black/40">
             <h2 className="text-xl font-bold text-gray-900 mb-2 dark:text-gray-100">
               {t("deleteUser")}
             </h2>

@@ -64,7 +64,7 @@ export default function ThemeToggle() {
 
   return (
     <div
-      className="flex items-center gap-1"
+      className="inline-flex items-center gap-0.5 p-1 rounded-full bg-gray-100 dark:bg-gray-800"
       role="group"
       aria-label={t("label")}
     >
@@ -77,10 +77,10 @@ export default function ThemeToggle() {
             onClick={() => setTheme(opt)}
             aria-pressed={active}
             title={t(opt)}
-            className={`flex items-center justify-center w-8 h-8 rounded transition-colors ${
+            className={`flex items-center justify-center w-10 h-9 rounded-full transition-colors ${
               active
-                ? "bg-blue-100 text-blue-700 dark:bg-blue-900 dark:text-blue-200"
-                : "text-gray-500 hover:text-gray-700 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-gray-200 dark:hover:bg-gray-800"
+                ? "bg-gray-900 text-white shadow-sm dark:bg-white dark:text-gray-900"
+                : "text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-gray-100"
             }`}
           >
             <Icon name={opt} />

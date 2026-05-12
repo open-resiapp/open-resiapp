@@ -123,7 +123,7 @@ export default function ModulesAdminClient({ installed, canManageUsers }: Props)
         </div>
       )}
 
-      <section className="rounded-xl border border-gray-200 bg-white p-5 dark:border-gray-700 dark:bg-gray-800">
+      <section className="rounded-2xl shadow-sm bg-white p-5 dark:border-gray-700 dark:bg-gray-800">
         <h2 className="mb-3 text-lg font-semibold dark:text-gray-100">Install module</h2>
         {!staged ? (
           <form onSubmit={handleUpload} className="flex items-center gap-3">
@@ -192,7 +192,7 @@ export default function ModulesAdminClient({ installed, canManageUsers }: Props)
         )}
       </section>
 
-      <section className="rounded-xl border border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-800">
+      <section className="rounded-2xl shadow-sm bg-white dark:border-gray-700 dark:bg-gray-800">
         <h2 className="border-b px-5 py-3 text-lg font-semibold dark:border-gray-700 dark:text-gray-100">Installed</h2>
         {installed.length === 0 ? (
           <p className="px-5 py-4 text-sm text-gray-500 dark:text-gray-400">

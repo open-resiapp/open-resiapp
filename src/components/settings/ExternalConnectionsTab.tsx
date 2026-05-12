@@ -313,7 +313,7 @@ export default function ExternalConnectionsTab() {
           {connections.map((conn) => (
             <div
               key={conn.id}
-              className="bg-white rounded-xl border border-gray-200 p-6 dark:bg-gray-800 dark:border-gray-700"
+              className="bg-white rounded-2xl shadow-sm p-6 dark:bg-gray-800 dark:shadow-black/40"
             >
               <div className="flex items-start justify-between">
                 <div>

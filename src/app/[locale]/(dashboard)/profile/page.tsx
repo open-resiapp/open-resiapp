@@ -7,6 +7,7 @@ import PushSubscriptionManager from "@/components/notifications/PushSubscription
 import NotificationPreferences from "@/components/notifications/NotificationPreferences";
 import ConsentManagement from "@/components/consent/ConsentManagement";
 import ThemeToggle from "@/components/ThemeToggle";
+import LanguageSwitcher from "@/components/LanguageSwitcher";
 import type { UserRole } from "@/types";
 
 const roleKeys: Record<UserRole, string> = {
@@ -78,7 +79,7 @@ export default function ProfilePage() {
       <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">{t("title")}</h1>
 
       {/* User info card */}
-      <div className="bg-white rounded-xl border border-gray-200 p-6 dark:bg-gray-800 dark:border-gray-700">
+      <div className="bg-white rounded-2xl shadow-sm p-6 dark:bg-gray-800 dark:shadow-black/40">
         <h2 className="text-lg font-semibold text-gray-900 mb-4 dark:text-gray-100">
           {t("userInfo")}
         </h2>
@@ -99,7 +100,7 @@ export default function ProfilePage() {
       </div>
 
       {/* Change password card */}
-      <div className="bg-white rounded-xl border border-gray-200 p-6 dark:bg-gray-800 dark:border-gray-700">
+      <div className="bg-white rounded-2xl shadow-sm p-6 dark:bg-gray-800 dark:shadow-black/40">
         <h2 className="text-lg font-semibold text-gray-900 mb-4 dark:text-gray-100">
           {t("changePassword")}
         </h2>
@@ -167,19 +168,32 @@ export default function ProfilePage() {
         </form>
       </div>
 
-      {/* Appearance */}
-      <div className="bg-white rounded-xl border border-gray-200 p-6 dark:bg-gray-800 dark:border-gray-700">
+      {/* Appearance + Language */}
+      <div className="bg-white rounded-2xl shadow-sm p-6 dark:bg-gray-800 dark:shadow-black/40">
         <h2 className="text-lg font-semibold text-gray-900 mb-4 dark:text-gray-100">
           {t("appearance")}
         </h2>
-        <ThemeToggle />
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <div className="text-sm font-medium text-gray-700 mb-2 dark:text-gray-300">
+              {t("theme")}
+            </div>
+            <ThemeToggle />
+          </div>
+          <div>
+            <div className="text-sm font-medium text-gray-700 mb-2 dark:text-gray-300">
+              {t("language")}
+            </div>
+            <LanguageSwitcher />
+          </div>
+        </div>
       </div>
 
       {/* Consent management */}
       <ConsentManagement />
 
       {/* Notifications card */}
-      <div className="bg-white rounded-xl border border-gray-200 p-6 dark:bg-gray-800 dark:border-gray-700">
+      <div className="bg-white rounded-2xl shadow-sm p-6 dark:bg-gray-800 dark:shadow-black/40">
         <h2 className="text-lg font-semibold text-gray-900 mb-4 dark:text-gray-100">
           {t("notifications")}
         </h2>

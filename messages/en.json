@@ -717,7 +717,9 @@
     "roleVoteCounter": "Vote counter",
     "roleCaretaker": "Caretaker",
     "notifications": "Notifications",
-    "appearance": "Appearance"
+    "appearance": "Appearance",
+    "theme": "Theme",
+    "language": "Language"
   },
   "Notifications": {
     "pushNotifications": "Push notifications",

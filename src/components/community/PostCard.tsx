@@ -62,10 +62,8 @@ export default function PostCard({
 
   return (
     <div
-      className={`bg-white rounded-xl border p-6 dark:bg-gray-800 ${
-        status === "resolved" || status === "expired"
-          ? "border-gray-200 opacity-70 dark:border-gray-700"
-          : "border-gray-200 dark:border-gray-700"
+      className={`bg-white rounded-2xl shadow-sm p-5 sm:p-6 dark:bg-gray-800 dark:shadow-black/40 ${
+        status === "resolved" || status === "expired" ? "opacity-70" : ""
       }`}
     >
       <div className="flex items-start justify-between gap-4 mb-3 flex-wrap">
@@ -93,7 +91,7 @@ export default function PostCard({
             {onResolve && status === "active" && (
               <button
                 onClick={onResolve}
-                className="px-3 py-1.5 text-sm font-medium text-green-700 bg-green-50 hover:bg-green-100 rounded-lg transition-colors dark:text-green-300 dark:bg-green-900/40 dark:hover:bg-green-900/60"
+                className="px-3 py-1.5 text-sm font-medium text-green-700 bg-green-50 hover:bg-green-600 hover:text-white rounded-full transition-colors dark:text-green-300 dark:bg-green-900/40 dark:hover:bg-green-600 dark:hover:text-white"
               >
                 {t("markResolved")}
               </button>
@@ -102,7 +100,7 @@ export default function PostCard({
             {onDelete && (
               <button
                 onClick={onDelete}
-                className="px-3 py-1.5 text-sm font-medium text-red-600 bg-red-50 hover:bg-red-100 rounded-lg transition-colors dark:text-red-300 dark:bg-red-900/40 dark:hover:bg-red-900/60"
+                className="px-3 py-1.5 text-sm font-medium text-red-600 bg-red-50 hover:bg-red-600 hover:text-white rounded-full transition-colors dark:text-red-300 dark:bg-red-900/40 dark:hover:bg-red-600 dark:hover:text-white"
               >
                 {t("delete")}
               </button>

@@ -128,14 +128,14 @@ export default function DirectoryPage() {
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder={tDir("searchPlaceholder")}
-          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-base dark:bg-gray-800 dark:border-gray-700 dark:text-gray-100 dark:placeholder-gray-500"
+          className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-base dark:bg-gray-800 dark:shadow-black/40 dark:text-gray-100 dark:placeholder-gray-500"
         />
       </div>
 
       {loading ? (
         <p className="text-gray-500 dark:text-gray-400">{tCommon("loading")}</p>
       ) : filtered.length === 0 ? (
-        <div className="bg-white border border-dashed border-gray-300 rounded-xl p-10 text-center dark:bg-gray-800 dark:border-gray-700">
+        <div className="bg-white border border-dashed border-gray-300 rounded-xl p-10 text-center dark:bg-gray-800 dark:shadow-black/40">
           <p className="text-gray-600 mb-4 dark:text-gray-300">{tDir("empty")}</p>
           <button
             onClick={() => setShowEdit(true)}
@@ -149,7 +149,7 @@ export default function DirectoryPage() {
           {filtered.map((e) => (
             <div
               key={e.id}
-              className="bg-white rounded-xl border border-gray-200 p-5 dark:bg-gray-800 dark:border-gray-700"
+              className="bg-white rounded-2xl shadow-sm p-5 dark:bg-gray-800 dark:shadow-black/40"
             >
               <div className="flex items-start justify-between gap-2 mb-2">
                 <div>

@@ -90,7 +90,7 @@ export default function DashboardPage() {
         {loadingPosts ? (
           <p className="text-sm text-gray-500 dark:text-gray-400">{t("loadingPosts")}</p>
         ) : posts.length === 0 ? (
-          <div className="bg-white border border-dashed border-gray-300 rounded-xl p-6 text-center dark:bg-gray-800 dark:border-gray-700">
+          <div className="bg-white border border-dashed border-gray-300 rounded-xl p-6 text-center dark:bg-gray-800 dark:shadow-black/40">
             <p className="text-sm text-gray-600 dark:text-gray-300">{t("noPosts")}</p>
           </div>
         ) : (
@@ -128,7 +128,7 @@ export default function DashboardPage() {
           {loadingEvents ? (
             <p className="text-sm text-gray-500 dark:text-gray-400">{t("loadingEvents")}</p>
           ) : events.length === 0 ? (
-            <div className="bg-white border border-dashed border-gray-300 rounded-xl p-6 text-center dark:bg-gray-800 dark:border-gray-700">
+            <div className="bg-white border border-dashed border-gray-300 rounded-xl p-6 text-center dark:bg-gray-800 dark:shadow-black/40">
               <p className="text-sm text-gray-600 mb-3 dark:text-gray-300">
                 {t("noUpcomingEvents")}
               </p>
@@ -145,7 +145,7 @@ export default function DashboardPage() {
                 <Link
                   key={event.id}
                   href="/komunita/udalosti"
-                  className="bg-white rounded-xl border border-gray-200 p-5 hover:shadow-md transition-shadow block dark:bg-gray-800 dark:border-gray-700"
+                  className="bg-white rounded-2xl shadow-sm p-5 hover:shadow-md transition-shadow block dark:bg-gray-800 dark:shadow-black/40"
                 >
                   <div className="flex items-center gap-2 mb-2">
                     <span className="text-2xl">📅</span>
