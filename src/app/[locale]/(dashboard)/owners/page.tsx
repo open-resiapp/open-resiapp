@@ -109,7 +109,7 @@ export default function VlastniciPage() {
             href="/owners/pending-registrations"
             className="inline-flex items-center gap-2 px-5 py-3 bg-amber-600 hover:bg-amber-700 text-white text-base font-medium rounded-lg transition-colors"
           >
-            {t("pendingRegistrations")}
+            {t("pendingRegistrationsLink")}
             <PendingCountBadge />
           </Link>
           <button

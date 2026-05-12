@@ -421,7 +421,7 @@
   },
   "Owners": {
     "title": "Vlastníci a uživatelé",
-    "pendingRegistrations": "Čekající žádosti",
+    "pendingRegistrationsLink": "Čekající žádosti",
     "pendingShellUsers": "Nepárované karty vlastníků",
     "pending": {
       "title": "Vlastníci bez účtu",
