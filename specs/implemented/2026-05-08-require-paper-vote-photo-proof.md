@@ -14,8 +14,8 @@ tags: [voting, paper-vote, audit, bug-fix, compliance]
 feature_branch: feature/require-paper-vote-photo
 changelog_version: "2.1.1"
 changelog_date: "2026-05-13"
-docs_version: ""
-docs_communicated: ""
+docs_version: "2.1.1"
+docs_communicated: "2026-05-13"
 ---
 
 ## Goal

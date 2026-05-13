@@ -14,8 +14,8 @@ tags: [export, import, easy-import, data-portability, cloud-onboarding]
 feature_branch: ""
 changelog_version: "2.1.1"
 changelog_date: "2026-05-13"
-docs_version: ""
-docs_communicated: ""
+docs_version: "2.1.1"
+docs_communicated: "2026-05-13"
 ---
 
 ## Goal
