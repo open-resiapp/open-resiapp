@@ -280,6 +280,13 @@ export async function uninstallModule(name: string): Promise<void> {
     .limit(1);
   if (!row) throw new ModuleInstallError(`module "${name}" is not installed`);
 
+  // Per-module uninstall lock (manifest field `uninstallable: false`).
+  // Used by the cloud platform's sandbox/demo module so a tester cannot
+  // remove the DEMO banner. Read the manifest from disk rather than
+  // persisting the flag in coreModules — avoids a schema migration and
+  // honours updates if a future upgrade flips the flag.
+  await assertManifestUninstallable(row.installPath, name);
+
   if (loaded) {
     await runOnUninstallSafe(loaded);
     unregisterModule(name);
@@ -291,6 +298,25 @@ export async function uninstallModule(name: string): Promise<void> {
   await db.delete(coreModules).where(eq(coreModules.name, name));
 
   await fs.rm(row.installPath, { recursive: true, force: true });
+}
+
+async function assertManifestUninstallable(
+  installPath: string,
+  name: string
+): Promise<void> {
+  try {
+    const raw = await fs.readFile(path.join(installPath, "module.json"), "utf-8");
+    const parsed = JSON.parse(raw) as { uninstallable?: unknown };
+    if (parsed.uninstallable === false) {
+      throw new ModuleInstallError(
+        `Module "${name}" declares uninstallable: false in its manifest and cannot be removed.`
+      );
+    }
+  } catch (err) {
+    // If the manifest is missing or unreadable we fall through and allow
+    // uninstall — the file removal cleans up the orphaned install row.
+    if (err instanceof ModuleInstallError) throw err;
+  }
 }
 
 async function runOnUninstallSafe(loaded: LoadedModule): Promise<void> {

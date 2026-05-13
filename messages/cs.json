@@ -82,6 +82,10 @@
     "uploadFile": "Nahrát XLSX / CSV",
     "uploadPdf": "Nahrát LV (PDF)",
     "advanced": "Pokročilé",
+    "exportCurrentDataXlsx": "Exportovat aktuální data (XLSX)",
+    "exportCurrentDataCsv": "Exportovat aktuální data (CSV)",
+    "exportCurrentDataHelp": "Stáhne aktuální stav komunity ve stejném formátu, jaký používá import. Lze jej nahrát na čistou instanci.",
+    "exportEmpty": "Žádná komunita zatím neexistuje — není co exportovat.",
     "step3Title": "3. Tabulka s daty",
     "rowsLabel": "řádků",
     "addRow": "Přidat řádek",
@@ -818,5 +822,13 @@
         "no": "Nezúčastním se"
       }
     }
+  },
+  "Readonly": {
+    "bannerTitle": "Zkušební období skončilo.",
+    "bannerBody": "Aplikace je v režimu pouze pro čtení — zápis je během tohoto období blokován."
+  },
+  "Sandbox": {
+    "bannerTitle": "DEMO instance.",
+    "bannerBody": "Toto je testovací prostředí. Data jsou fiktivní a budou zahozena při přechodu do ostrého provozu."
   }
 }

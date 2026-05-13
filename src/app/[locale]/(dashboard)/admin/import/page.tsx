@@ -19,6 +19,7 @@ import type {
 
 import {
   commitImportAction,
+  exportCurrentDataAction,
   exportRowsAsXlsxAction,
   generateTemplateAction,
   parsePdfAction,
@@ -155,6 +156,19 @@ export default function ImportWizardPage() {
     setGeneralError(null);
     generateTemplateAction(structure, format)
       .then((blob) => downloadBlob(blob.filename, blob.base64, blob.mimeType))
+      .catch((err: Error) => setGeneralError(err.message));
+  }
+
+  function onExportCurrentData(format: "xlsx" | "csv") {
+    setGeneralError(null);
+    exportCurrentDataAction(format)
+      .then((res) => {
+        if (res.empty) {
+          setGeneralError(t("exportEmpty"));
+          return;
+        }
+        downloadBlob(res.filename, res.base64, res.mimeType);
+      })
       .catch((err: Error) => setGeneralError(err.message));
   }
 
@@ -503,13 +517,31 @@ export default function ImportWizardPage() {
             <summary className="cursor-pointer text-sm text-gray-600 dark:text-gray-400 py-2">
               {t("advanced")}
             </summary>
-            <button
-              type="button"
-              onClick={() => onDownloadTemplate("csv")}
-              className="mt-2 px-3 py-1.5 rounded bg-gray-100 hover:bg-gray-200 text-gray-900 text-sm dark:bg-gray-800 dark:hover:bg-gray-700 dark:text-gray-100"
-            >
-              {t("downloadCsv")}
-            </button>
+            <div className="mt-2 flex flex-wrap gap-2">
+              <button
+                type="button"
+                onClick={() => onDownloadTemplate("csv")}
+                className="px-3 py-1.5 rounded bg-gray-100 hover:bg-gray-200 text-gray-900 text-sm dark:bg-gray-800 dark:hover:bg-gray-700 dark:text-gray-100"
+              >
+                {t("downloadCsv")}
+              </button>
+              <button
+                type="button"
+                onClick={() => onExportCurrentData("xlsx")}
+                className="px-3 py-1.5 rounded bg-indigo-600 hover:bg-indigo-700 text-white text-sm"
+                title={t("exportCurrentDataHelp")}
+              >
+                {t("exportCurrentDataXlsx")}
+              </button>
+              <button
+                type="button"
+                onClick={() => onExportCurrentData("csv")}
+                className="px-3 py-1.5 rounded bg-indigo-100 hover:bg-indigo-200 text-indigo-900 text-sm dark:bg-indigo-900 dark:hover:bg-indigo-800 dark:text-indigo-100"
+                title={t("exportCurrentDataHelp")}
+              >
+                {t("exportCurrentDataCsv")}
+              </button>
+            </div>
           </details>
         </div>
       </section>

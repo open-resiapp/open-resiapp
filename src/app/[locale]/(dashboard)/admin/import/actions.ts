@@ -6,6 +6,10 @@ import { auth } from "@/lib/auth";
 import type { UserRole } from "@/types";
 import { hasPermission } from "@/lib/permissions";
 
+import {
+  exportCommunityAsImportRows,
+  flattenForExport,
+} from "@/lib/import/export";
 import { generateCsvTemplate, parseCsv } from "@/lib/import/formats/csv";
 import {
   generateXlsxTemplate,
@@ -165,6 +169,44 @@ export async function exportRowsAsXlsxAction(
   const xlsx = generateXlsxTemplate(structure, rows);
   return {
     filename: `import-${structure}-${new Date().toISOString().slice(0, 10)}.xlsx`,
+    mimeType:
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    base64: Buffer.from(xlsx).toString("base64"),
+  };
+}
+
+/**
+ * Export the current state of this instance's community as a downloadable
+ * xlsx/csv file in the Easy Import column schema. Importing it on a freshly-
+ * wiped instance reproduces the same state — round-trip safe.
+ *
+ * Returns `{ empty: true }` when there is no community yet (operator clicked
+ * Export on a fresh instance). The UI shows a hint instead of an empty file.
+ */
+export async function exportCurrentDataAction(
+  format: "xlsx" | "csv"
+): Promise<
+  | { empty: true }
+  | { empty: false; filename: string; mimeType: string; base64: string }
+> {
+  await requireAdmin();
+  const result = await exportCommunityAsImportRows();
+  if (!result) return { empty: true };
+  const dataRows = flattenForExport(result);
+  const stamp = new Date().toISOString().slice(0, 10);
+  if (format === "csv") {
+    const csv = generateCsvTemplate(result.structure, dataRows);
+    return {
+      empty: false,
+      filename: `export-${result.structure}-${stamp}.csv`,
+      mimeType: "text/csv; charset=utf-8",
+      base64: Buffer.from(csv, "utf8").toString("base64"),
+    };
+  }
+  const xlsx = generateXlsxTemplate(result.structure, dataRows);
+  return {
+    empty: false,
+    filename: `export-${result.structure}-${stamp}.xlsx`,
     mimeType:
       "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
     base64: Buffer.from(xlsx).toString("base64"),

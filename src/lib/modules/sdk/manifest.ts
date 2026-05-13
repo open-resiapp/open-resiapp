@@ -11,6 +11,13 @@ export interface ModuleManifest {
   uiSlots: SlotName[];
   minCoreVersion: string;
   checksum?: string;
+  /**
+   * When `false`, the admin UI hides the uninstall control and the server
+   * rejects uninstall requests. Used by the cloud platform's sandbox/demo
+   * module so a tester cannot flip a flag to remove the DEMO banner and
+   * make the trial instance feel like production. Defaults to `true`.
+   */
+  uninstallable?: boolean;
 }
 
 export interface ManifestValidationError {
@@ -88,6 +95,9 @@ export function validateManifest(
   if (m.author !== undefined && typeof m.author !== "string") {
     errors.push({ field: "author", message: "must be string" });
   }
+  if (m.uninstallable !== undefined && typeof m.uninstallable !== "boolean") {
+    errors.push({ field: "uninstallable", message: "must be boolean" });
+  }
 
   if (errors.length > 0) return { ok: false, errors };
 
@@ -103,6 +113,7 @@ export function validateManifest(
       uiSlots: m.uiSlots as SlotName[],
       minCoreVersion: m.minCoreVersion as string,
       checksum: m.checksum as string | undefined,
+      uninstallable: m.uninstallable as boolean | undefined,
     },
   };
 }

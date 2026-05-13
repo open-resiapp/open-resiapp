@@ -83,6 +83,10 @@
     "uploadFile": "Upload XLSX / CSV",
     "uploadPdf": "Upload LV (PDF)",
     "advanced": "Advanced",
+    "exportCurrentDataXlsx": "Export current data (XLSX)",
+    "exportCurrentDataCsv": "Export current data (CSV)",
+    "exportCurrentDataHelp": "Download the current community state in the same format used for import. Re-upload on a fresh instance to reproduce.",
+    "exportEmpty": "No community exists yet — nothing to export.",
     "step3Title": "3. Data grid",
     "rowsLabel": "rows",
     "addRow": "Add row",
@@ -935,5 +939,13 @@
         "no": "Not going"
       }
     }
+  },
+  "Readonly": {
+    "bannerTitle": "Trial expired.",
+    "bannerBody": "This instance is in read-only mode — writes are blocked during this period."
+  },
+  "Sandbox": {
+    "bannerTitle": "DEMO instance.",
+    "bannerBody": "This is a test environment. Data is fictitious and will be discarded when you go live."
   }
 }

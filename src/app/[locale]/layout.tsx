@@ -4,6 +4,7 @@ import { getMessages } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { routing } from "@/i18n/routing";
 import Providers from "@/components/Providers";
+import InstanceStateBanners from "@/components/system/InstanceStateBanners";
 import { getThemeFromCookie } from "@/lib/theme.server";
 
 // Pre-paint script: reads `theme` cookie and applies the resolved class to
@@ -62,7 +63,10 @@ export default async function LocaleLayout({
       </head>
       <body className="antialiased">
         <NextIntlClientProvider messages={messages}>
-          <Providers initialTheme={theme}>{children}</Providers>
+          <Providers initialTheme={theme}>
+            <InstanceStateBanners />
+            {children}
+          </Providers>
         </NextIntlClientProvider>
       </body>
     </html>
