@@ -25,7 +25,12 @@
     "invalidCredentials": "Invalid email or password.",
     "verifyOk": "Email successfully verified. Your request is now waiting for an admin to review it.",
     "verifyExpired": "This verification link has expired. Please register again.",
-    "verifyInvalid": "This verification link is invalid or already used."
+    "verifyInvalid": "This verification link is invalid or already used.",
+    "ssoInvalid": "Cloud sign-in failed. Please try again from your resiapp.cloud dashboard.",
+    "ssoExpired": "The sign-in link has expired. Please open the app again from your resiapp.cloud dashboard.",
+    "ssoReplay": "This sign-in link has already been used. Please open the app again from your resiapp.cloud dashboard.",
+    "ssoUnsupported": "Cloud sign-in is not enabled on this instance.",
+    "ssoBlocked": "Your account is deactivated. Please contact your building administrator."
   },
   "RegisterQr": {
     "title": "Registration",

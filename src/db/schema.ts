@@ -474,6 +474,25 @@ export const emailVerifications = pgTable(
   })
 );
 
+// BYT-20260513-006: replay protection for cloud SSO JWTs.
+// Each successfully consumed token's jti lands here; the unique PK
+// makes a second insert fail, which the SSO endpoint surfaces as
+// sso_replay. expires_at is the JWT's exp claim so a daily cleanup
+// cron can prune the table.
+export const ssoConsumedTokens = pgTable(
+  "sso_consumed_tokens",
+  {
+    jti: varchar("jti", { length: 64 }).primaryKey(),
+    expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
+    consumedAt: timestamp("consumed_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+  },
+  (table) => ({
+    expiresIdx: index("sso_consumed_tokens_expires_idx").on(table.expiresAt),
+  })
+);
+
 export const externalConnections = pgTable("external_connections", {
   id: uuid("id").primaryKey().defaultRandom(),
   name: varchar("name", { length: 255 }).notNull(),

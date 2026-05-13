@@ -25,7 +25,12 @@
     "invalidCredentials": "Nesprávny email alebo heslo.",
     "verifyOk": "Email úspešne overený. Vaša žiadosť čaká na schválenie správcom.",
     "verifyExpired": "Platnosť overovacieho odkazu vypršala. Skúste sa zaregistrovať znova.",
-    "verifyInvalid": "Overovací odkaz je neplatný alebo už bol použitý."
+    "verifyInvalid": "Overovací odkaz je neplatný alebo už bol použitý.",
+    "ssoInvalid": "Prihlásenie cez cloud zlyhalo. Skúste znovu z dashboardu resiapp.cloud.",
+    "ssoExpired": "Prihlasovací odkaz vypršal. Otvorte aplikáciu znovu z dashboardu resiapp.cloud.",
+    "ssoReplay": "Tento prihlasovací odkaz už bol použitý. Otvorte aplikáciu znovu z dashboardu resiapp.cloud.",
+    "ssoUnsupported": "Prihlásenie cez cloud nie je v tejto inštancii povolené.",
+    "ssoBlocked": "Váš účet je deaktivovaný. Kontaktujte správcu domu."
   },
   "RegisterQr": {
     "title": "Registrácia",

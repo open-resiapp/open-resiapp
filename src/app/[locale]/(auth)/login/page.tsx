@@ -14,6 +14,23 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
 
   const verifyState = searchParams.get("verify");
+  const ssoErrorKey = ((): string | null => {
+    const code = searchParams.get("error");
+    switch (code) {
+      case "sso_invalid":
+        return "ssoInvalid";
+      case "sso_expired":
+        return "ssoExpired";
+      case "sso_replay":
+        return "ssoReplay";
+      case "sso_unsupported":
+        return "ssoUnsupported";
+      case "sso_blocked":
+        return "ssoBlocked";
+      default:
+        return null;
+    }
+  })();
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -59,6 +76,12 @@ export default function LoginPage() {
       {verifyState === "not_found" && (
         <div className="bg-amber-50 text-amber-800 border border-amber-200 px-4 py-3 rounded-lg text-base mb-4 dark:bg-amber-900/30 dark:text-amber-200 dark:border-amber-800">
           {t("verifyInvalid")}
+        </div>
+      )}
+
+      {ssoErrorKey && (
+        <div className="bg-amber-50 text-amber-800 border border-amber-200 px-4 py-3 rounded-lg text-base mb-4 dark:bg-amber-900/30 dark:text-amber-200 dark:border-amber-800">
+          {t(ssoErrorKey)}
         </div>
       )}
 
