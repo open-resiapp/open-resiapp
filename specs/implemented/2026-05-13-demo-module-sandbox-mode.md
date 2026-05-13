@@ -1,7 +1,7 @@
 ---
 spec_id: BYT-20260513-001
 title: "Sandbox banner + manifest-driven uninstall lock (byt-app integration points for cloud's demo module)"
-status: in_progress
+status: implemented
 created: 2026-05-13
 updated: 2026-05-13
 author: Filip
@@ -12,8 +12,8 @@ depends_on: []
 related_handoffs: ["2026-05-13-resiapp-cloud-to-byt-app-demo-module-and-identity-import.md"]
 tags: [modules, sandbox, white-label, cloud-onboarding]
 feature_branch: ""
-changelog_version: ""
-changelog_date: ""
+changelog_version: "2.1.1"
+changelog_date: "2026-05-13"
 docs_version: ""
 docs_communicated: ""
 ---

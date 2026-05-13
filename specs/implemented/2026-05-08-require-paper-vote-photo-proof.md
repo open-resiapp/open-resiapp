@@ -3,17 +3,17 @@ spec_id: BYT-20260508-004
 title: "Require photo proof when recording paper vote on behalf of owner"
 status: implemented
 created: 2026-05-08
-updated: 2026-05-12
+updated: 2026-05-13
 author: byt-app
 owner: byt-app
-last_verified: 2026-05-12
+last_verified: 2026-05-13
 project_type: node
 depends_on: []
 related_handoffs: []
 tags: [voting, paper-vote, audit, bug-fix, compliance]
 feature_branch: feature/require-paper-vote-photo
-changelog_version: ""
-changelog_date: ""
+changelog_version: "2.1.1"
+changelog_date: "2026-05-13"
 docs_version: ""
 docs_communicated: ""
 ---

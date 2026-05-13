@@ -830,7 +830,8 @@
   },
   "Readonly": {
     "bannerTitle": "Zkušební období skončilo.",
-    "bannerBody": "Aplikace je v režimu pouze pro čtení — zápis je během tohoto období blokován."
+    "bannerBody": "Aplikace je v režimu pouze pro čtení — zápis je během tohoto období blokován.",
+    "bannerCta": "Přejít do ostrého provozu"
   },
   "Sandbox": {
     "bannerTitle": "DEMO instance.",

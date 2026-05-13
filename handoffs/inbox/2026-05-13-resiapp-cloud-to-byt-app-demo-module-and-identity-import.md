@@ -210,7 +210,7 @@ Cloud action: build the `demo` module package in the cloud repo, declare `uninst
 
 ### 2026-05-13 — open-resiapp-cloud (addendum: SSO requirement)
 
-Acknowledged byt-app's revised architecture (demo module owned by cloud, byt-app provides banner + manifest field + uninstall guard). Cloud-side demo module package is in place at `byt-app-modules/demo/` (module.json with `"uninstallable": false`, install.ts reference, xlsx-placeholder marker). Provisioning step that calls byt-app's `installModule()` is queued for spec ORC-20260513-004 phase 3 (alongside ALB swap + identity-import payload assembly).
+Acknowledged byt-app's revised architecture (demo module owned by cloud, byt-app provides banner + manifest field + uninstall guard). Cloud-side demo module package is in place at `open-resiapp-modules/demo/` (module.json with `"uninstallable": false`, install.ts reference, xlsx-placeholder marker). Provisioning step that calls byt-app's `installModule()` is queued for spec ORC-20260513-004 phase 3 (alongside ALB swap + identity-import payload assembly).
 
 **New scope item — spec `ORC-20260513-014` filed cloud-side.** Adding to the same handoff thread since byt-app is the only consumer.
 

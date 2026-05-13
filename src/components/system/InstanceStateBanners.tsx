@@ -42,6 +42,18 @@ export default async function InstanceStateBanners() {
         >
           <strong className="font-semibold">{tReadonly("bannerTitle")}</strong>{" "}
           <span>{tReadonly("bannerBody")}</span>
+          {process.env.CLOUD_PROMOTE_URL ? (
+            <>
+              {" "}
+              <a
+                href={process.env.CLOUD_PROMOTE_URL}
+                className="font-semibold underline underline-offset-2 hover:text-amber-700 dark:hover:text-amber-200"
+                rel="noopener noreferrer"
+              >
+                {tReadonly("bannerCta")}
+              </a>
+            </>
+          ) : null}
         </div>
       )}
     </>

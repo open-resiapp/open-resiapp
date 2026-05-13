@@ -3,17 +3,17 @@ spec_id: BYT-20260512-001
 title: "Shell-user claim flow & admin merge for imported owners"
 status: implemented
 created: 2026-05-12
-updated: 2026-05-12
+updated: 2026-05-13
 author: byt-app
 owner: byt-app
-last_verified: 2026-05-12
+last_verified: 2026-05-13
 project_type: node
 depends_on: [BYT-20260508-003]
 related_handoffs: []
 tags: [import, owners, invitations, qr, pairing, shell-users]
 feature_branch: ""
-changelog_version: ""
-changelog_date: ""
+changelog_version: "2.1.1"
+changelog_date: "2026-05-13"
 docs_version: ""
 docs_communicated: ""
 ---

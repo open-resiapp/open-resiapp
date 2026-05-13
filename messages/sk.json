@@ -947,7 +947,8 @@
   },
   "Readonly": {
     "bannerTitle": "Skúšobné obdobie skončilo.",
-    "bannerBody": "Aplikácia je v režime iba na čítanie — zápis je počas tohto obdobia zablokovaný."
+    "bannerBody": "Aplikácia je v režime iba na čítanie — zápis je počas tohto obdobia zablokovaný.",
+    "bannerCta": "Prejsť do ostrej prevádzky"
   },
   "Sandbox": {
     "bannerTitle": "DEMO inštancia.",

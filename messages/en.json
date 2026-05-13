@@ -947,7 +947,8 @@
   },
   "Readonly": {
     "bannerTitle": "Trial expired.",
-    "bannerBody": "This instance is in read-only mode — writes are blocked during this period."
+    "bannerBody": "This instance is in read-only mode — writes are blocked during this period.",
+    "bannerCta": "Promote to production"
   },
   "Sandbox": {
     "bannerTitle": "DEMO instance.",

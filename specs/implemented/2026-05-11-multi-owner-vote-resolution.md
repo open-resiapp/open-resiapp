@@ -3,17 +3,17 @@ spec_id: BYT-20260511-001
 title: "Multi-owner vote resolution per §14 zák. 182/1993 Z.z."
 status: implemented
 created: 2026-05-11
-updated: 2026-05-12
+updated: 2026-05-13
 author: byt-app
 owner: byt-app
-last_verified: 2026-05-12
+last_verified: 2026-05-13
 project_type: node
 depends_on: [BYT-20260508-003]
 related_handoffs: []
 tags: [voting, multi-owner, legal-compliance, refactor, engine, slovak-law]
 feature_branch: ""
-changelog_version: ""
-changelog_date: ""
+changelog_version: "2.1.1"
+changelog_date: "2026-05-13"
 docs_version: ""
 docs_communicated: ""
 ---

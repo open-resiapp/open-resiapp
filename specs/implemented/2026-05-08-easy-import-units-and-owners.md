@@ -3,17 +3,17 @@ spec_id: BYT-20260508-003
 title: "Easy Import bytov a vlastníkov"
 status: implemented
 created: 2026-05-08
-updated: 2026-05-12
+updated: 2026-05-13
 author: byt-app
 owner: byt-app
-last_verified: 2026-05-12
+last_verified: 2026-05-13
 project_type: other
 depends_on: []
 related_handoffs: []
 tags: [import, owners, units, onboarding]
 feature_branch: "feature/easy-import-units-and-owners"
-changelog_version: ""
-changelog_date: ""
+changelog_version: "2.1.1"
+changelog_date: "2026-05-13"
 docs_version: ""
 docs_communicated: ""
 ---
