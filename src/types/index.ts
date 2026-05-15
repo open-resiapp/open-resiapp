@@ -11,8 +11,6 @@ import type {
   consentRecords,
   boardMembers,
   entities,
-  housingRootData,
-  housingUnitData,
   memberships,
 } from "@/db/schema";
 import type {
@@ -21,18 +19,13 @@ import type {
   mandates,
 } from "@modules/voting/src/db/schema";
 
-// Phase 9.2 type aliases — Building/Entrance/Flat/UserFlat are now
-// derived from the entity tree. Legacy callers keep the same TS names
-// so call-site signatures don't churn until they're rewritten.
+// BYT-20260515-001 Phase 8b: Building / Entrance / Flat / UserFlat /
+// HousingRootData / HousingUnitData aliases dropped. Per-kind fields
+// live on entities.data jsonb; callers either use `Entity` directly
+// or declare a local row shape that reflects the jsonb columns they
+// actually read.
 export type Entity = InferSelectModel<typeof entities>;
-export type HousingRootData = InferSelectModel<typeof housingRootData>;
-export type HousingUnitData = InferSelectModel<typeof housingUnitData>;
 export type Membership = InferSelectModel<typeof memberships>;
-
-export type Building = Entity & HousingRootData;
-export type Entrance = Entity;
-export type Flat = Entity & HousingUnitData;
-export type UserFlat = { userId: string; flatId: string };
 
 export type User = InferSelectModel<typeof users>;
 export type Voting = InferSelectModel<typeof votings>;

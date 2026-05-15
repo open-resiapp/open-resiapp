@@ -3,7 +3,7 @@ import { and, eq, sql } from "drizzle-orm";
 
 import { auth } from "@/lib/auth";
 import { db } from "@/db";
-import { entities, housingUnitData, memberships } from "@/db/schema";
+import { entities, memberships } from "@/db/schema";
 import { hasPermission } from "@/lib/permissions";
 import { archiveEntity, setParent } from "@/lib/entity-tree";
 import { recordEntityAudit } from "@/lib/entity-audit";
@@ -27,40 +27,27 @@ export async function PATCH(
   const body = await request.json();
   const { flatNumber, floor, area, shareNumerator, shareDenominator, entranceId } = body;
 
-  // Phase 2b dual-write: keep legacy housing_unit_data updates as the
-  // rollback path while making entities.data the read-path truth.
+  // Phase 8a: dual-write removed — entities.data is the only target.
   if (flatNumber !== undefined) {
     await db
       .update(entities)
       .set({ name: flatNumber })
       .where(and(eq(entities.id, id), eq(entities.kind, "unit")));
   }
-  const hud: Record<string, unknown> = {};
-  if (flatNumber !== undefined) hud.flatNumber = flatNumber;
-  if (floor !== undefined) hud.floor = floor;
-  if (area !== undefined) hud.area = area;
-  if (shareNumerator !== undefined) hud.shareNumerator = shareNumerator;
-  if (shareDenominator !== undefined) hud.shareDenominator = shareDenominator;
-  if (Object.keys(hud).length > 0) {
+  const dataPatch = unitDataPatch({
+    flatNumber,
+    floor,
+    shareNumerator,
+    shareDenominator,
+    area,
+  });
+  if (Object.keys(dataPatch).length > 0) {
     await db
-      .update(housingUnitData)
-      .set(hud)
-      .where(eq(housingUnitData.entityId, id));
-    const dataPatch = unitDataPatch({
-      flatNumber,
-      floor,
-      shareNumerator,
-      shareDenominator,
-      area,
-    });
-    if (Object.keys(dataPatch).length > 0) {
-      await db
-        .update(entities)
-        .set({
-          data: sql`${entities.data} || ${JSON.stringify(dataPatch)}::jsonb`,
-        })
-        .where(eq(entities.id, id));
-    }
+      .update(entities)
+      .set({
+        data: sql`${entities.data} || ${JSON.stringify(dataPatch)}::jsonb`,
+      })
+      .where(eq(entities.id, id));
   }
   if (entranceId !== undefined) {
     await setParent(id, entranceId);

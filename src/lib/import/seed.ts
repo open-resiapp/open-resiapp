@@ -6,8 +6,6 @@ import { db } from "@/db";
 import {
   entities,
   entityAuditLog,
-  housingRootData,
-  housingUnitData,
   memberships,
   users,
 } from "@/db/schema";
@@ -219,19 +217,9 @@ export async function seedImport(input: SeedInput): Promise<SeedResult> {
         },
       });
 
-      // Phase 6b: legacy housing_root_data dual-write fires only for
-      // HOA-shaped templates (leaf kind = "unit"). Non-HOA roots
-      // (garden community, garage building, …) live exclusively on
-      // entities.data.
-      if (kinds.leaf === "unit") {
-        await tx.insert(housingRootData).values({
-          entityId: communityId,
-          address: first.community_address,
-          ico: first.community_ico ?? null,
-          votingMethod: first.voting_method,
-          country: first.country,
-        });
-      }
+      // Phase 8a: legacy housing_root_data dual-write removed.
+      // Root fields live exclusively on entities.data jsonb (already
+      // written inline on the insert above).
 
       await tx.insert(entityAuditLog).values({
         actorUserId: input.actorUserId,
@@ -451,16 +439,9 @@ export async function seedImport(input: SeedInput): Promise<SeedResult> {
         },
       });
 
-      if (kinds.leaf === "unit") {
-        await tx.insert(housingUnitData).values({
-          entityId: unitId,
-          flatNumber: r.unit_number,
-          floor: r.unit_floor,
-          shareNumerator: r.unit_share_numerator,
-          shareDenominator: r.unit_share_denominator,
-          area: r.unit_area_m2 ?? null,
-        });
-      }
+      // Phase 8a: legacy housing_unit_data dual-write removed.
+      // Leaf fields live exclusively on entities.data jsonb (written
+      // inline on the entity insert above).
 
       await tx.insert(entityAuditLog).values({
         actorUserId: input.actorUserId,

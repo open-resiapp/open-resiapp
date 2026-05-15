@@ -241,39 +241,10 @@ export const entities = pgTable(
   })
 );
 
-// 1:1 extension data for housing roots (community / block).
-// Required when entities.kind in ('community', 'building').
-export const housingRootData = pgTable("housing_root_data", {
-  entityId: uuid("entity_id")
-    .primaryKey()
-    .references(() => entities.id, { onDelete: "cascade" }),
-  address: varchar("address", { length: 500 }).notNull(),
-  ico: varchar("ico", { length: 20 }),
-  votingMethod: votingMethodEnum("voting_method")
-    .notNull()
-    .default("per_share"),
-  country: countryEnum("country").notNull().default("sk"),
-  governanceModel: governanceModelEnum("governance_model")
-    .notNull()
-    .default("chairman_council"),
-  legalNotice: text("legal_notice"),
-  communityCrossEntranceVisible: boolean("community_cross_entrance_visible")
-    .notNull()
-    .default(false),
-});
-
-// 1:1 extension data for housing units (flats).
-// Required when entities.kind = 'unit'.
-export const housingUnitData = pgTable("housing_unit_data", {
-  entityId: uuid("entity_id")
-    .primaryKey()
-    .references(() => entities.id, { onDelete: "cascade" }),
-  flatNumber: varchar("flat_number", { length: 20 }).notNull(),
-  floor: integer("floor").notNull().default(0),
-  shareNumerator: integer("share_numerator").notNull(),
-  shareDenominator: integer("share_denominator").notNull(),
-  area: integer("area"),
-});
+// BYT-20260515-001 Phase 8b: housing_root_data and housing_unit_data
+// dropped. Their fields live on entities.data jsonb. Migration
+// 0036_drop_legacy_housing_data.sql removes the underlying tables;
+// schema definitions removed here.
 
 // User ↔ entity link with per-membership role and voting weight.
 // Replaces users.flatId + userFlats once the migration ships.
@@ -921,28 +892,8 @@ export const entitiesRelations = relations(entities, ({ one, many }) => ({
   }),
   children: many(entities, { relationName: "entityParent" }),
   memberships: many(memberships),
-  housingRoot: one(housingRootData, {
-    fields: [entities.id],
-    references: [housingRootData.entityId],
-  }),
-  housingUnit: one(housingUnitData, {
-    fields: [entities.id],
-    references: [housingUnitData.entityId],
-  }),
-}));
-
-export const housingRootDataRelations = relations(housingRootData, ({ one }) => ({
-  entity: one(entities, {
-    fields: [housingRootData.entityId],
-    references: [entities.id],
-  }),
-}));
-
-export const housingUnitDataRelations = relations(housingUnitData, ({ one }) => ({
-  entity: one(entities, {
-    fields: [housingUnitData.entityId],
-    references: [entities.id],
-  }),
+  // Phase 8b: housingRoot / housingUnit relations dropped along with
+  // their tables. Per-kind fields live on entities.data jsonb.
 }));
 
 export const membershipsRelations = relations(memberships, ({ one }) => ({

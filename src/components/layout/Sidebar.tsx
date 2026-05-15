@@ -37,8 +37,10 @@ export default function Sidebar({
   onClose: () => void;
 }) {
   const t = useTranslations("Sidebar");
+  const tRoot = useTranslations();
   const pathname = usePathname();
   const [buildingName, setBuildingName] = useState<string | null>(null);
+  const [templateSlug, setTemplateSlug] = useState<string | null>(null);
   const [enabledModules, setEnabledModules] = useState<Set<string> | null>(null);
 
   useEffect(() => {
@@ -46,9 +48,19 @@ export default function Sidebar({
       .then((r) => (r.ok ? r.json() : null))
       .then((data) => {
         if (data?.name) setBuildingName(data.name);
+        if (data?.templateSlug) setTemplateSlug(data.templateSlug);
       })
       .catch(() => {});
   }, []);
+
+  // BYT-20260515-001 Phase 7: the subtitle reflects the install
+  // template's display name when available — "Bytový dom / SVB" for
+  // HOA installs, "Záhradkárska osada" for gardens, etc. Falls back
+  // to the legacy "appDescription" key on pre-Phase-5 installs that
+  // never persisted a template_slug.
+  const subtitle = templateSlug
+    ? tRoot(`Templates.${templateSlug}.name`)
+    : t("appDescription");
 
   useEffect(() => {
     fetch("/api/session/enabled-modules")
@@ -84,7 +96,7 @@ export default function Sidebar({
       >
         <div className="p-6 border-b border-gray-200 dark:border-gray-800">
           <h2 className="text-lg font-bold text-blue-600 dark:text-blue-400">{buildingName || t("appName")}</h2>
-          <p className="text-sm text-gray-500 mt-1 dark:text-gray-400">{t("appDescription")}</p>
+          <p className="text-sm text-gray-500 mt-1 dark:text-gray-400">{subtitle}</p>
         </div>
 
         <nav className="p-4 space-y-1">

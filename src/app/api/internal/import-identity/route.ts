@@ -5,7 +5,7 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 
 import { db } from "@/db";
-import { entities, housingRootData, users } from "@/db/schema";
+import { entities, users } from "@/db/schema";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -103,9 +103,7 @@ export async function POST(req: Request) {
   const communityId = crypto.randomUUID();
 
   const result = await db.transaction(async (tx) => {
-    // Phase 2b dual-write: data jsonb is the read-path truth, the
-    // legacy housing_root_data row is preserved for rollback until
-    // Phase 8.
+    // Phase 8a: dual-write removed — entities.data is the only target.
     const rootData = {
       address: org_settings.address,
       ico: org_settings.ico ?? null,
@@ -120,14 +118,6 @@ export async function POST(req: Request) {
       depth: 0,
       rootId: communityId,
       data: rootData,
-    });
-
-    await tx.insert(housingRootData).values({
-      entityId: communityId,
-      address: org_settings.address,
-      ico: org_settings.ico,
-      country: org_settings.country,
-      votingMethod: org_settings.votingMethod,
     });
 
     const insertedUsers = await tx

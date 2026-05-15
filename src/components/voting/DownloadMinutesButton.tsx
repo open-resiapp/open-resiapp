@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useTranslations } from "next-intl";
 import type { VotingResults, QuorumType } from "@/types";
+import { useCommunityKinds } from "@/hooks/useCommunityKinds";
 
 interface VoteRow {
   id: string;
@@ -53,6 +54,12 @@ export default function DownloadMinutesButton({
   entranceName,
 }: DownloadMinutesButtonProps) {
   const t = useTranslations("VotingMinutes");
+  const tRoot = useTranslations();
+  const { leafKind } = useCommunityKinds();
+  // Phase 7b: pass the leaf kind label so the PDF renders the right
+  // term ("Záhrada" instead of "Byt" for a garden community, etc.).
+  // Falls back to "Byt" for pre-Phase-5 installs.
+  const unitLabel = leafKind ? tRoot(`Kinds.${leafKind}`) : "Byt";
   const [generating, setGenerating] = useState(false);
   const [error, setError] = useState("");
 
@@ -107,6 +114,7 @@ export default function DownloadMinutesButton({
           entranceName={entranceName}
           country={building.country}
           flatNumbersByUnitId={flatNumbersByUnitId}
+          unitLabel={unitLabel}
         />
       );
 

@@ -3,7 +3,7 @@ import { aliasedTable, and, asc, eq, isNull, sql } from "drizzle-orm";
 
 import { auth } from "@/lib/auth";
 import { db } from "@/db";
-import { entities, housingUnitData } from "@/db/schema";
+import { entities } from "@/db/schema";
 import { hasPermission } from "@/lib/permissions";
 import { createEntity } from "@/lib/entity-tree";
 import { recordEntityAudit } from "@/lib/entity-audit";
@@ -79,9 +79,7 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  // Phase 2b dual-write: create the unit entity, insert legacy
-  // housing_unit_data row, AND mirror the same fields into
-  // entities.data jsonb so read paths see fresh values immediately.
+  // Phase 8a: dual-write removed — entities.data is the only target.
   const entity = await createEntity({
     parentId: entranceId,
     kind: "unit",
@@ -100,14 +98,6 @@ export async function POST(request: NextRequest) {
     },
   });
 
-  await db.insert(housingUnitData).values({
-    entityId: entity.id,
-    flatNumber,
-    floor: floor ?? 0,
-    shareNumerator,
-    shareDenominator,
-    area: area ?? null,
-  });
   const dataPatch = unitDataPatch({
     flatNumber,
     floor: floor ?? 0,

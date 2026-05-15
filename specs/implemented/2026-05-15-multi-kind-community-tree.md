@@ -1,7 +1,7 @@
 ---
 spec_id: BYT-20260515-001
 title: "Multi-kind community tree — replace hardcoded housing hierarchy with arbitrary recursive tree"
-status: in_progress
+status: implemented
 created: 2026-05-15
 updated: 2026-05-15
 author: byt-app
@@ -542,6 +542,108 @@ Phase 8 lands after at least one production release of dual-table parity.
 - `src/lib/import/columns.ts`: derive per-row columns from `entity_kinds.data_schema` of the leaf kind.
 - `src/lib/import/validate.ts`: relax share-sum + flat-number invariants when the template's leaf kind doesn't declare share fields.
 - Drop the amber banner entirely once columns + validation no longer demand share fields.
+
+**2026-05-15 — Handoff agreed (cloud)**
+- `handoffs/outbox/2026-05-15-open-resiapp-to-open-resiapp-cloud-community-template-selection.md` moved to `status: agreed`. Cloud created spec **ORC-20260515-001** (cloud template picker with preview).
+- All 6 constraints (§1–6) confirmed by cloud: env-var contract, locked slug list, per-instance catalog sovereignty, set-once-at-provisioning, billing template-agnostic, SSO carries identity only.
+- Cloud sync of template JSONs: cloud will ingest `byt-app/src/lib/templates/*.json` as read-only assets via CI for the preview pane. No POST surface from cloud → instance for kinds.
+
+**2026-05-15 — Phase 7a (sidebar subtitle)**
+- `src/components/layout/Sidebar.tsx`: fetches `templateSlug` from `/api/building`. When present, subtitle resolves to `Templates.<slug>.name` (e.g. "Bytový dom / SVB" for HOA, "Záhradkárska osada" for garden). Falls back to the legacy `Sidebar.appDescription` key on pre-Phase-5 installs.
+- Highest-visibility swap shipped first — the sidebar renders on every dashboard route, so non-HOA tenants see template-appropriate framing immediately on login.
+
+**2026-05-15 — Phase 7b (settings + voting copy)**
+- New hook `src/hooks/useCommunityKinds.ts` — fetches `/api/building` → reads `templateSlug` → fetches `/api/templates?slug=<x>` → returns `{ templateSlug, rootKind, middleKind, leafKind }`. Components consume it instead of duplicating fetch logic. Returns all `null` on pre-Phase-5 installs so callers can fall back to legacy HOA copy.
+- `src/components/settings/SettingsTabs.tsx`:
+  - `building` tab → `Templates.<slug>.name` ("Bytový dom / SVB" / "Záhradkárska osada" / …).
+  - `entrances` tab → `Kinds.<middleKind>` ("Vchod" / "Sektor" / "Garážový blok" / …).
+  - `flats` tab → `Kinds.<leafKind>` ("Byt" / "Záhrada / parcela" / "Garáž" / …).
+  - Voting / boardMembers / connections tabs keep their HOA-agnostic labels.
+  - Falls back to legacy keys (`tabBuilding`, `tabEntrances`, `tabFlats`) before the hook resolves to avoid label flicker on first paint.
+- `src/components/settings/BuildingInfoTab.tsx`: section title swapped from "Informácie o bytovom dome" to `Templates.<slug>.name`. Form fields untouched (still HOA-shaped — address / ICO / governance model / country) because they remain semantically meaningful for every template that uses the `community` root kind.
+- `src/components/voting/VotingMinutesPDF.tsx`:
+  - New optional prop `unitLabel?: string` (default `"Byt"`). Used in:
+    - Vote-table column header.
+    - "Byty s viacerými spoluvlastníkmi" section title (plural via a guarded fallback — switches to singular leaf label for non-HOA templates).
+    - Multi-owner breakdown row labels.
+    - Mandate row labels.
+  - **NOT changed**: legal rationale labels (`single_owner` / `unanimous` / `majority_share` / `tie_abstain` / `no_quorum_within_unit`) and §14 ods. 4 / §1187 OZ citations. These are statutory text that doesn't generalize across templates — non-HOA installs needing minutes generation will require a separate template-aware PDF in a later spec.
+- `src/components/voting/DownloadMinutesButton.tsx`: reads `leafKind` via `useCommunityKinds()`, resolves `Kinds.<leafKind>` → passes as `unitLabel` to `VotingMinutesPDF`.
+
+**Phase 7c — deferred**
+- `src/app/[locale]/(auth)/login/page.tsx` — `Auth.subtitle` "Bytové spoločenstvo" hardcoded HOA wording. Pre-login has no root context. Options: (a) accept stays HOA-flavoured for v1; (b) surface template via a server-side `set-cookie` from the install bootstrap; (c) move community framing inside the post-login dashboard only. Probably (a) for v1 — login screen is already brand-neutral after sidebar swap covers logged-in views.
+- Anywhere else `"Byt"` / `"Vchod"` / `"Bytový dom"` still appears in JSX (dashboard tiles, owner list, etc.) — sweep on demand as non-HOA tenants surface issues. Avoid a big-bang i18n PR; we don't have non-HOA traffic yet.
+
+**2026-05-15 — Phase 8a (dual-write removed)**
+- All 5 dual-write call sites stripped of `housingRootData` / `housingUnitData` inserts and updates. `entities.data` jsonb is the sole write target:
+  - `src/app/api/building/route.ts` — bootstrap + PATCH paths.
+  - `src/app/api/flats/route.ts` — POST path.
+  - `src/app/api/flats/[id]/route.ts` — PATCH path.
+  - `src/app/api/internal/import-identity/route.ts` — transaction inserts only the entity row with `data: rootData`.
+  - `src/lib/import/seed.ts` — root + leaf inserts no longer fork on `kinds.leaf === "unit"`; both paths write entities-only.
+- `housing_root_data` and `housing_unit_data` tables retain whatever state they had at the moment of Phase 8a deploy. They are now **orphan tables** — read by nothing, written by nothing — and stay in the Drizzle schema so a rollback to Phase 2b code paths still compiles. Phase 8b drops them.
+- `src/types/index.ts` legacy aliases (`Building`, `Flat`, `HousingRootData`, `HousingUnitData`) stay because the schema still defines the tables. Phase 8b removes them together.
+
+**Phase 8b — next**
+1. **Drop tables** — new migration `0036_drop_legacy_housing_data.sql`:
+   ```sql
+   DROP TABLE "housing_unit_data";
+   DROP TABLE "housing_root_data";
+   ```
+   Reversible only by re-running the Phase 2a backfill from `entities.data` — operators should snapshot the tables first if they need rollback parity.
+2. **Schema cleanup** — remove `housingRootData`, `housingUnitData` and their `relations()` blocks from `src/db/schema.ts`; remove `housingRoot`/`housingUnit` from `entitiesRelations`.
+3. **Snapshot + journal** — generate `drizzle/meta/0036_snapshot.json` from the new schema; append journal entry idx=36.
+4. **Types cleanup** — drop `HousingRootData`, `HousingUnitData`, `Building`, `Flat`, `UserFlat` from `src/types/index.ts`. Replace `Entrance = Entity` with just `Entity` at call sites.
+5. **Caller sweep** — ~17 files import the legacy aliases; either:
+   - mechanically rename `Building` / `Flat` / `Entrance` to `Entity` where the legacy fields aren't accessed, or
+   - rebuild the row shape locally where the file genuinely needs jsonb-fed fields.
+6. **Memory index** — update `MEMORY.md` to drop references to `housing_*_data` and reflect the entities-only model.
+
+**Phase 8b is a real production-cycle gate**: ship Phase 8a, watch one release window for jsonb-only voting / settings / import errors, then run 8b. Don't do 8a + 8b in the same deploy.
+
+**2026-05-15 — Phase 8b (tables + types dropped)**
+- `drizzle/0036_drop_legacy_housing_data.sql` — `DROP TABLE IF EXISTS housing_unit_data` then `housing_root_data`. Irreversible without backup; the migration comment instructs operators to `pg_dump` the two tables first.
+- `drizzle/meta/0036_snapshot.json` — generated by reading 0035, deleting `public.housing_root_data` + `public.housing_unit_data` entries from `tables`, rewriting `id` + `prevId`. Drizzle's next `db:generate` produces an empty diff against the new state.
+- `drizzle/meta/_journal.json` — appended idx=36.
+- `src/db/schema.ts`:
+  - `housingRootData` + `housingUnitData` table definitions deleted.
+  - `housingRootDataRelations` + `housingUnitDataRelations` deleted.
+  - `entitiesRelations.housingRoot` + `.housingUnit` deleted — only `parent`, `children`, `memberships` remain.
+- `src/types/index.ts`:
+  - `HousingRootData`, `HousingUnitData`, `Building`, `Flat`, `Entrance`, `UserFlat` aliases deleted.
+  - Re-checked callers: no file actually imports any of these from `@/types` — the ~17 files flagged in the audit either declared their own local `interface Entrance` / `interface Flat` or referenced the values from `@/db/schema` directly. Sweep avoided.
+- `housing_root_data` / `housing_unit_data` no longer exist in TypeScript or at the database layer. Remaining string mentions in source are exclusively comments documenting the migration history.
+- `MEMORY.md` audit: no `housing_*_data` references to update.
+
+**Operator action before applying 0036:**
+```bash
+# Optional but recommended — preserves rollback parity in case the
+# new entities.data jsonb is missing keys that the old tables had.
+pg_dump -t housing_root_data -t housing_unit_data \
+  > housing_data_snapshot_$(date +%Y%m%d).sql
+
+pnpm db:migrate    # applies 0036 → DROP TABLE
+```
+
+**Spec complete for v1.** All 8 phases shipped:
+- Phase 1 — schema (entity_kinds catalog, entities.data jsonb, kind enum → text FK)
+- Phase 2 — data backfill, read switch, dual-write
+- Phase 3 — canonical voting method dispatcher
+- Phase 3b — member-scoped voting (one_per_member, custom_weight)
+- Phase 4 — 20 templates + loader + `/api/templates`
+- Phase 5 — `setup.sh` template picker + first-boot bootstrap + 38-kind catalog
+- Phase 6 — wizard template picker + plumbing
+- Phase 6b — kind-aware seeder
+- Phase 7a — sidebar subtitle
+- Phase 7b — settings tabs + voting PDF unit label
+- Phase 8a — dual-write removed
+- Phase 8b — legacy tables + types dropped
+
+**Deferred (not blocking v1 ship):**
+- Phase 6c — column / validate generalization (operator UX polish; share-column placeholders work today)
+- Phase 7c — login subtitle + on-demand JSX label sweeps
+
+**Recommendation:** move this spec to `specs/implemented/` and run `/spec-retro` to capture drift findings against the original Approach (the 8-phase plan ended up much more granular — 1c, 2a/2b, 3b, 6/6b/6c, 7a/7b/7c, 8a/8b — that drift is worth recording).
 
 **Phase 7 — next after 6b**
 - Audit hardcoded "Bytový dom" / "Vchod" / "Byt" labels and switch to `Kinds.<slug>` translation keys driven by the root entity's kind / template.

@@ -2,6 +2,7 @@
 
 import { useTranslations } from "next-intl";
 import { Link, usePathname } from "@/i18n/navigation";
+import { useCommunityKinds } from "@/hooks/useCommunityKinds";
 
 export type SettingsTab = "building" | "entrances" | "flats" | "voting" | "boardMembers" | "connections";
 
@@ -25,11 +26,24 @@ export default function SettingsTabs({
   showRegistrationQr = false,
 }: SettingsTabsProps) {
   const t = useTranslations("Settings");
+  const tRoot = useTranslations();
+
+  // BYT-20260515-001 Phase 7b: tab labels reflect the install
+  // template's kind chain so non-HOA tenants don't see "Vchody" /
+  // "Byty" against a garden or garage tree. Falls back to the legacy
+  // HOA-shaped keys (`tabBuilding`, `tabEntrances`, `tabFlats`) when
+  // the chain isn't loaded yet or the instance predates Phase 5.
+  const { templateSlug, middleKind, leafKind } = useCommunityKinds();
+  const rootTabLabel = templateSlug
+    ? tRoot(`Templates.${templateSlug}.name`)
+    : t("tabBuilding");
+  const middleTabLabel = middleKind ? tRoot(`Kinds.${middleKind}`) : t("tabEntrances");
+  const leafTabLabel = leafKind ? tRoot(`Kinds.${leafKind}`) : t("tabFlats");
 
   const tabLabels: Record<SettingsTab, string> = {
-    building: t("tabBuilding"),
-    entrances: t("tabEntrances"),
-    flats: t("tabFlats"),
+    building: rootTabLabel,
+    entrances: middleTabLabel,
+    flats: leafTabLabel,
     voting: t("tabVoting"),
     boardMembers: t("tabBoardMembers"),
     connections: t("tabConnections"),

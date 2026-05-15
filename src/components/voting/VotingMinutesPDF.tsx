@@ -286,6 +286,15 @@ interface VotingMinutesPDFProps {
   country?: "sk" | "cz";
   /** unitEntityId → flat number, used to render multi-owner breakdown. */
   flatNumbersByUnitId?: Record<string, string>;
+  /**
+   * BYT-20260515-001 Phase 7b: label for the unit/leaf in the
+   * generated PDF. Defaults to "Byt" (HOA). For non-HOA installs the
+   * caller passes the translated leaf-kind label so the document
+   * doesn't say "Byt 12" against a garage or storage unit. Legal
+   * rationale labels (§14 ods. 4) stay HOA-specific by design — they
+   * carry statutory citations that don't apply to other templates.
+   */
+  unitLabel?: string;
 }
 
 const choiceLabelsResolution: Record<string, string> = {
@@ -342,6 +351,7 @@ export default function VotingMinutesPDF({
   entranceName,
   country = "sk",
   flatNumbersByUnitId = {},
+  unitLabel = "Byt",
 }: VotingMinutesPDFProps) {
   const multiOwnerBreakdowns =
     results.unitBreakdowns?.filter((u) => u.hasMultipleOwners) ?? [];
@@ -444,7 +454,7 @@ export default function VotingMinutesPDF({
           <Text style={styles.sectionTitle}>Zoznam hlasov</Text>
           <View style={styles.tableHeader}>
             <Text style={[styles.colNum, styles.headerText]}>#</Text>
-            <Text style={[styles.colFlat, styles.headerText]}>Byt</Text>
+            <Text style={[styles.colFlat, styles.headerText]}>{unitLabel}</Text>
             <Text style={[styles.colOwner, styles.headerText]}>Vlastník</Text>
             <Text style={[styles.colChoice, styles.headerText]}>Hlas</Text>
             <Text style={[styles.colType, styles.headerText]}>Typ</Text>
@@ -472,7 +482,7 @@ export default function VotingMinutesPDF({
         {multiOwnerBreakdowns.length > 0 && (
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>
-              Byty s viacerými spoluvlastníkmi
+              {`${unitLabel === "Byt" ? "Byty" : unitLabel} s viacerými spoluvlastníkmi`}
             </Text>
             {multiOwnerBreakdowns.map((u) => {
               const flatNumber = flatNumbersByUnitId[u.unitEntityId];
@@ -484,7 +494,7 @@ export default function VotingMinutesPDF({
                 >
                   <View style={styles.unitBreakdownHeader}>
                     <Text>
-                      Byt {flatNumber ?? u.unitEntityId.slice(0, 8)}
+                      {unitLabel} {flatNumber ?? u.unitEntityId.slice(0, 8)}
                     </Text>
                     <Text>
                       Výsledok bytu: {choiceLabelsResolution[u.resolved]}
@@ -515,7 +525,7 @@ export default function VotingMinutesPDF({
             {mandateRows.map((m) => (
               <View key={m.id} style={styles.mandateRow} wrap={false}>
                 <Text style={styles.mandateText}>
-                  Byt {m.fromFlatNumber} ({m.fromOwnerName}) → {m.toOwnerName}
+                  {unitLabel} {m.fromFlatNumber} ({m.fromOwnerName}) → {m.toOwnerName}
                 </Text>
               </View>
             ))}

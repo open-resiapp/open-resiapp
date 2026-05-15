@@ -3,7 +3,7 @@ import { eq, sql } from "drizzle-orm";
 
 import { auth } from "@/lib/auth";
 import { db } from "@/db";
-import { entities, housingRootData } from "@/db/schema";
+import { entities } from "@/db/schema";
 import { hasPermission } from "@/lib/permissions";
 import { createEntity } from "@/lib/entity-tree";
 import { getCommunityRoot } from "@/lib/legacy-compat";
@@ -57,11 +57,7 @@ export async function PATCH(request: NextRequest) {
       governanceModel: governanceModel || "chairman_council",
       legalNotice: legalNotice || null,
     };
-    // Phase 2b dual-write: legacy table + entities.data jsonb.
-    await db.insert(housingRootData).values({
-      entityId: root.id,
-      ...bootstrapValues,
-    });
+    // Phase 8a: dual-write removed — entities.data is the only target.
     await db
       .update(entities)
       .set({
@@ -78,36 +74,22 @@ export async function PATCH(request: NextRequest) {
       .set({ name })
       .where(eq(entities.id, existing.id));
   }
-  const housingUpdate: Record<string, unknown> = {};
-  if (address !== undefined) housingUpdate.address = address;
-  if (ico !== undefined) housingUpdate.ico = ico;
-  if (votingMethod !== undefined) housingUpdate.votingMethod = votingMethod;
-  if (legalNotice !== undefined) housingUpdate.legalNotice = legalNotice;
-  if (country !== undefined) housingUpdate.country = country;
-  if (governanceModel !== undefined) housingUpdate.governanceModel = governanceModel;
-  if (Object.keys(housingUpdate).length > 0) {
-    // Phase 2b dual-write: keep housingRootData as the rollback source
-    // while making entities.data the read-path truth.
+  // Phase 8a: dual-write removed — entities.data is the only target.
+  const dataPatch = rootDataPatch({
+    address,
+    ico,
+    votingMethod,
+    country,
+    governanceModel,
+    legalNotice,
+  });
+  if (Object.keys(dataPatch).length > 0) {
     await db
-      .update(housingRootData)
-      .set(housingUpdate)
-      .where(eq(housingRootData.entityId, existing.id));
-    const dataPatch = rootDataPatch({
-      address,
-      ico,
-      votingMethod,
-      country,
-      governanceModel,
-      legalNotice,
-    });
-    if (Object.keys(dataPatch).length > 0) {
-      await db
-        .update(entities)
-        .set({
-          data: sql`${entities.data} || ${JSON.stringify(dataPatch)}::jsonb`,
-        })
-        .where(eq(entities.id, existing.id));
-    }
+      .update(entities)
+      .set({
+        data: sql`${entities.data} || ${JSON.stringify(dataPatch)}::jsonb`,
+      })
+      .where(eq(entities.id, existing.id));
   }
 
   const updated = await getCommunityRoot();

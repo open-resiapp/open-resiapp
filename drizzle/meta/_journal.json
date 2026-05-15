@@ -253,6 +253,13 @@
       "when": 1778915000000,
       "tag": "0035_backfill_entities_data",
       "breakpoints": true
+    },
+    {
+      "idx": 36,
+      "version": "7",
+      "when": 1778915100000,
+      "tag": "0036_drop_legacy_housing_data",
+      "breakpoints": true
     }
   ]
 }

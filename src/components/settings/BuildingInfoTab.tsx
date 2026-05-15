@@ -2,6 +2,7 @@
 
 import { useTranslations } from "next-intl";
 import { useState, useEffect } from "react";
+import { useCommunityKinds } from "@/hooks/useCommunityKinds";
 
 interface BuildingInfo {
   id: string;
@@ -20,6 +21,14 @@ interface BuildingInfoTabProps {
 export default function BuildingInfoTab({ canEdit }: BuildingInfoTabProps) {
   const t = useTranslations("Settings");
   const tc = useTranslations("Common");
+  const tRoot = useTranslations();
+  // Phase 7b: "Informácie o bytovom dome" is HOA-flavoured. Use the
+  // template's name when known so a garden / garage tenant gets the
+  // right vocabulary in the heading.
+  const { templateSlug } = useCommunityKinds();
+  const sectionTitle = templateSlug
+    ? tRoot(`Templates.${templateSlug}.name`)
+    : t("buildingInfo");
   const [building, setBuilding] = useState<BuildingInfo | null>(null);
   const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState(false);
@@ -100,7 +109,7 @@ export default function BuildingInfoTab({ canEdit }: BuildingInfoTabProps) {
   if (!building) {
     return (
       <div className="bg-white rounded-2xl shadow-sm p-6 dark:bg-gray-800 dark:shadow-black/40">
-        <h2 className="text-lg font-bold text-gray-900 mb-4 dark:text-gray-100">{t("buildingInfo")}</h2>
+        <h2 className="text-lg font-bold text-gray-900 mb-4 dark:text-gray-100">{sectionTitle}</h2>
 
         {message && (
           <div
@@ -160,7 +169,7 @@ export default function BuildingInfoTab({ canEdit }: BuildingInfoTabProps) {
   return (
     <div className="bg-white rounded-2xl shadow-sm p-6 dark:bg-gray-800 dark:shadow-black/40">
       <div className="flex items-center justify-between mb-4">
-        <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100">{t("buildingInfo")}</h2>
+        <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100">{sectionTitle}</h2>
         {canEdit && !editing && (
           <button
             onClick={() => setEditing(true)}
