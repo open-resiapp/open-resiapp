@@ -73,13 +73,13 @@ These are NOT findings — they are remaining work tracked for future spikes.
 - **Target:** `spec_skill`
 - **From discrepancy:** #2
 - **Recommendation:** When a spec proposes "switch reads to new store now, switch writes later", the Approach section must explicitly answer: between deploy A (read switch) and deploy B (write switch), how does the new read source stay current? Acceptable answers: (a) dual-write at deploy A, (b) batch sync job between A and B, (c) maintenance window. "We'll switch writes later" without a plan is a data-freshness bug. `/spec-new` should prompt for this when the spec touches a dual-store migration.
-- **Applied:** proposed
+- **Applied:** dismissed (single-operator project; skill prompt would add friction without preventing bugs)
 
 ### 3. Voting/quorum specs must distinguish algorithm changes from weight-formula changes
 - **Target:** `spec_skill`
 - **From discrepancy:** #3
 - **Recommendation:** Specs that introduce multiple voting methods must categorize each method as either "same algorithm, different weight" or "different algorithm" up front. The latter needs a separate phase with its own resolution path, dedup key, and breakdown type. Listing them as siblings in a bullet point obscures the algorithmic difference and creates surprise scope expansion mid-spike.
-- **Applied:** proposed
+- **Applied:** dismissed (single-operator project; skill prompt would add friction without preventing bugs)
 
 ### 4. Multi-template/multi-kind features need a full kind enumeration before bootstrap can ship
 - **Target:** `claude_md`
@@ -97,7 +97,7 @@ These are NOT findings — they are remaining work tracked for future spikes.
 - **Target:** `spec_skill`
 - **From discrepancy:** #6
 - **Recommendation:** When a spec's Approach says "N files affected" or "K callers to sweep", that number MUST be grounded in a targeted grep that matches only the relevant pattern (imports, calls, instances of the specific identifier). Fuzzy counts inflate phase estimates and push real work into deferred phases that never land. Reviewers should ask "what grep produced this number?" for any phase that gates on a caller count.
-- **Applied:** proposed
+- **Applied:** dismissed (single-operator project; skill prompt would add friction without preventing bugs)
 
 ### 7. Legally regulated UI content can't be parametrized like display labels
 - **Target:** `claude_md`
@@ -109,4 +109,4 @@ These are NOT findings — they are remaining work tracked for future spikes.
 - **Target:** `spec_skill`
 - **From discrepancy:** (meta — applies to specs #1, #3, #4, #5)
 - **Recommendation:** Architecturally-invasive specs (those touching schema + voting + UI + templates simultaneously) routinely split each phase into 2–3 sub-phases during implementation. This spec's 8 phases became ~14 sub-phases (1c, 2a/2b, 3b, 6/6b/6c, 7a/7b/7c, 8a/8b). `/spec-new` should default cross-cutting specs to a "phases are placeholders; expect sub-phasing" disclaimer in the Notes section, AND `/spec-promote spec → in_progress` should remind operators to run `/spec-retro` after every phase (already in spec Notes — but the reminder should also be in the skill).
-- **Applied:** proposed
+- **Applied:** dismissed (single-operator project; skill prompt would add friction without preventing bugs)
