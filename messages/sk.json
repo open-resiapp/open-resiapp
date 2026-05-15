@@ -953,5 +953,115 @@
   "Sandbox": {
     "bannerTitle": "DEMO inštancia.",
     "bannerBody": "Toto je skúšobné prostredie. Údaje sú vymyslené a budú zahodené pri prechode do ostrej prevádzky."
+  },
+  "Templates": {
+    "Categories": {
+      "residential": "Bývanie",
+      "land": "Pôda a príroda",
+      "commercial": "Komerčné a zdieľané",
+      "civic": "Sociálne a občianske",
+      "custom": "Vlastné"
+    },
+    "hoa": {
+      "name": "Bytový dom / SVB",
+      "description": "Spoločenstvo vlastníkov bytov v bytovom dome. Hlasovanie podľa spoluvlastníckeho podielu (§14 zák. 182/1993 Z.z.).",
+      "sampleCommunityName": "Bytový dom"
+    },
+    "garden": {
+      "name": "Záhradkárska osada",
+      "description": "Združenie záhradkárov so zdieľanou pôdou a infraštruktúrou. Hlasovanie jeden člen — jeden hlas.",
+      "sampleCommunityName": "Záhradkárska osada",
+      "sampleSection": "Sektor A"
+    },
+    "garage": {
+      "name": "Garážový dom",
+      "description": "Spoluvlastníctvo garáží v garážovom dome. Hlasovanie jedna garáž — jeden hlas.",
+      "sampleCommunityName": "Garážový dom"
+    },
+    "street": {
+      "name": "Ulica s rodinnými domami",
+      "description": "Obyvatelia ulice s rodinnými domami. Spoločné rozhodovanie o ulici, údržbe, akciách.",
+      "sampleCommunityName": "Naša ulica"
+    },
+    "cottage": {
+      "name": "Chatová oblasť",
+      "description": "Chatári v chatovej oblasti. Spoločné rozhodovanie o prístupových cestách, vode, elektrine.",
+      "sampleCommunityName": "Chatová oblasť"
+    },
+    "urbar": {
+      "name": "Urbárske / pozemkové spoločenstvo",
+      "description": "Spoločenstvo vlastníkov lesov a pôdy (zák. 97/2013 Z.z.). Hlasovanie váhované podielom.",
+      "sampleCommunityName": "Urbárske spoločenstvo"
+    },
+    "apiary": {
+      "name": "Včelárske združenie",
+      "description": "Včelári so zdieľanou klimatickou zónou alebo lokalitou. Jeden člen — jeden hlas.",
+      "sampleCommunityName": "Včelárske združenie"
+    },
+    "marina": {
+      "name": "Prístav / jachtklub",
+      "description": "Spoločenstvo majiteľov plavidiel kotviacich v jednom prístave. Hlasovanie jedno kotvisko — jeden hlas.",
+      "sampleCommunityName": "Prístav"
+    },
+    "mobile_home_park": {
+      "name": "Park mobilných domov",
+      "description": "Rezidenti parku mobilných domov / karavanov. Hlasovanie jedna parcela — jeden hlas.",
+      "sampleCommunityName": "Park mobilných domov"
+    },
+    "storage_units": {
+      "name": "Skladovacie boxy",
+      "description": "Areál samoobslužných skladovacích jednotiek. Hlasovanie jeden box — jeden hlas.",
+      "sampleCommunityName": "Skladovací areál"
+    },
+    "office_building": {
+      "name": "Administratívna budova",
+      "description": "Vlastníci kancelárskych priestorov v jednej budove. Hlasovanie váhované podielom.",
+      "sampleCommunityName": "Administratívna budova"
+    },
+    "coworking": {
+      "name": "Coworkingové centrum",
+      "description": "Členovia zdieľaného pracovného priestoru. Jeden člen — jeden hlas.",
+      "sampleCommunityName": "Coworkingové centrum"
+    },
+    "industrial_park": {
+      "name": "Priemyselný park",
+      "description": "Nájomcovia priemyselného parku alebo logistického areálu. Hlasovanie váhované podielom.",
+      "sampleCommunityName": "Priemyselný park"
+    },
+    "cemetery": {
+      "name": "Cintorínske hrobové miesta",
+      "description": "Vlastníci hrobových miest na cintoríne. Hlasovanie jedno miesto — jeden hlas.",
+      "sampleCommunityName": "Cintorín"
+    },
+    "sports_club": {
+      "name": "Športový klub",
+      "description": "Členovia športového klubu s prístupom k spoločným zariadeniam. Jeden člen — jeden hlas.",
+      "sampleCommunityName": "Športový klub"
+    },
+    "hunting_association": {
+      "name": "Poľovnícke združenie",
+      "description": "Poľovnícke združenie (zák. 274/2009 Z.z.). Hlasovanie jeden člen — jeden hlas.",
+      "sampleCommunityName": "Poľovnícke združenie"
+    },
+    "fishing_cooperative": {
+      "name": "Rybárske združenie",
+      "description": "Združenie držiteľov rybárskych povolení (zák. 216/2018 Z.z.). Jeden člen — jeden hlas.",
+      "sampleCommunityName": "Rybárske združenie"
+    },
+    "parents_association": {
+      "name": "Rada rodičov",
+      "description": "Združenie rodičov pri škole alebo škôlke. Hlasovanie jeden rodič — jeden hlas.",
+      "sampleCommunityName": "Rada rodičov"
+    },
+    "religious_community": {
+      "name": "Náboženská obec / farnosť",
+      "description": "Členovia náboženskej obce alebo farnosti. Hlasovanie jedna domácnosť — jeden hlas.",
+      "sampleCommunityName": "Farnosť"
+    },
+    "custom": {
+      "name": "Vlastná štruktúra",
+      "description": "Prázdny strom — admin si nakonfiguruje vlastné typy uzlov a hierarchiu cez UI po inštalácii.",
+      "sampleCommunityName": "Naše spoločenstvo"
+    }
   }
 }

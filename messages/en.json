@@ -953,5 +953,115 @@
   "Sandbox": {
     "bannerTitle": "DEMO instance.",
     "bannerBody": "This is a test environment. Data is fictitious and will be discarded when you go live."
+  },
+  "Templates": {
+    "Categories": {
+      "residential": "Residential",
+      "land": "Land & nature",
+      "commercial": "Commercial & shared",
+      "civic": "Social & civic",
+      "custom": "Custom"
+    },
+    "hoa": {
+      "name": "HOA / Residential building",
+      "description": "Homeowners association in a residential building. Voting weighted by ownership share (§14 Act 182/1993, Slovakia).",
+      "sampleCommunityName": "Residential building"
+    },
+    "garden": {
+      "name": "Garden community",
+      "description": "Garden allotment association with shared land and infrastructure. One member, one vote.",
+      "sampleCommunityName": "Garden community",
+      "sampleSection": "Section A"
+    },
+    "garage": {
+      "name": "Garage building",
+      "description": "Shared ownership of garages in one building. One garage, one vote.",
+      "sampleCommunityName": "Garage building"
+    },
+    "street": {
+      "name": "Street with houses",
+      "description": "Residents on a single street with detached houses. Joint decisions on the street, upkeep, events.",
+      "sampleCommunityName": "Our street"
+    },
+    "cottage": {
+      "name": "Cottage settlement",
+      "description": "Cottage owners in a settlement. Joint decisions on access roads, water, electricity.",
+      "sampleCommunityName": "Cottage settlement"
+    },
+    "urbar": {
+      "name": "Land commons (urbár)",
+      "description": "Shared ownership of forests and land (Act 97/2013, Slovakia). Voting weighted by share.",
+      "sampleCommunityName": "Land commons"
+    },
+    "apiary": {
+      "name": "Beekeeping association",
+      "description": "Beekeepers sharing a climatic zone or apiary location. One member, one vote.",
+      "sampleCommunityName": "Beekeeping association"
+    },
+    "marina": {
+      "name": "Marina / boat club",
+      "description": "Boat owners mooring at a single marina. One mooring, one vote.",
+      "sampleCommunityName": "Marina"
+    },
+    "mobile_home_park": {
+      "name": "Mobile home park",
+      "description": "Residents of a mobile-home / caravan park. One pad, one vote.",
+      "sampleCommunityName": "Mobile home park"
+    },
+    "storage_units": {
+      "name": "Storage units facility",
+      "description": "Self-storage facility tenants. One unit, one vote.",
+      "sampleCommunityName": "Storage facility"
+    },
+    "office_building": {
+      "name": "Office building",
+      "description": "Office-suite owners in a single building. Voting weighted by share.",
+      "sampleCommunityName": "Office building"
+    },
+    "coworking": {
+      "name": "Coworking space",
+      "description": "Members of a shared workspace. One member, one vote.",
+      "sampleCommunityName": "Coworking space"
+    },
+    "industrial_park": {
+      "name": "Industrial park",
+      "description": "Tenants of an industrial / logistics park. Voting weighted by share.",
+      "sampleCommunityName": "Industrial park"
+    },
+    "cemetery": {
+      "name": "Cemetery plots",
+      "description": "Owners of grave plots in a cemetery. One plot, one vote.",
+      "sampleCommunityName": "Cemetery"
+    },
+    "sports_club": {
+      "name": "Sports club",
+      "description": "Members of a sports club with shared facilities. One member, one vote.",
+      "sampleCommunityName": "Sports club"
+    },
+    "hunting_association": {
+      "name": "Hunting association",
+      "description": "Hunting association (Act 274/2009, Slovakia). One member, one vote.",
+      "sampleCommunityName": "Hunting association"
+    },
+    "fishing_cooperative": {
+      "name": "Fishing cooperative",
+      "description": "Holders of fishing licenses (Act 216/2018, Slovakia). One member, one vote.",
+      "sampleCommunityName": "Fishing cooperative"
+    },
+    "parents_association": {
+      "name": "School parents association",
+      "description": "Parent body attached to a school or kindergarten. One parent, one vote.",
+      "sampleCommunityName": "Parents association"
+    },
+    "religious_community": {
+      "name": "Religious community / parish",
+      "description": "Members of a religious community or parish. One household, one vote.",
+      "sampleCommunityName": "Parish"
+    },
+    "custom": {
+      "name": "Custom structure",
+      "description": "Empty tree — the admin configures node kinds and hierarchy via the UI after install.",
+      "sampleCommunityName": "Our community"
+    }
   }
 }
