@@ -2,12 +2,10 @@ import { NextRequest, NextResponse } from "next/server";
 import { eq } from "drizzle-orm";
 
 import { db } from "@/db";
-import { entities, entityKindEnum } from "@/db/schema";
+import { entities } from "@/db/schema";
 import { withExternalAuth } from "@/lib/external-auth";
 import { recordEntityAudit } from "@/lib/entity-audit";
-
-type EntityKind = (typeof entityKindEnum.enumValues)[number];
-const VALID_KINDS = new Set<EntityKind>(entityKindEnum.enumValues);
+import { getKind } from "@/lib/kinds/registry.server";
 
 // Set-kind is one-way and audit-logged. The spec gates this at the
 // admin API layer (RES-20260501-002 §"Operator-only mutation surface")
@@ -25,9 +23,9 @@ async function handler(
 
   const body = await request.json();
   const { kind } = body ?? {};
-  if (typeof kind !== "string" || !VALID_KINDS.has(kind as EntityKind)) {
+  if (typeof kind !== "string" || !(await getKind(kind))) {
     return NextResponse.json(
-      { error: `kind must be one of: ${[...VALID_KINDS].join(", ")}` },
+      { error: "kind must be a registered entity_kinds slug" },
       { status: 400 }
     );
   }
@@ -44,7 +42,7 @@ async function handler(
 
   await db
     .update(entities)
-    .set({ kind: kind as EntityKind })
+    .set({ kind })
     .where(eq(entities.id, id));
 
   recordEntityAudit({

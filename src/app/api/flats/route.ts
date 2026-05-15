@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { aliasedTable, and, asc, eq, isNull } from "drizzle-orm";
+import { aliasedTable, and, asc, eq, isNull, sql } from "drizzle-orm";
 
 import { auth } from "@/lib/auth";
 import { db } from "@/db";
@@ -8,6 +8,7 @@ import { hasPermission } from "@/lib/permissions";
 import { createEntity } from "@/lib/entity-tree";
 import { recordEntityAudit } from "@/lib/entity-audit";
 import { listUserFlats } from "@/lib/legacy-compat";
+import { unitDataPatch } from "@/lib/db/entity-data";
 import type { UserRole } from "@/types";
 
 export async function GET(request: NextRequest) {
@@ -33,27 +34,27 @@ export async function GET(request: NextRequest) {
     );
   }
 
-  // Phase 9.1d: list all housing_unit entities with their data + parent
-  // entrance name. Replaces the legacy flats + entrances join.
+  // Phase 2b: list all unit entities with their data + parent entrance
+  // name from entities.data jsonb. Replaces the housingUnitData join.
   const entrance = aliasedTable(entities, "entrance");
+  const flatNumberExpr = sql<string>`${entities.data}->>'flat_number'`;
   const result = await db
     .select({
       id: entities.id,
-      flatNumber: housingUnitData.flatNumber,
-      floor: housingUnitData.floor,
-      area: housingUnitData.area,
-      shareNumerator: housingUnitData.shareNumerator,
-      shareDenominator: housingUnitData.shareDenominator,
+      flatNumber: flatNumberExpr,
+      floor: sql<number>`coalesce((${entities.data}->>'floor')::int, 0)`,
+      area: sql<number | null>`(${entities.data}->>'area_m2')::numeric`,
+      shareNumerator: sql<number>`(${entities.data}->>'share_numerator')::int`,
+      shareDenominator: sql<number>`(${entities.data}->>'share_denominator')::int`,
       entranceId: entities.parentId,
       entranceName: entrance.name,
     })
     .from(entities)
-    .innerJoin(housingUnitData, eq(housingUnitData.entityId, entities.id))
     .leftJoin(entrance, eq(entrance.id, entities.parentId))
     .where(
-      and(eq(entities.kind, "housing_unit"), isNull(entities.archivedAt))
+      and(eq(entities.kind, "unit"), isNull(entities.archivedAt))
     )
-    .orderBy(asc(entrance.name), asc(housingUnitData.flatNumber));
+    .orderBy(asc(entrance.name), asc(flatNumberExpr));
 
   return NextResponse.json(result);
 }
@@ -78,11 +79,12 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  // Phase 9.1d: create the housing_unit entity + housing_unit_data only.
-  // Legacy flats table write removed; entity tree is canonical.
+  // Phase 2b dual-write: create the unit entity, insert legacy
+  // housing_unit_data row, AND mirror the same fields into
+  // entities.data jsonb so read paths see fresh values immediately.
   const entity = await createEntity({
     parentId: entranceId,
-    kind: "housing_unit",
+    kind: "unit",
     name: flatNumber,
   });
   recordEntityAudit({
@@ -106,6 +108,19 @@ export async function POST(request: NextRequest) {
     shareDenominator,
     area: area ?? null,
   });
+  const dataPatch = unitDataPatch({
+    flatNumber,
+    floor: floor ?? 0,
+    shareNumerator,
+    shareDenominator,
+    area: area ?? null,
+  });
+  await db
+    .update(entities)
+    .set({
+      data: sql`${entities.data} || ${JSON.stringify(dataPatch)}::jsonb`,
+    })
+    .where(eq(entities.id, entity.id));
 
   return NextResponse.json(
     {

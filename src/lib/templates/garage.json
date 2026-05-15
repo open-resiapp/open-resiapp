@@ -1,0 +1,16 @@
+{
+  "slug": "garage",
+  "display_name_key": "Templates.garage.name",
+  "description_key": "Templates.garage.description",
+  "category": "commercial",
+  "root_kind": "community",
+  "default_voting_method": "one_per_unit",
+  "default_roles": ["admin", "chairman", "owner"],
+  "starter_tree": [
+    {
+      "kind": "community",
+      "name_key": "Templates.garage.sampleCommunityName"
+    }
+  ],
+  "import_levels": ["community", "garage_block", "garage"]
+}

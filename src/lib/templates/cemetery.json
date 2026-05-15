@@ -1,0 +1,16 @@
+{
+  "slug": "cemetery",
+  "display_name_key": "Templates.cemetery.name",
+  "description_key": "Templates.cemetery.description",
+  "category": "civic",
+  "root_kind": "community",
+  "default_voting_method": "one_per_unit",
+  "default_roles": ["admin", "chairman", "owner"],
+  "starter_tree": [
+    {
+      "kind": "community",
+      "name_key": "Templates.cemetery.sampleCommunityName"
+    }
+  ],
+  "import_levels": ["community", "cemetery_section", "grave_plot"]
+}

@@ -21,7 +21,7 @@ async function handler(_request: NextRequest) {
     .where(
       and(
         eq(entities.parentId, buildingInfo.id),
-        eq(entities.kind, "housing_entrance"),
+        eq(entities.kind, "entrance"),
         isNull(entities.archivedAt)
       )
     );
@@ -30,7 +30,7 @@ async function handler(_request: NextRequest) {
     .from(entities)
     .where(
       and(
-        eq(entities.kind, "housing_unit"),
+        eq(entities.kind, "unit"),
         eq(entities.rootId, buildingInfo.id),
         isNull(entities.archivedAt)
       )

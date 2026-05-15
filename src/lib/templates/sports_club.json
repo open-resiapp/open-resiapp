@@ -1,0 +1,16 @@
+{
+  "slug": "sports_club",
+  "display_name_key": "Templates.sports_club.name",
+  "description_key": "Templates.sports_club.description",
+  "category": "civic",
+  "root_kind": "community",
+  "default_voting_method": "one_per_member",
+  "default_roles": ["admin", "chairman", "member"],
+  "starter_tree": [
+    {
+      "kind": "community",
+      "name_key": "Templates.sports_club.sampleCommunityName"
+    }
+  ],
+  "import_levels": ["community", "club_section", "member_locker"]
+}

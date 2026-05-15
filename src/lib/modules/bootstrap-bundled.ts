@@ -23,10 +23,10 @@ import { listCommunityRoots } from "@/lib/legacy-compat";
 type BundledModuleConfig = {
   name: string;
   autoEnableKinds: ReadonlyArray<
-    | "housing_community"
-    | "housing_block"
-    | "housing_entrance"
-    | "housing_unit"
+    | "community"
+    | "building"
+    | "entrance"
+    | "unit"
     | "generic_group"
   >;
 };
@@ -34,7 +34,7 @@ type BundledModuleConfig = {
 const BUNDLED_MODULES: ReadonlyArray<BundledModuleConfig> = [
   {
     name: "voting",
-    autoEnableKinds: ["housing_community", "housing_block"],
+    autoEnableKinds: ["community", "building"],
   },
 ];
 

@@ -1,10 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
-import { and, eq } from "drizzle-orm";
+import { and, eq, sql } from "drizzle-orm";
 import { alias } from "drizzle-orm/pg-core";
 
 import { auth } from "@/lib/auth";
 import { db } from "@/db";
-import { users, housingUnitData } from "@/db/schema";
+import { users, entities } from "@/db/schema";
 import { mandates, votings } from "@modules/voting/src/db/schema";
 import { hasPermission } from "@/lib/permissions";
 import type { UserRole } from "@/types";
@@ -30,13 +30,13 @@ export async function GET(request: NextRequest) {
   const toOwner = alias(users, "toOwner");
   const verifiedByAdmin = alias(users, "verifiedByAdmin");
 
-  // Phase 9.2: flat number now comes from housing_unit_data joined
-  // on the mandate's from_entity_id (== flat entity id).
+  // Phase 2b: flat_number comes from entities.data jsonb on the unit
+  // entity referenced by mandate.fromEntityId.
   const rows = await db
     .select({
       id: mandates.id,
       fromOwnerName: fromOwner.name,
-      fromFlatNumber: housingUnitData.flatNumber,
+      fromFlatNumber: sql<string | null>`${entities.data}->>'flat_number'`,
       toOwnerName: toOwner.name,
       paperDocumentConfirmed: mandates.paperDocumentConfirmed,
       verifiedByAdminName: verifiedByAdmin.name,
@@ -48,7 +48,7 @@ export async function GET(request: NextRequest) {
     .from(mandates)
     .leftJoin(fromOwner, eq(mandates.fromOwnerId, fromOwner.id))
     .leftJoin(toOwner, eq(mandates.toOwnerId, toOwner.id))
-    .leftJoin(housingUnitData, eq(housingUnitData.entityId, mandates.fromEntityId))
+    .leftJoin(entities, eq(entities.id, mandates.fromEntityId))
     .leftJoin(verifiedByAdmin, eq(mandates.verifiedByAdminId, verifiedByAdmin.id))
     .where(eq(mandates.votingId, votingId));
 

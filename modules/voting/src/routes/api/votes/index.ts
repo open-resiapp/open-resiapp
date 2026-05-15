@@ -3,7 +3,7 @@ import { aliasedTable, and, eq, isNull, sql } from "drizzle-orm";
 
 import { auth } from "@/lib/auth";
 import { db } from "@/db";
-import { users, entities, housingUnitData, memberships } from "@/db/schema";
+import { users, entities, memberships } from "@/db/schema";
 import { votes, votings } from "@modules/voting/src/db/schema";
 import { hasPermission } from "@/lib/permissions";
 import { generateAuditHash, calculateResults } from "@modules/voting/src/engine";
@@ -11,6 +11,11 @@ import { sendVoteConfirmation } from "@modules/voting/src/email/vote-confirmatio
 import { isElectronicVotingBlocked } from "@modules/voting/src/rules";
 import { dispatchHook } from "@/lib/modules/dispatch";
 import { getCommunityRoot } from "@/lib/legacy-compat";
+import {
+  computeUnitWeight,
+  isUnitScoped,
+  normalizeVotingMethod,
+} from "@/lib/voting-method";
 import type {
   UserRole,
   VoteChoice,
@@ -37,10 +42,12 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: "Nemáte oprávnenie" }, { status: 403 });
   }
 
-  // Phase 9.2: read voting method + country from the root entity's
-  // housing_root_data via the legacy-compat helper.
+  // Phase 2b: voting method + country read from entities.data via
+  // getCommunityRoot. Phase 3: votingMethod is canonicalized (legacy
+  // values like "per_share" map to "weighted_by_share") so downstream
+  // dispatch only sees the 5 canonical forms.
   const root = await getCommunityRoot();
-  const votingMethod = (root?.votingMethod ?? "per_share") as VotingMethod;
+  const votingMethod = normalizeVotingMethod(root?.votingMethod);
   const country = (root?.country ?? "sk") as Country;
 
   // Voting scope (entityId points at root / entrance / flat).
@@ -55,9 +62,11 @@ export async function GET(request: NextRequest) {
 
   const quorumType = (voting?.quorumType ?? "simple_all") as QuorumType;
 
-  // Vote rows joined with the housing_unit entity + housing_unit_data
-  // for share/area data, the voter's user record, and the voter's
-  // membership on the unit for the owner-of-unit share (BYT-20260511-001).
+  // Phase 2b: vote rows joined with the unit entity. Share / area / flat
+  // number now come from entities.data jsonb. Numeric casts via ::int
+  // preserve the integer semantics of the legacy columns — voting math
+  // remains byte-identical to the housing_unit_data join (regulated by
+  // §14 zák. 182/1993 Z.z.).
   type VoteRow = {
     id: string;
     choice: "za" | "proti" | "zdrzal_sa";
@@ -88,16 +97,16 @@ export async function GET(request: NextRequest) {
       auditHash: votes.auditHash,
       paperPhotoUrl: votes.paperPhotoUrl,
       ownerName: users.name,
-      flatNumber: housingUnitData.flatNumber,
-      shareNumerator: housingUnitData.shareNumerator,
-      shareDenominator: housingUnitData.shareDenominator,
-      area: housingUnitData.area,
+      flatNumber: sql<string>`${entities.data}->>'flat_number'`,
+      shareNumerator: sql<number>`(${entities.data}->>'share_numerator')::int`,
+      shareDenominator: sql<number>`(${entities.data}->>'share_denominator')::int`,
+      area: sql<number | null>`(${entities.data}->>'area_m2')::int`,
       ownerUnitShareNumerator: memberships.ownerUnitShareNumerator,
       ownerUnitShareDenominator: memberships.ownerUnitShareDenominator,
     })
     .from(votes)
     .leftJoin(users, eq(votes.ownerId, users.id))
-    .innerJoin(housingUnitData, eq(housingUnitData.entityId, votes.entityId))
+    .innerJoin(entities, eq(entities.id, votes.entityId))
     .leftJoin(
       memberships,
       and(
@@ -123,21 +132,21 @@ export async function GET(request: NextRequest) {
     ownerUnitShareDenominator: v.ownerUnitShareDenominator ?? 1,
   }));
 
-  // Total possible weight: sum housing_unit_data over every housing_unit
-  // entity in the voting's subtree (or all if root-scope). The path
-  // overlap is computed via the materialized path.
+  // Total possible weight: sum entities.data share/area over every unit
+  // in the voting's subtree (or all when root-scope). The path overlap
+  // is computed via the materialized path on entities. Phase 2b reads
+  // share/area from entities.data jsonb instead of housing_unit_data.
   const flatsForScope = voting?.entityId
     ? await db
         .select({
-          shareNumerator: housingUnitData.shareNumerator,
-          shareDenominator: housingUnitData.shareDenominator,
-          area: housingUnitData.area,
+          shareNumerator: sql<number>`(${entities.data}->>'share_numerator')::int`,
+          shareDenominator: sql<number>`(${entities.data}->>'share_denominator')::int`,
+          area: sql<number | null>`(${entities.data}->>'area_m2')::int`,
         })
         .from(entities)
-        .innerJoin(housingUnitData, eq(housingUnitData.entityId, entities.id))
         .where(
           and(
-            eq(entities.kind, "housing_unit"),
+            eq(entities.kind, "unit"),
             isNull(entities.archivedAt),
             sql`${entities.path} LIKE (
               SELECT path || '%' FROM ${entities} WHERE id = ${voting.entityId}
@@ -146,30 +155,38 @@ export async function GET(request: NextRequest) {
         )
     : await db
         .select({
-          shareNumerator: housingUnitData.shareNumerator,
-          shareDenominator: housingUnitData.shareDenominator,
-          area: housingUnitData.area,
+          shareNumerator: sql<number>`(${entities.data}->>'share_numerator')::int`,
+          shareDenominator: sql<number>`(${entities.data}->>'share_denominator')::int`,
+          area: sql<number | null>`(${entities.data}->>'area_m2')::int`,
         })
         .from(entities)
-        .innerJoin(housingUnitData, eq(housingUnitData.entityId, entities.id))
         .where(
-          and(eq(entities.kind, "housing_unit"), isNull(entities.archivedAt))
+          and(eq(entities.kind, "unit"), isNull(entities.archivedAt))
         );
 
+  // Phase 3: total possible weight via the canonical dispatcher. The
+  // legally-regulated math is unchanged for HOA (weighted_by_share);
+  // the dispatcher just centralizes the formulas so non-HOA templates
+  // (one_per_unit, per_area) share the same code path.
+  if (!isUnitScoped(votingMethod)) {
+    return NextResponse.json(
+      {
+        error:
+          "Member-scoped voting methods (one_per_member, custom_weight) are not yet implemented (Phase 3b).",
+      },
+      { status: 501 }
+    );
+  }
   let totalPossibleWeight = 0;
   for (const f of flatsForScope) {
-    switch (votingMethod) {
-      case "per_flat":
-        totalPossibleWeight += 1;
-        break;
-      case "per_area":
-        totalPossibleWeight += f.area ?? 1;
-        break;
-      case "per_share":
-      default:
-        totalPossibleWeight += f.shareNumerator / f.shareDenominator;
-        break;
-    }
+    totalPossibleWeight += computeUnitWeight(
+      {
+        shareNumerator: f.shareNumerator,
+        shareDenominator: f.shareDenominator,
+        area: f.area,
+      },
+      votingMethod
+    );
   }
 
   const results = calculateResults(
@@ -184,21 +201,21 @@ export async function GET(request: NextRequest) {
     .filter((v) => v.ownerId === session.user.id)
     .map((v) => ({ flatId: v.flatId, choice: v.choice }));
 
-  // Current user's flats via memberships at housing_unit entities.
+  // Current user's flats via memberships at unit entities. Phase 2b
+  // reads flat_number from entities.data jsonb.
   type UserFlat = { flatId: string; flatNumber: string };
   const currentUserFlats: UserFlat[] = await db
     .select({
       flatId: entities.id,
-      flatNumber: housingUnitData.flatNumber,
+      flatNumber: sql<string>`${entities.data}->>'flat_number'`,
     })
     .from(memberships)
     .innerJoin(entities, eq(memberships.entityId, entities.id))
-    .innerJoin(housingUnitData, eq(housingUnitData.entityId, entities.id))
     .where(
       and(
         eq(memberships.userId, session.user.id),
         eq(memberships.status, "active"),
-        eq(entities.kind, "housing_unit"),
+        eq(entities.kind, "unit"),
         isNull(entities.archivedAt)
       )
     );
@@ -324,12 +341,15 @@ export async function POST(request: NextRequest) {
     }
   }
 
-  // Helper: re-fetch flat number for confirmation email.
+  // Helper: re-fetch flat number for confirmation email. Phase 2b
+  // reads from entities.data jsonb.
   async function loadFlatNumber(eid: string): Promise<string | null> {
     const [row] = await db
-      .select({ flatNumber: housingUnitData.flatNumber })
-      .from(housingUnitData)
-      .where(eq(housingUnitData.entityId, eid))
+      .select({
+        flatNumber: sql<string | null>`${entities.data}->>'flat_number'`,
+      })
+      .from(entities)
+      .where(eq(entities.id, eid))
       .limit(1);
     return row?.flatNumber ?? null;
   }
@@ -425,9 +445,11 @@ export async function POST(request: NextRequest) {
           .where(eq(users.id, voterId))
           .limit(1);
         const [hud] = await tx
-          .select({ flatNumber: housingUnitData.flatNumber })
-          .from(housingUnitData)
-          .where(eq(housingUnitData.entityId, flatId))
+          .select({
+            flatNumber: sql<string | null>`${entities.data}->>'flat_number'`,
+          })
+          .from(entities)
+          .where(eq(entities.id, flatId))
           .limit(1);
 
         if (!voter.email) {

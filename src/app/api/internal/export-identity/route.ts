@@ -1,10 +1,10 @@
 import "server-only";
 
 import { NextResponse } from "next/server";
-import { and, eq, isNull } from "drizzle-orm";
+import { and, eq, isNull, sql } from "drizzle-orm";
 
 import { db } from "@/db";
-import { entities, housingRootData, users } from "@/db/schema";
+import { entities, users } from "@/db/schema";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -43,19 +43,19 @@ export async function GET(req: Request) {
     return NextResponse.json({ error: "unauthorized" }, { status: 401 });
   }
 
+  // Phase 2b: root settings read from entities.data jsonb.
   const [community] = await db
     .select({
       id: entities.id,
       name: entities.name,
-      address: housingRootData.address,
-      ico: housingRootData.ico,
-      country: housingRootData.country,
-      votingMethod: housingRootData.votingMethod,
+      address: sql<string>`${entities.data}->>'address'`,
+      ico: sql<string | null>`${entities.data}->>'ico'`,
+      country: sql<string>`${entities.data}->>'country'`,
+      votingMethod: sql<string>`${entities.data}->>'voting_method'`,
     })
     .from(entities)
-    .innerJoin(housingRootData, eq(housingRootData.entityId, entities.id))
     .where(
-      and(eq(entities.kind, "housing_community"), isNull(entities.archivedAt))
+      and(eq(entities.kind, "community"), isNull(entities.archivedAt))
     )
     .limit(1);
 

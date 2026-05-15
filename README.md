@@ -1,7 +1,7 @@
 # OpenResiApp
 
 [![Docker Hub](https://img.shields.io/docker/v/ipk0/open-resiapp?label=Docker%20Hub&sort=semver)](https://hub.docker.com/r/ipk0/open-resiapp)
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![License: AGPL v3](https://img.shields.io/badge/License-AGPL_v3-blue.svg)](LICENSE)
 [![GitHub Discussions](https://img.shields.io/github/discussions/open-resiapp/open-resiapp)](https://github.com/open-resiapp/open-resiapp/discussions)
 
 Open-source web application for managing residential apartment buildings (bytove domy) in Slovakia. Built for building administrators, owners, and tenants.
@@ -231,4 +231,6 @@ See **[CONTRIBUTING.md](CONTRIBUTING.md)** for the full guide, or jump straight 
 
 ## License
 
-[MIT License](LICENSE)
+[GNU Affero General Public License v3.0 or later](LICENSE)
+
+Copyleft. If you run a modified version on a network server, you must make the source available to its users. See the [LICENSE](LICENSE) file for full terms.

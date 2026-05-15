@@ -3,13 +3,7 @@ import crypto from "crypto";
 import { and, desc, eq, isNotNull, isNull, ne, notInArray, sql } from "drizzle-orm";
 
 import { db } from "@/db";
-import {
-  entities,
-  housingUnitData,
-  invitations,
-  memberships,
-  users,
-} from "@/db/schema";
+import { entities, invitations, memberships, users } from "@/db/schema";
 import { sendClaimShellInvitation } from "@/lib/email";
 
 const DEFAULT_CLAIM_EXPIRY_DAYS = 14;
@@ -139,16 +133,15 @@ export async function listPendingShellUsers(
       id: users.id,
       name: users.name,
       email: users.email,
-      flatNumber: housingUnitData.flatNumber,
-      shareNumerator: housingUnitData.shareNumerator,
-      shareDenominator: housingUnitData.shareDenominator,
+      flatNumber: sql<string | null>`${entities.data}->>'flat_number'`,
+      shareNumerator: sql<number | null>`(${entities.data}->>'share_numerator')::int`,
+      shareDenominator: sql<number | null>`(${entities.data}->>'share_denominator')::int`,
       membershipId: memberships.id,
       entityId: entities.id,
     })
     .from(users)
     .innerJoin(memberships, eq(memberships.userId, users.id))
     .innerJoin(entities, eq(memberships.entityId, entities.id))
-    .leftJoin(housingUnitData, eq(housingUnitData.entityId, entities.id))
     .where(
       and(
         eq(users.status, "pending"),

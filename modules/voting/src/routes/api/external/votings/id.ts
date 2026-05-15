@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
-import { eq } from "drizzle-orm";
+import { eq, sql } from "drizzle-orm";
 
 import { db } from "@/db";
-import { users, housingUnitData } from "@/db/schema";
+import { users, entities } from "@/db/schema";
 import { votings, votes } from "@modules/voting/src/db/schema";
 import { withExternalAuth } from "@/lib/external-auth";
 import type { ValidatedApiKey } from "@/lib/api-keys";
@@ -38,21 +38,21 @@ async function handler(
     return NextResponse.json({ error: "Voting not found" }, { status: 404 });
   }
 
-  // Phase 9.2: vote rows joined with the housing_unit_data extension
-  // for flatNumber. votes.entityId == housing_unit entity id.
+  // Phase 2b: flatNumber comes from entities.data jsonb on the unit
+  // entity referenced by votes.entityId.
   const votesData = await db
     .select({
       id: votes.id,
       choice: votes.choice,
       voteType: votes.voteType,
       flatId: votes.entityId,
-      flatNumber: housingUnitData.flatNumber,
+      flatNumber: sql<string | null>`${entities.data}->>'flat_number'`,
       ownerId: votes.ownerId,
       ownerName: users.name,
       createdAt: votes.createdAt,
     })
     .from(votes)
-    .leftJoin(housingUnitData, eq(housingUnitData.entityId, votes.entityId))
+    .leftJoin(entities, eq(entities.id, votes.entityId))
     .leftJoin(users, eq(votes.ownerId, users.id))
     .where(eq(votes.votingId, id));
 

@@ -1,0 +1,18 @@
+{
+  "slug": "hunting_association",
+  "display_name_key": "Templates.hunting_association.name",
+  "description_key": "Templates.hunting_association.description",
+  "category": "land",
+  "root_kind": "community",
+  "default_voting_method": "one_per_member",
+  "default_roles": ["admin", "chairman", "member"],
+  "starter_tree": [
+    {
+      "kind": "community",
+      "name_key": "Templates.hunting_association.sampleCommunityName"
+    }
+  ],
+  "import_levels": ["community", "hunting_district", "hunter"],
+  "legal_review_required": true,
+  "notes_url": "https://www.slov-lex.sk/pravne-predpisy/SK/ZZ/2009/274/"
+}

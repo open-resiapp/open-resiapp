@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { and, eq } from "drizzle-orm";
+import { and, eq, sql } from "drizzle-orm";
 
 import { auth } from "@/lib/auth";
 import { db } from "@/db";
@@ -7,6 +7,7 @@ import { entities, housingUnitData, memberships } from "@/db/schema";
 import { hasPermission } from "@/lib/permissions";
 import { archiveEntity, setParent } from "@/lib/entity-tree";
 import { recordEntityAudit } from "@/lib/entity-audit";
+import { unitDataPatch } from "@/lib/db/entity-data";
 import type { UserRole } from "@/types";
 
 export async function PATCH(
@@ -26,12 +27,13 @@ export async function PATCH(
   const body = await request.json();
   const { flatNumber, floor, area, shareNumerator, shareDenominator, entranceId } = body;
 
-  // Phase 9.1d: write directly to entities + housing_unit_data.
+  // Phase 2b dual-write: keep legacy housing_unit_data updates as the
+  // rollback path while making entities.data the read-path truth.
   if (flatNumber !== undefined) {
     await db
       .update(entities)
       .set({ name: flatNumber })
-      .where(and(eq(entities.id, id), eq(entities.kind, "housing_unit")));
+      .where(and(eq(entities.id, id), eq(entities.kind, "unit")));
   }
   const hud: Record<string, unknown> = {};
   if (flatNumber !== undefined) hud.flatNumber = flatNumber;
@@ -44,6 +46,21 @@ export async function PATCH(
       .update(housingUnitData)
       .set(hud)
       .where(eq(housingUnitData.entityId, id));
+    const dataPatch = unitDataPatch({
+      flatNumber,
+      floor,
+      shareNumerator,
+      shareDenominator,
+      area,
+    });
+    if (Object.keys(dataPatch).length > 0) {
+      await db
+        .update(entities)
+        .set({
+          data: sql`${entities.data} || ${JSON.stringify(dataPatch)}::jsonb`,
+        })
+        .where(eq(entities.id, id));
+    }
   }
   if (entranceId !== undefined) {
     await setParent(id, entranceId);
@@ -59,16 +76,15 @@ export async function PATCH(
     .select({
       id: entities.id,
       entranceId: entities.parentId,
-      flatNumber: housingUnitData.flatNumber,
-      floor: housingUnitData.floor,
-      area: housingUnitData.area,
-      shareNumerator: housingUnitData.shareNumerator,
-      shareDenominator: housingUnitData.shareDenominator,
+      flatNumber: sql<string>`${entities.data}->>'flat_number'`,
+      floor: sql<number>`coalesce((${entities.data}->>'floor')::int, 0)`,
+      area: sql<number | null>`(${entities.data}->>'area_m2')::numeric`,
+      shareNumerator: sql<number>`(${entities.data}->>'share_numerator')::int`,
+      shareDenominator: sql<number>`(${entities.data}->>'share_denominator')::int`,
       createdAt: entities.createdAt,
     })
     .from(entities)
-    .innerJoin(housingUnitData, eq(housingUnitData.entityId, entities.id))
-    .where(and(eq(entities.id, id), eq(entities.kind, "housing_unit")))
+    .where(and(eq(entities.id, id), eq(entities.kind, "unit")))
     .limit(1);
 
   if (!updated) {

@@ -41,19 +41,19 @@ export async function findExistingCommunity(
   name: string,
   address: string
 ): Promise<{ id: string; name: string; address: string } | null> {
+  // Phase 2b: address lives on entities.data jsonb.
   const rows = await db
     .select({
       id: entities.id,
       name: entities.name,
-      address: housingRootData.address,
+      address: sql<string>`${entities.data}->>'address'`,
     })
     .from(entities)
-    .innerJoin(housingRootData, eq(housingRootData.entityId, entities.id))
     .where(
       and(
-        eq(entities.kind, "housing_community"),
+        eq(entities.kind, "community"),
         isNull(entities.archivedAt),
-        sql`(LOWER(${entities.name}) = LOWER(${name}) OR LOWER(${housingRootData.address}) = LOWER(${address}))`
+        sql`(LOWER(${entities.name}) = LOWER(${name}) OR LOWER(${entities.data}->>'address') = LOWER(${address}))`
       )
     )
     .limit(1);
@@ -145,14 +145,22 @@ export async function seedImport(input: SeedInput): Promise<SeedResult> {
       communityId = crypto.randomUUID();
       communityPath = buildPath(null, communityId);
 
+      // Phase 2b dual-write: root settings live on entities.data jsonb
+      // (read-path truth) AND in housing_root_data (rollback source).
       await tx.insert(entities).values({
         id: communityId,
         parentId: null,
-        kind: "housing_community",
+        kind: "community",
         name: first.community_name,
         path: communityPath,
         depth: 0,
         rootId: communityId,
+        data: {
+          address: first.community_address,
+          ico: first.community_ico ?? null,
+          voting_method: first.voting_method,
+          country: first.country,
+        },
       });
 
       await tx.insert(housingRootData).values({
@@ -168,7 +176,7 @@ export async function seedImport(input: SeedInput): Promise<SeedResult> {
         action: "entity.create",
         entityId: communityId,
         afterJson: JSON.stringify({
-          kind: "housing_community",
+          kind: "community",
           name: first.community_name,
         }),
       });
@@ -202,11 +210,11 @@ export async function seedImport(input: SeedInput): Promise<SeedResult> {
     // Unit names follow the seeder's "Byt <N>" convention; we also keep a
     // secondary lookup of unit flat-numbers by joining housing_unit_data.
     for (const e of existingChildren) {
-      if (e.kind === "housing_block") {
+      if (e.kind === "building") {
         existingByKindAndKey.set(`block|${e.name}`, e);
-      } else if (e.kind === "housing_entrance" && e.parentId) {
+      } else if (e.kind === "entrance" && e.parentId) {
         existingByKindAndKey.set(`entrance|${e.parentId}|${e.name}`, e);
-      } else if (e.kind === "housing_unit" && e.parentId) {
+      } else if (e.kind === "unit" && e.parentId) {
         existingByKindAndKey.set(`unit|${e.parentId}|${e.name}`, e);
       }
     }
@@ -226,7 +234,7 @@ export async function seedImport(input: SeedInput): Promise<SeedResult> {
       await tx.insert(entities).values({
         id: blockId,
         parentId: communityId,
-        kind: "housing_block",
+        kind: "building",
         name: r.block_name!,
         path: blockPath,
         depth: 1,
@@ -236,7 +244,7 @@ export async function seedImport(input: SeedInput): Promise<SeedResult> {
         actorUserId: input.actorUserId,
         action: "entity.create",
         entityId: blockId,
-        afterJson: JSON.stringify({ kind: "housing_block", name: r.block_name }),
+        afterJson: JSON.stringify({ kind: "building", name: r.block_name }),
       });
       blockIdByName.set(k, blockId);
     }
@@ -277,7 +285,7 @@ export async function seedImport(input: SeedInput): Promise<SeedResult> {
       await tx.insert(entities).values({
         id: entranceId,
         parentId: parent.id,
-        kind: "housing_entrance",
+        kind: "entrance",
         name: r.entrance_label,
         path: entrancePath,
         depth: parent.depth + 1,
@@ -288,7 +296,7 @@ export async function seedImport(input: SeedInput): Promise<SeedResult> {
         action: "entity.create",
         entityId: entranceId,
         afterJson: JSON.stringify({
-          kind: "housing_entrance",
+          kind: "entrance",
           name: r.entrance_label,
         }),
       });
@@ -345,14 +353,24 @@ export async function seedImport(input: SeedInput): Promise<SeedResult> {
 
       const unitId = crypto.randomUUID();
       const unitPath = buildPath(parentPath, unitId);
+      // Phase 2b dual-write: unit fields on entities.data jsonb
+      // (read-path truth) AND in housing_unit_data (rollback source).
+      // Note: legacy column `area` ↔ canonical jsonb key `area_m2`.
       await tx.insert(entities).values({
         id: unitId,
         parentId,
-        kind: "housing_unit",
+        kind: "unit",
         name: `Byt ${r.unit_number}`,
         path: unitPath,
         depth: parentDepth + 1,
         rootId: communityId,
+        data: {
+          flat_number: r.unit_number,
+          floor: r.unit_floor,
+          share_numerator: r.unit_share_numerator,
+          share_denominator: r.unit_share_denominator,
+          area_m2: r.unit_area_m2 ?? null,
+        },
       });
 
       await tx.insert(housingUnitData).values({
@@ -369,7 +387,7 @@ export async function seedImport(input: SeedInput): Promise<SeedResult> {
         action: "entity.create",
         entityId: unitId,
         afterJson: JSON.stringify({
-          kind: "housing_unit",
+          kind: "unit",
           flatNumber: r.unit_number,
           floor: r.unit_floor,
         }),

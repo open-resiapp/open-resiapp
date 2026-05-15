@@ -103,13 +103,23 @@ export async function POST(req: Request) {
   const communityId = crypto.randomUUID();
 
   const result = await db.transaction(async (tx) => {
+    // Phase 2b dual-write: data jsonb is the read-path truth, the
+    // legacy housing_root_data row is preserved for rollback until
+    // Phase 8.
+    const rootData = {
+      address: org_settings.address,
+      ico: org_settings.ico ?? null,
+      voting_method: org_settings.votingMethod,
+      country: org_settings.country,
+    };
     await tx.insert(entities).values({
       id: communityId,
-      kind: "housing_community",
+      kind: "community",
       name: org_settings.name,
       path: `/${communityId}`,
       depth: 0,
       rootId: communityId,
+      data: rootData,
     });
 
     await tx.insert(housingRootData).values({

@@ -1,13 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
-import { and, eq, isNull } from "drizzle-orm";
+import { and, eq, isNull, sql } from "drizzle-orm";
 
 import { db } from "@/db";
-import {
-  users,
-  memberships,
-  entities,
-  housingUnitData,
-} from "@/db/schema";
+import { users, memberships, entities } from "@/db/schema";
 import { withExternalAuth } from "@/lib/external-auth";
 import type { ValidatedApiKey } from "@/lib/api-keys";
 
@@ -36,21 +31,19 @@ async function handleGet(
     return NextResponse.json({ error: "User not found" }, { status: 404 });
   }
 
-  // Phase 9.1c: read flat assignments via memberships → housing_unit
-  // entities → housing_unit_data.
+  // Phase 2b: flat_number read from entities.data jsonb.
   const ufRows = await db
     .select({
       flatId: entities.id,
-      flatNumber: housingUnitData.flatNumber,
+      flatNumber: sql<string>`${entities.data}->>'flat_number'`,
     })
     .from(memberships)
     .innerJoin(entities, eq(memberships.entityId, entities.id))
-    .innerJoin(housingUnitData, eq(housingUnitData.entityId, entities.id))
     .where(
       and(
         eq(memberships.userId, user.id),
         eq(memberships.status, "active"),
-        eq(entities.kind, "housing_unit"),
+        eq(entities.kind, "unit"),
         isNull(entities.archivedAt)
       )
     );

@@ -1,15 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
-import { aliasedTable, and, eq, inArray, isNull } from "drizzle-orm";
+import { aliasedTable, and, eq, inArray, isNull, sql } from "drizzle-orm";
 import bcrypt from "bcrypt";
 
 import { auth } from "@/lib/auth";
 import { db } from "@/db";
-import {
-  users,
-  memberships,
-  entities,
-  housingUnitData,
-} from "@/db/schema";
+import { users, memberships, entities } from "@/db/schema";
 import { hasPermission } from "@/lib/permissions";
 import type { UserRole } from "@/types";
 
@@ -40,8 +35,8 @@ export async function GET(request: NextRequest) {
     return NextResponse.json([]);
   }
 
-  // Phase 9.1c: read flat assignments via memberships → housing_unit
-  // entities → housing_unit_data. Drops the legacy userFlats join.
+  // Phase 2b: read flat numbers from entities.data jsonb. The legacy
+  // housing_unit_data table is no longer joined (BYT-20260515-001).
   const userIds = allUsers.map((u) => u.id);
   const entrance = aliasedTable(entities, "entrance");
   type UfRow = {
@@ -54,18 +49,17 @@ export async function GET(request: NextRequest) {
     .select({
       userId: memberships.userId,
       flatId: entities.id,
-      flatNumber: housingUnitData.flatNumber,
+      flatNumber: sql<string>`${entities.data}->>'flat_number'`,
       entranceName: entrance.name,
     })
     .from(memberships)
     .innerJoin(entities, eq(memberships.entityId, entities.id))
-    .innerJoin(housingUnitData, eq(housingUnitData.entityId, entities.id))
     .leftJoin(entrance, eq(entrance.id, entities.parentId))
     .where(
       and(
         inArray(memberships.userId, userIds),
         eq(memberships.status, "active"),
-        eq(entities.kind, "housing_unit"),
+        eq(entities.kind, "unit"),
         isNull(entities.archivedAt)
       )
     );

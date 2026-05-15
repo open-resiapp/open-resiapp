@@ -17,9 +17,13 @@ import {
   compare,
   mul,
   rational,
-  toFloat,
   type Rational,
 } from "@/lib/rational";
+import {
+  computeUnitWeight,
+  isUnitScoped,
+  normalizeVotingMethod,
+} from "@/lib/voting-method";
 import { getVotingRules, type Country } from "../rules";
 
 // ── Public entry point ────────────────────────────────────
@@ -37,13 +41,24 @@ export interface CalculateResultsOptions {
  */
 export function calculateResults(
   votes: VoteWithOwnership[],
-  method: VotingMethod = "per_share",
+  method: VotingMethod = "weighted_by_share",
   quorumType: QuorumType = "simple_all",
   totalPossibleWeight: number = 0,
   options: CalculateResultsOptions = {}
 ): VotingResults {
   const { country = "sk" } = options;
   const rules = getVotingRules(country);
+  const canonical = normalizeVotingMethod(method);
+
+  // Member-scoped methods (one_per_member, custom_weight) skip unit
+  // grouping — each membership votes independently. Phase 3 scaffolds
+  // the dispatch; the member-scoped resolver lands in Phase 3b.
+  if (!isUnitScoped(canonical)) {
+    throw new Error(
+      `calculateResults: voting method "${canonical}" is member-scoped — implementation lands in Phase 3b. ` +
+        `Switch the community's voting_method to a unit-scoped one for now.`
+    );
+  }
 
   // 1. Group by unit.
   const byUnit = new Map<string, VoteWithOwnership[]>();
@@ -56,7 +71,7 @@ export function calculateResults(
   // 2. Resolve each unit.
   const unitBreakdowns: UnitResolution[] = [];
   for (const slot of byUnit.values()) {
-    unitBreakdowns.push(resolveUnitVote(slot, method));
+    unitBreakdowns.push(resolveUnitVote(slot, canonical));
   }
 
   // 3. Sum unit-weighted contributions.
@@ -233,15 +248,14 @@ export function resolveUnitVote(
 }
 
 function getUnitWeight(v: VoteWithOwnership, method: VotingMethod): number {
-  switch (method) {
-    case "per_flat":
-      return 1;
-    case "per_area":
-      return v.area ?? 1;
-    case "per_share":
-    default:
-      return toFloat(rational(v.unitShareNumerator, v.unitShareDenominator));
-  }
+  return computeUnitWeight(
+    {
+      shareNumerator: v.unitShareNumerator,
+      shareDenominator: v.unitShareDenominator,
+      area: v.area,
+    },
+    normalizeVotingMethod(method)
+  );
 }
 
 // ── Legacy / single-owner aggregation helpers ─────────────

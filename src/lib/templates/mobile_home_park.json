@@ -1,0 +1,16 @@
+{
+  "slug": "mobile_home_park",
+  "display_name_key": "Templates.mobile_home_park.name",
+  "description_key": "Templates.mobile_home_park.description",
+  "category": "residential",
+  "root_kind": "community",
+  "default_voting_method": "one_per_unit",
+  "default_roles": ["admin", "chairman", "owner"],
+  "starter_tree": [
+    {
+      "kind": "community",
+      "name_key": "Templates.mobile_home_park.sampleCommunityName"
+    }
+  ],
+  "import_levels": ["community", "garden_section", "mobile_home_pad"]
+}

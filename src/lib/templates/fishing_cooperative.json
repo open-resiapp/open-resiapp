@@ -1,0 +1,18 @@
+{
+  "slug": "fishing_cooperative",
+  "display_name_key": "Templates.fishing_cooperative.name",
+  "description_key": "Templates.fishing_cooperative.description",
+  "category": "land",
+  "root_kind": "community",
+  "default_voting_method": "one_per_member",
+  "default_roles": ["admin", "chairman", "member"],
+  "starter_tree": [
+    {
+      "kind": "community",
+      "name_key": "Templates.fishing_cooperative.sampleCommunityName"
+    }
+  ],
+  "import_levels": ["community", "pond", "license_holder"],
+  "legal_review_required": true,
+  "notes_url": "https://www.slov-lex.sk/pravne-predpisy/SK/ZZ/2018/216/"
+}

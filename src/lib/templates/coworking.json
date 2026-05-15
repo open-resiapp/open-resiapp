@@ -1,0 +1,16 @@
+{
+  "slug": "coworking",
+  "display_name_key": "Templates.coworking.name",
+  "description_key": "Templates.coworking.description",
+  "category": "commercial",
+  "root_kind": "community",
+  "default_voting_method": "one_per_member",
+  "default_roles": ["admin", "chairman", "member"],
+  "starter_tree": [
+    {
+      "kind": "community",
+      "name_key": "Templates.coworking.sampleCommunityName"
+    }
+  ],
+  "import_levels": ["community", "coworking_zone", "desk"]
+}

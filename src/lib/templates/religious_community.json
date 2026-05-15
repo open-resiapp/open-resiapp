@@ -1,0 +1,17 @@
+{
+  "slug": "religious_community",
+  "display_name_key": "Templates.religious_community.name",
+  "description_key": "Templates.religious_community.description",
+  "category": "civic",
+  "root_kind": "community",
+  "default_voting_method": "one_per_member",
+  "default_roles": ["admin", "chairman", "member"],
+  "starter_tree": [
+    {
+      "kind": "community",
+      "name_key": "Templates.religious_community.sampleCommunityName"
+    }
+  ],
+  "import_levels": ["community", "congregation_group", "member_household"],
+  "legal_review_required": true
+}

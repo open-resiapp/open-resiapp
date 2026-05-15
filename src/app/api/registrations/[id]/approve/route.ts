@@ -67,7 +67,7 @@ export async function POST(
   const [flat] = await db
     .select({ id: entities.id })
     .from(entities)
-    .where(and(eq(entities.id, flatId), eq(entities.kind, "housing_unit")))
+    .where(and(eq(entities.id, flatId), eq(entities.kind, "unit")))
     .limit(1);
 
   if (!flat) {

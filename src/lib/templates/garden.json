@@ -1,0 +1,22 @@
+{
+  "slug": "garden",
+  "display_name_key": "Templates.garden.name",
+  "description_key": "Templates.garden.description",
+  "category": "land",
+  "root_kind": "community",
+  "default_voting_method": "one_per_member",
+  "default_roles": ["admin", "chairman", "member"],
+  "starter_tree": [
+    {
+      "kind": "community",
+      "name_key": "Templates.garden.sampleCommunityName",
+      "children": [
+        {
+          "kind": "garden_section",
+          "name_key": "Templates.garden.sampleSection"
+        }
+      ]
+    }
+  ],
+  "import_levels": ["community", "garden_section", "plot"]
+}

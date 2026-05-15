@@ -5,7 +5,6 @@ import { db } from "@/db";
 import {
   entities,
   memberships,
-  type entityKindEnum,
   type membershipRoleEnum,
 } from "@/db/schema";
 
@@ -22,7 +21,10 @@ import {
  *   - Root entities have path "/<selfId>/" and depth 0
  */
 
-export type EntityKind = (typeof entityKindEnum.enumValues)[number];
+// BYT-20260515-001 Phase 1c: kind is now a runtime slug from the
+// entity_kinds catalog (per-instance, data-driven). No compile-time
+// union — validate against entity_kinds at the route boundary.
+export type EntityKind = string;
 export type MembershipRole = (typeof membershipRoleEnum.enumValues)[number];
 
 const ROLE_RANK: Record<MembershipRole, number> = {

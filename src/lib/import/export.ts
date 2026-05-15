@@ -1,15 +1,9 @@
 import "server-only";
 
-import { and, asc, eq, inArray, isNull } from "drizzle-orm";
+import { and, asc, eq, inArray, isNull, sql } from "drizzle-orm";
 
 import { db } from "@/db";
-import {
-  entities,
-  housingRootData,
-  housingUnitData,
-  memberships,
-  users,
-} from "@/db/schema";
+import { entities, memberships, users } from "@/db/schema";
 
 import type { StructureVariant } from "./types";
 
@@ -34,19 +28,19 @@ export interface ExportResult {
  * Returns `null` when no housing community exists yet (fresh instance).
  */
 export async function exportCommunityAsImportRows(): Promise<ExportResult | null> {
+  // Phase 2b: root settings read from entities.data jsonb.
   const [community] = await db
     .select({
       id: entities.id,
       name: entities.name,
-      address: housingRootData.address,
-      ico: housingRootData.ico,
-      country: housingRootData.country,
-      votingMethod: housingRootData.votingMethod,
+      address: sql<string>`${entities.data}->>'address'`,
+      ico: sql<string | null>`${entities.data}->>'ico'`,
+      country: sql<string>`${entities.data}->>'country'`,
+      votingMethod: sql<string>`${entities.data}->>'voting_method'`,
     })
     .from(entities)
-    .innerJoin(housingRootData, eq(housingRootData.entityId, entities.id))
     .where(
-      and(eq(entities.kind, "housing_community"), isNull(entities.archivedAt))
+      and(eq(entities.kind, "community"), isNull(entities.archivedAt))
     )
     .limit(1);
 
@@ -57,7 +51,7 @@ export async function exportCommunityAsImportRows(): Promise<ExportResult | null
     .from(entities)
     .where(
       and(
-        eq(entities.kind, "housing_block"),
+        eq(entities.kind, "building"),
         eq(entities.rootId, community.id),
         isNull(entities.archivedAt)
       )
@@ -69,29 +63,30 @@ export async function exportCommunityAsImportRows(): Promise<ExportResult | null
     .from(entities)
     .where(
       and(
-        eq(entities.kind, "housing_entrance"),
+        eq(entities.kind, "entrance"),
         eq(entities.rootId, community.id),
         isNull(entities.archivedAt)
       )
     )
     .orderBy(asc(entities.name));
 
+  // Phase 2b: unit fields from entities.data jsonb. Note legacy column
+  // `area` is exposed under the canonical jsonb key `area_m2`.
   const units = await db
     .select({
       id: entities.id,
       name: entities.name,
       parentId: entities.parentId,
-      flatNumber: housingUnitData.flatNumber,
-      floor: housingUnitData.floor,
-      area: housingUnitData.area,
-      shareNumerator: housingUnitData.shareNumerator,
-      shareDenominator: housingUnitData.shareDenominator,
+      flatNumber: sql<string>`${entities.data}->>'flat_number'`,
+      floor: sql<number>`coalesce((${entities.data}->>'floor')::int, 0)`,
+      area: sql<number | null>`(${entities.data}->>'area_m2')::numeric`,
+      shareNumerator: sql<number>`(${entities.data}->>'share_numerator')::int`,
+      shareDenominator: sql<number>`(${entities.data}->>'share_denominator')::int`,
     })
     .from(entities)
-    .innerJoin(housingUnitData, eq(housingUnitData.entityId, entities.id))
     .where(
       and(
-        eq(entities.kind, "housing_unit"),
+        eq(entities.kind, "unit"),
         eq(entities.rootId, community.id),
         isNull(entities.archivedAt)
       )

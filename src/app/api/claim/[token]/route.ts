@@ -1,11 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import bcrypt from "bcrypt";
-import { and, eq, ne } from "drizzle-orm";
+import { and, eq, ne, sql } from "drizzle-orm";
 
 import { db } from "@/db";
 import {
   entities,
-  housingUnitData,
   invitations,
   memberships,
   users,
@@ -55,22 +54,21 @@ export async function GET(_req: NextRequest, ctx: RouteContext) {
     return NextResponse.json({ error: "not_found" }, { status: 404 });
   }
 
-  // Pick the first housing_unit membership to surface a meaningful
-  // identifier on the claim screen.
+  // Pick the first unit membership to surface a meaningful identifier
+  // on the claim screen. Phase 2b: flat_number from entities.data.
   const [unitRow] = await db
     .select({
-      flatNumber: housingUnitData.flatNumber,
+      flatNumber: sql<string | null>`${entities.data}->>'flat_number'`,
       rootName: entities.name,
       rootId: entities.rootId,
     })
     .from(memberships)
     .innerJoin(entities, eq(memberships.entityId, entities.id))
-    .leftJoin(housingUnitData, eq(housingUnitData.entityId, entities.id))
     .where(
       and(
         eq(memberships.userId, shell.id),
         eq(memberships.status, "active"),
-        eq(entities.kind, "housing_unit")
+        eq(entities.kind, "unit")
       )
     )
     .limit(1);

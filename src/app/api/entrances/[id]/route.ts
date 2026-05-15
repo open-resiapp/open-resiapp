@@ -39,7 +39,7 @@ export async function PATCH(
   const [updated] = await db
     .update(entities)
     .set(updateData)
-    .where(and(eq(entities.id, id), eq(entities.kind, "housing_entrance")))
+    .where(and(eq(entities.id, id), eq(entities.kind, "entrance")))
     .returning();
 
   if (!updated) {
@@ -76,7 +76,7 @@ export async function DELETE(
     .where(
       and(
         eq(entities.parentId, id),
-        eq(entities.kind, "housing_unit"),
+        eq(entities.kind, "unit"),
         isNull(entities.archivedAt)
       )
     )

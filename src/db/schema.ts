@@ -6,6 +6,7 @@ import {
   integer,
   boolean,
   timestamp,
+  jsonb,
   pgEnum,
   uniqueIndex,
   unique,
@@ -132,13 +133,10 @@ export const moduleStatusEnum = pgEnum("module_status", [
   "failed",
 ]);
 
-export const entityKindEnum = pgEnum("entity_kind", [
-  "housing_community",
-  "housing_block",
-  "housing_entrance",
-  "housing_unit",
-  "generic_group",
-]);
+// BYT-20260515-001 Phase 1c: entityKindEnum removed. Kinds now live
+// in the entity_kinds catalog (per-instance, data-driven). The legacy
+// 5-value enum is preserved only in migration 0034's CASE expression
+// that converts the column from enum to text FK.
 
 export const platformRoleEnum = pgEnum("platform_role", [
   "member",
@@ -182,6 +180,32 @@ export const entityAuditActionEnum = pgEnum("entity_audit_action", [
 // building → entrance → flat hierarchy with an n-ary tree of
 // entities discriminated by `kind`. Path traversal logic lives
 // in src/lib/entity-tree.ts; nothing else parses `path`.
+//
+// BYT-20260515-001 Phase 1a: per-instance kind catalog (entity_kinds)
+// + entities.data jsonb for per-kind extension fields. The legacy enum
+// column entities.kind stays in place until Phase 1b backfills the
+// catalog and flips the column to a text FK.
+
+// Per-instance kind catalog. Each instance owns its rows — seeded at
+// install time from the selected template (hoa, garden, garage, …).
+// Instance admins may add custom kinds without code deploy.
+export const entityKinds = pgTable("entity_kinds", {
+  slug: varchar("slug", { length: 64 }).primaryKey(),
+  displayNameKey: varchar("display_name_key", { length: 200 }).notNull(),
+  icon: varchar("icon", { length: 64 }),
+  allowsMembers: boolean("allows_members").notNull().default(false),
+  votable: boolean("votable").notNull().default(false),
+  // Soft validation. Empty array = root only. Enforced in app layer,
+  // not via DB constraint, to allow per-instance customization.
+  allowedParentKinds: text("allowed_parent_kinds").array().notNull().default(sql`'{}'::text[]`),
+  // JSON Schema describing entities.data when kind = this slug. Used by
+  // the import wizard to generate column-mapping forms and by the UI
+  // to render per-kind detail editors.
+  dataSchema: jsonb("data_schema").notNull().default(sql`'{}'::jsonb`),
+  sortOrder: integer("sort_order").notNull().default(0),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
 
 export const entities = pgTable(
   "entities",
@@ -191,11 +215,17 @@ export const entities = pgTable(
       (): AnyPgColumn => entities.id,
       { onDelete: "restrict" }
     ),
-    kind: entityKindEnum("kind").notNull(),
+    kind: varchar("kind", { length: 64 })
+      .notNull()
+      .references(() => entityKinds.slug, { onDelete: "restrict" }),
     name: varchar("name", { length: 255 }).notNull(),
     path: text("path").notNull(),
     depth: integer("depth").notNull().default(0),
     rootId: uuid("root_id").notNull(),
+    // Per-kind extension fields. Replaces housing_root_data /
+    // housing_unit_data in Phase 2 of BYT-20260515-001. Shape per row
+    // is governed by entity_kinds.data_schema for that kind.
+    data: jsonb("data").notNull().default(sql`'{}'::jsonb`),
     archivedAt: timestamp("archived_at"),
     createdAt: timestamp("created_at").defaultNow().notNull(),
   },
@@ -212,7 +242,7 @@ export const entities = pgTable(
 );
 
 // 1:1 extension data for housing roots (community / block).
-// Required when entities.kind in ('housing_community', 'housing_block').
+// Required when entities.kind in ('community', 'building').
 export const housingRootData = pgTable("housing_root_data", {
   entityId: uuid("entity_id")
     .primaryKey()
@@ -233,7 +263,7 @@ export const housingRootData = pgTable("housing_root_data", {
 });
 
 // 1:1 extension data for housing units (flats).
-// Required when entities.kind = 'housing_unit'.
+// Required when entities.kind = 'unit'.
 export const housingUnitData = pgTable("housing_unit_data", {
   entityId: uuid("entity_id")
     .primaryKey()

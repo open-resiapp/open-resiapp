@@ -3,11 +3,7 @@ import { and, eq, isNull, sql } from "drizzle-orm";
 
 import { auth } from "@/lib/auth";
 import { db } from "@/db";
-import {
-  entities,
-  housingUnitData,
-  memberships,
-} from "@/db/schema";
+import { entities, memberships } from "@/db/schema";
 import { hasPermission } from "@/lib/permissions";
 import type { UserRole } from "@/types";
 
@@ -33,20 +29,23 @@ export async function GET() {
   // denominators is overkill — checking that
   //   SUM(num * (cross_product_of_other_denoms))  ==  PRODUCT(denoms) * 1
   // is too involved in SQL. Instead, fetch raw rows and reduce in JS.
+  //
+  // Phase 2b: flat_number now comes from entities.data jsonb. The
+  // membership share fields are still integer columns on the
+  // memberships table — they're the source of truth for the invariant.
   const rows = await db
     .select({
-      unitId: housingUnitData.entityId,
-      flatNumber: housingUnitData.flatNumber,
+      unitId: memberships.entityId,
+      flatNumber: sql<string>`${entities.data}->>'flat_number'`,
       num: memberships.ownerUnitShareNumerator,
       den: memberships.ownerUnitShareDenominator,
     })
     .from(memberships)
-    .innerJoin(housingUnitData, eq(housingUnitData.entityId, memberships.entityId))
     .innerJoin(entities, eq(entities.id, memberships.entityId))
     .where(
       and(
         eq(memberships.status, "active"),
-        eq(entities.kind, "housing_unit"),
+        eq(entities.kind, "unit"),
         isNull(entities.archivedAt)
       )
     );
@@ -92,8 +91,6 @@ export async function GET() {
       });
     }
   }
-  // Suppress an unused-import warning while the file is still small.
-  void sql;
   return NextResponse.json({ invalid });
 }
 

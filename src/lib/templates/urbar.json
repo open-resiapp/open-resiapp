@@ -1,0 +1,18 @@
+{
+  "slug": "urbar",
+  "display_name_key": "Templates.urbar.name",
+  "description_key": "Templates.urbar.description",
+  "category": "land",
+  "root_kind": "community",
+  "default_voting_method": "weighted_by_share",
+  "default_roles": ["admin", "chairman", "owner"],
+  "starter_tree": [
+    {
+      "kind": "community",
+      "name_key": "Templates.urbar.sampleCommunityName"
+    }
+  ],
+  "import_levels": ["community", "parcel_group", "parcel"],
+  "legal_review_required": true,
+  "notes_url": "https://www.slov-lex.sk/pravne-predpisy/SK/ZZ/2013/97/"
+}

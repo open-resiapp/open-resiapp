@@ -225,6 +225,34 @@
       "when": 1778663611904,
       "tag": "0031_lush_fenris",
       "breakpoints": true
+    },
+    {
+      "idx": 32,
+      "version": "7",
+      "when": 1778828610321,
+      "tag": "0032_silent_silhouette",
+      "breakpoints": true
+    },
+    {
+      "idx": 33,
+      "version": "7",
+      "when": 1778914800000,
+      "tag": "0033_seed_entity_kinds",
+      "breakpoints": true
+    },
+    {
+      "idx": 34,
+      "version": "7",
+      "when": 1778914900000,
+      "tag": "0034_kind_to_text_fk",
+      "breakpoints": true
+    },
+    {
+      "idx": 35,
+      "version": "7",
+      "when": 1778915000000,
+      "tag": "0035_backfill_entities_data",
+      "breakpoints": true
     }
   ]
 }

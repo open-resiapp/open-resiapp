@@ -22,13 +22,13 @@ async function handler(_request: NextRequest) {
       .select({ count: count() })
       .from(entities)
       .where(
-        and(eq(entities.kind, "housing_unit"), isNull(entities.archivedAt))
+        and(eq(entities.kind, "unit"), isNull(entities.archivedAt))
       ),
     db
       .select({ count: count() })
       .from(entities)
       .where(
-        and(eq(entities.kind, "housing_entrance"), isNull(entities.archivedAt))
+        and(eq(entities.kind, "entrance"), isNull(entities.archivedAt))
       ),
     db.select({ count: count() }).from(votings),
     db.select({ count: count() }).from(posts),

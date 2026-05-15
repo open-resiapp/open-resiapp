@@ -33,12 +33,12 @@ export async function GET() {
       child,
       and(
         eq(child.parentId, entities.id),
-        eq(child.kind, "housing_unit"),
+        eq(child.kind, "unit"),
         isNull(child.archivedAt)
       )
     )
     .where(
-      and(eq(entities.kind, "housing_entrance"), isNull(entities.archivedAt))
+      and(eq(entities.kind, "entrance"), isNull(entities.archivedAt))
     )
     .groupBy(entities.id)
     .orderBy(entities.name);
@@ -74,7 +74,7 @@ export async function POST(request: NextRequest) {
   // housing_entrance_data extension table can ship later.
   const entity = await createEntity({
     parentId: bld.id,
-    kind: "housing_entrance",
+    kind: "entrance",
     name,
   });
   recordEntityAudit({

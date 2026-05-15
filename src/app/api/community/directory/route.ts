@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { aliasedTable, and, eq, isNull } from "drizzle-orm";
+import { aliasedTable, and, eq, isNull, sql } from "drizzle-orm";
 
 import { auth } from "@/lib/auth";
 import { db } from "@/db";
@@ -7,7 +7,6 @@ import {
   directoryEntries,
   users,
   entities,
-  housingUnitData,
   memberships,
 } from "@/db/schema";
 import { hasPermission } from "@/lib/permissions";
@@ -63,18 +62,17 @@ export async function GET() {
         .select({
           userId: memberships.userId,
           flatId: flat.id,
-          flatNumber: housingUnitData.flatNumber,
+          flatNumber: sql<string>`${flat.data}->>'flat_number'`,
           entranceId: entrance.id,
           entranceName: entrance.name,
         })
         .from(memberships)
         .innerJoin(flat, eq(memberships.entityId, flat.id))
-        .innerJoin(housingUnitData, eq(housingUnitData.entityId, flat.id))
         .leftJoin(entrance, eq(entrance.id, flat.parentId))
         .where(
           and(
             eq(memberships.status, "active"),
-            eq(flat.kind, "housing_unit"),
+            eq(flat.kind, "unit"),
             isNull(flat.archivedAt)
           )
         )

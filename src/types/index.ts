@@ -61,7 +61,18 @@ export type VoteType = "electronic" | "paper";
 export type VotingStatus = "draft" | "active" | "closed";
 export type PostCategory = "info" | "urgent" | "event" | "maintenance";
 export type InvitationStatus = "pending" | "used" | "expired";
-export type VotingMethod = "per_share" | "per_flat" | "per_area";
+// BYT-20260515-001 Phase 3: voting methods generalized for multi-kind
+// communities. Canonical names live in @/lib/voting-method; legacy
+// values (`per_share`, `per_flat`) stay accepted via normalizeVotingMethod()
+// so existing housingRootData rows and audit logs keep working.
+export type VotingMethod =
+  | "weighted_by_share"
+  | "one_per_unit"
+  | "per_area"
+  | "one_per_member"
+  | "custom_weight"
+  | "per_share"
+  | "per_flat";
 export type VotingType = "written" | "meeting";
 export type VotingInitiatedBy = "board" | "owners_quarter";
 export type QuorumType = "simple_present" | "simple_all" | "two_thirds_all" | "all_unanimous";

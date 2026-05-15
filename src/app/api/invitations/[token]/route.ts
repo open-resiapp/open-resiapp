@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
-import { aliasedTable, eq } from "drizzle-orm";
+import { aliasedTable, eq, sql } from "drizzle-orm";
 
 import { db } from "@/db";
-import { invitations, entities, housingUnitData } from "@/db/schema";
+import { invitations, entities } from "@/db/schema";
 
 export async function GET(
   _request: NextRequest,
@@ -10,8 +10,8 @@ export async function GET(
 ) {
   const { token } = await params;
 
-  // Phase 9.1d: read flatNumber + entranceName from entities tree.
-  // invitations.flat_id == housing_unit entity id (Phase 4 backfill).
+  // Phase 2b: flatNumber from entities.data jsonb; entranceName from
+  // the parent entity. invitations.entityId == unit entity id.
   const flat = aliasedTable(entities, "flat");
   const entrance = aliasedTable(entities, "entrance");
   const result = await db
@@ -20,12 +20,11 @@ export async function GET(
       role: invitations.role,
       status: invitations.status,
       expiresAt: invitations.expiresAt,
-      flatNumber: housingUnitData.flatNumber,
+      flatNumber: sql<string | null>`${flat.data}->>'flat_number'`,
       entranceName: entrance.name,
     })
     .from(invitations)
     .leftJoin(flat, eq(flat.id, invitations.entityId))
-    .leftJoin(housingUnitData, eq(housingUnitData.entityId, flat.id))
     .leftJoin(entrance, eq(entrance.id, flat.parentId))
     .where(eq(invitations.token, token))
     .limit(1);

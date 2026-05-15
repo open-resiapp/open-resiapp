@@ -1,0 +1,16 @@
+{
+  "slug": "parents_association",
+  "display_name_key": "Templates.parents_association.name",
+  "description_key": "Templates.parents_association.description",
+  "category": "civic",
+  "root_kind": "community",
+  "default_voting_method": "one_per_member",
+  "default_roles": ["admin", "chairman", "member"],
+  "starter_tree": [
+    {
+      "kind": "community",
+      "name_key": "Templates.parents_association.sampleCommunityName"
+    }
+  ],
+  "import_levels": ["community", "class", "parent_seat"]
+}
