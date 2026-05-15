@@ -459,6 +459,73 @@ Phase 8 lands after at least one production release of dual-table parity.
 
 **Phase 4 → Phase 5 dependency**: Phase 4 ships standalone (UI can list templates, API can serve them), but a fresh install with `INSTALL_TEMPLATE=garden` still can't produce a working garden community until Phase 5 lands the bootstrap script + per-kind catalog seeds.
 
+**2026-05-15 — Phase 5 (setup.sh + bootstrap + kind catalog)**
+- `setup.sh`:
+  - Renamed the "Building name" prompt to "Community name" (the kind is no longer always residential).
+  - New paged "Pick the community template" prompt — English-only, 20 options grouped by 4 categories (Residential & housing, Land & nature, Commercial & shared, Social & civic) + custom. Default = `hoa`.
+  - Validates the slug against an in-script `VALID_TEMPLATES` array; unknown → error + exit.
+  - Writes `INSTALL_TEMPLATE=<slug>` to `.env`.
+  - After `create-admin.ts`, runs `bootstrap-community.ts --template "$INSTALL_TEMPLATE" --name "$APP_NAME" --locale "$LANGUAGE"`.
+  - Closing banner shows `Template:` alongside `Community:`, `Language:`, `URL:`.
+- `src/lib/kinds/registry.ts`:
+  - New export `CANONICAL_KIND_CATALOG`: 38 entries spanning every entity kind used by any v1 template. Each row carries `slug`, `displayNameKey: "Kinds.<slug>"`, `icon` (lucide), `allowsMembers`, `votable`, `allowedParentKinds`, `dataSchema` (minimal `{}` for most kinds; HOA-style share/area schema on `unit`, `parcel`, `office_suite`, `tenant_lot`), `sortOrder`.
+  - `HOA_CATALOG_SEED` retained as a backwards-compat alias for legacy paths.
+- `src/scripts/bootstrap-community.ts` (new, ~200 lines):
+  - Reads `--template` (or `INSTALL_TEMPLATE`), `--locale` (or `LANGUAGE`), optional `--name` override.
+  - Loads the template JSON from `src/lib/templates/<slug>.json`; loads `messages/<locale>.json` for `name_key` resolution.
+  - Computes the set of required kinds (`root_kind` + `import_levels` + every `kind` in `starter_tree`) and seeds them from `CANONICAL_KIND_CATALOG` via `INSERT … ON CONFLICT DO NOTHING`. Idempotent.
+  - Checks for an existing root entity; if any unarchived root exists, skips starter-tree creation (re-running is a no-op).
+  - Walks `starter_tree` depth-first; inserts entities with translated `name` (resolved per chosen locale, or the operator's `--name` for the root); sets `data.voting_method = template.default_voting_method` on the root so the Phase 3 dispatcher reads the right value.
+- Translations:
+  - New `Kinds` namespace in `messages/{sk,en}.json` (39 entries each — covers all 38 catalog kinds + `generic_group`). Parity verified.
+  - SK uses domain-appropriate terms (Komunita, Byt, Vchod, Parcela, Mólo, Kotvisko, Hrobové miesto, …).
+
+**Acceptance walk-through:**
+1. Operator runs `setup.sh`, picks template `garden`.
+2. `.env` gets `INSTALL_TEMPLATE=garden`.
+3. After Docker stack comes up, `create-admin.ts` makes the admin user.
+4. `bootstrap-community.ts` seeds `entity_kinds` rows: `community`, `garden_section`, `plot`, `generic_group`.
+5. The starter_tree gets inserted: a community root named "Záhradkárska osada" (sk) with a child "Sektor A" (sk). `voting_method = one_per_member` is written into `entities.data` on the root.
+6. Admin logs in; voting engine reads `voting_method` and dispatches via the canonical normalizer. Member-scoped methods still return 501 until Phase 3b — for `garden` this is a known gap.
+
+**Phase 5 known gaps:**
+- Member-scoped voting (`one_per_member`, `custom_weight`) still 501 — templates whose `default_voting_method` is `one_per_member` (garden, apiary, coworking, sports_club, hunting_association, fishing_cooperative, parents_association, religious_community, custom) bootstrap successfully but cannot run a vote yet. Phase 3b unblocks them.
+- The bootstrap script only handles the root community. Future templates with deeper starter trees (currently only `garden` has one) work via the recursive insert.
+- No UI for changing the template post-install (matches the handoff to open-resiapp-cloud).
+
+**2026-05-15 — Phase 3b (member-scoped voting engine)**
+- New types in `src/types/index.ts`:
+  - `MemberResolution` — per-voter result row (`userId`, `userName`, `choice`, `weight`).
+  - `VoteWithOwnership.membershipWeight?: number` — optional field consumed only by `custom_weight`.
+  - `VotingResults.memberBreakdowns?: MemberResolution[]` — mutually exclusive with `unitBreakdowns`.
+- `modules/voting/src/engine/index.ts`:
+  - `calculateResults` now branches on `isUnitScoped(canonical)` — member-scoped delegates to a new `calculateMemberScopedResults()`.
+  - Member-scoped path:
+    - **Last-write-wins dedupe** by `userId` (paper + electronic replays don't double-count).
+    - Per-vote weight via `computeMemberWeight()` — `1` for `one_per_member`, `membershipWeight` for `custom_weight`.
+    - No §14 ods. 4 co-owner resolution — each membership stands alone.
+    - Same CZ `silenceIsNo` rule (non-voters count as `proti` when applicable).
+    - Same 4 quorum types reused.
+  - Removed the Phase 3 placeholder throw — `one_per_member` and `custom_weight` are now first-class.
+- `modules/voting/src/routes/api/votes/index.ts`:
+  - GET: dropped the 501 short-circuit. `totalPossibleWeight` now dispatches: unit-scoped sums `computeUnitWeight()` over `flatsForScope`; member-scoped queries `memberships` joined to in-scope entities and sums `computeMemberWeight()`. Path-overlap filter reused for the membership scope so cross-community memberships don't bleed in.
+  - GET: `voteRows` query now selects `memberships.weight` and propagates it into `VoteWithOwnership.membershipWeight` (falls back to `1` when the membership row is missing — same defensive default as `ownerUnitShareNumerator`).
+  - POST: `voteMethod` + `memberScoped` resolved at the top of the handler.
+  - POST: existing-vote dedup key is `(votingId, ownerId)` in member-scoped mode, `(votingId, entityId)` otherwise. Skips the "another owner already voted for this unit" 400 in member-scoped mode (multi-owner units can each cast a vote there).
+- **Walk-through**: a `garden` install (template `default_voting_method = one_per_member`) can now bootstrap → admin assigns memberships → run a vote → tally returns `{ memberBreakdowns: [...], totalPossibleWeight: <activeMembershipCount> }`. The same engine path serves coworking, sports_club, hunting_association, fishing_cooperative, parents_association, religious_community, and `custom`.
+- **Regression**: HOA installs (`weighted_by_share`) take the unit-scoped branch and produce numerically identical results to Phase 2b — `calculateResults` now just routes around an extra `if`.
+
+**Phase 6 — next**
+- Import wizard rebuild: `src/app/[locale]/(dashboard)/admin/import/page.tsx` currently hardcodes the 3 HOA structure variants. Replace with a template-driven flow: pick template → wizard reads `import_levels` from `/api/templates?slug=<x>` → renders a kind picker per level → CSV column mapping uses `entity_kinds.data_schema`.
+
+**Phase 7 — i18n + UI polish**
+- Audit every place that hardcodes "Bytový dom" / "Vchod" / "Byt" labels and switch to `Kinds.<slug>` translation keys.
+- Header / sidebar / breadcrumbs read the root entity's kind to pick vocabulary (HOA shows "Byt", garden shows "Záhradka", etc.).
+
+**Phase 8 — cleanup**
+- Drop `housing_root_data`, `housing_unit_data` tables after one production release of dual-write parity. Remove the dual-write code from 5 routes. Drop schema definitions + relations.
+- Decide: gate custom-kinds-via-UI behind a feature flag, or ship as part of Phase 8.
+
 **Files still importing `housingRootData` / `housingUnitData` after PR 4** (`grep -l`, all intentional dual-write or types):
 - `building/route.ts` — dual-write
 - `flats/route.ts` — dual-write

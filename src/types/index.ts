@@ -101,13 +101,18 @@ export interface VoteWithOwnership {
   userId: string;
   userName: string | null;
   choice: VoteChoice;
-  // Unit-level (constant across all co-owners of one unit).
+  // Unit-level (constant across all co-owners of one unit). Required by
+  // unit-scoped methods (weighted_by_share, one_per_unit, per_area).
   unitShareNumerator: number;
   unitShareDenominator: number;
   area: number | null;
   // Owner-level (varies per co-owner; sum across active memberships = 1/1).
+  // Used by unit-scoped §14 ods. 4 resolution; ignored by member-scoped.
   ownerUnitShareNumerator: number;
   ownerUnitShareDenominator: number;
+  // Optional — set when the vote came from a member-scoped voting and the
+  // method is `custom_weight`. Defaults to 1 for `one_per_member`.
+  membershipWeight?: number;
 }
 
 export type UnitResolutionRationale =
@@ -138,6 +143,20 @@ export interface UnitResolution {
   hasMultipleOwners: boolean;
 }
 
+/**
+ * BYT-20260515-001 Phase 3b: member-scoped voting result row. One entry
+ * per voter. Member-scoped voting has no co-owner resolution — each
+ * active member casts one vote weighted independently of unit
+ * ownership share.
+ */
+export interface MemberResolution {
+  userId: string;
+  userName: string | null;
+  choice: VoteChoice;
+  /** Vote weight: 1 for one_per_member, memberships.weight for custom_weight. */
+  weight: number;
+}
+
 export interface VotingResults {
   za: number;
   proti: number;
@@ -153,7 +172,14 @@ export interface VotingResults {
   /**
    * Per-unit resolution detail. Omitted in legacy callers that only consume
    * the aggregate totals. Always present when calculateResults is fed
-   * VoteWithOwnership[] (BYT-20260511-001 path).
+   * VoteWithOwnership[] (BYT-20260511-001 path) AND the voting method is
+   * unit-scoped (weighted_by_share, one_per_unit, per_area).
    */
   unitBreakdowns?: UnitResolution[];
+  /**
+   * Per-member detail. Populated only when the voting method is
+   * member-scoped (one_per_member, custom_weight). Mutually exclusive
+   * with unitBreakdowns.
+   */
+  memberBreakdowns?: MemberResolution[];
 }

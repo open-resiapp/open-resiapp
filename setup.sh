@@ -142,11 +142,65 @@ if [[ -z "$APP_DOMAIN" ]]; then
   exit 1
 fi
 
-read -rp "  Building name (e.g. Bytove spolocenstvo Hlavna 12): " APP_NAME
-APP_NAME="${APP_NAME:-Bytove spolocenstvo}"
+read -rp "  Community name (e.g. Bytove spolocenstvo Hlavna 12): " APP_NAME
+APP_NAME="${APP_NAME:-OpenResiApp Community}"
 
 read -rp "  Language — sk or en [sk]: " LANGUAGE
 LANGUAGE="${LANGUAGE:-sk}"
+
+# ─── Community template (BYT-20260515-001) ───
+echo ""
+echo "  Pick the community template that best matches your use case."
+echo "  This seeds the entity kinds, default voting method, and starter"
+echo "  tree shape. Press Enter for the default (hoa)."
+echo ""
+echo "    Residential & housing"
+echo "     1) hoa                  HOA / Residential building   (default)"
+echo "     2) cottage              Cottage settlement"
+echo "     3) street               Street with houses"
+echo "     4) mobile_home_park     Mobile home park"
+echo ""
+echo "    Land & nature"
+echo "     5) garden               Garden community"
+echo "     6) urbar                Land commons (urbar)"
+echo "     7) apiary               Beekeeping association"
+echo "     8) hunting_association  Hunting association"
+echo "     9) fishing_cooperative  Fishing cooperative"
+echo ""
+echo "    Commercial & shared"
+echo "    10) garage               Garage building"
+echo "    11) storage_units        Storage units facility"
+echo "    12) office_building      Office building"
+echo "    13) coworking            Coworking space"
+echo "    14) industrial_park      Industrial park"
+echo "    15) marina               Marina / boat club"
+echo ""
+echo "    Social & civic"
+echo "    16) sports_club          Sports club"
+echo "    17) parents_association  School parents association"
+echo "    18) religious_community  Religious community / parish"
+echo "    19) cemetery             Cemetery plots"
+echo ""
+echo "    20) custom               Custom (empty — configure via UI)"
+echo ""
+read -rp "  Template [hoa]: " INSTALL_TEMPLATE
+INSTALL_TEMPLATE="${INSTALL_TEMPLATE:-hoa}"
+
+# Validate against the known slug list. Keep in sync with
+# src/lib/templates/*.json.
+VALID_TEMPLATES=(hoa cottage street mobile_home_park garden urbar apiary \
+  hunting_association fishing_cooperative garage storage_units office_building \
+  coworking industrial_park marina sports_club parents_association \
+  religious_community cemetery custom)
+TEMPLATE_OK=false
+for t in "${VALID_TEMPLATES[@]}"; do
+  if [[ "$INSTALL_TEMPLATE" == "$t" ]]; then TEMPLATE_OK=true; break; fi
+done
+if [[ "$TEMPLATE_OK" != "true" ]]; then
+  echo "  Error: Unknown template '${INSTALL_TEMPLATE}'."
+  echo "  Run setup.sh again and pick one of: ${VALID_TEMPLATES[*]}"
+  exit 1
+fi
 
 if [[ "$LANGUAGE" != "sk" && "$LANGUAGE" != "en" ]]; then
   echo "  Error: Language must be 'sk' or 'en'."
@@ -191,6 +245,7 @@ APP_NAME="${APP_NAME}"
 APP_URL=${APP_URL}
 APP_DOMAIN=${APP_DOMAIN}
 LANGUAGE=${LANGUAGE}
+INSTALL_TEMPLATE=${INSTALL_TEMPLATE}
 POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
 NEXTAUTH_SECRET=${NEXTAUTH_SECRET}
 EOF
@@ -312,6 +367,17 @@ echo ""
 docker compose exec -T app npx tsx src/scripts/create-admin.ts \
   --email "$ADMIN_EMAIL" --name "$ADMIN_NAME"
 
+# ─── Bootstrap community from template (BYT-20260515-001) ───
+
+echo ""
+echo "  Bootstrapping community from template '${INSTALL_TEMPLATE}'..."
+echo ""
+
+docker compose exec -T app npx tsx src/scripts/bootstrap-community.ts \
+  --template "$INSTALL_TEMPLATE" \
+  --name "$APP_NAME" \
+  --locale "$LANGUAGE"
+
 # ─── Done ───
 
 echo ""
@@ -319,9 +385,10 @@ echo "  ================================================"
 echo "  OpenResiApp is running!"
 echo "  ================================================"
 echo ""
-echo "  URL:      ${APP_URL}"
-echo "  Building: ${APP_NAME}"
-echo "  Language: ${LANGUAGE}"
+echo "  URL:       ${APP_URL}"
+echo "  Community: ${APP_NAME}"
+echo "  Template:  ${INSTALL_TEMPLATE}"
+echo "  Language:  ${LANGUAGE}"
 echo ""
 echo "  Admin:    ${ADMIN_EMAIL}"
 echo "  Password: (printed above — save it now!)"

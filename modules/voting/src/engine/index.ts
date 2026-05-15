@@ -1,6 +1,7 @@
 import { createHash } from "crypto";
 
 import type {
+  MemberResolution,
   QuorumType,
   UnitResolution,
   UnitResolutionBreakdownEntry,
@@ -20,11 +21,13 @@ import {
   type Rational,
 } from "@/lib/rational";
 import {
+  computeMemberWeight,
   computeUnitWeight,
   isUnitScoped,
   normalizeVotingMethod,
 } from "@/lib/voting-method";
-import { getVotingRules, type Country } from "../rules";
+import { getVotingRules, type Country, type CountryVotingRules } from "../rules";
+import type { CanonicalVotingMethod } from "@/lib/voting-method";
 
 // ── Public entry point ────────────────────────────────────
 
@@ -50,13 +53,16 @@ export function calculateResults(
   const rules = getVotingRules(country);
   const canonical = normalizeVotingMethod(method);
 
-  // Member-scoped methods (one_per_member, custom_weight) skip unit
-  // grouping — each membership votes independently. Phase 3 scaffolds
-  // the dispatch; the member-scoped resolver lands in Phase 3b.
+  // Phase 3b: member-scoped methods (one_per_member, custom_weight)
+  // bypass §14 ods. 4 co-owner resolution. Each active membership
+  // casts one independently-weighted vote.
   if (!isUnitScoped(canonical)) {
-    throw new Error(
-      `calculateResults: voting method "${canonical}" is member-scoped — implementation lands in Phase 3b. ` +
-        `Switch the community's voting_method to a unit-scoped one for now.`
+    return calculateMemberScopedResults(
+      votes,
+      canonical,
+      quorumType,
+      totalPossibleWeight,
+      rules
     );
   }
 
@@ -141,6 +147,109 @@ export function calculateResults(
     quorumType,
     totalPossibleWeight,
     unitBreakdowns,
+  };
+}
+
+// ── Member-scoped resolution (Phase 3b) ──────────────────
+
+/**
+ * BYT-20260515-001 Phase 3b: member-scoped tally.
+ *
+ * Used by `one_per_member` and `custom_weight` voting modes. No unit
+ * grouping — each active membership casts exactly one vote weighted
+ * by `computeMemberWeight()`. If a member appears in `votes` more than
+ * once (paper/electronic double entry, replays), the latest row by
+ * insertion order wins.
+ */
+function calculateMemberScopedResults(
+  votes: VoteWithOwnership[],
+  method: CanonicalVotingMethod,
+  quorumType: QuorumType,
+  totalPossibleWeight: number,
+  rules: CountryVotingRules
+): VotingResults {
+  // Last-write-wins per voter.
+  const byVoter = new Map<string, VoteWithOwnership>();
+  for (const v of votes) byVoter.set(v.userId, v);
+
+  let zaWeight = 0;
+  let protiWeight = 0;
+  let zdrzalSaWeight = 0;
+  let totalWeight = 0;
+  const memberBreakdowns: MemberResolution[] = [];
+
+  for (const v of byVoter.values()) {
+    const weight = computeMemberWeight(
+      { membershipWeight: v.membershipWeight ?? 1 },
+      method
+    );
+    totalWeight += weight;
+    switch (v.choice) {
+      case "za":
+        zaWeight += weight;
+        break;
+      case "proti":
+        protiWeight += weight;
+        break;
+      case "zdrzal_sa":
+        zdrzalSaWeight += weight;
+        break;
+    }
+    memberBreakdowns.push({
+      userId: v.userId,
+      userName: v.userName,
+      choice: v.choice,
+      weight,
+    });
+  }
+
+  // CZ per rollam: silence counts as opposition.
+  if (rules.silenceIsNo && totalPossibleWeight > 0) {
+    const nonVoted = totalPossibleWeight - totalWeight;
+    if (nonVoted > 0) {
+      protiWeight += nonVoted;
+      totalWeight = totalPossibleWeight;
+    }
+  }
+
+  // Same quorum types as unit-scoped.
+  let passed = false;
+  let quorumReached = false;
+  switch (quorumType) {
+    case "simple_present":
+      quorumReached = totalWeight > 0;
+      passed = zaWeight > totalWeight / 2;
+      break;
+    case "simple_all":
+      quorumReached =
+        totalPossibleWeight > 0 && zaWeight > totalPossibleWeight / 2;
+      passed = quorumReached;
+      break;
+    case "two_thirds_all":
+      quorumReached =
+        totalPossibleWeight > 0 && zaWeight >= (totalPossibleWeight * 2) / 3;
+      passed = quorumReached;
+      break;
+    case "all_unanimous":
+      quorumReached =
+        totalPossibleWeight > 0 && zaWeight === totalPossibleWeight;
+      passed = quorumReached;
+      break;
+  }
+
+  return {
+    za: zaWeight,
+    proti: protiWeight,
+    zdrzalSa: zdrzalSaWeight,
+    total: totalWeight,
+    zaPercent: totalWeight > 0 ? (zaWeight / totalWeight) * 100 : 0,
+    protiPercent: totalWeight > 0 ? (protiWeight / totalWeight) * 100 : 0,
+    zdrzalSaPercent: totalWeight > 0 ? (zdrzalSaWeight / totalWeight) * 100 : 0,
+    passed,
+    quorumReached,
+    quorumType,
+    totalPossibleWeight,
+    memberBreakdowns,
   };
 }
 

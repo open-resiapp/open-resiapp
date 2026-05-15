@@ -12,6 +12,7 @@ import { isElectronicVotingBlocked } from "@modules/voting/src/rules";
 import { dispatchHook } from "@/lib/modules/dispatch";
 import { getCommunityRoot } from "@/lib/legacy-compat";
 import {
+  computeMemberWeight,
   computeUnitWeight,
   isUnitScoped,
   normalizeVotingMethod,
@@ -84,6 +85,7 @@ export async function GET(request: NextRequest) {
     area: number | null;
     ownerUnitShareNumerator: number | null;
     ownerUnitShareDenominator: number | null;
+    membershipWeight: number | null;
   };
   const voteRows: VoteRow[] = await db
     .select({
@@ -103,6 +105,8 @@ export async function GET(request: NextRequest) {
       area: sql<number | null>`(${entities.data}->>'area_m2')::int`,
       ownerUnitShareNumerator: memberships.ownerUnitShareNumerator,
       ownerUnitShareDenominator: memberships.ownerUnitShareDenominator,
+      // Phase 3b: surfaced for custom_weight; unused by unit-scoped.
+      membershipWeight: memberships.weight,
     })
     .from(votes)
     .leftJoin(users, eq(votes.ownerId, users.id))
@@ -130,6 +134,7 @@ export async function GET(request: NextRequest) {
     // counts and the engine treats it as a single-owner case.
     ownerUnitShareNumerator: v.ownerUnitShareNumerator ?? 1,
     ownerUnitShareDenominator: v.ownerUnitShareDenominator ?? 1,
+    membershipWeight: v.membershipWeight ?? 1,
   }));
 
   // Total possible weight: sum entities.data share/area over every unit
@@ -164,29 +169,56 @@ export async function GET(request: NextRequest) {
           and(eq(entities.kind, "unit"), isNull(entities.archivedAt))
         );
 
-  // Phase 3: total possible weight via the canonical dispatcher. The
-  // legally-regulated math is unchanged for HOA (weighted_by_share);
-  // the dispatcher just centralizes the formulas so non-HOA templates
-  // (one_per_unit, per_area) share the same code path.
-  if (!isUnitScoped(votingMethod)) {
-    return NextResponse.json(
-      {
-        error:
-          "Member-scoped voting methods (one_per_member, custom_weight) are not yet implemented (Phase 3b).",
-      },
-      { status: 501 }
-    );
-  }
+  // Phase 3 / 3b: dispatch total possible weight by scope.
+  //   Unit-scoped: sum over the unit entities in the voting's subtree.
+  //   Member-scoped: count active memberships in the voting's subtree
+  //                   (one_per_member) or SUM(memberships.weight) for
+  //                   custom_weight. Memberships outside the scope (e.g.
+  //                   members of other communities on the instance) are
+  //                   excluded by the path filter.
   let totalPossibleWeight = 0;
-  for (const f of flatsForScope) {
-    totalPossibleWeight += computeUnitWeight(
-      {
-        shareNumerator: f.shareNumerator,
-        shareDenominator: f.shareDenominator,
-        area: f.area,
-      },
-      votingMethod
-    );
+  if (isUnitScoped(votingMethod)) {
+    for (const f of flatsForScope) {
+      totalPossibleWeight += computeUnitWeight(
+        {
+          shareNumerator: f.shareNumerator,
+          shareDenominator: f.shareDenominator,
+          area: f.area,
+        },
+        votingMethod
+      );
+    }
+  } else {
+    const scopeMembers = voting?.entityId
+      ? await db
+          .select({ weight: memberships.weight })
+          .from(memberships)
+          .innerJoin(entities, eq(entities.id, memberships.entityId))
+          .where(
+            and(
+              eq(memberships.status, "active"),
+              isNull(entities.archivedAt),
+              sql`${entities.path} LIKE (
+                SELECT path || '%' FROM ${entities} WHERE id = ${voting.entityId}
+              )`
+            )
+          )
+      : await db
+          .select({ weight: memberships.weight })
+          .from(memberships)
+          .innerJoin(entities, eq(entities.id, memberships.entityId))
+          .where(
+            and(
+              eq(memberships.status, "active"),
+              isNull(entities.archivedAt)
+            )
+          );
+    for (const m of scopeMembers) {
+      totalPossibleWeight += computeMemberWeight(
+        { membershipWeight: m.weight },
+        votingMethod
+      );
+    }
   }
 
   const results = calculateResults(
@@ -280,9 +312,11 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  // Country for rules engine — from root entity's housing_root_data.
+  // Country + canonical voting method for downstream dispatch.
   const root = await getCommunityRoot();
   const voteCountry = (root?.country ?? "sk") as Country;
+  const voteMethod = normalizeVotingMethod(root?.votingMethod);
+  const memberScoped = !isUnitScoped(voteMethod);
 
   if (!isPaperVote && isElectronicVotingBlocked(voteCountry, voting.votingType, voting.initiatedBy)) {
     return NextResponse.json(
@@ -357,17 +391,25 @@ export async function POST(request: NextRequest) {
   const _aliasedTableUnused = aliasedTable; // keep import warning quiet
   void _aliasedTableUnused;
 
-  // Existing vote check — by entityId now (was flatId).
-  const existingVote = await db
-    .select()
-    .from(votes)
-    .where(and(eq(votes.votingId, votingId), eq(votes.entityId, flatId)))
-    .limit(1);
+  // Existing-vote check. Phase 3b: member-scoped voting allows
+  // multiple owners of the same unit to vote independently, so the
+  // dedup key is (votingId, ownerId) rather than (votingId, entityId).
+  const existingVote = memberScoped
+    ? await db
+        .select()
+        .from(votes)
+        .where(and(eq(votes.votingId, votingId), eq(votes.ownerId, voterId)))
+        .limit(1)
+    : await db
+        .select()
+        .from(votes)
+        .where(and(eq(votes.votingId, votingId), eq(votes.entityId, flatId)))
+        .limit(1);
 
   if (existingVote.length > 0) {
     const existing = existingVote[0];
 
-    if (!isPaperVote && existing.ownerId !== voterId) {
+    if (!isPaperVote && !memberScoped && existing.ownerId !== voterId) {
       return NextResponse.json(
         { error: "Za tento byt už hlasoval iný vlastník" },
         { status: 400 }
