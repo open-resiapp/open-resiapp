@@ -183,6 +183,10 @@ async function main() {
     if (isRoot) {
       // Set voting method on the root so the dispatcher reads it.
       data.voting_method = template.default_voting_method;
+      // Persist the template slug so downstream tooling (import wizard,
+      // admin badges) can identify which template the instance was
+      // bootstrapped from without inferring it from the voting method.
+      data.template_slug = template.slug;
     }
 
     await db.insert(entities).values({

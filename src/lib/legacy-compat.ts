@@ -38,6 +38,13 @@ export interface CommunityRootRow {
   governanceModel: GovernanceModel;
   legalNotice: string | null;
   communityCrossEntranceVisible: boolean;
+  /**
+   * BYT-20260515-001 Phase 6: template slug the instance was
+   * bootstrapped from (written by bootstrap-community.ts onto
+   * entities.data.template_slug). Null on installs predating
+   * Phase 5, falls back to "hoa" in callers that need a default.
+   */
+  templateSlug: string | null;
   createdAt: Date;
 }
 
@@ -58,6 +65,7 @@ export async function getCommunityRoot(): Promise<CommunityRootRow | null> {
       governanceModel: sql<GovernanceModel>`${entities.data}->>'governance_model'`,
       legalNotice: sql<string | null>`${entities.data}->>'legal_notice'`,
       communityCrossEntranceVisible: sql<boolean>`coalesce((${entities.data}->>'community_cross_entrance_visible')::boolean, false)`,
+      templateSlug: sql<string | null>`${entities.data}->>'template_slug'`,
       createdAt: entities.createdAt,
     })
     .from(entities)
@@ -86,6 +94,7 @@ export async function listCommunityRoots(): Promise<CommunityRootRow[]> {
       governanceModel: sql<GovernanceModel>`${entities.data}->>'governance_model'`,
       legalNotice: sql<string | null>`${entities.data}->>'legal_notice'`,
       communityCrossEntranceVisible: sql<boolean>`coalesce((${entities.data}->>'community_cross_entrance_visible')::boolean, false)`,
+      templateSlug: sql<string | null>`${entities.data}->>'template_slug'`,
       createdAt: entities.createdAt,
     })
     .from(entities)

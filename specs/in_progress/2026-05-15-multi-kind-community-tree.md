@@ -515,8 +515,27 @@ Phase 8 lands after at least one production release of dual-table parity.
 - **Walk-through**: a `garden` install (template `default_voting_method = one_per_member`) can now bootstrap → admin assigns memberships → run a vote → tally returns `{ memberBreakdowns: [...], totalPossibleWeight: <activeMembershipCount> }`. The same engine path serves coworking, sports_club, hunting_association, fishing_cooperative, parents_association, religious_community, and `custom`.
 - **Regression**: HOA installs (`weighted_by_share`) take the unit-scoped branch and produce numerically identical results to Phase 2b — `calculateResults` now just routes around an extra `if`.
 
-**Phase 6 — next**
-- Import wizard rebuild: `src/app/[locale]/(dashboard)/admin/import/page.tsx` currently hardcodes the 3 HOA structure variants. Replace with a template-driven flow: pick template → wizard reads `import_levels` from `/api/templates?slug=<x>` → renders a kind picker per level → CSV column mapping uses `entity_kinds.data_schema`.
+**2026-05-15 — Phase 6 (import wizard — template picker)**
+- `src/scripts/bootstrap-community.ts`: root entity now carries `data.template_slug` alongside `data.voting_method`. Downstream tooling identifies the install template without inferring from voting method.
+- `src/lib/legacy-compat.ts`: `CommunityRootRow` extended with `templateSlug: string | null`. `getCommunityRoot()` + `listCommunityRoots()` select `${entities.data}->>'template_slug'`. `/api/building` surfaces it for the wizard.
+- `src/app/[locale]/(dashboard)/admin/import/page.tsx`:
+  - New top-of-wizard "Community template" section with a category-grouped dropdown (`<optgroup>` per Residential / Land / Commercial / Civic / Custom). Legal-review-required templates get a ⚖ glyph next to the name.
+  - Loads `/api/templates` on mount; loads `/api/templates?slug=<x>` on template change.
+  - On template change, derives `StructureVariant` from `import_levels.length` (2→`community_unit`, 3→`community_entrance_unit`, 4→`community_block_entrance_unit`) and pre-fills `community.voting_method` with `default_voting_method` if the operator hasn't overridden it.
+  - Defaults the template to the install's bootstrapped slug (`data.template_slug` from `/api/building`) — falls back to `"hoa"` for installs predating Phase 5.
+  - Non-HOA template warning banner: when the chosen template's `import_levels` use non-HOA kinds (anything other than `community → building? → entrance? → unit`), surfaces an amber banner stating the seeder still writes HOA kinds (Phase 6b will generalize).
+- `previewImportAction` + `commitImportAction` accept `templateSlug` (default `"hoa"`) and plumb it through to `seedImport`.
+- `seedImport()` accepts an optional `templateSlug` in `SeedInput` — currently ignored, but the API contract stabilizes so Phase 6b just adds the branching without breaking callers.
+- Translations: 4 new `Import.*` keys (`templateTitle`, `templateSubtitle`, `templateNonHoaTitle`, `templateNonHoaBody`) in both `sk.json` and `en.json`. The picker reuses the existing `Templates.Categories.*` namespace from Phase 4 — no new category keys.
+
+**Phase 6b — next (kind-aware seed)**
+- `src/lib/import/seed.ts`: replace hardcoded `kind: "building"` / `"entrance"` / `"unit"` with the template's `import_levels[i]` slugs. The seeder reads `templateSlug` (already plumbed) → calls `getTemplate(slug)` → uses the actual kind chain.
+- `src/lib/import/columns.ts`: derive per-row columns from `entity_kinds.data_schema` of the leaf kind (`plot.data_schema` for garden, `garage.data_schema` for garage, etc.). Today columns are hardcoded for HOA.
+- `src/lib/import/validate.ts`: relax share-sum + flat-number invariants for non-HOA leaf kinds where they don't apply.
+- Once 6b lands, drop the amber warning banner.
+
+**Phase 7 — next after 6b**
+- Audit hardcoded "Bytový dom" / "Vchod" / "Byt" labels and switch to `Kinds.<slug>` translation keys driven by the root entity's kind / template.
 
 **Phase 7 — i18n + UI polish**
 - Audit every place that hardcodes "Bytový dom" / "Vchod" / "Byt" labels and switch to `Kinds.<slug>` translation keys.

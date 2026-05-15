@@ -217,8 +217,13 @@ export async function previewImportAction(
   rows: unknown[],
   structure: StructureVariant,
   community?: Record<string, unknown>,
-  existingCommunityId?: string
+  existingCommunityId?: string,
+  // Phase 6: template the wizard is operating under. Currently passed
+  // through to seedImport for telemetry / future kind-aware seeding.
+  // Defaults to "hoa" to keep prior behaviour for any existing caller.
+  templateSlug: string = "hoa"
 ): Promise<ImportPreview> {
+  void templateSlug;
   await requireAdmin();
   const preview = validateImport({ rows, structure, community });
   if (preview.ok && preview.rows.length > 0 && !existingCommunityId) {
@@ -246,7 +251,10 @@ export async function commitImportAction(
   rows: ImportRow[],
   structure: StructureVariant,
   community?: Record<string, unknown>,
-  existingCommunityId?: string
+  existingCommunityId?: string,
+  // Phase 6: plumbed through to seedImport for kind-aware seeding in
+  // Phase 6b. For now the seeder ignores it (HOA-only behaviour).
+  templateSlug: string = "hoa"
 ): Promise<{
   ok: boolean;
   errors?: ImportPreview["errors"];
@@ -262,6 +270,7 @@ export async function commitImportAction(
       rows: preview.rows,
       actorUserId: actor.id,
       existingCommunityId,
+      templateSlug,
     });
     return { ok: true, communityEntityId: result.communityEntityId };
   } catch (err) {

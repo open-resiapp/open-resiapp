@@ -81,6 +81,15 @@ export interface SeedInput {
    * re-imports an idempotent append rather than a hard failure.
    */
   existingCommunityId?: string;
+  /**
+   * BYT-20260515-001 Phase 6: identifier of the community template the
+   * import wizard operated under. Today the seeder still writes the HOA
+   * kind chain (community → building → entrance → unit) regardless of
+   * this value; Phase 6b will fork on the template's `import_levels` to
+   * write the correct kinds for garden / garage / street / etc. The
+   * field is plumbed now so the API contract stabilizes early.
+   */
+  templateSlug?: string;
 }
 
 export interface SeedResult {

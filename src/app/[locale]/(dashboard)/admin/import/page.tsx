@@ -38,6 +38,54 @@ const STRUCTURES: { key: StructureVariant; labelKey: string }[] = [
   },
 ];
 
+// BYT-20260515-001 Phase 6: minimal client-side template descriptor.
+// Mirrors the subset of `Template` the wizard needs without importing
+// server-only types.
+interface WizardTemplate {
+  slug: string;
+  display_name_key: string;
+  description_key: string;
+  category: "residential" | "land" | "commercial" | "civic" | "custom";
+  default_voting_method: string;
+  legal_review_required: boolean;
+}
+
+interface TemplateDetail extends WizardTemplate {
+  import_levels: string[];
+  root_kind: string;
+}
+
+// Map a template's `import_levels` length to one of the three legacy
+// StructureVariant shapes the seeder currently supports. Phase 6b
+// generalizes the seeder so import_levels can use arbitrary kind
+// slugs — for now we approximate, and surface a warning when the
+// template's kinds don't match the HOA-style chain.
+function structureFromTemplate(levels: string[]): StructureVariant {
+  switch (levels.length) {
+    case 2:
+      return "community_unit";
+    case 3:
+      return "community_entrance_unit";
+    case 4:
+      return "community_block_entrance_unit";
+    default:
+      return "community_entrance_unit";
+  }
+}
+
+const HOA_LEAF_KINDS = new Set(["unit"]);
+const HOA_BRANCH_KINDS = new Set(["building", "entrance"]);
+
+function templateUsesHoaKinds(levels: string[]): boolean {
+  if (levels.length === 0) return false;
+  if (levels[0] !== "community") return false;
+  for (let i = 1; i < levels.length - 1; i++) {
+    if (!HOA_BRANCH_KINDS.has(levels[i])) return false;
+  }
+  const leaf = levels[levels.length - 1];
+  return HOA_LEAF_KINDS.has(leaf);
+}
+
 function downloadBlob(filename: string, base64: string, mimeType: string) {
   const binary = atob(base64);
   const len = binary.length;
@@ -62,6 +110,14 @@ export default function ImportWizardPage() {
 
   const [structure, setStructure] = useState<StructureVariant>(
     "community_entrance_unit"
+  );
+  // Phase 6: template the wizard is operating under. Defaults to "hoa"
+  // for installs predating Phase 5; overridden once /api/building
+  // returns the bootstrapped template slug.
+  const [templateSlug, setTemplateSlug] = useState<string>("hoa");
+  const [templates, setTemplates] = useState<WizardTemplate[]>([]);
+  const [templateDetail, setTemplateDetail] = useState<TemplateDetail | null>(
+    null
   );
   const [community, setCommunity] = useState<RowDict>({
     country: "sk",
@@ -89,9 +145,43 @@ export default function ImportWizardPage() {
           country: prev.country ?? data.country ?? "sk",
           voting_method: prev.voting_method ?? data.votingMethod ?? "per_share",
         }));
+        if (data.templateSlug) setTemplateSlug(data.templateSlug);
       })
       .catch(() => {});
   }, []);
+
+  // Load the template summary list once.
+  useEffect(() => {
+    fetch("/api/templates")
+      .then((r) => (r.ok ? r.json() : null))
+      .then((data: { templates: WizardTemplate[] } | null) => {
+        if (data?.templates) setTemplates(data.templates);
+      })
+      .catch(() => {});
+  }, []);
+
+  // When the selected template changes, fetch its full detail (so we
+  // can read import_levels) and reconcile structure + voting method.
+  useEffect(() => {
+    if (!templateSlug) return;
+    let cancelled = false;
+    fetch(`/api/templates?slug=${encodeURIComponent(templateSlug)}`)
+      .then((r) => (r.ok ? r.json() : null))
+      .then((tpl: TemplateDetail | null) => {
+        if (cancelled || !tpl) return;
+        setTemplateDetail(tpl);
+        setStructure(structureFromTemplate(tpl.import_levels));
+        // Only seed defaults — don't clobber operator edits.
+        setCommunity((prev) => ({
+          ...prev,
+          voting_method: prev.voting_method || tpl.default_voting_method,
+        }));
+      })
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
+  }, [templateSlug]);
   const [rows, setRows] = useState<RowDict[]>([]);
   const [preview, setPreview] = useState<ImportPreview | null>(null);
   const [committing, startCommit] = useTransition();
@@ -292,7 +382,13 @@ export default function ImportWizardPage() {
   function onPreview() {
     setGeneralError(null);
     startPreview(() => {
-      previewImportAction(rows, structure, community, existingCommunityId ?? undefined)
+      previewImportAction(
+        rows,
+        structure,
+        community,
+        existingCommunityId ?? undefined,
+        templateSlug
+      )
         .then(setPreview)
         .catch((err: Error) => setGeneralError(err.message));
     });
@@ -309,7 +405,8 @@ export default function ImportWizardPage() {
         preview.rows as ImportRow[],
         structure,
         community,
-        existingCommunityId ?? undefined
+        existingCommunityId ?? undefined,
+        templateSlug
       )
         .then((res) => {
           if (res.ok && res.communityEntityId) {
@@ -362,7 +459,30 @@ export default function ImportWizardPage() {
         </p>
       </div>
 
-      {/* Step 1: Structure */}
+      {/* Step 1a: Template (Phase 6) */}
+      <section className="rounded-lg border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-4">
+        <h2 className="text-lg font-semibold mb-3 text-gray-900 dark:text-gray-100">
+          {t("templateTitle")}
+        </h2>
+        <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
+          {t("templateSubtitle")}
+        </p>
+        <TemplatePicker
+          templates={templates}
+          value={templateSlug}
+          onChange={setTemplateSlug}
+        />
+        {templateDetail && !templateUsesHoaKinds(templateDetail.import_levels) && (
+          <div className="mt-3 rounded border border-amber-200 dark:border-amber-900 bg-amber-50 dark:bg-amber-950 px-3 py-2 text-sm text-amber-900 dark:text-amber-100">
+            <strong>{t("templateNonHoaTitle")}</strong>{" "}
+            {t("templateNonHoaBody", {
+              levels: templateDetail.import_levels.join(" → "),
+            })}
+          </div>
+        )}
+      </section>
+
+      {/* Step 1b: Structure */}
       <section className="rounded-lg border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-4">
         <h2 className="text-lg font-semibold mb-3 text-gray-900 dark:text-gray-100">
           {t("step1Title")}
@@ -773,5 +893,64 @@ function Stat({ label, value }: { label: string; value: string | number }) {
         {value}
       </dd>
     </div>
+  );
+}
+
+function TemplatePicker({
+  templates,
+  value,
+  onChange,
+}: {
+  templates: WizardTemplate[];
+  value: string;
+  onChange: (slug: string) => void;
+}) {
+  const tRoot = useTranslations();
+  const tCat = useTranslations("Templates.Categories");
+
+  const grouped = useMemo(() => {
+    const out: Record<string, WizardTemplate[]> = {
+      residential: [],
+      land: [],
+      commercial: [],
+      civic: [],
+      custom: [],
+    };
+    for (const tpl of templates) out[tpl.category]?.push(tpl);
+    return out;
+  }, [templates]);
+
+  if (templates.length === 0) {
+    return (
+      <select
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        className="w-full px-2 py-1.5 border rounded text-sm bg-white dark:bg-gray-900 border-gray-300 dark:border-gray-700"
+      >
+        <option value={value}>{value}</option>
+      </select>
+    );
+  }
+
+  return (
+    <select
+      value={value}
+      onChange={(e) => onChange(e.target.value)}
+      className="w-full px-2 py-1.5 border rounded text-sm bg-white dark:bg-gray-900 border-gray-300 dark:border-gray-700"
+    >
+      {(["residential", "land", "commercial", "civic", "custom"] as const).map(
+        (cat) =>
+          grouped[cat].length > 0 ? (
+            <optgroup key={cat} label={tCat(cat)}>
+              {grouped[cat].map((tpl) => (
+                <option key={tpl.slug} value={tpl.slug}>
+                  {tRoot(tpl.display_name_key)}
+                  {tpl.legal_review_required ? " ⚖" : ""}
+                </option>
+              ))}
+            </optgroup>
+          ) : null
+      )}
+    </select>
   );
 }
