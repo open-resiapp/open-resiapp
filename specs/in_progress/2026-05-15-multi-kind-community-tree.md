@@ -528,11 +528,20 @@ Phase 8 lands after at least one production release of dual-table parity.
 - `seedImport()` accepts an optional `templateSlug` in `SeedInput` — currently ignored, but the API contract stabilizes so Phase 6b just adds the branching without breaking callers.
 - Translations: 4 new `Import.*` keys (`templateTitle`, `templateSubtitle`, `templateNonHoaTitle`, `templateNonHoaBody`) in both `sk.json` and `en.json`. The picker reuses the existing `Templates.Categories.*` namespace from Phase 4 — no new category keys.
 
-**Phase 6b — next (kind-aware seed)**
-- `src/lib/import/seed.ts`: replace hardcoded `kind: "building"` / `"entrance"` / `"unit"` with the template's `import_levels[i]` slugs. The seeder reads `templateSlug` (already plumbed) → calls `getTemplate(slug)` → uses the actual kind chain.
-- `src/lib/import/columns.ts`: derive per-row columns from `entity_kinds.data_schema` of the leaf kind (`plot.data_schema` for garden, `garage.data_schema` for garage, etc.). Today columns are hardcoded for HOA.
-- `src/lib/import/validate.ts`: relax share-sum + flat-number invariants for non-HOA leaf kinds where they don't apply.
-- Once 6b lands, drop the amber warning banner.
+**2026-05-15 — Phase 6b (kind-aware seed)**
+- `src/lib/import/seed.ts`:
+  - New `resolveKindChain(templateSlug)` resolves a template's `import_levels` into a `{ root, block, entrance, leaf }` tuple. 4-level templates fill all four slots; 3-level set `block = null`; 2-level set `block = entrance = null`. HOA fallback (`community → building → entrance → unit`) kicks in when the template is missing or absent.
+  - `seedImport()` calls `resolveKindChain(input.templateSlug)` once and uses the resolved slugs everywhere — root insert, block insert (skipped if `kinds.block === null`), entrance insert (skipped if `kinds.entrance === null`), and leaf insert. Audit-log `afterJson` records the actual kind slug so a garden import shows `{kind: "plot"}` instead of `{kind: "unit"}`.
+  - `existingByKindAndKey` map keys still use the stable HOA-flavoured prefixes (`block|`, `entrance|`, `unit|`) so idempotent reattach reuses entities by their template-specific kinds.
+  - Root community now writes `data.template_slug` (mirroring `bootstrap-community.ts`) so the wizard correctly auto-detects which template a CSV-imported community belongs to.
+  - Legacy `housing_root_data` + `housing_unit_data` dual-write are now gated on `kinds.leaf === "unit"` — non-HOA installs skip the legacy tables entirely (no orphan rows). HOA installs preserve the dual-write rollback path until Phase 8.
+- Wizard amber banner softened: instead of "feature not yet implemented", it now coaches operators that the CSV still requires share columns (use 1/1 for shareless templates). Translations updated in both locales.
+- `src/lib/import/columns.ts` and `src/lib/import/validate.ts` left unchanged — column schema + share invariants stay HOA-shaped. Non-HOA imports require operators to put `1/1` placeholders in the share columns. Generalizing those is Phase 6c.
+
+**Phase 6c — deferred**
+- `src/lib/import/columns.ts`: derive per-row columns from `entity_kinds.data_schema` of the leaf kind.
+- `src/lib/import/validate.ts`: relax share-sum + flat-number invariants when the template's leaf kind doesn't declare share fields.
+- Drop the amber banner entirely once columns + validation no longer demand share fields.
 
 **Phase 7 — next after 6b**
 - Audit hardcoded "Bytový dom" / "Vchod" / "Byt" labels and switch to `Kinds.<slug>` translation keys driven by the root entity's kind / template.

@@ -481,6 +481,9 @@ export default function ImportWizardPage() {
           </div>
         )}
       </section>
+      {/* Phase 6b note: the amber banner above stays as a hint that
+          share/area CSV columns can default to 1/1 for non-HOA leaves
+          — the seeder itself now writes the correct kind chain. */}
 
       {/* Step 1b: Structure */}
       <section className="rounded-lg border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-4">

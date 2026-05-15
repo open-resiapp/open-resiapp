@@ -2,10 +2,10 @@
 handoff_id: open-resiapp-to-open-resiapp-cloud-20260515-001
 from: open-resiapp
 to: open-resiapp-cloud
-status: open
+status: agreed
 created: 2026-05-15
 updated: 2026-05-15
-related_specs: [BYT-20260515-001]
+related_specs: [BYT-20260515-001, ORC-20260515-001]
 ---
 
 ## Request
@@ -119,20 +119,85 @@ The cloud team owns provisioning and knows the orchestrator better than we do. T
 
 <!-- Append responses below. Do not edit prior entries. -->
 
+### 2026-05-15 — open-resiapp-cloud
+
+Accepted. Spec written: **ORC-20260515-001** (`specs/specs/2026-05-15-cloud-template-picker-with-preview.md`).
+
+**Constraints §1–6 confirmed:**
+
+1. `INSTALL_TEMPLATE` env var contract honored. Cloud injects exactly one slug per container; no separate provisioning API requested.
+2. v1 slug list locked. Cloud's `instances.community_template` column gets a CHECK constraint enumerating the 20 slugs verbatim. Adding template 21 = coordinated PR both sides + new migration to extend CHECK.
+3. **Cloud does NOT manage `entity_kinds`.** Kind catalog stays sovereign per-instance. Cloud will ship the 20 template JSONs as static read-only assets (copied from `byt-app/src/lib/templates/*.json` via a CI sync step) purely for the **preview pane** in the signup UI. Cloud never POSTs kinds to instance, never aggregates kinds across tenants.
+4. Template set once at provisioning. No edit affordance in customer portal — read-only badge only.
+5. Pricing template-agnostic. Slug lives on `instances`, not `subscriptions`. Confirmed: no Stripe metadata coupling.
+6. SSO JWT carries identity only. Template propagation = env var at boot, not session.
+
+**Pushback on the suggested implementation shape — drag-drop builder rejected for v1.**
+
+The handoff "How we imagine it" section proposes a dropdown picker, which is what we're shipping. Internal product instinct floated a drag-and-drop tree builder in cloud signup; we evaluated and rejected. Rationale (preserved in spec Notes for the record):
+
+- Drag-drop needs a kind library in cloud (community, dock, plot, …). That violates §3 (cloud owns no kind catalog).
+- Custom tree per tenant doesn't fit a single `INSTALL_TEMPLATE` slug — would force a new provisioning API on instance side (violates §1).
+- Onboarding friction kills trial conversion (today: 30s; with builder: 5–10min of decisions a customer can't yet evaluate).
+- Post-install custom-kinds UI is already on instance roadmap (BYT-20260515-001 Phase 8). Customers customize trees in the live app — better UX than pre-paying for an abstract tree.
+
+If demand signals for pre-provisioning customization later, v2 path = post-payment "Customize tree" link that redirects to the instance's own builder on first login. Cloud stays in lane.
+
+**v1 shape:**
+
+- Signup wizard step between plan and payment: category-grouped picker (Residential/Land/Commercial/Civic/Custom), default `hoa`
+- Right-pane preview from the static template JSONs: `starter_tree` as nested list + `default_voting_method` + `default_roles`. Static render, no interactivity
+- `instances.community_template` column (TEXT NOT NULL DEFAULT `'hoa'` + CHECK), backfills existing customers as `hoa`
+- Orchestrator injects `INSTALL_TEMPLATE` at container launch, same code path as `DATABASE_URL` (commit `55dade0`)
+- Customer portal: read-only badge on instance detail
+- Admin panel: filter + column on instance list (if admin UI ships in v1; else Phase 2)
+- English-only labels in v1 (mirrors `setup.sh`). SK localization deferred — when ready, cloud will read `Templates.*` keys from the instance-side `messages/{sk,en}.json`
+
+**Open question for byt-app:**
+
+Sync strategy for the 20 template JSONs. Two options:
+- **A) CI copy step** keyed to the instance image tag — cloud build pulls latest JSONs from `byt-app/src/lib/templates/` when `INSTANCE_IMAGE_REPO` is bumped
+- **B) Git submodule** — cloud links `byt-app` as submodule, JSONs live-linked
+
+Cloud-side preference: **A** (looser coupling, fewer cross-repo gotchas). Either way works on our end. Would you like the manifest assertion in byt-app's release checklist or in cloud's CI?
+
+**Status proposed:** `agreed`. Both projects can start implementation against the Decision Summary below.
+
 ---
 
 ## Decision Summary
-<!-- Fill in when status moves to "agreed". -->
 
 **What will be built:**
+
+- Cloud-side template picker in signup wizard between plan selection and Stripe payment, with starter-tree preview pane
+- `instances.community_template` column on cloud DB, NOT NULL DEFAULT `'hoa'`, CHECK constraint over the 20 v1 slugs
+- `INSTALL_TEMPLATE` env var injection at container launch (cloud's orchestrator)
+- Static copy of the 20 template JSONs in cloud's backend, synced from `byt-app/src/lib/templates/` via CI step (Option A)
+- Read-only template badge in customer portal; admin filter + column (if admin UI exists in v1)
+- Instance-side: `setup.sh` template picker, `INSTALL_TEMPLATE` env reader, `bootstrap-community.ts` first-boot script, per-instance `entity_kinds` seed from template
+
 **What will NOT be built (and why):**
+
+- **Drag-and-drop tree builder in cloud signup** — violates handoff §3 (cloud must not manage kind catalog), breaks `INSTALL_TEMPLATE` single-slug contract (§1), kills trial conversion (5–10min friction), duplicates instance-side post-install builder (BYT-20260515-001 Phase 8). v2 path: post-payment redirect to instance builder if data shows demand.
+- **Custom kind creation in cloud UI** — kind catalog is per-instance per §3; custom kinds are added via instance admin UI post-bootstrap.
+- **Post-install template change** — out of scope both sides for v1 per §4. Customer needs to provision a fresh instance to switch templates.
+- **Template-aware billing** — pricing is template-agnostic per §5. All 20 templates work on all 4 plans.
+- **Template in SSO JWT** — JWTs carry identity only per §6. Template is internal to the instance after provisioning.
+- **SK localization of template names in cloud signup UI (v1)** — English-only mirrors `setup.sh`. Deferred to follow-up once `Templates.*` namespace stabilizes.
+
 **Constraints agreed:**
+
+- Stable v1 slug list (20 templates). Adding template 21 requires coordinated PR on both sides plus cloud migration to extend CHECK constraint.
+- Cloud never POSTs kinds to instance, never reads instance's `entity_kinds` table, never aggregates kinds across tenants.
+- Cloud's template JSON copies are read-only previews — not authoritative. byt-app's `src/lib/templates/` is the source of truth.
+- Existing cloud customers backfilled as `community_template = 'hoa'` — no behavior change for current installs.
+
 **Each party's responsibilities:**
 
 | Project              | Responsibility | Target |
 |----------------------|---------------|--------|
-| open-resiapp         | …             | …      |
-| open-resiapp-cloud   | …             | …      |
+| open-resiapp (byt-app)   | Phase 5 complete: `setup.sh` picker, `bootstrap-community.ts`, `INSTALL_TEMPLATE` reader, per-instance `entity_kinds` seed from template. Phase 4 `/api/templates` endpoint ships template JSONs. Maintain `src/lib/templates/*.json` as source of truth. Tag releases when template schema changes so cloud can sync. | Phases 4 + 5 already complete per spec progress log (2026-05-15) |
+| open-resiapp-cloud   | ORC-20260515-001: DB column + CHECK, signup wizard step, preview pane, env injection in `instance_scheduler.py`, customer portal badge, admin filter (if applicable), CI sync step for template JSONs from byt-app | TBD — spec in `specs/specs/`, ready to move to `in_progress` |
 
 ---
 
