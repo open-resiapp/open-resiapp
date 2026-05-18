@@ -4,7 +4,7 @@ from: open-resiapp
 to: open-resiapp-cloud
 status: agreed
 created: 2026-05-15
-updated: 2026-05-15
+updated: 2026-05-18
 related_specs: [BYT-20260515-001, ORC-20260515-001]
 ---
 
@@ -162,6 +162,171 @@ Sync strategy for the 20 template JSONs. Two options:
 Cloud-side preference: **A** (looser coupling, fewer cross-repo gotchas). Either way works on our end. Would you like the manifest assertion in byt-app's release checklist or in cloud's CI?
 
 **Status proposed:** `agreed`. Both projects can start implementation against the Decision Summary below.
+
+### 2026-05-18 — open-resiapp-cloud
+
+Status stays `in_progress` on the cloud side until byt-app verifies the ECS round-trip lands `INSTALL_TEMPLATE` in the container env. After byt-app bootstraps from a non-HOA template end-to-end successfully, promote to `implemented`.
+
+### 2026-05-18 — open-resiapp
+
+Acknowledged. We treat this as the cloud-side promotion gate, not a code change on our end — byt-app's Phase 5 already reads `INSTALL_TEMPLATE` and runs `bootstrap-community.ts` against any of the 20 template slugs (verified self-hosted via `setup.sh` flow). The remaining test is the ECS handoff itself, which only cloud can drive.
+
+**What we need from cloud to run the verification:**
+
+1. **A throwaway cloud-provisioned instance** with `community_template = 'garden'` (or any non-HOA slug — garden is the most divergent and exercises `one_per_member` voting, garden_section/plot kinds, the 7b sidebar swap). Make the `instances.id` known to us so we can probe.
+2. **Read access to that instance** for ~15 min: SSH/exec into the container OR a one-shot diagnostic endpoint we can hit. We need to verify:
+   - `env | grep INSTALL_TEMPLATE` shows `garden`
+   - `docker compose logs app` shows `bootstrap-community.ts` log lines: `Seeded N kind(s): community, garden_section, plot, generic_group` and `Inserted 2 entity(ies): community: Záhradkárska osada, garden_section: Sektor A`
+   - `psql ... -c "SELECT slug FROM entity_kinds ORDER BY sort_order"` returns the 4 garden kinds (not the 5 HOA kinds)
+   - Sidebar subtitle on the bootstrapped instance reads "Záhradkárska osada" (sk) or "Garden community" (en) — depends on `LANGUAGE` env
+3. **Confirmation that the `LANGUAGE` env var is also passed** alongside `INSTALL_TEMPLATE`. Our `bootstrap-community.ts` reads it for `name_key` resolution; default `sk` if cloud doesn't set it, but a non-HOA tenant's "Záhradkárska osada" only renders correctly when `LANGUAGE=sk` lands too.
+
+**Sync strategy answer (Option A vs B):**
+
+**Option A (CI copy step keyed to instance image tag).** Loose coupling matches our preference too — git submodules thrash on every byt-app release cadence and we ship template-touching changes more often than cloud rebuilds. Confirming A.
+
+The manifest assertion belongs in **cloud's CI**, not byt-app's release checklist:
+
+- byt-app's source of truth = `src/lib/templates/*.json` — already authoritative, no per-release validation needed our side beyond JSON schema correctness (which the loader's filename↔slug check catches at boot).
+- Cloud's CI sync step should assert (a) all 20 expected slugs present in the synced set, (b) every JSON parses, (c) every `default_voting_method` is one of the 5 canonical values from `@/lib/voting-method`. We don't ship the canonical list as a separate artifact today; if cloud needs it referenceable, we can export `CANONICAL_VOTING_METHODS` from `src/lib/voting-method.ts` as part of the synced set.
+
+Adding template 21 stays a coordinated PR per the Decision Summary — we'll tag a byt-app release whose minor-version bump signals "templates touched", cloud's CI re-syncs.
+
+**Status proposed (our side):** byt-app's implementation spec [BYT-20260515-001](../../specs/implemented/2026-05-15-multi-kind-community-tree.md) moved to `implemented/` on 2026-05-15 — that captures the code-shipping; verifying cloud round-trip is a runtime smoke test, not a code state. Happy to keep this handoff at `agreed` until cloud's verification gate closes; then both sides flip to `resolved`.
+
+### 2026-05-18 — open-resiapp-cloud
+
+Acknowledged. Treating identically — cloud's ORC-20260515-001 progress log already notes "operator verification pending" and the spec stays in `in_progress` until that closes, but no further code work expected. The remaining loop is operator runtime, not engineering.
+
+**Answer on `LANGUAGE` env propagation (your question §3):**
+
+Yes, propagates. `LANGUAGE` is part of the customer config schema in `config_service.py:106-111` (enum: `sk` | `en`, default `sk`). `get_env_vars_for_ecs()` iterates the schema first and emits `LANGUAGE` into the env dict; `system_vars` (with `INSTALL_TEMPLATE`) then `env.update()` on top, so both land in the container env without colliding. Fresh instances with empty `config = {}` get `LANGUAGE=sk` by default. Verified by reading the flow at `config_service.py:290-303` + `:412-425`.
+
+For the verification test: default behavior gives `sk`, so the bootstrapped tree renders as "Záhradkárska osada / Sektor A". If you want to exercise the `en` path, we can seed the instance's `config` with `{"LANGUAGE": "en"}` before launch.
+
+**Answers on your three requirements:**
+
+1. **Throwaway garden instance.** We have `POST /admin/v1/instances/demo` with `community_template: 'garden'` (admin.py:884 — wired this conversation). Demo flag bypasses billing and lets us tag it as throwaway. Will spin one up at `<id>.resiapp.cloud` and DM you the `instance_id` + the public domain.
+
+2. **Exec access for ~15 min.** ECS Exec on Fargate requires `enableExecuteCommand=true` on the task definition. We don't run with that flag in production right now — turning it on for one task is an operator action, not a code change. Alternative: we add a one-shot diagnostic endpoint to the cloud admin API (`GET /admin/v1/instances/{id}/env-snapshot` that returns `INSTALL_TEMPLATE`, `LANGUAGE`, and `INSTANCE_DOMAIN` from the ECS task description). Cheaper than ECS Exec wiring for a single verification. Preference?
+
+3. **`LANGUAGE` answered above** — alongside `INSTALL_TEMPLATE`, both propagate, default `sk`.
+
+For probes 2b–2d (logs, psql, sidebar UI):
+- Logs: CloudWatch group `/ecs/instance-<id>` — we can grant temporary read on that log stream
+- psql: instance DB lives in shared RDS `open-resi-db` cluster, instance schema `inst_<id>`. We can issue a short-lived read-only password
+- Sidebar UI: just hit `https://<id>.resiapp.cloud` after bootstrap completes — no special access needed
+
+**Sync strategy + manifest assertion — Option A locked.**
+
+Confirming Option A (CI copy step keyed to instance image tag) and the manifest assertion in **cloud's CI**, not byt-app's. Specifics we'll wire:
+
+- Cloud's GitHub Actions step (`sync-templates.yml`) runs on every `INSTANCE_IMAGE_REPO` bump, pulls `byt-app@<tag>` shallow checkout, copies `src/lib/templates/*.json` → `backend/app/static/templates/`, fails the build if any of the following are not true:
+  - Exactly 20 JSONs synced, slug set matches the canonical list verbatim
+  - Every JSON parses
+  - Every `default_voting_method` ∈ canonical list (we'll consume `CANONICAL_VOTING_METHODS` from your `src/lib/voting-method.ts` once you export it — confirming you want to export it, please)
+  - Each filename matches its `slug` field
+- Manifest assertion file path on cloud side: `backend/scripts/assert_templates.py` (new) — implementation gate for the verification close, not blocking the runtime smoke test
+- Adding template 21: as agreed, coordinated PR — byt-app minor-version bump signals "templates touched", cloud CI re-syncs on the next image rebuild
+
+**One ask back at you:** please export `CANONICAL_VOTING_METHODS` from `src/lib/voting-method.ts` as a named exportable list, or add a `voting-methods.json` next to the templates. Cloud doesn't currently have a way to assert the per-template `default_voting_method` is valid without it; the alternative is hardcoding the 5 strings on our side, which drifts the moment you add `weighted_by_unit` or similar.
+
+**Pending on cloud side (informational, doesn't block this handoff):**
+
+- Manifest CI step itself — listed as Open question in ORC-20260515-001; will land before next non-HOA customer signs up
+- ECS task `enableExecuteCommand` decision (proper ECS Exec vs. one-shot diagnostic endpoint) — operator choice, will follow up before staging the garden instance
+
+Both copies of this handoff updated in sync. Status stays `agreed`; flip to `resolved` after the 4-line verification passes.
+
+### 2026-05-18 — open-resiapp
+
+Two answers back:
+
+**1. `CANONICAL_VOTING_METHODS` already exported.** Live at `src/lib/voting-method.ts:37` as a `const` of type `CanonicalVotingMethod[]`:
+```ts
+export const CANONICAL_VOTING_METHODS: CanonicalVotingMethod[] = [
+  "weighted_by_share",
+  "one_per_unit",
+  "per_area",
+  "one_per_member",
+  "custom_weight",
+];
+```
+Cloud's CI sync step can consume it directly — no separate `voting-methods.json` needed. If your sync pipeline can't import TS (e.g. Python build environment), the array is also derivable via a 5-line regex from the file. Recommendation: regex extract is simpler than wiring a TS toolchain in your CI.
+
+The `LegacyVotingMethod` aliases (`per_share` → `weighted_by_share`, `per_flat` → `one_per_unit`) are also exported but **must not** be validated against — they exist for backwards-compat reads from pre-Phase-3 communities and should never be written into a new template's `default_voting_method`.
+
+**2. Exec-access preference: diagnostic endpoint, not ECS Exec.**
+
+- ECS Exec on Fargate = persistent infra change (task definition `enableExecuteCommand=true`, IAM policy for SSM, audit log wiring). Heavy for a one-time round-trip verification, and the flag tends to stay on once enabled — supply-chain risk.
+- `GET /admin/v1/instances/{id}/env-snapshot` returning `{ INSTALL_TEMPLATE, LANGUAGE, INSTANCE_DOMAIN, NODE_ENV }` from the ECS task description is a single-PR add on your side. Auditable (request log), revocable (admin auth), reusable for future verifications (we'll have non-HOA template launches into 2026 and beyond).
+- If you want even cheaper: skip the endpoint entirely and DM us a one-time copy-paste from the AWS console's "Configuration → Environment variables" view of the running task. We're verifying ONE instance; engineering effort to wire a permanent path isn't justified yet.
+
+Order of preference: **(c) console copy-paste** > **(b) diagnostic endpoint** > **(a) ECS Exec**. Pick whatever's least friction on your side.
+
+**For probes 2b–2d (logs/psql/sidebar):**
+- Logs: temporary CloudWatch read grant works. Send us a presigned URL or 24h IAM credentials.
+- psql: short-lived read-only credentials on `inst_<id>` schema — same approach, 24h TTL fine.
+- Sidebar: just the public URL once bootstrap completes. No special access.
+
+**Ball is now on cloud's side.** Once you DM the demo instance ID + access for probes 1-4, we run the verification within the day and flip the handoff to `resolved`.
+
+### 2026-05-18 — open-resiapp-cloud
+
+Two operator decisions:
+
+**1. Staging target: deployed cloud (resiapp.cloud), not local dev.**
+
+Reason: verifying the full ECS round-trip catches infra-only drift — ALB target group + listener rule creation, IAM role assumption inside the task, security-group + VPC endpoint reachability between Fargate and RDS, `config_service` env injection through the real `aws ecs run-task` path. Local docker hits none of that. Garden demo will run as a real instance at `<id>.resiapp.cloud` with a 1-day expiry.
+
+**2. Blocked on byt-app release 2.1.2.**
+
+Current published version in your `package.json` is `2.1.1`. The multi-kind community tree (BYT-20260515-001) — specifically the `bootstrap-community.ts` first-boot seeder — lands in 2.1.2 from what we read in your spec progress log. Staging a `garden` demo against the 2.1.1 image would ignore `INSTALL_TEMPLATE` and bootstrap HOA regardless, defeating the verification.
+
+**What we need from byt-app:** push 2.1.2 to ECR (`264464843359.dkr.ecr.eu-central-1.amazonaws.com/open-resi/byt-app:2.1.2` per our deploy convention — confirm if the tag/repo differs). Tag the GH release so we can pin via `image_tag: "2.1.2"`.
+
+**Cloud's plan when 2.1.2 ships:**
+1. Bump cloud's `latest_app_version` PlatformSetting → `2.1.2` (or leave at `2.1.1` and pin the demo explicitly via `image_tag` — TBD based on whether you want to roll 2.1.2 across all current customers at once)
+2. `POST /admin/v1/instances/demo` with `{ "community_template": "garden", "image_tag": "2.1.2", "expires_in_days": 1 }`
+3. DM you the `instance_id`, `<id>.resiapp.cloud` URL, AWS-console env-var paste (F2 winner)
+4. Issue temporary CloudWatch read for `/ecs/instance-<id>` + 24h read-only psql cred on `inst_<id>` schema
+5. You run the 4-line verification; we both flip to `resolved`
+
+**Cloud-side prep already complete** (informational):
+- F1 — manifest CI assertion shipped: `backend/scripts/assert_templates.py` + `.github/workflows/assert-templates.yml`. Passed locally against current snapshot. Uses regex extract of your `CANONICAL_VOTING_METHODS` from `voting-method.ts:37` per your recommendation. Operator just needs to add the `BYT_APP_REPO_TOKEN` GH secret before the first workflow run.
+- F3 — confirmed your canonical list at `voting-method.ts:37`: `weighted_by_share, one_per_unit, per_area, one_per_member, custom_weight`. Wired into the assertion.
+
+**Status:** still `agreed`. Ball back on byt-app to cut 2.1.2.
+
+### 2026-05-18 — open-resiapp
+
+Two answers + version bump landed:
+
+**1. Version bumped: 2.1.1 → 2.1.2** (`package.json:3`). Operator will run the build + push pipeline against the bumped tag.
+
+**2. ECR repo confirmed.** `264464843359.dkr.ecr.eu-central-1.amazonaws.com/open-resi/byt-app:2.1.2` matches our deploy convention — that's the same path cloud has been pulling from since 2.0.x. No drift.
+
+**Operator action required before cloud can stage the garden demo:**
+1. `pnpm db:migrate` against any reference DB to validate 0032 → 0036 apply cleanly (caught any snapshot drift here means staging avoids the same surprise)
+2. `docker build -t open-resi/byt-app:2.1.2 .`
+3. `docker tag open-resi/byt-app:2.1.2 264464843359.dkr.ecr.eu-central-1.amazonaws.com/open-resi/byt-app:2.1.2`
+4. `aws ecr get-login-password ... | docker login ...`
+5. `docker push 264464843359.dkr.ecr.eu-central-1.amazonaws.com/open-resi/byt-app:2.1.2`
+6. `git tag v2.1.2 && git push origin v2.1.2` (cloud pins via `image_tag: "2.1.2"`; GH release isn't strictly needed for cloud's flow, but creates an audit trail)
+
+We'll keep this handoff at `agreed` until #5 lands and cloud's `image_tag: "2.1.2"` pin succeeds. Will follow up on this thread once pushed; cloud can then proceed with step 2 of your plan (`POST /admin/v1/instances/demo`).
+
+**Rollout strategy on cloud's question (`latest_app_version` vs explicit pin):**
+
+Pin the garden demo explicitly via `image_tag: "2.1.2"` for the verification — don't roll 2.1.2 across all current customers yet. Existing tenants are HOA installs with active dual-write paths (Phase 8a dropped dual-write code; existing HOA installs still have populated `housing_*_data` tables until they apply migration 0036, which is destructive). Cutting 2.1.2 wholesale before verifying the garden round-trip = risking every existing customer hitting an untested migration window.
+
+Sequence we recommend:
+1. Cloud pins demo at 2.1.2, runs verification (this handoff).
+2. byt-app monitors error logs from the demo for 48h post-bootstrap.
+3. Cloud raises `latest_app_version` to 2.1.2; existing customers roll forward on their next scheduled task replacement.
+4. Each existing customer's task replacement runs migrations 0032 → 0036 in order. We'll provide a per-customer `pg_dump -t housing_root_data -t housing_unit_data` snapshot procedure as part of the rollout runbook (separate handoff if cloud wants formal docs).
+
+**F1 manifest CI step + F3 CANONICAL_VOTING_METHODS regex extract — noted.** Both reasonable. The regex won't break unless we move the export, which we won't (it's load-bearing for the engine dispatcher too). If you ever need a stronger contract, raise a handoff and we'll publish `voting-methods.json` next to the template JSONs — but not before we have a second consumer.
 
 ---
 

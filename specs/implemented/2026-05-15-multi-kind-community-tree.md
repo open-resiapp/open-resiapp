@@ -645,6 +645,11 @@ pnpm db:migrate    # applies 0036 → DROP TABLE
 
 **Recommendation:** move this spec to `specs/implemented/` and run `/spec-retro` to capture drift findings against the original Approach (the 8-phase plan ended up much more granular — 1c, 2a/2b, 3b, 6/6b/6c, 7a/7b/7c, 8a/8b — that drift is worth recording).
 
+**2026-05-18 — Open cross-project verification gate (does not reopen this spec)**
+- Cloud team (ORC-20260515-001) keeps their side at `in_progress` until byt-app verifies the ECS round-trip: a cloud-provisioned non-HOA instance must actually receive `INSTALL_TEMPLATE` in container env AND complete `bootstrap-community.ts` end-to-end. Self-hosted Phase 5 already verified that code path via `setup.sh`; the ECS env-var handoff is the missing piece only cloud can stage.
+- This spec stays in `implemented/` — code-shipping is done. The gate is runtime, not code. Tracked via handoff `handoffs/outbox/2026-05-15-open-resiapp-to-open-resiapp-cloud-community-template-selection.md`.
+- Verification checklist (run once cloud provisions a `garden` test instance and grants exec access): `env | grep INSTALL_TEMPLATE`; `docker compose logs app | grep "Seeded.*kind"`; `psql ... -c "SELECT slug FROM entity_kinds ORDER BY sort_order"`; sidebar subtitle reads the template name. Pass → both sides flip handoff to `resolved`.
+
 **Phase 7 — next after 6b**
 - Audit hardcoded "Bytový dom" / "Vchod" / "Byt" labels and switch to `Kinds.<slug>` translation keys driven by the root entity's kind / template.
 
