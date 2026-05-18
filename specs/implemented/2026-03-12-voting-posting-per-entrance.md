@@ -11,6 +11,8 @@ project_type: feature
 depends_on: []
 related_handoffs: []
 tags: [voting, posts, entrances, multi-entrance]
+changelog_version: "2.1.2"
+changelog_date: "2026-05-18"
 ---
 
 ## Goal

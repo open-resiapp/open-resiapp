@@ -11,6 +11,8 @@ project_type: other
 depends_on: []
 related_handoffs: [bytove-druzstvo-to-byt-app-20260314-001]
 tags: [security, external-api, rate-limiting, audit]
+changelog_version: "2.1.2"
+changelog_date: "2026-05-18"
 ---
 
 ## Goal

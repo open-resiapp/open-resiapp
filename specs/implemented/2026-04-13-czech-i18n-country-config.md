@@ -11,6 +11,8 @@ project_type: other
 depends_on: []
 related_handoffs: []
 tags: [czech-market, i18n, country-config]
+changelog_version: "2.1.2"
+changelog_date: "2026-05-18"
 ---
 
 ## Goal

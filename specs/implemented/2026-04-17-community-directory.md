@@ -11,6 +11,8 @@ project_type: feature
 depends_on: [RES-20260417-001]
 related_handoffs: []
 tags: [community, directory, opt-in, privacy]
+changelog_version: "2.1.2"
+changelog_date: "2026-05-18"
 ---
 
 ## Goal

@@ -12,8 +12,8 @@ depends_on: []
 related_handoffs: []
 tags: [ui, theming, accessibility]
 feature_branch: feature/dark-mode-toggle
-changelog_version: ""
-changelog_date: ""
+changelog_version: "2.1.2"
+changelog_date: "2026-05-18"
 docs_version: ""
 docs_communicated: ""
 ---

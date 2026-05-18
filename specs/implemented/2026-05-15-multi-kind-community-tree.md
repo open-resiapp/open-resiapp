@@ -12,8 +12,8 @@ depends_on: []
 related_handoffs: ["2026-05-15-open-resiapp-to-open-resiapp-cloud-community-template-selection.md"]
 tags: [architecture, schema, entities, templates, multi-tenant, hoa, garden, garage, street]
 feature_branch: ""
-changelog_version: ""
-changelog_date: ""
+changelog_version: "2.1.2"
+changelog_date: "2026-05-18"
 docs_version: ""
 docs_communicated: ""
 ---

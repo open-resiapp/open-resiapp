@@ -11,6 +11,8 @@ project_type: other
 depends_on: [BYT-20260413-002]
 related_handoffs: []
 tags: [czech-market, board, governance]
+changelog_version: "2.1.2"
+changelog_date: "2026-05-18"
 ---
 
 ## Goal
