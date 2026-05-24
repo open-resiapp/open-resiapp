@@ -56,13 +56,6 @@ export async function POST(
     );
   }
 
-  if (!pending.emailVerifiedAt) {
-    return NextResponse.json(
-      { error: "Email používateľa nie je overený" },
-      { status: 400 }
-    );
-  }
-
   // Phase 9.1d: existence check via the housing_unit entity.
   const [flat] = await db
     .select({ id: entities.id })
@@ -80,6 +73,7 @@ export async function POST(
       .set({
         status: "active",
         role,
+        emailVerifiedAt: pending.emailVerifiedAt ?? new Date(),
       })
       .where(eq(users.id, id));
 
