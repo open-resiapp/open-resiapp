@@ -110,6 +110,11 @@ export interface UserFlatRow {
   entranceName: string | null;
   shareNumerator: number;
   shareDenominator: number;
+  // Owner's share OF this unit (memberships.owner_unit_share_*) — distinct
+  // from shareNumerator/Denominator above, which is the unit's share of the
+  // whole community. For a sole owner this is 1/1; for co-owners it splits.
+  ownerUnitShareNumerator: number;
+  ownerUnitShareDenominator: number;
   area: number | null;
 }
 
@@ -129,6 +134,8 @@ export async function listUserFlats(userId: string): Promise<UserFlatRow[]> {
       entranceName: entrance.name,
       shareNumerator: sql<number>`(${entities.data}->>'share_numerator')::int`,
       shareDenominator: sql<number>`(${entities.data}->>'share_denominator')::int`,
+      ownerUnitShareNumerator: memberships.ownerUnitShareNumerator,
+      ownerUnitShareDenominator: memberships.ownerUnitShareDenominator,
       area: sql<number | null>`(${entities.data}->>'area_m2')::numeric`,
     })
     .from(memberships)

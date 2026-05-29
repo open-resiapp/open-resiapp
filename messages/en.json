@@ -498,7 +498,13 @@
     "deleteWarning": "This action cannot be undone.",
     "deleteSuccess": "User has been deleted.",
     "deleteFailed": "Failed to delete user.",
-    "hasRelatedRecords": "User has related records. Use deactivation instead of deletion."
+    "hasRelatedRecords": "User has related records. Use deactivation instead of deletion.",
+    "ownerShareLabel": "Share",
+    "shareNumeratorLabel": "Share numerator",
+    "shareDenominatorLabel": "Share denominator",
+    "invalidShare": "Invalid share — numerator and denominator must be whole numbers greater than 0.",
+    "shareSumWarningTitle": "Ownership shares do not sum to 1/1",
+    "shareSumWarningItem": "Flat {flat}: shares sum to {sum} (should be 1/1)."
   },
   "Claim": {
     "loading": "Loading...",

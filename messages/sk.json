@@ -498,7 +498,13 @@
     "deleteWarning": "Táto akcia je nevratná.",
     "deleteSuccess": "Používateľ bol zmazaný.",
     "deleteFailed": "Nepodarilo sa zmazať používateľa.",
-    "hasRelatedRecords": "Používateľ má súvisiace záznamy. Použite deaktiváciu namiesto zmazania."
+    "hasRelatedRecords": "Používateľ má súvisiace záznamy. Použite deaktiváciu namiesto zmazania.",
+    "ownerShareLabel": "Podiel",
+    "shareNumeratorLabel": "Čitateľ podielu",
+    "shareDenominatorLabel": "Menovateľ podielu",
+    "invalidShare": "Neplatný podiel — čitateľ aj menovateľ musia byť celé čísla väčšie ako 0.",
+    "shareSumWarningTitle": "Súčet vlastníckych podielov sa nerovná 1/1",
+    "shareSumWarningItem": "Byt {flat}: súčet podielov je {sum} (má byť 1/1)."
   },
   "Claim": {
     "loading": "Načítavam...",

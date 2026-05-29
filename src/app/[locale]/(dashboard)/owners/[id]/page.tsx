@@ -16,6 +16,20 @@ interface FlatInfo {
   floor: number;
   entranceId: string;
   entranceName: string;
+  ownerUnitShareNumerator: number;
+  ownerUnitShareDenominator: number;
+}
+
+interface ShareWarning {
+  flatId: string;
+  flatNumber: string;
+  sumNumerator: string;
+  sumDenominator: string;
+}
+
+interface ShareInput {
+  num: string;
+  den: string;
 }
 
 interface UserDetail {
@@ -78,6 +92,8 @@ export default function UserDetailPage() {
   const [editPhone, setEditPhone] = useState("");
   const [editRole, setEditRole] = useState<UserRole>("owner");
   const [editFlatIds, setEditFlatIds] = useState<string[]>([]);
+  const [editShares, setEditShares] = useState<Record<string, ShareInput>>({});
+  const [shareWarnings, setShareWarnings] = useState<ShareWarning[]>([]);
 
   const router = useRouter();
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -122,6 +138,17 @@ export default function UserDetailPage() {
     setEditPhone(user.phone || "");
     setEditRole(user.role);
     setEditFlatIds(user.flats?.map((f) => f.flatId) || []);
+    setEditShares(
+      Object.fromEntries(
+        (user.flats || []).map((f) => [
+          f.flatId,
+          {
+            num: String(f.ownerUnitShareNumerator),
+            den: String(f.ownerUnitShareDenominator),
+          },
+        ])
+      )
+    );
     setError("");
     setEditing(true);
   }
@@ -132,12 +159,41 @@ export default function UserDetailPage() {
         ? prev.filter((id) => id !== flatId)
         : [...prev, flatId]
     );
+    // Default new selections to a sole-owner 1/1 share.
+    setEditShares((prev) =>
+      prev[flatId] ? prev : { ...prev, [flatId]: { num: "1", den: "1" } }
+    );
+  }
+
+  function setShare(flatId: string, field: keyof ShareInput, value: string) {
+    setEditShares((prev) => ({
+      ...prev,
+      [flatId]: {
+        num: prev[flatId]?.num ?? "1",
+        den: prev[flatId]?.den ?? "1",
+        [field]: value,
+      },
+    }));
   }
 
   async function handleSave(e: React.FormEvent) {
     e.preventDefault();
     setSaving(true);
     setError("");
+
+    // Per-flat owner share, only for selected flats. Validate positive ints.
+    const shares: Array<{ flatId: string; num: number; den: number }> = [];
+    for (const flatId of editFlatIds) {
+      const s = editShares[flatId] ?? { num: "1", den: "1" };
+      const num = Number(s.num);
+      const den = Number(s.den);
+      if (!Number.isInteger(num) || !Number.isInteger(den) || num <= 0 || den <= 0) {
+        setError(t("invalidShare"));
+        setSaving(false);
+        return;
+      }
+      shares.push({ flatId, num, den });
+    }
 
     const res = await fetch(`/api/users/${id}`, {
       method: "PATCH",
@@ -148,6 +204,7 @@ export default function UserDetailPage() {
         phone: editPhone || null,
         role: editRole,
         flatIds: editFlatIds,
+        shares,
       }),
     });
 
@@ -158,6 +215,8 @@ export default function UserDetailPage() {
       return;
     }
 
+    const data = await res.json();
+    setShareWarnings(data.shareWarnings ?? []);
     setSaving(false);
     setEditing(false);
     await fetchUser();
@@ -232,20 +291,21 @@ export default function UserDetailPage() {
     if (!user?.flats || user.flats.length === 0) return tCommon("noDash");
     return user.flats
       .map((f) => {
-        if (f.floor !== null && f.entranceName) {
-          return t("flatDisplay", {
-            number: f.flatNumber,
-            floor: f.floor,
-            entrance: f.entranceName,
-          });
-        }
-        if (f.entranceName) {
-          return t("flatDisplayNoFloor", {
-            number: f.flatNumber,
-            entrance: f.entranceName,
-          });
-        }
-        return `${t("flatLabel")} ${f.flatNumber}`;
+        const base =
+          f.floor !== null && f.entranceName
+            ? t("flatDisplay", {
+                number: f.flatNumber,
+                floor: f.floor,
+                entrance: f.entranceName,
+              })
+            : f.entranceName
+              ? t("flatDisplayNoFloor", {
+                  number: f.flatNumber,
+                  entrance: f.entranceName,
+                })
+              : `${t("flatLabel")} ${f.flatNumber}`;
+        const share = `${f.ownerUnitShareNumerator}/${f.ownerUnitShareDenominator}`;
+        return `${base} – ${t("ownerShareLabel")} ${share}`;
       })
       .join(", ");
   }
@@ -289,6 +349,24 @@ export default function UserDetailPage() {
               {tShell("assignExisting")}
             </button>
           </div>
+        </div>
+      )}
+
+      {shareWarnings.length > 0 && (
+        <div className="bg-amber-50 border border-amber-300 rounded-xl p-5 mb-4 dark:bg-amber-900/30 dark:border-amber-700">
+          <p className="text-base font-medium text-amber-900 dark:text-amber-100 mb-1">
+            {t("shareSumWarningTitle")}
+          </p>
+          <ul className="text-sm text-amber-800 dark:text-amber-200 list-disc ml-5">
+            {shareWarnings.map((w) => (
+              <li key={w.flatId}>
+                {t("shareSumWarningItem", {
+                  flat: w.flatNumber,
+                  sum: `${w.sumNumerator}/${w.sumDenominator}`,
+                })}
+              </li>
+            ))}
+          </ul>
         </div>
       )}
 
@@ -436,22 +514,51 @@ export default function UserDetailPage() {
                 {flats.length === 0 ? (
                   <p className="px-4 py-3 text-base text-gray-500 dark:text-gray-400">{t("noFlat")}</p>
                 ) : (
-                  flats.map((f) => (
-                    <label
-                      key={f.id}
-                      className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 cursor-pointer dark:hover:bg-gray-700/50"
-                    >
-                      <input
-                        type="checkbox"
-                        checked={editFlatIds.includes(f.id)}
-                        onChange={() => toggleFlatId(f.id)}
-                        className="w-5 h-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-900"
-                      />
-                      <span className="text-base text-gray-900 dark:text-gray-100">
-                        {t("flatLabel")} {f.flatNumber} ({f.entranceName})
-                      </span>
-                    </label>
-                  ))
+                  flats.map((f) => {
+                    const checked = editFlatIds.includes(f.id);
+                    const share = editShares[f.id] ?? { num: "1", den: "1" };
+                    return (
+                      <div key={f.id} className="px-4 py-3 hover:bg-gray-50 dark:hover:bg-gray-700/50">
+                        <label className="flex items-center gap-3 cursor-pointer">
+                          <input
+                            type="checkbox"
+                            checked={checked}
+                            onChange={() => toggleFlatId(f.id)}
+                            className="w-5 h-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-900"
+                          />
+                          <span className="text-base text-gray-900 dark:text-gray-100">
+                            {t("flatLabel")} {f.flatNumber} ({f.entranceName})
+                          </span>
+                        </label>
+                        {checked && (
+                          <div className="mt-2 ml-8 flex items-center gap-2">
+                            <span className="text-sm text-gray-500 dark:text-gray-400">
+                              {t("ownerShareLabel")}
+                            </span>
+                            <input
+                              type="number"
+                              min={1}
+                              step={1}
+                              value={share.num}
+                              onChange={(e) => setShare(f.id, "num", e.target.value)}
+                              aria-label={t("shareNumeratorLabel")}
+                              className="w-16 px-2 py-1 text-base text-center border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none dark:bg-gray-900 dark:border-gray-700 dark:text-gray-100"
+                            />
+                            <span className="text-gray-500 dark:text-gray-400">/</span>
+                            <input
+                              type="number"
+                              min={1}
+                              step={1}
+                              value={share.den}
+                              onChange={(e) => setShare(f.id, "den", e.target.value)}
+                              aria-label={t("shareDenominatorLabel")}
+                              className="w-16 px-2 py-1 text-base text-center border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none dark:bg-gray-900 dark:border-gray-700 dark:text-gray-100"
+                            />
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })
                 )}
               </div>
             </div>
