@@ -96,31 +96,31 @@ export default function VlastniciPage() {
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex flex-col gap-4 mb-6 sm:flex-row sm:items-center sm:justify-between">
         <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">{t("title")}</h1>
-        <div className="flex gap-3">
+        <div className="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap sm:gap-3">
           <Link
             href="/owners/pending"
-            className="inline-flex items-center gap-2 px-5 py-3 bg-blue-700 hover:bg-blue-800 text-white text-base font-medium rounded-lg transition-colors"
+            className="inline-flex items-center justify-center gap-2 px-4 py-2.5 sm:px-5 sm:py-3 bg-blue-700 hover:bg-blue-800 text-white text-sm sm:text-base font-medium rounded-lg transition-colors text-center"
           >
             {t("pendingShellUsers")}
           </Link>
           <Link
             href="/owners/pending-registrations"
-            className="inline-flex items-center gap-2 px-5 py-3 bg-amber-600 hover:bg-amber-700 text-white text-base font-medium rounded-lg transition-colors"
+            className="inline-flex items-center justify-center gap-2 px-4 py-2.5 sm:px-5 sm:py-3 bg-amber-600 hover:bg-amber-700 text-white text-sm sm:text-base font-medium rounded-lg transition-colors text-center"
           >
             {t("pendingRegistrationsLink")}
             <PendingCountBadge />
           </Link>
           <button
             onClick={() => setShowInviteModal(true)}
-            className="px-5 py-3 bg-green-600 hover:bg-green-700 text-white text-base font-medium rounded-lg transition-colors"
+            className="inline-flex items-center justify-center px-4 py-2.5 sm:px-5 sm:py-3 bg-green-600 hover:bg-green-700 text-white text-sm sm:text-base font-medium rounded-lg transition-colors"
           >
             {t("invite")}
           </button>
           <button
             onClick={() => setShowForm(!showForm)}
-            className="px-5 py-3 bg-blue-600 hover:bg-blue-700 text-white text-base font-medium rounded-lg transition-colors"
+            className="inline-flex items-center justify-center px-4 py-2.5 sm:px-5 sm:py-3 bg-blue-600 hover:bg-blue-700 text-white text-sm sm:text-base font-medium rounded-lg transition-colors"
           >
             {showForm ? tCommon("close") : t("addUser")}
           </button>
