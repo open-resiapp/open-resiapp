@@ -40,7 +40,10 @@ const SUPPORTED_KINDS = [
   "generic_group",
 ] as const;
 
-type Kind = (typeof coreSchema.entityKindEnum.enumValues)[number];
+// Phase 1c removed the entityKindEnum — kinds now live in the per-instance
+// entity_kinds catalog. For this bootstrap CLI the supported seed shapes are
+// the static SUPPORTED_KINDS list above.
+type Kind = (typeof SUPPORTED_KINDS)[number];
 
 interface CliArgs {
   kind: Kind;
@@ -62,9 +65,9 @@ function parseArgs(argv: string[]): CliArgs {
     if (tok === "--kind") {
       const next = argv[i + 1];
       if (!next) throw new Error("--kind requires a value");
-      if (!coreSchema.entityKindEnum.enumValues.includes(next as Kind)) {
+      if (!SUPPORTED_KINDS.includes(next as Kind)) {
         throw new Error(
-          `--kind must be one of: ${coreSchema.entityKindEnum.enumValues.join(", ")}`
+          `--kind must be one of: ${SUPPORTED_KINDS.join(", ")}`
         );
       }
       kind = next as Kind;
