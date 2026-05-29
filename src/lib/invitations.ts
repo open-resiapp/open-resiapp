@@ -147,6 +147,10 @@ export async function listPendingShellUsers(
         eq(users.status, "pending"),
         isNull(users.passwordHash),
         eq(memberships.status, "active"),
+        // Only shells actually assigned to a flat (unit). A shell whose
+        // active membership sits on a non-unit entity (root/entrance) has
+        // no flat and must not appear in the pending owners list.
+        eq(entities.kind, "unit"),
         eq(entities.rootId, rootId)
       )
     )
