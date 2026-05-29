@@ -193,10 +193,15 @@ export interface ClaimableRealUser {
 }
 
 /**
- * Real users (status='pending' or 'active', has email + passwordHash)
- * who hold NO active memberships anywhere. These are bulk-QR
- * self-registrants awaiting an admin to merge them into an existing
- * shell user — the "target" side of `mergeShellIntoUser`.
+ * Real users (status='pending', has email + passwordHash) who hold NO
+ * active memberships anywhere. These are bulk-QR self-registrants awaiting
+ * an admin to merge them into an existing shell user — the "target" side
+ * of `mergeShellIntoUser`.
+ *
+ * The status='pending' filter is essential: an already-accepted user
+ * (status='active') who was later removed from all flats also has no
+ * active membership, but is NOT an unhandled registration request and
+ * must not reappear here.
  *
  * `rootId` is currently unused because bulk-QR registrants have no
  * community association until merged; admin matches them by name.
@@ -218,6 +223,7 @@ export async function listClaimableRealUsers(): Promise<ClaimableRealUser[]> {
     .from(users)
     .where(
       and(
+        eq(users.status, "pending"),
         isNotNull(users.email),
         isNotNull(users.passwordHash),
         notInArray(users.id, withMembership)

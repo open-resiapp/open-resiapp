@@ -385,7 +385,8 @@
     "flatPlaceholder": "Vyberte byt…",
     "flatRequired": "Vyberte byt pre používateľa.",
     "roleLabel": "Rola",
-    "confirmReject": "Naozaj chcete zamietnuť žiadosť používateľa {name}?"
+    "confirmReject": "Naozaj chcete zamietnuť žiadosť používateľa {name}?",
+    "noFlatOption": "Bez bytu (člen spoločenstva)"
   },
   "RegistrationQr": {
     "title": "Hromadná registrácia cez QR",

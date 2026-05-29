@@ -33,12 +33,11 @@ export async function POST(
   const body = await request.json();
   const { flatId, role = "owner" } = body ?? {};
 
-  if (!flatId || typeof flatId !== "string") {
-    return NextResponse.json(
-      { error: "Vyberte byt pre používateľa" },
-      { status: 400 }
-    );
-  }
+  // Flat is optional: an admin may admit a registrant into the community
+  // without assigning a flat. No flat → activate the user, create no
+  // membership (a flatless community member, status='active').
+  const hasFlat = typeof flatId === "string" && flatId.length > 0;
+
   if (!ALLOWED_ROLES.includes(role)) {
     return NextResponse.json({ error: "Neplatná rola" }, { status: 400 });
   }
@@ -56,15 +55,17 @@ export async function POST(
     );
   }
 
-  // Phase 9.1d: existence check via the housing_unit entity.
-  const [flat] = await db
-    .select({ id: entities.id })
-    .from(entities)
-    .where(and(eq(entities.id, flatId), eq(entities.kind, "unit")))
-    .limit(1);
+  if (hasFlat) {
+    // Phase 9.1d: existence check via the housing_unit entity.
+    const [flat] = await db
+      .select({ id: entities.id })
+      .from(entities)
+      .where(and(eq(entities.id, flatId), eq(entities.kind, "unit")))
+      .limit(1);
 
-  if (!flat) {
-    return NextResponse.json({ error: "Byt nebol nájdený" }, { status: 400 });
+    if (!flat) {
+      return NextResponse.json({ error: "Byt nebol nájdený" }, { status: 400 });
+    }
   }
 
   await db.transaction(async (tx) => {
@@ -78,18 +79,20 @@ export async function POST(
       .where(eq(users.id, id));
 
     // Phase 9.1d: memberships single source of truth — userFlats /
-    // users.flatId writes removed.
-    await tx
-      .insert(memberships)
-      .values({
-        userId: id,
-        entityId: flatId,
-        role: role as typeof memberships.$inferInsert.role,
-        status: "active",
-      })
-      .onConflictDoNothing({
-        target: [memberships.userId, memberships.entityId],
-      });
+    // users.flatId writes removed. Skip entirely when no flat was chosen.
+    if (hasFlat) {
+      await tx
+        .insert(memberships)
+        .values({
+          userId: id,
+          entityId: flatId,
+          role: role as typeof memberships.$inferInsert.role,
+          status: "active",
+        })
+        .onConflictDoNothing({
+          target: [memberships.userId, memberships.entityId],
+        });
+    }
   });
 
   return NextResponse.json({ success: true });

@@ -385,7 +385,8 @@
     "flatPlaceholder": "Select a flat…",
     "flatRequired": "Select a flat for the user.",
     "roleLabel": "Role",
-    "confirmReject": "Reject the request from {name}?"
+    "confirmReject": "Reject the request from {name}?",
+    "noFlatOption": "No flat (community member)"
   },
   "RegistrationQr": {
     "title": "Bulk registration via QR",

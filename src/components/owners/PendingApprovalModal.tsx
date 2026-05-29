@@ -52,16 +52,14 @@ export default function PendingApprovalModal({
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!flatId) {
-      setError(t("flatRequired"));
-      return;
-    }
+    // Flat is optional — empty flatId admits the user into the community
+    // without assigning a flat.
     setSubmitting(true);
     setError(null);
     const res = await fetch(`/api/registrations/${user.id}/approve`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ flatId, role }),
+      body: JSON.stringify({ flatId: flatId || null, role }),
     });
     if (!res.ok) {
       const body = await res.json().catch(() => ({}));
@@ -104,10 +102,9 @@ export default function PendingApprovalModal({
             <select
               value={flatId}
               onChange={(e) => setFlatId(e.target.value)}
-              required
               className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none dark:bg-gray-900 dark:border-gray-700 dark:text-gray-100"
             >
-              <option value="">{t("flatPlaceholder")}</option>
+              <option value="">{t("noFlatOption")}</option>
               {flats.map((f) => (
                 <option key={f.id} value={f.id}>
                   {f.entranceName ? `${f.entranceName} — ` : ""}
@@ -144,7 +141,7 @@ export default function PendingApprovalModal({
             </button>
             <button
               type="submit"
-              disabled={submitting || !flatId}
+              disabled={submitting}
               className="px-5 py-3 bg-green-600 hover:bg-green-700 disabled:bg-green-400 text-white text-base font-medium rounded-lg transition-colors"
             >
               {submitting ? tCommon("saving") : t("approve")}
