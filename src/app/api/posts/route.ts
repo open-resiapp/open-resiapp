@@ -11,6 +11,7 @@ import { aliasedTable, desc, eq, sql } from "drizzle-orm";
 import { hasPermission } from "@/lib/permissions";
 import { sendPushToAll } from "@/lib/push";
 import { dispatchHook } from "@/lib/modules/dispatch";
+import { linkDocumentToTarget } from "@/lib/documents.server";
 import { getCommunityRoot } from "@/lib/legacy-compat";
 import type { UserRole } from "@/types";
 
@@ -111,6 +112,11 @@ export async function POST(request: NextRequest) {
       isPinned: isPinned || false,
     })
     .returning();
+
+  const documentIds = Array.isArray(body.documentIds) ? body.documentIds : [];
+  for (const docId of documentIds) {
+    await linkDocumentToTarget(String(docId), "board_post", post.id);
+  }
 
   sendPushToAll(
     { title: "Nový príspevok", body: title, url: "/board" },

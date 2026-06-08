@@ -4,6 +4,9 @@ import { useState, useEffect } from "react";
 import { useTranslations } from "next-intl";
 import EntranceScopePicker from "./EntranceScopePicker";
 import type { CommunityPostType } from "./PostCard";
+import DocumentAttachmentPicker, {
+  type AttachedDoc,
+} from "@/components/documents/DocumentAttachmentPicker";
 
 interface Entrance {
   id: string;
@@ -23,6 +26,7 @@ interface PostFormProps {
     eventLocation: string | null;
     entranceId: string | null;
     responsesAllowed: boolean;
+    documentIds: string[];
   }) => Promise<void>;
   submitting?: boolean;
 }
@@ -52,6 +56,7 @@ export default function PostForm({
   const [eventLocation, setEventLocation] = useState("");
   const [entranceId, setEntranceId] = useState<string | null>(null);
   const [responsesAllowed, setResponsesAllowed] = useState(true);
+  const [attachments, setAttachments] = useState<AttachedDoc[]>([]);
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -103,6 +108,7 @@ export default function PostForm({
       eventLocation: type === "event" ? eventLocation : null,
       entranceId,
       responsesAllowed,
+      documentIds: attachments.map((a) => a.id),
     });
   }
 
@@ -218,6 +224,8 @@ export default function PostForm({
         />
         {t("form.responsesAllowed")}
       </label>
+
+      <DocumentAttachmentPicker value={attachments} onChange={setAttachments} />
 
       {error && <p className="text-sm text-red-600">{error}</p>}
 

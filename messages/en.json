@@ -77,6 +77,13 @@
     "projectsTab": "Projects",
     "noProject": "No project",
     "assignProject": "Assign to project",
+    "attachments": {
+      "label": "Attachments (documents)",
+      "fromLibrary": "+ From library",
+      "uploadNew": "+ Upload new",
+      "uploading": "Uploading…",
+      "remove": "Remove"
+    },
     "projects": {
       "new": "New project",
       "empty": "No projects",

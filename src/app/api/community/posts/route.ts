@@ -24,6 +24,7 @@ import {
 } from "drizzle-orm";
 import { hasPermission } from "@/lib/permissions";
 import { dispatchHook } from "@/lib/modules/dispatch";
+import { linkDocumentToTarget } from "@/lib/documents.server";
 import type { UserRole } from "@/types";
 
 const POST_TTL_DAYS = 30;
@@ -255,6 +256,11 @@ export async function POST(request: NextRequest) {
       expiresAt,
     })
     .returning();
+
+  const documentIds = Array.isArray(body.documentIds) ? body.documentIds : [];
+  for (const docId of documentIds) {
+    await linkDocumentToTarget(String(docId), "community_post", post.id);
+  }
 
   dispatchHook("onPostCreate", {
     id: post.id,

@@ -2,6 +2,7 @@
 
 import { useTranslations, useFormatter } from "next-intl";
 import type { ReactNode } from "react";
+import PostAttachments from "@/components/documents/PostAttachments";
 
 export type CommunityPostType =
   | "sale"
@@ -43,6 +44,7 @@ interface PostCardProps {
 }
 
 export default function PostCard({
+  id,
   type,
   status,
   title,
@@ -124,6 +126,8 @@ export default function PostCard({
 
       <h3 className="text-lg font-semibold text-gray-900 mb-2 dark:text-gray-100">{title}</h3>
       <p className="text-base text-gray-700 whitespace-pre-wrap mb-3 dark:text-gray-200">{content}</p>
+
+      <PostAttachments targetType="community_post" targetId={id} />
 
       {photoUrl && (
         <div className="mb-3">

@@ -3,6 +3,9 @@
 import { useState } from "react";
 import { useTranslations } from "next-intl";
 import type { PostCategory } from "@/types";
+import DocumentAttachmentPicker, {
+  type AttachedDoc,
+} from "@/components/documents/DocumentAttachmentPicker";
 
 const categoryValues: PostCategory[] = ["info", "urgent", "event", "maintenance"];
 const categoryKeys: Record<PostCategory, string> = {
@@ -36,6 +39,7 @@ export default function NewPostModal({
   const tCommon = useTranslations("Common");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [attachments, setAttachments] = useState<AttachedDoc[]>([]);
 
   if (!isOpen) return null;
 
@@ -55,6 +59,7 @@ export default function NewPostModal({
         category: formData.get("category"),
         isPinned: formData.get("isPinned") === "on",
         entranceId: formData.get("entranceId") || null,
+        documentIds: attachments.map((a) => a.id),
       }),
     });
 
@@ -156,6 +161,8 @@ export default function NewPostModal({
             />
             {t("pinLabel")}
           </label>
+
+          <DocumentAttachmentPicker value={attachments} onChange={setAttachments} />
 
           <div className="flex gap-3 pt-2">
             <button

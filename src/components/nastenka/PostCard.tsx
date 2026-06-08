@@ -2,6 +2,7 @@
 
 import { useTranslations, useFormatter } from "next-intl";
 import type { PostCategory } from "@/types";
+import PostAttachments from "@/components/documents/PostAttachments";
 
 const categoryKeys: Record<PostCategory, string> = {
   info: "categoryInfo",
@@ -18,6 +19,7 @@ const categoryStyles: Record<PostCategory, { bg: string; text: string }> = {
 };
 
 interface PostCardProps {
+  postId?: string;
   title: string;
   content: string;
   category: PostCategory;
@@ -32,6 +34,7 @@ interface PostCardProps {
 }
 
 export default function PostCard({
+  postId,
   title,
   content,
   category,
@@ -103,6 +106,8 @@ export default function PostCard({
       <p className="text-base text-gray-700 whitespace-pre-wrap mb-4 dark:text-gray-200">
         {content}
       </p>
+
+      {postId && <PostAttachments targetType="board_post" targetId={postId} />}
 
       <div className="flex items-center justify-between text-sm text-gray-500 dark:text-gray-400">
         <span>{authorName}</span>

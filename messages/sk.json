@@ -77,6 +77,13 @@
     "projectsTab": "Projekty",
     "noProject": "Bez projektu",
     "assignProject": "Priradiť k projektu",
+    "attachments": {
+      "label": "Prílohy (dokumenty)",
+      "fromLibrary": "+ Z knižnice",
+      "uploadNew": "+ Nahrať nový",
+      "uploading": "Nahrávam…",
+      "remove": "Odobrať"
+    },
     "projects": {
       "new": "Nový projekt",
       "empty": "Žiadne projekty",

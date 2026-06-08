@@ -117,6 +117,7 @@ export default function NastenkaPage() {
           {posts.map((post) => (
             <PostCard
               key={post.id}
+              postId={post.id}
               title={post.title}
               content={post.content}
               category={post.category}
