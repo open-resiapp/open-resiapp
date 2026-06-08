@@ -44,7 +44,9 @@ export async function GET(
 
   const fileBuffer = await readFile(filePath);
 
-  return new NextResponse(fileBuffer, {
+  // Uint8Array<ArrayBuffer> wrap — @types/node 20.19+ types Buffer as
+  // Buffer<ArrayBufferLike>, not assignable to BodyInit.
+  return new NextResponse(new Uint8Array(fileBuffer), {
     headers: {
       "Content-Type": contentType,
       "Cache-Control": "private, max-age=86400",

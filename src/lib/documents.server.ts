@@ -7,6 +7,7 @@ import {
   documentAccessLog,
   entities,
   memberships,
+  users,
 } from "@/db/schema";
 import {
   canSeeDocPath,
@@ -35,17 +36,19 @@ export async function loadUserMemberships(
   return rows.map((r) => ({ entityPath: r.path, role: r.role }));
 }
 
+export type DocumentListItem = DocumentRow & { uploaderName: string | null };
+
 /**
  * Documents visible to the user within the subtree of `scopeEntityId`
  * (typically their current building root). Non-deleted only. Visibility is
  * resolved in-memory against the user's memberships — one membership query, no
- * per-document round-trip.
+ * per-document round-trip. Each row is enriched with the uploader's name.
  */
 export async function listVisibleDocuments(
   userId: string,
   scopeEntityId: string,
   opts: { type?: DocumentType } = {}
-): Promise<DocumentRow[]> {
+): Promise<DocumentListItem[]> {
   const [scope] = await db
     .select({ path: entities.path })
     .from(entities)
@@ -60,16 +63,17 @@ export async function listVisibleDocuments(
   if (opts.type) conditions.push(eq(documents.type, opts.type));
 
   const rows = await db
-    .select({ doc: documents, path: entities.path })
+    .select({ doc: documents, path: entities.path, uploaderName: users.name })
     .from(documents)
     .innerJoin(entities, eq(documents.entityId, entities.id))
+    .leftJoin(users, eq(documents.uploadedById, users.id))
     .where(and(...conditions))
     .orderBy(desc(documents.createdAt));
 
   const mems = await loadUserMemberships(userId);
   return rows
     .filter((r) => canSeeDocPath(mems, r.path, r.doc.audience))
-    .map((r) => r.doc);
+    .map((r) => ({ ...r.doc, uploaderName: r.uploaderName }));
 }
 
 /** Returns the document if the user may view it; null if missing OR forbidden. */

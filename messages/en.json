@@ -59,7 +59,62 @@
     "community": "Community",
     "owners": "Owners",
     "import": "Import",
-    "settings": "Settings"
+    "settings": "Settings",
+    "documents": "Documents"
+  },
+  "Documents": {
+    "title": "Documents",
+    "description": "Your building's central document library — contracts, budgets, minutes and more.",
+    "upload": "Upload document",
+    "empty": "No documents yet",
+    "filterAll": "All types",
+    "confirmDelete": "Delete this document?",
+    "download": "Download",
+    "delete": "Delete",
+    "uploadedBy": "Uploaded by {name}",
+    "retainUntilLabel": "Retain until {date}",
+    "form": {
+      "file": "File",
+      "name": "Name",
+      "namePlaceholder": "Optional — defaults to the file name",
+      "type": "Document type",
+      "audience": "Visible to",
+      "retainUntil": "Retain until",
+      "retainHint": "Optional — legal retention horizon (e.g. accounting records 10 years).",
+      "submit": "Upload",
+      "uploading": "Uploading…",
+      "cancel": "Cancel"
+    },
+    "type": {
+      "statutes": "Statutes / association agreement",
+      "house_rules": "House rules",
+      "minutes": "Meeting minutes",
+      "vote_result": "Vote result",
+      "vendor_contract": "Vendor contract",
+      "works_contract": "Works contract",
+      "insurance": "Insurance policy",
+      "revision": "Inspection report",
+      "budget": "Budget / quote",
+      "settlement": "Service settlement",
+      "fund_statement": "Repair fund statement",
+      "accounting": "Accounting document",
+      "employment": "Employment contract",
+      "technical": "Technical documentation",
+      "maintenance": "Maintenance record",
+      "notice": "Notice",
+      "other": "Other"
+    },
+    "audience": {
+      "admin": "Board only",
+      "owner": "Owners",
+      "resident": "Everyone (incl. tenants)"
+    },
+    "errors": {
+      "notAllowed": "File type not allowed",
+      "tooLarge": "File too large (max 25 MB)",
+      "fileRequired": "Select a file",
+      "uploadFailed": "Upload failed"
+    }
   },
   "ShareSumInvariant": {
     "title": "Heads up: {count} unit(s) have inconsistent co-owner shares",

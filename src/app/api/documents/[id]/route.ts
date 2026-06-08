@@ -38,7 +38,9 @@ export async function GET(
   await logDocumentAccess(doc.id, userId, doc.entityId);
 
   const filename = encodeURIComponent(doc.originalName || doc.name);
-  return new NextResponse(obj.body, {
+  // Wrap in a concrete Uint8Array<ArrayBuffer>: @types/node types Buffer as
+  // Buffer<ArrayBufferLike>, which is not assignable to BodyInit.
+  return new NextResponse(new Uint8Array(obj.body), {
     headers: {
       "Content-Type": doc.mimeType || obj.contentType,
       "Content-Disposition": `attachment; filename*=UTF-8''${filename}`,

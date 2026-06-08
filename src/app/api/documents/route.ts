@@ -3,8 +3,9 @@ import crypto from "crypto";
 
 import { auth } from "@/lib/auth";
 import { hasEntityPermission } from "@/lib/permissions-entity";
+import { resolveCurrentEntityId } from "@/lib/current-entity";
 import { getStorage } from "@/lib/storage";
-import { createDocument } from "@/lib/documents.server";
+import { createDocument, listVisibleDocuments } from "@/lib/documents.server";
 import {
   ALLOWED_DOCUMENT_MIME,
   MAX_DOCUMENT_SIZE,
@@ -13,6 +14,52 @@ import {
   type DocumentType,
   type DocumentAudience,
 } from "@/lib/documents";
+
+// GET /api/documents — list documents visible to the user within their
+// current entity scope, plus their management capabilities. Visibility is
+// resolved per-document by audience + entity line (canSeeDocPath).
+export async function GET() {
+  const session = await auth();
+  if (!session) {
+    return NextResponse.json({ error: "Neautorizovaný prístup" }, { status: 401 });
+  }
+  const userId = session.user.id;
+
+  const entityId = await resolveCurrentEntityId(userId);
+  if (!entityId) {
+    return NextResponse.json({
+      entityId: null,
+      canUpload: false,
+      isManager: false,
+      documents: [],
+    });
+  }
+
+  const [docs, canUpload, isManager] = await Promise.all([
+    listVisibleDocuments(userId, entityId),
+    hasEntityPermission(userId, entityId, "uploadDocument").catch(() => false),
+    hasEntityPermission(userId, entityId, "deleteDocument").catch(() => false),
+  ]);
+
+  return NextResponse.json({
+    entityId,
+    canUpload,
+    isManager,
+    documents: docs.map((d) => ({
+      id: d.id,
+      name: d.name,
+      type: d.type,
+      audience: d.audience,
+      mimeType: d.mimeType,
+      sizeBytes: d.sizeBytes,
+      originalName: d.originalName,
+      retainUntil: d.retainUntil,
+      createdAt: d.createdAt,
+      uploaderName: d.uploaderName,
+      isUploader: d.uploadedById === userId,
+    })),
+  });
+}
 
 // POST /api/documents — upload a document to an entity.
 // Multipart form: file, entityId, type, audience, name?, retainUntil?.

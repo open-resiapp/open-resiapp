@@ -56,7 +56,9 @@ export async function GET(req: Request) {
   }
 
   const xlsx = generateXlsxTemplate(result.structure, dataRows);
-  return new NextResponse(Buffer.from(xlsx), {
+  // Uint8Array<ArrayBuffer> wrap — @types/node 20.19+ types Buffer as
+  // Buffer<ArrayBufferLike>, not assignable to BodyInit.
+  return new NextResponse(new Uint8Array(Buffer.from(xlsx)), {
     headers: {
       "Content-Type":
         "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",

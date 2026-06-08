@@ -59,7 +59,62 @@
     "community": "Komunita",
     "owners": "Vlastníci",
     "import": "Import",
-    "settings": "Nastavenia"
+    "settings": "Nastavenia",
+    "documents": "Dokumenty"
+  },
+  "Documents": {
+    "title": "Dokumenty",
+    "description": "Centrálne úložisko dokumentov bytového domu — zmluvy, rozpočty, zápisnice a ďalšie.",
+    "upload": "Nahrať dokument",
+    "empty": "Zatiaľ žiadne dokumenty",
+    "filterAll": "Všetky typy",
+    "confirmDelete": "Naozaj vymazať tento dokument?",
+    "download": "Stiahnuť",
+    "delete": "Vymazať",
+    "uploadedBy": "Nahral {name}",
+    "retainUntilLabel": "Uchovať do {date}",
+    "form": {
+      "file": "Súbor",
+      "name": "Názov",
+      "namePlaceholder": "Voliteľné — predvolene názov súboru",
+      "type": "Typ dokumentu",
+      "audience": "Viditeľné pre",
+      "retainUntil": "Uchovať do",
+      "retainHint": "Voliteľné — zákonná lehota uchovania (napr. účtovné doklady 10 rokov).",
+      "submit": "Nahrať",
+      "uploading": "Nahrávam…",
+      "cancel": "Zrušiť"
+    },
+    "type": {
+      "statutes": "Zmluva o spoločenstve / Stanovy",
+      "house_rules": "Domový poriadok",
+      "minutes": "Zápisnica zo schôdze",
+      "vote_result": "Výsledok hlasovania",
+      "vendor_contract": "Dodávateľská zmluva",
+      "works_contract": "Zmluva o dielo",
+      "insurance": "Poistná zmluva",
+      "revision": "Revízna správa",
+      "budget": "Rozpočet / cenová ponuka",
+      "settlement": "Vyúčtovanie úhrad",
+      "fund_statement": "Vyúčtovanie fondu opráv",
+      "accounting": "Účtovný doklad",
+      "employment": "Pracovná zmluva",
+      "technical": "Technická dokumentácia",
+      "maintenance": "Protokol o údržbe",
+      "notice": "Oznam",
+      "other": "Iné"
+    },
+    "audience": {
+      "admin": "Len výbor",
+      "owner": "Vlastníci",
+      "resident": "Všetci (vrátane nájomníkov)"
+    },
+    "errors": {
+      "notAllowed": "Nepovolený typ súboru",
+      "tooLarge": "Súbor je príliš veľký (max 25 MB)",
+      "fileRequired": "Vyberte súbor",
+      "uploadFailed": "Nahranie zlyhalo"
+    }
   },
   "ShareSumInvariant": {
     "title": "Pozor: {count} bytov má neúplne vyplnené podiely spoluvlastníkov",

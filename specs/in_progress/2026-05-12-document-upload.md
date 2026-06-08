@@ -269,6 +269,17 @@ Verified against current code (CLAUDE.md "verify lists against code" rule):
   ahead of this spec; spec rewritten from stub to legally-grounded design with
   document taxonomy, union visibility model, and retention/GDPR restrictions.
   Old "no separate storage provider" constraint dropped.
+- 2026-06-08: code-complete. Backend (schema/migration 0038, `documents.ts` +
+  `documents.server.ts`, permissions, `GET/POST /api/documents`,
+  `GET/DELETE /api/documents/[id]`) and UI (`/documents` page, upload form,
+  document card, Sidebar nav, i18n sk+en — 44 keys each, full parity). All ACs
+  code-complete; **pending end-to-end verification** (`pnpm db:migrate` +
+  manual click-through) before promotion to `implemented` and setting
+  `last_verified`.
+  - v1 limitation: uploads anchor at the user's current root entity
+    (`resolveCurrentEntityId`); per-unit / per-entrance anchoring from the UI is
+    deferred (the resolver already supports any anchor — only the form is
+    root-only). Audience tiers still control who sees each doc.
 
 **Sources (research 2026-06-08):**
 - [Zákon 182/1993 Z.z. (slov-lex, aktuálne znenie)](https://static.slov-lex.sk/static/SK/ZZ/1993/182/20250101.html)

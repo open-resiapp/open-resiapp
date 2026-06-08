@@ -23,7 +23,9 @@ declare module "next-auth" {
   }
 }
 
-declare module "@auth/core/jwt" {
+// Augment next-auth/jwt (the direct-dep subpath), not the transitive
+// @auth/core/jwt — the latter isn't resolvable under pnpm's strict layout.
+declare module "next-auth/jwt" {
   interface JWT {
     id: string;
     role: UserRole;
