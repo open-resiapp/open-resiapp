@@ -326,6 +326,7 @@
     "editFailed": "Nepodarilo sa uložiť zmeny"
   },
   "Voting": {
+    "attachedProjectDocs": "Dokumenty k hlasovaniu",
     "title": "Hlasovanie",
     "newVoting": "Nové hlasovanie",
     "empty": "Zatiaľ neboli vytvorené žiadne hlasovania.",
@@ -359,6 +360,8 @@
     "paperVotePhotos": "Fotografie listinných hlasov"
   },
   "VotingNew": {
+    "projectLabel": "Dokumentový projekt",
+    "noProject": "Žiadny",
     "title": "Nové hlasovanie",
     "noPermission": "Nemáte oprávnenie vytvárať hlasovania.",
     "titleLabel": "Názov hlasovania",
@@ -1201,5 +1204,14 @@
       "description": "Prázdny strom — admin si nakonfiguruje vlastné typy uzlov a hierarchiu cez UI po inštalácii.",
       "sampleCommunityName": "Naše spoločenstvo"
     }
+  },
+  "InstallPrompt": {
+    "title": "Nainštalovať aplikáciu",
+    "body": "Pridajte si OpenResiApp na plochu pre rýchlejší prístup.",
+    "install": "Nainštalovať",
+    "later": "Teraz nie",
+    "iosBody": "Pridajte si OpenResiApp na plochu pre rýchlejší prístup.",
+    "iosShareHint": "Ťuknite na Zdieľať, potom „Pridať na plochu“.",
+    "dismiss": "Zavrieť"
   }
 }

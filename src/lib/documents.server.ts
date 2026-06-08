@@ -6,6 +6,9 @@ import {
   documents,
   documentAccessLog,
   documentProjects,
+  documentLinks,
+  posts,
+  communityPosts,
   entities,
   memberships,
   users,
@@ -13,6 +16,7 @@ import {
 import {
   canSeeDocPath,
   type DocumentAudience,
+  type DocumentLinkTarget,
   type DocumentProjectStatus,
   type DocumentType,
   type UserMembershipLite,
@@ -293,4 +297,96 @@ export async function assignDocumentToProject(
   projectId: string | null
 ): Promise<void> {
   await db.update(documents).set({ projectId }).where(eq(documents.id, documentId));
+}
+
+// ── Document attachments (links) — BYT-20260608-001 Phase B ──
+
+/** Resolve the entity a polymorphic target belongs to (for authorization). */
+export async function resolveTargetEntityId(
+  targetType: DocumentLinkTarget,
+  targetId: string
+): Promise<string | null> {
+  if (targetType === "board_post") {
+    const [r] = await db
+      .select({ entityId: posts.entityId })
+      .from(posts)
+      .where(eq(posts.id, targetId))
+      .limit(1);
+    return r?.entityId ?? null;
+  }
+  const [r] = await db
+    .select({ entityId: communityPosts.entityId })
+    .from(communityPosts)
+    .where(eq(communityPosts.id, targetId))
+    .limit(1);
+  return r?.entityId ?? null;
+}
+
+export async function linkDocumentToTarget(
+  documentId: string,
+  targetType: DocumentLinkTarget,
+  targetId: string
+): Promise<void> {
+  await db
+    .insert(documentLinks)
+    .values({ documentId, targetType, targetId })
+    .onConflictDoNothing();
+}
+
+export async function unlinkDocument(
+  documentId: string,
+  targetType: DocumentLinkTarget,
+  targetId: string
+): Promise<void> {
+  await db
+    .delete(documentLinks)
+    .where(
+      and(
+        eq(documentLinks.documentId, documentId),
+        eq(documentLinks.targetType, targetType),
+        eq(documentLinks.targetId, targetId)
+      )
+    );
+}
+
+/** Remove all attachment links for a target — call from the target's DELETE
+ *  handler (target_id has no FK, so this is not cascaded by the DB). */
+export async function deleteLinksForTarget(
+  targetType: DocumentLinkTarget,
+  targetId: string
+): Promise<void> {
+  await db
+    .delete(documentLinks)
+    .where(
+      and(
+        eq(documentLinks.targetType, targetType),
+        eq(documentLinks.targetId, targetId)
+      )
+    );
+}
+
+/** Documents attached to a target, filtered to those the user may see. */
+export async function listTargetDocuments(
+  userId: string,
+  targetType: DocumentLinkTarget,
+  targetId: string
+): Promise<DocumentListItem[]> {
+  const rows = await db
+    .select({ doc: documents, path: entities.path, uploaderName: users.name })
+    .from(documentLinks)
+    .innerJoin(documents, eq(documentLinks.documentId, documents.id))
+    .innerJoin(entities, eq(documents.entityId, entities.id))
+    .leftJoin(users, eq(documents.uploadedById, users.id))
+    .where(
+      and(
+        eq(documentLinks.targetType, targetType),
+        eq(documentLinks.targetId, targetId),
+        isNull(documents.deletedAt)
+      )
+    )
+    .orderBy(desc(documentLinks.createdAt));
+  const mems = await loadUserMemberships(userId);
+  return rows
+    .filter((r) => canSeeDocPath(mems, r.path, r.doc.audience))
+    .map((r) => ({ ...r.doc, uploaderName: r.uploaderName }));
 }

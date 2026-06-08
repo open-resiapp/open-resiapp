@@ -10,6 +10,7 @@ import {
 } from "@/db/schema";
 import { aliasedTable, and, eq, asc, sql } from "drizzle-orm";
 import { hasPermission } from "@/lib/permissions";
+import { deleteLinksForTarget } from "@/lib/documents.server";
 import type { UserRole } from "@/types";
 
 async function getPostById(id: string) {
@@ -194,5 +195,6 @@ export async function DELETE(
   }
 
   await db.delete(communityPosts).where(eq(communityPosts.id, id));
+  await deleteLinksForTarget("community_post", id);
   return NextResponse.json({ ok: true });
 }

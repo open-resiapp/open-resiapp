@@ -22,6 +22,7 @@ export default function NovaHlasovaniePage() {
   const [votingType, setVotingType] = useState("written");
   const [initiatedBy, setInitiatedBy] = useState("board");
   const [entrances, setEntrances] = useState<Entrance[]>([]);
+  const [projects, setProjects] = useState<{ id: string; title: string }[]>([]);
 
   const role = (session?.user?.role || "owner") as UserRole;
 
@@ -29,6 +30,15 @@ export default function NovaHlasovaniePage() {
     fetch("/api/entrances")
       .then((r) => r.json())
       .then((data) => setEntrances(data))
+      .catch(() => {});
+  }, []);
+
+  useEffect(() => {
+    fetch("/api/documents/projects")
+      .then((r) => (r.ok ? r.json() : null))
+      .then((data) => {
+        if (data?.projects) setProjects(data.projects);
+      })
       .catch(() => {});
   }, []);
 
@@ -63,6 +73,7 @@ export default function NovaHlasovaniePage() {
         initiatedBy: formData.get("initiatedBy"),
         quorumType: formData.get("quorumType"),
         entranceId: formData.get("entranceId") || null,
+        documentProjectId: formData.get("documentProjectId") || null,
       }),
     });
 
@@ -236,6 +247,25 @@ export default function NovaHlasovaniePage() {
               <option value="active">{t("statusActive")}</option>
             </select>
           </div>
+
+          {projects.length > 0 && (
+            <div>
+              <label className="block text-base font-medium text-gray-700 mb-1 dark:text-gray-200">
+                {t("projectLabel")}
+              </label>
+              <select
+                name="documentProjectId"
+                className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none dark:bg-gray-900 dark:border-gray-700 dark:text-gray-100"
+              >
+                <option value="">{t("noProject")}</option>
+                {projects.map((p) => (
+                  <option key={p.id} value={p.id}>
+                    {p.title}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
 
           <div className="flex gap-3 pt-4">
             <button

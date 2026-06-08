@@ -209,6 +209,12 @@ export const documentProjectStatusEnum = pgEnum("document_project_status", [
   "done",
 ]);
 
+// Where a document can be attached (polymorphic). BYT-20260608-001 Phase B.
+export const documentLinkTargetEnum = pgEnum("document_link_target", [
+  "board_post",
+  "community_post",
+]);
+
 // ── Tables ─────────────────────────────────────────────
 
 // Phase 9.2: legacy `building`, `entrances`, `flats` tables dropped.
@@ -477,6 +483,34 @@ export const documentProjects = pgTable(
   },
   (table) => ({
     entityIdx: index("document_projects_entity_idx").on(table.entityId),
+  })
+);
+
+// Attachment: a document linked to a post (board or community). Polymorphic —
+// target_id has NO FK; cleanup on post delete is explicit in the post DELETE
+// handlers. BYT-20260608-001 Phase B.
+export const documentLinks = pgTable(
+  "document_links",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    documentId: uuid("document_id")
+      .references(() => documents.id, { onDelete: "cascade" })
+      .notNull(),
+    targetType: documentLinkTargetEnum("target_type").notNull(),
+    targetId: uuid("target_id").notNull(),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+  },
+  (table) => ({
+    targetIdx: index("document_links_target_idx").on(
+      table.targetType,
+      table.targetId
+    ),
+    documentIdx: index("document_links_document_idx").on(table.documentId),
+    uniqueLink: uniqueIndex("document_links_unique_idx").on(
+      table.documentId,
+      table.targetType,
+      table.targetId
+    ),
   })
 );
 

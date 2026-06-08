@@ -28,6 +28,27 @@ export async function GET() {
         type: "image/svg+xml",
         purpose: "any",
       },
+      // Raster icons are required for Chrome/Android installability — the
+      // `beforeinstallprompt` event will not fire with an SVG-only manifest.
+      {
+        src: "/icon-192.png",
+        sizes: "192x192",
+        type: "image/png",
+        purpose: "any",
+      },
+      {
+        src: "/icon-512.png",
+        sizes: "512x512",
+        type: "image/png",
+        purpose: "any",
+      },
+      // Full-bleed variant so Android's adaptive-icon mask doesn't clip the glyph.
+      {
+        src: "/icon-maskable-512.png",
+        sizes: "512x512",
+        type: "image/png",
+        purpose: "maskable",
+      },
     ],
   });
 }

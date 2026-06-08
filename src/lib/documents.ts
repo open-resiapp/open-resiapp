@@ -37,6 +37,11 @@ export type DocumentAudience = (typeof DOCUMENT_AUDIENCES)[number];
 export const DOCUMENT_PROJECT_STATUSES = ["planned", "active", "done"] as const;
 export type DocumentProjectStatus = (typeof DOCUMENT_PROJECT_STATUSES)[number];
 
+// Polymorphic attachment targets. BYT-20260608-001 Phase B. Keep in sync with
+// the document_link_target pgEnum in src/db/schema.ts.
+export const DOCUMENT_LINK_TARGETS = ["board_post", "community_post"] as const;
+export type DocumentLinkTarget = (typeof DOCUMENT_LINK_TARGETS)[number];
+
 // Default audience per type — encodes the §11 owner-inspection mapping. The
 // upload form pre-fills this; an admin may narrow within their rights.
 export const DEFAULT_AUDIENCE_BY_TYPE: Record<DocumentType, DocumentAudience> = {

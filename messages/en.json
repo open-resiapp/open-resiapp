@@ -326,6 +326,7 @@
     "editFailed": "Failed to save changes"
   },
   "Voting": {
+    "attachedProjectDocs": "Documents for this vote",
     "title": "Voting",
     "newVoting": "New voting",
     "empty": "No votings have been created yet.",
@@ -359,6 +360,8 @@
     "paperVotePhotos": "Paper ballot photos"
   },
   "VotingNew": {
+    "projectLabel": "Document project",
+    "noProject": "None",
     "title": "New voting",
     "noPermission": "You do not have permission to create votings.",
     "titleLabel": "Voting title",
@@ -1201,5 +1204,14 @@
       "description": "Empty tree — the admin configures node kinds and hierarchy via the UI after install.",
       "sampleCommunityName": "Our community"
     }
+  },
+  "InstallPrompt": {
+    "title": "Install app",
+    "body": "Add OpenResiApp to your home screen for faster access.",
+    "install": "Install",
+    "later": "Not now",
+    "iosBody": "Add OpenResiApp to your home screen for faster access.",
+    "iosShareHint": "Tap Share, then “Add to Home Screen”.",
+    "dismiss": "Dismiss"
   }
 }

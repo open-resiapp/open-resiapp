@@ -1,0 +1,2 @@
+ALTER TABLE "mod_voting_votings" ADD COLUMN "document_project_id" uuid;--> statement-breakpoint
+ALTER TABLE "mod_voting_votings" ADD CONSTRAINT "mod_voting_votings_document_project_id_document_projects_id_fk" FOREIGN KEY ("document_project_id") REFERENCES "public"."document_projects"("id") ON DELETE set null ON UPDATE no action;

@@ -14,7 +14,7 @@ import { relations, sql } from "drizzle-orm";
 // Module schema imports core symbols (entities, users) directly from
 // the core schema. Phase 9.2 dropped the legacy entrances/flats tables;
 // scope + share data live on entities + housing_unit_data now.
-import { entities, users } from "@/db/schema";
+import { entities, users, documentProjects } from "@/db/schema";
 
 // ── Enums ──────────────────────────────────────────────
 // votingMethodEnum stays in core (it's a property of the housing root,
@@ -73,6 +73,13 @@ export const votings = pgTable("mod_voting_votings", {
   entityId: uuid("entity_id")
     .references(() => entities.id, { onDelete: "restrict" })
     .notNull(),
+  // Optional linked document Project (dossier) — voters see its documents on
+  // the voting detail. BYT-20260608-001 Phase C. Set null if the project is
+  // deleted (cross-module FK to core document_projects).
+  documentProjectId: uuid("document_project_id").references(
+    () => documentProjects.id,
+    { onDelete: "set null" }
+  ),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 

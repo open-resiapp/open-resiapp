@@ -7,6 +7,7 @@ import { useEffect, useState } from "react";
 import Sidebar from "@/components/layout/Sidebar";
 import Header from "@/components/layout/Header";
 import ServiceWorkerRegistration from "@/components/ServiceWorkerRegistration";
+import InstallPrompt from "@/components/InstallPrompt";
 import ConsentGate from "@/components/consent/ConsentGate";
 import ShareSumInvariantBanner from "@/components/admin/ShareSumInvariantBanner";
 import type { UserRole } from "@/types";
@@ -51,6 +52,7 @@ export default function DashboardLayout({
   return (
     <div className="min-h-screen bg-gray-50 flex dark:bg-gray-950">
       <ServiceWorkerRegistration />
+      <InstallPrompt />
       {!isPending && (
         <Sidebar
           role={session.user.role as UserRole}

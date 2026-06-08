@@ -37,6 +37,7 @@ export async function GET(
       createdAt: votings.createdAt,
       voteCounterId: votings.voteCounterId,
       entityId: votings.entityId,
+      documentProjectId: votings.documentProjectId,
       entranceName: entrance.name,
       createdBy: {
         id: users.id,
@@ -82,6 +83,8 @@ export async function PATCH(
   if (body.votingType !== undefined) updateData.votingType = body.votingType;
   if (body.initiatedBy !== undefined) updateData.initiatedBy = body.initiatedBy;
   if (body.quorumType !== undefined) updateData.quorumType = body.quorumType;
+  if (body.documentProjectId !== undefined)
+    updateData.documentProjectId = body.documentProjectId || null;
   // Accept either `entityId` (canonical) or legacy `entranceId` from older
   // clients. Both resolve to the voting's scope entity. NULL = community-wide
   // → use the root entity.

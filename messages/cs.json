@@ -836,5 +836,14 @@
   "Sandbox": {
     "bannerTitle": "DEMO instance.",
     "bannerBody": "Toto je testovací prostředí. Data jsou fiktivní a budou zahozena při přechodu do ostrého provozu."
+  },
+  "InstallPrompt": {
+    "title": "Nainstalovat aplikaci",
+    "body": "Přidejte si OpenResiApp na plochu pro rychlejší přístup.",
+    "install": "Nainstalovat",
+    "later": "Teď ne",
+    "iosBody": "Přidejte si OpenResiApp na plochu pro rychlejší přístup.",
+    "iosShareHint": "Klepněte na Sdílet, poté „Přidat na plochu“.",
+    "dismiss": "Zavřít"
   }
 }

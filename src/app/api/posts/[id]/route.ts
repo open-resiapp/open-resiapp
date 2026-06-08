@@ -4,6 +4,7 @@ import { db } from "@/db";
 import { posts, users } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { hasPermission } from "@/lib/permissions";
+import { deleteLinksForTarget } from "@/lib/documents.server";
 import type { UserRole } from "@/types";
 
 export async function GET(
@@ -103,6 +104,8 @@ export async function DELETE(
   if (!deleted) {
     return NextResponse.json({ error: "Príspevok nenájdený" }, { status: 404 });
   }
+
+  await deleteLinksForTarget("board_post", id);
 
   return NextResponse.json({ success: true });
 }

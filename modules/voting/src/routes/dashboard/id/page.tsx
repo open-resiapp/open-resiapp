@@ -20,6 +20,7 @@ import type {
   QuorumType,
   VotingResults as VotingResultsType,
 } from "@/types";
+import ProjectDocsInline from "@/components/documents/ProjectDocsInline";
 
 interface VotingDetail {
   id: string;
@@ -35,6 +36,7 @@ interface VotingDetail {
   entranceId: string | null;
   entranceName: string | null;
   createdBy: { id: string; name: string } | null;
+  documentProjectId: string | null;
 }
 
 interface UserFlatVote {
@@ -322,6 +324,15 @@ export default function VotingDetailPage() {
               <p className="text-base text-gray-700 mb-4 whitespace-pre-wrap dark:text-gray-200">
                 {voting.description}
               </p>
+            )}
+
+            {voting.documentProjectId && (
+              <div className="mb-4">
+                <p className="text-sm font-medium text-gray-700 mb-2 dark:text-gray-200">
+                  {t("attachedProjectDocs")}
+                </p>
+                <ProjectDocsInline projectId={voting.documentProjectId} />
+              </div>
             )}
 
             {legalNotice && (

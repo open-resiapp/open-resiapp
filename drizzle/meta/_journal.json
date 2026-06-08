@@ -281,6 +281,20 @@
       "when": 1780928481444,
       "tag": "0039_tiresome_yellow_claw",
       "breakpoints": true
+    },
+    {
+      "idx": 40,
+      "version": "7",
+      "when": 1780929875551,
+      "tag": "0040_great_sersi",
+      "breakpoints": true
+    },
+    {
+      "idx": 41,
+      "version": "7",
+      "when": 1780930481481,
+      "tag": "0041_marvelous_vision",
+      "breakpoints": true
     }
   ]
 }

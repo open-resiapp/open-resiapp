@@ -78,7 +78,7 @@ export async function POST(request: NextRequest) {
   }
 
   const body = await request.json();
-  const { title, description, startsAt, endsAt, status, votingType, initiatedBy, quorumType, entityId } = body;
+  const { title, description, startsAt, endsAt, status, votingType, initiatedBy, quorumType, entityId, documentProjectId } = body;
 
   if (!title || !startsAt || !endsAt) {
     return NextResponse.json(
@@ -130,6 +130,7 @@ export async function POST(request: NextRequest) {
       endsAt: new Date(endsAt),
       createdById: session.user.id,
       entityId: scopeEntityId,
+      documentProjectId: documentProjectId || null,
     })
     .returning();
 
