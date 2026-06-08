@@ -38,6 +38,15 @@ export async function POST(
     return NextResponse.json({ error: "Príspevok neexistuje" }, { status: 404 });
   }
 
+  // Author disabled responses on this post — reject new ones. Existing
+  // responses are untouched (still readable / deletable).
+  if (!post.responsesAllowed) {
+    return NextResponse.json(
+      { error: "Reakcie na tento príspevok sú vypnuté" },
+      { status: 403 }
+    );
+  }
+
   // Block self-response — the author already knows what they posted.
   if (post.authorId === session.user.id) {
     return NextResponse.json(

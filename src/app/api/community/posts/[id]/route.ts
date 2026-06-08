@@ -45,6 +45,7 @@ export async function GET(
       title: communityPosts.title,
       content: communityPosts.content,
       photoUrl: communityPosts.photoUrl,
+      responsesAllowed: communityPosts.responsesAllowed,
       eventDate: communityPosts.eventDate,
       eventLocation: communityPosts.eventLocation,
       entityId: communityPosts.entityId,
@@ -134,18 +135,37 @@ export async function PATCH(
   }
 
   const body = await request.json();
-  const { status } = body;
+  const { status, responsesAllowed } = body;
 
-  if (status !== "resolved") {
-    return NextResponse.json(
-      { error: "Povolený je len prechod na resolved" },
-      { status: 400 }
-    );
+  const updates: Partial<typeof communityPosts.$inferInsert> = {};
+
+  if (status !== undefined) {
+    if (status !== "resolved") {
+      return NextResponse.json(
+        { error: "Povolený je len prechod na resolved" },
+        { status: 400 }
+      );
+    }
+    updates.status = status;
+  }
+
+  if (responsesAllowed !== undefined) {
+    if (typeof responsesAllowed !== "boolean") {
+      return NextResponse.json(
+        { error: "responsesAllowed musí byť boolean" },
+        { status: 400 }
+      );
+    }
+    updates.responsesAllowed = responsesAllowed;
+  }
+
+  if (Object.keys(updates).length === 0) {
+    return NextResponse.json({ error: "Žiadna povolená zmena" }, { status: 400 });
   }
 
   const [updated] = await db
     .update(communityPosts)
-    .set({ status, updatedAt: new Date() })
+    .set({ ...updates, updatedAt: new Date() })
     .where(eq(communityPosts.id, id))
     .returning();
 

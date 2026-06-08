@@ -1,12 +1,12 @@
 ---
 spec_id: BYT-20260508-001
 title: "Make pre-migration pg_dump tolerant of forward-compatible client/server skew"
-status: idea
+status: implemented
 created: 2026-05-08
-updated: 2026-05-08
+updated: 2026-06-08
 author: Filip
 owner: Filip
-last_verified: 2026-05-08
+last_verified: 2026-06-08
 project_type: node
 depends_on: []
 related_handoffs: []
@@ -73,14 +73,14 @@ fi
 
 ## Acceptance Criteria
 
-- [ ] Entrypoint logs both client and server postgres major versions on every startup.
-- [ ] When `CLIENT_MAJOR < SERVER_MAJOR`, entrypoint logs a WARNING block, sets `DISABLE_PREMIGRATION_BACKUP=1` internally, and proceeds to migrations.
-- [ ] When `CLIENT_MAJOR == SERVER_MAJOR`, entrypoint runs pg_dump normally.
-- [ ] When `CLIENT_MAJOR > SERVER_MAJOR` (server downgrade — unusual), entrypoint runs pg_dump normally (forward-compatible direction).
-- [ ] When pg_dump runs but the resulting file is < 1KB, entrypoint treats it as failure and aborts.
-- [ ] `FORCE_PREMIGRATION_BACKUP=1` env var disables the auto-skip and restores strict-abort behavior.
-- [ ] Manual test: simulate the 2026-05-07 incident by building an image with `postgresql16-client` against a 17.x server. Verify entrypoint warns + proceeds + migrations apply + Next.js serves.
-- [ ] CLAUDE.md (or `docs/` equivalent) gains a brief note about the env vars and when to use each.
+- [x] Entrypoint logs both client and server postgres major versions on every startup.
+- [x] When `CLIENT_MAJOR < SERVER_MAJOR`, entrypoint logs a WARNING block, sets `DISABLE_PREMIGRATION_BACKUP=1` internally, and proceeds to migrations.
+- [x] When `CLIENT_MAJOR == SERVER_MAJOR`, entrypoint runs pg_dump normally.
+- [x] When `CLIENT_MAJOR > SERVER_MAJOR` (server downgrade — unusual), entrypoint runs pg_dump normally (forward-compatible direction).
+- [x] When pg_dump runs but the resulting file is < 1KB, entrypoint treats it as failure and aborts.
+- [x] `FORCE_PREMIGRATION_BACKUP=1` env var disables the auto-skip and restores strict-abort behavior.
+- [ ] Manual test: simulate the 2026-05-07 incident by building an image with `postgresql16-client` against a 17.x server. Verify entrypoint warns + proceeds + migrations apply + Next.js serves. _(pending user verification)_
+- [x] CLAUDE.md (or `docs/` equivalent) gains a brief note about the env vars and when to use each.
 
 ## Project Context
 
@@ -96,4 +96,5 @@ fi
 - **Why not always skip the backup?** It's a defense-in-depth layer for migration-induced corruption. We want it present in the normal case. Only skip when the alternative is "instance won't start at all."
 - **Should we email/alert on the skip path?** Probably yes, but that's a separate logging-pipeline concern. For now CloudWatch + a manual check is fine. Future spec.
 - **Concern: customer's data is now slightly more exposed during the affected restart cycle.** True. Mitigation: per-DB S3 backups (separate, scheduled) cover the wider safety net. The pre-migration dump is the "fast restore for THIS migration only" layer; losing it for one cycle is acceptable when the alternative is total downtime.
+- **2026-06-08 — implemented.** Version-detection block added to `docker-entrypoint.sh` (logs both majors every boot via `psql ... SHOW server_version_num` + `pg_dump --version`); auto-skip on client<server with WARNING block; `FORCE_PREMIGRATION_BACKUP=1` override; <1KB dump now aborts. Ops note added to project CLAUDE.md Deployment section. Manual incident-simulation test still pending (user to verify on a real PG16-client / PG17-server image).
 - **Why not pin client to PGDG and auto-track server major?** PGDG repo can be added at build time, but the client major is still locked at image-build time. Customer-instance image only gets a new client major when we rebuild and push. The proper long-term fix is a build-time variable (`POSTGRES_CLIENT_MAJOR`) so the Dockerfile takes a single version arg from CI, matching whatever cloud-side RDS major we publish. Track as a separate idea.

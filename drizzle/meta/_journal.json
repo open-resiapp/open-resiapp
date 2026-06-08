@@ -260,6 +260,20 @@
       "when": 1778915100000,
       "tag": "0036_drop_legacy_housing_data",
       "breakpoints": true
+    },
+    {
+      "idx": 37,
+      "version": "7",
+      "when": 1780921745004,
+      "tag": "0037_volatile_wong",
+      "breakpoints": true
+    },
+    {
+      "idx": 38,
+      "version": "7",
+      "when": 1780924909921,
+      "tag": "0038_fine_rick_jones",
+      "breakpoints": true
     }
   ]
 }

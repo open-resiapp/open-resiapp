@@ -26,6 +26,7 @@ interface PostData {
   createdAt: string;
   updatedAt: string;
   author: { id: string; name: string } | null;
+  responsesAllowed: boolean;
 }
 
 type TabValue = "all" | "sale" | "free" | "borrow";
@@ -100,6 +101,15 @@ export default function MarketplacePage() {
     if (!confirm(tMarket("confirmDelete"))) return;
     const res = await fetch(`/api/community/posts/${post.id}`, {
       method: "DELETE",
+    });
+    if (res.ok) fetchPosts();
+  }
+
+  async function handleToggleResponses(post: PostData) {
+    const res = await fetch(`/api/community/posts/${post.id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ responsesAllowed: !post.responsesAllowed }),
     });
     if (res.ok) fetchPosts();
   }
@@ -182,17 +192,26 @@ export default function MarketplacePage() {
                 createdAt={post.createdAt}
                 entranceName={post.entranceName}
                 canManage={canManage}
+                responsesAllowed={post.responsesAllowed}
                 onResolve={canManage ? () => handleResolve(post) : undefined}
                 onDelete={canManage ? () => handleDelete(post) : undefined}
+                onToggleResponses={
+                  canManage ? () => handleToggleResponses(post) : undefined
+                }
               >
-                {post.status === "active" && (
-                  <button
-                    onClick={() => setRespondTo(post)}
-                    className="w-full px-4 py-2 text-base font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg"
-                  >
-                    {tMarket("imInterested")}
-                  </button>
-                )}
+                {post.status === "active" &&
+                  (post.responsesAllowed === false ? (
+                    <p className="w-full text-center text-sm text-gray-500 dark:text-gray-400">
+                      {t("responsesDisabled")}
+                    </p>
+                  ) : (
+                    <button
+                      onClick={() => setRespondTo(post)}
+                      className="w-full px-4 py-2 text-base font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg"
+                    >
+                      {tMarket("imInterested")}
+                    </button>
+                  ))}
               </PostCard>
             );
           })}

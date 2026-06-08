@@ -23,6 +23,12 @@ const permissions = {
   changeCrossEntranceVisibility: ["admin"],
   editOwnDirectory: ["admin", "owner", "tenant"],
   viewDirectory: ["admin", "owner", "tenant"],
+  // Document library (BYT-20260512-006). Viewing is additionally filtered per
+  // document by audience+entity via canSeeDocPath; this gate only governs the
+  // management surface + nav visibility.
+  viewDocuments: ["admin", "owner", "tenant", "vote_counter", "caretaker"],
+  uploadDocument: ["admin", "caretaker"],
+  deleteDocument: ["admin"],
 } as const;
 
 export type Permission = keyof typeof permissions;

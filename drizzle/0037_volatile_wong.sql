@@ -1,0 +1,1 @@
+ALTER TABLE "community_posts" ADD COLUMN "responses_allowed" boolean DEFAULT true NOT NULL;

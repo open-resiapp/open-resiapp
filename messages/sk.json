@@ -882,7 +882,8 @@
       "eventLocation": "Miesto",
       "entrance": "Vchod",
       "photo": "Fotka (voliteľné)",
-      "submit": "Zverejniť"
+      "submit": "Zverejniť",
+      "responsesAllowed": "Povoliť reakcie"
     },
     "marketplace": {
       "title": "Burza",
@@ -954,7 +955,10 @@
         "maybe": "Možno",
         "no": "Nezúčastním sa"
       }
-    }
+    },
+    "responsesDisabled": "Reakcie sú vypnuté",
+    "enableResponses": "Povoliť reakcie",
+    "disableResponses": "Vypnúť reakcie"
   },
   "Readonly": {
     "bannerTitle": "Skúšobné obdobie skončilo.",

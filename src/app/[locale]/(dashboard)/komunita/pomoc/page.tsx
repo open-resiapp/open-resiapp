@@ -29,6 +29,7 @@ interface PostData {
   createdAt: string;
   updatedAt: string;
   author: { id: string; name: string } | null;
+  responsesAllowed: boolean;
   responseCount?: number;
 }
 
@@ -140,6 +141,15 @@ export default function HelpPage() {
     if (res.ok) fetchPosts();
   }
 
+  async function handleToggleResponses(post: PostData) {
+    const res = await fetch(`/api/community/posts/${post.id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ responsesAllowed: !post.responsesAllowed }),
+    });
+    if (res.ok) fetchPosts();
+  }
+
   return (
     <div className="max-w-4xl mx-auto">
       <div className="mb-6 flex items-start justify-between gap-4 flex-wrap">
@@ -220,17 +230,28 @@ export default function HelpPage() {
                 createdAt={post.createdAt}
                 entranceName={post.entranceName}
                 canManage={canManage}
+                responsesAllowed={post.responsesAllowed}
                 onResolve={canManage ? () => handleResolve(post) : undefined}
                 onDelete={canManage ? () => handleDelete(post) : undefined}
+                onToggleResponses={
+                  canManage ? () => handleToggleResponses(post) : undefined
+                }
               >
-                {post.status === "active" && !isAuthor && (
-                  <button
-                    onClick={() => setRespondTo(post)}
-                    className="w-full px-4 py-2 text-base font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg"
-                  >
-                    {tHelp(ctaKey)}
-                  </button>
-                )}
+                {post.status === "active" &&
+                  (post.responsesAllowed === false ? (
+                    <p className="w-full text-center text-sm text-gray-500 dark:text-gray-400">
+                      {t("responsesDisabled")}
+                    </p>
+                  ) : (
+                    !isAuthor && (
+                      <button
+                        onClick={() => setRespondTo(post)}
+                        className="w-full px-4 py-2 text-base font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg"
+                      >
+                        {tHelp(ctaKey)}
+                      </button>
+                    )
+                  ))}
                 {(post.responseCount ?? 0) > 0 && (
                   <div className="mt-3 border-t border-gray-100 pt-3 dark:border-gray-700">
                     <button

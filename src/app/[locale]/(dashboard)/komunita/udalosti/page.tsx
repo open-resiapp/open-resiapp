@@ -31,6 +31,7 @@ interface PostData {
   createdAt: string;
   updatedAt: string;
   author: { id: string; name: string } | null;
+  responsesAllowed: boolean;
   rsvp?: {
     yes: number;
     maybe: number;
@@ -155,6 +156,15 @@ export default function EventsPage() {
     if (res.ok) fetchPosts();
   }
 
+  async function handleToggleResponses(post: PostData) {
+    const res = await fetch(`/api/community/posts/${post.id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ responsesAllowed: !post.responsesAllowed }),
+    });
+    if (res.ok) fetchPosts();
+  }
+
   return (
     <div className="max-w-4xl mx-auto">
       <div className="mb-6 flex items-start justify-between gap-4 flex-wrap">
@@ -236,7 +246,11 @@ export default function EventsPage() {
                 createdAt={post.createdAt}
                 entranceName={post.entranceName}
                 canManage={canManage}
+                responsesAllowed={post.responsesAllowed}
                 onDelete={canManage ? () => handleDelete(post) : undefined}
+                onToggleResponses={
+                  canManage ? () => handleToggleResponses(post) : undefined
+                }
               >
                 <div className="space-y-3">
                   <div className="text-sm text-gray-600 dark:text-gray-300">
@@ -283,13 +297,19 @@ export default function EventsPage() {
                         {t("noResponses")}
                       </span>
                     )}
-                    {!isAuthor && (
-                      <button
-                        onClick={() => setRespondTo(post)}
-                        className="text-sm text-blue-600 hover:text-blue-700 font-medium dark:text-blue-400 dark:hover:text-blue-300"
-                      >
-                        {tEvents("addComment")}
-                      </button>
+                    {post.responsesAllowed === false ? (
+                      <span className="text-sm text-gray-500 dark:text-gray-400">
+                        {t("responsesDisabled")}
+                      </span>
+                    ) : (
+                      !isAuthor && (
+                        <button
+                          onClick={() => setRespondTo(post)}
+                          className="text-sm text-blue-600 hover:text-blue-700 font-medium dark:text-blue-400 dark:hover:text-blue-300"
+                        >
+                          {tEvents("addComment")}
+                        </button>
+                      )
                     )}
                   </div>
                   {expanded[post.id] === "loading" && (

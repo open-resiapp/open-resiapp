@@ -22,6 +22,7 @@ interface PostFormProps {
     eventDate: string | null;
     eventLocation: string | null;
     entranceId: string | null;
+    responsesAllowed: boolean;
   }) => Promise<void>;
   submitting?: boolean;
 }
@@ -50,6 +51,7 @@ export default function PostForm({
   const [eventDate, setEventDate] = useState("");
   const [eventLocation, setEventLocation] = useState("");
   const [entranceId, setEntranceId] = useState<string | null>(null);
+  const [responsesAllowed, setResponsesAllowed] = useState(true);
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -100,6 +102,7 @@ export default function PostForm({
       eventDate: type === "event" ? eventDate : null,
       eventLocation: type === "event" ? eventLocation : null,
       entranceId,
+      responsesAllowed,
     });
   }
 
@@ -205,6 +208,16 @@ export default function PostForm({
           </div>
         )}
       </div>
+
+      <label className="flex items-center gap-2 text-sm font-medium text-gray-700">
+        <input
+          type="checkbox"
+          checked={responsesAllowed}
+          onChange={(e) => setResponsesAllowed(e.target.checked)}
+          className="rounded border-gray-300"
+        />
+        {t("form.responsesAllowed")}
+      </label>
 
       {error && <p className="text-sm text-red-600">{error}</p>}
 

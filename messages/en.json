@@ -882,7 +882,8 @@
       "eventLocation": "Location",
       "entrance": "Entrance",
       "photo": "Photo (optional)",
-      "submit": "Publish"
+      "submit": "Publish",
+      "responsesAllowed": "Allow reactions"
     },
     "marketplace": {
       "title": "Marketplace",
@@ -954,7 +955,10 @@
         "maybe": "Maybe",
         "no": "Not going"
       }
-    }
+    },
+    "responsesDisabled": "Reactions disabled",
+    "enableResponses": "Allow reactions",
+    "disableResponses": "Disable reactions"
   },
   "Readonly": {
     "bannerTitle": "Trial expired.",

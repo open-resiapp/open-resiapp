@@ -99,6 +99,7 @@ export async function GET(request: NextRequest) {
       title: communityPosts.title,
       content: communityPosts.content,
       photoUrl: communityPosts.photoUrl,
+      responsesAllowed: communityPosts.responsesAllowed,
       eventDate: communityPosts.eventDate,
       eventLocation: communityPosts.eventLocation,
       entityId: communityPosts.entityId,
@@ -202,7 +203,7 @@ export async function POST(request: NextRequest) {
   }
 
   const body = await request.json();
-  const { type, title, content, photoUrl, eventDate, eventLocation, entranceId } = body;
+  const { type, title, content, photoUrl, eventDate, eventLocation, entranceId, responsesAllowed } = body;
 
   if (!type || !title || !content) {
     return NextResponse.json(
@@ -249,6 +250,8 @@ export async function POST(request: NextRequest) {
       eventDate: eventDate ? new Date(eventDate) : null,
       eventLocation: eventLocation || null,
       entityId: cpEntityId,
+      // Default true; only persist false when the author explicitly opts out.
+      responsesAllowed: responsesAllowed === false ? false : true,
       expiresAt,
     })
     .returning();

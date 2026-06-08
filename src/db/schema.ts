@@ -6,6 +6,7 @@ import {
   integer,
   boolean,
   timestamp,
+  date,
   jsonb,
   pgEnum,
   uniqueIndex,
@@ -168,6 +169,37 @@ export const entityAuditActionEnum = pgEnum("entity_audit_action", [
   "membership.remove",
   "user.claim_shell",
   "user.merge_shell",
+]);
+
+// ── Document library (BYT-20260512-006) ────────────────
+// Type taxonomy grounded in §8b/§9/§11 zák. 182/1993 Z.z. Audience is a
+// dedicated tier (admin/owner/resident), NOT the operational membership_role
+// rank — caretaker/vote_counter don't sit on a single visibility axis. The
+// owner tier encodes the §11 owner-inspection categories.
+export const documentTypeEnum = pgEnum("document_type", [
+  "statutes",
+  "house_rules",
+  "minutes",
+  "vote_result",
+  "vendor_contract",
+  "works_contract",
+  "insurance",
+  "revision",
+  "budget",
+  "settlement",
+  "fund_statement",
+  "accounting",
+  "employment",
+  "technical",
+  "maintenance",
+  "notice",
+  "other",
+]);
+
+export const documentAudienceEnum = pgEnum("document_audience", [
+  "admin",
+  "owner",
+  "resident",
 ]);
 
 // ── Tables ─────────────────────────────────────────────
@@ -356,18 +388,63 @@ export const posts = pgTable("posts", {
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
 
-export const documents = pgTable("documents", {
-  id: uuid("id").primaryKey().defaultRandom(),
-  name: varchar("name", { length: 255 }).notNull(),
-  fileUrl: varchar("file_url", { length: 1000 }).notNull(),
-  uploadedById: uuid("uploaded_by_id")
-    .references(() => users.id)
-    .notNull(),
-  entityId: uuid("entity_id")
-    .references(() => entities.id, { onDelete: "restrict" })
-    .notNull(),
-  createdAt: timestamp("created_at").defaultNow().notNull(),
-});
+export const documents = pgTable(
+  "documents",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    name: varchar("name", { length: 255 }).notNull(),
+    // Storage key resolved via src/lib/storage.ts (local disk or S3/Hetzner).
+    // Replaces the legacy file_url column.
+    storageKey: varchar("storage_key", { length: 1024 }).notNull(),
+    originalName: varchar("original_name", { length: 255 }),
+    mimeType: varchar("mime_type", { length: 127 }),
+    sizeBytes: integer("size_bytes"),
+    type: documentTypeEnum("type").notNull().default("other"),
+    // Visibility tier. Resolution (authority-from-above ∪ subtree-broadcast)
+    // lives in src/lib/documents.ts, not here.
+    audience: documentAudienceEnum("audience").notNull().default("admin"),
+    // Legal retention horizon (§431/2002, §9 ods. 5). Informational in v1 —
+    // no auto-purge; deletion is soft (deletedAt).
+    retainUntil: date("retain_until"),
+    uploadedById: uuid("uploaded_by_id").references(() => users.id, {
+      onDelete: "set null",
+    }),
+    entityId: uuid("entity_id")
+      .references(() => entities.id, { onDelete: "restrict" })
+      .notNull(),
+    deletedAt: timestamp("deleted_at"),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+  },
+  (table) => ({
+    entityIdx: index("documents_entity_idx").on(table.entityId),
+    typeIdx: index("documents_type_idx").on(table.type),
+    deletedIdx: index("documents_deleted_idx").on(table.deletedAt),
+  })
+);
+
+// Per-(document, viewer) access trail — evidences §11 fulfilment + GDPR
+// accountability. Dedicated table (not entity_audit_log): read events are
+// high-volume with a different lifecycle than entity mutations.
+export const documentAccessLog = pgTable(
+  "document_access_log",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    documentId: uuid("document_id")
+      .references(() => documents.id, { onDelete: "cascade" })
+      .notNull(),
+    userId: uuid("user_id").references(() => users.id, {
+      onDelete: "set null",
+    }),
+    entityId: uuid("entity_id").references(() => entities.id, {
+      onDelete: "set null",
+    }),
+    accessedAt: timestamp("accessed_at").defaultNow().notNull(),
+  },
+  (table) => ({
+    documentIdx: index("document_access_document_idx").on(table.documentId),
+    userIdx: index("document_access_user_idx").on(table.userId),
+  })
+);
 
 // Phase 9.2: legacy `user_flats` table dropped — replaced by memberships.
 
@@ -561,6 +638,9 @@ export const communityPosts = pgTable("community_posts", {
   id: uuid("id").primaryKey().defaultRandom(),
   type: communityPostTypeEnum("type").notNull(),
   status: communityPostStatusEnum("status").notNull().default("active"),
+  // Per-post switch: when false the respond endpoint rejects new responses
+  // and the UI hides the response form. Existing responses stay visible.
+  responsesAllowed: boolean("responses_allowed").notNull().default(true),
   title: varchar("title", { length: 255 }).notNull(),
   content: text("content").notNull(),
   photoUrl: varchar("photo_url", { length: 1000 }),

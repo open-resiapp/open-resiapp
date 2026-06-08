@@ -61,6 +61,7 @@ messages/
 - Docker image → Docker Hub → Railway
 - Caddy as reverse proxy
 - Env vars: never commit `.env`, keep `.env.example` up to date
+- Pre-migration backup (`docker-entrypoint.sh`): on every boot it logs both the pg_dump client major and the PostgreSQL server major. Expected steady state is matched majors (image client == RDS server). If the client is **older** than the server, the dump is forward-incompatible, so the entrypoint logs a WARNING and auto-skips the backup (migrations still run) instead of bricking the instance — per-DB S3 backups remain the safety net. Env vars: `DISABLE_PREMIGRATION_BACKUP=1` skips the backup entirely (manual opt-out); `FORCE_PREMIGRATION_BACKUP=1` overrides the auto-skip and restores strict abort-on-version-skew (downtime over a missing snapshot). A dump under 1KB is treated as a failure and aborts startup.
 
 ### UI patterns
 - Multi-state user choice (RSVP yes/maybe/no, vote for/against/abstain, status filters): use explicit per-state buttons. Avoid implicit toggles where one button cycles values.

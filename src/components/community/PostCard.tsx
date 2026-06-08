@@ -35,8 +35,10 @@ interface PostCardProps {
   createdAt: string;
   entranceName?: string | null;
   canManage?: boolean;
+  responsesAllowed?: boolean;
   onResolve?: () => void;
   onDelete?: () => void;
+  onToggleResponses?: () => void;
   children?: ReactNode;
 }
 
@@ -52,8 +54,10 @@ export default function PostCard({
   createdAt,
   entranceName,
   canManage,
+  responsesAllowed,
   onResolve,
   onDelete,
+  onToggleResponses,
   children,
 }: PostCardProps) {
   const t = useTranslations("Community");
@@ -87,6 +91,15 @@ export default function PostCard({
 
         {canManage && (
           <div className="flex items-center gap-2 flex-shrink-0">
+            {/* Author/admin can flip responses on/off at any state. */}
+            {onToggleResponses && (
+              <button
+                onClick={onToggleResponses}
+                className="px-3 py-1.5 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-full transition-colors dark:text-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600"
+              >
+                {responsesAllowed ? t("disableResponses") : t("enableResponses")}
+              </button>
+            )}
             {/* Resolve makes sense only on active posts. */}
             {onResolve && status === "active" && (
               <button

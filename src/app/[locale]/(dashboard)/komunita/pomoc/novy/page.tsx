@@ -36,6 +36,7 @@ export default function NewHelpPostPage() {
     eventDate: string | null;
     eventLocation: string | null;
     entranceId: string | null;
+    responsesAllowed: boolean;
   }) {
     setSubmitting(true);
     setError(null);
