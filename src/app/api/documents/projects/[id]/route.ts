@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 
 import { auth } from "@/lib/auth";
-import { hasEntityPermission } from "@/lib/permissions-entity";
+import { canManageEntity } from "@/lib/permissions-entity";
+import type { UserRole } from "@/types";
 import {
   getProject,
   getViewableProject,
@@ -69,11 +70,12 @@ export async function PATCH(
   if (!project) {
     return NextResponse.json({ error: "Projekt nenájdený" }, { status: 404 });
   }
-  const allowed = await hasEntityPermission(
+  const allowed = await canManageEntity(
+    session.user.role as UserRole,
     userId,
     project.entityId,
     "uploadDocument"
-  ).catch(() => false);
+  );
   if (!allowed) {
     return NextResponse.json({ error: "Nemáte oprávnenie" }, { status: 403 });
   }
@@ -118,11 +120,12 @@ export async function DELETE(
   if (!project) {
     return NextResponse.json({ error: "Projekt nenájdený" }, { status: 404 });
   }
-  const allowed = await hasEntityPermission(
+  const allowed = await canManageEntity(
+    session.user.role as UserRole,
     userId,
     project.entityId,
     "deleteDocument"
-  ).catch(() => false);
+  );
   if (!allowed) {
     return NextResponse.json({ error: "Nemáte oprávnenie" }, { status: 403 });
   }

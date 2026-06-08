@@ -2,7 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import crypto from "crypto";
 
 import { auth } from "@/lib/auth";
-import { hasEntityPermission } from "@/lib/permissions-entity";
+import { hasPermission } from "@/lib/permissions";
+import type { UserRole } from "@/types";
 import { resolveCurrentEntityId } from "@/lib/current-entity";
 import { getStorage } from "@/lib/storage";
 import { createDocument, listVisibleDocuments } from "@/lib/documents.server";
@@ -35,11 +36,10 @@ export async function GET() {
     });
   }
 
-  const [docs, canUpload, isManager] = await Promise.all([
-    listVisibleDocuments(userId, entityId),
-    hasEntityPermission(userId, entityId, "uploadDocument").catch(() => false),
-    hasEntityPermission(userId, entityId, "deleteDocument").catch(() => false),
-  ]);
+  const role = session.user.role as UserRole;
+  const canUpload = hasPermission(role, "uploadDocument");
+  const isManager = hasPermission(role, "deleteDocument");
+  const docs = await listVisibleDocuments(userId, entityId);
 
   return NextResponse.json({
     entityId,
@@ -93,13 +93,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Neplatná viditeľnosť" }, { status: 400 });
   }
 
-  let allowed = false;
-  try {
-    allowed = await hasEntityPermission(userId, entityId, "uploadDocument");
-  } catch {
-    return NextResponse.json({ error: "Neplatná entita" }, { status: 400 });
-  }
-  if (!allowed) {
+  if (!hasPermission(session.user.role as UserRole, "uploadDocument")) {
     return NextResponse.json({ error: "Nemáte oprávnenie" }, { status: 403 });
   }
 

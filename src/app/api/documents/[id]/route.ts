@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 
 import { auth } from "@/lib/auth";
-import { hasEntityPermission } from "@/lib/permissions-entity";
+import { hasPermission } from "@/lib/permissions";
+import type { UserRole } from "@/types";
 import { getStorage } from "@/lib/storage";
 import {
   getViewableDocument,
@@ -68,14 +69,9 @@ export async function DELETE(
     return NextResponse.json({ error: "Dokument nenájdený" }, { status: 404 });
   }
 
-  let canManage = doc.uploadedById === userId;
-  if (!canManage) {
-    try {
-      canManage = await hasEntityPermission(userId, doc.entityId, "deleteDocument");
-    } catch {
-      canManage = false;
-    }
-  }
+  const canManage =
+    doc.uploadedById === userId ||
+    hasPermission(session.user.role as UserRole, "deleteDocument");
   if (!canManage) {
     return NextResponse.json({ error: "Nemáte oprávnenie" }, { status: 403 });
   }
@@ -103,14 +99,9 @@ export async function PATCH(
     return NextResponse.json({ error: "Dokument nenájdený" }, { status: 404 });
   }
 
-  let canManage = doc.uploadedById === userId;
-  if (!canManage) {
-    canManage = await hasEntityPermission(
-      userId,
-      doc.entityId,
-      "uploadDocument"
-    ).catch(() => false);
-  }
+  const canManage =
+    doc.uploadedById === userId ||
+    hasPermission(session.user.role as UserRole, "uploadDocument");
   if (!canManage) {
     return NextResponse.json({ error: "Nemáte oprávnenie" }, { status: 403 });
   }

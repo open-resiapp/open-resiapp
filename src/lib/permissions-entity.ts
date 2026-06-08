@@ -9,7 +9,9 @@ import {
   PERMISSIONS_TABLE,
   type Permission,
   getPermissions,
+  hasPermission,
 } from "@/lib/permissions";
+import type { UserRole } from "@/types";
 
 // Entity-aware permission API — RES-20260501-002 §"Permission model
 // changes". Pulled into its own file so the static `permissions.ts`
@@ -73,6 +75,27 @@ export async function listEntityPermissions(
   const role = await getEffectiveRole(userId, entityId);
   if (role === null) return [];
   return getPermissions(role);
+}
+
+/**
+ * Management authorization that matches the app's flat-role convention while
+ * still honoring per-entity roles. True if the user's flat `users.role` grants
+ * the permission (how admins/caretakers are authorized app-wide — they may not
+ * hold a per-entity membership) OR they hold it via an entity membership. Use
+ * for upload/manage gates; viewing stays purely entity-scoped via canSeeDocPath.
+ */
+export async function canManageEntity(
+  role: UserRole,
+  userId: string,
+  entityId: string,
+  permission: Permission
+): Promise<boolean> {
+  if (hasPermission(role, permission)) return true;
+  try {
+    return await hasEntityPermission(userId, entityId, permission);
+  } catch {
+    return false;
+  }
 }
 
 export {

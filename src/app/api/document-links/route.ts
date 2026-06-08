@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 
 import { auth } from "@/lib/auth";
-import { hasEntityPermission } from "@/lib/permissions-entity";
+import { canManageEntity } from "@/lib/permissions-entity";
+import type { UserRole } from "@/types";
 import {
   linkDocumentToTarget,
   unlinkDocument,
@@ -72,11 +73,12 @@ export async function POST(request: NextRequest) {
   if (!entityId) {
     return NextResponse.json({ error: "Cieľ nenájdený" }, { status: 404 });
   }
-  const allowed = await hasEntityPermission(
+  const allowed = await canManageEntity(
+    session.user.role as UserRole,
     userId,
     entityId,
     "uploadDocument"
-  ).catch(() => false);
+  );
   if (!allowed) {
     return NextResponse.json({ error: "Nemáte oprávnenie" }, { status: 403 });
   }
@@ -104,11 +106,12 @@ export async function DELETE(request: NextRequest) {
   if (!entityId) {
     return NextResponse.json({ error: "Cieľ nenájdený" }, { status: 404 });
   }
-  const allowed = await hasEntityPermission(
+  const allowed = await canManageEntity(
+    session.user.role as UserRole,
     userId,
     entityId,
     "uploadDocument"
-  ).catch(() => false);
+  );
   if (!allowed) {
     return NextResponse.json({ error: "Nemáte oprávnenie" }, { status: 403 });
   }

@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 
 import { auth } from "@/lib/auth";
-import { hasEntityPermission } from "@/lib/permissions-entity";
+import { hasPermission } from "@/lib/permissions";
+import type { UserRole } from "@/types";
 import { resolveCurrentEntityId } from "@/lib/current-entity";
 import { createProject, listVisibleProjects } from "@/lib/documents.server";
 import {
@@ -25,10 +26,8 @@ export async function GET() {
     return NextResponse.json({ entityId: null, canManage: false, projects: [] });
   }
 
-  const [projects, canManage] = await Promise.all([
-    listVisibleProjects(userId, entityId),
-    hasEntityPermission(userId, entityId, "uploadDocument").catch(() => false),
-  ]);
+  const projects = await listVisibleProjects(userId, entityId);
+  const canManage = hasPermission(session.user.role as UserRole, "uploadDocument");
   return NextResponse.json({ entityId, canManage, projects });
 }
 
@@ -44,12 +43,7 @@ export async function POST(request: NextRequest) {
   if (!entityId) {
     return NextResponse.json({ error: "Chýba entita" }, { status: 400 });
   }
-  const allowed = await hasEntityPermission(
-    userId,
-    entityId,
-    "uploadDocument"
-  ).catch(() => false);
-  if (!allowed) {
+  if (!hasPermission(session.user.role as UserRole, "uploadDocument")) {
     return NextResponse.json({ error: "Nemáte oprávnenie" }, { status: 403 });
   }
 
