@@ -21,10 +21,12 @@ const labelCls =
 
 export default function DocumentUploadForm({
   entityId,
+  projects = [],
   onUploaded,
   onCancel,
 }: {
   entityId: string;
+  projects?: { id: string; title: string }[];
   onUploaded: () => void;
   onCancel: () => void;
 }) {
@@ -36,6 +38,7 @@ export default function DocumentUploadForm({
     DEFAULT_AUDIENCE_BY_TYPE.other
   );
   const [retainUntil, setRetainUntil] = useState("");
+  const [projectId, setProjectId] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -79,6 +82,7 @@ export default function DocumentUploadForm({
       fd.append("audience", audience);
       if (name.trim()) fd.append("name", name.trim());
       if (retainUntil) fd.append("retainUntil", retainUntil);
+      if (projectId) fd.append("projectId", projectId);
       const res = await fetch("/api/documents", { method: "POST", body: fd });
       if (!res.ok) throw new Error();
       onUploaded();
@@ -159,6 +163,24 @@ export default function DocumentUploadForm({
           {t("form.retainHint")}
         </p>
       </div>
+
+      {projects.length > 0 && (
+        <div>
+          <label className={labelCls}>{t("form.project")}</label>
+          <select
+            value={projectId}
+            onChange={(e) => setProjectId(e.target.value)}
+            className={inputCls}
+          >
+            <option value="">{t("noProject")}</option>
+            {projects.map((p) => (
+              <option key={p.id} value={p.id}>
+                {p.title}
+              </option>
+            ))}
+          </select>
+        </div>
+      )}
 
       {error && <p className="text-sm text-red-600 dark:text-red-400">{error}</p>}
 

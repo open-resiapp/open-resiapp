@@ -1,10 +1,11 @@
 import "server-only";
-import { and, desc, eq, isNull, sql } from "drizzle-orm";
+import { and, desc, eq, inArray, isNull, sql } from "drizzle-orm";
 
 import { db } from "@/db";
 import {
   documents,
   documentAccessLog,
+  documentProjects,
   entities,
   memberships,
   users,
@@ -12,6 +13,7 @@ import {
 import {
   canSeeDocPath,
   type DocumentAudience,
+  type DocumentProjectStatus,
   type DocumentType,
   type UserMembershipLite,
 } from "@/lib/documents";
@@ -115,6 +117,7 @@ export interface CreateDocumentInput {
   type: DocumentType;
   audience: DocumentAudience;
   retainUntil?: string | null; // ISO date (YYYY-MM-DD)
+  projectId?: string | null;
 }
 
 export async function createDocument(
@@ -133,6 +136,7 @@ export async function createDocument(
       type: input.type,
       audience: input.audience,
       retainUntil: input.retainUntil ?? null,
+      projectId: input.projectId ?? null,
     })
     .returning();
   return row;
@@ -153,4 +157,140 @@ export async function logDocumentAccess(
   entityId: string
 ): Promise<void> {
   await db.insert(documentAccessLog).values({ documentId, userId, entityId });
+}
+
+// ── Document projects (dossiers) — BYT-20260608-001 ────────
+
+export type DocumentProjectRow = typeof documentProjects.$inferSelect;
+export type ProjectWithMeta = DocumentProjectRow & { documentCount: number };
+
+export interface CreateProjectInput {
+  entityId: string;
+  title: string;
+  description?: string | null;
+  audience: DocumentAudience;
+  status: DocumentProjectStatus;
+}
+
+export async function createProject(
+  input: CreateProjectInput
+): Promise<DocumentProjectRow> {
+  const [row] = await db
+    .insert(documentProjects)
+    .values({
+      entityId: input.entityId,
+      title: input.title,
+      description: input.description ?? null,
+      audience: input.audience,
+      status: input.status,
+    })
+    .returning();
+  return row;
+}
+
+export async function getProject(id: string): Promise<DocumentProjectRow | null> {
+  const [row] = await db
+    .select()
+    .from(documentProjects)
+    .where(eq(documentProjects.id, id))
+    .limit(1);
+  return row ?? null;
+}
+
+/** Project if the user may see it (same audience+entity rule as documents). */
+export async function getViewableProject(
+  userId: string,
+  id: string
+): Promise<DocumentProjectRow | null> {
+  const [row] = await db
+    .select({ project: documentProjects, path: entities.path })
+    .from(documentProjects)
+    .innerJoin(entities, eq(documentProjects.entityId, entities.id))
+    .where(eq(documentProjects.id, id))
+    .limit(1);
+  if (!row) return null;
+  const mems = await loadUserMemberships(userId);
+  return canSeeDocPath(mems, row.path, row.project.audience) ? row.project : null;
+}
+
+/** Projects in the subtree of `scopeEntityId` the user may see, with doc counts. */
+export async function listVisibleProjects(
+  userId: string,
+  scopeEntityId: string
+): Promise<ProjectWithMeta[]> {
+  const [scope] = await db
+    .select({ path: entities.path })
+    .from(entities)
+    .where(eq(entities.id, scopeEntityId))
+    .limit(1);
+  if (!scope) return [];
+
+  const rows = await db
+    .select({ project: documentProjects, path: entities.path })
+    .from(documentProjects)
+    .innerJoin(entities, eq(documentProjects.entityId, entities.id))
+    .where(sql`${entities.path} LIKE ${scope.path + "%"}`)
+    .orderBy(desc(documentProjects.createdAt));
+
+  const mems = await loadUserMemberships(userId);
+  const visible = rows.filter((r) => canSeeDocPath(mems, r.path, r.project.audience));
+
+  const ids = visible.map((r) => r.project.id);
+  const counts = new Map<string, number>();
+  if (ids.length) {
+    const grouped = await db
+      .select({ projectId: documents.projectId, c: sql<number>`count(*)::int` })
+      .from(documents)
+      .where(and(inArray(documents.projectId, ids), isNull(documents.deletedAt)))
+      .groupBy(documents.projectId);
+    for (const g of grouped) if (g.projectId) counts.set(g.projectId, Number(g.c));
+  }
+
+  return visible.map((r) => ({
+    ...r.project,
+    documentCount: counts.get(r.project.id) ?? 0,
+  }));
+}
+
+/** Non-deleted docs in a project the user may see. */
+export async function listProjectDocuments(
+  userId: string,
+  projectId: string
+): Promise<DocumentListItem[]> {
+  const rows = await db
+    .select({ doc: documents, path: entities.path, uploaderName: users.name })
+    .from(documents)
+    .innerJoin(entities, eq(documents.entityId, entities.id))
+    .leftJoin(users, eq(documents.uploadedById, users.id))
+    .where(and(eq(documents.projectId, projectId), isNull(documents.deletedAt)))
+    .orderBy(desc(documents.createdAt));
+  const mems = await loadUserMemberships(userId);
+  return rows
+    .filter((r) => canSeeDocPath(mems, r.path, r.doc.audience))
+    .map((r) => ({ ...r.doc, uploaderName: r.uploaderName }));
+}
+
+export async function updateProject(
+  id: string,
+  patch: {
+    title?: string;
+    description?: string | null;
+    audience?: DocumentAudience;
+    status?: DocumentProjectStatus;
+  }
+): Promise<void> {
+  if (Object.keys(patch).length === 0) return;
+  await db.update(documentProjects).set(patch).where(eq(documentProjects.id, id));
+}
+
+export async function deleteProject(id: string): Promise<void> {
+  // documents.project_id is set null via FK — docs revert to standalone.
+  await db.delete(documentProjects).where(eq(documentProjects.id, id));
+}
+
+export async function assignDocumentToProject(
+  documentId: string,
+  projectId: string | null
+): Promise<void> {
+  await db.update(documents).set({ projectId }).where(eq(documents.id, documentId));
 }

@@ -8,6 +8,7 @@ import {
   getManageableDocument,
   softDeleteDocument,
   logDocumentAccess,
+  assignDocumentToProject,
 } from "@/lib/documents.server";
 
 // GET /api/documents/[id] — auth-gated proxy download. Visibility resolved via
@@ -81,4 +82,41 @@ export async function DELETE(
 
   await softDeleteDocument(doc.id);
   return new NextResponse(null, { status: 204 });
+}
+
+// PATCH /api/documents/[id] — assign/unassign the document to a project.
+// Body: { projectId: string | null }. Permitted for uploader OR a user with
+// upload rights on the document's entity.
+export async function PATCH(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  const session = await auth();
+  if (!session) {
+    return NextResponse.json({ error: "Neautorizovaný prístup" }, { status: 401 });
+  }
+  const userId = session.user.id;
+  const { id } = await params;
+
+  const doc = await getManageableDocument(id);
+  if (!doc) {
+    return NextResponse.json({ error: "Dokument nenájdený" }, { status: 404 });
+  }
+
+  let canManage = doc.uploadedById === userId;
+  if (!canManage) {
+    canManage = await hasEntityPermission(
+      userId,
+      doc.entityId,
+      "uploadDocument"
+    ).catch(() => false);
+  }
+  if (!canManage) {
+    return NextResponse.json({ error: "Nemáte oprávnenie" }, { status: 403 });
+  }
+
+  const body = await request.json().catch(() => ({}));
+  const projectId = body.projectId ? String(body.projectId) : null;
+  await assignDocumentToProject(id, projectId);
+  return NextResponse.json({ ok: true });
 }

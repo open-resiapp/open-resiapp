@@ -55,6 +55,7 @@ export async function GET() {
       originalName: d.originalName,
       retainUntil: d.retainUntil,
       createdAt: d.createdAt,
+      projectId: d.projectId,
       uploaderName: d.uploaderName,
       isUploader: d.uploadedById === userId,
     })),
@@ -80,6 +81,7 @@ export async function POST(request: NextRequest) {
   const nameInput = ((formData.get("name") as string) || "").trim();
   const retainRaw = ((formData.get("retainUntil") as string) || "").trim();
   const retainUntil = /^\d{4}-\d{2}-\d{2}$/.test(retainRaw) ? retainRaw : null;
+  const projectId = ((formData.get("projectId") as string) || "").trim() || null;
 
   if (!entityId) {
     return NextResponse.json({ error: "Chýba entita" }, { status: 400 });
@@ -136,6 +138,7 @@ export async function POST(request: NextRequest) {
     type: type as DocumentType,
     audience: audience as DocumentAudience,
     retainUntil,
+    projectId,
   });
 
   return NextResponse.json({ document: doc }, { status: 201 });

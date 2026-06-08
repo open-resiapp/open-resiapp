@@ -202,6 +202,13 @@ export const documentAudienceEnum = pgEnum("document_audience", [
   "resident",
 ]);
 
+// Document Project (dossier) lifecycle. BYT-20260608-001.
+export const documentProjectStatusEnum = pgEnum("document_project_status", [
+  "planned",
+  "active",
+  "done",
+]);
+
 // ── Tables ─────────────────────────────────────────────
 
 // Phase 9.2: legacy `building`, `entrances`, `flats` tables dropped.
@@ -406,6 +413,11 @@ export const documents = pgTable(
     // Legal retention horizon (§431/2002, §9 ods. 5). Informational in v1 —
     // no auto-purge; deletion is soft (deletedAt).
     retainUntil: date("retain_until"),
+    // Optional grouping into a named dossier (BYT-20260608-001). Set null on
+    // project delete — the document reverts to standalone.
+    projectId: uuid("project_id").references(() => documentProjects.id, {
+      onDelete: "set null",
+    }),
     uploadedById: uuid("uploaded_by_id").references(() => users.id, {
       onDelete: "set null",
     }),
@@ -419,6 +431,7 @@ export const documents = pgTable(
     entityIdx: index("documents_entity_idx").on(table.entityId),
     typeIdx: index("documents_type_idx").on(table.type),
     deletedIdx: index("documents_deleted_idx").on(table.deletedAt),
+    projectIdx: index("documents_project_idx").on(table.projectId),
   })
 );
 
@@ -443,6 +456,27 @@ export const documentAccessLog = pgTable(
   (table) => ({
     documentIdx: index("document_access_document_idx").on(table.documentId),
     userIdx: index("document_access_user_idx").on(table.userId),
+  })
+);
+
+// Named dossier grouping a set of documents (e.g. "Rekonštrukcia balkónov").
+// BYT-20260608-001. A voting links one project; the library lists its docs.
+// Documents reference this via documents.project_id (set null on delete).
+export const documentProjects = pgTable(
+  "document_projects",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    entityId: uuid("entity_id")
+      .references(() => entities.id, { onDelete: "restrict" })
+      .notNull(),
+    title: varchar("title", { length: 255 }).notNull(),
+    description: text("description"),
+    audience: documentAudienceEnum("audience").notNull().default("owner"),
+    status: documentProjectStatusEnum("status").notNull().default("active"),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+  },
+  (table) => ({
+    entityIdx: index("document_projects_entity_idx").on(table.entityId),
   })
 );
 

@@ -274,6 +274,13 @@
       "when": 1780924909921,
       "tag": "0038_fine_rick_jones",
       "breakpoints": true
+    },
+    {
+      "idx": 39,
+      "version": "7",
+      "when": 1780928481444,
+      "tag": "0039_tiresome_yellow_claw",
+      "breakpoints": true
     }
   ]
 }

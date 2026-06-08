@@ -19,6 +19,7 @@ export interface DocumentItem {
   createdAt: string;
   uploaderName: string | null;
   isUploader: boolean;
+  projectId: string | null;
 }
 
 function formatBytes(bytes: number | null): string {
@@ -40,14 +41,20 @@ export default function DocumentCard({
   doc,
   canManage,
   onDelete,
+  projects,
+  onAssignProject,
+  readOnly,
 }: {
   doc: DocumentItem;
   canManage: boolean;
   onDelete: (id: string) => void;
+  projects?: { id: string; title: string }[];
+  onAssignProject?: (id: string, projectId: string | null) => void;
+  readOnly?: boolean;
 }) {
   const t = useTranslations("Documents");
   const format = useFormatter();
-  const canDelete = canManage || doc.isUploader;
+  const canDelete = !readOnly && (canManage || doc.isUploader);
 
   const meta = [
     doc.uploaderName ? t("uploadedBy", { name: doc.uploaderName }) : null,
@@ -98,6 +105,21 @@ export default function DocumentCard({
           >
             {t("delete")}
           </button>
+        )}
+        {!readOnly && canManage && projects && onAssignProject && (
+          <select
+            value={doc.projectId ?? ""}
+            onChange={(e) => onAssignProject(doc.id, e.target.value || null)}
+            className="px-2 py-1 text-xs border border-gray-300 rounded-lg dark:bg-gray-900 dark:border-gray-700 dark:text-gray-100"
+            title={t("assignProject")}
+          >
+            <option value="">{t("noProject")}</option>
+            {projects.map((p) => (
+              <option key={p.id} value={p.id}>
+                {p.title}
+              </option>
+            ))}
+          </select>
         )}
       </div>
     </div>

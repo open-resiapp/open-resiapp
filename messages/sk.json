@@ -73,6 +73,32 @@
     "delete": "Vymazať",
     "uploadedBy": "Nahral {name}",
     "retainUntilLabel": "Uchovať do {date}",
+    "documentsTab": "Dokumenty",
+    "projectsTab": "Projekty",
+    "noProject": "Bez projektu",
+    "assignProject": "Priradiť k projektu",
+    "projects": {
+      "new": "Nový projekt",
+      "empty": "Žiadne projekty",
+      "open": "Otvoriť",
+      "close": "Zavrieť",
+      "delete": "Vymazať projekt",
+      "confirmDelete": "Vymazať projekt? Dokumenty zostanú zachované.",
+      "docCount": "{count} dok.",
+      "status": {
+        "planned": "Plánované",
+        "active": "Aktívne",
+        "done": "Dokončené"
+      },
+      "form": {
+        "title": "Názov projektu",
+        "description": "Popis",
+        "audience": "Viditeľné pre",
+        "status": "Stav",
+        "submit": "Vytvoriť projekt",
+        "cancel": "Zrušiť"
+      }
+    },
     "form": {
       "file": "Súbor",
       "name": "Názov",
@@ -83,7 +109,8 @@
       "retainHint": "Voliteľné — zákonná lehota uchovania (napr. účtovné doklady 10 rokov).",
       "submit": "Nahrať",
       "uploading": "Nahrávam…",
-      "cancel": "Zrušiť"
+      "cancel": "Zrušiť",
+      "project": "Projekt"
     },
     "type": {
       "statutes": "Zmluva o spoločenstve / Stanovy",

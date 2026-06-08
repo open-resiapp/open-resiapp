@@ -73,6 +73,32 @@
     "delete": "Delete",
     "uploadedBy": "Uploaded by {name}",
     "retainUntilLabel": "Retain until {date}",
+    "documentsTab": "Documents",
+    "projectsTab": "Projects",
+    "noProject": "No project",
+    "assignProject": "Assign to project",
+    "projects": {
+      "new": "New project",
+      "empty": "No projects",
+      "open": "Open",
+      "close": "Close",
+      "delete": "Delete project",
+      "confirmDelete": "Delete project? Its documents are kept.",
+      "docCount": "{count} docs",
+      "status": {
+        "planned": "Planned",
+        "active": "Active",
+        "done": "Done"
+      },
+      "form": {
+        "title": "Project name",
+        "description": "Description",
+        "audience": "Visible to",
+        "status": "Status",
+        "submit": "Create project",
+        "cancel": "Cancel"
+      }
+    },
     "form": {
       "file": "File",
       "name": "Name",
@@ -83,7 +109,8 @@
       "retainHint": "Optional — legal retention horizon (e.g. accounting records 10 years).",
       "submit": "Upload",
       "uploading": "Uploading…",
-      "cancel": "Cancel"
+      "cancel": "Cancel",
+      "project": "Project"
     },
     "type": {
       "statutes": "Statutes / association agreement",
