@@ -84,7 +84,9 @@
     "voting": "Hlasování",
     "owners": "Vlastníci",
     "import": "Import",
-    "settings": "Nastavení"
+    "settings": "Nastavení",
+    "community": "Komunita",
+    "documents": "Dokumenty"
   },
   "ShareSumInvariant": {
     "title": "Upozornění: {count} jednotek má neúplně vyplněné podíly spoluvlastníků",
@@ -143,7 +145,11 @@
     "fixErrorsFirst": "Nejdřív opravte chyby v tabulce.",
     "errorsCount": "chyb",
     "pasteUnrecognised": "Ze souboru se nepodařilo rozpoznat žádného vlastníka.",
-    "pdfScannedHint": "Tento PDF se zdá být skenovaný — nelze z něj získat text. Vyplňte řádky ručně nebo nahrajte digitální verzi LV."
+    "pdfScannedHint": "Tento PDF se zdá být skenovaný — nelze z něj získat text. Vyplňte řádky ručně nebo nahrajte digitální verzi LV.",
+    "templateTitle": "Šablona komunity",
+    "templateSubtitle": "Vyberte šablonu, která nejlépe odpovídá vaší komunitě. Šablona určuje hierarchii uzlů a výchozí způsob hlasování.",
+    "templateNonHoaTitle": "Tip:",
+    "templateNonHoaBody": "Pro šablonu {levels} seeder zapíše správné typy uzlů. CSV stále vyžaduje sloupce share_numerator / share_denominator — pro šablony bez podílů použijte 1/1."
   },
   "CommunityInfo": {
     "pendingHeading": "Vaše registrace čeká na schválení",
@@ -295,7 +301,8 @@
     "flatHeader": "Jednotka {number}",
     "changeVoteHint": "Kliknutím na jinou možnost změníte svůj hlas",
     "legalNotice": "Právní doložka",
-    "paperVotePhotos": "Fotografie listinných hlasů"
+    "paperVotePhotos": "Fotografie listinných hlasů",
+    "attachedProjectDocs": "Dokumenty k hlasování"
   },
   "VotingNew": {
     "title": "Nové hlasování",
@@ -326,7 +333,9 @@
     "scopeAll": "Celý dům",
     "submit": "Vytvořit hlasování",
     "submitting": "Vytvářím...",
-    "createFailed": "Nepodařilo se vytvořit hlasování"
+    "createFailed": "Nepodařilo se vytvořit hlasování",
+    "projectLabel": "Dokumentový projekt",
+    "noProject": "Žádný"
   },
   "VotingResults": {
     "title": "Výsledky",
@@ -406,7 +415,8 @@
     "flatPlaceholder": "Vyberte byt…",
     "flatRequired": "Vyberte byt pro uživatele.",
     "roleLabel": "Role",
-    "confirmReject": "Opravdu chcete zamítnout žádost uživatele {name}?"
+    "confirmReject": "Opravdu chcete zamítnout žádost uživatele {name}?",
+    "noFlatOption": "Bez bytu (člen společenství)"
   },
   "RegistrationQr": {
     "title": "Hromadná registrace přes QR",
@@ -549,7 +559,13 @@
     "deleteWarning": "Tato akce je nevratná.",
     "deleteSuccess": "Uživatel byl smazán.",
     "deleteFailed": "Nepodařilo se smazat uživatele.",
-    "hasRelatedRecords": "Uživatel má související záznamy. Použijte deaktivaci místo smazání."
+    "hasRelatedRecords": "Uživatel má související záznamy. Použijte deaktivaci místo smazání.",
+    "ownerShareLabel": "Podíl",
+    "shareNumeratorLabel": "Čitatel podílu",
+    "shareDenominatorLabel": "Jmenovatel podílu",
+    "invalidShare": "Neplatný podíl — čitatel i jmenovatel musí být celá čísla větší než 0.",
+    "shareSumWarningTitle": "Součet vlastnických podílů se nerovná 1/1",
+    "shareSumWarningItem": "Byt {flat}: součet podílů je {sum} (má být 1/1)."
   },
   "Register": {
     "loading": "Načítám...",
@@ -607,9 +623,6 @@
     "title": "Nastavení",
     "noPermission": "Nemáte oprávnění k zobrazení nastavení.",
     "registrationQrLink": "Registrační QR",
-    "tabBuilding": "Budova",
-    "tabEntrances": "Vchody",
-    "tabFlats": "Jednotky",
     "tabBranding": "Logo",
     "tabVoting": "Hlasování",
     "buildingInfo": "Informace o bytovém domě",
@@ -722,7 +735,12 @@
     "governanceModel": "Model správy",
     "governanceChairmanCouncil": "Předseda + rada",
     "governanceCommittee": "Výbor",
-    "governanceChairmanOnly": "Pouze předseda"
+    "governanceChairmanOnly": "Pouze předseda",
+    "importLink": "Import dat",
+    "setupGuideLink": "Průvodce nastavením",
+    "tabStructure": "Struktura",
+    "moreLink": "Více",
+    "modulesLink": "Moduly"
   },
   "VotingMinutes": {
     "downloadButton": "Stáhnout zápis",
@@ -766,7 +784,8 @@
     "prefNewPost": "Nové příspěvky",
     "prefNewPostDesc": "Upozornění při přidání nového příspěvku na nástěnku.",
     "prefVotingStarted": "Nové hlasování",
-    "prefVotingStartedDesc": "Upozornění při spuštění nového hlasování."
+    "prefVotingStartedDesc": "Upozornění při spuštění nového hlasování.",
+    "pushUnsupported": "Tento prohlížeč nepodporuje push oznámení. Zkuste aplikaci nainstalovat na plochu (Přidat na plochu) nebo použijte jiný prohlížeč."
   },
   "Consent": {
     "title": "Souhlas se zpracováním údajů",
@@ -853,7 +872,126 @@
         "maybe": "Možná",
         "no": "Nezúčastním se"
       }
-    }
+    },
+    "landing": {
+      "title": "Komunita",
+      "subtitle": "Sousedský prostor – prodávejte, pomáhejte si a potkávejte se."
+    },
+    "tiles": {
+      "marketplace": {
+        "title": "Burza",
+        "desc": "Prodávám, daruji, půjčím nebo hledám."
+      },
+      "help": {
+        "title": "Sousedská pomoc",
+        "desc": "Prosím o pomoc nebo nabízím pomoc sousedům."
+      },
+      "events": {
+        "title": "Události",
+        "desc": "Grilování, brigády, společná setkání."
+      },
+      "directory": {
+        "title": "Adresář",
+        "desc": "Kontakty a dovednosti sousedů, kteří je chtějí sdílet."
+      }
+    },
+    "type": {
+      "sale": "Prodám",
+      "free": "Daruji",
+      "borrow": "Půjčím / Hledám",
+      "help_request": "Prosím o pomoc",
+      "help_offer": "Nabízím pomoc",
+      "event": "Událost"
+    },
+    "status": {
+      "resolved": "Vyřešeno",
+      "expired": "Skončilo"
+    },
+    "scopeAll": "Celý dům",
+    "markResolved": "Označit jako vyřešené",
+    "delete": "Smazat",
+    "respondTitle": "Napsat reakci",
+    "respondPlaceholder": "Dobrý den, mám zájem o...",
+    "send": "Odeslat",
+    "sending": "Odesílám...",
+    "cancel": "Zrušit",
+    "noResponses": "Zatím žádné reakce.",
+    "showResponses": "Zobrazit reakce ({count})",
+    "hideResponses": "Skrýt reakce",
+    "empty": "Zatím žádné příspěvky. Buďte první!",
+    "addPost": "Přidat příspěvek",
+    "photoTooLarge": "Fotka je příliš velká (max 5 MB).",
+    "photoUploadFailed": "Nahrání fotky selhalo.",
+    "titleAndContentRequired": "Nadpis a obsah jsou povinné.",
+    "eventNeedsDateAndLocation": "Událost musí mít datum a místo.",
+    "uploading": "Nahrávám...",
+    "form": {
+      "type": "Typ příspěvku",
+      "title": "Nadpis",
+      "content": "Obsah",
+      "eventDate": "Datum a čas",
+      "eventLocation": "Místo",
+      "entrance": "Vchod",
+      "photo": "Fotka (volitelné)",
+      "submit": "Zveřejnit",
+      "responsesAllowed": "Povolit reakce"
+    },
+    "marketplace": {
+      "title": "Burza",
+      "subtitle": "Prodám, daruji, půjčím nebo hledám.",
+      "newPost": "Nový příspěvek",
+      "imInterested": "Mám zájem",
+      "showArchived": "Zobrazit vyřešené / skončené",
+      "confirmResolve": "Označit jako vyřešené?",
+      "confirmDelete": "Opravdu smazat tento příspěvek?",
+      "tabs": {
+        "all": "Vše",
+        "sale": "Prodám",
+        "free": "Daruji",
+        "borrow": "Půjčím / Hledám"
+      }
+    },
+    "help": {
+      "title": "Sousedská pomoc",
+      "subtitle": "Prosím o pomoc nebo nabízím pomoc sousedům.",
+      "newPost": "Nový příspěvek",
+      "imInterested": "Mám zájem",
+      "willHelp": "Rád pomůžu",
+      "showArchived": "Zobrazit vyřešené / skončené",
+      "confirmResolve": "Označit jako vyřešené?",
+      "confirmDelete": "Opravdu smazat tento příspěvek?",
+      "empty": "Zatím nikdo nepotřebuje ani nenabízí pomoc. Buďte první!",
+      "tabs": {
+        "all": "Vše",
+        "request": "Prosím o pomoc",
+        "offer": "Nabízím pomoc"
+      }
+    },
+    "directory": {
+      "title": "Adresář",
+      "subtitle": "Kontakty a dovednosti sousedů, kteří je chtějí sdílet.",
+      "editMine": "Upravit můj záznam",
+      "editTitle": "Můj záznam v adresáři",
+      "sharePhone": "Sdílet telefonní číslo",
+      "shareEmail": "Sdílet e-mail",
+      "note": "Poznámka",
+      "notePlaceholder": "např. Ráda pomůžu se zahradou",
+      "skills": "Dovednosti",
+      "skillsPlaceholder": "např. elektrikář, IT",
+      "removeFully": "Odstranit můj záznam úplně",
+      "confirmDelete": "Opravdu odstranit můj záznam z adresáře?",
+      "save": "Uložit",
+      "saving": "Ukládám...",
+      "cancel": "Zrušit",
+      "searchPlaceholder": "Hledat (jméno, byt, dovednosti)",
+      "empty": "Zatím nikdo nesdílí kontakt. Přidejte se první!",
+      "flat": "Byt",
+      "adminDelete": "Smazat (admin)",
+      "adminConfirmDelete": "Smazat záznam pro {name}?"
+    },
+    "responsesDisabled": "Reakce jsou vypnuté",
+    "enableResponses": "Povolit reakce",
+    "disableResponses": "Vypnout reakce"
   },
   "Readonly": {
     "bannerTitle": "Zkušební období skončilo.",
@@ -872,5 +1010,295 @@
     "iosBody": "Přidejte si OpenResiApp na plochu pro rychlejší přístup.",
     "iosShareHint": "Klepněte na Sdílet, poté „Přidat na plochu“.",
     "dismiss": "Zavřít"
+  },
+  "Documents": {
+    "title": "Dokumenty",
+    "description": "Centrální úložiště dokumentů bytového domu — smlouvy, rozpočty, zápisy a další.",
+    "upload": "Nahrát dokument",
+    "empty": "Zatím žádné dokumenty",
+    "filterAll": "Všechny typy",
+    "confirmDelete": "Opravdu smazat tento dokument?",
+    "download": "Stáhnout",
+    "delete": "Smazat",
+    "uploadedBy": "Nahrál {name}",
+    "retainUntilLabel": "Uchovat do {date}",
+    "documentsTab": "Dokumenty",
+    "projectsTab": "Projekty",
+    "noProject": "Bez projektu",
+    "assignProject": "Přiřadit k projektu",
+    "attachments": {
+      "label": "Přílohy (dokumenty)",
+      "fromLibrary": "+ Z knihovny",
+      "uploadNew": "+ Nahrát nový",
+      "uploading": "Nahrávám…",
+      "remove": "Odebrat"
+    },
+    "discussion": {
+      "title": "Diskuse",
+      "placeholder": "Napište komentář…",
+      "send": "Poslat",
+      "empty": "Zatím žádné komentáře",
+      "delete": "Smazat"
+    },
+    "anketa": {
+      "title": "Anketa — máte zájem?",
+      "disclaimer": "orientační, není to právní hlasování",
+      "startVote": "Spustit řádné hlasování"
+    },
+    "financing": {
+      "estimatedCost": "Odhadované náklady",
+      "fundingNote": "Financování",
+      "fundingNotePlaceholder": "např. úvěr 50 000 € + fond oprav"
+    },
+    "projects": {
+      "new": "Nový projekt",
+      "addDocument": "Přidat dokument",
+      "empty": "Žádné projekty",
+      "open": "Otevřít",
+      "close": "Zavřít",
+      "delete": "Smazat projekt",
+      "confirmDelete": "Smazat projekt? Dokumenty zůstanou zachovány.",
+      "docCount": "{count} dok.",
+      "status": {
+        "planned": "Plánováno",
+        "active": "Aktivní",
+        "done": "Dokončeno"
+      },
+      "form": {
+        "title": "Název projektu",
+        "description": "Popis",
+        "audience": "Viditelné pro",
+        "status": "Stav",
+        "submit": "Vytvořit projekt",
+        "cancel": "Zrušit"
+      }
+    },
+    "form": {
+      "file": "Soubor",
+      "name": "Název",
+      "namePlaceholder": "Volitelné — výchozí název souboru",
+      "type": "Typ dokumentu",
+      "audience": "Viditelné pro",
+      "retainUntil": "Uchovat do",
+      "retainHint": "Volitelné — zákonná lhůta uchování (např. účetní doklady 10 let).",
+      "submit": "Nahrát",
+      "uploading": "Nahrávám…",
+      "cancel": "Zrušit",
+      "project": "Projekt"
+    },
+    "type": {
+      "statutes": "Smlouva o společenství / Stanovy",
+      "house_rules": "Domovní řád",
+      "minutes": "Zápis ze schůze",
+      "vote_result": "Výsledek hlasování",
+      "vendor_contract": "Dodavatelská smlouva",
+      "works_contract": "Smlouva o dílo",
+      "insurance": "Pojistná smlouva",
+      "revision": "Revizní zpráva",
+      "budget": "Rozpočet / cenová nabídka",
+      "settlement": "Vyúčtování úhrad",
+      "fund_statement": "Vyúčtování fondu oprav",
+      "accounting": "Účetní doklad",
+      "employment": "Pracovní smlouva",
+      "technical": "Technická dokumentace",
+      "maintenance": "Protokol o údržbě",
+      "notice": "Oznámení",
+      "other": "Jiné"
+    },
+    "audience": {
+      "admin": "Pouze výbor",
+      "owner": "Vlastníci",
+      "resident": "Všichni (včetně nájemníků)"
+    },
+    "errors": {
+      "notAllowed": "Nepovolený typ souboru",
+      "tooLarge": "Soubor je příliš velký (max 25 MB)",
+      "fileRequired": "Vyberte soubor",
+      "uploadFailed": "Nahrání selhalo"
+    }
+  },
+  "OnboardingBanner": {
+    "title": "Vítejte! Pojďme nastavit vaši komunitu",
+    "body": "Vypadá to, že jste zatím nepřidali žádné jednotky. Průvodce vás provede prvotním nastavením.",
+    "action": "Spustit průvodce",
+    "dismiss": "Zavřít"
+  },
+  "Onboarding": {
+    "title": "Průvodce nastavením",
+    "intro": "Připravte svou komunitu krok za krokem. Každý krok můžete dokončit kdykoli — postup se sleduje automaticky podle zadaných údajů.",
+    "progress": "Dokončeno {done} z {total}",
+    "noPermission": "K nastavení komunity nemáte oprávnění.",
+    "start": "Začít",
+    "review": "Zobrazit",
+    "allDone": "Hotovo! Vaše komunita je nastavena.",
+    "steps": {
+      "community": {
+        "title": "Údaje o komunitě",
+        "body": "Zadejte název, adresu a IČO vaší komunity a způsob hlasování."
+      },
+      "units": {
+        "title": "Import jednotek a vlastníků",
+        "body": "Nahrajte seznam jednotek a vlastníků ze souboru, PDF z katastru, nebo zadejte ručně."
+      },
+      "owners": {
+        "title": "Pozvání vlastníků",
+        "body": "Pozvěte vlastníky, aby se zaregistrovali pomocí registračního QR kódu."
+      },
+      "posts": {
+        "title": "První oznámení",
+        "body": "Zveřejněte první oznámení pro vaši komunitu na nástěnce."
+      }
+    }
+  },
+  "Kinds": {
+    "community": "Komunita",
+    "building": "Budova",
+    "entrance": "Vchod",
+    "unit": "Byt",
+    "house": "Rodinný dům",
+    "street": "Ulice",
+    "cottage": "Chata",
+    "mobile_home_pad": "Stání mobilního domu",
+    "garden_section": "Sektor",
+    "plot": "Zahrádka / parcela",
+    "parcel_group": "Skupina parcel",
+    "parcel": "Parcela",
+    "apiary_zone": "Včelařská zóna",
+    "hive_owner": "Včelař",
+    "hunting_district": "Honitba",
+    "hunter": "Myslivec",
+    "pond": "Rybník",
+    "license_holder": "Držitel povolení",
+    "garage_block": "Garážový blok",
+    "garage": "Garáž",
+    "storage_row": "Řada boxů",
+    "storage_unit": "Skladovací box",
+    "floor": "Podlaží",
+    "office_suite": "Kancelářské prostory",
+    "coworking_zone": "Coworkingová zóna",
+    "desk": "Pracovní místo",
+    "industrial_block": "Průmyslový blok",
+    "tenant_lot": "Nájemní pozemek",
+    "dock": "Molo",
+    "mooring": "Kotviště",
+    "club_section": "Sekce klubu",
+    "member_locker": "Šatní skříňka",
+    "class": "Třída",
+    "parent_seat": "Místo rodiče",
+    "congregation_group": "Společenství",
+    "member_household": "Domácnost člena",
+    "cemetery_section": "Sektor hřbitova",
+    "grave_plot": "Hrobové místo",
+    "generic_group": "Skupina"
+  },
+  "Templates": {
+    "Categories": {
+      "residential": "Bydlení",
+      "land": "Půda a příroda",
+      "commercial": "Komerční a sdílené",
+      "civic": "Sociální a občanské",
+      "custom": "Vlastní"
+    },
+    "hoa": {
+      "name": "Bytový dům / SVJ",
+      "description": "Společenství vlastníků jednotek v bytovém domě. Hlasování vážené spoluvlastnickým podílem (§1187 zák. 89/2012 Sb.).",
+      "sampleCommunityName": "Bytový dům"
+    },
+    "garden": {
+      "name": "Zahrádkářská osada",
+      "description": "Sdružení zahrádkářů se sdílenou půdou a infrastrukturou. Hlasování jeden člen — jeden hlas.",
+      "sampleCommunityName": "Zahrádkářská osada",
+      "sampleSection": "Sektor A"
+    },
+    "garage": {
+      "name": "Garážový dům",
+      "description": "Spoluvlastnictví garáží v garážovém domě. Hlasování jedna garáž — jeden hlas.",
+      "sampleCommunityName": "Garážový dům"
+    },
+    "street": {
+      "name": "Ulice s rodinnými domy",
+      "description": "Obyvatelé ulice s rodinnými domy. Společné rozhodování o ulici, údržbě, akcích.",
+      "sampleCommunityName": "Naše ulice"
+    },
+    "cottage": {
+      "name": "Chatová oblast",
+      "description": "Chataři v chatové oblasti. Společné rozhodování o přístupových cestách, vodě, elektřině.",
+      "sampleCommunityName": "Chatová oblast"
+    },
+    "urbar": {
+      "name": "Urbariát / pozemkové společenství",
+      "description": "Společenství vlastníků lesů a půdy (zák. 97/2013 Z.z.). Hlasování vážené podílem.",
+      "sampleCommunityName": "Pozemkové společenství"
+    },
+    "apiary": {
+      "name": "Včelařské sdružení",
+      "description": "Včelaři se sdílenou klimatickou zónou nebo lokalitou. Jeden člen — jeden hlas.",
+      "sampleCommunityName": "Včelařské sdružení"
+    },
+    "marina": {
+      "name": "Přístav / jachtklub",
+      "description": "Společenství majitelů plavidel kotvících v jednom přístavu. Hlasování jedno kotviště — jeden hlas.",
+      "sampleCommunityName": "Přístav"
+    },
+    "mobile_home_park": {
+      "name": "Park mobilních domů",
+      "description": "Rezidenti parku mobilních domů / karavanů. Hlasování jedno stání — jeden hlas.",
+      "sampleCommunityName": "Park mobilních domů"
+    },
+    "storage_units": {
+      "name": "Skladovací boxy",
+      "description": "Areál samoobslužných skladovacích jednotek. Hlasování jeden box — jeden hlas.",
+      "sampleCommunityName": "Skladovací areál"
+    },
+    "office_building": {
+      "name": "Administrativní budova",
+      "description": "Vlastníci kancelářských prostor v jedné budově. Hlasování vážené podílem.",
+      "sampleCommunityName": "Administrativní budova"
+    },
+    "coworking": {
+      "name": "Coworkingové centrum",
+      "description": "Členové sdíleného pracovního prostoru. Jeden člen — jeden hlas.",
+      "sampleCommunityName": "Coworkingové centrum"
+    },
+    "industrial_park": {
+      "name": "Průmyslový park",
+      "description": "Nájemci průmyslového parku nebo logistického areálu. Hlasování vážené podílem.",
+      "sampleCommunityName": "Průmyslový park"
+    },
+    "cemetery": {
+      "name": "Hřbitovní hrobová místa",
+      "description": "Vlastníci hrobových míst na hřbitově. Hlasování jedno místo — jeden hlas.",
+      "sampleCommunityName": "Hřbitov"
+    },
+    "sports_club": {
+      "name": "Sportovní klub",
+      "description": "Členové sportovního klubu s přístupem ke společným zařízením. Jeden člen — jeden hlas.",
+      "sampleCommunityName": "Sportovní klub"
+    },
+    "hunting_association": {
+      "name": "Myslivecké sdružení",
+      "description": "Myslivecké sdružení (zák. 274/2009 Z.z.). Hlasování jeden člen — jeden hlas.",
+      "sampleCommunityName": "Myslivecké sdružení"
+    },
+    "fishing_cooperative": {
+      "name": "Rybářské sdružení",
+      "description": "Sdružení držitelů rybářských povolení (zák. 216/2018 Z.z.). Jeden člen — jeden hlas.",
+      "sampleCommunityName": "Rybářské sdružení"
+    },
+    "parents_association": {
+      "name": "Rada rodičů",
+      "description": "Sdružení rodičů při škole nebo školce. Hlasování jeden rodič — jeden hlas.",
+      "sampleCommunityName": "Rada rodičů"
+    },
+    "religious_community": {
+      "name": "Náboženská obec / farnost",
+      "description": "Členové náboženské obce nebo farnosti. Hlasování jedna domácnost — jeden hlas.",
+      "sampleCommunityName": "Farnost"
+    },
+    "custom": {
+      "name": "Vlastní struktura",
+      "description": "Prázdný strom — administrátor si nakonfiguruje vlastní typy uzlů a hierarchii přes UI po instalaci.",
+      "sampleCommunityName": "Naše společenství"
+    }
   }
 }
