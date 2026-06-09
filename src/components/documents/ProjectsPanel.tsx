@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { useTranslations } from "next-intl";
+import { useRouter } from "@/i18n/navigation";
 import {
   DOCUMENT_AUDIENCES,
   DOCUMENT_PROJECT_STATUSES,
@@ -16,6 +17,8 @@ export interface ProjectItem {
   description: string | null;
   audience: DocumentAudience;
   status: DocumentProjectStatus;
+  estimatedCost: number | null;
+  fundingNote: string | null;
   documentCount: number;
 }
 
@@ -97,6 +100,8 @@ function NewProjectForm({
   const [description, setDescription] = useState("");
   const [audience, setAudience] = useState<DocumentAudience>("owner");
   const [status, setStatus] = useState<DocumentProjectStatus>("active");
+  const [estimatedCost, setEstimatedCost] = useState("");
+  const [fundingNote, setFundingNote] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
   async function submit(e: React.FormEvent) {
@@ -107,7 +112,14 @@ function NewProjectForm({
       const res = await fetch("/api/documents/projects", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ title: title.trim(), description, audience, status }),
+        body: JSON.stringify({
+          title: title.trim(),
+          description,
+          audience,
+          status,
+          estimatedCost: estimatedCost ? Number(estimatedCost) : null,
+          fundingNote,
+        }),
       });
       if (res.ok) onCreated();
     } finally {
@@ -168,6 +180,28 @@ function NewProjectForm({
           </select>
         </div>
       </div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div>
+          <label className={labelCls}>{t("financing.estimatedCost")}</label>
+          <input
+            type="number"
+            min="0"
+            value={estimatedCost}
+            onChange={(e) => setEstimatedCost(e.target.value)}
+            className={inputCls}
+          />
+        </div>
+        <div>
+          <label className={labelCls}>{t("financing.fundingNote")}</label>
+          <input
+            type="text"
+            value={fundingNote}
+            onChange={(e) => setFundingNote(e.target.value)}
+            placeholder={t("financing.fundingNotePlaceholder")}
+            className={inputCls}
+          />
+        </div>
+      </div>
       <div className="flex gap-3">
         <button
           type="submit"
@@ -188,6 +222,14 @@ function NewProjectForm({
   );
 }
 
+interface ProjectComment {
+  id: string;
+  content: string;
+  createdAt: string;
+  authorName: string | null;
+  isMine: boolean;
+}
+
 function ProjectRow({
   project,
   canManage,
@@ -198,9 +240,36 @@ function ProjectRow({
   onChanged: () => void;
 }) {
   const t = useTranslations("Documents");
+  const tCommon = useTranslations("Common");
+  const router = useRouter();
   const [open, setOpen] = useState(false);
   const [docs, setDocs] = useState<DocumentItem[] | null>(null);
+  const [comments, setComments] = useState<ProjectComment[] | null>(null);
+  const [interest, setInterest] = useState<{
+    up: number;
+    down: number;
+    mine: "up" | "down" | null;
+  } | null>(null);
+  const [canReact, setCanReact] = useState(false);
+  const [canStartVote, setCanStartVote] = useState(false);
+  const [editingFin, setEditingFin] = useState(false);
+  const [finCost, setFinCost] = useState("");
+  const [finNote, setFinNote] = useState("");
   const [loading, setLoading] = useState(false);
+  const [commentText, setCommentText] = useState("");
+  const [posting, setPosting] = useState(false);
+
+  const load = useCallback(async () => {
+    const res = await fetch(`/api/documents/projects/${project.id}`);
+    if (res.ok) {
+      const j = await res.json();
+      setDocs(j.documents ?? []);
+      setComments(j.comments ?? []);
+      setInterest(j.interest ?? null);
+      setCanReact(!!j.canReact);
+      setCanStartVote(!!j.canStartVote);
+    }
+  }, [project.id]);
 
   async function toggle() {
     const next = !open;
@@ -208,14 +277,72 @@ function ProjectRow({
     if (next && docs === null) {
       setLoading(true);
       try {
-        const res = await fetch(`/api/documents/projects/${project.id}`);
-        if (res.ok) {
-          const j = await res.json();
-          setDocs(j.documents);
-        }
+        await load();
       } finally {
         setLoading(false);
       }
+    }
+  }
+
+  async function postComment(e: React.FormEvent) {
+    e.preventDefault();
+    const text = commentText.trim();
+    if (!text) return;
+    setPosting(true);
+    try {
+      const res = await fetch(`/api/documents/projects/${project.id}/comments`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ content: text }),
+      });
+      if (res.ok) {
+        setCommentText("");
+        await load();
+      }
+    } finally {
+      setPosting(false);
+    }
+  }
+
+  async function deleteComment(commentId: string) {
+    const res = await fetch(
+      `/api/documents/projects/${project.id}/comments?commentId=${commentId}`,
+      { method: "DELETE" }
+    );
+    if (res.ok) await load();
+  }
+
+  async function react(stance: "up" | "down") {
+    if (!canReact) return;
+    const next = interest?.mine === stance ? null : stance;
+    const res = await fetch(`/api/documents/projects/${project.id}/interest`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ stance: next }),
+    });
+    if (res.ok) await load();
+  }
+
+  function startEditFin() {
+    setFinCost(
+      project.estimatedCost != null ? String(project.estimatedCost) : ""
+    );
+    setFinNote(project.fundingNote ?? "");
+    setEditingFin(true);
+  }
+
+  async function saveFin() {
+    const res = await fetch(`/api/documents/projects/${project.id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        estimatedCost: finCost ? Number(finCost) : null,
+        fundingNote: finNote,
+      }),
+    });
+    if (res.ok) {
+      setEditingFin(false);
+      onChanged();
     }
   }
 
@@ -277,16 +404,170 @@ function ProjectRow({
         </div>
       </div>
       {open && (
-        <div className="px-5 pb-5 space-y-3">
-          {loading ? (
-            <p className="text-sm text-gray-500 dark:text-gray-400">…</p>
-          ) : docs && docs.length > 0 ? (
-            docs.map((d) => (
-              <DocumentCard key={d.id} doc={d} canManage={false} onDelete={() => {}} readOnly />
-            ))
-          ) : (
-            <p className="text-sm text-gray-500 dark:text-gray-400">{t("empty")}</p>
+        <div className="px-5 pb-5 space-y-5">
+          {(project.estimatedCost != null ||
+            project.fundingNote ||
+            canManage) && (
+            <div className="rounded-lg bg-gray-50 p-3 dark:bg-gray-900">
+              {editingFin ? (
+                <div className="flex flex-col sm:flex-row gap-2">
+                  <input
+                    type="number"
+                    min="0"
+                    value={finCost}
+                    onChange={(e) => setFinCost(e.target.value)}
+                    placeholder={t("financing.estimatedCost")}
+                    className="sm:w-44 px-3 py-2 text-sm border border-gray-300 rounded-lg dark:bg-gray-800 dark:border-gray-700 dark:text-gray-100"
+                  />
+                  <input
+                    type="text"
+                    value={finNote}
+                    onChange={(e) => setFinNote(e.target.value)}
+                    placeholder={t("financing.fundingNotePlaceholder")}
+                    className="flex-1 px-3 py-2 text-sm border border-gray-300 rounded-lg dark:bg-gray-800 dark:border-gray-700 dark:text-gray-100"
+                  />
+                  <button
+                    onClick={saveFin}
+                    className="px-3 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg"
+                  >
+                    {tCommon("save")}
+                  </button>
+                </div>
+              ) : (
+                <div className="flex items-center justify-between gap-2 flex-wrap">
+                  <span className="text-sm text-gray-700 dark:text-gray-200">
+                    💰{" "}
+                    {project.estimatedCost != null
+                      ? project.estimatedCost.toLocaleString()
+                      : "—"}
+                    {project.fundingNote ? ` · ${project.fundingNote}` : ""}
+                  </span>
+                  {canManage && (
+                    <button
+                      onClick={startEditFin}
+                      className="text-xs text-blue-600 hover:underline dark:text-blue-300"
+                    >
+                      {tCommon("edit")}
+                    </button>
+                  )}
+                </div>
+              )}
+            </div>
           )}
+
+          <div className="space-y-3">
+            {loading ? (
+              <p className="text-sm text-gray-500 dark:text-gray-400">…</p>
+            ) : docs && docs.length > 0 ? (
+              docs.map((d) => (
+                <DocumentCard key={d.id} doc={d} canManage={false} onDelete={() => {}} readOnly />
+              ))
+            ) : (
+              <p className="text-sm text-gray-500 dark:text-gray-400">{t("empty")}</p>
+            )}
+          </div>
+
+          {interest && (
+            <div className="rounded-lg border border-gray-200 p-3 dark:border-gray-700">
+              <div className="flex items-center justify-between gap-2 mb-2 flex-wrap">
+                <h4 className="text-sm font-semibold text-gray-900 dark:text-gray-100">
+                  {t("anketa.title")}
+                </h4>
+                <span className="text-xs text-gray-400 dark:text-gray-500">
+                  {t("anketa.disclaimer")}
+                </span>
+              </div>
+              <div className="flex items-center gap-3">
+                <button
+                  onClick={() => react("up")}
+                  disabled={!canReact}
+                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
+                    interest.mine === "up"
+                      ? "bg-green-600 text-white"
+                      : "bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-200"
+                  } ${!canReact ? "opacity-60 cursor-default" : ""}`}
+                >
+                  👍 {interest.up}
+                </button>
+                <button
+                  onClick={() => react("down")}
+                  disabled={!canReact}
+                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
+                    interest.mine === "down"
+                      ? "bg-red-600 text-white"
+                      : "bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-200"
+                  } ${!canReact ? "opacity-60 cursor-default" : ""}`}
+                >
+                  👎 {interest.down}
+                </button>
+              </div>
+              {canStartVote && (
+                <div className="mt-3 pt-3 border-t border-gray-200 dark:border-gray-700">
+                  <button
+                    onClick={() =>
+                      router.push(`/voting/new?projectId=${project.id}`)
+                    }
+                    className="text-sm font-medium text-blue-600 hover:underline dark:text-blue-300"
+                  >
+                    {t("anketa.startVote")} →
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
+
+          <div>
+            <h4 className="text-sm font-semibold text-gray-900 mb-2 dark:text-gray-100">
+              💬 {t("discussion.title")}
+            </h4>
+            <div className="space-y-2 mb-3">
+              {comments && comments.length > 0 ? (
+                comments.map((c) => (
+                  <div
+                    key={c.id}
+                    className="bg-gray-50 rounded-lg px-3 py-2 dark:bg-gray-900"
+                  >
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="text-xs font-medium text-gray-600 dark:text-gray-300">
+                        {c.authorName ?? tCommon("unknown")}
+                      </span>
+                      {(c.isMine || canManage) && (
+                        <button
+                          onClick={() => deleteComment(c.id)}
+                          className="text-xs text-red-600 hover:underline dark:text-red-400"
+                        >
+                          {t("discussion.delete")}
+                        </button>
+                      )}
+                    </div>
+                    <p className="text-sm text-gray-800 whitespace-pre-wrap dark:text-gray-200">
+                      {c.content}
+                    </p>
+                  </div>
+                ))
+              ) : (
+                <p className="text-sm text-gray-500 dark:text-gray-400">
+                  {t("discussion.empty")}
+                </p>
+              )}
+            </div>
+            <form onSubmit={postComment} className="flex gap-2">
+              <input
+                value={commentText}
+                onChange={(e) => setCommentText(e.target.value)}
+                placeholder={t("discussion.placeholder")}
+                maxLength={5000}
+                className="flex-1 px-3 py-2 text-sm border border-gray-300 rounded-lg dark:bg-gray-900 dark:border-gray-700 dark:text-gray-100"
+              />
+              <button
+                type="submit"
+                disabled={posting}
+                className="px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg disabled:opacity-50"
+              >
+                {t("discussion.send")}
+              </button>
+            </form>
+          </div>
         </div>
       )}
     </div>

@@ -84,6 +84,23 @@
       "uploading": "Nahrávam…",
       "remove": "Odobrať"
     },
+    "discussion": {
+      "title": "Diskusia",
+      "placeholder": "Napíšte komentár…",
+      "send": "Poslať",
+      "empty": "Zatiaľ žiadne komentáre",
+      "delete": "Zmazať"
+    },
+    "anketa": {
+      "title": "Anketa — máte záujem?",
+      "disclaimer": "orientačné, nie je to právne hlasovanie",
+      "startVote": "Spustiť riadne hlasovanie"
+    },
+    "financing": {
+      "estimatedCost": "Odhadované náklady",
+      "fundingNote": "Financovanie",
+      "fundingNotePlaceholder": "napr. úver 50 000 € + fond opráv"
+    },
     "projects": {
       "new": "Nový projekt",
       "empty": "Žiadne projekty",
@@ -148,6 +165,39 @@
       "tooLarge": "Súbor je príliš veľký (max 25 MB)",
       "fileRequired": "Vyberte súbor",
       "uploadFailed": "Nahranie zlyhalo"
+    }
+  },
+  "OnboardingBanner": {
+    "title": "Vitajte! Nastavme vašu komunitu",
+    "body": "Vyzerá to, že ešte nemáte pridané žiadne jednotky. Sprievodca vás prevedie prvotným nastavením.",
+    "action": "Spustiť sprievodcu",
+    "dismiss": "Zavrieť"
+  },
+  "Onboarding": {
+    "title": "Sprievodca nastavením",
+    "intro": "Pripravte svoju komunitu krok za krokom. Každý krok môžete dokončiť kedykoľvek — postup sa sleduje automaticky podľa zadaných údajov.",
+    "progress": "Dokončené {done} z {total}",
+    "noPermission": "Na nastavenie komunity nemáte oprávnenie.",
+    "start": "Začať",
+    "review": "Zobraziť",
+    "allDone": "Hotovo! Vaša komunita je nastavená.",
+    "steps": {
+      "community": {
+        "title": "Údaje o komunite",
+        "body": "Zadajte názov, adresu a IČO vašej komunity a spôsob hlasovania."
+      },
+      "units": {
+        "title": "Import jednotiek a vlastníkov",
+        "body": "Nahrajte zoznam bytov a vlastníkov zo súboru, PDF z katastra alebo zadajte ručne."
+      },
+      "owners": {
+        "title": "Pozvanie vlastníkov",
+        "body": "Pozvite vlastníkov, aby sa zaregistrovali pomocou registračného QR kódu."
+      },
+      "posts": {
+        "title": "Prvé oznámenie",
+        "body": "Uverejnite prvé oznámenie pre vašu komunitu na nástenke."
+      }
     }
   },
   "ShareSumInvariant": {
@@ -685,6 +735,8 @@
     "title": "Nastavenia",
     "noPermission": "Nemáte oprávnenie na zobrazenie nastavení.",
     "registrationQrLink": "Registračný QR",
+    "importLink": "Import údajov",
+    "setupGuideLink": "Sprievodca nastavením",
     "tabBuilding": "Budova",
     "tabEntrances": "Vchody",
     "tabFlats": "Byty",

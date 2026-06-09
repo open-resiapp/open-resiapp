@@ -1,5 +1,5 @@
 import "server-only";
-import { and, desc, eq, inArray, isNull, sql } from "drizzle-orm";
+import { and, asc, desc, eq, inArray, isNull, sql } from "drizzle-orm";
 
 import { db } from "@/db";
 import {
@@ -7,6 +7,9 @@ import {
   documentAccessLog,
   documentProjects,
   documentLinks,
+  projectComments,
+  projectInterest,
+  coreModules,
   posts,
   communityPosts,
   entities,
@@ -174,6 +177,8 @@ export interface CreateProjectInput {
   description?: string | null;
   audience: DocumentAudience;
   status: DocumentProjectStatus;
+  estimatedCost?: number | null;
+  fundingNote?: string | null;
 }
 
 export async function createProject(
@@ -187,6 +192,8 @@ export async function createProject(
       description: input.description ?? null,
       audience: input.audience,
       status: input.status,
+      estimatedCost: input.estimatedCost ?? null,
+      fundingNote: input.fundingNote ?? null,
     })
     .returning();
   return row;
@@ -281,6 +288,8 @@ export async function updateProject(
     description?: string | null;
     audience?: DocumentAudience;
     status?: DocumentProjectStatus;
+    estimatedCost?: number | null;
+    fundingNote?: string | null;
   }
 ): Promise<void> {
   if (Object.keys(patch).length === 0) return;
@@ -389,4 +398,124 @@ export async function listTargetDocuments(
   return rows
     .filter((r) => canSeeDocPath(mems, r.path, r.doc.audience))
     .map((r) => ({ ...r.doc, uploaderName: r.uploaderName }));
+}
+
+// ── Project discussion thread — BYT-20260608-001 (project workspace) ──
+
+export type ProjectCommentRow = typeof projectComments.$inferSelect;
+export interface ProjectCommentItem {
+  id: string;
+  content: string;
+  createdAt: Date;
+  authorId: string | null;
+  authorName: string | null;
+}
+
+/** Chronological comments on a project, with author names. */
+export async function listProjectComments(
+  projectId: string
+): Promise<ProjectCommentItem[]> {
+  const rows = await db
+    .select({ c: projectComments, authorName: users.name })
+    .from(projectComments)
+    .leftJoin(users, eq(projectComments.authorId, users.id))
+    .where(eq(projectComments.projectId, projectId))
+    .orderBy(asc(projectComments.createdAt));
+  return rows.map((r) => ({
+    id: r.c.id,
+    content: r.c.content,
+    createdAt: r.c.createdAt,
+    authorId: r.c.authorId,
+    authorName: r.authorName,
+  }));
+}
+
+export async function createProjectComment(
+  projectId: string,
+  authorId: string,
+  content: string
+): Promise<void> {
+  await db.insert(projectComments).values({ projectId, authorId, content });
+}
+
+export async function getProjectComment(
+  id: string
+): Promise<ProjectCommentRow | null> {
+  const [row] = await db
+    .select()
+    .from(projectComments)
+    .where(eq(projectComments.id, id))
+    .limit(1);
+  return row ?? null;
+}
+
+export async function deleteProjectComment(id: string): Promise<void> {
+  await db.delete(projectComments).where(eq(projectComments.id, id));
+}
+
+// ── Project pre-vote (anketa) — casual 👍/👎 interest reaction ──
+
+export interface ProjectInterestSummary {
+  up: number;
+  down: number;
+  mine: "up" | "down" | null;
+}
+
+export async function getProjectInterest(
+  projectId: string,
+  userId: string
+): Promise<ProjectInterestSummary> {
+  const rows = await db
+    .select({ stance: projectInterest.stance, userId: projectInterest.userId })
+    .from(projectInterest)
+    .where(eq(projectInterest.projectId, projectId));
+  let up = 0;
+  let down = 0;
+  let mine: "up" | "down" | null = null;
+  for (const r of rows) {
+    if (r.stance === "up") up++;
+    else down++;
+    if (r.userId === userId) mine = r.stance;
+  }
+  return { up, down, mine };
+}
+
+export async function setProjectInterest(
+  projectId: string,
+  userId: string,
+  stance: "up" | "down"
+): Promise<void> {
+  await db
+    .insert(projectInterest)
+    .values({ projectId, userId, stance })
+    .onConflictDoUpdate({
+      target: [projectInterest.projectId, projectInterest.userId],
+      set: { stance, updatedAt: new Date() },
+    });
+}
+
+export async function clearProjectInterest(
+  projectId: string,
+  userId: string
+): Promise<void> {
+  await db
+    .delete(projectInterest)
+    .where(
+      and(
+        eq(projectInterest.projectId, projectId),
+        eq(projectInterest.userId, userId)
+      )
+    );
+}
+
+/** True if a module is installed AND enabled (core_modules.status='enabled').
+ *  Used to gate cross-module actions like "start a formal vote from a project"
+ *  when the voting module may not be installed. */
+export async function isModuleEnabled(name: string): Promise<boolean> {
+  const [row] = await db
+    .select({ name: coreModules.name })
+    .from(coreModules)
+    .where(and(eq(coreModules.name, name), eq(coreModules.status, "enabled")))
+    .limit(1);
+  return !!row;
 }

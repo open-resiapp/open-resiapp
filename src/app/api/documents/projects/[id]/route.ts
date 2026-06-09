@@ -2,11 +2,15 @@ import { NextRequest, NextResponse } from "next/server";
 
 import { auth } from "@/lib/auth";
 import { canManageEntity } from "@/lib/permissions-entity";
+import { hasPermission } from "@/lib/permissions";
 import type { UserRole } from "@/types";
 import {
   getProject,
   getViewableProject,
   listProjectDocuments,
+  listProjectComments,
+  getProjectInterest,
+  isModuleEnabled,
   updateProject,
   deleteProject,
 } from "@/lib/documents.server";
@@ -35,8 +39,23 @@ export async function GET(
   }
 
   const docs = await listProjectDocuments(userId, id);
+  const comments = await listProjectComments(id);
+  const interest = await getProjectInterest(id, userId);
+  const canStartVote =
+    hasPermission(session.user.role as UserRole, "createVoting") &&
+    (await isModuleEnabled("voting"));
   return NextResponse.json({
     project,
+    interest,
+    canReact: hasPermission(session.user.role as UserRole, "vote"),
+    canStartVote,
+    comments: comments.map((c) => ({
+      id: c.id,
+      content: c.content,
+      createdAt: c.createdAt,
+      authorName: c.authorName,
+      isMine: c.authorId === userId,
+    })),
     documents: docs.map((d) => ({
       id: d.id,
       name: d.name,
@@ -86,6 +105,8 @@ export async function PATCH(
     description?: string | null;
     audience?: DocumentAudience;
     status?: DocumentProjectStatus;
+    estimatedCost?: number | null;
+    fundingNote?: string | null;
   } = {};
   if (typeof body.title === "string" && body.title.trim()) {
     patch.title = body.title.trim();
@@ -98,6 +119,13 @@ export async function PATCH(
   }
   if ((DOCUMENT_PROJECT_STATUSES as readonly string[]).includes(body.status)) {
     patch.status = body.status as DocumentProjectStatus;
+  }
+  if (body.estimatedCost !== undefined) {
+    const ec = Number(body.estimatedCost);
+    patch.estimatedCost = Number.isFinite(ec) && ec > 0 ? Math.round(ec) : null;
+  }
+  if (typeof body.fundingNote === "string") {
+    patch.fundingNote = body.fundingNote.trim() || null;
   }
   await updateProject(id, patch);
   return NextResponse.json({ ok: true });

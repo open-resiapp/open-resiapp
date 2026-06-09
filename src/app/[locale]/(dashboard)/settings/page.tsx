@@ -66,6 +66,7 @@ export default function SettingsPage() {
         alertCount={alertCount}
         showModules={hasPermission(role, "manageSettings")}
         showRegistrationQr={hasPermission(role, "manageUsers")}
+        showImport={hasPermission(role, "manageSettings")}
       />
 
       {activeTab === "building" && <BuildingInfoTab canEdit={canEdit} />}

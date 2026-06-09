@@ -14,6 +14,9 @@ interface SettingsTabsProps {
   // Hidden when the corresponding flag is false.
   showModules?: boolean;
   showRegistrationQr?: boolean;
+  // RES-20260609-001: Import + the onboarding guide moved out of the
+  // top-level nav and live here as link-style tabs.
+  showImport?: boolean;
 }
 
 const tabs: SettingsTab[] = ["building", "entrances", "flats", "voting", "boardMembers", "connections"];
@@ -24,6 +27,7 @@ export default function SettingsTabs({
   alertCount,
   showModules = false,
   showRegistrationQr = false,
+  showImport = false,
 }: SettingsTabsProps) {
   const t = useTranslations("Settings");
   const tRoot = useTranslations();
@@ -59,6 +63,7 @@ export default function SettingsTabs({
   const onModulesPage = pathname?.startsWith("/settings/modules") ?? false;
   const onRegistrationQrPage =
     pathname?.startsWith("/settings/registration-qr") ?? false;
+  const onImportPage = pathname?.startsWith("/admin/import") ?? false;
   // Base tabs switch local state when we're on the root /settings page;
   // on sub-pages they navigate back via ?tab=... so the user gets the
   // expected jump rather than a no-op click.
@@ -117,6 +122,19 @@ export default function SettingsTabs({
             className={`${baseClass} ${onModulesPage ? activeClass : inactiveClass}`}
           >
             Modules
+          </Link>
+        )}
+        {showImport && (
+          <Link
+            href="/admin/import"
+            className={`${baseClass} ${onImportPage ? activeClass : inactiveClass}`}
+          >
+            {t("importLink")}
+          </Link>
+        )}
+        {showImport && (
+          <Link href="/onboarding" className={`${baseClass} ${inactiveClass}`}>
+            {t("setupGuideLink")}
           </Link>
         )}
       </nav>

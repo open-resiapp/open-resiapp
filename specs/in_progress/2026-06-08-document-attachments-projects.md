@@ -3,7 +3,7 @@ spec_id: BYT-20260608-001
 title: "Document attachments & projects (posts + voting)"
 status: in_progress
 created: 2026-06-08
-updated: 2026-06-08
+updated: 2026-06-09
 author: Filip
 owner: Filip
 last_verified: 2026-06-08
@@ -158,6 +158,59 @@ Verify against current code before implementing (CLAUDE.md):
 - Visibility resolver + serving: `src/lib/documents.ts` / `documents.server.ts`,
   `/api/documents/[id]`.
 
+## Project workspace (initiative hub)
+
+Projects evolve from a *document dossier* into a full **initiative workspace** for
+building projects (balcony reconstruction, lift replacement, maintenance).
+
+**Research grounding:** SK renovations are funded from fond opráv (FPÚO) / bank
+loan / ŠFRB (≤75%) / mimoriadny príspevok, and the **legal vote threshold
+depends on the funding type** — bank loan + security → **2/3 of *all* owners**;
+fund use → **simple majority of all owners** (§7b/§14 zák. 182/1993). Sources:
+[ŠFRB](https://www.sfrb.sk/ziadatel/obnovujte-s-nami/),
+[MF SR – použitie FPÚO](https://www.mfsr.sk/sk/ministerstvo/legislativa-majetkove-pravo/majetkove-pravo/vlastnictvo-bytov-nebytovych-priestorov/pouzitie-prostriedkov-fondu-prevadzky-udrzby-oprav.html),
+[obnovabytovychdomov.sk](https://www.obnovabytovychdomov.sk/financovanie-2/).
+
+**Architecture:** a Project is a HUB that scopes existing collaboration
+primitives via `projectId` + adds project-specific fields. Reuse over rebuild.
+
+### Sections (phased)
+- **Overview** — status, kind, start/target/actual dates, responsible person, cover photo.
+- **Documents & Photos** — the dossier (DONE) + a gallery view for plans/renders.
+- **Discussion** — flat chronological thread per project (**DONE** — `project_comments`).
+- **Pre-vote (anketa)** — informal interest check (see below).
+- **Voting** — the legal §14 vote, linked to the project (**DONE** — `votings.documentProjectId`).
+- **Financing** — source (fond/loan/ŠFRB/special), estimated/approved/actual cost,
+  loan details; **derives the required vote threshold** (loan → 2/3 all owners).
+- **Vendor(s)** — contractor name, contact, quote amount, contract doc.
+- **Updates / timeline** — chairman milestone posts.
+
+### Pre-vote (anketa) — locked decisions (2026-06-09)
+A lightweight, **non-binding interest check** that precedes the legal vote — "is
+there appetite for this?" If there's interest, the chairman starts the regular
+§14 voting.
+
+- **Not a vote.** UI must label it **"Anketa / Prieskum záujmu"**, never
+  "Hlasovanie", with a disclaimer: *"orientačný prieskum — nie je to právne hlasovanie."*
+- **Owners only** answer (they are the legal voters; their interest predicts the vote).
+- **YES / NO** — *mám záujem / nemám záujem* (want / don't want). Binary, no "maybe".
+- **No quorum** — advisory; **headcount tally only**, NOT share-weighted (keeps it
+  visibly different from the legal weighted vote).
+- **Changeable** until the chairman closes it.
+- **Bridge**: the result view has a **"Spustiť riadne hlasovanie"** action →
+  creates the legal voting linked to the project, quorum pre-set from financing type.
+- **Reuse**: the `eventRsvps` / `rsvp_status` pattern → a `project_interest`
+  (projectId, userId, stance `yes|no`) table. NOT a new voting engine.
+
+Flow: **discussion → anketa (gauge interest) → riadne hlasovanie (legal) →
+realization (vendor / financing / updates).**
+
+### Build phasing
+- **P1 — workspace shell**: rich status/kind/dates/cover + a project detail view; gallery.
+- **P2 — collaboration**: discussion (DONE) + **pre-vote (anketa)**.
+- **P3 — money & approval**: financing fields + vendor records + vote-threshold
+  derivation + initiate-vote-from-project.
+
 ## Notes
 
 **Locked decisions (2026-06-08, from chat):**
@@ -174,3 +227,38 @@ Verify against current code before implementing (CLAUDE.md):
   doc keeps its own audience for the library).
 - Post-delete link cleanup is app-level (polymorphic `targetId` has no FK) —
   must be added to both post DELETE handlers, not left to the DB.
+
+**Implemented (2026-06-08/09):** Phases A (projects + library Projects tab),
+B (post attachments — attach-on-create on board + community, render on cards,
+link cleanup), C (voting ↔ project). Rename `document_projects` → `projects`
+(migration 0043; Drizzle symbol stays `documentProjects`). Project **discussion
+threads** (`project_comments`, migration 0042 — list/post/delete + UI in the
+project row; viewers comment, author/admin delete). Management gates switched
+from per-entity `hasEntityPermission` to flat `users.role` via `canManageEntity`
+(flat-admin OR entity-role) — matches the app's admin convention; viewing stays
+entity-scoped via `canSeeDocPath`.
+
+**Pre-vote (anketa) implemented (2026-06-09):** casual 👍/👎 per owner on a
+project (`project_interest`, migration 0044) — owners-only react (`vote`
+permission), advisory headcount tally, changeable, labelled "not a legal vote".
+UI in the project row, above the discussion.
+
+**Implemented (2026-06-09, cont.):** the **"Spustiť riadne hlasovanie" bridge**
+(anketa → `/voting/new?projectId=…`, gated server-side on `createVoting` AND
+`isModuleEnabled("voting")` — hidden if the voting module isn't installed/enabled;
+the voting form pre-selects the project). **Easy financing** (`estimatedCost` +
+`fundingNote`, migration 0045 — create form + inline edit in the project row),
+**informational only** (see perspective below).
+
+**Still spec-only (not built):** vendor records, photo gallery, updates feed.
+Migrations to date: **0038–0045**.
+
+**Multi-template perspective (2026-06-09):** the Project workspace (docs +
+discussion + anketa + financing) is **template-agnostic** — equally useful for
+HOA, garden, garage, and street communities (a garden club re-fencing, a garage
+block re-roofing, a street association resurfacing). The ONLY HOA-specific piece
+is the **legal vote threshold** (loan → 2/3, fund → simple majority; §14 zák.
+182/1993), which MUST NOT be generalized to other templates (CLAUDE.md
+legally-regulated-content rule). That is exactly why financing stays
+informational — a future "auto-set the vote's quorum from the funding type" must
+be **gated to the HOA template only**, never baked into the generic project.

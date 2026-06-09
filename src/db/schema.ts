@@ -215,6 +215,13 @@ export const documentLinkTargetEnum = pgEnum("document_link_target", [
   "community_post",
 ]);
 
+// Casual pre-vote reaction on a project — thumbs up / down. NOT a legal vote.
+// BYT-20260608-001 (anketa / prieskum záujmu).
+export const projectInterestStanceEnum = pgEnum("project_interest_stance", [
+  "up",
+  "down",
+]);
+
 // ── Tables ─────────────────────────────────────────────
 
 // Phase 9.2: legacy `building`, `entrances`, `flats` tables dropped.
@@ -468,8 +475,11 @@ export const documentAccessLog = pgTable(
 // Named dossier grouping a set of documents (e.g. "Rekonštrukcia balkónov").
 // BYT-20260608-001. A voting links one project; the library lists its docs.
 // Documents reference this via documents.project_id (set null on delete).
+// Renamed document_projects → projects (BYT-20260608-001): the entity is now a
+// full initiative workspace, not just a document dossier. The Drizzle symbol
+// stays `documentProjects` to avoid churn / local-var collisions with `projects`.
 export const documentProjects = pgTable(
-  "document_projects",
+  "projects",
   {
     id: uuid("id").primaryKey().defaultRandom(),
     entityId: uuid("entity_id")
@@ -479,6 +489,13 @@ export const documentProjects = pgTable(
     description: text("description"),
     audience: documentAudienceEnum("audience").notNull().default("owner"),
     status: documentProjectStatusEnum("status").notNull().default("active"),
+    // Easy, template-agnostic financing — INFORMATIONAL ONLY. estimatedCost in
+    // whole currency units; fundingNote free text ("úver 50 000 € + fond opráv").
+    // No legal vote-threshold logic here: §14 loan = 2/3 / fund = simple-majority
+    // is HOA-specific and must NOT be generalized to garden/garage templates
+    // (CLAUDE.md legally-regulated-content rule). BYT-20260608-001.
+    estimatedCost: integer("estimated_cost"),
+    fundingNote: text("funding_note"),
     createdAt: timestamp("created_at").defaultNow().notNull(),
   },
   (table) => ({
@@ -511,6 +528,54 @@ export const documentLinks = pgTable(
       table.targetType,
       table.targetId
     ),
+  })
+);
+
+// Discussion thread on a project — chairman + owners discuss the initiative
+// (the balcony loan, the vendor, the plan…). Flat chronological thread, no
+// nesting in v1. Author set null on user delete so the thread survives.
+// BYT-20260608-001 (project workspace).
+export const projectComments = pgTable(
+  "project_comments",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    projectId: uuid("project_id")
+      .references(() => documentProjects.id, { onDelete: "cascade" })
+      .notNull(),
+    authorId: uuid("author_id").references(() => users.id, {
+      onDelete: "set null",
+    }),
+    content: text("content").notNull(),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+  },
+  (table) => ({
+    projectIdx: index("project_comments_project_idx").on(table.projectId),
+  })
+);
+
+// Pre-vote interest on a project — one casual 👍/👎 per owner, changeable.
+// Advisory only, no quorum, headcount tally. Owners gauge appetite before the
+// chairman starts the real §14 vote. BYT-20260608-001 (anketa).
+export const projectInterest = pgTable(
+  "project_interest",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    projectId: uuid("project_id")
+      .references(() => documentProjects.id, { onDelete: "cascade" })
+      .notNull(),
+    userId: uuid("user_id")
+      .references(() => users.id, { onDelete: "cascade" })
+      .notNull(),
+    stance: projectInterestStanceEnum("stance").notNull(),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at").defaultNow().notNull(),
+  },
+  (table) => ({
+    userProjectIdx: uniqueIndex("project_interest_user_project_idx").on(
+      table.projectId,
+      table.userId
+    ),
+    projectIdx: index("project_interest_project_idx").on(table.projectId),
   })
 );
 

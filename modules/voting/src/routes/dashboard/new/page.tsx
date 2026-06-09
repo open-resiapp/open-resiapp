@@ -23,6 +23,7 @@ export default function NovaHlasovaniePage() {
   const [initiatedBy, setInitiatedBy] = useState("board");
   const [entrances, setEntrances] = useState<Entrance[]>([]);
   const [projects, setProjects] = useState<{ id: string; title: string }[]>([]);
+  const [selectedProjectId, setSelectedProjectId] = useState("");
 
   const role = (session?.user?.role || "owner") as UserRole;
 
@@ -40,6 +41,12 @@ export default function NovaHlasovaniePage() {
         if (data?.projects) setProjects(data.projects);
       })
       .catch(() => {});
+  }, []);
+
+  // Pre-select the project when arriving from a project's "start formal vote".
+  useEffect(() => {
+    const p = new URLSearchParams(window.location.search).get("projectId");
+    if (p) setSelectedProjectId(p);
   }, []);
 
   if (!hasPermission(role, "createVoting")) {
@@ -255,6 +262,8 @@ export default function NovaHlasovaniePage() {
               </label>
               <select
                 name="documentProjectId"
+                value={selectedProjectId}
+                onChange={(e) => setSelectedProjectId(e.target.value)}
                 className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none dark:bg-gray-900 dark:border-gray-700 dark:text-gray-100"
               >
                 <option value="">{t("noProject")}</option>

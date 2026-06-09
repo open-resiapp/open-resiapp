@@ -24,7 +24,9 @@ const navItems: NavItem[] = [
   { href: "/komunita", labelKey: "community", icon: "🏘️", permission: "viewCommunity" },
   { href: "/owners", labelKey: "owners", icon: "👥", permission: "manageUsers" },
   { href: "/documents", labelKey: "documents", icon: "📄", permission: "viewDocuments" },
-  { href: "/admin/import", labelKey: "import", icon: "📥", permission: "manageSettings" },
+  // RES-20260609-001: Import is a once-per-lifetime bootstrap, not a
+  // daily destination. It moved under Settings (+ the /onboarding guide)
+  // so it stops occupying a permanent top-level nav slot.
   { href: "/settings", labelKey: "settings", icon: "⚙️", permission: "viewSettings" },
 ];
 

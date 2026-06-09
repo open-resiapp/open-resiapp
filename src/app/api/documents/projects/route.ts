@@ -64,6 +64,10 @@ export async function POST(request: NextRequest) {
     : "active";
   const description =
     (typeof body.description === "string" ? body.description : "").trim() || null;
+  const ec = Number(body.estimatedCost);
+  const estimatedCost = Number.isFinite(ec) && ec > 0 ? Math.round(ec) : null;
+  const fundingNote =
+    (typeof body.fundingNote === "string" ? body.fundingNote : "").trim() || null;
 
   const project = await createProject({
     entityId,
@@ -71,6 +75,8 @@ export async function POST(request: NextRequest) {
     description,
     audience,
     status,
+    estimatedCost,
+    fundingNote,
   });
   return NextResponse.json({ project }, { status: 201 });
 }

@@ -84,6 +84,23 @@
       "uploading": "Uploading…",
       "remove": "Remove"
     },
+    "discussion": {
+      "title": "Discussion",
+      "placeholder": "Write a comment…",
+      "send": "Send",
+      "empty": "No comments yet",
+      "delete": "Delete"
+    },
+    "anketa": {
+      "title": "Poll — interested?",
+      "disclaimer": "informal, not a legal vote",
+      "startVote": "Start the formal vote"
+    },
+    "financing": {
+      "estimatedCost": "Estimated cost",
+      "fundingNote": "Funding",
+      "fundingNotePlaceholder": "e.g. loan €50,000 + repair fund"
+    },
     "projects": {
       "new": "New project",
       "empty": "No projects",
@@ -148,6 +165,39 @@
       "tooLarge": "File too large (max 25 MB)",
       "fileRequired": "Select a file",
       "uploadFailed": "Upload failed"
+    }
+  },
+  "OnboardingBanner": {
+    "title": "Welcome! Let's set up your community",
+    "body": "It looks like you haven't added any units yet. The setup guide walks you through getting started.",
+    "action": "Open setup guide",
+    "dismiss": "Dismiss"
+  },
+  "Onboarding": {
+    "title": "Setup guide",
+    "intro": "Get your community ready step by step. You can finish each step anytime — progress is tracked automatically from your data.",
+    "progress": "{done} of {total} done",
+    "noPermission": "You don't have permission to set up the community.",
+    "start": "Start",
+    "review": "Review",
+    "allDone": "All set! Your community is ready.",
+    "steps": {
+      "community": {
+        "title": "Community details",
+        "body": "Enter your community's name, address, company ID and voting method."
+      },
+      "units": {
+        "title": "Import units & owners",
+        "body": "Upload your list of units and owners from a file, a land-registry PDF, or enter them by hand."
+      },
+      "owners": {
+        "title": "Invite owners",
+        "body": "Invite owners to register using the registration QR code."
+      },
+      "posts": {
+        "title": "First announcement",
+        "body": "Publish your first announcement to the community board."
+      }
     }
   },
   "ShareSumInvariant": {
@@ -685,6 +735,8 @@
     "title": "Settings",
     "noPermission": "You do not have permission to view settings.",
     "registrationQrLink": "Registration QR",
+    "importLink": "Import data",
+    "setupGuideLink": "Setup guide",
     "tabBuilding": "Building",
     "tabEntrances": "Entrances",
     "tabFlats": "Flats",
