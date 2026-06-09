@@ -78,7 +78,7 @@ audit-grade workflow the grant promised.
 - **Jurisdiction-specific document templates** — SK template citing §14a, CZ
   template citing §1206/§1210; the feature is gated to the jurisdictions and
   votable HOA entity kinds that own the statute.
-- Extension of `mod_voting_mandates` + a `mandateId` link on `mod_voting_votes`.
+- Extension of `mod_voting_mandates` + a `mandateId` link on the signed ballot (`ballots`, BYT-20260609-008).
 - i18n of all new UI strings (`sk.json` / `cs.json` / `en.json`).
 
 **Out of scope**
@@ -128,7 +128,7 @@ active    — admin/counter scans QR -> payload matches (voting,owner,rep);
             records notaryName, notarisedAt, documentStorageKey,
             paperDocumentConfirmed=true, verifiedByAdminId, verificationDate;
             audit: voting.mandate_verify
-  | representative casts the unit's vote (mandateId linked)
+  | representative casts the unit's ballot — all items (ballots.mandateId linked)
 used      — a vote referencing this mandate exists
   ── OR ──
 revoked   — granting owner revokes BEFORE any mandated vote is recorded;
@@ -144,7 +144,7 @@ revocation.
 
 A mandate **only ever authorises the granting owner's own share**. There is no
 field by which received authority is re-transferred, so "A mandates B, B mandates
-C" is structurally impossible: B casting under A's mandate is a `votes.mandateId`
+C" is structurally impossible: B casting under A's mandate is a `ballots.mandateId`
 link, not a transferable artefact B can re-grant. A defensive guard additionally
 rejects issuing a mandate whose `fromOwnerId` is currently a `toOwnerId` on an
 active mandate **for the same share** (belt-and-braces against UI mistakes).
@@ -168,15 +168,16 @@ revokedReason          text
 // verificationNote, isActive (kept; isActive derivable from status — migrate)
 ```
 
-Add to `mod_voting_votes`:
+Add to `ballots` (the signed submission, BYT-20260609-008):
 
 ```ts
 mandateId  uuid -> mod_voting_mandates.id  on delete restrict   // nullable
 ```
 
-A mandated vote keeps `ownerId` = the **share-holding owner** (invariant: vote
-belongs to the unit, owner is the share holder) and sets `recordedById` = the
-representative + `mandateId` = the authorising mandate. New enum
+A mandated ballot keeps `ownerId` = the **share-holding owner** (invariant: a vote
+belongs to the (unit, item), owner is the share holder) and sets `recordedById` =
+the representative + `mandateId` = the authorising mandate; the representative's one
+signed ballot covers all items. New enum
 `mod_voting_mandate_status`; new `entity_audit_action` values
 `voting.mandate_issue`, `voting.mandate_verify`, `voting.mandate_revoke`. Enum adds
 use the **hand-written migration pattern** (CLAUDE.md; `0034_kind_to_text_fk.sql`).
@@ -220,10 +221,10 @@ evidence was not altered post-close.
 - [ ] Verifying records `notaryName`, `notarisedAt`, `documentStorageKey`,
       `verifiedByAdminId`, sets status `active`, and writes
       `voting.mandate_verify` to `entity_audit_log`.
-- [ ] A representative can cast the mandated share's vote; the vote row has
-      `ownerId` = share-holder, `recordedById` = representative,
+- [ ] A representative can cast the mandated share's **ballot** (all items); the
+      ballot has `ownerId` = share-holder, `recordedById` = representative,
       `mandateId` = the mandate; the engine resolves the share to the
-      representative's choice under the per-share model.
+      representative's choice **per item** under the per-share model.
 - [ ] The granting owner can revoke a mandate while no linked vote exists; after a
       mandated vote is recorded, revocation is rejected. Revocation writes
       `voting.mandate_revoke`.
@@ -243,9 +244,10 @@ evidence was not altered post-close.
   `paperDocumentConfirmed`, `verifiedByAdminId`, `verificationDate`,
   `verificationNote`, `isActive`, unique `(votingId, fromEntityId)`. This spec
   extends it; it does not invent it.
-- **Votes table:** `mod_voting_votes` (`:86`) — `ownerId`, `entityId`, `choice`,
-  `voteType` (electronic|paper), `recordedById`, `paperPhotoUrl`, `auditHash`,
-  `(votingId, entityId)` unique. Gains a nullable `mandateId`.
+- **Ballot table:** under multi-item votings (BYT-20260609-008) the signed
+  submission is `ballots` (per voting × unit × owner) with per-item choices in
+  `ballot_item_votes`; the **ballot** gains the nullable `mandateId`. (Pre-multi-item
+  this link would have sat on `mod_voting_votes`.)
 - **Per-share resolution:** BYT-20260511-001 — unchanged; mandated votes flow
   through the same `VoteWithOwnership[]` engine input as any other share vote.
 - **Audit bundle:** BYT-20260518-001 — mandate evidence reconciled in design
@@ -275,8 +277,8 @@ to, the T9 findings on these specific points.
   practice but raises re-binding and revocation complexity; deferred pending T9.
 - **Electronic mandated vote vs paper:** a verified mandate could let the
   representative vote electronically (passkey, T1) or be recorded as a paper vote at
-  the meeting. MVP supports recording the mandated vote through the normal vote path
-  with `mandateId` set; the physical channel stays `voteType`.
+  the meeting. MVP supports recording the mandated ballot through the normal ballot
+  path with `mandateId` set; the physical channel stays `voteType`.
 - **`isActive` vs `status`:** the new `status` enum supersedes the `isActive`
   boolean; migration maps `isActive=true → 'active'`. Confirm no current code reads
   `isActive` before dropping it (grep `isActive` across `modules/voting` per the

@@ -12,11 +12,19 @@ evidence — and the UX must work for elderly owners who don't use
 smartphones and are afraid of breaking something.
 
 ## Invariants
-- A vote always belongs to a unit, never to an owner. The owner is the
-  caster; the unit is the holder of the recorded stance.
+- A vote always belongs to a (unit, item), never to an owner. The owner is
+  the caster; the unit holds the recorded stance; the item is the resolution
+  being decided. A voting holds one or more items (BYT-20260609-008).
 - A unit's recorded stance is resolved from its owners' share-weighted
   inputs: majority of unit shares for the same choice wins. No majority,
   including any tie (50/50, three-way split), produces an abstain stance.
+  Resolution runs independently per item.
+- An owner submits one signed ballot per voting covering all items; the single
+  confirmation (email / passkey / paper signature) commits to every item
+  choice at once, so no item can be altered after signing. An unmarked item
+  resolves by the jurisdiction's silence rule.
+- Quorum and majority are per item, not per voting; each item carries its own
+  quorum type and produces its own result.
 - A vote choice is always one of three values: for, against, abstain.
   Null, skipped, or other values must never exist.
 - An electronic vote is never accepted on the basis of an authenticated
@@ -85,10 +93,10 @@ smartphones and are afraid of breaking something.
   specific entrance. Visibility is determined by membership-path overlap
   with that scope — an owner sees a voting iff their active membership
   is on an ancestor of, equal to, or a descendant of the voting's scope.
-- A vote belongs to the unit. The owner identity is the caster on behalf
-  of their share of that unit.
-- A unit's resolved stance belongs to the (voting, unit) pair and is
-  derived from the (voting, unit, owner) raw share-votes.
+- A vote belongs to the (unit, item). The owner identity is the caster on
+  behalf of their share of that unit, via a single signed ballot.
+- A unit's resolved stance belongs to the (voting, unit, item) triple and is
+  derived from the (voting, item, unit, owner) raw share-votes.
 - Voting creation authority belongs to: admin, owner, and chairman.
   Other roles (board members, vote counter, residents) participate but
   do not initiate.

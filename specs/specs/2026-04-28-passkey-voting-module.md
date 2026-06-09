@@ -37,7 +37,7 @@ As a module, the feature follows normal module semantics: an instance that has n
 - `voting.before` slot injection — `BiometricVoteButton`
 - `settings.tabs` slot injection — passkey device management
 - Vote audit annotation via `sdk.votes.annotate()` (no direct write to `votes` table)
-- Replay-protection challenge format (`votingId + choice + userId + timestamp`)
+- Replay-protection challenge format (`votingId + ballotHash + userId + timestamp` — one signature over the whole multi-item ballot, BYT-20260609-008)
 - Counter validation for cloned-authenticator detection
 - Graceful fallback when `window.PublicKeyCredential` is unavailable
 - PDF zápisnica enhancement showing biometric badge per voter
@@ -219,17 +219,18 @@ export async function POST(req: Request) {
 
 ### WebAuthn — voting
 
-Challenge **encodes the vote intent** so a captured challenge cannot be reused for a different choice:
+Challenge **encodes the whole-ballot intent** — a `ballotHash` over all item choices (multi-item votings, BYT-20260609-008) — so one signature covers every item and a captured challenge cannot be reused for a different set of choices:
 
 ```typescript
 // /api/modules/passkey/vote/options
-const { votingId, choice } = await req.json();
+const { votingId, itemChoices } = await req.json();   // itemChoices: [{itemId, choice}] for all items
 const user = await sdk.auth.requireUser();
 
 await sdk.votes.assertCanVote(user.id, votingId);   // SDK enforces eligibility
 
 const ts = Date.now();
-const intent = `${votingId}|${choice}|${user.id}|${ts}`;
+const ballotHash = base64url(sha256(jcs(sortByItemId(itemChoices))));  // commitment over ALL items
+const intent = `${votingId}|${ballotHash}|${user.id}|${ts}`;
 const challenge = base64url(sha256(intent));
 
 const options = await generateAuthenticationOptions({
@@ -243,7 +244,7 @@ await sdk.db.write('mod_passkey_voting_challenges', {
   challenge,
   user_id: user.id,
   purpose: 'vote',
-  payload: { votingId, choice, ts },
+  payload: { votingId, ballotHash, itemChoices, ts },
   expires_at: new Date(ts + 5 * 60_000),
 });
 
@@ -256,7 +257,7 @@ const body = await req.json();
 const user = await sdk.auth.requireUser();
 
 const ch = await consumeChallenge(body.response.clientDataJSON, user.id, 'vote');
-const { votingId, choice, ts } = ch.payload as VotePayload;
+const { votingId, ballotHash, itemChoices, ts } = ch.payload as VotePayload;
 
 const authenticator = await getAuthenticator(body.id, user.id);
 
@@ -281,12 +282,14 @@ await bumpCounter(authenticator.id, verification.authenticationInfo.newCounter);
 
 const signature = body.response.signature;        // base64url
 const auditHash = sha256Hex([
-  votingId, choice, user.id, ts, signature, authenticator.id,
+  votingId, ballotHash, user.id, ts, signature, authenticator.id,
 ].join('|'));
 
-const voteId = await sdk.votes.castVote({ votingId, userId: user.id, choice });
+// One signature -> one ballot covering all items (BYT-20260609-008).
+// The SDK writes one ballot + a ballot_item_votes row per item from this single assertion.
+const ballotId = await sdk.votes.castBallot({ votingId, userId: user.id, itemChoices, ballotHash });
 
-await sdk.votes.annotate(voteId, {
+await sdk.votes.annotate(ballotId, {
   verifiedByBiometrics: true,
   webauthnSignature:    signature,
   webauthnChallenge:    ch.challenge,
@@ -294,7 +297,7 @@ await sdk.votes.annotate(voteId, {
   auditHash,
 });
 
-return Response.json({ ok: true, voteId });
+return Response.json({ ok: true, ballotId });
 ```
 
 ### Audit fields on votes (via SDK)
@@ -318,14 +321,14 @@ The SDK writes these into a core-managed `vote_annotations` table (or extra colu
 ```tsx
 import { startAuthentication } from '@simplewebauthn/browser';
 
-export function BiometricVoteButton({ votingId, choice }: SlotProps) {
+export function BiometricVoteButton({ votingId, itemChoices }: SlotProps) {  // signs the whole ballot
   if (typeof window === 'undefined' || !window.PublicKeyCredential) return null;
 
   return (
     <button onClick={async () => {
       const opts = await fetch('/api/modules/passkey/vote/options', {
         method: 'POST',
-        body: JSON.stringify({ votingId, choice }),
+        body: JSON.stringify({ votingId, itemChoices }),
       }).then(r => r.json());
 
       const assertion = await startAuthentication(opts);
@@ -377,7 +380,7 @@ In all cases, the email-confirmation flow remains the baseline and is fully suff
 §14a requires identification of the voter and integrity of the vote.
 
 - **Identification**: WebAuthn binds the assertion to a hardware-backed credential previously registered to a verified user account. The assertion includes `userVerification: 'required'`, so the device must perform local biometric or PIN check before signing. This is materially stronger than possession of an email mailbox.
-- **Integrity**: The signed challenge **encodes the vote intent** (`votingId|choice|userId|timestamp`). Any tampering with the choice between the user's intent and the server invalidates the signature.
+- **Integrity**: The signed challenge **encodes the whole-ballot intent** (`votingId|ballotHash|userId|timestamp`, where `ballotHash` commits to every item choice). Any tampering with any item choice between the user's intent and the server invalidates the signature.
 - **Non-repudiation**: The signature plus public key allow recomputing and verifying the proof at any later point in time.
 - **PDF zápisnica audit section** shows, per voter:
   - Voter identifier (name, unit, choice)
@@ -426,7 +429,7 @@ Module reads these on `onAppStart`; missing values cause `onAppStart` to log a c
 - [ ] `BiometricVoteButton` appears in `voting.before` only when module is active and browser supports WebAuthn
 - [ ] Vote signed via passkey has `verifiedByBiometrics: true` and matching audit fields visible via SDK read
 - [ ] Captured challenge cannot be reused: second `/vote/verify` call with the same challenge returns 400
-- [ ] Captured challenge for choice A cannot be replayed for choice B: hash mismatch rejects the request
+- [ ] A captured ballot challenge cannot be replayed with different item choices: the `ballotHash` mismatch rejects the request
 - [ ] Authenticator counter regression (newCounter ≤ stored) returns 400 and logs a "cloned authenticator" warning
 - [ ] PDF zápisnica renders 🔒 badge with hash and device label for biometrically verified votes; ✉️ badge for the rest
 - [ ] WebAuthn-unsupported browser falls back silently to standard email confirmation; no error shown
@@ -449,3 +452,4 @@ Module reads these on `onAppStart`; missing values cause `onAppStart` to log a c
 - Open question: cross-device passkey sync (iCloud Keychain, Google Password Manager) — works out of the box at the WebAuthn layer, but document the UX so admins understand "the device label may not match the originally registered device." No code change needed.
 - Open question: should we record `aaguid` → human-readable model name via the FIDO MDS feed? Nice for the zápisnica but adds an external dependency. Defer.
 - The grant's T1 scope also names recovery codes + printable backup, a role/permission redesign, and §14a edge-case integration tests; these are tracked as T1 work but kept out of this module spec's current scope deliberately.
+- **Multi-item votings (BYT-20260609-008):** one passkey assertion signs the whole ballot via `ballotHash`; `/vote/verify` writes one ballot + a `ballot_item_votes` row per item from the single signature. The `voting.before` slot button receives `itemChoices`, not a single `choice`.
