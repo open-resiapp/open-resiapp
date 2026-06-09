@@ -6,7 +6,7 @@ Slovak HOA (housing community) management app.
 - Next.js App Router + TypeScript + Tailwind CSS v4
 - PostgreSQL + Drizzle ORM — migrations in `drizzle/migrations/`
 - NextAuth v5 (beta.30) — auth
-- next-intl — i18n, locales: `sk` (default), `en`
+- next-intl — i18n, locales: `sk` (default), `en`, `cs`
 - Docker + Caddy — deployment
 
 ## Structure
@@ -28,6 +28,7 @@ drizzle/
 messages/
   sk.json           # Slovak strings (default)
   en.json
+  cs.json           # Czech
 ```
 
 ## Rules
@@ -35,7 +36,7 @@ messages/
 ### i18n
 - ALL user-facing strings via `useTranslations()` / `getTranslations()`
 - Never hardcode text in components
-- Add new keys to both `sk.json` and `en.json`
+- Add new keys to ALL locale catalogs: `sk.json`, `en.json`, `cs.json` (cs is a live, routed locale — see `src/i18n/routing.ts`). Czech localizes the HOA legal basis to Czech law (§1187 zák. 89/2012 Sb.); SK-specific community types (urbár, hunting, fishing) keep their Slovak act references unchanged.
 - Email copy: any new function in `src/lib/email.ts` sources strings via `getTranslations({ locale, namespace: "Email" })` against `messages/{locale}.json`, and accepts an optional `locale?: string` param (default `routing.defaultLocale`). Pre-existing SK-hardcoded emails (`sendPasswordReset`, `sendPairingInvitation`, `sendVoteConfirmation`) are tech debt — do not copy that pattern.
 
 ### Database
