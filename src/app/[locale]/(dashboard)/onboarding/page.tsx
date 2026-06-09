@@ -19,7 +19,7 @@ interface OnboardingStatus {
 }
 
 const STEPS: { key: StepKey; href: React.ComponentProps<typeof Link>["href"] }[] = [
-  { key: "community", href: { pathname: "/settings", query: { tab: "building" } } },
+  { key: "community", href: { pathname: "/settings", query: { tab: "structure" } } },
   { key: "units", href: "/admin/import" },
   { key: "owners", href: "/settings/registration-qr" },
   { key: "posts", href: "/board" },

@@ -7,31 +7,37 @@ import { useSearchParams } from "next/navigation";
 import { hasPermission } from "@/lib/permissions";
 import type { UserRole } from "@/types";
 import SettingsTabs, { type SettingsTab } from "@/components/settings/SettingsTabs";
-import BuildingInfoTab from "@/components/settings/BuildingInfoTab";
+import StructureTab from "@/components/settings/StructureTab";
 import BrandingTab from "@/components/settings/BrandingTab";
-import EntrancesTab from "@/components/settings/EntrancesTab";
-import FlatsTab from "@/components/settings/FlatsTab";
 import VotingSettingsTab from "@/components/settings/VotingSettingsTab";
 import ExternalConnectionsTab from "@/components/settings/ExternalConnectionsTab";
 import BoardMembersTab from "@/components/settings/BoardMembersTab";
 
 const VALID_TABS: ReadonlyArray<SettingsTab> = [
-  "building",
+  "structure",
   "branding",
-  "entrances",
-  "flats",
   "voting",
   "boardMembers",
   "connections",
 ];
 
+// RES-20260609-002: building/entrances/flats merged into "structure".
+// Map the old tab values so existing bookmarks and the onboarding link
+// still land on the right tab.
+const LEGACY_TAB_ALIASES: Record<string, SettingsTab> = {
+  building: "structure",
+  entrances: "structure",
+  flats: "structure",
+};
+
 export default function SettingsPage() {
   const { data: session } = useSession();
   const t = useTranslations("Settings");
   const searchParams = useSearchParams();
+  const rawTab = searchParams.get("tab");
+  const resolvedTab = rawTab ? (LEGACY_TAB_ALIASES[rawTab] ?? rawTab) : null;
   const initialTab =
-    (VALID_TABS.find((x) => x === searchParams.get("tab")) as SettingsTab) ??
-    "building";
+    (VALID_TABS.find((x) => x === resolvedTab) as SettingsTab) ?? "structure";
   const [activeTab, setActiveTab] = useState<SettingsTab>(initialTab);
   const [alertCount, setAlertCount] = useState(0);
 
@@ -72,10 +78,8 @@ export default function SettingsPage() {
         showBranding={hasPermission(role, "manageSettings")}
       />
 
-      {activeTab === "building" && <BuildingInfoTab canEdit={canEdit} />}
+      {activeTab === "structure" && <StructureTab canEdit={canEdit} />}
       {activeTab === "branding" && canEdit && <BrandingTab canEdit={canEdit} />}
-      {activeTab === "entrances" && <EntrancesTab canEdit={canEdit} />}
-      {activeTab === "flats" && <FlatsTab canEdit={canEdit} />}
       {activeTab === "voting" && <VotingSettingsTab canEdit={canEdit} />}
       {activeTab === "boardMembers" && <BoardMembersTab canEdit={canEdit} />}
       {activeTab === "connections" && canEdit && <ExternalConnectionsTab />}
