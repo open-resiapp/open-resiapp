@@ -1,12 +1,12 @@
 ---
 spec_id: BYT-20260512-006
 title: "Document upload (HOA documents library)"
-status: in_progress
+status: implemented
 created: 2026-05-12
-updated: 2026-06-08
+updated: 2026-06-09
 author: Filip
 owner: Filip
-last_verified: 2026-06-08
+last_verified: 2026-06-09
 project_type: node
 depends_on: []
 related_handoffs: []
