@@ -260,6 +260,7 @@ export default function FlatsTab({ canEdit }: FlatsTabProps) {
             <div key={entranceName}>
               <h3 className="text-base font-semibold text-gray-700 mb-2 dark:text-gray-200">{entranceName}</h3>
               <div className="bg-white rounded-2xl shadow-sm overflow-hidden dark:bg-gray-800 dark:shadow-black/40">
+                <div className="overflow-x-auto">
                 <table className="w-full text-base">
                   <thead>
                     <tr className="border-b border-gray-200 bg-gray-50 dark:border-gray-700 dark:bg-gray-900">
@@ -299,6 +300,7 @@ export default function FlatsTab({ canEdit }: FlatsTabProps) {
                     ))}
                   </tbody>
                 </table>
+                </div>
               </div>
             </div>
           ))}

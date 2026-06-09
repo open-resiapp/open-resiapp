@@ -59,7 +59,7 @@ export default function PostCard({
           : "border-gray-200 dark:border-gray-700"
       }`}
     >
-      <div className="flex items-start justify-between gap-4 mb-3">
+      <div className="flex items-start justify-between gap-3 mb-3 flex-wrap">
         <div className="flex items-center gap-2 flex-wrap">
           {isPinned && (
             <span className="text-sm font-medium text-blue-600 dark:text-blue-400">
@@ -79,7 +79,7 @@ export default function PostCard({
         </div>
 
         {isAdmin && (
-          <div className="flex items-center gap-2 flex-shrink-0">
+          <div className="flex items-center gap-2 flex-wrap">
             <button
               onClick={onTogglePin}
               className="px-3 py-1.5 text-sm font-medium text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors dark:text-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600"

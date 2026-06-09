@@ -89,3 +89,13 @@ body {
     font-size: 16px !important;
   }
 }
+
+/* iOS Safari date/time inputs carry an intrinsic min-width that overflows a
+   constrained (w-full / flex) container. Let them shrink to the box so they
+   never push past the screen edge. */
+input[type="date"],
+input[type="datetime-local"],
+input[type="time"] {
+  min-width: 0;
+  max-width: 100%;
+}
