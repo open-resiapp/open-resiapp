@@ -22,11 +22,13 @@ const labelCls =
 export default function DocumentUploadForm({
   entityId,
   projects = [],
+  lockedProjectId,
   onUploaded,
   onCancel,
 }: {
   entityId: string;
   projects?: { id: string; title: string }[];
+  lockedProjectId?: string;
   onUploaded: () => void;
   onCancel: () => void;
 }) {
@@ -82,7 +84,8 @@ export default function DocumentUploadForm({
       fd.append("audience", audience);
       if (name.trim()) fd.append("name", name.trim());
       if (retainUntil) fd.append("retainUntil", retainUntil);
-      if (projectId) fd.append("projectId", projectId);
+      const pid = lockedProjectId ?? projectId;
+      if (pid) fd.append("projectId", pid);
       const res = await fetch("/api/documents", { method: "POST", body: fd });
       if (!res.ok) throw new Error();
       onUploaded();
@@ -164,7 +167,7 @@ export default function DocumentUploadForm({
         </p>
       </div>
 
-      {projects.length > 0 && (
+      {!lockedProjectId && projects.length > 0 && (
         <div>
           <label className={labelCls}>{t("form.project")}</label>
           <select

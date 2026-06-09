@@ -103,6 +103,7 @@
     },
     "projects": {
       "new": "New project",
+      "addDocument": "Add document",
       "empty": "No projects",
       "open": "Open",
       "close": "Close",

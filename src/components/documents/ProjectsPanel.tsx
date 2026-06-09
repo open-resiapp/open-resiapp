@@ -10,6 +10,7 @@ import {
   type DocumentProjectStatus,
 } from "@/lib/documents";
 import DocumentCard, { type DocumentItem } from "./DocumentCard";
+import DocumentUploadForm from "./DocumentUploadForm";
 
 export interface ProjectItem {
   id: string;
@@ -36,10 +37,12 @@ const labelCls =
 export default function ProjectsPanel({
   projects,
   canManage,
+  entityId,
   onChanged,
 }: {
   projects: ProjectItem[];
   canManage: boolean;
+  entityId: string | null;
   onChanged: () => void;
 }) {
   const t = useTranslations("Documents");
@@ -79,6 +82,7 @@ export default function ProjectsPanel({
               key={p.id}
               project={p}
               canManage={canManage}
+              entityId={entityId}
               onChanged={onChanged}
             />
           ))}
@@ -233,10 +237,12 @@ interface ProjectComment {
 function ProjectRow({
   project,
   canManage,
+  entityId,
   onChanged,
 }: {
   project: ProjectItem;
   canManage: boolean;
+  entityId: string | null;
   onChanged: () => void;
 }) {
   const t = useTranslations("Documents");
@@ -255,6 +261,8 @@ function ProjectRow({
   const [editingFin, setEditingFin] = useState(false);
   const [finCost, setFinCost] = useState("");
   const [finNote, setFinNote] = useState("");
+  const [docEdit, setDocEdit] = useState(false);
+  const [showUpload, setShowUpload] = useState(false);
   const [loading, setLoading] = useState(false);
   const [commentText, setCommentText] = useState("");
   const [posting, setPosting] = useState(false);
@@ -344,6 +352,12 @@ function ProjectRow({
       setEditingFin(false);
       onChanged();
     }
+  }
+
+  async function deleteDoc(docId: string) {
+    if (!confirm(t("confirmDelete"))) return;
+    const res = await fetch(`/api/documents/${docId}`, { method: "DELETE" });
+    if (res.ok) await load();
   }
 
   async function del() {
@@ -456,11 +470,54 @@ function ProjectRow({
           )}
 
           <div className="space-y-3">
+            <div className="flex items-center justify-between gap-2">
+              <h4 className="text-sm font-semibold text-gray-900 dark:text-gray-100">
+                📄 {t("documentsTab")}
+              </h4>
+              {canManage && (
+                <button
+                  onClick={() => {
+                    setDocEdit((v) => !v);
+                    setShowUpload(false);
+                  }}
+                  className="text-xs text-blue-600 hover:underline dark:text-blue-300"
+                >
+                  {docEdit ? tCommon("close") : tCommon("edit")}
+                </button>
+              )}
+            </div>
+
+            {docEdit &&
+              (showUpload && entityId ? (
+                <DocumentUploadForm
+                  entityId={entityId}
+                  lockedProjectId={project.id}
+                  onUploaded={() => {
+                    setShowUpload(false);
+                    load();
+                  }}
+                  onCancel={() => setShowUpload(false)}
+                />
+              ) : (
+                <button
+                  onClick={() => setShowUpload(true)}
+                  className="text-sm font-medium text-blue-600 hover:underline dark:text-blue-300"
+                >
+                  + {t("projects.addDocument")}
+                </button>
+              ))}
+
             {loading ? (
               <p className="text-sm text-gray-500 dark:text-gray-400">…</p>
             ) : docs && docs.length > 0 ? (
               docs.map((d) => (
-                <DocumentCard key={d.id} doc={d} canManage={false} onDelete={() => {}} readOnly />
+                <DocumentCard
+                  key={d.id}
+                  doc={d}
+                  canManage={docEdit && canManage}
+                  onDelete={() => deleteDoc(d.id)}
+                  readOnly={!docEdit}
+                />
               ))
             ) : (
               <p className="text-sm text-gray-500 dark:text-gray-400">{t("empty")}</p>

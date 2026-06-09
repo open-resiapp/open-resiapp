@@ -103,6 +103,7 @@
     },
     "projects": {
       "new": "Nový projekt",
+      "addDocument": "Pridať dokument",
       "empty": "Žiadne projekty",
       "open": "Otvoriť",
       "close": "Zavrieť",

@@ -179,6 +179,7 @@ export default function DocumentsPage() {
         <ProjectsPanel
           projects={projectsData?.projects ?? []}
           canManage={projectsData?.canManage ?? false}
+          entityId={projectsData?.entityId ?? null}
           onChanged={fetchAll}
         />
       )}
