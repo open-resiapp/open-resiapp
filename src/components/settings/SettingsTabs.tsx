@@ -4,7 +4,7 @@ import { useTranslations } from "next-intl";
 import { Link, usePathname } from "@/i18n/navigation";
 import { useCommunityKinds } from "@/hooks/useCommunityKinds";
 
-export type SettingsTab = "building" | "entrances" | "flats" | "voting" | "boardMembers" | "connections";
+export type SettingsTab = "building" | "branding" | "entrances" | "flats" | "voting" | "boardMembers" | "connections";
 
 interface SettingsTabsProps {
   activeTab: SettingsTab | null;
@@ -17,9 +17,11 @@ interface SettingsTabsProps {
   // RES-20260609-001: Import + the onboarding guide moved out of the
   // top-level nav and live here as link-style tabs.
   showImport?: boolean;
+  // BYT-20260512-008: white-label logo tab — admin (manageSettings) only.
+  showBranding?: boolean;
 }
 
-const tabs: SettingsTab[] = ["building", "entrances", "flats", "voting", "boardMembers", "connections"];
+const baseTabs: SettingsTab[] = ["building", "entrances", "flats", "voting", "boardMembers", "connections"];
 
 export default function SettingsTabs({
   activeTab,
@@ -28,6 +30,7 @@ export default function SettingsTabs({
   showModules = false,
   showRegistrationQr = false,
   showImport = false,
+  showBranding = false,
 }: SettingsTabsProps) {
   const t = useTranslations("Settings");
   const tRoot = useTranslations();
@@ -46,12 +49,18 @@ export default function SettingsTabs({
 
   const tabLabels: Record<SettingsTab, string> = {
     building: rootTabLabel,
+    branding: t("tabBranding"),
     entrances: middleTabLabel,
     flats: leafTabLabel,
     voting: t("tabVoting"),
     boardMembers: t("tabBoardMembers"),
     connections: t("tabConnections"),
   };
+
+  // Branding sits next to "building" but only for admins (manageSettings).
+  const tabs: SettingsTab[] = showBranding
+    ? ["building", "branding", "entrances", "flats", "voting", "boardMembers", "connections"]
+    : baseTabs;
 
   const baseClass =
     "whitespace-nowrap py-3 px-1 border-b-2 text-base font-medium transition-colors relative";

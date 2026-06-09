@@ -44,6 +44,7 @@ export default function Sidebar({
   const pathname = usePathname();
   const [buildingName, setBuildingName] = useState<string | null>(null);
   const [templateSlug, setTemplateSlug] = useState<string | null>(null);
+  const [logoUrl, setLogoUrl] = useState<string | null>(null);
   const [enabledModules, setEnabledModules] = useState<Set<string> | null>(null);
 
   useEffect(() => {
@@ -52,6 +53,19 @@ export default function Sidebar({
       .then((data) => {
         if (data?.name) setBuildingName(data.name);
         if (data?.templateSlug) setTemplateSlug(data.templateSlug);
+      })
+      .catch(() => {});
+  }, []);
+
+  // BYT-20260512-008: white-label logo. Built from the branding version token
+  // so a new upload busts the cached image.
+  useEffect(() => {
+    fetch("/api/branding")
+      .then((r) => (r.ok ? r.json() : null))
+      .then((data) => {
+        if (data?.hasLogo && data?.v) {
+          setLogoUrl(`/api/branding/asset/logo?v=${encodeURIComponent(data.v)}`);
+        }
       })
       .catch(() => {});
   }, []);
@@ -98,6 +112,16 @@ export default function Sidebar({
         }`}
       >
         <div className="p-6 border-b border-gray-200 dark:border-gray-800">
+          {logoUrl && (
+            <div className="mb-3">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={logoUrl}
+                alt={buildingName || t("appName")}
+                className="h-10 w-auto max-w-[180px] object-contain"
+              />
+            </div>
+          )}
           <h2 className="text-lg font-bold text-blue-600 dark:text-blue-400">{buildingName || t("appName")}</h2>
           <p className="text-sm text-gray-500 mt-1 dark:text-gray-400">{subtitle}</p>
         </div>

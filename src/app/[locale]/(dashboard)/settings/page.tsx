@@ -8,6 +8,7 @@ import { hasPermission } from "@/lib/permissions";
 import type { UserRole } from "@/types";
 import SettingsTabs, { type SettingsTab } from "@/components/settings/SettingsTabs";
 import BuildingInfoTab from "@/components/settings/BuildingInfoTab";
+import BrandingTab from "@/components/settings/BrandingTab";
 import EntrancesTab from "@/components/settings/EntrancesTab";
 import FlatsTab from "@/components/settings/FlatsTab";
 import VotingSettingsTab from "@/components/settings/VotingSettingsTab";
@@ -16,6 +17,7 @@ import BoardMembersTab from "@/components/settings/BoardMembersTab";
 
 const VALID_TABS: ReadonlyArray<SettingsTab> = [
   "building",
+  "branding",
   "entrances",
   "flats",
   "voting",
@@ -67,9 +69,11 @@ export default function SettingsPage() {
         showModules={hasPermission(role, "manageSettings")}
         showRegistrationQr={hasPermission(role, "manageUsers")}
         showImport={hasPermission(role, "manageSettings")}
+        showBranding={hasPermission(role, "manageSettings")}
       />
 
       {activeTab === "building" && <BuildingInfoTab canEdit={canEdit} />}
+      {activeTab === "branding" && canEdit && <BrandingTab canEdit={canEdit} />}
       {activeTab === "entrances" && <EntrancesTab canEdit={canEdit} />}
       {activeTab === "flats" && <FlatsTab canEdit={canEdit} />}
       {activeTab === "voting" && <VotingSettingsTab canEdit={canEdit} />}

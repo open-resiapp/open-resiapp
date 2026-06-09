@@ -18,6 +18,11 @@ export const metadata: Metadata = {
   description: "Správa bytového spoločenstva",
   icons: {
     icon: "/icon.svg",
+    // BYT-20260512-008: iOS home-screen icon. The asset route serves the
+    // instance's custom apple-touch icon when set, else the bundled default,
+    // so this link is always valid. (Already-installed devices keep their
+    // baked-in icon until reinstall — an OS limitation.)
+    apple: "/api/branding/asset/apple",
   },
   manifest: "/api/manifest",
 };

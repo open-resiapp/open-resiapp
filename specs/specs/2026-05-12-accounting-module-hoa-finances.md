@@ -3,10 +3,10 @@ spec_id: BYT-20260512-002
 title: "Accounting module for SVB chairman/treasurer to track HOA finances"
 status: spec
 created: 2026-05-12
-updated: 2026-05-12
+updated: 2026-06-09
 author: byt-app
 owner: byt-app
-last_verified: 2026-05-12
+last_verified: 2026-06-09
 project_type: node
 depends_on: []
 related_handoffs: []
@@ -136,7 +136,7 @@ Strategic wedge vs. incumbents (DOMUS, SSB2000, DOMSYS): we are the only product
 - Bi-directional link: each accounting record affected by a vote stores `voting_resolution_id`; vote detail page shows resulting financial impact.
 
 **Permissions & roles**
-- Extend `membershipRoleEnum`: add `treasurer` (write predpis/payments/expenses, no governance), keep `chairman` (approval + read), keep `owner` (read-own).
+- Add `treasurer` (pokladník) to the **board-role model** (`BoardMemberRole` — the model that already defines `chairman`), **not** `membershipRoleEnum` (verified 2026-06-09: enum = admin/owner/tenant/vote_counter/caretaker, no chairman). Treasurer: write predpis/payments/expenses, no governance. `chairman`: approval + read. `owner`: read-own.
 - Server-side check on every server action + API route.
 
 **GDPR — debtor disclosure (SK)**
@@ -282,7 +282,7 @@ PDF mirrors `VotingMinutesPDF.tsx` structure: header (SVB name, period, owner), 
 
 ### Permissions
 
-Extend `membershipRoleEnum` with `treasurer`. Verify if `chairman` already exists in current enum; add if not. Server-side guard on every server action + API route under `modules/accounting/`. Owner read-own check enforced at query level (always filtered by `unit_id IN (memberships WHERE user_id = ?)`).
+Add `treasurer` (pokladník) to the board-role model (`BoardMemberRole` in `src/types/index.ts` + its persisted board table) — **not** `membershipRoleEnum`. Verified 2026-06-09: `membershipRoleEnum` = admin / owner / tenant / vote_counter / caretaker; `chairman` lives in `BoardMemberRole`, so `treasurer` belongs there too. Server-side guard on every server action + API route under `modules/accounting/`. Owner read-own check enforced at query level (always filtered by `unit_id IN (memberships WHERE user_id = ?)`).
 
 ### Opening-balance correction tool
 
@@ -424,6 +424,7 @@ Reuse RES-20260413-002. Per-country settings:
 - [ ] Right-to-inspect read-only view available to every owner of the dom (§11 ods. 6 SK / §1179 CZ).
 - [ ] SK debtor disclosure toggle only enables names + sumy for owners with nedoplatok ≥ 500 EUR (§9 ods. 3 zák. 182/1993).
 - [ ] Electronic delivery of vyúčtovanie requires recorded owner consent; non-consenting owners fall back to listinné doručenie.
+- [ ] Vyúčtovanie and upomienka PDFs cite the instance country's own statutes (SK §-refs vs CZ §-refs); the SK template is never reused verbatim for a CZ instance — statutory-citation content is template-aware, not naively parametrized (project rule: legally-regulated content).
 
 ### Core flows
 
@@ -440,6 +441,8 @@ Reuse RES-20260413-002. Per-country settings:
 - [ ] Vyúčtovanie wizard blocks progression if unreconciled bank lines or uncategorised invoices remain.
 - [ ] Vyúčtovanie PDF matches statutory contents (per-service skutečné náklady, přijaté zálohy, rozdíl, použitý kľúč rozúčtovania).
 - [ ] Period lock turns published year read-only; correction posts as reversal in current year.
+- [ ] Cross-period overpayment applies FIFO to the oldest open assessment across periods; leftover credit parks as a `preplatok` on the unit, not silently absorbed.
+- [ ] `allocation_basis_snapshot_json` is frozen on each assessment at publish; later edits to a unit's area / share / persons do not retro-alter already-published assessments.
 
 ### Onboarding & opening balance
 
@@ -474,6 +477,7 @@ Reuse RES-20260413-002. Per-country settings:
 - [ ] IBAN field validates MOD-97 checksum.
 - [ ] Collector email per HOA accepts inbound PDF; OCR extracts IČO/IBAN/sum/VS into `expense_inbox` row.
 - [ ] Treasurer can post inbox row as expense in ≤2 clicks.
+- [ ] Inbound collector-email attachments are virus-scanned and pass the optional per-HOA from-domain allowlist before entering `expense_inbox`; failures are quarantined, never auto-posted.
 
 ### Cash-flow projection
 
@@ -509,6 +513,28 @@ Reuse RES-20260413-002. Per-country settings:
 - [ ] Resolution `fpuo_rate_change` creates draft schedule revision visible to treasurer in &lt; 5 sec.
 - [ ] Resolution `expense_approval` creates draft expense authorisation linked to the vote.
 - [ ] Every `journal_entry` originating from a vote stores `voting_resolution_id`; vote detail page lists resulting financial impacts.
+
+### Permissions & roles
+
+- [ ] `treasurer` (pokladník) is added to the board-role model (same model as `chairman`), **not** naively to `membershipRoleEnum` — see Notes 2026-06-09 drift finding.
+- [ ] `treasurer` + `admin` can create / edit / void predpis, payments, expenses, meter readings; `chairman` and `owner` cannot post or mutate financial records.
+- [ ] `chairman` has full accounting read + approval actions (závierka, expense authorisation) but no direct ledger writes (separation of duties).
+- [ ] Owner reads are server-side scoped: every owner query is filtered by `unit_id IN (memberships WHERE user_id = ?)`; requesting another unit's karta bytu / payments returns 403, not just a hidden UI element.
+- [ ] Every server action + API route under `modules/accounting/` runs the role check before any DB read; under-privileged requests return 403.
+
+### Audit trail & data lifecycle
+
+- [ ] Append-only event log records every mutation (insert / update / void) with actor, timestamp, and before/after snapshot; no in-place field overwrite occurs without a corresponding log row.
+- [ ] Signed export bundle for kontrolná komisia reproduces the full ledger + event log and verifies tamper-evidently without DB access.
+- [ ] No hard delete anywhere — units, payments, expenses, journal lines use `archived_at` soft-delete; archiving a unit preserves its historical journal lines and assessments.
+- [ ] Opening-balance and locked-period entries cannot be voided or edited; the only correction path is a reversal posted in the current open period.
+
+### Mutable-record correction (open period)
+
+- [ ] In an open period, a mis-entered manual payment / expense / meter reading can be voided or edited; the action writes an audit-log row and re-derives affected unit balances.
+- [ ] Voiding a matched payment unallocates it from its assessments and restores each assessment's open balance.
+- [ ] A draft (unpublished) fee schedule can be discarded with no ledger side effects; a published schedule cannot be deleted — only superseded by an `effective_from` revision.
+- [ ] An owner can withdraw their own open reklamace before the response deadline; withdrawal is logged and closes the case.
 
 ### Architectural / project rules
 
@@ -565,7 +591,7 @@ Reuse RES-20260413-002. Per-country settings:
 - **2026-05-12**: Verify §1184a NOZ (or equivalent) on electronic delivery without prior consent — research could not confirm.
 - **2026-05-12**: Verify whether SK FPÚO → služby transient cover (§10 ods. 3) requires zhromaždenie approval — statute silent.
 - **2026-05-12**: Need real exported file samples from each bank before locking parsers (CAMT.053 SK, Fio CSV/JSON, VÚB ABO).
-- **2026-05-12**: `chairman` role — verify presence in current `membershipRoleEnum`; if missing, schema migration required.
+- **2026-05-12 → resolved 2026-06-09**: `chairman` is NOT in `membershipRoleEnum` (verified: enum = admin / owner / tenant / vote_counter / caretaker). It is a `BoardMemberRole` in `src/types/index.ts` (chairman / council_member / committee_member / committee_chairman). **Therefore `treasurer` (pokladník) must be added to the board-role model, NOT `membershipRoleEnum`** — Scope + Approach §Permissions corrected accordingly. Confirm whether board roles need a persisted enum/table migration for `treasurer`.
 - **2026-05-12**: PAY by square — confirm OSS Node library exists with current spec; if not, port spec ourselves (it's ~150 lines).
 - **2026-05-12**: FinStat API pricing — free tier limits unknown; ARES is free for CZ. Budget impact for SK lookup at scale.
 - **2026-05-12**: Inbound email provider — SES Inbound vs Postmark Inbound vs Mailgun. Each has different per-HOA address routing model. Pick one for first deployment.

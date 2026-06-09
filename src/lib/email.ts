@@ -1,6 +1,7 @@
 import nodemailer from "nodemailer";
 import { getTranslations } from "next-intl/server";
 import { routing } from "@/i18n/routing";
+import { getBranding, brandingLogoAbsoluteUrl } from "@/lib/branding.server";
 
 const smtpHost = process.env.SMTP_HOST;
 const smtpPort = parseInt(process.env.SMTP_PORT || "587", 10);
@@ -50,6 +51,22 @@ export function getTransporter() {
 
 export const EMAIL_FROM = emailFrom;
 
+/**
+ * BYT-20260512-008: optional white-label logo header for transactional emails.
+ * Returns an <img> block (absolute URL — mail clients fetch off-session) when
+ * the instance has a logo, else "". Never throws into the mail path.
+ */
+async function brandingEmailHeader(): Promise<string> {
+  try {
+    const branding = await getBranding();
+    if (!branding) return "";
+    const url = brandingLogoAbsoluteUrl(branding.branding.v);
+    return `<div style="text-align: center; margin-bottom: 24px;"><img src="${url}" alt="" style="max-height: 48px; max-width: 220px; height: auto;" /></div>`;
+  } catch {
+    return "";
+  }
+}
+
 export async function sendPasswordReset(params: {
   recipientEmail: string;
   userName: string;
@@ -64,8 +81,10 @@ export async function sendPasswordReset(params: {
     return false;
   }
 
+  const logoHeader = await brandingEmailHeader();
   const html = `
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+      ${logoHeader}
       <h2 style="color: #1d4ed8;">Obnovenie hesla</h2>
       <p>Vážený/á <strong>${params.userName}</strong>,</p>
       <p>Dostali sme žiadosť o obnovenie vášho hesla. Kliknutím na odkaz nižšie si nastavíte nové heslo:</p>
@@ -116,8 +135,10 @@ export async function sendPairingInvitation(params: {
     return false;
   }
 
+  const logoHeader = await brandingEmailHeader();
   const html = `
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+      ${logoHeader}
       <h2 style="color: #1d4ed8;">Pozvánka na prepojenie</h2>
       <p>Boli ste pozvaní na prepojenie s bytovým domom <strong>${params.buildingName}</strong>.</p>
 
