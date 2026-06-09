@@ -76,3 +76,16 @@ body {
   font-size: 16px;
   @apply bg-white text-gray-900 dark:bg-gray-900 dark:text-gray-100;
 }
+
+/* iOS Safari auto-zooms the page when you focus an input/select/textarea whose
+   font-size is < 16px. Several compact controls use Tailwind text-sm/text-xs
+   (14/12px) — force every form control to 16px on small screens so focusing
+   never triggers the zoom. `!important` beats the utility classes; desktop
+   (>640px) keeps the smaller sizing. */
+@media (max-width: 640px) {
+  input,
+  select,
+  textarea {
+    font-size: 16px !important;
+  }
+}
