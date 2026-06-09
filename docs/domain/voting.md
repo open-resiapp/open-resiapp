@@ -1,7 +1,7 @@
 ---
 subsystem: voting
-last_updated: 2026-05-18
-updated_by: filipvnencak (via /domain-extract)
+last_updated: 2026-06-09
+updated_by: filipvnencak (mandate reconciliation — NLnet T-challenge #5)
 ---
 
 ## Mental model
@@ -25,11 +25,29 @@ smartphones and are afraid of breaking something.
   passkey assertion). A merely-sent email is not capture.
 - A paper vote always has an attached photograph of the signed ballot.
   Paper without photo must never be accepted.
-- Mandates (proxy or delegated voting) do not exist in this system.
-  Delegation is not legally defensible at the level required, so the
-  per-share input model is used instead: a missing co-owner's share
-  is simply uncast, and the unit-level resolution rule handles it.
-  Absence of a forgeable delegation artefact is itself a legal feature.
+- Forgeable digital delegation does not exist: there is no in-app
+  "vote on behalf of another owner" toggle, and a purely-digital proxy
+  is never accepted. Its absence is a deliberate legal feature.
+- Co-owners of one unit are handled by the per-share input model, not by
+  a mandate: a missing co-owner's share is simply uncast and the
+  unit-level resolution rule handles it.
+- A mandate (one owner authorising a representative to cast their share)
+  exists ONLY as a notarised paper artefact re-bound to the digital
+  ballot. The system emits a deterministic QR-encoded mandate document;
+  the owner signs it on paper with a notarised signature in person; the
+  notarised paper is bound back to a specific (voting, owner,
+  representative) before the representative's vote is recorded; the
+  representative is then the caster of record for that share. The QR
+  payload carries no server secret (same external-verifiability rule as
+  audit artefacts). Mandates are never chained — a representative cannot
+  sub-delegate (forbidden by §14a). This is the legally-defensible
+  representation path under §14a zák. 182/1993 Z.z. (SK) and §1206/§1210
+  zák. 89/2012 Sb. (CZ); the `mod_voting_mandates` table already models
+  it (from-owner, to-owner, paper-document confirmation, admin
+  verification). The non-forgeable, in-person-notarised form is what
+  makes it defensible — a purely digital delegation artefact would not be.
+  See the notarised-mandate spec (BYT-20260609-004); exact statutory
+  mechanics are confirmed by the T9 independent legal opinions.
 - A closed voting's votes are immutable. Photos can be replaced when a
   dispute is logged; choices cannot.
 - A voting is never deleted once active. Termination is via status
@@ -90,7 +108,11 @@ smartphones and are afraid of breaking something.
 - Vote dispute — flagged on the vote row with a note. Resolved by photo
   correction (paper) or admin annotation (electronic); never resolved
   by silent deletion.
-- Mandate granted — does not exist. No counterpart.
+- Mandate granted ↔ mandate revoked. A notarised paper mandate is bound
+  to a (voting, owner, representative); the owner can revoke it before the
+  representative's vote is recorded, and revocation is itself an audited
+  event. A purely-digital proxy still has no counterpart because it does
+  not exist.
 
 ## Edge cases
 - Confusing `abstain` (explicit choice) with silence (non-voter). They
@@ -121,6 +143,14 @@ smartphones and are afraid of breaking something.
 - Forgetting that admin / owner / chairman are all valid voting
   creators. Code that hard-codes `role === 'admin'` blocks legitimate
   owner-initiated and chairman-initiated votings.
-- Treating mandates as a planned feature. They are not coming back.
-  Designs that assume "we'll add delegation later" must instead lean
-  on the per-share input model.
+- Conflating the two representation mechanisms. Co-owners of one unit
+  use the per-share input model (each casts their own share); an owner
+  authorising a *different* person uses the notarised paper mandate.
+  These are orthogonal — do not collapse them.
+- Implementing a mandate as a forgeable digital proxy. The mandate is
+  legally-defensible only as a notarised paper artefact (deterministic QR
+  document, in-person notarised signature) re-bound to the ballot. A
+  database row flipped by an admin with no notarised-paper evidence is
+  not a valid mandate.
+- Chaining mandates. A representative holding a mandate cannot
+  sub-delegate it to a third person — forbidden by §14a.

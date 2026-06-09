@@ -30,7 +30,10 @@ import {
 // Public READS of the bytes live in /api/branding/asset/[name]; this route is
 // the admin-gated management surface.
 
-type Gate = { session: NonNullable<Awaited<ReturnType<typeof auth>>> } | { error: NextResponse };
+// Success carries no payload — callers only branch on the error. (Deriving a
+// type from `auth`'s return is unsafe: it's overloaded, and ReturnType picks
+// the middleware overload, not Session.)
+type Gate = { ok: true } | { error: NextResponse };
 
 async function requireAdmin(): Promise<Gate> {
   const session = await auth();
@@ -40,7 +43,7 @@ async function requireAdmin(): Promise<Gate> {
   if (!hasPermission(session.user.role as UserRole, "manageSettings")) {
     return { error: NextResponse.json({ error: "Nemáte oprávnenie" }, { status: 403 }) };
   }
-  return { session };
+  return { ok: true };
 }
 
 export async function GET() {

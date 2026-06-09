@@ -26,7 +26,7 @@ confirmation emails) from core into a **free bundled module** under
 documents, notifications); voting becomes optional and opt-in. The
 module ships pre-installed and enabled for housing kinds; non-housing
 communities (street, playground, garden, garage) can enable it
-explicitly. The premium passkey voting module (RES-20260428-003)
+explicitly. The passkey voting module (RES-20260428-003)
 extends this base module rather than the core.
 
 ## Scope
@@ -58,7 +58,7 @@ extends this base module rather than the core.
   behind a separate "purge voting data" operator action on the admin API.
 - Cross-module event surface: the module emits `voting.created`,
   `voting.opened`, `voting.closed`, `vote.cast`, `vote.disputed` via
-  `sdk.events.emit` so the premium passkey module (RES-20260428-003) and
+  `sdk.events.emit` so the passkey module (RES-20260428-003) and
   any future module (e.g. analytics, notifications) can subscribe.
 
 **Out of scope:**
@@ -70,7 +70,7 @@ extends this base module rather than the core.
 - Replacing the existing UI/UX of the voting screens — the move is
   technical, the screens stay visually identical (only their import
   paths change).
-- A premium passkey integration — that ships as RES-20260428-003 and
+- A passkey integration — that ships as RES-20260428-003 and
   consumes this module's events.
 - Marketplace listing, paid module flow, or per-tenant licensing — voting
   is bundled and free.
@@ -248,7 +248,7 @@ sdk.events.emit('vote.cast',      { voteId, votingId, ownerId, choice });
 sdk.events.emit('vote.disputed',  { voteId, reason });
 ```
 
-The premium passkey module subscribes to `vote.cast` (or, more
+The passkey module subscribes to `vote.cast` (or, more
 precisely, to a pre-cast variant — tracked in RES-20260428-003) to
 attach a hardware-bound proof. Future modules (analytics, board summary,
 audit export) subscribe without modifying this spec.
@@ -323,7 +323,7 @@ implementation.
 - [ ] SK and CZ voting rule engines (`voting-rules.ts`) produce
       identical outputs after the move for a frozen test corpus
       (snapshot tests carried over from core unchanged).
-- [ ] The premium passkey spec (RES-20260428-003) compiles against this
+- [ ] The passkey spec (RES-20260428-003) compiles against this
       module's published event payloads without modification — verified
       by a contract test that subscribes to `vote.cast` and asserts the
       payload type.
@@ -346,7 +346,7 @@ implementation.
     `entityId` scope semantics post-entity-refactor.
   - BYT-20260413-003 (Czech rules) — the rule engine moves verbatim;
     no behavioural changes.
-- Direct dependents: RES-20260428-003 (passkey, premium) consumes the
+- Direct dependents: RES-20260428-003 (passkey) consumes the
   events emitted here.
 - The cloud platform (`open-resiapp-cloud`) treats the voting module as
   always-bundled for housing tenants and gates the passkey extension

@@ -32,7 +32,7 @@ Allow a closed voting to be exported as a self-contained, cryptographically sign
 
 **In scope**
 - ZIP bundle export from a closed voting's detail page (admin-only action).
-- Bundle contents: `manifest.json`, `votes.json`, `result.json`, `merkle-root.txt`, `signature.sig`, `verify.md`. (No `mandates.json` — mandates are removed from the voting model per `docs/domain/voting.md`; delegation is replaced by the per-share input model.)
+- Bundle contents: `manifest.json`, `votes.json`, `result.json`, `merkle-root.txt`, `signature.sig`, `verify.md`, plus `mandates.json` **when the voting has any notarised mandate** (see Design decision #4 — reconciled with `docs/domain/voting.md` 2026-06-09 and the notarised-mandate workflow BYT-20260609-004). Co-owner shares remain a per-share-input concern, not a mandate.
 - Merkle tree over per-vote hashes (extends existing SHA-256 in `modules/voting/src/engine/index.ts:406-416`).
 - Server-side asymmetric signature (Ed25519 preferred over RSA: smaller, faster, no padding ambiguity) of `manifest.json` + merkle root.
 - Dedicated signing keypair, separate from `NEXTAUTH_SECRET`. Key rotation strategy with key id (`kid`) embedded in manifest.
@@ -219,7 +219,7 @@ All nine originally-open design questions are decided. Resolutions are folded in
 
 3. **Canonical JSON** — RFC 8785 JCS. Banned invariant: no float fields anywhere in any hashed payload (share fractions are `{num, den}`).
 
-4. **Mandates / proxies** — removed from the voting model entirely. No `mandates.json` in the bundle. Per `docs/domain/voting.md`: under the per-share input model, a missing co-owner's share is simply uncast and the unit-level resolution rule handles it. Absence of a forgeable delegation artefact is itself a legal feature.
+4. **Mandates / proxies** — *forgeable digital* proxies do not exist (that absence is a legal feature). But a **notarised paper mandate** (one owner authorising a representative, re-bound to the ballot) IS a legally-defensible artefact — the `mod_voting_mandates` table models it, and the NLnet grant commits to the full QR/notary workflow (BYT-20260609-004). Therefore: when a voting has any mandate, the bundle MUST include a `mandates.json` carrying each mandate's public-data leaf (`{votingId, fromUnitId, fromOwnerId, toOwnerId, mandateDocumentSha256, notarisedAt, verifiedByAdminId, recordedAt}`) folded into the same merkle tree, so a verifier can confirm which mandated votes were authorised and that the mandate evidence was not altered. No server secret in the leaf (same rule as ballot leaves). Co-owners of one unit remain a per-share-input concern, not a mandate. This reverses the earlier "mandates removed" stance; see `docs/domain/voting.md` (updated 2026-06-09).
 
 5. **PII in bundle** — single full-PII bundle, restricted access. Every download writes a row to `voting_bundle_downloads`; the row's UUID is embedded in the filename and in `manifest.json` so leaks trace to origin. `manifest.piiClass = "restricted"` declared up front. Phase 2 spec (deferred): pseudonymized public variant for NLnet reviewers and researchers, with a cross-commitment binding it to the canonical bundle.
 
