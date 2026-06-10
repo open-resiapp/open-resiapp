@@ -8,6 +8,8 @@ Open-source web application for managing residential apartment buildings (bytove
 
 **Self-hosted. Free. No vendor lock-in.** Deploy with one `docker compose up` command and manage your building in minutes.
 
+**Website:** [open-resi.app](https://open-resi.app) — guides on [elektronické hlasovanie SVB](https://open-resi.app/elektronicke-hlasovanie-svb/), [bytové družstvá](https://open-resi.app/elektronicke-hlasovanie-bytove-druzstvo/), [zákon 182/1993](https://open-resi.app/zakon-182-1993-hlasovanie/), and [cloud pricing](https://open-resi.app/cloud-cennik/).
+
 ## Features
 
 - **Weighted Voting** — Three methods (by share, by flat, by area), three quorum types, SHA-256 audited votes
@@ -213,6 +215,7 @@ npm run dev                 # http://localhost:3000
 
 ## Community
 
+- **[open-resi.app](https://open-resi.app)** — website, feature guides, and cloud pricing
 - **[GitHub Discussions](https://github.com/open-resiapp/open-resiapp/discussions)** — ask questions, share ideas, show your setup
 - **[Issues](https://github.com/open-resiapp/open-resiapp/issues)** — report bugs and track feature requests
 
