@@ -15,7 +15,6 @@ import type {
 } from "@/db/schema";
 import type {
   votings,
-  votes,
   mandates,
 } from "@modules/voting/src/db/schema";
 
@@ -29,7 +28,18 @@ export type Membership = InferSelectModel<typeof memberships>;
 
 export type User = InferSelectModel<typeof users>;
 export type Voting = InferSelectModel<typeof votings>;
-export type Vote = InferSelectModel<typeof votes>;
+// BYT-20260609-008: the mod_voting_votes table was dropped for the multi-item
+// ballot model. `Vote` remains as a standalone shape for the onVoteCreate
+// module hook, which is dormant until ballot-level notifications are wired.
+export interface Vote {
+  id: string;
+  votingId: string;
+  ownerId: string;
+  entityId: string;
+  choice: VoteChoice;
+  voteType: VoteType;
+  createdAt: Date;
+}
 export type Mandate = InferSelectModel<typeof mandates>;
 export type Post = InferSelectModel<typeof posts>;
 export type Document = InferSelectModel<typeof documents>;
@@ -175,4 +185,27 @@ export interface VotingResults {
    * with unitBreakdowns.
    */
   memberBreakdowns?: MemberResolution[];
+}
+
+// ── Multi-item votings (BYT-20260609-008) ──────────────
+// A voting holds an ordered list of items (resolutions); each item carries
+// its own quorumType and resolves independently. The voting itself has no
+// single pass/fail once this model is live.
+
+export interface VotingItem {
+  id: string;
+  votingId: string;
+  idx: number;
+  title: string;
+  description: string | null;
+  quorumType: QuorumType;
+  createdAt: Date;
+}
+
+/**
+ * Per-item tally: a full VotingResults plus the item it belongs to. The
+ * engine returns one of these per item; there is no voting-level result.
+ */
+export interface VotingItemResult extends VotingResults {
+  itemId: string;
 }

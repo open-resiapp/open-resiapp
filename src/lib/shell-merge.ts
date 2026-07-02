@@ -22,7 +22,7 @@ import {
   registrationTokens,
   users,
 } from "@/db/schema";
-import { mandates, votes, votings } from "@modules/voting/src/db/schema";
+import { mandates, ballots, votings } from "@modules/voting/src/db/schema";
 import { recordEntityAudit } from "@/lib/entity-audit";
 
 export class ShellMergeError extends Error {
@@ -145,15 +145,15 @@ export async function mergeShellIntoUser(
       }
     }
 
-    // Voting module (votes, mandates, votings)
+    // Voting module (ballots, mandates)
     await tx
-      .update(votes)
+      .update(ballots)
       .set({ ownerId: targetUserId })
-      .where(eq(votes.ownerId, shellUserId));
+      .where(eq(ballots.ownerId, shellUserId));
     await tx
-      .update(votes)
+      .update(ballots)
       .set({ recordedById: targetUserId })
-      .where(eq(votes.recordedById, shellUserId));
+      .where(eq(ballots.recordedById, shellUserId));
     await tx
       .update(mandates)
       .set({ fromOwnerId: targetUserId })

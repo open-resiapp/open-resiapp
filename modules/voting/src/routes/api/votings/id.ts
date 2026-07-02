@@ -4,11 +4,12 @@ import { aliasedTable, and, eq, inArray, isNull } from "drizzle-orm";
 import { auth } from "@/lib/auth";
 import { db } from "@/db";
 import { users, entities, memberships } from "@/db/schema";
-import { votings } from "@modules/voting/src/db/schema";
+import { votings, votingItems, ballots } from "@modules/voting/src/db/schema";
 import { hasPermission } from "@/lib/permissions";
 import { sendPushToAll } from "@/lib/push";
 import { dispatchHook } from "@/lib/modules/dispatch";
 import { getCommunityRoot } from "@/lib/legacy-compat";
+import { normalizeItems } from "@modules/voting/src/items";
 import type { UserRole } from "@/types";
 
 export async function GET(
@@ -31,7 +32,6 @@ export async function GET(
       status: votings.status,
       votingType: votings.votingType,
       initiatedBy: votings.initiatedBy,
-      quorumType: votings.quorumType,
       startsAt: votings.startsAt,
       endsAt: votings.endsAt,
       createdAt: votings.createdAt,
@@ -54,7 +54,14 @@ export async function GET(
     return NextResponse.json({ error: "Hlasovanie nenájdené" }, { status: 404 });
   }
 
-  return NextResponse.json(voting);
+  // BYT-20260609-008: ordered ballot items (each with its own quorumType).
+  const items = await db
+    .select()
+    .from(votingItems)
+    .where(eq(votingItems.votingId, id))
+    .orderBy(votingItems.idx);
+
+  return NextResponse.json({ ...voting, items });
 }
 
 export async function PATCH(
@@ -82,7 +89,6 @@ export async function PATCH(
   if (body.voteCounterId !== undefined) updateData.voteCounterId = body.voteCounterId;
   if (body.votingType !== undefined) updateData.votingType = body.votingType;
   if (body.initiatedBy !== undefined) updateData.initiatedBy = body.initiatedBy;
-  if (body.quorumType !== undefined) updateData.quorumType = body.quorumType;
   if (body.documentProjectId !== undefined)
     updateData.documentProjectId = body.documentProjectId || null;
   // Accept either `entityId` (canonical) or legacy `entranceId` from older
@@ -98,11 +104,56 @@ export async function PATCH(
     }
   }
 
-  const [updated] = await db
-    .update(votings)
-    .set(updateData)
-    .where(eq(votings.id, id))
-    .returning();
+  // BYT-20260609-008: optional structural edit of ballot items. Only
+  // allowed before any ballot is cast — item ids are referenced by
+  // ballot_item_votes (on delete restrict), and reshuffling resolutions
+  // mid-vote would invalidate cast choices.
+  let updated: typeof votings.$inferSelect | null | undefined;
+  if (Array.isArray(body.items)) {
+    const existingBallot = await db
+      .select({ id: ballots.id })
+      .from(ballots)
+      .where(eq(ballots.votingId, id))
+      .limit(1);
+    if (existingBallot.length > 0) {
+      return NextResponse.json(
+        { error: "Položky nie je možné upraviť po odovzdaní prvého hlasu" },
+        { status: 400 }
+      );
+    }
+
+    const normalized = normalizeItems(body, "", null);
+    if ("error" in normalized) {
+      return NextResponse.json({ error: normalized.error }, { status: 400 });
+    }
+
+    updated = await db.transaction(async (tx) => {
+      const [u] = await tx
+        .update(votings)
+        .set(updateData)
+        .where(eq(votings.id, id))
+        .returning();
+      if (!u) return null;
+      await tx.delete(votingItems).where(eq(votingItems.votingId, id));
+      await tx.insert(votingItems).values(
+        normalized.items.map((it) => ({
+          votingId: id,
+          idx: it.idx,
+          title: it.title,
+          description: it.description,
+          quorumType: it.quorumType,
+        }))
+      );
+      return u;
+    });
+  } else {
+    const [u] = await db
+      .update(votings)
+      .set(updateData)
+      .where(eq(votings.id, id))
+      .returning();
+    updated = u;
+  }
 
   if (!updated) {
     return NextResponse.json({ error: "Hlasovanie nenájdené" }, { status: 404 });

@@ -9,6 +9,7 @@ import type {
   VoteChoice,
   VoteWithOwnership,
   VoteWithShare,
+  VotingItemResult,
   VotingMethod,
   VotingResults,
 } from "@/types";
@@ -401,16 +402,93 @@ export function aggregateFlatsForVoter(
 // available to any future consumer of this module's internals.
 void mul;
 
-// ── Audit hashing (unchanged) ─────────────────────────────
+// ── Multi-item ballots (BYT-20260609-008) ─────────────────
+//
+// Per-item resolution + secretless hashing (Option B). The canonical forms
+// below MUST match migration 0046 byte-for-byte (both use UTF-8 sha256 hex):
+//
+//   ballotHash    = sha256( JCS([{itemId, choice}] sorted by itemId) )
+//   itemAuditHash = sha256( votingId|itemId|entityId|ownerId|choice|recordedAtISO )
+//
+// These take NO NEXTAUTH_SECRET (unlike the dropped legacy generateAuditHash)
+// so the audit bundle can be verified without server state (docs/domain/voting.md).
 
-export function generateAuditHash(
-  votingId: string,
-  ownerId: string,
-  flatId: string,
-  choice: string,
-  timestamp: Date
+/**
+ * Commitment over an owner's full set of item choices. Canonicalised as a
+ * JSON array sorted by itemId, each element `{"choice":…,"itemId":…}` with
+ * keys in lexicographic order and no whitespace — the whole set is what the
+ * single signature (passkey/email/paper) binds.
+ */
+export function computeBallotHash(
+  items: { itemId: string; choice: VoteChoice }[]
 ): string {
-  const secret = process.env.NEXTAUTH_SECRET || "";
-  const data = `${votingId}${ownerId}${flatId}${choice}${timestamp.toISOString()}${secret}`;
-  return createHash("sha256").update(data).digest("hex");
+  const canonical =
+    "[" +
+    [...items]
+      .sort((a, b) =>
+        a.itemId < b.itemId ? -1 : a.itemId > b.itemId ? 1 : 0
+      )
+      .map(
+        (i) =>
+          `{"choice":${JSON.stringify(i.choice)},"itemId":${JSON.stringify(
+            i.itemId
+          )}}`
+      )
+      .join(",") +
+    "]";
+  return createHash("sha256").update(canonical, "utf8").digest("hex");
+}
+
+/**
+ * Secretless per-item audit leaf. `recordedAt` is serialised via
+ * `Date.toISOString()` (ISO-8601 UTC, millisecond precision) to match the
+ * migration's `to_char(..., 'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"')`.
+ */
+export function computeItemAuditHash(input: {
+  votingId: string;
+  itemId: string;
+  entityId: string;
+  ownerId: string;
+  choice: VoteChoice;
+  recordedAt: Date;
+}): string {
+  const data = [
+    input.votingId,
+    input.itemId,
+    input.entityId,
+    input.ownerId,
+    input.choice,
+    input.recordedAt.toISOString(),
+  ].join("|");
+  return createHash("sha256").update(data, "utf8").digest("hex");
+}
+
+/**
+ * Resolve a multi-item voting: run the existing per-share / member-scoped
+ * engine independently for each item, using that item's own quorumType.
+ * Returns one VotingItemResult per item — there is no voting-level pass/fail.
+ *
+ * `votesByItem` maps itemId → the VoteWithOwnership rows cast for that item.
+ * Items absent from the map resolve on an empty vote set (no votes cast).
+ * The core `calculateResults` is reused unchanged, so a single-item voting
+ * produces byte-identical results to the legacy single-question path
+ * (guarded by scripts/voting-golden-check.ts).
+ */
+export function calculateItemResults(
+  items: { id: string; quorumType: QuorumType }[],
+  votesByItem: Map<string, VoteWithOwnership[]>,
+  method: VotingMethod = "weighted_by_share",
+  totalPossibleWeight: number = 0,
+  options: CalculateResultsOptions = {}
+): VotingItemResult[] {
+  return items.map((item) => {
+    const result = calculateResults(
+      votesByItem.get(item.id) ?? [],
+      method,
+      item.quorumType,
+      totalPossibleWeight,
+      options
+    );
+    return { ...result, itemId: item.id };
+  });
 }

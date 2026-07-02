@@ -240,14 +240,31 @@ const quorumTypeLabels: Record<QuorumType, string> = {
   all_unanimous: "Súhlas všetkých (100%)",
 };
 
-export interface VoteRowPDF {
+// BYT-20260609-008: one signed ballot per owner-share (covers all items).
+export interface BallotRowPDF {
   id: string;
   ownerName: string | null;
   flatNumber: string;
-  choice: string;
   voteType: string;
-  createdAt: string;
-  auditHash: string;
+  recordedAt: string;
+  ballotHash: string;
+}
+
+// BYT-20260609-008: per-item (resolution) result + its own vote list.
+export interface ItemVotePDF {
+  flatNumber: string;
+  ownerName: string | null;
+  choice: string;
+  itemAuditHash: string;
+}
+
+export interface ItemResultPDF {
+  idx: number;
+  title: string;
+  description: string | null;
+  quorumType: QuorumType;
+  result: VotingResults;
+  votes: ItemVotePDF[];
 }
 
 export interface MandateRowPDF {
@@ -261,7 +278,6 @@ export interface VotingPDF {
   title: string;
   votingType: string;
   initiatedBy: string;
-  quorumType: QuorumType;
   startsAt: string;
   endsAt: string;
   createdBy: { name: string } | null;
@@ -276,8 +292,10 @@ export interface BuildingPDF {
 interface VotingMinutesPDFProps {
   building: BuildingPDF;
   voting: VotingPDF;
-  results: VotingResults;
-  votes: VoteRowPDF[];
+  /** BYT-20260609-008: one section per item (resolution). */
+  items: ItemResultPDF[];
+  /** One signed ballot per owner-share (the single signature per owner). */
+  ballots: BallotRowPDF[];
   mandates: MandateRowPDF[];
   legalNotice: string | null;
   qrDataUrl: string | null;
@@ -342,8 +360,8 @@ function formatDateTime(iso: string): string {
 export default function VotingMinutesPDF({
   building: bld,
   voting,
-  results,
-  votes,
+  items,
+  ballots,
   mandates: mandateRows,
   legalNotice,
   qrDataUrl,
@@ -353,8 +371,6 @@ export default function VotingMinutesPDF({
   flatNumbersByUnitId = {},
   unitLabel = "Byt",
 }: VotingMinutesPDFProps) {
-  const multiOwnerBreakdowns =
-    results.unitBreakdowns?.filter((u) => u.hasMultipleOwners) ?? [];
   const rationaleSet = country === "cz" ? rationaleLabelsCZ : rationaleLabels;
   return (
     <Document>
@@ -391,10 +407,8 @@ export default function VotingMinutesPDF({
             </Text>
           </View>
           <View style={styles.metaRow}>
-            <Text style={styles.metaLabel}>Typ kvóra:</Text>
-            <Text style={styles.metaValue}>
-              {quorumTypeLabels[voting.quorumType as QuorumType] || voting.quorumType}
-            </Text>
+            <Text style={styles.metaLabel}>Počet bodov:</Text>
+            <Text style={styles.metaValue}>{items.length}</Text>
           </View>
           <View style={styles.metaRow}>
             <Text style={styles.metaLabel}>Obdobie:</Text>
@@ -410,113 +424,139 @@ export default function VotingMinutesPDF({
           </View>
         </View>
 
-        {/* Results */}
+        {/* Per-item (resolution) sections — each with its own quorum,
+            result, vote list and §14/§1187 co-owner breakdown. */}
+        {items.map((item) => {
+          const r = item.result;
+          const multiOwner =
+            r.unitBreakdowns?.filter((u) => u.hasMultipleOwners) ?? [];
+          return (
+            <View key={item.idx} style={styles.section}>
+              <Text style={styles.sectionTitle}>
+                {`Bod ${item.idx + 1}: ${item.title}`}
+              </Text>
+              {item.description && (
+                <Text style={{ fontSize: 9, color: "#555", marginBottom: 6 }}>
+                  {item.description}
+                </Text>
+              )}
+              <View style={styles.metaRow}>
+                <Text style={styles.metaLabel}>Typ kvóra:</Text>
+                <Text style={styles.metaValue}>
+                  {quorumTypeLabels[item.quorumType] || item.quorumType}
+                </Text>
+              </View>
+
+              <View style={styles.resultRow}>
+                <Text style={styles.resultLabel}>ZA</Text>
+                <Text style={styles.resultValue}>{r.zaPercent.toFixed(1)}%</Text>
+              </View>
+              <View style={styles.resultRow}>
+                <Text style={styles.resultLabel}>PROTI</Text>
+                <Text style={styles.resultValue}>{r.protiPercent.toFixed(1)}%</Text>
+              </View>
+              <View style={styles.resultRow}>
+                <Text style={styles.resultLabel}>ZDRŽAL SA</Text>
+                <Text style={styles.resultValue}>{r.zdrzalSaPercent.toFixed(1)}%</Text>
+              </View>
+              <View style={styles.resultRow}>
+                <Text style={styles.resultLabel}>Kvórum</Text>
+                <Text style={styles.resultValue}>
+                  {r.quorumReached ? "DOSIAHNUTÉ" : "NEDOSIAHNUTÉ"}
+                </Text>
+              </View>
+              <Text
+                style={[styles.passedBadge, r.passed ? styles.passed : styles.notPassed]}
+              >
+                {r.passed ? "SCHVÁLENÉ" : "NESCHVÁLENÉ"}
+              </Text>
+
+              {/* Per-item vote list */}
+              {item.votes.length > 0 && (
+                <View style={{ marginTop: 8 }}>
+                  <View style={styles.tableHeader}>
+                    <Text style={[styles.colNum, styles.headerText]}>#</Text>
+                    <Text style={[styles.colFlat, styles.headerText]}>{unitLabel}</Text>
+                    <Text style={[styles.colOwner, styles.headerText]}>Vlastník</Text>
+                    <Text style={[styles.colChoice, styles.headerText]}>Hlas</Text>
+                    <Text style={[styles.colHash, styles.headerText]}>Audit hash</Text>
+                  </View>
+                  {item.votes.map((v, i) => (
+                    <View key={i} style={styles.tableRow} wrap={false}>
+                      <Text style={styles.colNum}>{i + 1}</Text>
+                      <Text style={styles.colFlat}>{v.flatNumber}</Text>
+                      <Text style={styles.colOwner}>{v.ownerName || "—"}</Text>
+                      <Text style={styles.colChoice}>
+                        {choiceLabels[v.choice] || v.choice}
+                      </Text>
+                      <Text style={styles.colHash}>{v.itemAuditHash}</Text>
+                    </View>
+                  ))}
+                </View>
+              )}
+
+              {/* Per-item co-owner (§14 ods. 4 / §1187) breakdown */}
+              {multiOwner.length > 0 && (
+                <View style={{ marginTop: 6 }}>
+                  {multiOwner.map((u) => {
+                    const flatNumber = flatNumbersByUnitId[u.unitEntityId];
+                    return (
+                      <View
+                        key={u.unitEntityId}
+                        style={styles.unitBreakdownBlock}
+                        wrap={false}
+                      >
+                        <View style={styles.unitBreakdownHeader}>
+                          <Text>
+                            {unitLabel} {flatNumber ?? u.unitEntityId.slice(0, 8)}
+                          </Text>
+                          <Text>Výsledok: {choiceLabelsResolution[u.resolved]}</Text>
+                        </View>
+                        {u.breakdown.map((b, i) => (
+                          <View key={i} style={styles.unitBreakdownOwner}>
+                            <Text>
+                              {b.userName ?? "Spoluvlastník"} (podiel{" "}
+                              {b.ownerShareNumerator}/{b.ownerShareDenominator})
+                            </Text>
+                            <Text>{choiceLabelsResolution[b.choice]}</Text>
+                          </View>
+                        ))}
+                        <Text style={styles.unitBreakdownRationale}>
+                          {rationaleSet[u.rationale]}
+                        </Text>
+                      </View>
+                    );
+                  })}
+                </View>
+              )}
+            </View>
+          );
+        })}
+
+        {/* Signatures — one signed ballot per owner-share (covers all items) */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Výsledky</Text>
-          <View style={styles.resultRow}>
-            <Text style={styles.resultLabel}>ZA</Text>
-            <Text style={styles.resultValue}>
-              {results.zaPercent.toFixed(1)}%
-            </Text>
-          </View>
-          <View style={styles.resultRow}>
-            <Text style={styles.resultLabel}>PROTI</Text>
-            <Text style={styles.resultValue}>
-              {results.protiPercent.toFixed(1)}%
-            </Text>
-          </View>
-          <View style={styles.resultRow}>
-            <Text style={styles.resultLabel}>ZDRŽAL SA</Text>
-            <Text style={styles.resultValue}>
-              {results.zdrzalSaPercent.toFixed(1)}%
-            </Text>
-          </View>
-
-          <View style={styles.resultRow}>
-            <Text style={styles.resultLabel}>Kvórum</Text>
-            <Text style={styles.resultValue}>
-              {results.quorumReached ? "DOSIAHNUTÉ" : "NEDOSIAHNUTÉ"}
-            </Text>
-          </View>
-
-          <Text
-            style={[
-              styles.passedBadge,
-              results.passed ? styles.passed : styles.notPassed,
-            ]}
-          >
-            {results.passed ? "SCHVÁLENÉ" : "NESCHVÁLENÉ"}
-          </Text>
-        </View>
-
-        {/* Vote table */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Zoznam hlasov</Text>
+          <Text style={styles.sectionTitle}>Odovzdané hlasovacie lístky (podpisy)</Text>
           <View style={styles.tableHeader}>
             <Text style={[styles.colNum, styles.headerText]}>#</Text>
             <Text style={[styles.colFlat, styles.headerText]}>{unitLabel}</Text>
             <Text style={[styles.colOwner, styles.headerText]}>Vlastník</Text>
-            <Text style={[styles.colChoice, styles.headerText]}>Hlas</Text>
             <Text style={[styles.colType, styles.headerText]}>Typ</Text>
             <Text style={[styles.colDate, styles.headerText]}>Dátum</Text>
-            <Text style={[styles.colHash, styles.headerText]}>Audit hash</Text>
+            <Text style={[styles.colHash, styles.headerText]}>Ballot hash</Text>
           </View>
-          {votes.map((v, i) => (
-            <View key={v.id} style={styles.tableRow} wrap={false}>
+          {ballots.map((b, i) => (
+            <View key={b.id} style={styles.tableRow} wrap={false}>
               <Text style={styles.colNum}>{i + 1}</Text>
-              <Text style={styles.colFlat}>{v.flatNumber}</Text>
-              <Text style={styles.colOwner}>{v.ownerName || "—"}</Text>
-              <Text style={styles.colChoice}>
-                {choiceLabels[v.choice] || v.choice}
-              </Text>
+              <Text style={styles.colFlat}>{b.flatNumber}</Text>
+              <Text style={styles.colOwner}>{b.ownerName || "—"}</Text>
               <Text style={styles.colType}>
-                {v.voteType === "paper" ? "Listinný" : "Elektronický"}
+                {b.voteType === "paper" ? "Listinný" : "Elektronický"}
               </Text>
-              <Text style={styles.colDate}>{formatDateTime(v.createdAt)}</Text>
-              <Text style={styles.colHash}>{v.auditHash}</Text>
+              <Text style={styles.colDate}>{formatDateTime(b.recordedAt)}</Text>
+              <Text style={styles.colHash}>{b.ballotHash}</Text>
             </View>
           ))}
         </View>
-
-        {/* Multi-owner breakdown */}
-        {multiOwnerBreakdowns.length > 0 && (
-          <View style={styles.section}>
-            <Text style={styles.sectionTitle}>
-              {`${unitLabel === "Byt" ? "Byty" : unitLabel} s viacerými spoluvlastníkmi`}
-            </Text>
-            {multiOwnerBreakdowns.map((u) => {
-              const flatNumber = flatNumbersByUnitId[u.unitEntityId];
-              return (
-                <View
-                  key={u.unitEntityId}
-                  style={styles.unitBreakdownBlock}
-                  wrap={false}
-                >
-                  <View style={styles.unitBreakdownHeader}>
-                    <Text>
-                      {unitLabel} {flatNumber ?? u.unitEntityId.slice(0, 8)}
-                    </Text>
-                    <Text>
-                      Výsledok bytu: {choiceLabelsResolution[u.resolved]}
-                    </Text>
-                  </View>
-                  {u.breakdown.map((b, i) => (
-                    <View key={i} style={styles.unitBreakdownOwner}>
-                      <Text>
-                        {b.userName ?? "Spoluvlastník"} (podiel{" "}
-                        {b.ownerShareNumerator}/{b.ownerShareDenominator})
-                      </Text>
-                      <Text>{choiceLabelsResolution[b.choice]}</Text>
-                    </View>
-                  ))}
-                  <Text style={styles.unitBreakdownRationale}>
-                    {rationaleSet[u.rationale]}
-                  </Text>
-                </View>
-              );
-            })}
-          </View>
-        )}
 
         {/* Mandates */}
         {mandateRows.length > 0 && (

@@ -8,7 +8,7 @@ import {
   memberships,
   entities,
 } from "@/db/schema";
-import { votes, mandates, votings } from "@modules/voting/src/db/schema";
+import { ballots, mandates, votings } from "@modules/voting/src/db/schema";
 import { and, eq, inArray, or, sql } from "drizzle-orm";
 import { listUserFlats } from "@/lib/legacy-compat";
 import { hasPermission } from "@/lib/permissions";
@@ -408,9 +408,9 @@ export async function DELETE(
 
   // Check for related records
   const [hasVotes] = await db
-    .select({ id: votes.id })
-    .from(votes)
-    .where(eq(votes.ownerId, id))
+    .select({ id: ballots.id })
+    .from(ballots)
+    .where(eq(ballots.ownerId, id))
     .limit(1);
 
   const [hasPosts] = await db

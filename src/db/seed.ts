@@ -21,10 +21,15 @@ import {
 } from "./schema";
 import {
   votings,
-  votes,
+  votingItems,
+  ballots,
+  ballotItemVotes,
   mandates,
 } from "@modules/voting/src/db/schema";
-import { generateAuditHash } from "@modules/voting/src/engine";
+import {
+  computeBallotHash,
+  computeItemAuditHash,
+} from "@modules/voting/src/engine";
 
 async function seed() {
   const pool = new Pool({
@@ -39,7 +44,9 @@ async function seed() {
   await db.delete(communityResponses);
   await db.delete(communityPosts);
   await db.delete(directoryEntries);
-  await db.delete(votes);
+  // Ballots cascade to ballot_item_votes + ballot_photos; then items, then votings.
+  await db.delete(ballots);
+  await db.delete(votingItems);
   await db.delete(mandates);
   await db.delete(posts);
   await db.delete(votings);
@@ -189,6 +196,42 @@ async function seed() {
   const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
   const weekLater = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
 
+  // BYT-20260609-008: cast one signed ballot (+ its single item-vote) per
+  // owner-share, replacing the legacy single-choice votes rows.
+  async function castBallot(
+    votingId: string,
+    itemId: string,
+    ownerId: string,
+    flatId: string,
+    choice: "za" | "proti" | "zdrzal_sa",
+    ts: Date
+  ) {
+    const [b] = await db
+      .insert(ballots)
+      .values({
+        votingId,
+        entityId: flatId,
+        ownerId,
+        voteType: "electronic",
+        ballotHash: computeBallotHash([{ itemId, choice }]),
+        recordedAt: ts,
+      })
+      .returning({ id: ballots.id });
+    await db.insert(ballotItemVotes).values({
+      ballotId: b.id,
+      itemId,
+      choice,
+      itemAuditHash: computeItemAuditHash({
+        votingId,
+        itemId,
+        entityId: flatId,
+        ownerId,
+        choice,
+        recordedAt: ts,
+      }),
+    });
+  }
+
   const [activeVoting] = await db
     .insert(votings)
     .values({
@@ -198,15 +241,24 @@ async function seed() {
       status: "active",
       votingType: "written",
       initiatedBy: "board",
-      quorumType: "simple_all",
       startsAt: weekAgo,
       endsAt: weekLater,
       createdById: admin.id,
     })
     .returning();
+  const [activeItem] = await db
+    .insert(votingItems)
+    .values({
+      votingId: activeVoting.id,
+      idx: 0,
+      title: activeVoting.title,
+      description: activeVoting.description,
+      quorumType: "simple_all",
+    })
+    .returning({ id: votingItems.id });
   console.log("Created active voting:", activeVoting.title);
 
-  // Cast some votes on active voting — per flat now
+  // Cast some ballots on active voting — per flat now
   // ownerIds[0] = Ján Novák (flats 0, 6) — vote for flat 0
   // ownerIds[1] = Mária Kováčová (flat 1)
   // ownerIds[2] = Peter Horváth (flat 2)
@@ -217,23 +269,16 @@ async function seed() {
   ];
 
   for (const v of voteData) {
-    const ts = new Date();
-    await db.insert(votes).values({
-      votingId: activeVoting.id,
-      ownerId: v.ownerId,
-      flatId: allFlats[v.flatIdx].id,
-      choice: v.choice,
-      voteType: "electronic",
-      auditHash: generateAuditHash(
-        activeVoting.id,
-        v.ownerId,
-        allFlats[v.flatIdx].id,
-        v.choice,
-        ts
-      ),
-    });
+    await castBallot(
+      activeVoting.id,
+      activeItem.id,
+      v.ownerId,
+      allFlats[v.flatIdx].id,
+      v.choice,
+      new Date()
+    );
   }
-  console.log("Cast 3 votes on active voting (per flat)");
+  console.log("Cast 3 ballots on active voting (per flat)");
 
   // Closed voting — two_thirds_all quorum
   const monthAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
@@ -248,40 +293,43 @@ async function seed() {
       status: "closed",
       votingType: "written",
       initiatedBy: "board",
-      quorumType: "two_thirds_all",
       startsAt: monthAgo,
       endsAt: twoWeeksAgo,
       createdById: admin.id,
     })
     .returning();
+  const [closedItem] = await db
+    .insert(votingItems)
+    .values({
+      votingId: closedVoting.id,
+      idx: 0,
+      title: closedVoting.title,
+      description: closedVoting.description,
+      quorumType: "two_thirds_all",
+    })
+    .returning({ id: votingItems.id });
 
   // Each owner votes for their first flat
   const closedVoteFlats = [0, 1, 2, 4]; // flatIdx for each owner
   for (let i = 0; i < ownerIds.length; i++) {
     const choice = Math.random() > 0.3 ? "za" : "proti";
     const ts = new Date(monthAgo.getTime() + Math.random() * 14 * 24 * 60 * 60 * 1000);
-    await db.insert(votes).values({
-      votingId: closedVoting.id,
-      ownerId: ownerIds[i],
-      flatId: allFlats[closedVoteFlats[i]].id,
-      choice: choice as "za" | "proti",
-      voteType: "electronic",
-      auditHash: generateAuditHash(
-        closedVoting.id,
-        ownerIds[i],
-        allFlats[closedVoteFlats[i]].id,
-        choice,
-        ts
-      ),
-    });
+    await castBallot(
+      closedVoting.id,
+      closedItem.id,
+      ownerIds[i],
+      allFlats[closedVoteFlats[i]].id,
+      choice as "za" | "proti",
+      ts
+    );
   }
-  console.log("Created closed voting with 4 votes");
+  console.log("Created closed voting with 4 ballots");
 
   // Draft voting — meeting type (for testing)
   const nextWeek = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
   const twoWeeksLater = new Date(now.getTime() + 14 * 24 * 60 * 60 * 1000);
 
-  await db
+  const [draftVoting] = await db
     .insert(votings)
     .values({
       title: "Schôdza vlastníkov — plán údržby 2026",
@@ -290,12 +338,18 @@ async function seed() {
       status: "draft",
       votingType: "meeting",
       initiatedBy: "board",
-      quorumType: "simple_present",
       startsAt: nextWeek,
       endsAt: twoWeeksLater,
       createdById: admin.id,
     })
     .returning();
+  await db.insert(votingItems).values({
+    votingId: draftVoting.id,
+    idx: 0,
+    title: draftVoting.title,
+    description: draftVoting.description,
+    quorumType: "simple_present",
+  });
   console.log("Created draft meeting voting");
 
   // Posts

@@ -302,7 +302,22 @@
     "changeVoteHint": "Kliknutím na jinou možnost změníte svůj hlas",
     "legalNotice": "Právní doložka",
     "paperVotePhotos": "Fotografie listinných hlasů",
-    "attachedProjectDocs": "Dokumenty k hlasování"
+    "attachedProjectDocs": "Dokumenty k hlasování",
+    "ballotIntro": "Označte svou volbu u každého bodu. Všechny body podepíšete najednou jedním podpisem.",
+    "setRemainingLabel": "Nastavit zbývající neoznačené body na:",
+    "reviewAndSign": "Zkontrolovat a podepsat",
+    "reviewTitle": "Kontrola před podpisem",
+    "reviewHelp": "Zkontrolujte své volby. Po podpisu nelze měnit jednotlivé body – pouze znovu odevzdat celý lístek.",
+    "unmarkedItem": "Neoznačené (zdržení se)",
+    "confirmSign": "Potvrdit a podepsat",
+    "signing": "Podepisuji…",
+    "remainingToMark": "Zbývá označit: {count}",
+    "allItemsMarked": "Všechny body jsou označeny",
+    "alreadySignedHint": "Podepsáno {date}. Volby můžete změnit a podepsat znovu.",
+    "withdrawBallot": "Stáhnout hlas",
+    "withdrawConfirm": "Opravdu stáhnout váš hlasovací lístek?",
+    "ballotHashLabel": "Kontrolní otisk lístku",
+    "signSubmitFailed": "Nepodařilo se odevzdat hlasovací lístek"
   },
   "VotingNew": {
     "title": "Nové hlasování",
@@ -335,7 +350,17 @@
     "submitting": "Vytvářím...",
     "createFailed": "Nepodařilo se vytvořit hlasování",
     "projectLabel": "Dokumentový projekt",
-    "noProject": "Žádný"
+    "noProject": "Žádný",
+    "itemsLabel": "Body hlasování (usnesení)",
+    "itemsHelp": "Každý bod se hlasuje a vyhodnocuje samostatně. Vlastník podepíše všechny body najednou.",
+    "itemNumber": "Bod č. {number}",
+    "itemTitlePlaceholder": "Např.: Schválení ročního rozpočtu",
+    "itemDescriptionPlaceholder": "Podrobnosti k bodu (volitelné)...",
+    "addItem": "Přidat bod",
+    "removeItem": "Odstranit",
+    "moveUp": "Posunout výše",
+    "moveDown": "Posunout níže",
+    "itemTitleRequired": "Každý bod musí mít název"
   },
   "VotingResults": {
     "title": "Výsledky",
@@ -381,7 +406,11 @@
     "flat": "jednotka {number}",
     "photoLabel": "Fotografie listinného hlasu (povinné)",
     "uploadFailed": "Nepodařilo se nahrát fotografii",
-    "photoRequired": "Fotografie podepsaného listinného hlasu je povinná"
+    "photoRequired": "Fotografie podepsaného listinného hlasu je povinná",
+    "itemsLabel": "Body hlasování",
+    "setRemainingLabel": "Nastavit zbývající na:",
+    "photosLabel": "Fotky lístku",
+    "photosHelp": "Můžete přidat více fotek (vícestránkový lístek)."
   },
   "Mandate": {
     "title": "Plná moc",

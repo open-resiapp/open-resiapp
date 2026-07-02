@@ -1,12 +1,12 @@
 ---
 spec_id: BYT-20260609-008
 title: "Multi-item votings (multiple resolutions per voting, one signed ballot)"
-status: spec
+status: implemented
 created: 2026-06-09
-updated: 2026-06-09
+updated: 2026-07-02
 author: byt-app
 owner: filipvnencak
-last_verified: 2026-06-09
+last_verified: 2026-07-02
 project_type: other
 depends_on:
   - RES-20260505-001   # voting as a free module (the module being extended)
@@ -279,8 +279,55 @@ as follow-ups):
 - **Ballot edit window:** confirm an owner can withdraw/re-submit a ballot before
   close, and that doing so supersedes (not appends) the prior signed ballot.
 
-Placement note: filed in `specs/specs/` (status `spec`). It is a structural voting
-change with cross-spec impact (audit bundle, passkey, mandate, minutes, domain doc);
-those edits are listed above and should be applied as follow-ups when this is
-promoted. Best sequenced **after** T5 W1 (rule-pack/majority model) to avoid
-migrating `quorumType` twice.
+### Implementation (2026-07-02)
+
+Implemented in 6 phases on `main` (no feature branch — per project convention):
+
+- **Phase 1 — schema + migration.** New tables `voting_items`, `ballots`,
+  `ballot_item_votes`, `ballot_photos`. Additive migration `0046_multi_item_ballots.sql`
+  (create + 1:1 backfill from the legacy model). Secretless hashes via Postgres core
+  `sha256()` (no `pgcrypto`). Legacy tables kept during the dual-model window.
+- **Phase 2 — engine + types.** `calculateItemResults()` (per-item, reuses the
+  per-share §14 engine), `computeBallotHash()` / `computeItemAuditHash()`. Golden
+  check `scripts/voting-golden-check.ts` (`pnpm test:voting-golden`) proves
+  byte-identical results for single-item votings + hash parity with the migration.
+- **Phase 3 — create/edit.** `POST/PATCH /api/votings` accept `items[]`; create UI
+  is an items editor (add/remove/reorder, per-item quorum). Item edits blocked once a
+  ballot exists.
+- **Phase 4 — cast.** New `/api/ballots` (GET/POST/DELETE). Cast UI: per-item
+  selectors + bulk-set-remaining + review-before-sign + single signature; unmarked =
+  silence; co-owners each cast their own ballot (per-share); withdraw/resubmit
+  supersedes. Paper flow accepts multiple photos.
+- **Phase 5 — minutes.** `VotingMinutesPDF` rebuilt per-item (own quorum, result,
+  vote list, §14/§1187 co-owner breakdown kept country-keyed) + a signatures section.
+- **Phase 6 — cleanup.** All consumers switched off the legacy tables (external API
+  backward-compatible, seed, shell-merge, admin/user delete routes); legacy
+  `/api/votes` removed; migration `0047_drop_legacy_votes.sql` drops
+  `mod_voting_votes` + `votings.quorum_type` (enums retained).
+
+All new UI strings added to `sk` / `en` / `cs`. Verified: `tsc --noEmit` = 0 and golden
+checks pass. Not yet exercised end-to-end against a live DB.
+
+### Follow-ups (open)
+
+- **`onVoteCreate` hook dormant** — the ballot path does not dispatch it, so
+  vote-triggered module notifications no longer fire. Needs a ballot-level
+  notification/email design.
+- **External API contract** — `/api/external/v1/votings*` gained an additive `items[]`
+  field (top-level `quorumType`/`voteCounts`/`votes` retained for back-compat).
+  Communicate to the bytové-družstvo consumer via the open external-API handoff.
+- **Audit bundle (BYT-20260518-001)** — build on the secretless leaves laid down here.
+- **Passkey (RES-20260428-003)** — sign `ballotHash` into `ballots.signature`.
+- **Mandate cast-under-ballot (BYT-20260609-004)** — wire the representative flow via
+  the existing `ballots.mandateId` FK.
+- **T5 (BYT-20260609-007)** — will migrate `voting_items.quorum_type` (enum) to the
+  basis×threshold majority model — the accepted second `quorumType` migration
+  (Option B trade-off).
+
+### Runtime verification checklist (before closing out)
+
+- [ ] `pnpm db:migrate` applies 0046 then 0047 (0047 is irreversible — backup applies).
+- [ ] End-to-end: create multi-item voting → cast (mark some, bulk-set rest, review,
+      sign) → withdraw → re-sign → record a paper ballot with ≥2 photos → close →
+      per-item results + minutes PDF.
+- [ ] Migration backfill parity check (item/ballot/photo counts) per Phase 1 SQL.

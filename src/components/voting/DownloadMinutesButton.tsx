@@ -5,22 +5,34 @@ import { useTranslations } from "next-intl";
 import type { VotingResults, QuorumType } from "@/types";
 import { useCommunityKinds } from "@/hooks/useCommunityKinds";
 
-interface VoteRow {
+// BYT-20260609-008 multi-item ballot shapes (from /api/ballots).
+interface BallotChoice {
+  itemId: string;
+  choice: string;
+  itemAuditHash: string;
+}
+interface BallotRow {
   id: string;
-  flatId: string;
+  entityId: string;
   ownerName: string | null;
   flatNumber: string;
-  choice: string;
   voteType: string;
-  createdAt: string;
-  auditHash: string;
+  ballotHash: string;
+  recordedAt: string;
+  choices: BallotChoice[];
+}
+interface VotingItemRow {
+  id: string;
+  idx: number;
+  title: string;
+  description: string | null;
+  quorumType: QuorumType;
 }
 
 interface VotingInfo {
   title: string;
   votingType: string;
   initiatedBy: string;
-  quorumType: QuorumType;
   startsAt: string;
   endsAt: string;
   createdBy: { name: string } | null;
@@ -36,9 +48,10 @@ interface BuildingInfo {
 interface DownloadMinutesButtonProps {
   votingId: string;
   voting: VotingInfo;
-  voteData: {
-    votes: VoteRow[];
-    results: VotingResults;
+  ballotData: {
+    items: VotingItemRow[];
+    results: (VotingResults & { itemId: string })[];
+    ballots: BallotRow[];
   };
   building: BuildingInfo;
   legalNotice: string | null;
@@ -48,7 +61,7 @@ interface DownloadMinutesButtonProps {
 export default function DownloadMinutesButton({
   votingId,
   voting,
-  voteData,
+  ballotData,
   building,
   legalNotice,
   entranceName,
@@ -95,18 +108,56 @@ export default function DownloadMinutesButton({
       });
 
       const flatNumbersByUnitId: Record<string, string> = {};
-      for (const v of voteData.votes) {
-        if (!flatNumbersByUnitId[v.flatId]) {
-          flatNumbersByUnitId[v.flatId] = v.flatNumber;
+      for (const b of ballotData.ballots) {
+        if (!flatNumbersByUnitId[b.entityId]) {
+          flatNumbersByUnitId[b.entityId] = b.flatNumber;
         }
       }
+
+      // One PDF section per item (resolution). Each item's vote list is
+      // rebuilt from the ballots' per-item choices, carrying itemAuditHash.
+      const items = [...ballotData.items]
+        .sort((a, b) => a.idx - b.idx)
+        .map((item) => {
+          const result = ballotData.results.find((r) => r.itemId === item.id);
+          const votes = ballotData.ballots.flatMap((b) => {
+            const c = b.choices.find((ch) => ch.itemId === item.id);
+            return c
+              ? [
+                  {
+                    flatNumber: b.flatNumber,
+                    ownerName: b.ownerName,
+                    choice: c.choice,
+                    itemAuditHash: c.itemAuditHash,
+                  },
+                ]
+              : [];
+          });
+          return {
+            idx: item.idx,
+            title: item.title,
+            description: item.description,
+            quorumType: item.quorumType,
+            result: result as VotingResults,
+            votes,
+          };
+        });
+
+      const ballots = ballotData.ballots.map((b) => ({
+        id: b.id,
+        ownerName: b.ownerName,
+        flatNumber: b.flatNumber,
+        voteType: b.voteType,
+        recordedAt: b.recordedAt,
+        ballotHash: b.ballotHash,
+      }));
 
       const doc = (
         <VotingMinutesPDF
           building={building}
           voting={voting}
-          results={voteData.results}
-          votes={voteData.votes}
+          items={items}
+          ballots={ballots}
           mandates={mandateRows}
           legalNotice={legalNotice}
           qrDataUrl={qrDataUrl}

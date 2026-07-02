@@ -11,7 +11,7 @@ import {
   boardMembers,
   coreModuleGrants,
 } from "@/db/schema";
-import { votings, votes, mandates } from "@modules/voting/src/db/schema";
+import { votings, ballots, mandates } from "@modules/voting/src/db/schema";
 import { withExternalAuth } from "@/lib/external-auth";
 import { recordEntityAudit } from "@/lib/entity-audit";
 
@@ -130,11 +130,11 @@ async function handleDelete(
         .where(eq(votings.entityId, id)),
     },
     {
-      table: "votes",
+      table: "ballots",
       promise: db
         .select({ count: sql<number>`count(*)::int` })
-        .from(votes)
-        .where(eq(votes.entityId, id)),
+        .from(ballots)
+        .where(eq(ballots.entityId, id)),
     },
     {
       table: "mandates",

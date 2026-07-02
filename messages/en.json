@@ -441,7 +441,22 @@
     "flatHeader": "Flat {number}",
     "changeVoteHint": "Click a different option to change your vote",
     "legalNotice": "Legal notice",
-    "paperVotePhotos": "Paper ballot photos"
+    "paperVotePhotos": "Paper ballot photos",
+    "ballotIntro": "Mark your choice for each item. You sign all items at once with a single signature.",
+    "setRemainingLabel": "Set remaining unmarked items to:",
+    "reviewAndSign": "Review and sign",
+    "reviewTitle": "Review before signing",
+    "reviewHelp": "Check your choices. After signing you cannot change individual items — only resubmit the whole ballot.",
+    "unmarkedItem": "Unmarked (abstain)",
+    "confirmSign": "Confirm and sign",
+    "signing": "Signing…",
+    "remainingToMark": "Remaining to mark: {count}",
+    "allItemsMarked": "All items marked",
+    "alreadySignedHint": "Signed {date}. You can change your choices and sign again.",
+    "withdrawBallot": "Withdraw vote",
+    "withdrawConfirm": "Really withdraw your ballot?",
+    "ballotHashLabel": "Ballot checksum",
+    "signSubmitFailed": "Failed to submit the ballot"
   },
   "VotingNew": {
     "projectLabel": "Document project",
@@ -474,7 +489,17 @@
     "scopeAll": "Whole building",
     "submit": "Create voting",
     "submitting": "Creating...",
-    "createFailed": "Failed to create voting"
+    "createFailed": "Failed to create voting",
+    "itemsLabel": "Voting items (resolutions)",
+    "itemsHelp": "Each item is voted and resolved independently. The owner signs all items at once.",
+    "itemNumber": "Item #{number}",
+    "itemTitlePlaceholder": "E.g.: Approval of the annual budget",
+    "itemDescriptionPlaceholder": "Details for this item (optional)...",
+    "addItem": "Add item",
+    "removeItem": "Remove",
+    "moveUp": "Move up",
+    "moveDown": "Move down",
+    "itemTitleRequired": "Every item must have a title"
   },
   "VotingResults": {
     "title": "Results",
@@ -520,7 +545,11 @@
     "flat": "flat {number}",
     "photoLabel": "Paper ballot photo (required)",
     "uploadFailed": "Failed to upload photo",
-    "photoRequired": "A photo of the signed paper ballot is required"
+    "photoRequired": "A photo of the signed paper ballot is required",
+    "itemsLabel": "Voting items",
+    "setRemainingLabel": "Set remaining to:",
+    "photosLabel": "Ballot photos",
+    "photosHelp": "You can add multiple photos (multi-page ballot)."
   },
   "Mandate": {
     "title": "Power of Attorney",

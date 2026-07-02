@@ -323,6 +323,20 @@
       "when": 1780988136380,
       "tag": "0045_acoustic_gwen_stacy",
       "breakpoints": true
+    },
+    {
+      "idx": 46,
+      "version": "7",
+      "when": 1782983055269,
+      "tag": "0046_multi_item_ballots",
+      "breakpoints": true
+    },
+    {
+      "idx": 47,
+      "version": "7",
+      "when": 1783018686373,
+      "tag": "0047_drop_legacy_votes",
+      "breakpoints": true
     }
   ]
 }

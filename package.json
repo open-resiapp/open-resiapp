@@ -12,6 +12,7 @@
     "db:migrate": "drizzle-kit migrate",
     "db:studio": "drizzle-kit studio",
     "db:seed": "tsx src/db/seed.ts",
+    "test:voting-golden": "tsx scripts/voting-golden-check.ts",
     "create-admin": "tsx src/scripts/create-admin.ts",
     "setup:tenant": "tsx scripts/setup-tenant.ts",
     "entity-admin": "tsx scripts/entity-admin/cli.ts"

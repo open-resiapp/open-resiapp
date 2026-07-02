@@ -4,10 +4,11 @@ import { aliasedTable, desc, eq, sql } from "drizzle-orm";
 import { auth } from "@/lib/auth";
 import { db } from "@/db";
 import { users, entities, memberships } from "@/db/schema";
-import { votings } from "@modules/voting/src/db/schema";
+import { votings, votingItems } from "@modules/voting/src/db/schema";
 import { hasPermission } from "@/lib/permissions";
 import { getCommunityRoot } from "@/lib/legacy-compat";
 import { validatePerRollamDuration } from "@modules/voting/src/rules";
+import { normalizeItems } from "@modules/voting/src/items";
 import type { UserRole, Country } from "@/types";
 
 export async function GET() {
@@ -33,7 +34,6 @@ export async function GET() {
       status: votings.status,
       votingType: votings.votingType,
       initiatedBy: votings.initiatedBy,
-      quorumType: votings.quorumType,
       startsAt: votings.startsAt,
       endsAt: votings.endsAt,
       createdAt: votings.createdAt,
@@ -78,7 +78,7 @@ export async function POST(request: NextRequest) {
   }
 
   const body = await request.json();
-  const { title, description, startsAt, endsAt, status, votingType, initiatedBy, quorumType, entityId, documentProjectId } = body;
+  const { title, description, startsAt, endsAt, status, votingType, initiatedBy, entityId, documentProjectId } = body;
 
   if (!title || !startsAt || !endsAt) {
     return NextResponse.json(
@@ -117,22 +117,48 @@ export async function POST(request: NextRequest) {
     root?.id ||
     null;
 
-  const [voting] = await db
-    .insert(votings)
-    .values({
-      title,
-      description: description || null,
-      status: status || "draft",
-      votingType: votingType || "written",
-      initiatedBy: initiatedBy || "board",
-      quorumType: quorumType || "simple_all",
-      startsAt: new Date(startsAt),
-      endsAt: new Date(endsAt),
-      createdById: session.user.id,
-      entityId: scopeEntityId,
-      documentProjectId: documentProjectId || null,
-    })
-    .returning();
+  // BYT-20260609-008: normalise ballot items (quorum now lives per-item on
+  // voting_items; the legacy votings.quorum_type column is gone).
+  const normalized = normalizeItems(body, title, description || null);
+  if ("error" in normalized) {
+    return NextResponse.json({ error: normalized.error }, { status: 400 });
+  }
 
-  return NextResponse.json(voting, { status: 201 });
+  const voting = await db.transaction(async (tx) => {
+    const [created] = await tx
+      .insert(votings)
+      .values({
+        title,
+        description: description || null,
+        status: status || "draft",
+        votingType: votingType || "written",
+        initiatedBy: initiatedBy || "board",
+        startsAt: new Date(startsAt),
+        endsAt: new Date(endsAt),
+        createdById: session.user.id,
+        entityId: scopeEntityId,
+        documentProjectId: documentProjectId || null,
+      })
+      .returning();
+
+    await tx.insert(votingItems).values(
+      normalized.items.map((it) => ({
+        votingId: created.id,
+        idx: it.idx,
+        title: it.title,
+        description: it.description,
+        quorumType: it.quorumType,
+      }))
+    );
+
+    return created;
+  });
+
+  const items = await db
+    .select()
+    .from(votingItems)
+    .where(eq(votingItems.votingId, voting.id))
+    .orderBy(votingItems.idx);
+
+  return NextResponse.json({ ...voting, items }, { status: 201 });
 }

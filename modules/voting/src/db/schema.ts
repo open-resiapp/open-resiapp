@@ -4,12 +4,12 @@ import {
   varchar,
   text,
   boolean,
+  integer,
   timestamp,
   pgEnum,
   uniqueIndex,
-  check,
 } from "drizzle-orm/pg-core";
-import { relations, sql } from "drizzle-orm";
+import { relations } from "drizzle-orm";
 
 // Module schema imports core symbols (entities, users) directly from
 // the core schema. Phase 9.2 dropped the legacy entrances/flats tables;
@@ -68,7 +68,6 @@ export const votings = pgTable("mod_voting_votings", {
     .notNull(),
   votingType: votingTypeEnum("voting_type").notNull().default("written"),
   initiatedBy: votingInitiatedByEnum("initiated_by").notNull().default("board"),
-  quorumType: quorumTypeEnum("quorum_type").notNull().default("simple_all"),
   voteCounterId: uuid("vote_counter_id").references(() => users.id),
   entityId: uuid("entity_id")
     .references(() => entities.id, { onDelete: "restrict" })
@@ -82,40 +81,6 @@ export const votings = pgTable("mod_voting_votings", {
   ),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
-
-export const votes = pgTable(
-  "mod_voting_votes",
-  {
-    id: uuid("id").primaryKey().defaultRandom(),
-    votingId: uuid("voting_id")
-      .references(() => votings.id)
-      .notNull(),
-    ownerId: uuid("owner_id")
-      .references(() => users.id)
-      .notNull(),
-    entityId: uuid("entity_id")
-      .references(() => entities.id, { onDelete: "restrict" })
-      .notNull(),
-    choice: voteChoiceEnum("choice").notNull(),
-    voteType: voteTypeEnum("vote_type").notNull().default("electronic"),
-    recordedById: uuid("recorded_by_id").references(() => users.id),
-    paperPhotoUrl: varchar("paper_photo_url", { length: 1000 }),
-    auditHash: varchar("audit_hash", { length: 64 }).notNull(),
-    disputed: boolean("disputed").notNull().default(false),
-    disputeNote: text("dispute_note"),
-    createdAt: timestamp("created_at").defaultNow().notNull(),
-  },
-  (table) => ({
-    votingEntityIdx: uniqueIndex("mod_voting_votes_voting_entity_idx").on(
-      table.votingId,
-      table.entityId
-    ),
-    paperPhotoRequired: check(
-      "mod_voting_votes_paper_photo_required",
-      sql`vote_type != 'paper' OR paper_photo_url IS NOT NULL`
-    ),
-  })
-);
 
 export const mandates = pgTable(
   "mod_voting_mandates",
@@ -150,6 +115,111 @@ export const mandates = pgTable(
   })
 );
 
+// ── Multi-item ballots (BYT-20260609-008) ──────────────
+// Backfilled from the legacy single-question model in migration 0046; the
+// legacy `mod_voting_votes` table + `votings.quorum_type` column were dropped
+// in the cleanup migration 0047 once every reader/writer was switched over.
+
+// One voting → many items (resolutions). Each item carries its OWN
+// quorumType and produces its own result; the voting has no single
+// pass/fail once this model is live.
+export const votingItems = pgTable(
+  "mod_voting_voting_items",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    votingId: uuid("voting_id")
+      .references(() => votings.id, { onDelete: "cascade" })
+      .notNull(),
+    idx: integer("idx").notNull(), // display / ballot order
+    title: varchar("title", { length: 500 }).notNull(),
+    description: text("description"),
+    quorumType: quorumTypeEnum("quorum_type").notNull(), // MOVED from votings
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+  },
+  (table) => ({
+    votingIdxUnique: uniqueIndex("mod_voting_voting_items_voting_idx").on(
+      table.votingId,
+      table.idx
+    ),
+  })
+);
+
+// The signed submission: one ballot per (voting, unit, owner-share). A
+// single confirmation commits to ALL item choices via `ballotHash`.
+// This uniqueness widens the legacy (votingId, entityId) recording key to
+// per-share, realising the widening BYT-20260518-001 deferred.
+export const ballots = pgTable(
+  "mod_voting_ballots",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    votingId: uuid("voting_id")
+      .references(() => votings.id, { onDelete: "restrict" })
+      .notNull(),
+    entityId: uuid("entity_id")
+      .references(() => entities.id, { onDelete: "restrict" })
+      .notNull(), // the unit
+    ownerId: uuid("owner_id")
+      .references(() => users.id, { onDelete: "restrict" })
+      .notNull(), // share-holder
+    voteType: voteTypeEnum("vote_type").notNull().default("electronic"),
+    // Counter / representative who recorded the ballot (soft link).
+    recordedById: uuid("recorded_by_id").references(() => users.id, {
+      onDelete: "set null",
+    }),
+    // Representation link (BYT-20260609-004): a representative casts the
+    // whole ballot under one mandate (mandate is per voting × owner).
+    mandateId: uuid("mandate_id").references(() => mandates.id, {
+      onDelete: "restrict",
+    }),
+    ballotHash: varchar("ballot_hash", { length: 64 }).notNull(), // commitment over all item choices
+    signature: text("signature"), // passkey assertion (one, over ballotHash)
+    recordedAt: timestamp("recorded_at").defaultNow().notNull(),
+    disputed: boolean("disputed").notNull().default(false),
+    disputeNote: text("dispute_note"),
+  },
+  (table) => ({
+    votingEntityOwnerIdx: uniqueIndex(
+      "mod_voting_ballots_voting_entity_owner_idx"
+    ).on(table.votingId, table.entityId, table.ownerId),
+  })
+);
+
+// One choice per item, under a ballot. `itemAuditHash` is secretless
+// (Option B): sha256(votingId|itemId|entityId|ownerId|choice|recordedAt),
+// no server secret — feeds audit-bundle leaves per docs/domain/voting.md.
+export const ballotItemVotes = pgTable(
+  "mod_voting_ballot_item_votes",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    ballotId: uuid("ballot_id")
+      .references(() => ballots.id, { onDelete: "cascade" })
+      .notNull(),
+    itemId: uuid("item_id")
+      .references(() => votingItems.id, { onDelete: "restrict" })
+      .notNull(),
+    choice: voteChoiceEnum("choice").notNull(),
+    itemAuditHash: varchar("item_audit_hash", { length: 64 }).notNull(),
+  },
+  (table) => ({
+    ballotItemUnique: uniqueIndex(
+      "mod_voting_ballot_item_votes_ballot_item_idx"
+    ).on(table.ballotId, table.itemId),
+  })
+);
+
+// Paper ballots carry ≥1 photo (multi-page paper → several photos). The
+// "paper ⇒ ≥1 photo" rule is enforced in the app layer (cross-table, so
+// not a single-row CHECK), replacing the legacy per-row photo check.
+export const ballotPhotos = pgTable("mod_voting_ballot_photos", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  ballotId: uuid("ballot_id")
+    .references(() => ballots.id, { onDelete: "cascade" })
+    .notNull(),
+  storageKey: varchar("storage_key", { length: 1024 }).notNull(), // via src/lib/storage.ts
+  idx: integer("idx").notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
 // ── Relations ──────────────────────────────────────────
 
 export const votingsRelations = relations(votings, ({ one, many }) => ({
@@ -166,27 +236,9 @@ export const votingsRelations = relations(votings, ({ one, many }) => ({
     fields: [votings.entityId],
     references: [entities.id],
   }),
-  votes: many(votes),
   mandates: many(mandates),
-}));
-
-export const votesRelations = relations(votes, ({ one }) => ({
-  voting: one(votings, {
-    fields: [votes.votingId],
-    references: [votings.id],
-  }),
-  owner: one(users, {
-    fields: [votes.ownerId],
-    references: [users.id],
-  }),
-  entity: one(entities, {
-    fields: [votes.entityId],
-    references: [entities.id],
-  }),
-  recordedBy: one(users, {
-    fields: [votes.recordedById],
-    references: [users.id],
-  }),
+  items: many(votingItems),
+  ballots: many(ballots),
 }));
 
 export const mandatesRelations = relations(mandates, ({ one }) => ({
@@ -205,5 +257,66 @@ export const mandatesRelations = relations(mandates, ({ one }) => ({
   toOwner: one(users, {
     fields: [mandates.toOwnerId],
     references: [users.id],
+  }),
+}));
+
+// ── Multi-item ballot relations (BYT-20260609-008) ─────
+
+export const votingItemsRelations = relations(
+  votingItems,
+  ({ one, many }) => ({
+    voting: one(votings, {
+      fields: [votingItems.votingId],
+      references: [votings.id],
+    }),
+    itemVotes: many(ballotItemVotes),
+  })
+);
+
+export const ballotsRelations = relations(ballots, ({ one, many }) => ({
+  voting: one(votings, {
+    fields: [ballots.votingId],
+    references: [votings.id],
+  }),
+  entity: one(entities, {
+    fields: [ballots.entityId],
+    references: [entities.id],
+  }),
+  owner: one(users, {
+    fields: [ballots.ownerId],
+    references: [users.id],
+    relationName: "ballotOwner",
+  }),
+  recordedBy: one(users, {
+    fields: [ballots.recordedById],
+    references: [users.id],
+    relationName: "ballotRecordedBy",
+  }),
+  mandate: one(mandates, {
+    fields: [ballots.mandateId],
+    references: [mandates.id],
+  }),
+  itemVotes: many(ballotItemVotes),
+  photos: many(ballotPhotos),
+}));
+
+export const ballotItemVotesRelations = relations(
+  ballotItemVotes,
+  ({ one }) => ({
+    ballot: one(ballots, {
+      fields: [ballotItemVotes.ballotId],
+      references: [ballots.id],
+    }),
+    item: one(votingItems, {
+      fields: [ballotItemVotes.itemId],
+      references: [votingItems.id],
+    }),
+  })
+);
+
+export const ballotPhotosRelations = relations(ballotPhotos, ({ one }) => ({
+  ballot: one(ballots, {
+    fields: [ballotPhotos.ballotId],
+    references: [ballots.id],
   }),
 }));

@@ -441,7 +441,22 @@
     "flatHeader": "Byt {number}",
     "changeVoteHint": "Kliknutím na inú možnosť zmeníte svoj hlas",
     "legalNotice": "Právna doložka",
-    "paperVotePhotos": "Fotografie listinných hlasov"
+    "paperVotePhotos": "Fotografie listinných hlasov",
+    "ballotIntro": "Označte svoju voľbu pri každom bode. Všetky body podpíšete naraz jedným podpisom.",
+    "setRemainingLabel": "Nastaviť zvyšné neoznačené body na:",
+    "reviewAndSign": "Skontrolovať a podpísať",
+    "reviewTitle": "Kontrola pred podpisom",
+    "reviewHelp": "Skontrolujte svoje voľby. Po podpise nie je možné meniť jednotlivé body – iba znova odovzdať celý lístok.",
+    "unmarkedItem": "Neoznačené (zdržanie sa)",
+    "confirmSign": "Potvrdiť a podpísať",
+    "signing": "Podpisujem…",
+    "remainingToMark": "Zostáva označiť: {count}",
+    "allItemsMarked": "Všetky body sú označené",
+    "alreadySignedHint": "Podpísané {date}. Voľby môžete zmeniť a podpísať znova.",
+    "withdrawBallot": "Stiahnuť hlas",
+    "withdrawConfirm": "Naozaj stiahnuť váš hlasovací lístok?",
+    "ballotHashLabel": "Kontrolný odtlačok lístka",
+    "signSubmitFailed": "Nepodarilo sa odovzdať hlasovací lístok"
   },
   "VotingNew": {
     "projectLabel": "Dokumentový projekt",
@@ -474,7 +489,17 @@
     "scopeAll": "Celá bytovka",
     "submit": "Vytvoriť hlasovanie",
     "submitting": "Vytváram...",
-    "createFailed": "Nepodarilo sa vytvoriť hlasovanie"
+    "createFailed": "Nepodarilo sa vytvoriť hlasovanie",
+    "itemsLabel": "Body hlasovania (uznesenia)",
+    "itemsHelp": "Každý bod sa hlasuje a vyhodnocuje samostatne. Vlastník podpíše všetky body naraz.",
+    "itemNumber": "Bod č. {number}",
+    "itemTitlePlaceholder": "Napr.: Schválenie ročného rozpočtu",
+    "itemDescriptionPlaceholder": "Podrobnosti k bodu (voliteľné)...",
+    "addItem": "Pridať bod",
+    "removeItem": "Odstrániť",
+    "moveUp": "Posunúť vyššie",
+    "moveDown": "Posunúť nižšie",
+    "itemTitleRequired": "Každý bod musí mať názov"
   },
   "VotingResults": {
     "title": "Výsledky",
@@ -520,7 +545,11 @@
     "flat": "byt {number}",
     "photoLabel": "Fotografia listinného hlasu (povinné)",
     "uploadFailed": "Nepodarilo sa nahrať fotografiu",
-    "photoRequired": "Fotografia podpísaného listinného hlasu je povinná"
+    "photoRequired": "Fotografia podpísaného listinného hlasu je povinná",
+    "itemsLabel": "Body hlasovania",
+    "setRemainingLabel": "Nastaviť zvyšné na:",
+    "photosLabel": "Fotky lístka",
+    "photosHelp": "Môžete pridať viac fotiek (viacstranový lístok)."
   },
   "Mandate": {
     "title": "Splnomocnenie",

@@ -95,8 +95,17 @@ export async function GET(req: NextRequest) {
   const token = url.searchParams.get("token");
   const locale = sanitizeLocale(url.searchParams.get("locale"));
 
-  const loginTarget = new URL(`/${locale}/login`, url);
-  const dashboardTarget = new URL(`/${locale}/dashboard`, url);
+  // Build redirect targets from the injected public origin, NOT req.url.
+  // In the Next standalone server behind Caddy/ALB, req.url reflects the
+  // internal bind host (http://0.0.0.0:3000), so redirecting relative to it
+  // sends the browser to 0.0.0.0. NEXTAUTH_URL is injected by the cloud
+  // control plane as https://{instance.domain}; url.origin is the local-dev
+  // fallback. AUTH_TRUST_HOST does not help here — this is a custom route
+  // that reads req.url directly and bypasses Auth.js host resolution.
+  const publicBase =
+    process.env.NEXTAUTH_URL ?? process.env.AUTH_URL ?? url.origin;
+  const loginTarget = new URL(`/${locale}/login`, publicBase);
+  const dashboardTarget = new URL(`/${locale}/dashboard`, publicBase);
 
   let user;
   try {

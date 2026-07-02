@@ -12,6 +12,14 @@ interface Entrance {
   name: string;
 }
 
+// BYT-20260609-008: a voting holds an ordered list of items (resolutions),
+// each with its own quorum type.
+interface ItemDraft {
+  title: string;
+  description: string;
+  quorumType: string;
+}
+
 export default function NovaHlasovaniePage() {
   const { data: session } = useSession();
   const router = useRouter();
@@ -24,8 +32,35 @@ export default function NovaHlasovaniePage() {
   const [entrances, setEntrances] = useState<Entrance[]>([]);
   const [projects, setProjects] = useState<{ id: string; title: string }[]>([]);
   const [selectedProjectId, setSelectedProjectId] = useState("");
+  const [items, setItems] = useState<ItemDraft[]>([
+    { title: "", description: "", quorumType: "simple_all" },
+  ]);
 
   const role = (session?.user?.role || "owner") as UserRole;
+
+  function addItem() {
+    setItems((prev) => [
+      ...prev,
+      { title: "", description: "", quorumType: "simple_all" },
+    ]);
+  }
+  function removeItem(i: number) {
+    setItems((prev) => (prev.length === 1 ? prev : prev.filter((_, idx) => idx !== i)));
+  }
+  function moveItem(i: number, dir: -1 | 1) {
+    setItems((prev) => {
+      const j = i + dir;
+      if (j < 0 || j >= prev.length) return prev;
+      const next = [...prev];
+      [next[i], next[j]] = [next[j], next[i]];
+      return next;
+    });
+  }
+  function updateItem(i: number, field: keyof ItemDraft, value: string) {
+    setItems((prev) =>
+      prev.map((it, idx) => (idx === i ? { ...it, [field]: value } : it))
+    );
+  }
 
   useEffect(() => {
     fetch("/api/entrances")
@@ -67,6 +102,17 @@ export default function NovaHlasovaniePage() {
 
     const formData = new FormData(e.currentTarget);
 
+    const cleanItems = items.map((it) => ({
+      title: it.title.trim(),
+      description: it.description.trim() || null,
+      quorumType: it.quorumType,
+    }));
+    if (cleanItems.some((it) => !it.title)) {
+      setError(t("itemTitleRequired"));
+      setLoading(false);
+      return;
+    }
+
     const res = await fetch("/api/votings", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -78,7 +124,7 @@ export default function NovaHlasovaniePage() {
         status: formData.get("status"),
         votingType: formData.get("votingType"),
         initiatedBy: formData.get("initiatedBy"),
-        quorumType: formData.get("quorumType"),
+        items: cleanItems,
         entranceId: formData.get("entranceId") || null,
         documentProjectId: formData.get("documentProjectId") || null,
       }),
@@ -206,20 +252,109 @@ export default function NovaHlasovaniePage() {
             </div>
           )}
 
-          {/* Quorum Type */}
+          {/* Voting items (resolutions) — each with its own quorum. */}
           <div>
-            <label className="block text-base font-medium text-gray-700 mb-1 dark:text-gray-200">
-              {t("quorumTypeLabel")}
-            </label>
-            <select
-              name="quorumType"
-              className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none dark:bg-gray-900 dark:border-gray-700 dark:text-gray-100"
+            <div className="flex items-center justify-between mb-1">
+              <label className="block text-base font-medium text-gray-700 dark:text-gray-200">
+                {t("itemsLabel")}
+              </label>
+            </div>
+            <p className="text-sm text-gray-500 mb-3 dark:text-gray-400">
+              {t("itemsHelp")}
+            </p>
+
+            <div className="space-y-4">
+              {items.map((item, i) => (
+                <div
+                  key={i}
+                  className="border border-gray-200 rounded-lg p-4 dark:border-gray-700"
+                >
+                  <div className="flex items-center justify-between mb-3">
+                    <span className="text-base font-semibold text-gray-900 dark:text-gray-100">
+                      {t("itemNumber", { number: i + 1 })}
+                    </span>
+                    <div className="flex items-center gap-1">
+                      <button
+                        type="button"
+                        onClick={() => moveItem(i, -1)}
+                        disabled={i === 0}
+                        aria-label={t("moveUp")}
+                        className="px-2 py-1 text-gray-600 hover:bg-gray-100 rounded disabled:opacity-30 dark:text-gray-300 dark:hover:bg-gray-700"
+                      >
+                        &uarr;
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => moveItem(i, 1)}
+                        disabled={i === items.length - 1}
+                        aria-label={t("moveDown")}
+                        className="px-2 py-1 text-gray-600 hover:bg-gray-100 rounded disabled:opacity-30 dark:text-gray-300 dark:hover:bg-gray-700"
+                      >
+                        &darr;
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => removeItem(i)}
+                        disabled={items.length === 1}
+                        className="px-2 py-1 text-red-600 hover:bg-red-50 rounded disabled:opacity-30 dark:text-red-400 dark:hover:bg-red-900/30"
+                      >
+                        {t("removeItem")}
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="space-y-3">
+                    <input
+                      value={item.title}
+                      onChange={(e) => updateItem(i, "title", e.target.value)}
+                      required
+                      className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none dark:bg-gray-900 dark:border-gray-700 dark:text-gray-100"
+                      placeholder={t("itemTitlePlaceholder")}
+                    />
+                    <textarea
+                      value={item.description}
+                      onChange={(e) =>
+                        updateItem(i, "description", e.target.value)
+                      }
+                      rows={2}
+                      className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none resize-vertical dark:bg-gray-900 dark:border-gray-700 dark:text-gray-100"
+                      placeholder={t("itemDescriptionPlaceholder")}
+                    />
+                    <div>
+                      <label className="block text-sm font-medium text-gray-600 mb-1 dark:text-gray-300">
+                        {t("quorumTypeLabel")}
+                      </label>
+                      <select
+                        value={item.quorumType}
+                        onChange={(e) =>
+                          updateItem(i, "quorumType", e.target.value)
+                        }
+                        className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none dark:bg-gray-900 dark:border-gray-700 dark:text-gray-100"
+                      >
+                        <option value="simple_all">{t("quorumSimpleAll")}</option>
+                        <option value="simple_present">
+                          {t("quorumSimplePresent")}
+                        </option>
+                        <option value="two_thirds_all">
+                          {t("quorumTwoThirdsAll")}
+                        </option>
+                        <option value="all_unanimous">
+                          {t("quorumAllUnanimous")}
+                        </option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <button
+              type="button"
+              onClick={addItem}
+              className="mt-3 w-full py-3 px-4 text-base font-medium text-blue-600 border border-dashed border-blue-300 rounded-lg hover:bg-blue-50 transition-colors dark:text-blue-400 dark:border-blue-800 dark:hover:bg-blue-900/20"
             >
-              <option value="simple_all">{t("quorumSimpleAll")}</option>
-              <option value="simple_present">{t("quorumSimplePresent")}</option>
-              <option value="two_thirds_all">{t("quorumTwoThirdsAll")}</option>
-              <option value="all_unanimous">{t("quorumAllUnanimous")}</option>
-            </select>
+              + {t("addItem")}
+            </button>
           </div>
 
           {/* Entrance scope */}

@@ -7,8 +7,8 @@ import { useParams } from "next/navigation";
 import { useRouter } from "@/i18n/navigation";
 import VoteButton from "@/components/voting/VoteButton";
 import VotingResults from "@/components/voting/VotingResults";
-import PaperVoteModal from "@/components/voting/PaperVoteModal";
 import MandateModal from "@/components/voting/MandateModal";
+import PaperVoteModal from "@/components/voting/PaperVoteModal";
 import DownloadMinutesButton from "@/components/voting/DownloadMinutesButton";
 import { hasPermission } from "@/lib/permissions";
 import type {
@@ -29,7 +29,6 @@ interface VotingDetail {
   status: VotingStatus;
   votingType: VotingType;
   initiatedBy: VotingInitiatedBy;
-  quorumType: QuorumType;
   startsAt: string;
   endsAt: string;
   voteCounterId: string | null;
@@ -39,41 +38,69 @@ interface VotingDetail {
   documentProjectId: string | null;
 }
 
-interface UserFlatVote {
-  flatId: string;
-  choice: string;
-}
-
-interface UserFlat {
-  flatId: string;
-  flatNumber: string;
-}
-
-interface VoteRow {
+// ── BYT-20260609-008 multi-item ballot shapes (from /api/ballots) ──
+interface VotingItemRow {
   id: string;
-  flatId: string;
+  idx: number;
+  title: string;
+  description: string | null;
+  quorumType: QuorumType;
+}
+interface BallotChoice {
+  itemId: string;
+  choice: string;
+  itemAuditHash: string;
+}
+interface BallotPhoto {
+  storageKey: string;
+  idx: number;
+}
+interface BallotRow {
+  id: string;
+  entityId: string;
   ownerId: string;
   ownerName: string | null;
   flatNumber: string;
   voteType: string;
-  paperPhotoUrl: string | null;
-  choice: string;
-  createdAt: string;
-  auditHash: string;
+  ballotHash: string;
+  recordedAt: string;
+  disputed: boolean;
+  choices: BallotChoice[];
+  photos: BallotPhoto[];
+}
+interface UserBallot {
+  ballotId: string;
+  flatId: string;
+  voteType: string;
+  recordedAt: string;
+  choices: Record<string, string>;
+}
+interface UserFlat {
+  flatId: string;
+  flatNumber: string;
+}
+interface BallotData {
+  items: VotingItemRow[];
+  results: (VotingResultsType & { itemId: string })[];
+  ballots: BallotRow[];
+  userBallots: UserBallot[];
+  userFlats: UserFlat[];
+  totalBallots: number;
+  totalPossibleWeight: number;
 }
 
-interface VoteData {
-  votes: VoteRow[];
-  results: VotingResultsType;
-  userVotedFlats: UserFlatVote[];
-  userFlats: UserFlat[];
-  totalVotes: number;
-}
+const CHOICE_KEY: Record<VoteChoice, string> = {
+  za: "for",
+  proti: "against",
+  zdrzal_sa: "abstain",
+};
+const CHOICES: VoteChoice[] = ["za", "proti", "zdrzal_sa"];
 
 export default function VotingDetailPage() {
   const { data: session } = useSession();
   const t = useTranslations("Voting");
   const tNew = useTranslations("VotingNew");
+  const tVote = useTranslations("VoteButton");
   const tCommon = useTranslations("Common");
   const format = useFormatter();
   const params = useParams();
@@ -81,21 +108,26 @@ export default function VotingDetailPage() {
   const id = params.id as string;
 
   const [voting, setVoting] = useState<VotingDetail | null>(null);
-  const [voteData, setVoteData] = useState<VoteData | null>(null);
+  const [data, setData] = useState<BallotData | null>(null);
   const [buildingData, setBuildingData] = useState<{ name: string; address: string; ico: string | null; country?: "sk" | "cz" } | null>(null);
   const [legalNotice, setLegalNotice] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [voting404, setVoting404] = useState(false);
-  const [castingVote, setCastingVote] = useState(false);
-  const [showPaperModal, setShowPaperModal] = useState(false);
   const [showMandateModal, setShowMandateModal] = useState(false);
+  const [showPaperModal, setShowPaperModal] = useState(false);
   const [editMode, setEditMode] = useState(false);
   const [editTitle, setEditTitle] = useState("");
   const [editDescription, setEditDescription] = useState("");
   const [editStartsAt, setEditStartsAt] = useState("");
   const [editEndsAt, setEditEndsAt] = useState("");
   const [editSaving, setEditSaving] = useState(false);
-  const [lastAuditHash, setLastAuditHash] = useState<string | null>(null);
+
+  // Per-flat ballot drafts (itemId → choice), the review step, and status.
+  const [drafts, setDrafts] = useState<Record<string, Record<string, VoteChoice>>>({});
+  const [reviewFlat, setReviewFlat] = useState<string | null>(null);
+  const [submitting, setSubmitting] = useState(false);
+  const [castError, setCastError] = useState("");
+  const [lastBallotHash, setLastBallotHash] = useState<string | null>(null);
 
   const role = (session?.user?.role || "owner") as UserRole;
   const canVote = hasPermission(role, "vote");
@@ -105,9 +137,16 @@ export default function VotingDetailPage() {
 
   const fetchVoteData = useCallback(async () => {
     if (!hasPermission(role, "viewVotingResults")) return;
-    const res = await fetch(`/api/votes?votingId=${id}`);
+    const res = await fetch(`/api/ballots?votingId=${id}`);
     if (res.ok) {
-      setVoteData(await res.json());
+      const d: BallotData = await res.json();
+      setData(d);
+      // Prefill drafts from any existing ballots so re-editing shows prior choices.
+      const init: Record<string, Record<string, VoteChoice>> = {};
+      for (const ub of d.userBallots) {
+        init[ub.flatId] = { ...(ub.choices as Record<string, VoteChoice>) };
+      }
+      setDrafts(init);
     }
   }, [id, role]);
 
@@ -132,9 +171,7 @@ export default function VotingDetailPage() {
             ico: bldData.ico,
             country: bldData.country,
           });
-          if (bldData.legalNotice) {
-            setLegalNotice(bldData.legalNotice);
-          }
+          if (bldData.legalNotice) setLegalNotice(bldData.legalNotice);
         }
       }
       await fetchVoteData();
@@ -143,28 +180,52 @@ export default function VotingDetailPage() {
     load();
   }, [id, fetchVoteData]);
 
-  async function handleVote(choice: VoteChoice, flatId: string) {
-    if (!canVote || voting?.status !== "active") return;
+  function setChoice(flatId: string, itemId: string, choice: VoteChoice) {
+    setDrafts((prev) => ({
+      ...prev,
+      [flatId]: { ...(prev[flatId] || {}), [itemId]: choice },
+    }));
+  }
+  function bulkSetRemaining(flatId: string, choice: VoteChoice) {
+    if (!data) return;
+    setDrafts((prev) => {
+      const cur = { ...(prev[flatId] || {}) };
+      for (const item of data.items) if (!cur[item.id]) cur[item.id] = choice;
+      return { ...prev, [flatId]: cur };
+    });
+  }
 
-    // Skip if already voted with the same choice
-    const existing = userVotedFlats.find((v) => v.flatId === flatId);
-    if (existing && existing.choice === choice) return;
-
-    setCastingVote(true);
-    const res = await fetch("/api/votes", {
+  async function submitBallot(flatId: string) {
+    setSubmitting(true);
+    setCastError("");
+    const cur = drafts[flatId] || {};
+    const items = Object.entries(cur).map(([itemId, choice]) => ({ itemId, choice }));
+    const res = await fetch("/api/ballots", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ votingId: id, choice, flatId }),
+      body: JSON.stringify({ votingId: id, flatId, items }),
     });
-
     if (res.ok) {
-      const data = await res.json();
-      if (data.auditHash) {
-        setLastAuditHash(data.auditHash);
-      }
+      const j = await res.json();
+      if (j.ballotHash) setLastBallotHash(j.ballotHash);
+      setReviewFlat(null);
+      await fetchVoteData();
+    } else {
+      const e = await res.json().catch(() => ({}));
+      setCastError(e.error || t("signSubmitFailed"));
+    }
+    setSubmitting(false);
+  }
+
+  async function withdrawBallot(flatId: string) {
+    if (!window.confirm(t("withdrawConfirm"))) return;
+    const res = await fetch(`/api/ballots?votingId=${id}&flatId=${flatId}`, {
+      method: "DELETE",
+    });
+    if (res.ok) {
+      setReviewFlat(null);
       await fetchVoteData();
     }
-    setCastingVote(false);
   }
 
   async function handleStatusChange(status: VotingStatus) {
@@ -189,7 +250,6 @@ export default function VotingDetailPage() {
   async function handleEditSave(e: React.FormEvent) {
     e.preventDefault();
     setEditSaving(true);
-
     const res = await fetch(`/api/votings/${id}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
@@ -200,7 +260,6 @@ export default function VotingDetailPage() {
         endsAt: editEndsAt,
       }),
     });
-
     if (res.ok) {
       const refetch = await fetch(`/api/votings/${id}`);
       if (refetch.ok) setVoting(await refetch.json());
@@ -238,35 +297,16 @@ export default function VotingDetailPage() {
   const isMeetingOrOwnersQuarter =
     voting.votingType === "meeting" || voting.initiatedBy === "owners_quarter";
 
-  // Per-flat voting data
-  const userFlats = voteData?.userFlats || [];
-  const userVotedFlats = voteData?.userVotedFlats || [];
+  const items = data?.items || [];
+  const userFlats = data?.userFlats || [];
+  const userBallots = data?.userBallots || [];
   const hasVotedAllFlats =
     userFlats.length > 0 &&
-    userFlats.every((f) =>
-      userVotedFlats.some((v) => v.flatId === f.flatId)
-    );
+    userFlats.every((f) => userBallots.some((b) => b.flatId === f.flatId));
 
-  const getFlatVote = (flatId: string) =>
-    userVotedFlats.find((v) => v.flatId === flatId);
-
-  // Check if a flat was voted by someone else (co-owner)
-  const isFlatVotedByOther = (flatId: string) => {
-    const vote = getFlatVote(flatId);
-    return (
-      !vote &&
-      (voteData?.votes as Array<{ flatId: string }>)?.some(
-        (v) => v.flatId === flatId
-      )
-    );
-  };
-
-  const getChoiceKey = (choice: string) =>
-    choice === "za"
-      ? "votedFor"
-      : choice === "proti"
-      ? "votedAgainst"
-      : "votedAbstain";
+  const flatNumbers = Object.fromEntries(
+    (data?.ballots || []).map((b) => [b.entityId, b.flatNumber])
+  );
 
   return (
     <div className="max-w-2xl mx-auto">
@@ -283,13 +323,11 @@ export default function VotingDetailPage() {
             <div className="flex items-start justify-between gap-4 mb-4">
               <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">{voting.title}</h1>
               <div className="flex gap-2 flex-shrink-0 flex-wrap">
-                {/* Entrance badge */}
                 {voting.entranceName && (
                   <span className="px-3 py-1 rounded-full text-sm font-medium whitespace-nowrap bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300">
                     {voting.entranceName}
                   </span>
                 )}
-                {/* Voting type badge */}
                 <span
                   className={`px-3 py-1 rounded-full text-sm font-medium whitespace-nowrap ${
                     voting.votingType === "meeting"
@@ -297,11 +335,8 @@ export default function VotingDetailPage() {
                       : "bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-200"
                   }`}
                 >
-                  {voting.votingType === "meeting"
-                    ? t("typeMeeting")
-                    : t("typeWritten")}
+                  {voting.votingType === "meeting" ? t("typeMeeting") : t("typeWritten")}
                 </span>
-                {/* Status badge */}
                 <span
                   className={`px-3 py-1 rounded-full text-sm font-medium whitespace-nowrap ${
                     isActive
@@ -311,11 +346,7 @@ export default function VotingDetailPage() {
                       : "bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-300"
                   }`}
                 >
-                  {isActive
-                    ? t("statusActive")
-                    : isClosed
-                    ? t("statusClosed")
-                    : t("statusDraft")}
+                  {isActive ? t("statusActive") : isClosed ? t("statusClosed") : t("statusDraft")}
                 </span>
               </div>
             </div>
@@ -345,19 +376,11 @@ export default function VotingDetailPage() {
             <div className="flex flex-wrap gap-4 text-sm text-gray-500 dark:text-gray-400">
               <span>
                 {t("from")}{" "}
-                {format.dateTime(new Date(voting.startsAt), {
-                  day: "numeric",
-                  month: "long",
-                  year: "numeric",
-                })}
+                {format.dateTime(new Date(voting.startsAt), { day: "numeric", month: "long", year: "numeric" })}
               </span>
               <span>
                 {t("to")}{" "}
-                {format.dateTime(new Date(voting.endsAt), {
-                  day: "numeric",
-                  month: "long",
-                  year: "numeric",
-                })}
+                {format.dateTime(new Date(voting.endsAt), { day: "numeric", month: "long", year: "numeric" })}
               </span>
             </div>
 
@@ -464,61 +487,180 @@ export default function VotingDetailPage() {
       {isActive && isMeetingOrOwnersQuarter && canVote && (
         <div className="bg-amber-50 border border-amber-200 rounded-xl p-6 mb-6 text-center dark:bg-amber-900/30 dark:border-amber-800">
           <p className="text-base text-amber-800 dark:text-amber-200">
-            {voting.votingType === "meeting"
-              ? t("meetingOnlyInfo")
-              : t("ownersQuarterInfo")}
+            {voting.votingType === "meeting" ? t("meetingOnlyInfo") : t("ownersQuarterInfo")}
           </p>
         </div>
       )}
 
-      {/* Per-flat voting sections */}
-      {isActive && canVote && !isMeetingOrOwnersQuarter && userFlats.length > 0 && (
+      {/* Per-flat multi-item ballot: mark every item, then sign once. */}
+      {isActive && canVote && !isMeetingOrOwnersQuarter && userFlats.length > 0 && items.length > 0 && (
         <div className="space-y-4 mb-6">
+          {castError && (
+            <div className="bg-red-50 text-red-700 px-4 py-3 rounded-lg text-base dark:bg-red-900/30 dark:text-red-200">
+              {castError}
+            </div>
+          )}
           {userFlats.map((flat) => {
-            const flatVote = getFlatVote(flat.flatId);
-            const votedByOther = isFlatVotedByOther(flat.flatId);
+            const cur = drafts[flat.flatId] || {};
+            const markedCount = Object.keys(cur).length;
+            const remaining = items.length - markedCount;
+            const existing = userBallots.find((b) => b.flatId === flat.flatId);
+            const inReview = reviewFlat === flat.flatId;
 
             return (
               <div
                 key={flat.flatId}
                 className="bg-white rounded-xl border border-gray-200 p-6 dark:bg-gray-800 dark:border-gray-700"
               >
-                <h3 className="text-lg font-bold text-gray-900 mb-3 dark:text-gray-100">
+                <h3 className="text-lg font-bold text-gray-900 mb-1 dark:text-gray-100">
                   {t("flatHeader", { number: flat.flatNumber })}
                 </h3>
 
-                {votedByOther ? (
-                  <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 text-center dark:bg-amber-900/30 dark:border-amber-800">
-                    <p className="text-base text-amber-700 dark:text-amber-200">
-                      {t("flatVotedByOther")}
+                {existing && (
+                  <p className="text-sm text-green-700 mb-3 dark:text-green-300">
+                    {t("alreadySignedHint", {
+                      date: format.dateTime(new Date(existing.recordedAt), {
+                        day: "numeric",
+                        month: "long",
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      }),
+                    })}
+                  </p>
+                )}
+
+                {!inReview ? (
+                  <>
+                    <p className="text-base text-gray-600 mb-4 dark:text-gray-300">
+                      {t("ballotIntro")}
                     </p>
-                  </div>
+
+                    <div className="space-y-5">
+                      {items.map((item) => (
+                        <div key={item.id}>
+                          <div className="mb-2">
+                            <span className="text-base font-semibold text-gray-900 dark:text-gray-100">
+                              {item.idx + 1}. {item.title}
+                            </span>
+                            {item.description && (
+                              <p className="text-sm text-gray-500 whitespace-pre-wrap dark:text-gray-400">
+                                {item.description}
+                              </p>
+                            )}
+                          </div>
+                          <div className="grid grid-cols-3 gap-2">
+                            {CHOICES.map((c) => (
+                              <VoteButton
+                                key={c}
+                                choice={c}
+                                selected={cur[item.id] === c}
+                                disabled={submitting}
+                                onClick={(choice) => setChoice(flat.flatId, item.id, choice)}
+                              />
+                            ))}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+
+                    {/* Bulk set remaining */}
+                    <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+                      <p className="text-sm text-gray-500 mb-2 dark:text-gray-400">
+                        {t("setRemainingLabel")}
+                      </p>
+                      <div className="grid grid-cols-3 gap-2">
+                        {CHOICES.map((c) => (
+                          <button
+                            key={c}
+                            type="button"
+                            disabled={submitting || remaining === 0}
+                            onClick={() => bulkSetRemaining(flat.flatId, c)}
+                            className="px-3 py-2 text-sm font-medium border border-gray-300 rounded-lg hover:bg-gray-100 disabled:opacity-40 dark:border-gray-700 dark:hover:bg-gray-700 dark:text-gray-200"
+                          >
+                            {tVote(CHOICE_KEY[c])}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div className="mt-4 flex items-center justify-between gap-3">
+                      <span className="text-sm text-gray-500 dark:text-gray-400">
+                        {remaining > 0
+                          ? t("remainingToMark", { count: remaining })
+                          : t("allItemsMarked")}
+                      </span>
+                      <div className="flex gap-2">
+                        {existing && (
+                          <button
+                            type="button"
+                            onClick={() => withdrawBallot(flat.flatId)}
+                            className="px-4 py-3 text-base font-medium text-red-600 bg-red-50 hover:bg-red-100 rounded-lg transition-colors dark:text-red-300 dark:bg-red-900/30 dark:hover:bg-red-900/50"
+                          >
+                            {t("withdrawBallot")}
+                          </button>
+                        )}
+                        <button
+                          type="button"
+                          disabled={submitting || markedCount === 0}
+                          onClick={() => {
+                            setCastError("");
+                            setReviewFlat(flat.flatId);
+                          }}
+                          className="px-5 py-3 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white text-base font-medium rounded-lg transition-colors"
+                        >
+                          {t("reviewAndSign")}
+                        </button>
+                      </div>
+                    </div>
+                  </>
                 ) : (
-                  <div className="space-y-2">
-                    <p className="text-base text-gray-600 mb-2 dark:text-gray-300">
-                      {flatVote
-                        ? t("changeVoteHint")
-                        : t("castVote", { flatNumber: flat.flatNumber })}
+                  <>
+                    <h4 className="text-base font-bold text-gray-900 mb-1 dark:text-gray-100">
+                      {t("reviewTitle")}
+                    </h4>
+                    <p className="text-sm text-gray-500 mb-4 dark:text-gray-400">
+                      {t("reviewHelp")}
                     </p>
-                    <VoteButton
-                      choice="za"
-                      selected={flatVote?.choice === "za"}
-                      disabled={castingVote}
-                      onClick={(choice) => handleVote(choice, flat.flatId)}
-                    />
-                    <VoteButton
-                      choice="proti"
-                      selected={flatVote?.choice === "proti"}
-                      disabled={castingVote}
-                      onClick={(choice) => handleVote(choice, flat.flatId)}
-                    />
-                    <VoteButton
-                      choice="zdrzal_sa"
-                      selected={flatVote?.choice === "zdrzal_sa"}
-                      disabled={castingVote}
-                      onClick={(choice) => handleVote(choice, flat.flatId)}
-                    />
-                  </div>
+                    <ul className="divide-y divide-gray-200 dark:divide-gray-700 mb-4">
+                      {items.map((item) => {
+                        const choice = cur[item.id] as VoteChoice | undefined;
+                        return (
+                          <li key={item.id} className="flex items-center justify-between py-2 gap-3">
+                            <span className="text-base text-gray-800 dark:text-gray-200">
+                              {item.idx + 1}. {item.title}
+                            </span>
+                            <span
+                              className={`text-sm font-semibold whitespace-nowrap ${
+                                choice
+                                  ? "text-gray-900 dark:text-gray-100"
+                                  : "text-amber-600 dark:text-amber-300"
+                              }`}
+                            >
+                              {choice ? tVote(CHOICE_KEY[choice]) : t("unmarkedItem")}
+                            </span>
+                          </li>
+                        );
+                      })}
+                    </ul>
+                    <div className="flex gap-2 justify-end">
+                      <button
+                        type="button"
+                        disabled={submitting}
+                        onClick={() => setReviewFlat(null)}
+                        className="px-5 py-3 text-base font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors dark:text-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600"
+                      >
+                        {tCommon("cancel")}
+                      </button>
+                      <button
+                        type="button"
+                        disabled={submitting}
+                        onClick={() => submitBallot(flat.flatId)}
+                        className="px-5 py-3 bg-green-600 hover:bg-green-700 disabled:bg-green-400 text-white text-base font-medium rounded-lg transition-colors"
+                      >
+                        {submitting ? t("signing") : t("confirmSign")}
+                      </button>
+                    </div>
+                  </>
                 )}
               </div>
             );
@@ -526,18 +668,18 @@ export default function VotingDetailPage() {
         </div>
       )}
 
-      {/* Audit hash display */}
-      {lastAuditHash && (
+      {/* Ballot hash display */}
+      {lastBallotHash && (
         <div className="bg-gray-50 border border-gray-200 rounded-xl p-4 mb-6 dark:bg-gray-800 dark:border-gray-700">
-          <p className="text-sm text-gray-500 mb-1 dark:text-gray-400">{t("auditHashLabel")}</p>
+          <p className="text-sm text-gray-500 mb-1 dark:text-gray-400">{t("ballotHashLabel")}</p>
           <p className="text-xs font-mono text-gray-700 break-all dark:text-gray-200">
-            {lastAuditHash}
+            {lastBallotHash}
           </p>
         </div>
       )}
 
       {/* Action buttons */}
-      {isActive && (
+      {isActive && (canRecordPaper || canMandate) && (
         <div className="flex flex-wrap gap-3 mb-6">
           {canRecordPaper && (
             <button
@@ -558,25 +700,46 @@ export default function VotingDetailPage() {
         </div>
       )}
 
-      {/* Results */}
-      {voteData && (isClosed || hasVotedAllFlats || canManage) && (
-        <VotingResults
-          results={voteData.results}
-          totalVotes={voteData.totalVotes}
-          flatNumbers={Object.fromEntries(
-            voteData.votes.map((v) => [v.flatId, v.flatNumber])
-          )}
-          country={buildingData?.country ?? "sk"}
-        />
+      {/* Per-item results */}
+      {data && (isClosed || hasVotedAllFlats || canManage) && items.length > 0 && (
+        <div className="space-y-6">
+          {items.map((item) => {
+            const r = data.results.find((x) => x.itemId === item.id);
+            if (!r) return null;
+            const totalVotes = data.ballots.filter((b) =>
+              b.choices.some((c) => c.itemId === item.id)
+            ).length;
+            return (
+              <div key={item.id}>
+                <div className="mb-2">
+                  <h3 className="text-lg font-bold text-gray-900 dark:text-gray-100">
+                    {item.idx + 1}. {item.title}
+                  </h3>
+                  {item.description && (
+                    <p className="text-sm text-gray-500 whitespace-pre-wrap dark:text-gray-400">
+                      {item.description}
+                    </p>
+                  )}
+                </div>
+                <VotingResults
+                  results={r}
+                  totalVotes={totalVotes}
+                  flatNumbers={flatNumbers}
+                  country={buildingData?.country ?? "sk"}
+                />
+              </div>
+            );
+          })}
+        </div>
       )}
 
-      {/* Download minutes button */}
-      {isClosed && canManage && voteData && buildingData && (
+      {/* Per-item voting minutes */}
+      {isClosed && canManage && data && buildingData && (
         <div className="mt-6">
           <DownloadMinutesButton
             votingId={id}
             voting={voting}
-            voteData={voteData}
+            ballotData={data}
             building={buildingData}
             legalNotice={legalNotice}
             entranceName={voting.entranceName}
@@ -584,33 +747,29 @@ export default function VotingDetailPage() {
         </div>
       )}
 
-      {/* Paper vote photos */}
-      {canManage && voteData && voteData.votes.some((v) => v.paperPhotoUrl) && (
+      {/* Paper ballot photos (read from ballots) */}
+      {canManage && data && data.ballots.some((b) => b.photos.length > 0) && (
         <div className="bg-white rounded-xl border border-gray-200 p-6 mt-6 dark:bg-gray-800 dark:border-gray-700">
           <h3 className="text-lg font-bold text-gray-900 mb-4 dark:text-gray-100">
             {t("paperVotePhotos")}
           </h3>
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-            {voteData.votes
-              .filter((v) => v.paperPhotoUrl)
-              .map((v) => (
+            {data.ballots.flatMap((b) =>
+              b.photos.map((p) => (
                 <a
-                  key={v.id}
-                  href={v.paperPhotoUrl!}
+                  key={`${b.id}-${p.idx}`}
+                  href={p.storageKey}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="block border border-gray-200 rounded-lg overflow-hidden hover:border-blue-400 transition-colors dark:border-gray-700 dark:hover:border-blue-500"
                 >
-                  <img
-                    src={v.paperPhotoUrl!}
-                    alt={`${v.ownerName} - ${v.flatNumber}`}
-                    className="w-full h-32 object-cover"
-                  />
+                  <img src={p.storageKey} alt={`${b.ownerName} - ${b.flatNumber}`} className="w-full h-32 object-cover" />
                   <div className="p-2 text-sm text-gray-600 dark:text-gray-300">
-                    {v.ownerName} &middot; {t("flatHeader", { number: v.flatNumber })}
+                    {b.ownerName} &middot; {t("flatHeader", { number: b.flatNumber })}
                   </div>
                 </a>
-              ))}
+              ))
+            )}
           </div>
         </div>
       )}
