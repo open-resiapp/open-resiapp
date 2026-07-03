@@ -12,7 +12,7 @@
 // User-facing code never sees these debit/credit terms — this module is
 // the hidden double-entry layer beneath the domain surface.
 
-import { eq, and, inArray } from "drizzle-orm";
+import { eq, and, inArray, sql } from "drizzle-orm";
 import { db } from "@/db";
 import {
   accounts,
@@ -496,6 +496,110 @@ export async function postPaymentMatched(
   return entryId;
 }
 
+// ── Apply parked preplatok against open assessments ────
+
+/**
+ * Applies a payment's parked preplatok (credit sitting on 379 for the
+ * unit) to open assessments: Dr 379 / Cr pohľadávky per allocation, plus
+ * the allocation rows. The caller computes the allocations and guarantees
+ * they don't exceed the payment's unallocated remainder — re-verified
+ * here against the DB.
+ */
+export async function applyPaymentCredit(
+  tx: Tx,
+  input: {
+    paymentId: string;
+    entityId: string;
+    periodId: string;
+    country: Country;
+    createdById: string;
+    unitEntityId: string;
+    /** "manual" when a person triggered the application (audit). */
+    allocatedBy: "auto" | "manual";
+    allocations: {
+      assessmentId: string;
+      serviceCategoryId: string;
+      okruh: Okruh;
+      amountCents: number;
+    }[];
+  }
+): Promise<string> {
+  if (input.allocations.length === 0) {
+    throw new Error("accounting: credit application needs allocations");
+  }
+  const [payment] = await tx
+    .select({
+      amountCents: payments.amountCents,
+      journalEntryId: payments.journalEntryId,
+      voidedAt: payments.voidedAt,
+    })
+    .from(payments)
+    .where(eq(payments.id, input.paymentId));
+  if (!payment) {
+    throw new Error(`accounting: payment ${input.paymentId} not found`);
+  }
+  if (payment.voidedAt) {
+    throw new Error(`accounting: payment ${input.paymentId} is voided`);
+  }
+  if (!payment.journalEntryId) {
+    throw new Error(
+      `accounting: payment ${input.paymentId} is not posted — match it first`
+    );
+  }
+  const [allocatedRow] = await tx
+    .select({
+      total: sql<number>`coalesce(sum(${paymentAllocations.amountCents}), 0)::int`,
+    })
+    .from(paymentAllocations)
+    .where(eq(paymentAllocations.paymentId, input.paymentId));
+  const remainder = payment.amountCents - (allocatedRow?.total ?? 0);
+  const applying = input.allocations.reduce((s, a) => s + a.amountCents, 0);
+  if (applying > remainder) {
+    throw new Error(
+      `accounting: applying ${applying} exceeds parked remainder ${remainder}`
+    );
+  }
+
+  const lines: LineInput[] = [
+    {
+      accountCode: ACCOUNT_CODES.INE_ZAVAZKY,
+      debitCents: applying,
+      okruh: "svc",
+      unitEntityId: input.unitEntityId,
+    },
+    ...input.allocations.map((a) => ({
+      accountCode: receivableCode(a.okruh),
+      creditCents: a.amountCents,
+      okruh: a.okruh,
+      unitEntityId: input.unitEntityId,
+      serviceCategoryId: a.serviceCategoryId,
+    })),
+  ];
+
+  const entryId = await insertEntry(tx, {
+    entityId: input.entityId,
+    periodId: input.periodId,
+    country: input.country,
+    postedAt: new Date(),
+    description: "Použitie preplatku",
+    sourceType: "payment",
+    sourceId: input.paymentId,
+    createdById: input.createdById,
+    lines,
+  });
+
+  await tx.insert(paymentAllocations).values(
+    input.allocations.map((a) => ({
+      paymentId: input.paymentId,
+      assessmentId: a.assessmentId,
+      amountCents: a.amountCents,
+      allocatedBy: input.allocatedBy,
+    }))
+  );
+
+  return entryId;
+}
+
 // ── Void payment (open-period correction) ──────────────
 
 /**
@@ -532,7 +636,20 @@ export async function voidPayment(
   }
 
   let reversalId: string | null = null;
-  if (payment.journalEntryId) {
+  // Reverse EVERY entry the payment produced — the original match AND any
+  // later credit applications (Dr 379 / Cr pohľadávky). Reversals are only
+  // created here, and voidedAt guards re-entry, so at this point all
+  // entries carrying this payment as source are forward postings.
+  const originalEntries = await tx
+    .select({ id: journalEntries.id })
+    .from(journalEntries)
+    .where(
+      and(
+        eq(journalEntries.sourceType, "payment"),
+        eq(journalEntries.sourceId, input.paymentId)
+      )
+    );
+  if (originalEntries.length > 0) {
     const originalLines = await tx
       .select({
         accountId: journalLines.accountId,
@@ -543,7 +660,12 @@ export async function voidPayment(
         serviceCategoryId: journalLines.serviceCategoryId,
       })
       .from(journalLines)
-      .where(eq(journalLines.journalEntryId, payment.journalEntryId));
+      .where(
+        inArray(
+          journalLines.journalEntryId,
+          originalEntries.map((e) => e.id)
+        )
+      );
 
     await assertPeriodOpen(tx, input.periodId);
     const [entry] = await tx

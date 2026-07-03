@@ -1471,6 +1471,33 @@
       "voidYes": "Void",
       "voidNo": "Cancel",
       "voiding": "Voiding…"
+    },
+    "karta": {
+      "title": "Unit ledger",
+      "subtitle": "Running balance of every unit — schedules, payments and credits",
+      "backToAccounting": "Back to accounting",
+      "backToList": "Back to unit list",
+      "empty": "No movements yet.",
+      "loadError": "Failed to load the unit ledger.",
+      "forbidden": "You don't have access to this unit ledger.",
+      "submitError": "Action failed",
+      "signHint": "Positive balance = arrears (the unit owes), negative = credit.",
+      "detailTitle": "Unit ledger {unit}",
+      "noVs": "No variable symbol assigned",
+      "balance": "Balance",
+      "balanceOwes": "Arrears — the unit owes the community",
+      "balanceCredit": "Credit — the community holds an overpayment",
+      "balanceSettled": "Settled",
+      "preplatok": "Parked credit",
+      "applyCredit": "Apply credit to arrears",
+      "applyingCredit": "Applying…",
+      "colDate": "Date",
+      "colDescription": "Description",
+      "colPredpis": "Charge",
+      "colUhrada": "Payment",
+      "colBalance": "Balance",
+      "lineNoCategory": "No service (credit / bank)",
+      "vsLabel": "Variable symbol: {vs}"
     }
   }
 }

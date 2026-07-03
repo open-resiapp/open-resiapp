@@ -1471,6 +1471,33 @@
       "voidYes": "Stornovat",
       "voidNo": "Zrušit",
       "voiding": "Stornuje se…"
+    },
+    "karta": {
+      "title": "Karta jednotky",
+      "subtitle": "Průběžný zůstatek každé jednotky — předpisy, úhrady a přeplatky",
+      "backToAccounting": "Zpět na účetnictví",
+      "backToList": "Zpět na seznam jednotek",
+      "empty": "Zatím žádné pohyby.",
+      "loadError": "Nepodařilo se načíst kartu jednotky.",
+      "forbidden": "K této kartě jednotky nemáte přístup.",
+      "submitError": "Akce selhala",
+      "signHint": "Kladný zůstatek = nedoplatek (jednotka dluží), záporný = přeplatek.",
+      "detailTitle": "Karta jednotky {unit}",
+      "noVs": "Bez přiděleného variabilního symbolu",
+      "balance": "Zůstatek",
+      "balanceOwes": "Nedoplatek — jednotka dluží společenství",
+      "balanceCredit": "Přeplatek — společenství eviduje kredit",
+      "balanceSettled": "Vyrovnáno",
+      "preplatok": "Přeplatek na účtu",
+      "applyCredit": "Použít přeplatek na nedoplatky",
+      "applyingCredit": "Aplikuje se…",
+      "colDate": "Datum",
+      "colDescription": "Popis",
+      "colPredpis": "Předpis",
+      "colUhrada": "Úhrada",
+      "colBalance": "Zůstatek",
+      "lineNoCategory": "Bez služby (přeplatek / banka)",
+      "vsLabel": "Variabilní symbol: {vs}"
     }
   }
 }

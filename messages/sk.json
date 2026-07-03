@@ -1471,6 +1471,33 @@
       "voidYes": "Stornovať",
       "voidNo": "Zrušiť",
       "voiding": "Stornuje sa…"
+    },
+    "karta": {
+      "title": "Karta bytu",
+      "subtitle": "Priebežný zostatok každého bytu — predpisy, úhrady a preplatky",
+      "backToAccounting": "Späť na účtovníctvo",
+      "backToList": "Späť na zoznam bytov",
+      "empty": "Zatiaľ žiadne pohyby.",
+      "loadError": "Nepodarilo sa načítať kartu bytu.",
+      "forbidden": "Na túto kartu bytu nemáte prístup.",
+      "submitError": "Akcia zlyhala",
+      "signHint": "Kladný zostatok = nedoplatok (byt dlží), záporný = preplatok.",
+      "detailTitle": "Karta bytu {unit}",
+      "noVs": "Bez prideleného variabilného symbolu",
+      "balance": "Zostatok",
+      "balanceOwes": "Nedoplatok — byt dlží spoločenstvu",
+      "balanceCredit": "Preplatok — spoločenstvo eviduje kredit",
+      "balanceSettled": "Vyrovnané",
+      "preplatok": "Preplatok na účte",
+      "applyCredit": "Použiť preplatok na nedoplatky",
+      "applyingCredit": "Aplikuje sa…",
+      "colDate": "Dátum",
+      "colDescription": "Popis",
+      "colPredpis": "Predpis",
+      "colUhrada": "Úhrada",
+      "colBalance": "Zostatok",
+      "lineNoCategory": "Bez služby (preplatok / banka)",
+      "vsLabel": "Variabilný symbol: {vs}"
     }
   }
 }
