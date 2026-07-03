@@ -1405,7 +1405,20 @@
       "discardYes": "Zahodiť",
       "discardNo": "Ponechať",
       "discarding": "Zahadzuje sa…",
-      "amountPlaceholder": "0,00"
+      "amountPlaceholder": "0,00",
+      "previewTitle": "Náhľad a publikovanie",
+      "loadPreview": "Zobraziť náhľad po bytoch",
+      "previewLoading": "Počíta sa…",
+      "previewHint": "Náhľad počíta z naposledy uložených položiek. Pred publikovaním uložte zmeny.",
+      "unitCol": "Byt",
+      "vsCol": "VS",
+      "totalCol": "Spolu",
+      "monthlyTotal": "Mesačne spolu",
+      "publishConfirm": "Publikovať predpis na {months, plural, one {# mesiac} few {# mesiace} other {# mesiacov}} roka {year}. Publikovaný predpis sa už nedá upravovať — zmeny bude riešiť revízia.",
+      "publish": "Publikovať predpis",
+      "publishing": "Publikuje sa…",
+      "effectiveFromLabel": "Platný od",
+      "amountsVaryNote": "Sumy sa v priebehu roka menia (zmena počtu osôb). Náhľad zobrazuje prvý mesiac; mesačné súčty:"
     },
     "allocationKeys": {
       "share": "Spoluvlastnícky podiel",

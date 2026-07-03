@@ -1405,7 +1405,20 @@
       "discardYes": "Discard",
       "discardNo": "Keep",
       "discarding": "Discarding…",
-      "amountPlaceholder": "0.00"
+      "amountPlaceholder": "0.00",
+      "previewTitle": "Preview & publish",
+      "loadPreview": "Show per-unit preview",
+      "previewLoading": "Computing…",
+      "previewHint": "The preview is computed from the last saved rows. Save your changes before publishing.",
+      "unitCol": "Unit",
+      "vsCol": "VS",
+      "totalCol": "Total",
+      "monthlyTotal": "Monthly total",
+      "publishConfirm": "Publish the schedule for {months, plural, one {# month} other {# months}} of {year}. A published schedule can no longer be edited — changes go through a revision.",
+      "publish": "Publish schedule",
+      "publishing": "Publishing…",
+      "effectiveFromLabel": "Effective from",
+      "amountsVaryNote": "Amounts change during the year (person-count change). The preview shows the first month; monthly totals:"
     },
     "allocationKeys": {
       "share": "Ownership share",

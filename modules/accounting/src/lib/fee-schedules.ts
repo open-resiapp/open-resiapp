@@ -165,10 +165,30 @@ export async function getFeeSchedule(
   };
 }
 
-function assertWithinYear(effectiveFrom: Date, year: number): void {
+/**
+ * The whole predpis pipeline is month-granular (assessments, supersede
+ * boundaries, postings) — effectiveFrom must be the first instant of a
+ * month inside the period year, otherwise a mid-month revision would
+ * silently re-price the elapsed part of the month.
+ */
+export function assertMonthStartWithinYear(
+  effectiveFrom: Date,
+  year: number
+): void {
   if (effectiveFrom.getUTCFullYear() !== year) {
     throw new Error(
       `accounting: effectiveFrom ${effectiveFrom.toISOString()} outside period year ${year}`
+    );
+  }
+  if (
+    effectiveFrom.getUTCDate() !== 1 ||
+    effectiveFrom.getUTCHours() !== 0 ||
+    effectiveFrom.getUTCMinutes() !== 0 ||
+    effectiveFrom.getUTCSeconds() !== 0 ||
+    effectiveFrom.getUTCMilliseconds() !== 0
+  ) {
+    throw new Error(
+      `accounting: effectiveFrom ${effectiveFrom.toISOString()} must be the first day of a month (UTC)`
     );
   }
 }
@@ -179,7 +199,7 @@ export async function createFeeSchedule(input: {
   effectiveFrom: Date;
   createdById: string;
 }): Promise<{ id: string }> {
-  assertWithinYear(input.effectiveFrom, input.year);
+  assertMonthStartWithinYear(input.effectiveFrom, input.year);
   return db.transaction(async (tx) => {
     const period = await getOrCreateOpenPeriod(tx, input.entityId, input.year);
 
@@ -219,7 +239,7 @@ export interface ServiceRowInput {
  * published schedules are immutable). Returns the period year for
  * effectiveFrom validation.
  */
-async function lockDraft(
+export async function lockDraft(
   tx: Parameters<Parameters<typeof db.transaction>[0]>[0],
   entityId: string,
   scheduleId: string
@@ -281,7 +301,7 @@ export async function updateFeeScheduleDraft(input: {
       input.scheduleId
     );
     if (input.effectiveFrom) {
-      assertWithinYear(input.effectiveFrom, periodYear);
+      assertMonthStartWithinYear(input.effectiveFrom, periodYear);
     }
 
     if (categoryIds.length > 0) {

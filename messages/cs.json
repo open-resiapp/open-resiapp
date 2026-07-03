@@ -1405,7 +1405,20 @@
       "discardYes": "Zahodit",
       "discardNo": "Ponechat",
       "discarding": "Zahazuje se…",
-      "amountPlaceholder": "0,00"
+      "amountPlaceholder": "0,00",
+      "previewTitle": "Náhled a publikování",
+      "loadPreview": "Zobrazit náhled po jednotkách",
+      "previewLoading": "Počítá se…",
+      "previewHint": "Náhled se počítá z naposledy uložených položek. Před publikováním uložte změny.",
+      "unitCol": "Jednotka",
+      "vsCol": "VS",
+      "totalCol": "Celkem",
+      "monthlyTotal": "Měsíčně celkem",
+      "publishConfirm": "Publikovat předpis na {months, plural, one {# měsíc} few {# měsíce} other {# měsíců}} roku {year}. Publikovaný předpis už nelze upravovat — změny řeší revize.",
+      "publish": "Publikovat předpis",
+      "publishing": "Publikuje se…",
+      "effectiveFromLabel": "Platný od",
+      "amountsVaryNote": "Částky se v průběhu roku mění (změna počtu osob). Náhled zobrazuje první měsíc; měsíční součty:"
     },
     "allocationKeys": {
       "share": "Spoluvlastnický podíl",

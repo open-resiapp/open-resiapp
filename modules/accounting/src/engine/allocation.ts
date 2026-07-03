@@ -78,6 +78,62 @@ function roundHalfEven(value: number): number {
 }
 
 /**
+ * Splits `totalCents` across parts proportionally to arbitrary non-negative
+ * weights (ownership share, m², person count, …). Sum-preserving via
+ * largest-remainder: floors every share, then distributes the leftover
+ * cents to the largest fractional remainders — no part drifts more than
+ * one cent from its exact proportion and the parts always sum to the total
+ * (domain invariant 10). Used by predpis assessment generation.
+ */
+export function splitByWeights(
+  totalCents: number,
+  parts: { id: string; weight: number }[]
+): { id: string; amountCents: number }[] {
+  if (totalCents < 0) {
+    throw new Error(`splitByWeights: negative total ${totalCents}`);
+  }
+  if (parts.some((p) => p.weight < 0 || !Number.isFinite(p.weight))) {
+    throw new Error("splitByWeights: weights must be finite and >= 0");
+  }
+  const weightSum = parts.reduce((s, p) => s + p.weight, 0);
+  if (weightSum <= 0) {
+    throw new Error("splitByWeights: weight sum must be > 0");
+  }
+  const exact = parts.map((p) => (totalCents * p.weight) / weightSum);
+  const floors = exact.map(Math.floor);
+  let leftover = totalCents - floors.reduce((s, f) => s + f, 0);
+  // Stable order: biggest remainder first; ties keep input order.
+  const order = exact
+    .map((v, i) => ({ i, rem: v - floors[i] }))
+    .sort((a, b) => b.rem - a.rem || a.i - b.i);
+  const result = [...floors];
+  for (const { i } of order) {
+    if (leftover <= 0) break;
+    result[i] += 1;
+    leftover -= 1;
+  }
+  // Float-edge safety net: exact shares are computed in floating point, so
+  // a value can land epsilon above the integer it mathematically is,
+  // leaving the floors summing high (leftover < 0) or the distribution
+  // short. Reconcile against the largest-weight part and re-assert the
+  // invariant — sum preservation must hold unconditionally (invariant 10).
+  const sum = result.reduce((s, v) => s + v, 0);
+  if (sum !== totalCents) {
+    const largest = parts.reduce(
+      (best, p, i) => (p.weight > parts[best].weight ? i : best),
+      0
+    );
+    result[largest] += totalCents - sum;
+    if (result[largest] < 0) {
+      throw new Error(
+        `splitByWeights: could not reconcile rounding (sum ${sum}, total ${totalCents})`
+      );
+    }
+  }
+  return parts.map((p, i) => ({ id: p.id, amountCents: result[i] }));
+}
+
+/**
  * Allocates an incoming payment across open assessments.
  *
  * FIFO across (periodYear, month) groups: the oldest month is settled (or
