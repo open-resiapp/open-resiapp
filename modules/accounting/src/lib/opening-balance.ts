@@ -1,10 +1,11 @@
 import "server-only";
 
-import { and, eq, isNull, sql, asc } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 import { db } from "@/db";
-import { entities } from "@/db/schema";
-import { accountingPeriods, journalEntries } from "../db/schema";
+import { journalEntries } from "../db/schema";
 import { postOpeningBalance } from "../engine/booking";
+import { getOrCreateOpenPeriod } from "./periods";
+import { listDomUnits } from "./dom-units";
 
 // Opening-balance tool server logic (spec §Opening-balance correction
 // tool). Domain invariant 6: `banka + pokladnica = Σ fpúo + Σ zálohy +
@@ -32,21 +33,7 @@ export async function getOpeningBalanceState(
   country: "sk" | "cz",
   year: number
 ): Promise<OpeningBalanceState> {
-  const units = await db
-    .select({
-      id: entities.id,
-      name: entities.name,
-      flatNumber: sql<string | null>`${entities.data}->>'flat_number'`,
-    })
-    .from(entities)
-    .where(
-      and(
-        eq(entities.kind, "unit"),
-        eq(entities.rootId, rootEntityId),
-        isNull(entities.archivedAt)
-      )
-    )
-    .orderBy(asc(entities.name));
+  const units = await listDomUnits(rootEntityId);
 
   const [existing] = await db
     .select({ id: journalEntries.id })
@@ -112,24 +99,7 @@ export async function submitOpeningBalance(
       throw new Error("accounting: opening balance already posted");
     }
 
-    let [period] = await tx
-      .select({ id: accountingPeriods.id, status: accountingPeriods.status })
-      .from(accountingPeriods)
-      .where(
-        and(
-          eq(accountingPeriods.entityId, input.entityId),
-          eq(accountingPeriods.year, input.year)
-        )
-      );
-    if (!period) {
-      [period] = await tx
-        .insert(accountingPeriods)
-        .values({ entityId: input.entityId, year: input.year })
-        .returning({
-          id: accountingPeriods.id,
-          status: accountingPeriods.status,
-        });
-    }
+    const period = await getOrCreateOpenPeriod(tx, input.entityId, input.year);
 
     const assets = input.bankaCents + input.pokladnicaCents;
     const liabilities = input.unitBalances.reduce(

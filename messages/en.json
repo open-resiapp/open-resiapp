@@ -1367,7 +1367,66 @@
       "submitting": "Posting…",
       "submitError": "Posting failed",
       "loadError": "Failed to load data.",
-      "alreadyPosted": "The opening balance has already been posted and cannot be entered again. Corrections are booked as adjusting entries in the current period."
+      "alreadyPosted": "The opening balance has already been posted and cannot be entered again. Corrections are booked as adjusting entries in the current period.",
+      "amountPlaceholder": "0.00"
+    },
+    "predpis": {
+      "title": "Fee schedule",
+      "subtitle": "Monthly payment schedule — repair fund and service advances",
+      "unitSettingsLink": "Unit variable symbols",
+      "newSchedule": "New schedule",
+      "creating": "Creating…",
+      "empty": "No fee schedule yet. Create the first one for the current year.",
+      "loadError": "Failed to load fee schedules.",
+      "submitError": "Save failed",
+      "effectiveFromShort": "effective from",
+      "serviceCount": "{count, plural, =0 {no items} one {# item} other {# items}}",
+      "status": {
+        "draft": "Draft",
+        "published": "Published"
+      },
+      "backToList": "Back to schedules",
+      "editorTitle": "Fee schedule {year}",
+      "editorSubtitle": "Set the schedule rows — service, allocation key and monthly amount.",
+      "publishedReadOnly": "A published schedule cannot be edited — changes go through a revision with a new effective date.",
+      "noServices": "The schedule has no rows yet.",
+      "service": "Service",
+      "allocationKey": "Allocation key",
+      "monthlyAmount": "Monthly amount",
+      "perUnit": "€/unit",
+      "perDom": "€/building",
+      "removeRow": "Remove",
+      "addService": "Add service",
+      "savedOk": "Saved",
+      "save": "Save draft",
+      "saving": "Saving…",
+      "discardDraft": "Discard draft",
+      "discardConfirm": "Really discard this draft schedule?",
+      "discardYes": "Discard",
+      "discardNo": "Keep",
+      "discarding": "Discarding…",
+      "amountPlaceholder": "0.00"
+    },
+    "allocationKeys": {
+      "share": "Ownership share",
+      "area_m2": "Floor area (m²)",
+      "persons": "Person count",
+      "flat_count_equal": "Equal per unit",
+      "fixed": "Fixed amount per unit"
+    },
+    "unitSettings": {
+      "backToList": "Back to schedules",
+      "title": "Variable symbols",
+      "subtitle": "Each unit has an assigned variable symbol — incoming payments are matched by it.",
+      "autoFill": "Prefill from unit numbers",
+      "unit": "Unit",
+      "vs": "Variable symbol",
+      "duplicateVs": "Variable symbols must be unique.",
+      "submitError": "Save failed",
+      "loadError": "Failed to load units.",
+      "savedOk": "Saved",
+      "save": "Save",
+      "saving": "Saving…"
     }
   }
 }

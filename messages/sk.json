@@ -1367,7 +1367,66 @@
       "submitting": "Účtuje sa…",
       "submitError": "Zaúčtovanie zlyhalo",
       "loadError": "Nepodarilo sa načítať údaje.",
-      "alreadyPosted": "Otváracia súvaha je už zaúčtovaná a nedá sa zadať znova. Opravy sa účtujú ako korekčné zápisy v aktuálnom období."
+      "alreadyPosted": "Otváracia súvaha je už zaúčtovaná a nedá sa zadať znova. Opravy sa účtujú ako korekčné zápisy v aktuálnom období.",
+      "amountPlaceholder": "0,00"
+    },
+    "predpis": {
+      "title": "Predpis",
+      "subtitle": "Mesačný predpis úhrad — fond opráv a zálohy na služby",
+      "unitSettingsLink": "Variabilné symboly bytov",
+      "newSchedule": "Nový predpis",
+      "creating": "Vytvára sa…",
+      "empty": "Zatiaľ žiadny predpis. Vytvorte prvý predpis pre aktuálny rok.",
+      "loadError": "Nepodarilo sa načítať predpisy.",
+      "submitError": "Uloženie zlyhalo",
+      "effectiveFromShort": "platný od",
+      "serviceCount": "{count, plural, =0 {žiadne položky} one {# položka} few {# položky} other {# položiek}}",
+      "status": {
+        "draft": "Návrh",
+        "published": "Publikovaný"
+      },
+      "backToList": "Späť na predpisy",
+      "editorTitle": "Predpis {year}",
+      "editorSubtitle": "Nastavte položky predpisu — službu, kľúč rozpočítania a mesačnú sumu.",
+      "publishedReadOnly": "Publikovaný predpis sa nedá upravovať — zmeny rieši revízia s novou platnosťou.",
+      "noServices": "Predpis zatiaľ nemá žiadne položky.",
+      "service": "Služba",
+      "allocationKey": "Kľúč rozpočítania",
+      "monthlyAmount": "Mesačná suma",
+      "perUnit": "€/byt",
+      "perDom": "€/dom",
+      "removeRow": "Odstrániť",
+      "addService": "Pridať službu",
+      "savedOk": "Uložené",
+      "save": "Uložiť návrh",
+      "saving": "Ukladá sa…",
+      "discardDraft": "Zahodiť návrh",
+      "discardConfirm": "Naozaj zahodiť tento návrh predpisu?",
+      "discardYes": "Zahodiť",
+      "discardNo": "Ponechať",
+      "discarding": "Zahadzuje sa…",
+      "amountPlaceholder": "0,00"
+    },
+    "allocationKeys": {
+      "share": "Spoluvlastnícky podiel",
+      "area_m2": "Podlahová plocha (m²)",
+      "persons": "Počet osôb",
+      "flat_count_equal": "Rovnako na byt",
+      "fixed": "Pevná suma na byt"
+    },
+    "unitSettings": {
+      "backToList": "Späť na predpisy",
+      "title": "Variabilné symboly",
+      "subtitle": "Každý byt má priradený variabilný symbol — podľa neho sa párujú prijaté platby.",
+      "autoFill": "Predvyplniť z čísel bytov",
+      "unit": "Byt",
+      "vs": "Variabilný symbol",
+      "duplicateVs": "Variabilné symboly sa nesmú opakovať.",
+      "submitError": "Uloženie zlyhalo",
+      "loadError": "Nepodarilo sa načítať byty.",
+      "savedOk": "Uložené",
+      "save": "Uložiť",
+      "saving": "Ukladá sa…"
     }
   }
 }

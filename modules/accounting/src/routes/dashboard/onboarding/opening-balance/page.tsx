@@ -10,6 +10,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
+import { parseCents as parseCentsBase, formatEur } from "@modules/accounting/src/lib/money";
 
 interface UnitRow {
   id: string;
@@ -25,24 +26,9 @@ interface State {
   units: UnitRow[];
 }
 
-/** "1 234,56" | "1234.56" → cents; null on garbage. */
-function parseCents(raw: string): number | null {
-  const cleaned = raw.replace(/\s/g, "").replace(",", ".");
-  if (cleaned === "") return 0;
-  if (!/^-?\d+(\.\d{1,2})?$/.test(cleaned)) return null;
-  const [whole, frac = ""] = cleaned.split(".");
-  const sign = whole.startsWith("-") ? -1 : 1;
-  const wholeAbs = Math.abs(parseInt(whole, 10));
-  const fracCents = parseInt(frac.padEnd(2, "0") || "0", 10);
-  return sign * (wholeAbs * 100 + fracCents);
-}
-
-function formatEur(cents: number): string {
-  return (cents / 100).toLocaleString("sk-SK", {
-    style: "currency",
-    currency: "EUR",
-  });
-}
+// Opening balances allow debts (negative) and treat empty fields as 0.
+const parseCents = (raw: string) =>
+  parseCentsBase(raw, { allowNegative: true, emptyAsZero: true });
 
 export default function OpeningBalancePage() {
   const t = useTranslations("Accounting.openingBalance");
@@ -193,7 +179,7 @@ export default function OpeningBalancePage() {
             <input
               value={banka}
               onChange={(e) => setBanka(e.target.value)}
-              placeholder="0,00"
+              placeholder={t("amountPlaceholder")}
               inputMode="decimal"
               className={inputClass}
             />
@@ -203,7 +189,7 @@ export default function OpeningBalancePage() {
             <input
               value={pokladnica}
               onChange={(e) => setPokladnica(e.target.value)}
-              placeholder="0,00"
+              placeholder={t("amountPlaceholder")}
               inputMode="decimal"
               className={inputClass}
             />
@@ -254,7 +240,7 @@ export default function OpeningBalancePage() {
                               [u.id]: { ...v, fpuo: e.target.value },
                             }))
                           }
-                          placeholder="0,00"
+                          placeholder={t("amountPlaceholder")}
                           inputMode="decimal"
                           className={inputClass}
                         />
@@ -268,7 +254,7 @@ export default function OpeningBalancePage() {
                               [u.id]: { ...v, zalohy: e.target.value },
                             }))
                           }
-                          placeholder="0,00"
+                          placeholder={t("amountPlaceholder")}
                           inputMode="decimal"
                           className={inputClass}
                         />

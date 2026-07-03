@@ -1,13 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 
-import type { Session } from "next-auth";
-
-import { auth } from "@/lib/auth";
-import {
-  getCommunityRoot,
-  type CommunityRootRow,
-} from "@/lib/legacy-compat";
-import { canWriteAccounting } from "@modules/accounting/src/lib/authz";
+import { requireWriter } from "@modules/accounting/src/lib/api-guard";
 import {
   getOpeningBalanceState,
   submitOpeningBalance,
@@ -15,39 +8,6 @@ import {
 
 // Opening-balance tool API — write-privileged (treasurer / admin) only,
 // including GET: the tool exposes whole-dom financial state.
-
-type WriterCtx =
-  | { ok: false; error: NextResponse }
-  | { ok: true; session: Session; root: CommunityRootRow };
-
-async function requireWriter(): Promise<WriterCtx> {
-  const session = await auth();
-  if (!session) {
-    return {
-      ok: false,
-      error: NextResponse.json({ error: "unauthorized" }, { status: 401 }),
-    };
-  }
-  const root = await getCommunityRoot();
-  if (!root) {
-    return {
-      ok: false,
-      error: NextResponse.json({ error: "no community" }, { status: 404 }),
-    };
-  }
-  const allowed = await canWriteAccounting(
-    session.user.id,
-    session.user.role as string,
-    root.id
-  );
-  if (!allowed) {
-    return {
-      ok: false,
-      error: NextResponse.json({ error: "forbidden" }, { status: 403 }),
-    };
-  }
-  return { ok: true, session, root };
-}
 
 export async function handleGet(): Promise<NextResponse> {
   const ctx = await requireWriter();

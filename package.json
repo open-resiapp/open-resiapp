@@ -14,6 +14,7 @@
     "db:seed": "tsx src/db/seed.ts",
     "test:voting-golden": "tsx scripts/voting-golden-check.ts",
     "test:accounting-allocation": "tsx scripts/accounting-allocation-check.ts",
+    "test:accounting-money": "tsx scripts/accounting-money-check.ts",
     "create-admin": "tsx src/scripts/create-admin.ts",
     "setup:tenant": "tsx scripts/setup-tenant.ts",
     "entity-admin": "tsx scripts/entity-admin/cli.ts"
