@@ -1329,5 +1329,45 @@
     "iosBody": "Pridajte si OpenResiApp na plochu pre rýchlejší prístup.",
     "iosShareHint": "Ťuknite na Zdieľať, potom „Pridať na plochu“.",
     "dismiss": "Zavrieť"
+  },
+  "Accounting": {
+    "serviceCategories": {
+      "FPUO": "Fond prevádzky, údržby a opráv",
+      "SVC_HEAT": "Teplo",
+      "SVC_WATER_COLD": "Studená voda",
+      "SVC_WATER_HOT": "Teplá úžitková voda",
+      "SVC_ELECTRICITY_COMMON": "Elektrina spoločných priestorov",
+      "SVC_LIFT": "Výťah",
+      "SVC_CLEANING": "Upratovanie",
+      "SVC_INTERNET": "Internet",
+      "SVC_OTHER": "Ostatné"
+    },
+    "openingBalance": {
+      "title": "Otváracia súvaha",
+      "subtitle": "Počiatočné zostatky k 1.1.{year}. Zadajte stav banky, pokladnice a zostatky za jednotlivé byty.",
+      "step1": "Účty",
+      "step2": "Byty",
+      "step3": "Kontrola",
+      "banka": "Zostatok na bankovom účte (€)",
+      "pokladnica": "Zostatok v pokladnici (€)",
+      "unitsHint": "Zadajte zostatok fondu opráv a záloh na služby za každý byt k 1.1. Prázdne pole znamená nulu.",
+      "unit": "Byt",
+      "fpuoBalance": "Fond opráv (€)",
+      "zalohyBalance": "Zálohy na služby (€)",
+      "negativeHint": "Záporná hodnota znamená, že byt mal k 1.1. nedoplatok (dlh voči spoločenstvu).",
+      "assetsTotal": "Banka + pokladnica",
+      "fpuoTotal": "Súčet fondu opráv",
+      "zalohyTotal": "Súčet záloh na služby",
+      "rozdiel": "Rozdiel",
+      "korekciaExplain": "Rozdiel medzi majetkom a zostatkami bytov sa zaúčtuje ako výsledok hospodárenia minulých rokov. Skontrolujte, či ste zadali všetky zostatky správne — po potvrdení sa otváracia súvaha už nedá zmeniť.",
+      "korekciaConfirm": "Potvrdzujem zaúčtovanie rozdielu {amount} ako výsledok hospodárenia minulých rokov.",
+      "next": "Ďalej",
+      "back": "Späť",
+      "submit": "Zaúčtovať otváraciu súvahu",
+      "submitting": "Účtuje sa…",
+      "submitError": "Zaúčtovanie zlyhalo",
+      "loadError": "Nepodarilo sa načítať údaje.",
+      "alreadyPosted": "Otváracia súvaha je už zaúčtovaná a nedá sa zadať znova. Opravy sa účtujú ako korekčné zápisy v aktuálnom období."
+    }
   }
 }

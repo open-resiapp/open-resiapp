@@ -1329,5 +1329,45 @@
       "description": "Prázdný strom — administrátor si nakonfiguruje vlastní typy uzlů a hierarchii přes UI po instalaci.",
       "sampleCommunityName": "Naše společenství"
     }
+  },
+  "Accounting": {
+    "serviceCategories": {
+      "FPUO": "Příspěvek na správu domu a pozemku (fond oprav)",
+      "SVC_HEAT": "Teplo",
+      "SVC_WATER_COLD": "Studená voda",
+      "SVC_WATER_HOT": "Teplá voda",
+      "SVC_ELECTRICITY_COMMON": "Elektřina společných prostor",
+      "SVC_LIFT": "Výtah",
+      "SVC_CLEANING": "Úklid",
+      "SVC_INTERNET": "Internet",
+      "SVC_OTHER": "Ostatní"
+    },
+    "openingBalance": {
+      "title": "Počáteční rozvaha",
+      "subtitle": "Počáteční zůstatky k 1. 1. {year}. Zadejte stav banky, pokladny a zůstatky za jednotlivé jednotky.",
+      "step1": "Účty",
+      "step2": "Jednotky",
+      "step3": "Kontrola",
+      "banka": "Zůstatek na bankovním účtu (€)",
+      "pokladnica": "Zůstatek v pokladně (€)",
+      "unitsHint": "Zadejte zůstatek fondu oprav a záloh na služby za každou jednotku k 1. 1. Prázdné pole znamená nulu.",
+      "unit": "Jednotka",
+      "fpuoBalance": "Fond oprav (€)",
+      "zalohyBalance": "Zálohy na služby (€)",
+      "negativeHint": "Záporná hodnota znamená, že jednotka měla k 1. 1. nedoplatek (dluh vůči společenství).",
+      "assetsTotal": "Banka + pokladna",
+      "fpuoTotal": "Součet fondu oprav",
+      "zalohyTotal": "Součet záloh na služby",
+      "rozdiel": "Rozdíl",
+      "korekciaExplain": "Rozdíl mezi majetkem a zůstatky jednotek se zaúčtuje jako výsledek hospodaření minulých let. Zkontrolujte všechny zůstatky — po potvrzení už počáteční rozvahu nelze změnit.",
+      "korekciaConfirm": "Potvrzuji zaúčtování rozdílu {amount} jako výsledek hospodaření minulých let.",
+      "next": "Další",
+      "back": "Zpět",
+      "submit": "Zaúčtovat počáteční rozvahu",
+      "submitting": "Účtuje se…",
+      "submitError": "Zaúčtování selhalo",
+      "loadError": "Nepodařilo se načíst data.",
+      "alreadyPosted": "Počáteční rozvaha je již zaúčtována a nelze ji zadat znovu. Opravy se účtují jako korekční zápisy v aktuálním období."
+    }
   }
 }

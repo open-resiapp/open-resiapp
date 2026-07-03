@@ -1,9 +1,9 @@
 ---
 spec_id: BYT-20260512-002
 title: "Accounting module for SVB chairman/treasurer to track HOA finances"
-status: spec
+status: in_progress
 created: 2026-05-12
-updated: 2026-06-09
+updated: 2026-07-03
 author: byt-app
 owner: byt-app
 last_verified: 2026-06-09
@@ -617,6 +617,28 @@ Reuse RES-20260413-002. Per-country settings:
 - **Opening-balance invariant = blocking** — settled. Treasurer cannot post first business entry until banka+pokladnica = Σ FPÚO + Σ zálohy + výsledok hospodárenia. Prevents the "Excel chaos carryover" failure mode common to inherited SVB books.
 - **QR codes mandatory on every PDF** — settled. PAY by square (SK) + SPAYD (CZ), static on predpis, dynamic on nedoplatok/upomienka.
 - **CZK vyúčtování rounding to whole koruna** — settled as default, configurable per HOA; bookings stay 2-decimal.
+
+### Phase 1 implementation log + iteration plan (2026-07-03)
+
+**Done (this spike):**
+- `docs/domain/accounting.md` + 6 glossary entries (sdd-workflow)
+- Schema: 14 `mod_accounting_*` tables + `treasurer` board role — migrations 0048 (generated), 0049 (balance trigger, hand), 0050 (SK catalog seed, hand), 0051 (journal back-links, generated)
+- Seeds: `coa-sk.ts` (9 accounts, `ACCOUNT_CODES`), `service-categories-sk.ts` (full 9-slug catalog), i18n `Accounting.serviceCategories` ×3 locales
+- Engine: `allocation.ts` (pure; sum-preserving proportional + priority_ordered + FIFO) with 28-check golden script (`pnpm test:accounting-allocation`); `booking.ts` (postOpeningBalance, postAssessmentsForMonth, postPaymentMatched, voidPayment, postManualEntry — all audited, period-open-guarded)
+- Module skeleton: `module.json`, dist entry, `defineModule`, `authz.ts` (board-role based)
+- Opening-balance tool: API (`/api/accounting/opening-balance` GET/POST, treasurer/admin-gated) + 3-step wizard UI + i18n `Accounting.openingBalance` ×3 locales
+
+**Iteration backlog (ordered, one iteration = one commit-able unit):**
+1. Predpis editor — fee schedule CRUD (draft) + per-service rows UI + server actions; unit_settings VS assignment UI
+2. Predpis publish — assessment generation (allocation keys vs snapshot), publish preview per byt, postAssessmentsForMonth wiring for elapsed months
+3. Manual payment entry + allocation — payment form, allocatePayment integration, postPaymentMatched, void flow UI
+4. Karta bytu — per-unit running-balance table with drill-down, owner read-own scoping
+5. Dashboard — 4 tiles (Pokladnica, Banka, Fond opráv, Nedoplatky) + sidebar nav item via module UI slot
+6. PAY by square QR + predpis PDF (mirror VotingMinutesPDF; verify `bysquare` npm lib first)
+7. Golden-check script for booking engine invariants (opening balance korekcia, month idempotency, void mirror)
+8. Accounting landing page `/accounting` routing to onboarding when no opening balance exists
+
+**Verification per iteration:** `npx tsc --noEmit` clean + relevant golden script green. No `pnpm dev`/lint/full tests (owner tests manually).
 
 ### Follow-up specs to file
 

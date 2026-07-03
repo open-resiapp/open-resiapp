@@ -67,6 +67,7 @@ export const boardMemberRoleEnum = pgEnum("board_member_role", [
   "council_member",
   "committee_member",
   "committee_chairman",
+  "treasurer",
 ]);
 
 export const apiKeyPermissionEnum = pgEnum("api_key_permission", [

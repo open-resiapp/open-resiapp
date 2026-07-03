@@ -1,0 +1,6 @@
+ALTER TABLE "mod_accounting_fee_assessments" ADD COLUMN "journal_entry_id" uuid;--> statement-breakpoint
+ALTER TABLE "mod_accounting_payments" ADD COLUMN "journal_entry_id" uuid;--> statement-breakpoint
+ALTER TABLE "mod_accounting_payments" ADD COLUMN "void_journal_entry_id" uuid;--> statement-breakpoint
+ALTER TABLE "mod_accounting_fee_assessments" ADD CONSTRAINT "mod_accounting_fee_assessments_journal_entry_id_mod_accounting_journal_entries_id_fk" FOREIGN KEY ("journal_entry_id") REFERENCES "public"."mod_accounting_journal_entries"("id") ON DELETE restrict ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "mod_accounting_payments" ADD CONSTRAINT "mod_accounting_payments_journal_entry_id_mod_accounting_journal_entries_id_fk" FOREIGN KEY ("journal_entry_id") REFERENCES "public"."mod_accounting_journal_entries"("id") ON DELETE restrict ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "mod_accounting_payments" ADD CONSTRAINT "mod_accounting_payments_void_journal_entry_id_mod_accounting_journal_entries_id_fk" FOREIGN KEY ("void_journal_entry_id") REFERENCES "public"."mod_accounting_journal_entries"("id") ON DELETE restrict ON UPDATE no action;

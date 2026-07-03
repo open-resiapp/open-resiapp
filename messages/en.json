@@ -1329,5 +1329,45 @@
     "iosBody": "Add OpenResiApp to your home screen for faster access.",
     "iosShareHint": "Tap Share, then “Add to Home Screen”.",
     "dismiss": "Dismiss"
+  },
+  "Accounting": {
+    "serviceCategories": {
+      "FPUO": "Repair and maintenance fund",
+      "SVC_HEAT": "Heating",
+      "SVC_WATER_COLD": "Cold water",
+      "SVC_WATER_HOT": "Hot water",
+      "SVC_ELECTRICITY_COMMON": "Common-area electricity",
+      "SVC_LIFT": "Lift",
+      "SVC_CLEANING": "Cleaning",
+      "SVC_INTERNET": "Internet",
+      "SVC_OTHER": "Other"
+    },
+    "openingBalance": {
+      "title": "Opening balance",
+      "subtitle": "Opening balances as of 1 Jan {year}. Enter the bank balance, cash box and per-unit balances.",
+      "step1": "Accounts",
+      "step2": "Units",
+      "step3": "Review",
+      "banka": "Bank account balance (€)",
+      "pokladnica": "Cash box balance (€)",
+      "unitsHint": "Enter each unit’s repair-fund and service-advance balance as of 1 Jan. An empty field means zero.",
+      "unit": "Unit",
+      "fpuoBalance": "Repair fund (€)",
+      "zalohyBalance": "Service advances (€)",
+      "negativeHint": "A negative value means the unit owed money (arrears) as of 1 Jan.",
+      "assetsTotal": "Bank + cash box",
+      "fpuoTotal": "Repair fund total",
+      "zalohyTotal": "Service advances total",
+      "rozdiel": "Difference",
+      "korekciaExplain": "The difference between assets and unit balances will be booked as prior-years result. Double-check all balances — the opening balance cannot be changed after confirmation.",
+      "korekciaConfirm": "I confirm booking the difference of {amount} as prior-years result.",
+      "next": "Next",
+      "back": "Back",
+      "submit": "Post opening balance",
+      "submitting": "Posting…",
+      "submitError": "Posting failed",
+      "loadError": "Failed to load data.",
+      "alreadyPosted": "The opening balance has already been posted and cannot be entered again. Corrections are booked as adjusting entries in the current period."
+    }
   }
 }

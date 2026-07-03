@@ -1,0 +1,14 @@
+{
+  "name": "accounting",
+  "version": "0.1.0",
+  "description": "SVB/SVJ finance tracking — predpis, úhrady, fond opráv, vyúčtovanie (BYT-20260512-002).",
+  "author": "open-housing",
+  "entry": "dist/index.js",
+  "permissions": [
+    "db:read",
+    "db:write",
+    "ui:inject"
+  ],
+  "uiSlots": ["sidebar.items", "dashboard.widgets"],
+  "minCoreVersion": "0.1.0"
+}

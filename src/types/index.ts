@@ -51,7 +51,7 @@ export type PairingRequest = InferSelectModel<typeof pairingRequests>;
 export type ConsentRecord = InferSelectModel<typeof consentRecords>;
 export type BoardMember = InferSelectModel<typeof boardMembers>;
 export type GovernanceModel = "chairman_council" | "committee" | "chairman_only";
-export type BoardMemberRole = "chairman" | "council_member" | "committee_member" | "committee_chairman";
+export type BoardMemberRole = "chairman" | "council_member" | "committee_member" | "committee_chairman" | "treasurer";
 
 export type UserRole = "admin" | "owner" | "tenant" | "vote_counter" | "caretaker";
 export type UserStatus = "pending" | "active" | "rejected";
