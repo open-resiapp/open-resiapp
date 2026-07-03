@@ -386,9 +386,12 @@ export async function postAssessmentsForMonth(
 // ── Payment matched ────────────────────────────────────
 
 /**
- * Posts a matched payment (Dr banka / Cr pohľadávky per allocation) and
- * writes the allocation rows. Caller computes allocations via
- * engine/allocation.ts first. Idempotent via payments.journalEntryId.
+ * Posts a matched payment: Dr banka for the FULL payment amount (the cash
+ * really arrived — the ledger's 221 must tie out with the bank statement),
+ * Cr pohľadávky per allocation, and Cr 379 (iné záväzky) for any
+ * unallocated remainder — the preplatok parked on the unit. A payment with
+ * zero allocations still posts (pure preplatok). Idempotent via
+ * payments.journalEntryId.
  */
 export async function postPaymentMatched(
   tx: Tx,
@@ -399,6 +402,8 @@ export async function postPaymentMatched(
     country: Country;
     createdById: string;
     allocatedBy: "auto" | "manual";
+    /** Unit the payment belongs to — carries the preplatok credit line. */
+    unitEntityId: string | null;
     allocations: {
       assessmentId: string;
       unitEntityId: string;
@@ -433,14 +438,15 @@ export async function postPaymentMatched(
       `accounting: allocations ${allocated} exceed payment ${payment.amountCents}`
     );
   }
-  // allocated < amount is legal: the rest parks as preplatok (credit on
-  // the unit) — visible in karta bytu as unallocated payment remainder.
+  const preplatok = payment.amountCents - allocated;
 
+  // Okruh on the cash and preplatok-parking lines is nominal (the money is
+  // not pool-assigned until applied) — "svc" mirrors zálohy semantics.
   const lines: LineInput[] = [
     {
       accountCode: ACCOUNT_CODES.BANKA,
-      debitCents: allocated,
-      okruh: "fpuo",
+      debitCents: payment.amountCents,
+      okruh: "svc",
     },
     ...input.allocations.map((a) => ({
       accountCode: receivableCode(a.okruh),
@@ -450,6 +456,14 @@ export async function postPaymentMatched(
       serviceCategoryId: a.serviceCategoryId,
     })),
   ];
+  if (preplatok > 0) {
+    lines.push({
+      accountCode: ACCOUNT_CODES.INE_ZAVAZKY,
+      creditCents: preplatok,
+      okruh: "svc",
+      unitEntityId: input.unitEntityId,
+    });
+  }
 
   const entryId = await insertEntry(tx, {
     entityId: input.entityId,
@@ -463,14 +477,16 @@ export async function postPaymentMatched(
     lines,
   });
 
-  await tx.insert(paymentAllocations).values(
-    input.allocations.map((a) => ({
-      paymentId: input.paymentId,
-      assessmentId: a.assessmentId,
-      amountCents: a.amountCents,
-      allocatedBy: input.allocatedBy,
-    }))
-  );
+  if (input.allocations.length > 0) {
+    await tx.insert(paymentAllocations).values(
+      input.allocations.map((a) => ({
+        paymentId: input.paymentId,
+        assessmentId: a.assessmentId,
+        amountCents: a.amountCents,
+        allocatedBy: input.allocatedBy,
+      }))
+    );
+  }
 
   await tx
     .update(payments)

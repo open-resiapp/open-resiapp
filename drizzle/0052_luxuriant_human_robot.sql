@@ -1,0 +1,2 @@
+ALTER TABLE "mod_accounting_payments" ADD COLUMN "unit_entity_id" uuid;--> statement-breakpoint
+ALTER TABLE "mod_accounting_payments" ADD CONSTRAINT "mod_accounting_payments_unit_entity_id_entities_id_fk" FOREIGN KEY ("unit_entity_id") REFERENCES "public"."entities"("id") ON DELETE restrict ON UPDATE no action;

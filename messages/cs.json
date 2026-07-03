@@ -1440,6 +1440,37 @@
       "savedOk": "Uloženo",
       "save": "Uložit",
       "saving": "Ukládá se…"
+    },
+    "payments": {
+      "title": "Úhrady",
+      "subtitle": "Ruční zaevidování přijaté platby a její rozúčtování na předpis",
+      "backToAccounting": "Zpět na účetnictví",
+      "newPayment": "Nová úhrada",
+      "unit": "Jednotka",
+      "amount": "Částka",
+      "amountPlaceholder": "0,00",
+      "receivedAt": "Datum přijetí",
+      "note": "Poznámka",
+      "save": "Zaevidovat",
+      "saving": "Ukládá se…",
+      "submitError": "Uložení selhalo",
+      "loadError": "Nepodařilo se načíst úhrady.",
+      "empty": "Zatím žádné úhrady.",
+      "allocatedSummary": "Úhrada zaevidována — rozúčtováno {allocated}:",
+      "preplatokNote": "Přeplatek {amount} zůstává na jednotce jako kredit.",
+      "colDate": "Datum",
+      "colUnit": "Jednotka",
+      "colVs": "VS",
+      "colAmount": "Částka",
+      "colAllocated": "Rozúčtováno",
+      "colNote": "Poznámka",
+      "void": "Stornovat",
+      "voidedLabel": "Stornováno",
+      "voidConfirm": "Storno úhrady zaúčtuje opravný zápis. Uveďte důvod:",
+      "voidReasonPlaceholder": "Důvod storna",
+      "voidYes": "Stornovat",
+      "voidNo": "Zrušit",
+      "voiding": "Stornuje se…"
     }
   }
 }

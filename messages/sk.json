@@ -1440,6 +1440,37 @@
       "savedOk": "Uložené",
       "save": "Uložiť",
       "saving": "Ukladá sa…"
+    },
+    "payments": {
+      "title": "Úhrady",
+      "subtitle": "Manuálne zaevidovanie prijatej platby a jej rozpočítanie na predpis",
+      "backToAccounting": "Späť na účtovníctvo",
+      "newPayment": "Nová úhrada",
+      "unit": "Byt",
+      "amount": "Suma",
+      "amountPlaceholder": "0,00",
+      "receivedAt": "Dátum prijatia",
+      "note": "Poznámka",
+      "save": "Zaevidovať",
+      "saving": "Ukladá sa…",
+      "submitError": "Uloženie zlyhalo",
+      "loadError": "Nepodarilo sa načítať úhrady.",
+      "empty": "Zatiaľ žiadne úhrady.",
+      "allocatedSummary": "Úhrada zaevidovaná — rozpočítané {allocated}:",
+      "preplatokNote": "Preplatok {amount} zostáva na byte ako kredit.",
+      "colDate": "Dátum",
+      "colUnit": "Byt",
+      "colVs": "VS",
+      "colAmount": "Suma",
+      "colAllocated": "Rozpočítané",
+      "colNote": "Poznámka",
+      "void": "Stornovať",
+      "voidedLabel": "Stornované",
+      "voidConfirm": "Storno úhrady zaúčtuje opravný zápis. Uveďte dôvod:",
+      "voidReasonPlaceholder": "Dôvod storna",
+      "voidYes": "Stornovať",
+      "voidNo": "Zrušiť",
+      "voiding": "Stornuje sa…"
     }
   }
 }

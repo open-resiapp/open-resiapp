@@ -1440,6 +1440,37 @@
       "savedOk": "Saved",
       "save": "Save",
       "saving": "Saving…"
+    },
+    "payments": {
+      "title": "Payments",
+      "subtitle": "Record a received payment manually and allocate it against the schedule",
+      "backToAccounting": "Back to accounting",
+      "newPayment": "New payment",
+      "unit": "Unit",
+      "amount": "Amount",
+      "amountPlaceholder": "0.00",
+      "receivedAt": "Received on",
+      "note": "Note",
+      "save": "Record",
+      "saving": "Saving…",
+      "submitError": "Save failed",
+      "loadError": "Failed to load payments.",
+      "empty": "No payments yet.",
+      "allocatedSummary": "Payment recorded — {allocated} allocated:",
+      "preplatokNote": "Overpayment of {amount} stays on the unit as credit.",
+      "colDate": "Date",
+      "colUnit": "Unit",
+      "colVs": "VS",
+      "colAmount": "Amount",
+      "colAllocated": "Allocated",
+      "colNote": "Note",
+      "void": "Void",
+      "voidedLabel": "Voided",
+      "voidConfirm": "Voiding posts a reversal entry. State the reason:",
+      "voidReasonPlaceholder": "Void reason",
+      "voidYes": "Void",
+      "voidNo": "Cancel",
+      "voiding": "Voiding…"
     }
   }
 }

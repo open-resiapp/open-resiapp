@@ -435,6 +435,13 @@ export const payments = pgTable(
     entityId: uuid("entity_id")
       .references(() => entities.id, { onDelete: "restrict" })
       .notNull(),
+    // The unit the payment belongs to. Set on manual entry and on matched
+    // bank imports; null only for unmatched imports. Without it a fully
+    // unallocated payment (pure preplatok) would lose its unit attribution
+    // — the domain rule "preplatok parks on the unit" depends on this.
+    unitEntityId: uuid("unit_entity_id").references(() => entities.id, {
+      onDelete: "restrict",
+    }),
     source: paymentSourceEnum("source").notNull(),
     receivedAt: timestamp("received_at").notNull(),
     valueDate: timestamp("value_date"),

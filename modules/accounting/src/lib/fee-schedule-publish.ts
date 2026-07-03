@@ -9,6 +9,7 @@ import {
   feeSchedules,
   feeScheduleServices,
   paymentAllocations,
+  payments,
   serviceCategories,
   unitPersons,
   unitSettings,
@@ -254,6 +255,67 @@ export async function postDueMonthsForSchedule(
   return posted;
 }
 
+/**
+ * Posts due-but-unposted months for EVERY published schedule of the dom
+ * whose period is open. Idempotent and cheap when there is nothing to do —
+ * payment entry and dashboard reads call this first so receivables always
+ * reflect all due months before balances/allocations are computed.
+ */
+export async function postAllDueMonths(
+  tx: Tx,
+  input: {
+    entityId: string;
+    country: Country;
+    actorId: string;
+    now?: Date;
+  }
+): Promise<void> {
+  const now = input.now ?? new Date();
+  // Lock the dom's open periods first. This serializes concurrent callers
+  // (payment entries, publishes — publish locks the same row) so two
+  // transactions can never both see a month as unposted and double-post
+  // it, nor both read the same open assessment amounts and double-allocate.
+  await tx
+    .select({ id: accountingPeriods.id })
+    .from(accountingPeriods)
+    .where(
+      and(
+        eq(accountingPeriods.entityId, input.entityId),
+        eq(accountingPeriods.status, "open")
+      )
+    )
+    .for("update");
+  const schedules = await tx
+    .select({
+      id: feeSchedules.id,
+      periodId: feeSchedules.periodId,
+      year: accountingPeriods.year,
+    })
+    .from(feeSchedules)
+    .innerJoin(
+      accountingPeriods,
+      eq(feeSchedules.periodId, accountingPeriods.id)
+    )
+    .where(
+      and(
+        eq(feeSchedules.entityId, input.entityId),
+        eq(feeSchedules.status, "published"),
+        eq(accountingPeriods.status, "open")
+      )
+    );
+  for (const schedule of schedules) {
+    await postDueMonthsForSchedule(tx, {
+      entityId: input.entityId,
+      periodId: schedule.periodId,
+      scheduleId: schedule.id,
+      country: input.country,
+      actorId: input.actorId,
+      year: schedule.year,
+      now,
+    });
+  }
+}
+
 // ── Preview ────────────────────────────────────────────
 
 export interface PublishPreview {
@@ -460,16 +522,22 @@ export async function publishSchedule(input: {
         );
       }
 
-      // An unposted assessment can already carry payment allocations
-      // (prepayments). Deleting it would orphan the paid amount — refuse
-      // with a domain error instead of dying on the FK.
+      // An unposted assessment can already carry payment-allocation rows —
+      // live prepayments (money would be orphaned) or history from voided
+      // payments (rows are kept forever by design and the FK is restrict,
+      // so the delete below would die either way). Both block the revision
+      // at this month; the treasurer starts it one month later instead.
       const [blocked] = await tx
-        .select({ paymentId: paymentAllocations.paymentId })
+        .select({
+          paymentId: paymentAllocations.paymentId,
+          voidedAt: payments.voidedAt,
+        })
         .from(paymentAllocations)
         .innerJoin(
           feeAssessments,
           eq(paymentAllocations.assessmentId, feeAssessments.id)
         )
+        .innerJoin(payments, eq(paymentAllocations.paymentId, payments.id))
         .where(
           and(
             eq(feeAssessments.scheduleId, sibling.id),
@@ -479,7 +547,9 @@ export async function publishSchedule(input: {
         .limit(1);
       if (blocked) {
         throw new Error(
-          `accounting: a payment is already allocated to month ${firstMonth} or later — void/re-allocate it before revising`
+          blocked.voidedAt
+            ? `accounting: voided-payment history is attached to month ${firstMonth} or later — start the revision from a later month`
+            : `accounting: a payment is already allocated to month ${firstMonth} or later — void it or start the revision from a later month`
         );
       }
 
