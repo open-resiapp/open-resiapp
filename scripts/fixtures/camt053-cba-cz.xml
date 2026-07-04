@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Document xmlns="urn:iso:std:iso:20022:tech:xsd:camt.053.001.02">
+  <BkToCstmrStmt>
+    <GrpHdr>
+      <MsgId>CZSTMT-2026-07-02-001</MsgId>
+      <CreDtTm>2026-07-03T02:00:00+02:00</CreDtTm>
+    </GrpHdr>
+    <Stmt>
+      <Id>2026/129</Id>
+      <FrToDt>
+        <FrDtTm>2026-07-02T00:00:00+02:00</FrDtTm>
+        <ToDtTm>2026-07-02T23:59:59+02:00</ToDtTm>
+      </FrToDt>
+      <Acct>
+        <Id>
+          <IBAN>CZ6508000000192000145399</IBAN>
+        </Id>
+        <Ccy>CZK</Ccy>
+      </Acct>
+      <Bal>
+        <Tp>
+          <CdOrPrtry>
+            <Cd>PRCD</Cd>
+          </CdOrPrtry>
+        </Tp>
+        <Amt Ccy="CZK">352000.00</Amt>
+        <CdtDbtInd>CRDT</CdtDbtInd>
+      </Bal>
+      <Bal>
+        <Tp>
+          <CdOrPrtry>
+            <Cd>CLBD</Cd>
+          </CdOrPrtry>
+        </Tp>
+        <Amt Ccy="CZK">356980.00</Amt>
+        <CdtDbtInd>CRDT</CdtDbtInd>
+      </Bal>
+      <Ntry>
+        <Amt Ccy="CZK">4980.00</Amt>
+        <CdtDbtInd>CRDT</CdtDbtInd>
+        <Sts>BOOK</Sts>
+        <BookgDt>
+          <Dt>2026-07-02</Dt>
+        </BookgDt>
+        <ValDt>
+          <Dt>2026-07-02</Dt>
+        </ValDt>
+        <AcctSvcrRef>CZ-BATCH-778899</AcctSvcrRef>
+        <NtryDtls>
+          <TxDtls>
+            <Refs>
+              <AcctSvcrRef>CZ-TX-778899-1</AcctSvcrRef>
+              <EndToEndId>NOTPROVIDED</EndToEndId>
+            </Refs>
+            <Amt Ccy="CZK">3180.00</Amt>
+            <RltdPties>
+              <Dbtr>
+                <Pty>
+                  <Nm>Jana Dvořáková</Nm>
+                </Pty>
+              </Dbtr>
+              <DbtrAcct>
+                <Id>
+                  <IBAN>CZ0301000000350000456789</IBAN>
+                </Id>
+              </DbtrAcct>
+            </RltdPties>
+            <RmtInf>
+              <Strd>
+                <CdtrRefInf>
+                  <Ref>/VS0000000205/SS0000002026/KS0308</Ref>
+                </CdtrRefInf>
+              </Strd>
+            </RmtInf>
+          </TxDtls>
+          <TxDtls>
+            <Refs>
+              <AcctSvcrRef>CZ-TX-778899-2</AcctSvcrRef>
+              <EndToEndId>/VS0000000206/SS0000000000/KS0000</EndToEndId>
+            </Refs>
+            <Amt Ccy="CZK">1800.00</Amt>
+            <RltdPties>
+              <Dbtr>
+                <Pty>
+                  <Nm>Petr Svoboda</Nm>
+                </Pty>
+              </Dbtr>
+              <DbtrAcct>
+                <Id>
+                  <IBAN>CZ9455000000001033556677</IBAN>
+                </Id>
+              </DbtrAcct>
+            </RltdPties>
+            <RmtInf>
+              <Ustrd>zaloha sluzby cervenec</Ustrd>
+            </RmtInf>
+          </TxDtls>
+        </NtryDtls>
+      </Ntry>
+    </Stmt>
+  </BkToCstmrStmt>
+</Document>

@@ -17,6 +17,7 @@
     "test:accounting-money": "tsx scripts/accounting-money-check.ts",
     "test:accounting-assessment": "tsx scripts/accounting-assessment-check.ts",
     "test:accounting-booking": "tsx scripts/accounting-booking-check.ts",
+    "test:accounting-camt053": "tsx scripts/accounting-camt053-check.ts",
     "create-admin": "tsx src/scripts/create-admin.ts",
     "setup:tenant": "tsx scripts/setup-tenant.ts",
     "entity-admin": "tsx scripts/entity-admin/cli.ts"
@@ -32,6 +33,7 @@
     "bcrypt": "^6.0.0",
     "bysquare": "^4.0.0",
     "drizzle-orm": "^0.45.1",
+    "fast-xml-parser": "^5.9.3",
     "next": "16.1.5",
     "next-auth": "^5.0.0-beta.30",
     "next-intl": "^4.8.3",
