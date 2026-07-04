@@ -86,7 +86,8 @@
     "import": "Import",
     "settings": "Nastavení",
     "community": "Komunita",
-    "documents": "Dokumenty"
+    "documents": "Dokumenty",
+    "accounting": "Účetnictví"
   },
   "ShareSumInvariant": {
     "title": "Upozornění: {count} jednotek má neúplně vyplněné podíly spoluvlastníků",
@@ -1470,7 +1471,10 @@
       "voidReasonPlaceholder": "Důvod storna",
       "voidYes": "Stornovat",
       "voidNo": "Zrušit",
-      "voiding": "Stornuje se…"
+      "voiding": "Stornuje se…",
+      "method": "Způsob",
+      "methodBank": "Bankovní převod",
+      "methodCash": "Hotovost (pokladna)"
     },
     "karta": {
       "title": "Karta jednotky",
@@ -1498,6 +1502,28 @@
       "colBalance": "Zůstatek",
       "lineNoCategory": "Bez služby (přeplatek / banka)",
       "vsLabel": "Variabilní symbol: {vs}"
+    },
+    "home": {
+      "title": "Účetnictví",
+      "subtitle": "Přehled financí společenství — pokladna, banka, fond oprav a nedoplatky",
+      "ownerSubtitle": "Přehled plateb a zůstatku vaší jednotky",
+      "loadError": "Nepodařilo se načíst přehled.",
+      "onboardingCta": "Začněte otevírací rozvahou",
+      "onboardingHint": "Před prvním předpisem zadejte počáteční zůstatky — banku, pokladnu a zůstatky jednotek.",
+      "tilePokladnica": "Pokladna",
+      "tileBanka": "Banka",
+      "tileFondOprav": "Fond oprav",
+      "tileNedoplatky": "Nedoplatky",
+      "nedoplatkyCount": "{count, plural, =0 {žádná jednotka} one {# jednotka} few {# jednotky} other {# jednotek}}",
+      "navPredpis": "Předpis",
+      "navPredpisHint": "Měsíční předpisy plateb, klíče rozúčtování, publikování",
+      "navPayments": "Úhrady",
+      "navPaymentsHint": "Zaevidování přijatých plateb a jejich rozúčtování",
+      "navKarta": "Karta jednotky",
+      "navKartaHint": "Průběžný zůstatek každé jednotky s historií pohybů",
+      "navKartaOwnerHint": "Zůstatek, předpisy a úhrady vaší jednotky",
+      "navVs": "Variabilní symboly",
+      "navVsHint": "Přiřazení variabilních symbolů jednotkám pro párování plateb"
     }
   }
 }

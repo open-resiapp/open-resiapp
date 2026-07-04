@@ -21,6 +21,7 @@ const navItems: NavItem[] = [
   { href: "/", labelKey: "dashboard", icon: "📊" },
   { href: "/board", labelKey: "board", icon: "📋" },
   { href: "/voting", labelKey: "voting", icon: "🗳️", requiresModule: "voting" },
+  { href: "/accounting", labelKey: "accounting", icon: "💶", requiresModule: "accounting" },
   { href: "/komunita", labelKey: "community", icon: "🏘️", permission: "viewCommunity" },
   { href: "/owners", labelKey: "owners", icon: "👥", permission: "manageUsers" },
   { href: "/documents", labelKey: "documents", icon: "📄", permission: "viewDocuments" },

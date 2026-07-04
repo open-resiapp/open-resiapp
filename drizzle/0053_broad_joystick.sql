@@ -1,0 +1,2 @@
+CREATE TYPE "public"."mod_accounting_payment_method" AS ENUM('bank', 'cash');--> statement-breakpoint
+ALTER TABLE "mod_accounting_payments" ADD COLUMN "method" "mod_accounting_payment_method" DEFAULT 'bank' NOT NULL;

@@ -303,7 +303,6 @@ export async function applyUnitCredit(input: {
     await postAllDueMonths(tx, {
       entityId: input.entityId,
       country: input.country,
-      actorId: input.actorId,
     });
 
     const period = await getOrCreateOpenPeriod(

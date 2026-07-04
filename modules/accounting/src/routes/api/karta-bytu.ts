@@ -53,13 +53,11 @@ export async function handleListUnits(): Promise<NextResponse> {
   );
   // Due months post lazily on EVERY karta read — an owner's balance must
   // never lag behind the calendar (invariant 7: complete flows). The
-  // triggering user is recorded as the posting actor; the entries
-  // themselves are schedule-sourced and idempotent.
+  // postings carry the publishing treasurer as actor, never the reader.
   await db.transaction((tx) =>
     postAllDueMonths(tx, {
       entityId: root.id,
       country: root.country,
-      actorId: session.user.id,
     })
   );
 
@@ -110,7 +108,6 @@ export async function handleGetLedger(
     postAllDueMonths(tx, {
       entityId: root.id,
       country: root.country,
-      actorId: session.user.id,
     })
   );
 

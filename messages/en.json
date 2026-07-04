@@ -86,7 +86,8 @@
     "owners": "Owners",
     "import": "Import",
     "settings": "Settings",
-    "documents": "Documents"
+    "documents": "Documents",
+    "accounting": "Accounting"
   },
   "Documents": {
     "title": "Documents",
@@ -1470,7 +1471,10 @@
       "voidReasonPlaceholder": "Void reason",
       "voidYes": "Void",
       "voidNo": "Cancel",
-      "voiding": "Voiding…"
+      "voiding": "Voiding…",
+      "method": "Method",
+      "methodBank": "Bank transfer",
+      "methodCash": "Cash (cash box)"
     },
     "karta": {
       "title": "Unit ledger",
@@ -1498,6 +1502,28 @@
       "colBalance": "Balance",
       "lineNoCategory": "No service (credit / bank)",
       "vsLabel": "Variable symbol: {vs}"
+    },
+    "home": {
+      "title": "Accounting",
+      "subtitle": "Community finances at a glance — cash box, bank, repair fund and arrears",
+      "ownerSubtitle": "Your unit's payments and balance",
+      "loadError": "Failed to load the overview.",
+      "onboardingCta": "Start with the opening balance",
+      "onboardingHint": "Before the first fee schedule, enter the opening balances — bank, cash box and per-unit balances.",
+      "tilePokladnica": "Cash box",
+      "tileBanka": "Bank",
+      "tileFondOprav": "Repair fund",
+      "tileNedoplatky": "Arrears",
+      "nedoplatkyCount": "{count, plural, =0 {no units} one {# unit} other {# units}}",
+      "navPredpis": "Fee schedule",
+      "navPredpisHint": "Monthly fee schedules, allocation keys, publishing",
+      "navPayments": "Payments",
+      "navPaymentsHint": "Record received payments and allocate them",
+      "navKarta": "Unit ledger",
+      "navKartaHint": "Running balance of every unit with movement history",
+      "navKartaOwnerHint": "Your unit's balance, schedules and payments",
+      "navVs": "Variable symbols",
+      "navVsHint": "Assign variable symbols to units for payment matching"
     }
   }
 }

@@ -127,6 +127,8 @@ export interface CreatePaymentInput {
   unitEntityId: string;
   amountCents: number;
   receivedAt: Date;
+  /** Where the money arrived — bank account (221) or cash box (211). */
+  method: "bank" | "cash";
   note?: string;
 }
 
@@ -168,7 +170,6 @@ export async function createManualPayment(
     await postAllDueMonths(tx, {
       entityId: input.entityId,
       country: input.country,
-      actorId: input.createdById,
     });
 
     // Cash books into the receivedAt year when that period is still open;
@@ -198,6 +199,7 @@ export async function createManualPayment(
         entityId: input.entityId,
         unitEntityId: input.unitEntityId,
         source: "manual",
+        method: input.method,
         receivedAt: input.receivedAt,
         amountCents: input.amountCents,
         vs: unit.vs ?? null,

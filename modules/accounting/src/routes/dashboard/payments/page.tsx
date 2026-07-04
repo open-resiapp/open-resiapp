@@ -56,6 +56,7 @@ export default function PaymentsPage() {
 
   // Form state
   const [unitId, setUnitId] = useState("");
+  const [method, setMethod] = useState<"bank" | "cash">("bank");
   const [amount, setAmount] = useState("");
   const [receivedAt, setReceivedAt] = useState(
     () => new Date().toISOString().slice(0, 10)
@@ -107,6 +108,7 @@ export default function PaymentsPage() {
           unitEntityId: unitId,
           amountCents,
           receivedAt: new Date(`${receivedAt}T00:00:00Z`).toISOString(),
+          method,
           note: note.trim() || undefined,
         }),
       });
@@ -189,6 +191,19 @@ export default function PaymentsPage() {
                   {u.vs ? ` (VS ${u.vs})` : ""}
                 </option>
               ))}
+            </select>
+          </label>
+          <label className="flex flex-col gap-1 text-sm">
+            <span className="text-gray-700 dark:text-gray-300">
+              {t("method")}
+            </span>
+            <select
+              value={method}
+              onChange={(e) => setMethod(e.target.value as "bank" | "cash")}
+              className={inputClass}
+            >
+              <option value="bank">{t("methodBank")}</option>
+              <option value="cash">{t("methodCash")}</option>
             </select>
           </label>
           <label className="flex flex-col gap-1 text-sm">

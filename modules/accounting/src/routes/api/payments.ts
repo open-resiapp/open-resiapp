@@ -29,6 +29,7 @@ export async function handleCreate(req: NextRequest): Promise<NextResponse> {
     unitEntityId?: string;
     amountCents?: number;
     receivedAt?: string;
+    method?: string;
     note?: string;
   };
   try {
@@ -38,6 +39,10 @@ export async function handleCreate(req: NextRequest): Promise<NextResponse> {
   }
   if (typeof body.unitEntityId !== "string") {
     return NextResponse.json({ error: "invalid unit" }, { status: 400 });
+  }
+  const method = body.method ?? "bank";
+  if (method !== "bank" && method !== "cash") {
+    return NextResponse.json({ error: "invalid method" }, { status: 400 });
   }
   const amountCents = Number(body.amountCents);
   if (!Number.isInteger(amountCents) || amountCents <= 0) {
@@ -62,6 +67,7 @@ export async function handleCreate(req: NextRequest): Promise<NextResponse> {
       unitEntityId: body.unitEntityId,
       amountCents,
       receivedAt,
+      method,
       note: typeof body.note === "string" ? body.note : undefined,
     });
     return NextResponse.json(result, { status: 201 });

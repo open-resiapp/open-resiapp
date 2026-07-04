@@ -266,7 +266,6 @@ export async function postAllDueMonths(
   input: {
     entityId: string;
     country: Country;
-    actorId: string;
     now?: Date;
   }
 ): Promise<void> {
@@ -290,6 +289,7 @@ export async function postAllDueMonths(
       id: feeSchedules.id,
       periodId: feeSchedules.periodId,
       year: accountingPeriods.year,
+      createdById: feeSchedules.createdById,
     })
     .from(feeSchedules)
     .innerJoin(
@@ -309,7 +309,11 @@ export async function postAllDueMonths(
       periodId: schedule.periodId,
       scheduleId: schedule.id,
       country: input.country,
-      actorId: input.actorId,
+      // Separation of duties: lazy postings are a consequence of the
+      // publish decision, so they carry the schedule's author (treasurer),
+      // never the reader whose page view happened to trigger them — a
+      // chairman or owner must not appear as creator of ledger entries.
+      actorId: schedule.createdById,
       year: schedule.year,
       now,
     });

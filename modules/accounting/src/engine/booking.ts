@@ -418,6 +418,7 @@ export async function postPaymentMatched(
       amountCents: payments.amountCents,
       journalEntryId: payments.journalEntryId,
       voidedAt: payments.voidedAt,
+      method: payments.method,
     })
     .from(payments)
     .where(eq(payments.id, input.paymentId));
@@ -444,7 +445,10 @@ export async function postPaymentMatched(
   // not pool-assigned until applied) — "svc" mirrors zálohy semantics.
   const lines: LineInput[] = [
     {
-      accountCode: ACCOUNT_CODES.BANKA,
+      accountCode:
+        payment.method === "cash"
+          ? ACCOUNT_CODES.POKLADNICA
+          : ACCOUNT_CODES.BANKA,
       debitCents: payment.amountCents,
       okruh: "svc",
     },

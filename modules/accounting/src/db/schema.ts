@@ -80,6 +80,13 @@ export const allocatedByEnum = pgEnum("mod_accounting_allocated_by", [
   "manual",
 ]);
 
+// Where the money physically arrived — drives the debit account on the
+// payment posting (221 banka vs 211 pokladnica).
+export const paymentMethodEnum = pgEnum("mod_accounting_payment_method", [
+  "bank",
+  "cash",
+]);
+
 // ── Settings ───────────────────────────────────────────
 
 // Append-only: a strategy change inserts a new effective-from row, the
@@ -443,6 +450,7 @@ export const payments = pgTable(
       onDelete: "restrict",
     }),
     source: paymentSourceEnum("source").notNull(),
+    method: paymentMethodEnum("method").notNull().default("bank"),
     receivedAt: timestamp("received_at").notNull(),
     valueDate: timestamp("value_date"),
     amountCents: integer("amount_cents").notNull(),
