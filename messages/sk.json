@@ -1585,7 +1585,16 @@
       "pickUnit": "Vyberte byt…",
       "confirm": "Sedí",
       "confirming": "Páruje sa…",
-      "vsLabel": "VS {vs}"
+      "vsLabel": "VS {vs}",
+      "fioTitle": "Fio banka — živé prepojenie",
+      "fioHint": "Vygenerujte read-only API token v internetbankingu Fio (Nastavenia → API) a vložte ho sem. Platby sa potom sťahujú jedným klikom.",
+      "fioTokenPlaceholder": "Fio API token",
+      "fioConnect": "Prepojiť",
+      "fioSaving": "Ukladá sa…",
+      "fioConnected": "Prepojené (token {preview})",
+      "fioLastSync": "posledná synchronizácia {date}",
+      "fioSync": "Synchronizovať teraz",
+      "fioSyncing": "Sťahuje sa…"
     }
   }
 }

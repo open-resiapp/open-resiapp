@@ -1585,7 +1585,16 @@
       "pickUnit": "Vyberte jednotku…",
       "confirm": "Sedí",
       "confirming": "Páruje se…",
-      "vsLabel": "VS {vs}"
+      "vsLabel": "VS {vs}",
+      "fioTitle": "Fio banka — živé propojení",
+      "fioHint": "Vygenerujte read-only API token v internetbankingu Fio (Nastavení → API) a vložte jej sem. Platby se pak stahují jedním klikem.",
+      "fioTokenPlaceholder": "Fio API token",
+      "fioConnect": "Propojit",
+      "fioSaving": "Ukládá se…",
+      "fioConnected": "Propojeno (token {preview})",
+      "fioLastSync": "poslední synchronizace {date}",
+      "fioSync": "Synchronizovat nyní",
+      "fioSyncing": "Stahuje se…"
     }
   }
 }

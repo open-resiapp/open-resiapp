@@ -156,7 +156,180 @@ export interface ImportSummary {
 }
 
 /** Ledger currency per country — imports in any other currency refuse. */
-const LEDGER_CURRENCY: Record<Country, string> = { sk: "EUR", cz: "CZK" };
+export const LEDGER_CURRENCY: Record<Country, string> = {
+  sk: "EUR",
+  cz: "CZK",
+};
+
+/** One incoming bank line, source-agnostic (camt.053 upload, Fio poll). */
+export interface NormalizedBankLine {
+  /** Non-null — callers synthesize a stable key when the bank omits one. */
+  externalTxId: string;
+  amountCents: number;
+  direction: "credit" | "debit";
+  bookingDate: string | null;
+  valueDate: string | null;
+  vs: string | null;
+  ss: string | null;
+  ks: string | null;
+  counterpartyIban: string | null;
+  counterpartyName: string | null;
+  narrative: string | null;
+}
+
+/**
+ * The shared import pipeline: dedupe per dom, insert, auto-match, post.
+ * Runs inside the caller's transaction (caller already holds the
+ * open-period locks via postAllDueMonths).
+ */
+async function importLines(
+  tx: Tx,
+  input: {
+    entityId: string;
+    country: Country;
+    actorId: string;
+    source: "bank_import" | "fio_api";
+    lines: NormalizedBankLine[];
+    summary: ImportSummary;
+  }
+): Promise<void> {
+  const matchable = await gatherMatchableUnits(tx, input.entityId);
+  const { summary } = input;
+
+  for (const line of input.lines) {
+    if (line.direction === "debit") {
+      summary.debitsSkipped += 1;
+      continue;
+    }
+    if (line.amountCents <= 0) {
+      // Zero-amount informational entries carry no money.
+      continue;
+    }
+    summary.credits += 1;
+
+    // Pre-check scoped to the dom (the unique index is per entity —
+    // bank references are only unique per bank, not across doms).
+    const [existing] = await tx
+      .select({ id: payments.id })
+      .from(payments)
+      .where(
+        and(
+          eq(payments.entityId, input.entityId),
+          eq(payments.externalTxId, line.externalTxId)
+        )
+      )
+      .limit(1);
+    if (existing) {
+      summary.skippedDuplicates += 1;
+      continue;
+    }
+
+    const suggestion = suggestMatch(
+      {
+        vs: line.vs,
+        ss: line.ss,
+        amountCents: line.amountCents,
+        counterpartyIban: line.counterpartyIban,
+        counterpartyName: line.counterpartyName,
+      },
+      matchable
+    );
+    const autoUnit = suggestion.autoApply ? suggestion.unitEntityId : null;
+
+    const receivedAt = line.bookingDate
+      ? new Date(`${line.bookingDate}T00:00:00Z`)
+      : new Date();
+    const [payment] = await tx
+      .insert(payments)
+      .values({
+        entityId: input.entityId,
+        unitEntityId: autoUnit,
+        source: input.source,
+        method: "bank",
+        receivedAt,
+        valueDate: line.valueDate
+          ? new Date(`${line.valueDate}T00:00:00Z`)
+          : null,
+        amountCents: line.amountCents,
+        vs: line.vs,
+        ss: line.ss,
+        ks: line.ks,
+        counterpartyIban: line.counterpartyIban,
+        counterpartyName: line.counterpartyName,
+        narrative: line.narrative,
+        externalTxId: line.externalTxId,
+        rawPayload: line as unknown as Record<string, unknown>,
+        createdById: input.actorId,
+      })
+      .returning({ id: payments.id });
+    summary.imported += 1;
+
+    if (autoUnit) {
+      // Same fiscal-year rule as manual entry — the payment's receivedAt
+      // year when that period is open, else the current open period.
+      const period = await periodForReceivedAt(
+        tx,
+        input.entityId,
+        receivedAt
+      );
+      await allocateAndPostPayment(tx, {
+        paymentId: payment.id,
+        entityId: input.entityId,
+        periodId: period.id,
+        country: input.country,
+        unitEntityId: autoUnit,
+        amountCents: line.amountCents,
+        actorId: input.actorId,
+        allocatedBy: "auto",
+      });
+      summary.autoMatched += 1;
+    } else {
+      summary.needsReview += 1;
+    }
+  }
+}
+
+/** Runs the shared pipeline in its own transaction (Fio poll path). */
+export async function importNormalizedLines(input: {
+  entityId: string;
+  country: Country;
+  actorId: string;
+  source: "bank_import" | "fio_api";
+  lines: NormalizedBankLine[];
+}): Promise<ImportSummary> {
+  return db.transaction(async (tx) => {
+    await postAllDueMonths(tx, {
+      entityId: input.entityId,
+      country: input.country,
+    });
+    const summary: ImportSummary = {
+      statements: 1,
+      credits: 0,
+      imported: 0,
+      skippedDuplicates: 0,
+      autoMatched: 0,
+      needsReview: 0,
+      debitsSkipped: 0,
+    };
+    await importLines(tx, { ...input, summary });
+    return summary;
+  });
+}
+
+/** Refuses any line whose currency differs from the ledger's. */
+export function assertLedgerCurrency(
+  country: Country,
+  lines: { currency?: string | null }[]
+): void {
+  const expected = LEDGER_CURRENCY[country];
+  for (const line of lines) {
+    if (line.currency && line.currency !== expected) {
+      throw new Error(
+        `accounting: statement carries ${line.currency} amounts — this ledger books ${expected}`
+      );
+    }
+  }
+}
 
 export async function importCamt053Statement(input: {
   entityId: string;
@@ -176,16 +349,10 @@ export async function importCamt053Statement(input: {
 
   // Amounts are stored as plain cents with NO currency column — a
   // foreign-currency line booked verbatim would corrupt every balance.
-  const expectedCurrency = LEDGER_CURRENCY[input.country];
-  for (const stmt of statements) {
-    for (const line of stmt.transactions) {
-      if (line.currency && line.currency !== expectedCurrency) {
-        throw new Error(
-          `accounting: statement carries ${line.currency} amounts — this ledger books ${expectedCurrency}`
-        );
-      }
-    }
-  }
+  assertLedgerCurrency(
+    input.country,
+    statements.flatMap((s) => s.transactions)
+  );
 
   return db.transaction(async (tx) => {
     // Serializes with every other money mutation AND posts due months so
@@ -219,8 +386,6 @@ export async function importCamt053Statement(input: {
       }
     }
 
-    const matchable = await gatherMatchableUnits(tx, input.entityId);
-
     const summary: ImportSummary = {
       statements: statements.length,
       credits: 0,
@@ -231,108 +396,35 @@ export async function importCamt053Statement(input: {
       debitsSkipped: 0,
     };
 
-    for (const stmt of statements) {
-      let position = 0;
-      for (const line of stmt.transactions) {
-        position += 1;
-        if (line.direction === "debit") {
-          summary.debitsSkipped += 1;
-          continue;
-        }
-        if (line.amountCents <= 0) {
-          // Zero-amount informational entries carry no money.
-          continue;
-        }
-        summary.credits += 1;
-
-        // Idempotency key: the bank's AcctSvcrRef, or a synthesized
-        // statement-scoped key when the bank omits it — a NULL key would
-        // bypass the unique index and re-import the line on every upload.
-        const externalTxId =
+    // Idempotency key: the bank's AcctSvcrRef, or a synthesized
+    // statement-scoped key when the bank omits it — a NULL key would
+    // bypass the unique index and re-import the line on every upload.
+    const lines: NormalizedBankLine[] = statements.flatMap((stmt) =>
+      stmt.transactions.map((line, i) => ({
+        externalTxId:
           line.externalTxId ??
-          `stmt:${stmt.iban ?? "?"}:${stmt.statementId ?? "?"}:${position}`;
+          `stmt:${stmt.iban ?? "?"}:${stmt.statementId ?? "?"}:${i + 1}`,
+        amountCents: line.amountCents,
+        direction: line.direction,
+        bookingDate: line.bookingDate,
+        valueDate: line.valueDate,
+        vs: line.vs,
+        ss: line.ss,
+        ks: line.ks,
+        counterpartyIban: line.counterpartyIban,
+        counterpartyName: line.counterpartyName,
+        narrative: line.narrative,
+      }))
+    );
 
-        // Pre-check scoped to the dom (the unique index is per entity —
-        // AcctSvcrRef is only unique per bank, not across doms).
-        const [existing] = await tx
-          .select({ id: payments.id })
-          .from(payments)
-          .where(
-            and(
-              eq(payments.entityId, input.entityId),
-              eq(payments.externalTxId, externalTxId)
-            )
-          )
-          .limit(1);
-        if (existing) {
-          summary.skippedDuplicates += 1;
-          continue;
-        }
-
-        const suggestion = suggestMatch(
-          {
-            vs: line.vs,
-            ss: line.ss,
-            amountCents: line.amountCents,
-            counterpartyIban: line.counterpartyIban,
-            counterpartyName: line.counterpartyName,
-          },
-          matchable
-        );
-        const autoUnit = suggestion.autoApply ? suggestion.unitEntityId : null;
-
-        const receivedAt = line.bookingDate
-          ? new Date(`${line.bookingDate}T00:00:00Z`)
-          : new Date();
-        const [payment] = await tx
-          .insert(payments)
-          .values({
-            entityId: input.entityId,
-            unitEntityId: autoUnit,
-            source: "bank_import",
-            method: "bank",
-            receivedAt,
-            valueDate: line.valueDate
-              ? new Date(`${line.valueDate}T00:00:00Z`)
-              : null,
-            amountCents: line.amountCents,
-            vs: line.vs,
-            ss: line.ss,
-            ks: line.ks,
-            counterpartyIban: line.counterpartyIban,
-            counterpartyName: line.counterpartyName,
-            narrative: line.narrative,
-            externalTxId,
-            rawPayload: line as unknown as Record<string, unknown>,
-            createdById: input.actorId,
-          })
-          .returning({ id: payments.id });
-        summary.imported += 1;
-
-        if (autoUnit) {
-          // Same fiscal-year rule as manual entry — the payment's
-          // receivedAt year when that period is open, else current open.
-          const period = await periodForReceivedAt(
-            tx,
-            input.entityId,
-            receivedAt
-          );
-          await allocateAndPostPayment(tx, {
-            paymentId: payment.id,
-            entityId: input.entityId,
-            periodId: period.id,
-            country: input.country,
-            unitEntityId: autoUnit,
-            amountCents: line.amountCents,
-            actorId: input.actorId,
-            allocatedBy: "auto",
-          });
-          summary.autoMatched += 1;
-        } else {
-          summary.needsReview += 1;
-        }
-      }
-    }
+    await importLines(tx, {
+      entityId: input.entityId,
+      country: input.country,
+      actorId: input.actorId,
+      source: "bank_import",
+      lines,
+      summary,
+    });
 
     await tx.insert(auditLog).values({
       entityId: input.entityId,
@@ -397,7 +489,7 @@ export async function listUnmatchedBankLines(
       .where(
         and(
           eq(payments.entityId, entityId),
-          eq(payments.source, "bank_import"),
+          inArray(payments.source, ["bank_import", "fio_api"]),
           isNull(payments.journalEntryId),
           isNull(payments.voidedAt)
         )

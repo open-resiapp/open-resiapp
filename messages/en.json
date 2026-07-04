@@ -1585,7 +1585,16 @@
       "pickUnit": "Pick a unit…",
       "confirm": "Looks right",
       "confirming": "Matching…",
-      "vsLabel": "VS {vs}"
+      "vsLabel": "VS {vs}",
+      "fioTitle": "Fio banka — live connection",
+      "fioHint": "Generate a read-only API token in Fio internet banking (Settings → API) and paste it here. Payments then pull in one click.",
+      "fioTokenPlaceholder": "Fio API token",
+      "fioConnect": "Connect",
+      "fioSaving": "Saving…",
+      "fioConnected": "Connected (token {preview})",
+      "fioLastSync": "last sync {date}",
+      "fioSync": "Sync now",
+      "fioSyncing": "Fetching…"
     }
   }
 }

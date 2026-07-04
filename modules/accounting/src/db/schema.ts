@@ -10,6 +10,7 @@ import {
   uniqueIndex,
   index,
   check,
+  boolean,
 } from "drizzle-orm/pg-core";
 import { sql } from "drizzle-orm";
 
@@ -530,6 +531,40 @@ export const paymentAllocations = pgTable(
       "mod_accounting_payment_allocations_amount_check",
       sql`${table.amountCents} > 0`
     ),
+  })
+);
+
+// ── Bank connections (outbound read tokens) ────────────
+
+export const bankProviderEnum = pgEnum("mod_accounting_bank_provider", [
+  "fio",
+]);
+
+// Per-dom live bank connections (Phase 2: Fio REST). The token is an
+// OUTBOUND read-only credential we must present verbatim to the bank —
+// unlike external_connections (inbound keys, stored hashed) it cannot be
+// hashed. Protected by DB at-rest encryption + the treasurer-only API
+// surface; never returned to clients (masked prefix only).
+export const bankConnections = pgTable(
+  "mod_accounting_bank_connections",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    entityId: uuid("entity_id")
+      .references(() => entities.id, { onDelete: "restrict" })
+      .notNull(),
+    provider: bankProviderEnum("provider").notNull(),
+    token: text("token").notNull(),
+    isActive: boolean("is_active").notNull().default(true),
+    lastSyncAt: timestamp("last_sync_at"),
+    createdById: uuid("created_by_id")
+      .references(() => users.id, { onDelete: "restrict" })
+      .notNull(),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+  },
+  (table) => ({
+    entityProviderUnique: uniqueIndex(
+      "mod_accounting_bank_connections_entity_provider_idx"
+    ).on(table.entityId, table.provider),
   })
 );
 

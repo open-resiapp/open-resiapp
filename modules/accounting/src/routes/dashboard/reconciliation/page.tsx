@@ -47,6 +47,12 @@ interface ImportSummary {
   debitsSkipped: number;
 }
 
+interface FioState {
+  connected: boolean;
+  tokenPreview: string | null;
+  lastSyncAt: string | null;
+}
+
 export default function ReconciliationPage() {
   const t = useTranslations("Accounting.reconciliation");
   const format = useFormatter();
@@ -59,6 +65,10 @@ export default function ReconciliationPage() {
   const [summary, setSummary] = useState<ImportSummary | null>(null);
   const [overrides, setOverrides] = useState<Record<string, string>>({});
   const [confirming, setConfirming] = useState<string | null>(null);
+  const [fio, setFio] = useState<FioState | null>(null);
+  const [fioToken, setFioToken] = useState("");
+  const [fioSaving, setFioSaving] = useState(false);
+  const [fioSyncing, setFioSyncing] = useState(false);
 
   const load = useCallback(() => {
     fetch("/api/accounting/reconciliation")
@@ -74,6 +84,56 @@ export default function ReconciliationPage() {
   }, []);
 
   useEffect(load, [load]);
+
+  useEffect(() => {
+    fetch("/api/accounting/fio")
+      .then((r) => (r.ok ? r.json() : null))
+      .then((data: FioState | null) => {
+        if (data) setFio(data);
+      })
+      .catch(() => {});
+  }, []);
+
+  async function saveFioToken() {
+    if (!fioToken.trim()) return;
+    setFioSaving(true);
+    setError(null);
+    try {
+      const res = await fetch("/api/accounting/fio", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ token: fioToken.trim() }),
+      });
+      const body = await res.json().catch(() => null);
+      if (!res.ok) throw new Error(body?.error ?? String(res.status));
+      setFioToken("");
+      const state = await fetch("/api/accounting/fio").then((r) => r.json());
+      setFio(state);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "fio");
+    } finally {
+      setFioSaving(false);
+    }
+  }
+
+  async function syncFioNow() {
+    setFioSyncing(true);
+    setError(null);
+    setSummary(null);
+    try {
+      const res = await fetch("/api/accounting/fio/sync", { method: "POST" });
+      const body = await res.json().catch(() => null);
+      if (!res.ok) throw new Error(body?.error ?? String(res.status));
+      setSummary(body);
+      const state = await fetch("/api/accounting/fio").then((r) => r.json());
+      setFio(state);
+      load();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "fio");
+    } finally {
+      setFioSyncing(false);
+    }
+  }
 
   async function importFile(file: File) {
     setImporting(true);
@@ -196,6 +256,53 @@ export default function ReconciliationPage() {
             {t("submitError")} ({error})
           </p>
         )}
+
+        {/* Fio live connection */}
+        <div className="mt-6 border-t border-gray-200 dark:border-gray-700 pt-4">
+          <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100 mb-1">
+            {t("fioTitle")}
+          </h3>
+          {fio?.connected ? (
+            <div className="flex flex-wrap items-center gap-3 text-sm">
+              <span className="text-gray-600 dark:text-gray-400">
+                {t("fioConnected", { preview: fio.tokenPreview ?? "" })}
+                {fio.lastSyncAt &&
+                  ` · ${t("fioLastSync", {
+                    date: format.dateTime(new Date(fio.lastSyncAt), {
+                      dateStyle: "medium",
+                      timeStyle: "short",
+                    }),
+                  })}`}
+              </span>
+              <button
+                onClick={syncFioNow}
+                disabled={fioSyncing}
+                className="px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white rounded-lg text-sm"
+              >
+                {fioSyncing ? t("fioSyncing") : t("fioSync")}
+              </button>
+            </div>
+          ) : (
+            <div className="flex flex-wrap items-center gap-3">
+              <p className="w-full text-sm text-gray-600 dark:text-gray-400">
+                {t("fioHint")}
+              </p>
+              <input
+                value={fioToken}
+                onChange={(e) => setFioToken(e.target.value)}
+                placeholder={t("fioTokenPlaceholder")}
+                className="flex-1 min-w-64 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 text-sm font-mono"
+              />
+              <button
+                onClick={saveFioToken}
+                disabled={fioSaving || !fioToken.trim()}
+                className="px-4 py-2 border border-blue-600 text-blue-600 dark:text-blue-400 dark:border-blue-400 rounded-lg disabled:opacity-50 text-sm"
+              >
+                {fioSaving ? t("fioSaving") : t("fioConnect")}
+              </button>
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Unmatched lines */}
