@@ -1523,7 +1523,46 @@
       "navKartaHint": "Průběžný zůstatek každé jednotky s historií pohybů",
       "navKartaOwnerHint": "Zůstatek, předpisy a úhrady vaší jednotky",
       "navVs": "Variabilní symboly",
-      "navVsHint": "Přiřazení variabilních symbolů jednotkám pro párování plateb"
+      "navVsHint": "Přiřazení variabilních symbolů jednotkám pro párování plateb",
+      "navSettings": "Nastavení",
+      "navSettingsHint": "IBAN účtu a způsob rozúčtování úhrad"
+    },
+    "settings": {
+      "title": "Nastavení účetnictví",
+      "subtitle": "Bankovní účet společenství a způsob rozúčtování částečných úhrad",
+      "backToAccounting": "Zpět na účetnictví",
+      "loadError": "Nepodařilo se načíst nastavení.",
+      "submitError": "Uložení selhalo",
+      "iban": "IBAN účtu společenství",
+      "ibanHint": "Tiskne se na předpis PDF a kóduje do platebního QR kódu.",
+      "ibanInvalid": "Neplatný IBAN (kontrola MOD-97 selhala).",
+      "strategy": "Rozúčtování částečné úhrady",
+      "strategyHint": "Jak se rozdělí platba, která nepokryje celý měsíční předpis.",
+      "strategy_proportional": "Poměrně",
+      "strategy_proportional_hint": "Částka se rozdělí mezi položky předpisu poměrně k jejich výši.",
+      "strategy_priority_ordered": "Podle priority",
+      "strategy_priority_ordered_hint": "Položky se hradí v pořadí priorit, dokud se platba nevyčerpá.",
+      "priorityOrder": "Pořadí priorit",
+      "moveUp": "Posunout výše",
+      "moveDown": "Posunout níže",
+      "savedOk": "Uloženo",
+      "save": "Uložit",
+      "saving": "Ukládá se…"
+    },
+    "predpisPdf": {
+      "title": "Měsíční předpis plateb",
+      "subtitle": "za období {month}",
+      "unit": "Jednotka",
+      "vs": "Variabilní symbol",
+      "service": "Služba",
+      "monthlyAmount": "Měsíční částka",
+      "total": "Celkem",
+      "qrTitle": "Úhrada přes platební QR — naskenujte v bankovní aplikaci",
+      "iban": "IBAN",
+      "footer": "Předpis není faktura. Vygenerováno systémem OpenResiApp.",
+      "download": "Stáhnout předpis (PDF)",
+      "generating": "Generuje se…",
+      "error": "Generování selhalo"
     }
   }
 }

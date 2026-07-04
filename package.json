@@ -29,6 +29,7 @@
     "@types/qrcode": "^1.5.6",
     "adm-zip": "^0.5.17",
     "bcrypt": "^6.0.0",
+    "bysquare": "^4.0.0",
     "drizzle-orm": "^0.45.1",
     "next": "16.1.5",
     "next-auth": "^5.0.0-beta.30",

@@ -32,6 +32,9 @@ importers:
       bcrypt:
         specifier: ^6.0.0
         version: 6.0.0
+      bysquare:
+        specifier: ^4.0.0
+        version: 4.0.0
       drizzle-orm:
         specifier: ^0.45.1
         version: 0.45.2(@types/pg@8.20.0)(pg@8.20.0)
@@ -1895,6 +1898,10 @@ packages:
   buffer-from@1.1.2:
     resolution: {integrity: sha512-E+XQCRwSbaaiChtv6k6Dwgc+bx+Bs6vuKJHHl5kox/BaKbhiXzqQOwK4cO22yElGp2OCmjwVhT3HmxgyPGnJfQ==}
 
+  bysquare@4.0.0:
+    resolution: {integrity: sha512-V1gGJFn39TY9XnvQDbzMTgGau3wCatsH5+XNSC2wXGgYijIVUD0gkZGalNIub28R+XhM/zUvge+8ccMPJ2+bZw==}
+    hasBin: true
+
   bytes@3.1.2:
     resolution: {integrity: sha512-/Nf7TyzTx6S3yRJObOAV7956r8cr2+Oj8AC5dt8wSP3BQAoeX58NoHyCU8P8zGkNXStjTSi6fzO6F0pBdcYbEg==}
     engines: {node: '>= 0.8'}
@@ -2942,6 +2949,9 @@ packages:
   lru-cache@5.1.1:
     resolution: {integrity: sha512-KpNARQA3Iwv+jTA0utUVVbrh+Jlrr1Fv0e56GGzAFOXN7dk/FviaDW8LHmK52DlcH4WP2n6gI8vN1aesBFgo9w==}
 
+  lzma1@0.2.0:
+    resolution: {integrity: sha512-JkPtHHKANh2je4Gp2kTjtobUXf7+zzfGHYm9PPRnx+Mr4KhAqoyb8dwtCExGaxkJl5upwWStdkIJWpn28XWiHw==}
+
   magic-string@0.30.21:
     resolution: {integrity: sha512-vd2F4YUyEXKGcLHoq+TEyCjxueSeHnFxyyjNp80yg0XV4vUhnDer/lvvlqM/arB5bXQN5K2/3oinyCRyx8T2CQ==}
 
@@ -3713,6 +3723,10 @@ packages:
     resolution: {integrity: sha512-8XkAphELsDnEGrDxUOHB3RGvXz6TeuYSGEZBOjtTtPm2lwhGBjLgOzLHB63IUWfBpNucQjND6d3AOudO+H3RWQ==}
     deprecated: uuid@10 and below is no longer supported.  For ESM codebases, update to uuid@latest.  For CommonJS codebases, use uuid@11 (but be aware this version will likely be deprecated in 2028).
     hasBin: true
+
+  validator@13.15.35:
+    resolution: {integrity: sha512-TQ5pAGhd5whStmqWvYF4OjQROlmv9SMFVt37qoCBdqRffuuklWYQlCNnEs2ZaIBD1kZRNnikiZOS1eqgkar0iw==}
+    engines: {node: '>= 0.10'}
 
   vary@1.1.2:
     resolution: {integrity: sha512-BNGbWLfd0eUPabhkXUVm0j8uuvREyTh5ovRa/dyow/BqAbZJyC+5fU+IzQOzmAKzYqYRAISoRhdQr3eIZ/PXqg==}
@@ -5469,6 +5483,11 @@ snapshots:
 
   buffer-from@1.1.2: {}
 
+  bysquare@4.0.0:
+    dependencies:
+      lzma1: 0.2.0
+      validator: 13.15.35
+
   bytes@3.1.2: {}
 
   call-bind-apply-helpers@1.0.2:
@@ -6629,6 +6648,8 @@ snapshots:
     dependencies:
       yallist: 3.1.1
 
+  lzma1@0.2.0: {}
+
   magic-string@0.30.21:
     dependencies:
       '@jridgewell/sourcemap-codec': 1.5.5
@@ -7481,6 +7502,8 @@ snapshots:
   util-deprecate@1.0.2: {}
 
   uuid@10.0.0: {}
+
+  validator@13.15.35: {}
 
   vary@1.1.2: {}
 

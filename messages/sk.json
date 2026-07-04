@@ -1523,7 +1523,46 @@
       "navKartaHint": "Priebežný zostatok každého bytu s históriou pohybov",
       "navKartaOwnerHint": "Zostatok, predpisy a úhrady vášho bytu",
       "navVs": "Variabilné symboly",
-      "navVsHint": "Priradenie variabilných symbolov bytom pre párovanie platieb"
+      "navVsHint": "Priradenie variabilných symbolov bytom pre párovanie platieb",
+      "navSettings": "Nastavenia",
+      "navSettingsHint": "IBAN účtu a spôsob rozpočítania úhrad"
+    },
+    "settings": {
+      "title": "Nastavenia účtovníctva",
+      "subtitle": "Bankový účet spoločenstva a spôsob rozpočítania čiastočných úhrad",
+      "backToAccounting": "Späť na účtovníctvo",
+      "loadError": "Nepodarilo sa načítať nastavenia.",
+      "submitError": "Uloženie zlyhalo",
+      "iban": "IBAN účtu spoločenstva",
+      "ibanHint": "Tlačí sa na predpis PDF a koduje do PAY by square QR kódu.",
+      "ibanInvalid": "Neplatný IBAN (kontrola MOD-97 zlyhala).",
+      "strategy": "Rozpočítanie čiastočnej úhrady",
+      "strategyHint": "Ako sa rozdelí platba, ktorá nepokryje celý mesačný predpis.",
+      "strategy_proportional": "Pomerne",
+      "strategy_proportional_hint": "Suma sa rozdelí medzi položky predpisu pomerne k ich výške.",
+      "strategy_priority_ordered": "Podľa priority",
+      "strategy_priority_ordered_hint": "Položky sa uhrádzajú v poradí priorít, kým sa platba nevyčerpá.",
+      "priorityOrder": "Poradie priorít",
+      "moveUp": "Posunúť vyššie",
+      "moveDown": "Posunúť nižšie",
+      "savedOk": "Uložené",
+      "save": "Uložiť",
+      "saving": "Ukladá sa…"
+    },
+    "predpisPdf": {
+      "title": "Mesačný predpis úhrad",
+      "subtitle": "za obdobie {month}",
+      "unit": "Byt",
+      "vs": "Variabilný symbol",
+      "service": "Služba",
+      "monthlyAmount": "Mesačná suma",
+      "total": "Spolu",
+      "qrTitle": "Úhrada cez PAY by square — naskenujte v bankovej aplikácii",
+      "iban": "IBAN",
+      "footer": "Predpis nie je faktúra. Vygenerované systémom OpenResiApp.",
+      "download": "Stiahnuť predpis (PDF)",
+      "generating": "Generuje sa…",
+      "error": "Generovanie zlyhalo"
     }
   }
 }

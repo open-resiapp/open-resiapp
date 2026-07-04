@@ -103,6 +103,9 @@ export const accountingSettings = pgTable(
       .default("proportional"),
     // Ordered service_category slugs, only read for priority_ordered.
     priorityOrder: jsonb("priority_order"),
+    // The dom's collection account — printed on predpis PDFs and encoded
+    // into PAY by square QR. MOD-97-validated on write.
+    bankIban: varchar("bank_iban", { length: 34 }),
     effectiveFrom: timestamp("effective_from").notNull(),
     createdById: uuid("created_by_id")
       .references(() => users.id)

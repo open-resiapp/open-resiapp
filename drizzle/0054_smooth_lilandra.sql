@@ -1,0 +1,1 @@
+ALTER TABLE "mod_accounting_settings" ADD COLUMN "bank_iban" varchar(34);

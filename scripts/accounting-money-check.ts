@@ -17,6 +17,10 @@ import {
   centsToInput,
   formatEur,
 } from "@modules/accounting/src/lib/money";
+import {
+  isValidIban,
+  normalizeIban,
+} from "@modules/accounting/src/lib/iban";
 
 let failures = 0;
 
@@ -112,6 +116,27 @@ console.log("formatEur: sanity");
   check("contains amount", s.includes("1") && s.includes("234,56"), s);
   check("contains € symbol", s.includes("€"), s);
 }
+
+console.log("iban: normalization");
+check(
+  "spaces stripped + uppercased",
+  normalizeIban("sk96 1100 0000 0029 1859 9669") === "SK9611000000002918599669"
+);
+check("garbage shape rejected", normalizeIban("XX12") === null);
+check("non-alnum rejected", normalizeIban("SK96-1100") === null);
+
+console.log("iban: MOD-97 validation");
+// Known-valid IBANs (published examples).
+check("valid SK", isValidIban("SK9611000000002918599669"));
+check("valid SK with spaces", isValidIban("SK96 1100 0000 0029 1859 9669"));
+check("valid CZ", isValidIban("CZ6508000000192000145399"));
+check("valid DE", isValidIban("DE89370400440532013000"));
+check("valid GB", isValidIban("GB29NWBK60161331926819"));
+// Single-digit corruption must fail the checksum.
+check("checksum catches digit flip", !isValidIban("SK9611000000002918599668"));
+check("checksum catches swapped chars", !isValidIban("SK6911000000002918599669"));
+check("empty invalid", !isValidIban(""));
+check("too short invalid", !isValidIban("SK96"));
 
 if (failures > 0) {
   console.error(`\n${failures} check(s) FAILED.`);

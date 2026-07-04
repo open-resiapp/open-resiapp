@@ -12,6 +12,7 @@ import {
   listUnitBalances,
 } from "@modules/accounting/src/lib/karta-bytu";
 import { postAllDueMonths } from "@modules/accounting/src/lib/fee-schedule-publish";
+import { getPredpisPdfData } from "@modules/accounting/src/lib/predpis-pdf-data";
 
 // Karta bytu API. Unlike the treasurer-only routes, owners are allowed
 // here — scoped server-side to units they hold an active owner membership
@@ -116,6 +117,42 @@ export async function handleGetLedger(
     return NextResponse.json({ error: "not found" }, { status: 404 });
   }
   return NextResponse.json({ ledger, canWrite: isWriter });
+}
+
+/** GET /api/accounting/karta/[unitId]/predpis-pdf — data for the PDF. */
+export async function handlePredpisPdfData(
+  _req: NextRequest,
+  unitEntityId: string
+): Promise<NextResponse> {
+  const ctx = await baseCtx();
+  if (ctx.error) return ctx.error;
+  const { session, root } = ctx;
+
+  const allowed = await canReadUnitLedger(
+    session.user.id,
+    session.user.role as string,
+    root.id,
+    unitEntityId
+  );
+  if (!allowed) {
+    return NextResponse.json({ error: "forbidden" }, { status: 403 });
+  }
+
+  try {
+    const data = await getPredpisPdfData({
+      entityId: root.id,
+      country: root.country,
+      unitEntityId,
+      beneficiaryName: root.name,
+    });
+    return NextResponse.json({
+      ...data,
+      building: { name: root.name, address: root.address, ico: root.ico },
+    });
+  } catch (err) {
+    const message = err instanceof Error ? err.message : "pdf data failed";
+    return NextResponse.json({ error: message }, { status: 400 });
+  }
 }
 
 /** POST /api/accounting/karta/[unitId]/apply-credit — treasurer/admin. */

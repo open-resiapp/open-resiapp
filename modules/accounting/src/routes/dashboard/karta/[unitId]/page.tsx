@@ -9,6 +9,7 @@ import { Fragment, useCallback, useEffect, useState } from "react";
 import { useFormatter, useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { formatEur } from "@modules/accounting/src/lib/money";
+import DownloadPredpisButton from "@modules/accounting/src/components/DownloadPredpisButton";
 
 interface LedgerLine {
   categorySlug: string | null;
@@ -106,9 +107,12 @@ export default function KartaDetailPage({ unitId }: { unitId: string }) {
       <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mt-2 mb-1">
         {t("detailTitle", { unit: ledger.flatNumber ?? ledger.name })}
       </h1>
-      <p className="text-gray-600 dark:text-gray-400 mb-6">
-        {ledger.vs ? t("vsLabel", { vs: ledger.vs }) : t("noVs")}
-      </p>
+      <div className="flex items-center justify-between mb-6">
+        <p className="text-gray-600 dark:text-gray-400">
+          {ledger.vs ? t("vsLabel", { vs: ledger.vs }) : t("noVs")}
+        </p>
+        <DownloadPredpisButton unitId={unitId} />
+      </div>
 
       {/* Summary */}
       <div className="flex flex-wrap gap-4 mb-6">
