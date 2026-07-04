@@ -37,9 +37,12 @@ import {
   postOpeningBalance,
   postAssessmentsForMonth,
   postPaymentMatched,
+  postSupplierInvoice,
+  postSupplierPayment,
   applyPaymentCredit,
   voidPayment,
   assertPeriodOpen,
+  expenseDebitCode,
   type Tx,
 } from "@modules/accounting/src/engine/booking";
 import { ACCOUNT_CODES } from "@modules/accounting/src/seeds/coa-sk";
@@ -457,6 +460,85 @@ async function main() {
           reason: "again",
         });
       });
+
+      // ── Supplier expenses (Phase 3) ──
+      console.log("supplier expenses");
+      check(
+        "fpuo expense debits the fund (472)",
+        expenseDebitCode("fpuo", "SVC_OTHER") === ACCOUNT_CODES.ZAVAZKY_FPUO
+      );
+      check(
+        "heat expense debits 502",
+        expenseDebitCode("svc", "SVC_HEAT") === ACCOUNT_CODES.NAKLADY_ENERGIE
+      );
+      check(
+        "lift expense debits 518",
+        expenseDebitCode("svc", "SVC_LIFT") === ACCOUNT_CODES.NAKLADY_SLUZBY
+      );
+      {
+        const fondBefore = -(await accountBalance(
+          tx,
+          root.id,
+          ACCOUNT_CODES.ZAVAZKY_FPUO
+        ));
+        const invoiceEntry = await postSupplierInvoice(tx, {
+          expenseId: root.id, // any uuid — surface row not needed here
+          entityId: root.id,
+          periodId: period.id,
+          country: "sk",
+          createdById: actor.id,
+          okruh: "fpuo",
+          categorySlug: null,
+          serviceCategoryId: null,
+          amountCents: 12000,
+          description: "Faktúra oprava strechy",
+        });
+        const invTotals = await entryTotals(tx, invoiceEntry);
+        check(
+          "invoice entry balances",
+          invTotals.debits === 12000 && invTotals.credits === 12000
+        );
+        const fondAfter = -(await accountBalance(
+          tx,
+          root.id,
+          ACCOUNT_CODES.ZAVAZKY_FPUO
+        ));
+        check(
+          "fpuo invoice draws the fund down",
+          fondAfter === fondBefore - 12000,
+          `${fondBefore} → ${fondAfter}`
+        );
+        check(
+          "321 carries the payable",
+          (await accountBalance(tx, root.id, ACCOUNT_CODES.DODAVATELIA)) ===
+            -12000
+        );
+
+        const bankaBefore = await accountBalance(
+          tx,
+          root.id,
+          ACCOUNT_CODES.BANKA
+        );
+        await postSupplierPayment(tx, {
+          expenseId: root.id,
+          entityId: root.id,
+          periodId: period.id,
+          country: "sk",
+          createdById: actor.id,
+          okruh: "fpuo",
+          amountCents: 12000,
+          method: "bank",
+        });
+        check(
+          "payment clears 321",
+          (await accountBalance(tx, root.id, ACCOUNT_CODES.DODAVATELIA)) === 0
+        );
+        check(
+          "payment credits banka",
+          (await accountBalance(tx, root.id, ACCOUNT_CODES.BANKA)) ===
+            bankaBefore - 12000
+        );
+      }
 
       // ── Period lock ──
       console.log("period immutability");

@@ -50,6 +50,7 @@ export const sourceTypeEnum = pgEnum("mod_accounting_source_type", [
   "fee_schedule_publish",
   "payment",
   "manual",
+  "expense",
 ]);
 
 export const allocationKeyEnum = pgEnum("mod_accounting_allocation_key", [
@@ -533,6 +534,79 @@ export const paymentAllocations = pgTable(
     ),
     amountCheck: check(
       "mod_accounting_payment_allocations_amount_check",
+      sql`${table.amountCents} > 0`
+    ),
+  })
+);
+
+// ── Expenses (supplier side, Phase 3) ──────────────────
+
+// Manual entry primary; OCR/inbox arrive later. Brutto is the money that
+// actually leaves the account and gets split across owners at
+// vyúčtovanie (supplier charges DPH even though the SVB is no VAT payer);
+// netto+DPH are recorded for the doklad. Category may be null on entry
+// (dashboard "uncategorized" queue) but must be set before the
+// vyúčtovanie gate passes.
+export const expenses = pgTable(
+  "mod_accounting_expenses",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    entityId: uuid("entity_id")
+      .references(() => entities.id, { onDelete: "restrict" })
+      .notNull(),
+    supplierName: varchar("supplier_name", { length: 255 }).notNull(),
+    supplierIco: varchar("supplier_ico", { length: 20 }),
+    supplierDic: varchar("supplier_dic", { length: 20 }),
+    supplierIban: varchar("supplier_iban", { length: 34 }),
+    invoiceNo: varchar("invoice_no", { length: 100 }).notNull(),
+    invoiceDate: timestamp("invoice_date").notNull(),
+    dueDate: timestamp("due_date"),
+    serviceCategoryId: uuid("service_category_id").references(
+      () => serviceCategories.id,
+      { onDelete: "restrict" }
+    ),
+    okruh: okruhEnum("okruh").notNull(),
+    /** Brutto — what leaves the account and is split among owners. */
+    amountCents: integer("amount_cents").notNull(),
+    amountNettoCents: integer("amount_netto_cents"),
+    /** DPH percent ×100 (2300 = 23 %). */
+    dphRateBp: integer("dph_rate_bp"),
+    dphCents: integer("dph_cents"),
+    /** REVIZIA_* categories: statutory next-inspection deadline. */
+    nextInspectionDueAt: timestamp("next_inspection_due_at"),
+    // Booking links: invoice posting (Dr náklady|472 / Cr 321) and the
+    // payment posting (Dr 321 / Cr 221|211) once paid.
+    journalEntryId: uuid("journal_entry_id").references(
+      () => journalEntries.id,
+      { onDelete: "restrict" }
+    ),
+    paidAt: timestamp("paid_at"),
+    paymentJournalEntryId: uuid("payment_journal_entry_id").references(
+      () => journalEntries.id,
+      { onDelete: "restrict" }
+    ),
+    paymentMethod: paymentMethodEnum("payment_method"),
+    voidedAt: timestamp("voided_at"),
+    voidedById: uuid("voided_by_id").references(() => users.id, {
+      onDelete: "restrict",
+    }),
+    voidReason: text("void_reason"),
+    voidJournalEntryId: uuid("void_journal_entry_id").references(
+      () => journalEntries.id,
+      { onDelete: "restrict" }
+    ),
+    createdById: uuid("created_by_id")
+      .references(() => users.id, { onDelete: "restrict" })
+      .notNull(),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+  },
+  (table) => ({
+    entityInvoiceIdx: index("mod_accounting_expenses_entity_idx").on(
+      table.entityId,
+      table.invoiceDate
+    ),
+    amountCheck: check(
+      "mod_accounting_expenses_amount_check",
       sql`${table.amountCents} > 0`
     ),
   })

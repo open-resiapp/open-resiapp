@@ -102,7 +102,12 @@ interface EntryInput {
   country: Country;
   postedAt: Date;
   description: string;
-  sourceType: "opening_balance" | "fee_schedule_publish" | "payment" | "manual";
+  sourceType:
+    | "opening_balance"
+    | "fee_schedule_publish"
+    | "payment"
+    | "manual"
+    | "expense";
   sourceId: string | null;
   createdById: string;
   lines: LineInput[];
@@ -498,6 +503,126 @@ export async function postPaymentMatched(
     .where(eq(payments.id, input.paymentId));
 
   return entryId;
+}
+
+// ── Supplier expenses (Phase 3) ────────────────────────
+
+/**
+ * Expense account per okruh + category. FPÚO spending debits 472 directly
+ * — the fund shrinks, no cost account (SVB non-profit practice for
+ * čerpanie fondu). Services costs hit 5xx and are settled with owners in
+ * the vyúčtovanie.
+ */
+export function expenseDebitCode(
+  okruh: Okruh,
+  categorySlug: string | null
+): string {
+  if (okruh === "fpuo") return ACCOUNT_CODES.ZAVAZKY_FPUO;
+  switch (categorySlug) {
+    case "SVC_HEAT":
+    case "SVC_WATER_COLD":
+    case "SVC_WATER_HOT":
+    case "SVC_ELECTRICITY_COMMON":
+      return ACCOUNT_CODES.NAKLADY_ENERGIE;
+    case "SVC_LIFT":
+    case "SVC_CLEANING":
+    case "SVC_INTERNET":
+      return ACCOUNT_CODES.NAKLADY_SLUZBY;
+    case "SVC_OTHER":
+      return ACCOUNT_CODES.NAKLADY_OSTATNE;
+    default:
+      return ACCOUNT_CODES.NAKLADY_OSTATNE;
+  }
+}
+
+/**
+ * Posts a supplier invoice: Dr náklady (or 472 for FPÚO čerpanie) /
+ * Cr 321 Dodávatelia — brutto, the amount that will leave the account.
+ */
+export async function postSupplierInvoice(
+  tx: Tx,
+  input: {
+    expenseId: string;
+    entityId: string;
+    periodId: string;
+    country: Country;
+    createdById: string;
+    okruh: Okruh;
+    categorySlug: string | null;
+    serviceCategoryId: string | null;
+    amountCents: number;
+    description: string;
+  }
+): Promise<string> {
+  if (input.amountCents <= 0) {
+    throw new Error("accounting: expense amount must be > 0");
+  }
+  const lines: LineInput[] = [
+    {
+      accountCode: expenseDebitCode(input.okruh, input.categorySlug),
+      debitCents: input.amountCents,
+      okruh: input.okruh,
+      serviceCategoryId: input.serviceCategoryId,
+    },
+    {
+      accountCode: ACCOUNT_CODES.DODAVATELIA,
+      creditCents: input.amountCents,
+      okruh: input.okruh,
+    },
+  ];
+  return insertEntry(tx, {
+    entityId: input.entityId,
+    periodId: input.periodId,
+    country: input.country,
+    postedAt: new Date(),
+    description: input.description,
+    sourceType: "expense",
+    sourceId: input.expenseId,
+    createdById: input.createdById,
+    lines,
+  });
+}
+
+/** Posts the expense payment: Dr 321 / Cr banka (221) or pokladnica (211). */
+export async function postSupplierPayment(
+  tx: Tx,
+  input: {
+    expenseId: string;
+    entityId: string;
+    periodId: string;
+    country: Country;
+    createdById: string;
+    okruh: Okruh;
+    amountCents: number;
+    method: "bank" | "cash";
+  }
+): Promise<string> {
+  const lines: LineInput[] = [
+    {
+      accountCode: ACCOUNT_CODES.DODAVATELIA,
+      debitCents: input.amountCents,
+      okruh: input.okruh,
+    },
+    {
+      accountCode:
+        input.method === "cash"
+          ? ACCOUNT_CODES.POKLADNICA
+          : ACCOUNT_CODES.BANKA,
+      creditCents: input.amountCents,
+      okruh: input.okruh,
+    },
+  ];
+  return insertEntry(tx, {
+    entityId: input.entityId,
+    periodId: input.periodId,
+    country: input.country,
+    postedAt: new Date(),
+    description: "Úhrada dodávateľovi",
+    sourceType: "expense",
+    sourceId: input.expenseId,
+    createdById: input.createdById,
+    lines,
+  });
 }
 
 // ── Apply parked preplatok against open assessments ────

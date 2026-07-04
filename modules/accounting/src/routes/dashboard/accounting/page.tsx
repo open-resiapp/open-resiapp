@@ -156,6 +156,7 @@ export default function AccountingHomePage() {
               "navReconciliation",
               "navReconciliationHint",
             ],
+            ["/accounting/expenses", "🧰", "navExpenses", "navExpensesHint"],
             ["/accounting/karta", "🧾", "navKarta", "navKartaHint"],
             [
               "/accounting/predpis/unit-settings",

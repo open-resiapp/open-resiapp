@@ -414,6 +414,20 @@
       "when": 1783144664244,
       "tag": "0058_wakeful_harpoon",
       "breakpoints": true
+    },
+    {
+      "idx": 59,
+      "version": "7",
+      "when": 1783144957931,
+      "tag": "0059_accounting_sk_expense_accounts",
+      "breakpoints": true
+    },
+    {
+      "idx": 60,
+      "version": "7",
+      "when": 1783145001068,
+      "tag": "0060_nasty_killmonger",
+      "breakpoints": true
     }
   ]
 }

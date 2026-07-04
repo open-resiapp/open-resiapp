@@ -35,11 +35,19 @@ export const ACCOUNT_CODES = {
   BANKA: "221",
   POHLADAVKY_VLASTNICI_FPUO: "311.100",
   POHLADAVKY_VLASTNICI_SLUZBY: "311.200",
+  DODAVATELIA: "321",
   INE_POHLADAVKY: "378",
   INE_ZAVAZKY: "379",
   ZAVAZKY_FPUO: "472",
   ZAVAZKY_SLUZBY: "478",
   VYSLEDOK_MINULYCH_ROKOV: "428",
+  // Phase 3 expense accounts (5xx) — services okruh costs, settled with
+  // the owners in the annual vyúčtovanie. FPÚO spending does NOT hit 5xx:
+  // čerpanie fondu debits 472 directly (the fund shrinks).
+  NAKLADY_ENERGIE: "502",
+  NAKLADY_OPRAVY: "511",
+  NAKLADY_SLUZBY: "518",
+  NAKLADY_OSTATNE: "549",
 } as const;
 
 export const COA_SK: ChartAccountSeed[] = [
@@ -79,5 +87,26 @@ export const COA_SK: ChartAccountSeed[] = [
     code: ACCOUNT_CODES.VYSLEDOK_MINULYCH_ROKOV,
     name: "Nevysporiadaný výsledok hospodárenia minulých rokov",
     kind: "equity",
+  },
+  { code: ACCOUNT_CODES.DODAVATELIA, name: "Dodávatelia", kind: "liability" },
+  {
+    code: ACCOUNT_CODES.NAKLADY_ENERGIE,
+    name: "Spotreba energie",
+    kind: "expense",
+  },
+  {
+    code: ACCOUNT_CODES.NAKLADY_OPRAVY,
+    name: "Opravy a udržiavanie",
+    kind: "expense",
+  },
+  {
+    code: ACCOUNT_CODES.NAKLADY_SLUZBY,
+    name: "Ostatné služby",
+    kind: "expense",
+  },
+  {
+    code: ACCOUNT_CODES.NAKLADY_OSTATNE,
+    name: "Iné ostatné náklady",
+    kind: "expense",
   },
 ];
