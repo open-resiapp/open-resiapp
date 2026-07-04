@@ -1530,7 +1530,12 @@
       "navReconciliation": "Banka a párovanie",
       "navReconciliationHint": "Import výpisu CAMT.053 a spárovanie platieb",
       "navExpenses": "Výdavky",
-      "navExpensesHint": "Dodávateľské faktúry a čerpanie fondu opráv"
+      "navExpensesHint": "Dodávateľské faktúry a čerpanie fondu opráv",
+      "attentionTitle": "Vyžaduje pozornosť",
+      "attentionUnmatched": "{count, plural, one {# nespárovaná platba čaká} few {# nespárované platby čakajú} other {# nespárovaných platieb čaká}} na kontrolu",
+      "attentionUncategorized": "{count, plural, one {# nezaradená faktúra} few {# nezaradené faktúry} other {# nezaradených faktúr}}",
+      "attentionOverdueInvoices": "{count, plural, one {# faktúra po splatnosti} few {# faktúry po splatnosti} other {# faktúr po splatnosti}}",
+      "attentionOverdueUnits": "{count, plural, one {# byt s nedoplatkom} few {# byty s nedoplatkom} other {# bytov s nedoplatkom}}"
     },
     "settings": {
       "title": "Nastavenia účtovníctva",

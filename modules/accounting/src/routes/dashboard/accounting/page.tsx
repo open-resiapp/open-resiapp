@@ -11,6 +11,11 @@ import { Link } from "@/i18n/navigation";
 import { formatEur } from "@modules/accounting/src/lib/money";
 
 interface Tiles {
+  attention: {
+    unmatchedBankLines: number;
+    uncategorizedExpenses: number;
+    overdueInvoices: number;
+  };
   openingPosted: boolean;
   pokladnicaCents: number;
   bankaCents: number;
@@ -143,6 +148,68 @@ export default function AccountingHomePage() {
           </p>
         </div>
       </div>
+
+      {/* Vyžaduje pozornosť */}
+      {(tiles.attention.unmatchedBankLines > 0 ||
+        tiles.attention.uncategorizedExpenses > 0 ||
+        tiles.attention.overdueInvoices > 0 ||
+        tiles.nedoplatky.count > 0) && (
+        <div className="mb-8 bg-white dark:bg-gray-900 border border-amber-300 dark:border-amber-800 rounded-lg p-5">
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-3">
+            ⚠️ {t("attentionTitle")}
+          </h2>
+          <ul className="space-y-2 text-sm">
+            {tiles.attention.unmatchedBankLines > 0 && (
+              <li>
+                <Link
+                  href="/accounting/reconciliation"
+                  className="text-blue-600 dark:text-blue-400 hover:underline"
+                >
+                  {t("attentionUnmatched", {
+                    count: tiles.attention.unmatchedBankLines,
+                  })}
+                </Link>
+              </li>
+            )}
+            {tiles.attention.uncategorizedExpenses > 0 && (
+              <li>
+                <Link
+                  href="/accounting/expenses"
+                  className="text-blue-600 dark:text-blue-400 hover:underline"
+                >
+                  {t("attentionUncategorized", {
+                    count: tiles.attention.uncategorizedExpenses,
+                  })}
+                </Link>
+              </li>
+            )}
+            {tiles.attention.overdueInvoices > 0 && (
+              <li>
+                <Link
+                  href="/accounting/expenses"
+                  className="text-blue-600 dark:text-blue-400 hover:underline"
+                >
+                  {t("attentionOverdueInvoices", {
+                    count: tiles.attention.overdueInvoices,
+                  })}
+                </Link>
+              </li>
+            )}
+            {tiles.nedoplatky.count > 0 && (
+              <li>
+                <Link
+                  href="/accounting/karta"
+                  className="text-blue-600 dark:text-blue-400 hover:underline"
+                >
+                  {t("attentionOverdueUnits", {
+                    count: tiles.nedoplatky.count,
+                  })}
+                </Link>
+              </li>
+            )}
+          </ul>
+        </div>
+      )}
 
       {/* Navigation */}
       <div className="grid sm:grid-cols-2 gap-4">

@@ -1530,7 +1530,12 @@
       "navReconciliation": "Bank & reconciliation",
       "navReconciliationHint": "CAMT.053 statement import and payment matching",
       "navExpenses": "Expenses",
-      "navExpensesHint": "Supplier invoices and repair-fund drawdown"
+      "navExpensesHint": "Supplier invoices and repair-fund drawdown",
+      "attentionTitle": "Needs attention",
+      "attentionUnmatched": "{count, plural, one {# unmatched payment waits} other {# unmatched payments wait}} for review",
+      "attentionUncategorized": "{count, plural, one {# uncategorized invoice} other {# uncategorized invoices}}",
+      "attentionOverdueInvoices": "{count, plural, one {# invoice past due} other {# invoices past due}}",
+      "attentionOverdueUnits": "{count, plural, one {# unit in arrears} other {# units in arrears}}"
     },
     "settings": {
       "title": "Accounting settings",

@@ -1,8 +1,14 @@
 import "server-only";
 
-import { and, eq, inArray, sql } from "drizzle-orm";
+import { and, eq, inArray, isNull, sql } from "drizzle-orm";
 import { db } from "@/db";
-import { accounts, journalEntries, journalLines } from "../db/schema";
+import {
+  accounts,
+  expenses,
+  journalEntries,
+  journalLines,
+  payments,
+} from "../db/schema";
 import { ACCOUNT_CODES } from "../seeds/coa-sk";
 import { listDomUnits } from "./dom-units";
 import { listUnitBalances } from "./karta-bytu";
@@ -13,7 +19,17 @@ import { listUnitBalances } from "./karta-bytu";
 
 type Country = "sk" | "cz";
 
+export interface AttentionItems {
+  /** Imported bank lines waiting in the reconciliation queue. */
+  unmatchedBankLines: number;
+  /** Non-voided expenses without a service category. */
+  uncategorizedExpenses: number;
+  /** Unpaid, non-voided expenses past their due date. */
+  overdueInvoices: number;
+}
+
 export interface DashboardTiles {
+  attention: AttentionItems;
   openingPosted: boolean;
   /** 211 — cash box. */
   pokladnicaCents: number;
@@ -79,10 +95,36 @@ export async function getDashboardTiles(
     )
     .limit(1);
 
-  const [balances, units] = await Promise.all([
-    accountBalances(entityId, country),
-    listDomUnits(entityId),
-  ]);
+  const countPayments = (cond: ReturnType<typeof and>) =>
+    db
+      .select({ n: sql<number>`count(*)::int` })
+      .from(payments)
+      .where(cond)
+      .then((r) => r[0].n);
+
+  const [balances, units, unmatchedBankLines, expenseCounts] =
+    await Promise.all([
+      accountBalances(entityId, country),
+      listDomUnits(entityId),
+      countPayments(
+        and(
+          eq(payments.entityId, entityId),
+          inArray(payments.source, ["bank_import", "fio_api"]),
+          isNull(payments.journalEntryId),
+          isNull(payments.voidedAt)
+        )
+      ),
+      db
+        .select({
+          uncategorized: sql<number>`count(*) filter (where ${expenses.serviceCategoryId} is null)::int`,
+          overdue: sql<number>`count(*) filter (where ${expenses.paidAt} is null and ${expenses.dueDate} < now())::int`,
+        })
+        .from(expenses)
+        .where(
+          and(eq(expenses.entityId, entityId), isNull(expenses.voidedAt))
+        )
+        .then((r) => r[0]),
+    ]);
   const drMinusCr = (code: string) => balances.get(code) ?? 0;
 
   const fondLiability = -drMinusCr(ACCOUNT_CODES.ZAVAZKY_FPUO);
@@ -106,6 +148,11 @@ export async function getDashboardTiles(
   }
 
   return {
+    attention: {
+      unmatchedBankLines,
+      uncategorizedExpenses: expenseCounts.uncategorized,
+      overdueInvoices: expenseCounts.overdue,
+    },
     openingPosted: !!opening,
     pokladnicaCents: drMinusCr(ACCOUNT_CODES.POKLADNICA),
     bankaCents: drMinusCr(ACCOUNT_CODES.BANKA),
