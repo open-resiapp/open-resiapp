@@ -20,8 +20,8 @@ import {
 import { postPaymentMatched, voidPayment } from "../engine/booking";
 import {
   getCurrentOpenPeriod,
-  getOrCreateOpenPeriod,
   lockOpenPeriods,
+  periodForReceivedAt,
 } from "./periods";
 import { domUnitsWhere } from "./dom-units";
 import { postAllDueMonths } from "./fee-schedule-publish";
@@ -176,28 +176,11 @@ export async function createManualPayment(
       country: input.country,
     });
 
-    // Cash books into the receivedAt year only when that period already
-    // exists and is open. Otherwise (published year, or a backdated year
-    // no period was ever opened for) it books into the current open
-    // period — a missing past-year period must NOT be minted, or it would
-    // predate the opening balance and stay open forever (invariants 4+6).
-    const receivedYear = input.receivedAt.getUTCFullYear();
-    const [receivedPeriod] = await tx
-      .select({
-        id: accountingPeriods.id,
-        status: accountingPeriods.status,
-      })
-      .from(accountingPeriods)
-      .where(
-        and(
-          eq(accountingPeriods.entityId, input.entityId),
-          eq(accountingPeriods.year, receivedYear)
-        )
-      );
-    const period =
-      receivedPeriod?.status === "open"
-        ? receivedPeriod
-        : await getCurrentOpenPeriod(tx, input.entityId);
+    const period = await periodForReceivedAt(
+      tx,
+      input.entityId,
+      input.receivedAt
+    );
 
     const [payment] = await tx
       .insert(payments)
@@ -214,78 +197,110 @@ export async function createManualPayment(
       })
       .returning({ id: payments.id });
 
-    const open = await openAssessmentsForUnit(tx, input.unitEntityId);
-    const openById = new Map(open.map((a) => [a.id, a]));
-
-    let allocated: { assessmentId: string; amountCents: number }[] = [];
-    let unallocatedCents = input.amountCents;
-
-    if (open.length > 0) {
-      const settings = await currentAllocationStrategy(tx, input.entityId);
-      const result = allocatePayment(
-        input.amountCents,
-        open,
-        settings.strategy,
-        settings.priorityOrder
-      );
-      allocated = result.allocations;
-      unallocatedCents = result.unallocatedCents;
-    }
-
-    // Category id per assessment for the journal lines.
-    const categoryIdByAssessment = new Map<string, string>();
-    if (allocated.length > 0) {
-      const assessmentCategories = await tx
-        .select({
-          id: feeAssessments.id,
-          serviceCategoryId: feeAssessments.serviceCategoryId,
-        })
-        .from(feeAssessments)
-        .where(
-          inArray(
-            feeAssessments.id,
-            allocated.map((a) => a.assessmentId)
-          )
-        );
-      for (const a of assessmentCategories) {
-        categoryIdByAssessment.set(a.id, a.serviceCategoryId);
-      }
-    }
-
-    // Always posts — even with zero allocations the cash arrived (Dr banka
-    // full amount) and the remainder parks as preplatok (Cr 379 on the
-    // unit). Balances derive from postings; off-ledger money is corrupt
-    // state (domain invariants 2 + 11).
-    await postPaymentMatched(tx, {
+    const result = await allocateAndPostPayment(tx, {
       paymentId: payment.id,
       entityId: input.entityId,
       periodId: period.id,
       country: input.country,
-      createdById: input.createdById,
-      allocatedBy: "auto",
       unitEntityId: input.unitEntityId,
-      allocations: allocated.map((a) => ({
-        assessmentId: a.assessmentId,
-        unitEntityId: input.unitEntityId,
-        serviceCategoryId: categoryIdByAssessment.get(a.assessmentId)!,
-        okruh: openById.get(a.assessmentId)!.okruh,
-        amountCents: a.amountCents,
-      })),
+      amountCents: input.amountCents,
+      actorId: input.createdById,
+      allocatedBy: "auto",
     });
 
-    return {
-      paymentId: payment.id,
-      allocatedCents: input.amountCents - unallocatedCents,
-      unallocatedCents,
-      allocations: allocated.map((a) => ({
-        assessmentId: a.assessmentId,
-        amountCents: a.amountCents,
-        month: openById.get(a.assessmentId)!.month,
-        periodYear: openById.get(a.assessmentId)!.periodYear,
-        categorySlug: openById.get(a.assessmentId)!.categorySlug,
-      })),
-    };
+    return { paymentId: payment.id, ...result };
   });
+}
+
+/**
+ * Allocates an (already inserted, unposted) payment across the unit's
+ * open assessments per the HOA strategy and posts it — the shared tail of
+ * manual entry, bank-import auto-match and reconciliation confirm.
+ * Callers hold the open-period locks (postAllDueMonths) already.
+ */
+export async function allocateAndPostPayment(
+  tx: Tx,
+  input: {
+    paymentId: string;
+    entityId: string;
+    periodId: string;
+    country: Country;
+    unitEntityId: string;
+    amountCents: number;
+    actorId: string;
+    allocatedBy: "auto" | "manual";
+  }
+): Promise<Omit<CreatePaymentResult, "paymentId">> {
+  const open = await openAssessmentsForUnit(tx, input.unitEntityId);
+  const openById = new Map(open.map((a) => [a.id, a]));
+
+  let allocated: { assessmentId: string; amountCents: number }[] = [];
+  let unallocatedCents = input.amountCents;
+
+  if (open.length > 0) {
+    const settings = await currentAllocationStrategy(tx, input.entityId);
+    const result = allocatePayment(
+      input.amountCents,
+      open,
+      settings.strategy,
+      settings.priorityOrder
+    );
+    allocated = result.allocations;
+    unallocatedCents = result.unallocatedCents;
+  }
+
+  // Category id per assessment for the journal lines.
+  const categoryIdByAssessment = new Map<string, string>();
+  if (allocated.length > 0) {
+    const assessmentCategories = await tx
+      .select({
+        id: feeAssessments.id,
+        serviceCategoryId: feeAssessments.serviceCategoryId,
+      })
+      .from(feeAssessments)
+      .where(
+        inArray(
+          feeAssessments.id,
+          allocated.map((a) => a.assessmentId)
+        )
+      );
+    for (const a of assessmentCategories) {
+      categoryIdByAssessment.set(a.id, a.serviceCategoryId);
+    }
+  }
+
+  // Always posts — even with zero allocations the cash arrived (Dr banka
+  // full amount) and the remainder parks as preplatok (Cr 379 on the
+  // unit). Balances derive from postings; off-ledger money is corrupt
+  // state (domain invariants 2 + 11).
+  await postPaymentMatched(tx, {
+    paymentId: input.paymentId,
+    entityId: input.entityId,
+    periodId: input.periodId,
+    country: input.country,
+    createdById: input.actorId,
+    allocatedBy: input.allocatedBy,
+    unitEntityId: input.unitEntityId,
+    allocations: allocated.map((a) => ({
+      assessmentId: a.assessmentId,
+      unitEntityId: input.unitEntityId,
+      serviceCategoryId: categoryIdByAssessment.get(a.assessmentId)!,
+      okruh: openById.get(a.assessmentId)!.okruh,
+      amountCents: a.amountCents,
+    })),
+  });
+
+  return {
+    allocatedCents: input.amountCents - unallocatedCents,
+    unallocatedCents,
+    allocations: allocated.map((a) => ({
+      assessmentId: a.assessmentId,
+      amountCents: a.amountCents,
+      month: openById.get(a.assessmentId)!.month,
+      periodYear: openById.get(a.assessmentId)!.periodYear,
+      categorySlug: openById.get(a.assessmentId)!.categorySlug,
+    })),
+  };
 }
 
 // ── Void ───────────────────────────────────────────────

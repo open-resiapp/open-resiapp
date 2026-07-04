@@ -150,6 +150,12 @@ export default function AccountingHomePage() {
           [
             ["/accounting/predpis", "🧮", "navPredpis", "navPredpisHint"],
             ["/accounting/payments", "💳", "navPayments", "navPaymentsHint"],
+            [
+              "/accounting/reconciliation",
+              "🏦",
+              "navReconciliation",
+              "navReconciliationHint",
+            ],
             ["/accounting/karta", "🧾", "navKarta", "navKartaHint"],
             [
               "/accounting/predpis/unit-settings",

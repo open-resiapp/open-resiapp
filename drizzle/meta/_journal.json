@@ -393,6 +393,13 @@
       "when": 1783141689258,
       "tag": "0055_cold_scream",
       "breakpoints": true
+    },
+    {
+      "idx": 56,
+      "version": "7",
+      "when": 1783142586838,
+      "tag": "0056_slim_purple_man",
+      "breakpoints": true
     }
   ]
 }

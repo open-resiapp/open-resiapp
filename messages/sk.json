@@ -1474,7 +1474,8 @@
       "voiding": "Stornuje sa…",
       "method": "Spôsob",
       "methodBank": "Bankový prevod",
-      "methodCash": "Hotovosť (pokladnica)"
+      "methodCash": "Hotovosť (pokladnica)",
+      "vsLabel": "VS {vs}"
     },
     "karta": {
       "title": "Karta bytu",
@@ -1525,7 +1526,9 @@
       "navVs": "Variabilné symboly",
       "navVsHint": "Priradenie variabilných symbolov bytom pre párovanie platieb",
       "navSettings": "Nastavenia",
-      "navSettingsHint": "IBAN účtu a spôsob rozpočítania úhrad"
+      "navSettingsHint": "IBAN účtu a spôsob rozpočítania úhrad",
+      "navReconciliation": "Banka a párovanie",
+      "navReconciliationHint": "Import výpisu CAMT.053 a spárovanie platieb"
     },
     "settings": {
       "title": "Nastavenia účtovníctva",
@@ -1564,6 +1567,25 @@
       "download": "Stiahnuť predpis (PDF)",
       "generating": "Generuje sa…",
       "error": "Generovanie zlyhalo"
+    },
+    "reconciliation": {
+      "title": "Banka a párovanie",
+      "subtitle": "Import bankového výpisu (CAMT.053) a spárovanie platieb s bytmi",
+      "backToAccounting": "Späť na účtovníctvo",
+      "loadError": "Nepodarilo sa načítať nespárované platby.",
+      "submitError": "Akcia zlyhala",
+      "uploadTitle": "Import výpisu",
+      "uploadHint": "Nahrajte XML výpis z internetbankingu (camt.053 — podporujú všetky slovenské banky). Platby s variabilným symbolom sa spárujú automaticky.",
+      "importing": "Importuje sa…",
+      "summary": "Importovaných {imported}, automaticky spárovaných {autoMatched}, na kontrolu {needsReview}.",
+      "summarySkipped": "Preskočené: {duplicates} duplicít, {debits} odchádzajúcich platieb.",
+      "unmatchedTitle": "Na spárovanie ({count})",
+      "allMatched": "Všetky platby sú spárované. 🎉",
+      "confidence": "zhoda {value} %",
+      "pickUnit": "Vyberte byt…",
+      "confirm": "Sedí",
+      "confirming": "Páruje sa…",
+      "vsLabel": "VS {vs}"
     }
   }
 }

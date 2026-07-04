@@ -489,8 +489,10 @@ export const payments = pgTable(
     ),
   },
   (table) => ({
+    // Entity-scoped: AcctSvcrRef is unique per BANK, not globally — two
+    // doms at different banks can legitimately see the same reference.
     externalTxUnique: uniqueIndex("mod_accounting_payments_external_tx_idx")
-      .on(table.externalTxId)
+      .on(table.entityId, table.externalTxId)
       .where(sql`${table.externalTxId} IS NOT NULL`),
     entityReceivedIdx: index("mod_accounting_payments_entity_received_idx").on(
       table.entityId,

@@ -1,0 +1,2 @@
+DROP INDEX "mod_accounting_payments_external_tx_idx";--> statement-breakpoint
+CREATE UNIQUE INDEX "mod_accounting_payments_external_tx_idx" ON "mod_accounting_payments" USING btree ("entity_id","external_tx_id") WHERE "mod_accounting_payments"."external_tx_id" IS NOT NULL;

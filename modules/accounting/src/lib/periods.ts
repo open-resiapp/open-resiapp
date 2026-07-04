@@ -62,6 +62,33 @@ export async function getCurrentOpenPeriod(
   );
 }
 
+/**
+ * The period a payment received at `receivedAt` books into: the
+ * receivedAt year when that period already exists and is open, otherwise
+ * the current open period (never minting past-year periods — they would
+ * predate the opening balance). ONE rule for manual entry, bank import
+ * and reconciliation — the same December payment must land in the same
+ * fiscal year regardless of the entry path.
+ */
+export async function periodForReceivedAt(
+  tx: Tx,
+  entityId: string,
+  receivedAt: Date
+): Promise<{ id: string; status: string }> {
+  const receivedYear = receivedAt.getUTCFullYear();
+  const [receivedPeriod] = await tx
+    .select({ id: accountingPeriods.id, status: accountingPeriods.status })
+    .from(accountingPeriods)
+    .where(
+      and(
+        eq(accountingPeriods.entityId, entityId),
+        eq(accountingPeriods.year, receivedYear)
+      )
+    );
+  if (receivedPeriod?.status === "open") return receivedPeriod;
+  return getCurrentOpenPeriod(tx, entityId);
+}
+
 export async function getOrCreateOpenPeriod(
   tx: Tx,
   entityId: string,

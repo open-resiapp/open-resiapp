@@ -188,7 +188,7 @@ export default function PaymentsPage() {
               {units.map((u) => (
                 <option key={u.id} value={u.id}>
                   {u.flatNumber ?? u.name}
-                  {u.vs ? ` (VS ${u.vs})` : ""}
+                  {u.vs ? ` (${t("vsLabel", { vs: u.vs })})` : ""}
                 </option>
               ))}
             </select>
