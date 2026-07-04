@@ -1547,7 +1547,8 @@
       "moveDown": "Posunúť nižšie",
       "savedOk": "Uložené",
       "save": "Uložiť",
-      "saving": "Ukladá sa…"
+      "saving": "Ukladá sa…",
+      "ibanPlaceholder": "SK00 0000 0000 0000 0000 0000"
     },
     "predpisPdf": {
       "title": "Mesačný predpis úhrad",

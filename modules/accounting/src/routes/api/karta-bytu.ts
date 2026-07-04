@@ -52,21 +52,24 @@ export async function handleListUnits(): Promise<NextResponse> {
     session.user.role as string,
     root.id
   );
-  // Due months post lazily on EVERY karta read — an owner's balance must
-  // never lag behind the calendar (invariant 7: complete flows). The
-  // postings carry the publishing treasurer as actor, never the reader.
-  await db.transaction((tx) =>
-    postAllDueMonths(tx, {
-      entityId: root.id,
-      country: root.country,
-    })
-  );
-
   const units = await listAccessibleUnits(
     session.user.id,
     session.user.role as string,
     root.id
   );
+  // Due months post lazily on karta reads — an owner's balance must never
+  // lag behind the calendar (invariant 7). Only for users with actual
+  // accounting access, though: a session with zero accessible units must
+  // not be able to trigger ledger writes by hammering this GET.
+  if (isWriter || units.length > 0) {
+    await db.transaction((tx) =>
+      postAllDueMonths(tx, {
+        entityId: root.id,
+        country: root.country,
+      })
+    );
+  }
+
   const balances = await listUnitBalances(
     root.id,
     root.country,

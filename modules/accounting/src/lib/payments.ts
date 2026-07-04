@@ -18,7 +18,11 @@ import {
   type OpenAssessment,
 } from "../engine/allocation";
 import { postPaymentMatched, voidPayment } from "../engine/booking";
-import { getOrCreateOpenPeriod } from "./periods";
+import {
+  getCurrentOpenPeriod,
+  getOrCreateOpenPeriod,
+  lockOpenPeriods,
+} from "./periods";
 import { domUnitsWhere } from "./dom-units";
 import { postAllDueMonths } from "./fee-schedule-publish";
 
@@ -172,14 +176,17 @@ export async function createManualPayment(
       country: input.country,
     });
 
-    // Cash books into the receivedAt year when that period is still open;
-    // a payment for an already-published year books into the current open
-    // period instead (domain invariant 4: locked periods are immutable —
-    // late records post into the open period).
+    // Cash books into the receivedAt year only when that period already
+    // exists and is open. Otherwise (published year, or a backdated year
+    // no period was ever opened for) it books into the current open
+    // period — a missing past-year period must NOT be minted, or it would
+    // predate the opening balance and stay open forever (invariants 4+6).
     const receivedYear = input.receivedAt.getUTCFullYear();
-    const currentYear = new Date().getUTCFullYear();
     const [receivedPeriod] = await tx
-      .select({ status: accountingPeriods.status })
+      .select({
+        id: accountingPeriods.id,
+        status: accountingPeriods.status,
+      })
       .from(accountingPeriods)
       .where(
         and(
@@ -187,11 +194,10 @@ export async function createManualPayment(
           eq(accountingPeriods.year, receivedYear)
         )
       );
-    const bookYear =
-      receivedPeriod && receivedPeriod.status !== "open"
-        ? Math.max(currentYear, receivedYear + 1)
-        : receivedYear;
-    const period = await getOrCreateOpenPeriod(tx, input.entityId, bookYear);
+    const period =
+      receivedPeriod?.status === "open"
+        ? receivedPeriod
+        : await getCurrentOpenPeriod(tx, input.entityId);
 
     const [payment] = await tx
       .insert(payments)
@@ -292,6 +298,11 @@ export async function voidManualPayment(input: {
   reason: string;
 }): Promise<void> {
   await db.transaction(async (tx) => {
+    // Serialize with payments / credit applications / publishes — a void
+    // racing a concurrent apply-credit could otherwise leave the credit
+    // entry un-reversed (both read pre-commit state of the other).
+    await lockOpenPeriods(tx, input.entityId);
+
     const [payment] = await tx
       .select({ receivedAt: payments.receivedAt })
       .from(payments)
@@ -306,11 +317,7 @@ export async function voidManualPayment(input: {
 
     // Reversal posts into the CURRENT open period (corrections never touch
     // locked periods — domain invariant 4).
-    const period = await getOrCreateOpenPeriod(
-      tx,
-      input.entityId,
-      new Date().getUTCFullYear()
-    );
+    const period = await getCurrentOpenPeriod(tx, input.entityId);
 
     await voidPayment(tx, {
       paymentId: input.paymentId,

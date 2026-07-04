@@ -125,7 +125,7 @@ export default function AccountingSettingsPage() {
               setIban(e.target.value);
               setSaved(false);
             }}
-            placeholder="SK00 0000 0000 0000 0000 0000"
+            placeholder={t("ibanPlaceholder")}
             className={`w-full px-3 py-2 border rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 font-mono ${
               ibanValid
                 ? "border-gray-300 dark:border-gray-600"

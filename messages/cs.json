@@ -1547,7 +1547,8 @@
       "moveDown": "Posunout níže",
       "savedOk": "Uloženo",
       "save": "Uložit",
-      "saving": "Ukládá se…"
+      "saving": "Ukládá se…",
+      "ibanPlaceholder": "CZ00 0000 0000 0000 0000 0000"
     },
     "predpisPdf": {
       "title": "Měsíční předpis plateb",

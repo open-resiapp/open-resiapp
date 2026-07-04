@@ -2,7 +2,7 @@ import "server-only";
 
 import { and, eq } from "drizzle-orm";
 import { db } from "@/db";
-import { journalEntries } from "../db/schema";
+import { accountingPeriods, journalEntries } from "../db/schema";
 import { postOpeningBalance } from "../engine/booking";
 import { getOrCreateOpenPeriod } from "./periods";
 import { listDomUnits } from "./dom-units";
@@ -84,6 +84,16 @@ export async function submitOpeningBalance(
   }
 
   return db.transaction(async (tx) => {
+    // Get/create the period first and LOCK its row — two concurrent
+    // submits (double-click, retry) serialize here, so the one-shot guard
+    // below re-reads committed state and the second submit fails cleanly.
+    const period = await getOrCreateOpenPeriod(tx, input.entityId, input.year);
+    await tx
+      .select({ id: accountingPeriods.id })
+      .from(accountingPeriods)
+      .where(eq(accountingPeriods.id, period.id))
+      .for("update");
+
     // One-shot guard — opening balance posts exactly once per dom.
     const [existing] = await tx
       .select({ id: journalEntries.id })
@@ -98,8 +108,6 @@ export async function submitOpeningBalance(
     if (existing) {
       throw new Error("accounting: opening balance already posted");
     }
-
-    const period = await getOrCreateOpenPeriod(tx, input.entityId, input.year);
 
     const assets = input.bankaCents + input.pokladnicaCents;
     const liabilities = input.unitBalances.reduce(

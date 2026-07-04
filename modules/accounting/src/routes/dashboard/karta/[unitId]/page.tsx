@@ -202,20 +202,22 @@ export default function KartaDetailPage({ unitId }: { unitId: string }) {
                     <td className="py-2 pr-4 text-gray-900 dark:text-gray-100">
                       {row.description}
                     </td>
-                    {/* Charge column: schedule/opening/manual debits.
-                        Payment column: payments (−) and payment stornos
-                        (shown as negative payment, not as a charge). */}
+                    {/* Columns key on the SOURCE, not the sign: charges
+                        (predpis / opening / manual corrections) live in
+                        the first column with their sign; everything
+                        payment-sourced (payments, stornos, credit
+                        applications) lives in the payment column, storno
+                        shown negative. A manual credit must never read
+                        as money the owner paid. */}
                     <td className="py-2 pr-4 text-right text-gray-900 dark:text-gray-100">
-                      {row.deltaCents > 0 && row.sourceType !== "payment"
+                      {row.sourceType !== "payment" && row.deltaCents !== 0
                         ? formatEur(row.deltaCents)
                         : ""}
                     </td>
                     <td className="py-2 pr-4 text-right text-gray-900 dark:text-gray-100">
-                      {row.deltaCents < 0
+                      {row.sourceType === "payment" && row.deltaCents !== 0
                         ? formatEur(-row.deltaCents)
-                        : row.deltaCents > 0 && row.sourceType === "payment"
-                          ? formatEur(-row.deltaCents)
-                          : ""}
+                        : ""}
                     </td>
                     <td
                       className={`py-2 text-right font-medium ${

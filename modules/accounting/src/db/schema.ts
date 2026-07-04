@@ -108,7 +108,7 @@ export const accountingSettings = pgTable(
     bankIban: varchar("bank_iban", { length: 34 }),
     effectiveFrom: timestamp("effective_from").notNull(),
     createdById: uuid("created_by_id")
-      .references(() => users.id)
+      .references(() => users.id, { onDelete: "restrict" })
       .notNull(),
     createdAt: timestamp("created_at").defaultNow().notNull(),
   },
@@ -214,7 +214,7 @@ export const journalEntries = pgTable(
     // Set by the voting→accounting pipeline (Phase 7); nullable until then.
     votingResolutionId: uuid("voting_resolution_id"),
     createdById: uuid("created_by_id")
-      .references(() => users.id)
+      .references(() => users.id, { onDelete: "restrict" })
       .notNull(),
     createdAt: timestamp("created_at").defaultNow().notNull(),
   },
@@ -287,7 +287,7 @@ export const feeSchedules = pgTable(
     status: scheduleStatusEnum("status").notNull().default("draft"),
     publishedAt: timestamp("published_at"),
     createdById: uuid("created_by_id")
-      .references(() => users.id)
+      .references(() => users.id, { onDelete: "restrict" })
       .notNull(),
     createdAt: timestamp("created_at").defaultNow().notNull(),
   },
@@ -420,7 +420,7 @@ export const unitPersons = pgTable(
     personsCount: integer("persons_count").notNull(),
     effectiveFrom: timestamp("effective_from").notNull(),
     createdById: uuid("created_by_id")
-      .references(() => users.id)
+      .references(() => users.id, { onDelete: "restrict" })
       .notNull(),
     createdAt: timestamp("created_at").defaultNow().notNull(),
   },
@@ -468,7 +468,7 @@ export const payments = pgTable(
     externalTxId: varchar("external_tx_id", { length: 100 }),
     rawPayload: jsonb("raw_payload"),
     createdById: uuid("created_by_id")
-      .references(() => users.id)
+      .references(() => users.id, { onDelete: "restrict" })
       .notNull(),
     createdAt: timestamp("created_at").defaultNow().notNull(),
     // Posting link (Dr banka / Cr pohľadávky) — set when the payment is
@@ -481,7 +481,7 @@ export const payments = pgTable(
     // posts a reversal entry; allocation rows stay for history and are
     // excluded from balances via voidedAt IS NULL on the payment join.
     voidedAt: timestamp("voided_at"),
-    voidedById: uuid("voided_by_id").references(() => users.id),
+    voidedById: uuid("voided_by_id").references(() => users.id, { onDelete: "restrict" }),
     voidReason: text("void_reason"),
     voidJournalEntryId: uuid("void_journal_entry_id").references(
       () => journalEntries.id,
@@ -545,7 +545,7 @@ export const auditLog = pgTable(
       .references(() => entities.id, { onDelete: "restrict" })
       .notNull(),
     actorId: uuid("actor_id")
-      .references(() => users.id)
+      .references(() => users.id, { onDelete: "restrict" })
       .notNull(),
     action: varchar("action", { length: 50 }).notNull(), // insert | update | void | publish | lock | …
     tableName: varchar("table_name", { length: 100 }).notNull(),

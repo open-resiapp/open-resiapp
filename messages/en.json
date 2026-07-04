@@ -1547,7 +1547,8 @@
       "moveDown": "Move down",
       "savedOk": "Saved",
       "save": "Save",
-      "saving": "Saving…"
+      "saving": "Saving…",
+      "ibanPlaceholder": "e.g. SK00 0000 0000 0000 0000 0000"
     },
     "predpisPdf": {
       "title": "Monthly payment schedule",

@@ -17,7 +17,7 @@ import {
 import { ACCOUNT_CODES } from "../seeds/coa-sk";
 import { allocatePayment } from "../engine/allocation";
 import { applyPaymentCredit } from "../engine/booking";
-import { getOrCreateOpenPeriod } from "./periods";
+import { getCurrentOpenPeriod } from "./periods";
 import { domUnitsWhere, listDomUnits } from "./dom-units";
 import { hasBoardRole } from "./authz";
 import { postAllDueMonths } from "./fee-schedule-publish";
@@ -305,11 +305,7 @@ export async function applyUnitCredit(input: {
       country: input.country,
     });
 
-    const period = await getOrCreateOpenPeriod(
-      tx,
-      input.entityId,
-      new Date().getUTCFullYear()
-    );
+    const period = await getCurrentOpenPeriod(tx, input.entityId);
 
     // Payments of this unit with an unapplied remainder, oldest first.
     const unitPayments = await tx

@@ -23,6 +23,7 @@ import {
 import { postAssessmentsForMonth } from "../engine/booking";
 import { domUnitsWhere } from "./dom-units";
 import { lockDraft } from "./fee-schedules";
+import { lockOpenPeriods } from "./periods";
 import type { AllocationKey } from "./constants";
 
 // Predpis publish flow (spec §Predpis + iteration 2). Publishing a draft:
@@ -271,19 +272,10 @@ export async function postAllDueMonths(
 ): Promise<void> {
   const now = input.now ?? new Date();
   // Lock the dom's open periods first. This serializes concurrent callers
-  // (payment entries, publishes — publish locks the same row) so two
+  // (payment entries, voids, credit applications, publishes) so two
   // transactions can never both see a month as unposted and double-post
   // it, nor both read the same open assessment amounts and double-allocate.
-  await tx
-    .select({ id: accountingPeriods.id })
-    .from(accountingPeriods)
-    .where(
-      and(
-        eq(accountingPeriods.entityId, input.entityId),
-        eq(accountingPeriods.status, "open")
-      )
-    )
-    .for("update");
+  await lockOpenPeriods(tx, input.entityId);
   const schedules = await tx
     .select({
       id: feeSchedules.id,
