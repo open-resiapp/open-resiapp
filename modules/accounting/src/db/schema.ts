@@ -464,6 +464,10 @@ export const payments = pgTable(
     counterpartyIban: varchar("counterparty_iban", { length: 34 }),
     counterpartyName: varchar("counterparty_name", { length: 255 }),
     narrative: text("narrative"),
+    // Who decided the unit binding: a human (manual entry, reconciliation
+    // confirm) or the matching engine. IBAN learning trusts only 'manual'
+    // — auto-matches must never reinforce themselves. Null = unmatched.
+    matchedBy: allocatedByEnum("matched_by"),
     // Bank-issued id (AcctSvcrRef / Fio ID operace) — import idempotency
     // key from Phase 2 on; null for manual entries.
     externalTxId: varchar("external_tx_id", { length: 100 }),

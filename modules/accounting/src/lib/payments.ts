@@ -206,6 +206,8 @@ export async function createManualPayment(
       amountCents: input.amountCents,
       actorId: input.createdById,
       allocatedBy: "auto",
+      // The treasurer picked the unit by hand on the form.
+      matchedBy: "manual",
     });
 
     return { paymentId: payment.id, ...result };
@@ -229,8 +231,15 @@ export async function allocateAndPostPayment(
     amountCents: number;
     actorId: string;
     allocatedBy: "auto" | "manual";
+    /** Who decided the unit binding — drives IBAN learning eligibility. */
+    matchedBy: "auto" | "manual";
   }
 ): Promise<Omit<CreatePaymentResult, "paymentId">> {
+  await tx
+    .update(payments)
+    .set({ matchedBy: input.matchedBy })
+    .where(eq(payments.id, input.paymentId));
+
   const open = await openAssessmentsForUnit(tx, input.unitEntityId);
   const openById = new Map(open.map((a) => [a.id, a]));
 

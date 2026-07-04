@@ -163,12 +163,25 @@ function parseTransaction(entry: any): Camt053Transaction[] {
     ];
   }
 
-  return details.map((tx: any) => {
+  return details.map((tx: any, index: number) => {
     const refs = tx?.Refs;
     const endToEndRaw = text(refs?.EndToEndId);
     // SEPA fills "NOTPROVIDED" when the ordering party gave no reference.
     const endToEndId =
       endToEndRaw && endToEndRaw !== "NOTPROVIDED" ? endToEndRaw : null;
+
+    // Idempotency key: per-transaction AcctSvcrRef when present. The
+    // entry-level reference may only stand in for a SINGLE detail —
+    // in a batch entry it would give every detail the same key and the
+    // import would silently drop all but the first as "duplicates".
+    const entryRef = text(entry?.AcctSvcrRef);
+    const externalTxId =
+      text(refs?.AcctSvcrRef) ??
+      (entryRef === null
+        ? null
+        : details.length === 1
+          ? entryRef
+          : `${entryRef}:${index + 1}`);
 
     const ustrd = asArray(tx?.RmtInf?.Ustrd)
       .map((u: any) => text(u))
@@ -193,13 +206,23 @@ function parseTransaction(entry: any): Camt053Transaction[] {
     const counterpartyName = text(party?.Nm) ?? text(party?.Pty?.Nm);
     const counterpartyIban = text(partyAccount?.Id?.IBAN);
 
-    const txAmount = tx?.Amt ?? tx?.AmtDtls?.TxAmt?.Amt ?? entryAmount;
+    // Entry-total fallback is only safe for a single detail — in a batch
+    // it would book the batch TOTAL once per detail (N× phantom money).
+    let txAmount = tx?.Amt ?? tx?.AmtDtls?.TxAmt?.Amt;
+    if (txAmount === undefined) {
+      if (details.length > 1) {
+        throw new Camt053ParseError(
+          "batch entry without per-transaction amounts"
+        );
+      }
+      txAmount = entryAmount;
+    }
     if (txAmount === undefined) {
       throw new Camt053ParseError("transaction without amount");
     }
 
     return {
-      externalTxId: text(refs?.AcctSvcrRef) ?? text(entry?.AcctSvcrRef),
+      externalTxId,
       amountCents: xmlAmountToCents(text(txAmount) ?? ""),
       currency: txAmount?.["@_Ccy"] ?? entryCurrency ?? "EUR",
       direction,

@@ -1,0 +1,1 @@
+ALTER TABLE "mod_accounting_payments" ADD COLUMN "matched_by" "mod_accounting_allocated_by";

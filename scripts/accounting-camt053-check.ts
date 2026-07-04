@@ -116,6 +116,51 @@ console.log("ČBA CZ fixture");
   check("c2 amount", c2.amountCents === 180000);
 }
 
+console.log("batch-entry safety");
+{
+  const batchXml = (details: string) => `<?xml version="1.0"?>
+<Document xmlns="urn:iso:std:iso:20022:tech:xsd:camt.053.001.02">
+  <BkToCstmrStmt><Stmt><Id>B/1</Id>
+    <Ntry>
+      <Amt Ccy="EUR">50.00</Amt>
+      <CdtDbtInd>CRDT</CdtDbtInd>
+      <BookgDt><Dt>2026-07-02</Dt></BookgDt>
+      <AcctSvcrRef>BATCH-REF-1</AcctSvcrRef>
+      <NtryDtls>${details}</NtryDtls>
+    </Ntry>
+  </Stmt></BkToCstmrStmt>
+</Document>`;
+
+  // Entry-level ref only, two details WITH amounts → per-detail suffixed
+  // keys, never the same key twice (same key would dedupe-drop line 2).
+  const suffixed = parseCamt053(
+    batchXml(
+      `<TxDtls><Amt Ccy="EUR">30.00</Amt></TxDtls><TxDtls><Amt Ccy="EUR">20.00</Amt></TxDtls>`
+    )
+  )[0].transactions;
+  check("batch entry-ref keys are suffixed", suffixed[0].externalTxId === "BATCH-REF-1:1" && suffixed[1].externalTxId === "BATCH-REF-1:2");
+  check("batch per-tx amounts kept", suffixed[0].amountCents === 3000 && suffixed[1].amountCents === 2000);
+
+  // Single detail keeps the bare entry ref + may fall back to entry amount.
+  const single = parseCamt053(batchXml(`<TxDtls></TxDtls>`))[0].transactions;
+  check("single detail keeps bare entry ref", single[0].externalTxId === "BATCH-REF-1");
+  check("single detail falls back to entry amount", single[0].amountCents === 5000);
+
+  // Batch WITHOUT per-tx amounts must throw — falling back to the entry
+  // total would book the batch total once per detail (N× phantom money).
+  try {
+    parseCamt053(batchXml(`<TxDtls></TxDtls><TxDtls></TxDtls>`));
+    failures++;
+    console.error("  FAIL batch without per-tx amounts — did not throw");
+  } catch (err) {
+    check(
+      "batch without per-tx amounts throws",
+      err instanceof Camt053ParseError &&
+        err.message.includes("per-transaction amounts")
+    );
+  }
+}
+
 console.log("malformed inputs");
 for (const [name, input] of [
   ["empty string", ""],

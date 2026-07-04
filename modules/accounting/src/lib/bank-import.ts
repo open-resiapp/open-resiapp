@@ -52,28 +52,24 @@ async function gatherMatchableUnits(
   const unitIds = units.map((u) => u.id);
   if (unitIds.length === 0) return [];
 
-  // Counterparty IBANs learned ONLY from HUMAN-confirmed matches (any
-  // allocation with allocatedBy='manual', i.e. reconciliation confirms).
-  // Learning from auto-matches would make a single wrong VS auto-match
-  // self-reinforcing: the wrong unit "learns" the payer's IBAN and every
-  // later payment from that account keeps auto-matching wrongly.
+  // Counterparty IBANs learned ONLY from HUMAN-confirmed matches
+  // (payments.matchedBy = 'manual' — reconciliation confirms and manual
+  // entry). Learning from auto-matches would make a single wrong VS
+  // auto-match self-reinforcing: the wrong unit "learns" the payer's IBAN
+  // and every later payment from that account keeps auto-matching wrongly.
   const ibans = await tx
     .selectDistinct({
       unitEntityId: payments.unitEntityId,
       iban: payments.counterpartyIban,
     })
     .from(payments)
-    .innerJoin(
-      paymentAllocations,
-      eq(paymentAllocations.paymentId, payments.id)
-    )
     .where(
       and(
         eq(payments.entityId, entityId),
         isNotNull(payments.unitEntityId),
         isNotNull(payments.counterpartyIban),
         isNull(payments.voidedAt),
-        eq(paymentAllocations.allocatedBy, "manual")
+        eq(payments.matchedBy, "manual")
       )
     );
   const ibansByUnit = new Map<string, Set<string>>();
@@ -207,8 +203,10 @@ async function importLines(
     }
     summary.credits += 1;
 
-    // Pre-check scoped to the dom (the unique index is per entity —
-    // bank references are only unique per bank, not across doms).
+    // Dedupe scoped to the dom (the unique index is per entity — bank
+    // references are only unique per bank, not across doms). The insert
+    // below is additionally onConflictDoNothing so a concurrent import of
+    // the same lines counts duplicates instead of aborting on 23505.
     const [existing] = await tx
       .select({ id: payments.id })
       .from(payments)
@@ -261,7 +259,12 @@ async function importLines(
         rawPayload: line as unknown as Record<string, unknown>,
         createdById: input.actorId,
       })
+      .onConflictDoNothing()
       .returning({ id: payments.id });
+    if (!payment) {
+      summary.skippedDuplicates += 1;
+      continue;
+    }
     summary.imported += 1;
 
     if (autoUnit) {
@@ -281,6 +284,7 @@ async function importLines(
         amountCents: line.amountCents,
         actorId: input.actorId,
         allocatedBy: "auto",
+        matchedBy: "auto",
       });
       summary.autoMatched += 1;
     } else {
@@ -312,6 +316,17 @@ export async function importNormalizedLines(input: {
       debitsSkipped: 0,
     };
     await importLines(tx, { ...input, summary });
+    // Every money mutation is audited — API-sourced imports included.
+    await tx.insert(auditLog).values({
+      entityId: input.entityId,
+      actorId: input.actorId,
+      action: "insert",
+      tableName: "mod_accounting_payments",
+      recordId: input.entityId,
+      after: { bankImport: summary, source: input.source },
+      justification:
+        input.source === "fio_api" ? "fio sync" : "bank line import",
+    });
     return summary;
   });
 }
@@ -399,11 +414,24 @@ export async function importCamt053Statement(input: {
     // Idempotency key: the bank's AcctSvcrRef, or a synthesized
     // statement-scoped key when the bank omits it — a NULL key would
     // bypass the unique index and re-import the line on every upload.
+    // The synthetic key carries date + amount so two DIFFERENT statements
+    // that both lack ids can't collide position-by-position; a statement
+    // with neither AcctSvcrRef nor an Id at all refuses (no stable key).
+    for (const stmt of statements) {
+      if (
+        !stmt.statementId &&
+        stmt.transactions.some((l) => !l.externalTxId)
+      ) {
+        throw new Error(
+          "accounting: statement has neither transaction references nor a statement id — cannot import idempotently"
+        );
+      }
+    }
     const lines: NormalizedBankLine[] = statements.flatMap((stmt) =>
       stmt.transactions.map((line, i) => ({
         externalTxId:
           line.externalTxId ??
-          `stmt:${stmt.iban ?? "?"}:${stmt.statementId ?? "?"}:${i + 1}`,
+          `stmt:${stmt.iban ?? "?"}:${stmt.statementId}:${line.bookingDate ?? "?"}:${line.amountCents}:${i + 1}`,
         amountCents: line.amountCents,
         direction: line.direction,
         bookingDate: line.bookingDate,
@@ -589,6 +617,7 @@ export async function confirmBankLineMatch(input: {
       amountCents: payment.amountCents,
       actorId: input.actorId,
       allocatedBy: "manual",
+      matchedBy: "manual",
     });
 
     await tx.insert(auditLog).values({

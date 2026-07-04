@@ -288,6 +288,8 @@ export default function ReconciliationPage() {
                 {t("fioHint")}
               </p>
               <input
+                type="password"
+                autoComplete="new-password"
                 value={fioToken}
                 onChange={(e) => setFioToken(e.target.value)}
                 placeholder={t("fioTokenPlaceholder")}
