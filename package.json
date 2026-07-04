@@ -18,6 +18,7 @@
     "test:accounting-assessment": "tsx scripts/accounting-assessment-check.ts",
     "test:accounting-booking": "tsx scripts/accounting-booking-check.ts",
     "test:accounting-camt053": "tsx scripts/accounting-camt053-check.ts",
+    "test:accounting-match": "tsx scripts/accounting-match-check.ts",
     "create-admin": "tsx src/scripts/create-admin.ts",
     "setup:tenant": "tsx scripts/setup-tenant.ts",
     "entity-admin": "tsx scripts/entity-admin/cli.ts"
