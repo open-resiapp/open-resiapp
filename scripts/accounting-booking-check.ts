@@ -39,6 +39,7 @@ import {
   postPaymentMatched,
   postSupplierInvoice,
   postSupplierPayment,
+  postSettlementClose,
   applyPaymentCredit,
   voidPayment,
   assertPeriodOpen,
@@ -538,6 +539,63 @@ async function main() {
           (await accountBalance(tx, root.id, ACCOUNT_CODES.BANKA)) ===
             bankaBefore - 12000
         );
+      }
+
+      // ── Settlement close (vyúčtovanie reclassification) ──
+      console.log("settlement close");
+      {
+        // Prescribed 100+80=180; costs 200; extras: u1 +30, u2 −10 → the
+        // entry must balance (Dr 180+30 = Cr 200+10) or the deferred
+        // trigger kills the tx.
+        const entryId = await postSettlementClose(tx, {
+          settlementId: root.id,
+          entityId: root.id,
+          periodId: period.id,
+          country: "sk",
+          createdById: actor.id,
+          year: 2099,
+          categoryCosts: [
+            {
+              serviceCategoryId: liftCat.id,
+              categorySlug: "SVC_LIFT",
+              costCents: 20000,
+            },
+          ],
+          unitLines: [
+            {
+              unitEntityId: units[0].id,
+              prescribedCents: 10000,
+              costShareCents: 13000,
+            },
+            {
+              unitEntityId: units[1].id,
+              prescribedCents: 8000,
+              costShareCents: 7000,
+            },
+          ],
+        });
+        check("settlement entry posts", entryId !== null);
+        const totals = await entryTotals(tx, entryId!);
+        check(
+          "settlement entry balances (210/210)",
+          totals.debits === 21000 && totals.credits === 21000,
+          `${totals.debits}/${totals.credits}`
+        );
+        // u1 owes 30 more → receivable 311.200 debited with unit ref.
+        const [extra] = await tx
+          .select({
+            debit: sql<number>`coalesce(sum(${journalLines.debitCents}), 0)::int`,
+          })
+          .from(journalLines)
+          .innerJoin(accounts, eq(journalLines.accountId, accounts.id))
+          .where(
+            and(
+              eq(journalLines.journalEntryId, entryId!),
+              eq(accounts.code, ACCOUNT_CODES.POHLADAVKY_VLASTNICI_SLUZBY),
+              eq(journalLines.unitEntityId, units[0].id)
+            )
+          );
+        check("nedoplatok lands on the unit's receivable", extra.debit === 3000);
       }
 
       // ── Period lock ──

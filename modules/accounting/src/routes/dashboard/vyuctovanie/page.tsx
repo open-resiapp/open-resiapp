@@ -59,6 +59,9 @@ export default function VyuctovaniePage() {
   const [year, setYear] = useState(() => new Date().getUTCFullYear() - 1);
   const [preview, setPreview] = useState<Preview | null>(null);
   const [error, setError] = useState(false);
+  const [publishError, setPublishError] = useState<string | null>(null);
+  const [confirmPublish, setConfirmPublish] = useState(false);
+  const [publishing, setPublishing] = useState(false);
 
   const load = useCallback(() => {
     setPreview(null);
@@ -72,6 +75,26 @@ export default function VyuctovaniePage() {
   }, [year]);
 
   useEffect(load, [load]);
+
+  async function publish() {
+    setPublishing(true);
+    setPublishError(null);
+    try {
+      const res = await fetch("/api/accounting/vyuctovanie", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ year }),
+      });
+      const body = await res.json().catch(() => null);
+      if (!res.ok) throw new Error(body?.error ?? String(res.status));
+      setConfirmPublish(false);
+      load();
+    } catch (err) {
+      setPublishError(err instanceof Error ? err.message : "publish");
+    } finally {
+      setPublishing(false);
+    }
+  }
 
   if (error) {
     return <p className="text-red-600 dark:text-red-400">{t("loadError")}</p>;
@@ -271,6 +294,35 @@ export default function VyuctovaniePage() {
               <p className="text-xs text-gray-500 dark:text-gray-400 mt-3">
                 {t("signHint")}
               </p>
+
+              {/* Publish */}
+              {preview.gates.canPublish && (
+                <div className="mt-6 bg-blue-50 dark:bg-blue-950 border border-blue-200 dark:border-blue-800 rounded-lg p-4 text-sm">
+                  <label className="flex items-start gap-2 text-blue-900 dark:text-blue-200">
+                    <input
+                      type="checkbox"
+                      checked={confirmPublish}
+                      onChange={(e) => setConfirmPublish(e.target.checked)}
+                      className="mt-1"
+                    />
+                    <span>{t("publishConfirm", { year: preview.year })}</span>
+                  </label>
+                  {publishError && (
+                    <p className="text-red-600 dark:text-red-400 mt-2">
+                      {t("publishError")} ({publishError})
+                    </p>
+                  )}
+                  <div className="flex justify-end mt-3">
+                    <button
+                      onClick={publish}
+                      disabled={publishing || !confirmPublish}
+                      className="px-5 py-2 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white rounded-lg"
+                    >
+                      {publishing ? t("publishing") : t("publish")}
+                    </button>
+                  </div>
+                </div>
+              )}
             </div>
           )}
         </>

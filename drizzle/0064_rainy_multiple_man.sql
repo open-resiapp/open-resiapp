@@ -1,0 +1,1 @@
+ALTER TYPE "public"."mod_accounting_source_type" ADD VALUE 'settlement';

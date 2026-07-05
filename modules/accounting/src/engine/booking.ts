@@ -107,7 +107,8 @@ interface EntryInput {
     | "fee_schedule_publish"
     | "payment"
     | "manual"
-    | "expense";
+    | "expense"
+    | "settlement";
   sourceId: string | null;
   createdById: string;
   lines: LineInput[];
@@ -620,6 +621,100 @@ export async function postSupplierPayment(
     description: "Úhrada dodávateľovi",
     sourceType: "expense",
     sourceId: input.expenseId,
+    createdById: input.createdById,
+    lines,
+  });
+}
+
+// ── Vyúčtovanie close (settlement reclassification) ────
+
+/**
+ * Posts the settlement-close entry for the SERVICES okruh:
+ *   Dr 478  — prescribed zálohy for the year (the advance liability
+ *             dissolves; what was actually consumed is now known)
+ *   Cr 5xx  — per category, the actual costs (cost accounts close into
+ *             the settlement)
+ *   per unit, extra = costShare − prescribed:
+ *     extra > 0 → Dr 311.200 (unit) — nedoplatok z vyúčtovania: the unit
+ *                 owes MORE than the predpis prescribed
+ *     extra < 0 → Cr 379 (unit)    — preplatok: prescribed advances
+ *                 exceeded the real cost; credit waits for FIFO/refund
+ * Balances by construction: P + Σpos = C + Σneg because C − P = Σextra.
+ * NOTE deliberately vs PRESCRIBED, not vs paid — unpaid prescriptions
+ * already sit on 311.200; posting (cost − paid) would double-count them.
+ */
+export async function postSettlementClose(
+  tx: Tx,
+  input: {
+    settlementId: string;
+    entityId: string;
+    periodId: string;
+    country: Country;
+    createdById: string;
+    year: number;
+    /** Per category: actual cost + account it accumulated on. */
+    categoryCosts: {
+      serviceCategoryId: string;
+      categorySlug: string;
+      costCents: number;
+    }[];
+    /** Per unit: prescribed vs cost share (services okruh totals). */
+    unitLines: {
+      unitEntityId: string;
+      prescribedCents: number;
+      costShareCents: number;
+    }[];
+  }
+): Promise<string | null> {
+  const prescribedTotal = input.unitLines.reduce(
+    (s, u) => s + u.prescribedCents,
+    0
+  );
+  const lines: LineInput[] = [];
+  if (prescribedTotal > 0) {
+    lines.push({
+      accountCode: ACCOUNT_CODES.ZAVAZKY_SLUZBY,
+      debitCents: prescribedTotal,
+      okruh: "svc",
+    });
+  }
+  for (const cat of input.categoryCosts) {
+    if (cat.costCents <= 0) continue;
+    lines.push({
+      accountCode: expenseDebitCode("svc", cat.categorySlug),
+      creditCents: cat.costCents,
+      okruh: "svc",
+      serviceCategoryId: cat.serviceCategoryId,
+    });
+  }
+  for (const unit of input.unitLines) {
+    const extra = unit.costShareCents - unit.prescribedCents;
+    if (extra > 0) {
+      lines.push({
+        accountCode: ACCOUNT_CODES.POHLADAVKY_VLASTNICI_SLUZBY,
+        debitCents: extra,
+        okruh: "svc",
+        unitEntityId: unit.unitEntityId,
+      });
+    } else if (extra < 0) {
+      lines.push({
+        accountCode: ACCOUNT_CODES.INE_ZAVAZKY,
+        creditCents: -extra,
+        okruh: "svc",
+        unitEntityId: unit.unitEntityId,
+      });
+    }
+  }
+  if (lines.length === 0) return null;
+
+  return insertEntry(tx, {
+    entityId: input.entityId,
+    periodId: input.periodId,
+    country: input.country,
+    postedAt: new Date(),
+    description: `Vyúčtovanie ${input.year}`,
+    sourceType: "settlement",
+    sourceId: input.settlementId,
     createdById: input.createdById,
     lines,
   });

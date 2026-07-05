@@ -1702,7 +1702,11 @@
       "cellTitle": "Náklad {cost} − zálohy {advances}",
       "footTotals": "Dům celkem",
       "footTitle": "Náklady {cost} − zálohy {advances}",
-      "signHint": "Kladná částka = nedoplatek (vlastník doplácí), záporná = přeplatek (vrací se)."
+      "signHint": "Kladná částka = nedoplatek (vlastník doplácí), záporná = přeplatek (vrací se).",
+      "publishConfirm": "Publikovat vyúčtování {year} a uzamknout období. Krok je NEVRATNÝ — opravy lze dále dělat jen opravným zápisem v aktuálním období.",
+      "publish": "Publikovat a uzamknout",
+      "publishing": "Publikuje se…",
+      "publishError": "Publikování selhalo"
     }
   }
 }

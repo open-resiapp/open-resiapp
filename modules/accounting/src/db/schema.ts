@@ -51,6 +51,7 @@ export const sourceTypeEnum = pgEnum("mod_accounting_source_type", [
   "payment",
   "manual",
   "expense",
+  "settlement",
 ]);
 
 export const allocationKeyEnum = pgEnum("mod_accounting_allocation_key", [
@@ -643,6 +644,62 @@ export const bankConnections = pgTable(
     entityProviderUnique: uniqueIndex(
       "mod_accounting_bank_connections_entity_provider_idx"
     ).on(table.entityId, table.provider),
+  })
+);
+
+// ── Published settlements (vyúčtovanie, Phase 4) ───────
+
+// One row per published year — IMMUTABLE (10-year retention; corrections
+// post as reversals in the open period). Per-unit statements live in
+// settlement_units with the full service breakdown frozen as payload.
+export const settlements = pgTable(
+  "mod_accounting_settlements",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    entityId: uuid("entity_id")
+      .references(() => entities.id, { onDelete: "restrict" })
+      .notNull(),
+    periodId: uuid("period_id")
+      .references(() => accountingPeriods.id, { onDelete: "restrict" })
+      .notNull(),
+    /** Reclassification entry (478/5xx close + per-unit rozdiely). */
+    journalEntryId: uuid("journal_entry_id").references(
+      () => journalEntries.id,
+      { onDelete: "restrict" }
+    ),
+    publishedById: uuid("published_by_id")
+      .references(() => users.id, { onDelete: "restrict" })
+      .notNull(),
+    publishedAt: timestamp("published_at").defaultNow().notNull(),
+  },
+  (table) => ({
+    periodUnique: uniqueIndex("mod_accounting_settlements_period_idx").on(
+      table.periodId
+    ),
+  })
+);
+
+export const settlementUnits = pgTable(
+  "mod_accounting_settlement_units",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    settlementId: uuid("settlement_id")
+      .references(() => settlements.id, { onDelete: "restrict" })
+      .notNull(),
+    unitEntityId: uuid("unit_entity_id")
+      .references(() => entities.id, { onDelete: "restrict" })
+      .notNull(),
+    /** Frozen per-service statement lines (SettlementServiceLine[]). */
+    payload: jsonb("payload").notNull(),
+    totalCostCents: integer("total_cost_cents").notNull(),
+    totalAdvancesCents: integer("total_advances_cents").notNull(),
+    /** Positive = nedoplatok, negative = preplatok. */
+    totalDifferenceCents: integer("total_difference_cents").notNull(),
+  },
+  (table) => ({
+    settlementUnitUnique: uniqueIndex(
+      "mod_accounting_settlement_units_settlement_unit_idx"
+    ).on(table.settlementId, table.unitEntityId),
   })
 );
 

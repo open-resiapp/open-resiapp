@@ -1702,7 +1702,11 @@
       "cellTitle": "Cost {cost} − advances {advances}",
       "footTotals": "Building total",
       "footTitle": "Costs {cost} − advances {advances}",
-      "signHint": "Positive = arrears (owner pays), negative = overpayment (returned)."
+      "signHint": "Positive = arrears (owner pays), negative = overpayment (returned).",
+      "publishConfirm": "Publish the {year} settlement and lock the period. This is IRREVERSIBLE — later corrections post only as reversals in the open period.",
+      "publish": "Publish & lock",
+      "publishing": "Publishing…",
+      "publishError": "Publishing failed"
     }
   }
 }

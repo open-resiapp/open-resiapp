@@ -10,13 +10,19 @@ import {
   payments,
   paymentAllocations,
   serviceCategories,
+  settlements,
+  settlementUnits,
+  auditLog,
 } from "../db/schema";
 import {
   computeSettlement,
   type SettlementResult,
   type SettlementServiceInput,
 } from "../engine/settlement";
+import { postSettlementClose } from "../engine/booking";
 import { listDomUnits } from "./dom-units";
+import { lockOpenPeriods } from "./periods";
+import { postAllDueMonths } from "./fee-schedule-publish";
 
 // Ročné vyúčtovanie assembly (BYT-20260512-002 Phase 4). Gates before
 // the wizard may proceed (spec §Annual vyúčtovanie wizard):
@@ -260,4 +266,128 @@ export async function getVyuctovaniePreview(
       : null;
 
   return { year, gates, settlement, categorySlugs, unitLabels };
+}
+
+/**
+ * Publishes the vyúčtovanie: freezes the per-unit statements, posts the
+ * reclassification entry (478/5xx close + per-unit rozdiely vs
+ * PRESCRIBED), and locks the period (status → published; every later
+ * correction is a reversal in the open period). Irreversible.
+ */
+export async function publishVyuctovanie(input: {
+  entityId: string;
+  country: Country;
+  year: number;
+  actorId: string;
+}): Promise<{ settlementId: string }> {
+  return db.transaction(async (tx) => {
+    // Serialize with every money mutation, then bring receivables current.
+    await lockOpenPeriods(tx, input.entityId);
+    await postAllDueMonths(tx, {
+      entityId: input.entityId,
+      country: input.country,
+    });
+
+    const [period] = await tx
+      .select({ id: accountingPeriods.id, status: accountingPeriods.status })
+      .from(accountingPeriods)
+      .where(
+        and(
+          eq(accountingPeriods.entityId, input.entityId),
+          eq(accountingPeriods.year, input.year)
+        )
+      )
+      .for("update");
+    if (!period) throw new Error("accounting: period not found");
+    if (period.status !== "open") {
+      throw new Error(`accounting: period ${input.year} is ${period.status}`);
+    }
+
+    // Gates re-checked server-side — the UI checklist is not the guard.
+    const preview = await getVyuctovaniePreview(
+      input.entityId,
+      input.country,
+      input.year
+    );
+    if (!preview.gates.canPublish) {
+      throw new Error(
+        "accounting: gates not passed — reconcile bank lines and categorize invoices first"
+      );
+    }
+    if (!preview.settlement) {
+      throw new Error("accounting: nothing to settle for the year");
+    }
+
+    const [settlement] = await tx
+      .insert(settlements)
+      .values({
+        entityId: input.entityId,
+        periodId: period.id,
+        publishedById: input.actorId,
+      })
+      .returning({ id: settlements.id });
+
+    await tx.insert(settlementUnits).values(
+      preview.settlement.units.map((u) => ({
+        settlementId: settlement.id,
+        unitEntityId: u.unitEntityId,
+        payload: u.services,
+        totalCostCents: u.totalCostCents,
+        totalAdvancesCents: u.totalAdvancesCents,
+        totalDifferenceCents: u.totalDifferenceCents,
+      }))
+    );
+
+    const slugById = preview.categorySlugs;
+    const entryId = await postSettlementClose(tx, {
+      settlementId: settlement.id,
+      entityId: input.entityId,
+      periodId: period.id,
+      country: input.country,
+      createdById: input.actorId,
+      year: input.year,
+      categoryCosts: preview.settlement.perService.map((s) => ({
+        serviceCategoryId: s.serviceCategoryId,
+        categorySlug: slugById[s.serviceCategoryId] ?? "SVC_OTHER",
+        costCents: s.actualCostCents,
+      })),
+      unitLines: preview.settlement.units.map((u) => ({
+        unitEntityId: u.unitEntityId,
+        prescribedCents: u.services.reduce(
+          (s, l) => s + l.prescribedCents,
+          0
+        ),
+        costShareCents: u.totalCostCents,
+      })),
+    });
+    if (entryId) {
+      await tx
+        .update(settlements)
+        .set({ journalEntryId: entryId })
+        .where(eq(settlements.id, settlement.id));
+    }
+
+    // Lock the period — postings into it refuse from here on.
+    await tx
+      .update(accountingPeriods)
+      .set({ status: "published", closedAt: new Date() })
+      .where(eq(accountingPeriods.id, period.id));
+
+    await tx.insert(auditLog).values({
+      entityId: input.entityId,
+      actorId: input.actorId,
+      action: "publish",
+      tableName: "mod_accounting_settlements",
+      recordId: settlement.id,
+      after: {
+        year: input.year,
+        units: preview.settlement.units.length,
+        totalDifferenceCents: preview.settlement.totalDifferenceCents,
+        journalEntryId: entryId,
+      },
+      justification: `vyúčtovanie ${input.year} published — period locked`,
+    });
+
+    return { settlementId: settlement.id };
+  });
 }
