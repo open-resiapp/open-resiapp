@@ -1540,7 +1540,9 @@
       "projectionHint": "Schedule inflow × historical collection rate {rate} % minus average monthly expenses. Estimate only — nothing is booked.",
       "projectionEstimatedNote": "* month without a published schedule — extrapolated from the last known month",
       "navMeters": "Meter readings",
-      "navMetersHint": "Heat and water meter states for the settlement"
+      "navMetersHint": "Heat and water meter states for the settlement",
+      "navVyuctovanie": "Annual settlement",
+      "navVyuctovanieHint": "Checks and preview of the service-advance settlement"
     },
     "settings": {
       "title": "Accounting settings",
@@ -1681,6 +1683,26 @@
       "type_water_cold": "Cold water (m³)",
       "type_water_hot": "Hot water (m³)",
       "type_electricity": "Electricity (kWh)"
+    },
+    "vyuctovanie": {
+      "title": "Annual settlement",
+      "subtitle": "Service-advance settlement — actual costs vs. received advances (the repair fund is not settled)",
+      "backToAccounting": "Back to accounting",
+      "loadError": "Failed to load the settlement.",
+      "gatesTitle": "Pre-settlement checks",
+      "gateUnmatched": "{count, plural, =0 {All bank payments are matched} one {# unmatched payment} other {# unmatched payments}}",
+      "gateUncategorized": "{count, plural, =0 {All invoices are categorized} one {# uncategorized invoice} other {# uncategorized invoices}}",
+      "gateReadings": "{count, plural, =0 {All units have readings} one {# unit without a reading} other {# units without readings}} (informational)",
+      "resolve": "resolve →",
+      "alreadyPublished": "This period is already published.",
+      "blockedHint": "The settlement preview appears once the checks above are resolved.",
+      "draftBanner": "DRAFT — the settlement is not published yet. Amounts may change.",
+      "colUnit": "Unit",
+      "colTotal": "Total",
+      "cellTitle": "Cost {cost} − advances {advances}",
+      "footTotals": "Building total",
+      "footTitle": "Costs {cost} − advances {advances}",
+      "signHint": "Positive = arrears (owner pays), negative = overpayment (returned)."
     }
   }
 }

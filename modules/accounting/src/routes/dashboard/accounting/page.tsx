@@ -340,6 +340,12 @@ export default function AccountingHomePage() {
             ],
             ["/accounting/expenses", "🧰", "navExpenses", "navExpensesHint"],
             ["/accounting/meters", "🌡️", "navMeters", "navMetersHint"],
+            [
+              "/accounting/vyuctovanie",
+              "📑",
+              "navVyuctovanie",
+              "navVyuctovanieHint",
+            ],
             ["/accounting/karta", "🧾", "navKarta", "navKartaHint"],
             [
               "/accounting/predpis/unit-settings",

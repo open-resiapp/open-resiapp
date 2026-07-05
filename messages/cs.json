@@ -1540,7 +1540,9 @@
       "projectionHint": "Příjmy z předpisu × historická úspěšnost výběru {rate} % mínus průměrné měsíční výdaje. Pouze odhad — nic se neúčtuje.",
       "projectionEstimatedNote": "* měsíc bez publikovaného předpisu — odhad podle posledního známého měsíce",
       "navMeters": "Odečty měřičů",
-      "navMetersHint": "Stavy měřičů tepla a vody pro vyúčtování"
+      "navMetersHint": "Stavy měřičů tepla a vody pro vyúčtování",
+      "navVyuctovanie": "Roční vyúčtování",
+      "navVyuctovanieHint": "Kontroly a náhled vyúčtování záloh na služby"
     },
     "settings": {
       "title": "Nastavení účetnictví",
@@ -1681,6 +1683,26 @@
       "type_water_cold": "Studená voda (m³)",
       "type_water_hot": "Teplá voda (m³)",
       "type_electricity": "Elektřina (kWh)"
+    },
+    "vyuctovanie": {
+      "title": "Roční vyúčtování",
+      "subtitle": "Vyúčtování záloh na služby — skutečné náklady vs. přijaté zálohy (fond oprav se nevyúčtovává)",
+      "backToAccounting": "Zpět na účetnictví",
+      "loadError": "Nepodařilo se načíst vyúčtování.",
+      "gatesTitle": "Kontroly před vyúčtováním",
+      "gateUnmatched": "{count, plural, =0 {Všechny bankovní platby jsou spárované} one {# nespárovaná platba} few {# nespárované platby} other {# nespárovaných plateb}}",
+      "gateUncategorized": "{count, plural, =0 {Všechny faktury jsou zařazené} one {# nezařazená faktura} few {# nezařazené faktury} other {# nezařazených faktur}}",
+      "gateReadings": "{count, plural, =0 {Všechny jednotky mají odečty} one {# jednotka bez odečtu} few {# jednotky bez odečtu} other {# jednotek bez odečtu}} (informativní)",
+      "resolve": "vyřešit →",
+      "alreadyPublished": "Toto období je již publikováno.",
+      "blockedHint": "Náhled vyúčtování se zobrazí po vyřešení kontrol výše.",
+      "draftBanner": "NÁVRH — vyúčtování ještě není publikováno. Částky se mohou změnit.",
+      "colUnit": "Jednotka",
+      "colTotal": "Celkem",
+      "cellTitle": "Náklad {cost} − zálohy {advances}",
+      "footTotals": "Dům celkem",
+      "footTitle": "Náklady {cost} − zálohy {advances}",
+      "signHint": "Kladná částka = nedoplatek (vlastník doplácí), záporná = přeplatek (vrací se)."
     }
   }
 }
