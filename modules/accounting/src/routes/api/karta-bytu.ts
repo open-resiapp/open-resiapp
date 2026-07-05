@@ -17,7 +17,10 @@ import {
   getVyuctovaniePdfData,
   listSettlementYearsForUnit,
 } from "@modules/accounting/src/lib/vyuctovanie";
-import { getOverdueForUnit } from "@modules/accounting/src/lib/overdue";
+import {
+  getOverdueForUnit,
+  getUpomienkaPdfData,
+} from "@modules/accounting/src/lib/overdue";
 
 // Karta bytu API. Unlike the treasurer-only routes, owners are allowed
 // here — scoped server-side to units they hold an active owner membership
@@ -156,6 +159,46 @@ export async function handleOverdue(
     unitEntityId,
   });
   return NextResponse.json(summary);
+}
+
+/**
+ * GET /api/accounting/karta/[unitId]/upomienka-pdf — dunning-letter data.
+ * WRITER only: the upomienka is a treasurer artifact sent TO the owner,
+ * not an owner self-service download.
+ */
+export async function handleUpomienkaPdfData(
+  _req: NextRequest,
+  unitEntityId: string
+): Promise<NextResponse> {
+  const ctx = await baseCtx();
+  if (ctx.error) return ctx.error;
+  const { session, root } = ctx;
+
+  const isWriter = await canWriteAccounting(
+    session.user.id,
+    session.user.role as string,
+    root.id
+  );
+  if (!isWriter) {
+    return NextResponse.json({ error: "forbidden" }, { status: 403 });
+  }
+
+  try {
+    const data = await getUpomienkaPdfData({
+      entityId: root.id,
+      country: root.country,
+      unitEntityId,
+      beneficiaryName: root.name,
+    });
+    return NextResponse.json({
+      ...data,
+      building: { name: root.name, address: root.address, ico: root.ico },
+    });
+  } catch (err) {
+    const message = err instanceof Error ? err.message : "pdf data failed";
+    const status = message.includes("nothing overdue") ? 404 : 400;
+    return NextResponse.json({ error: message }, { status });
+  }
 }
 
 /** GET /api/accounting/karta/[unitId]/vyuctovanie-pdf?year= */

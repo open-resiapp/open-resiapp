@@ -11,6 +11,7 @@ import { Link } from "@/i18n/navigation";
 import { formatEur } from "@modules/accounting/src/lib/money";
 import DownloadPredpisButton from "@modules/accounting/src/components/DownloadPredpisButton";
 import DownloadVyuctovanieButton from "@modules/accounting/src/components/DownloadVyuctovanieButton";
+import DownloadUpomienkaButton from "@modules/accounting/src/components/DownloadUpomienkaButton";
 
 interface LedgerLine {
   categorySlug: string | null;
@@ -275,9 +276,12 @@ export default function KartaDetailPage({ unitId }: { unitId: string }) {
               </tr>
             </tfoot>
           </table>
-          <p className="text-[11px] text-gray-400 dark:text-gray-500 mt-2">
-            {t("overdueDisclaimer")}
-          </p>
+          <div className="flex items-center justify-between mt-2">
+            <p className="text-[11px] text-gray-400 dark:text-gray-500">
+              {t("overdueDisclaimer")}
+            </p>
+            {canWrite && <DownloadUpomienkaButton unitId={unitId} />}
+          </div>
         </div>
       )}
 

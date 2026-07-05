@@ -2,11 +2,18 @@ import "server-only";
 
 import { and, eq, inArray } from "drizzle-orm";
 import { db } from "@/db";
-import { accountingSettings, settlements, settlementUnits } from "../db/schema";
+import {
+  accountingSettings,
+  settlements,
+  settlementUnits,
+  unitSettings,
+} from "../db/schema";
 import { sql } from "drizzle-orm";
 import { computeInterest, type RateEntry } from "../sanctions/interest";
 import { ECB_MRO_RATES, CNB_REPO_RATES } from "../seeds/interest-rates";
 import { openReceivablesForUnit, type OpenReceivable } from "./payments";
+import { listDomUnits } from "./dom-units";
+import { payBySquareString } from "../qr/pay-by-square";
 
 // Overdue receivables + lawful interest (BYT-20260512-002 Phase 5
 // surface). READ-ONLY calculator per spec decision — nothing posts; the
@@ -59,6 +66,82 @@ export interface OverdueSummary {
   totalInterestCents: number;
   /** True when the seeded rate history may be stale — surface a caveat. */
   ratesUnverified: true;
+}
+
+export interface UpomienkaPdfData extends OverdueSummary {
+  unitLabel: string;
+  vs: string | null;
+  iban: string | null;
+  /** Dynamic PAY by square for open + interest; null when unavailable. */
+  payBySquare: string | null;
+  /** SK-only template (statutory citations) — the endpoint enforces it. */
+  country: "sk";
+}
+
+/**
+ * Everything the upomienka PDF needs. SK-only — the statutory citations
+ * (nariadenie 87/1995, §517 OZ) belong to the SK template; the CZ
+ * upomínka (nař. 351/2013) ships with Phase 6 (template-aware rule).
+ */
+export async function getUpomienkaPdfData(input: {
+  entityId: string;
+  country: Country;
+  unitEntityId: string;
+  beneficiaryName: string;
+  now?: Date;
+}): Promise<UpomienkaPdfData> {
+  if (input.country !== "sk") {
+    throw new Error(
+      "accounting: the CZ upomínka template ships with Phase 6 — SK template must not serve other countries"
+    );
+  }
+  const summary = await getOverdueForUnit(input);
+  if (summary.items.length === 0) {
+    throw new Error("accounting: nothing overdue for the unit");
+  }
+
+  const units = await listDomUnits(input.entityId);
+  const unit = units.find((u) => u.id === input.unitEntityId);
+  if (!unit) throw new Error("accounting: unknown unit");
+
+  const [vsRow] = await db
+    .select({ vs: unitSettings.vs })
+    .from(unitSettings)
+    .where(eq(unitSettings.unitEntityId, input.unitEntityId));
+
+  const [settingsRow] = await db
+    .select({ bankIban: accountingSettings.bankIban })
+    .from(accountingSettings)
+    .where(
+      and(
+        eq(accountingSettings.entityId, input.entityId),
+        sql`${accountingSettings.effectiveFrom} <= now()`
+      )
+    )
+    .orderBy(sql`${accountingSettings.effectiveFrom} desc`)
+    .limit(1);
+  const iban = settingsRow?.bankIban ?? null;
+
+  const totalDue = summary.totalOpenCents + summary.totalInterestCents;
+  const payBySquare =
+    iban && vsRow?.vs && totalDue > 0
+      ? payBySquareString({
+          iban,
+          amountCents: totalDue,
+          vs: vsRow.vs,
+          beneficiaryName: input.beneficiaryName,
+          note: `Upomienka ${summary.asOf}`,
+        })
+      : null;
+
+  return {
+    ...summary,
+    unitLabel: unit.flatNumber ?? unit.name,
+    vs: vsRow?.vs ?? null,
+    iban,
+    payBySquare,
+    country: "sk",
+  };
 }
 
 export async function getOverdueForUnit(input: {

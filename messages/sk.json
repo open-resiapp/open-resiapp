@@ -1749,6 +1749,25 @@
       "qrTitle": "Úhrada nedoplatku cez PAY by square",
       "iban": "IBAN",
       "footer": "Vygenerované systémom OpenResiApp."
+    },
+    "upomienkaPdf": {
+      "download": "Vygenerovať upomienku (PDF)",
+      "generating": "Generuje sa…",
+      "error": "Generovanie zlyhalo",
+      "unit": "Byt",
+      "vs": "Variabilný symbol",
+      "intro": "Vyzývame Vás na úhradu nižšie uvedených neuhradených platieb spojených s užívaním bytu vrátane zákonného úroku z omeškania.",
+      "item": "Položka",
+      "due": "Splatnosť",
+      "days": "Dní",
+      "open": "Dlžná suma",
+      "rate": "Sadzba",
+      "interest": "Úrok",
+      "total": "Spolu",
+      "demand": "NA ÚHRADU SPOLU (istina + úrok)",
+      "qrTitle": "Úhrada cez PAY by square",
+      "iban": "IBAN",
+      "footer": "Vygenerované systémom OpenResiApp."
     }
   }
 }

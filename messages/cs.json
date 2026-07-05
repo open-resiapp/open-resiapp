@@ -1749,6 +1749,25 @@
       "qrTitle": "Úhrada nedoplatku přes platební QR",
       "iban": "IBAN",
       "footer": "Vygenerováno systémem OpenResiApp."
+    },
+    "upomienkaPdf": {
+      "download": "Vygenerovat upomínku (PDF)",
+      "generating": "Generuje se…",
+      "error": "Generování selhalo",
+      "unit": "Jednotka",
+      "vs": "Variabilní symbol",
+      "intro": "Vyzýváme Vás k úhradě níže uvedených neuhrazených plateb spojených s užíváním jednotky včetně zákonného úroku z prodlení.",
+      "item": "Položka",
+      "due": "Splatnost",
+      "days": "Dní",
+      "open": "Dlužná částka",
+      "rate": "Sazba",
+      "interest": "Úrok",
+      "total": "Celkem",
+      "demand": "K ÚHRADĚ CELKEM (jistina + úrok)",
+      "qrTitle": "Úhrada přes platební QR",
+      "iban": "IBAN",
+      "footer": "Vygenerováno systémem OpenResiApp."
     }
   }
 }
