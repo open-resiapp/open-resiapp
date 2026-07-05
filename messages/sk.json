@@ -1560,7 +1560,9 @@
       "navMeters": "Odpočty meračov",
       "navMetersHint": "Stavy meračov tepla a vody pre vyúčtovanie",
       "navVyuctovanie": "Ročné vyúčtovanie",
-      "navVyuctovanieHint": "Kontroly, náhľad vyúčtovania záloh na služby"
+      "navVyuctovanieHint": "Kontroly, náhľad vyúčtovania záloh na služby",
+      "navJournal": "Pohľad účtovníka",
+      "navJournalHint": "Účtovný denník a predvaha pre audit"
     },
     "settings": {
       "title": "Nastavenia účtovníctva",
@@ -1768,6 +1770,21 @@
       "qrTitle": "Úhrada cez PAY by square",
       "iban": "IBAN",
       "footer": "Vygenerované systémom OpenResiApp."
+    },
+    "journal": {
+      "title": "Pohľad účtovníka",
+      "subtitle": "Účtovný denník a obratová predvaha — iba na čítanie, pre audit a kontrolu",
+      "backToAccounting": "Späť na účtovníctvo",
+      "loadError": "Nepodarilo sa načítať denník.",
+      "empty": "Zatiaľ žiadne účtovné zápisy.",
+      "trialBalanceTitle": "Obratová predvaha",
+      "colAccount": "Účet",
+      "colName": "Názov",
+      "colDebit": "Má dať (MD)",
+      "colCredit": "Dal (D)",
+      "colBalance": "Zostatok",
+      "totals": "Spolu",
+      "journalTitle": "Účtovný denník ({total} zápisov)"
     }
   }
 }

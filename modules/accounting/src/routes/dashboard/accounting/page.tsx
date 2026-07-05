@@ -353,6 +353,7 @@ export default function AccountingHomePage() {
               "navVs",
               "navVsHint",
             ],
+            ["/accounting/journal", "📚", "navJournal", "navJournalHint"],
             ["/accounting/settings", "⚙️", "navSettings", "navSettingsHint"],
           ] as const
         ).map(([href, icon, label, hint]) => (
