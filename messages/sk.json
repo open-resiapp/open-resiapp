@@ -352,6 +352,13 @@
       "button": "Prevziať účet",
       "expiryNote": "Odkaz je platný {days} dní.",
       "fallback": "Ak tlačidlo nefunguje, skopírujte tento odkaz do prehliadača:"
+    },
+    "settlementPublished": {
+      "subject": "Ročné vyúčtovanie {year} je pripravené",
+      "heading": "Vyúčtovanie za rok {year}",
+      "intro": "Spoločenstvo {building} publikovalo ročné vyúčtovanie záloh na služby za rok {year}. Kompletný rozpis a PDF nájdete na karte svojho bytu.",
+      "button": "Otvoriť kartu bytu",
+      "hint": "Ak odkaz nefunguje, prihláste sa do aplikácie a otvorte Účtovníctvo → Karta bytu."
     }
   },
   "Header": {

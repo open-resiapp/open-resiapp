@@ -540,3 +540,62 @@ export async function sendClaimShellInvitation(params: {
     return false;
   }
 }
+
+/**
+ * Accounting (BYT-20260512-002): notifies an owner that the annual
+ * settlement for their unit is published and downloadable in the app.
+ * A NOTIFICATION, not the statutory delivery of the document — the
+ * electronic-delivery consent flow (spec §vyúčtovanie delivery) governs
+ * the statutory channel separately.
+ */
+export async function sendSettlementPublishedNotification(params: {
+  recipientEmail: string;
+  recipientName: string;
+  buildingName: string;
+  year: number;
+  kartaUrl: string;
+  locale?: string;
+}): Promise<boolean> {
+  const transporter = getTransporter();
+  if (!transporter) {
+    console.warn(
+      "[email] SMTP not configured — skipping settlement notification"
+    );
+    return false;
+  }
+
+  const locale = resolveLocale(params.locale);
+  const tCommon = await getTranslations({ locale, namespace: "Email.common" });
+  const t = await getTranslations({
+    locale,
+    namespace: "Email.settlementPublished",
+  });
+
+  const html = `
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+      <h2 style="color: #1d4ed8;">${t("heading", { year: params.year })}</h2>
+      <p>${tCommon("greeting", { name: params.recipientName })}</p>
+      <p>${t("intro", { building: params.buildingName, year: params.year })}</p>
+      <div style="margin: 24px 0; text-align: center;">
+        <a href="${params.kartaUrl}"
+           style="display: inline-block; padding: 12px 32px; background-color: #2563eb; color: #ffffff; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 16px;">
+          ${t("button")}
+        </a>
+      </div>
+      <p style="color: #6b7280; font-size: 14px;">${t("hint")}</p>
+    </div>
+  `;
+
+  try {
+    await transporter.sendMail({
+      from: emailFrom,
+      to: params.recipientEmail,
+      subject: t("subject", { year: params.year }),
+      html,
+    });
+    return true;
+  } catch (error) {
+    console.error("[email] Failed to send settlement notification:", error);
+    return false;
+  }
+}

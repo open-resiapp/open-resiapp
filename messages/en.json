@@ -352,6 +352,13 @@
       "button": "Claim account",
       "expiryNote": "Link valid for {days} days.",
       "fallback": "If the button doesn't work, copy this link into your browser:"
+    },
+    "settlementPublished": {
+      "subject": "Annual settlement {year} is ready",
+      "heading": "Settlement for {year}",
+      "intro": "The community {building} published the annual service-advance settlement for {year}. Full breakdown and PDF are on your unit ledger.",
+      "button": "Open unit ledger",
+      "hint": "If the link doesn't work, sign in to the app and open Accounting → Unit ledger."
     }
   },
   "Header": {

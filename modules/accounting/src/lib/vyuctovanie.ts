@@ -2,6 +2,7 @@ import "server-only";
 
 import { and, eq, gte, inArray, isNull, lt, sql } from "drizzle-orm";
 import { db } from "@/db";
+import { memberships, users } from "@/db/schema";
 import {
   accountingPeriods,
   expenses,
@@ -15,6 +16,7 @@ import {
   settlementUnits,
   unitSettings,
   accountingSettings,
+  accountingNotificationsSent,
   auditLog,
 } from "../db/schema";
 import {
@@ -24,6 +26,7 @@ import {
 } from "../engine/settlement";
 import { postSettlementClose } from "../engine/booking";
 import { payBySquareString } from "../qr/pay-by-square";
+import { sendSettlementPublishedNotification } from "@/lib/email";
 import { listDomUnits } from "./dom-units";
 import { lockOpenPeriods } from "./periods";
 import { postAllDueMonths } from "./fee-schedule-publish";
@@ -322,6 +325,117 @@ export async function getVyuctovaniePreview(
     categorySlugs,
     unitLabels,
   };
+}
+
+export interface DeliverySummary {
+  notified: number;
+  skippedAlreadySent: number;
+  skippedNoEmail: number;
+  failed: number;
+}
+
+/**
+ * Emails every owner whose unit is on the settlement that the statement
+ * is ready in the app. Per-recipient dedupe via
+ * mod_accounting_notifications_sent — safe to re-run (retry only reaches
+ * previously failed/new recipients). This is a NOTIFICATION; the
+ * statutory delivery channel (electronic-consent vs listinné) is a
+ * separate future flow.
+ */
+export async function notifySettlementPublished(input: {
+  entityId: string;
+  settlementId: string;
+  buildingName: string;
+  appBaseUrl: string;
+}): Promise<DeliverySummary> {
+  const [header] = await db
+    .select({ year: accountingPeriods.year })
+    .from(settlements)
+    .innerJoin(
+      accountingPeriods,
+      eq(settlements.periodId, accountingPeriods.id)
+    )
+    .where(
+      and(
+        eq(settlements.id, input.settlementId),
+        eq(settlements.entityId, input.entityId)
+      )
+    );
+  if (!header) throw new Error("accounting: settlement not found");
+
+  // Owners of the settled units, with their unit for the deep link.
+  const recipients = await db
+    .selectDistinct({
+      userId: users.id,
+      name: users.name,
+      email: users.email,
+      unitEntityId: settlementUnits.unitEntityId,
+    })
+    .from(settlementUnits)
+    .innerJoin(
+      memberships,
+      eq(memberships.entityId, settlementUnits.unitEntityId)
+    )
+    .innerJoin(users, eq(memberships.userId, users.id))
+    .where(
+      and(
+        eq(settlementUnits.settlementId, input.settlementId),
+        eq(memberships.role, "owner"),
+        eq(memberships.status, "active")
+      )
+    );
+
+  const already = await db
+    .select({ recipientId: accountingNotificationsSent.recipientId })
+    .from(accountingNotificationsSent)
+    .where(
+      and(
+        eq(accountingNotificationsSent.kind, "settlement_published"),
+        eq(accountingNotificationsSent.settlementId, input.settlementId)
+      )
+    );
+  const sentTo = new Set(already.map((r) => r.recipientId));
+
+  const summary: DeliverySummary = {
+    notified: 0,
+    skippedAlreadySent: 0,
+    skippedNoEmail: 0,
+    failed: 0,
+  };
+  const seenUser = new Set<string>();
+
+  for (const recipient of recipients) {
+    if (seenUser.has(recipient.userId)) continue;
+    seenUser.add(recipient.userId);
+    if (sentTo.has(recipient.userId)) {
+      summary.skippedAlreadySent += 1;
+      continue;
+    }
+    if (!recipient.email) {
+      summary.skippedNoEmail += 1;
+      continue;
+    }
+    const ok = await sendSettlementPublishedNotification({
+      recipientEmail: recipient.email,
+      recipientName: recipient.name,
+      buildingName: input.buildingName,
+      year: header.year,
+      kartaUrl: `${input.appBaseUrl}/accounting/karta/${recipient.unitEntityId}`,
+    });
+    if (!ok) {
+      summary.failed += 1;
+      continue;
+    }
+    await db.insert(accountingNotificationsSent).values({
+      entityId: input.entityId,
+      kind: "settlement_published",
+      recipientId: recipient.userId,
+      settlementId: input.settlementId,
+    });
+    summary.notified += 1;
+  }
+
+  return summary;
 }
 
 /** Years with a PUBLISHED settlement covering the unit (newest first). */

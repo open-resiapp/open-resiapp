@@ -6,6 +6,7 @@ import {
 } from "@modules/accounting/src/lib/api-guard";
 import {
   getVyuctovaniePreview,
+  notifySettlementPublished,
   publishVyuctovanie,
 } from "@modules/accounting/src/lib/vyuctovanie";
 
@@ -53,7 +54,26 @@ export async function handlePublish(req: NextRequest): Promise<NextResponse> {
       year,
       actorId: ctx.session.user.id,
     });
-    return NextResponse.json(result, { status: 201 });
+
+    // Owner notifications run AFTER the publish committed — an email
+    // failure must never roll back a legally published settlement. The
+    // dedupe table makes re-triggering safe.
+    let delivery = null;
+    try {
+      delivery = await notifySettlementPublished({
+        entityId: ctx.root.id,
+        settlementId: result.settlementId,
+        buildingName: ctx.root.name,
+        appBaseUrl:
+          process.env.NEXTAUTH_URL ||
+          process.env.APP_URL ||
+          "http://localhost:3000",
+      });
+    } catch (err) {
+      console.error("[accounting] settlement notification failed:", err);
+    }
+
+    return NextResponse.json({ ...result, delivery }, { status: 201 });
   } catch (err) {
     const message = err instanceof Error ? err.message : "publish failed";
     return NextResponse.json({ error: message }, { status: 400 });

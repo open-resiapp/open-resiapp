@@ -213,6 +213,13 @@
       "button": "Převzít účet",
       "expiryNote": "Odkaz je platný {days} dní.",
       "fallback": "Pokud tlačítko nefunguje, zkopírujte tento odkaz do prohlížeče:"
+    },
+    "settlementPublished": {
+      "subject": "Roční vyúčtování {year} je připraveno",
+      "heading": "Vyúčtování za rok {year}",
+      "intro": "Společenství {building} publikovalo roční vyúčtování záloh na služby za rok {year}. Kompletní rozpis a PDF najdete na kartě své jednotky.",
+      "button": "Otevřít kartu jednotky",
+      "hint": "Pokud odkaz nefunguje, přihlaste se do aplikace a otevřete Účetnictví → Karta jednotky."
     }
   },
   "Header": {

@@ -719,6 +719,41 @@ export const settlementUnits = pgTable(
   })
 );
 
+// ── Notifications sent (per-recipient email tracking) ──
+
+// ONE table for ALL accounting emails with a kind enum (project rule:
+// no purpose-specific table per email type). The core
+// community_notifications_sent is post-shaped and cannot reference
+// settlements, so the module owns its instance of the pattern. Additive
+// kinds only (upomienka, predpis_published, … arrive later).
+export const accountingNotificationKindEnum = pgEnum(
+  "mod_accounting_notification_kind",
+  ["settlement_published"]
+);
+
+export const accountingNotificationsSent = pgTable(
+  "mod_accounting_notifications_sent",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    entityId: uuid("entity_id")
+      .references(() => entities.id, { onDelete: "restrict" })
+      .notNull(),
+    kind: accountingNotificationKindEnum("kind").notNull(),
+    recipientId: uuid("recipient_id")
+      .references(() => users.id, { onDelete: "cascade" })
+      .notNull(),
+    settlementId: uuid("settlement_id").references(() => settlements.id, {
+      onDelete: "restrict",
+    }),
+    sentAt: timestamp("sent_at").defaultNow().notNull(),
+  },
+  (table) => ({
+    dedupeIdx: uniqueIndex(
+      "mod_accounting_notifications_sent_dedupe_idx"
+    ).on(table.kind, table.settlementId, table.recipientId),
+  })
+);
+
 // ── Meter readings (Phase 4 input) ─────────────────────
 
 export const meterTypeEnum = pgEnum("mod_accounting_meter_type", [
