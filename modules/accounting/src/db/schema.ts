@@ -646,6 +646,54 @@ export const bankConnections = pgTable(
   })
 );
 
+// ── Meter readings (Phase 4 input) ─────────────────────
+
+export const meterTypeEnum = pgEnum("mod_accounting_meter_type", [
+  "heat",
+  "water_cold",
+  "water_hot",
+  "electricity",
+]);
+
+// Not a financial posting — corrections void the row (audit-logged) and
+// enter a new one; vyúčtovanie reads only non-voided readings. Values are
+// integer thousandths of the meter unit (m³ / kWh / dieliky) — exact, no
+// float money-style drift.
+export const meterReadings = pgTable(
+  "mod_accounting_meter_readings",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    entityId: uuid("entity_id")
+      .references(() => entities.id, { onDelete: "restrict" })
+      .notNull(),
+    unitEntityId: uuid("unit_entity_id")
+      .references(() => entities.id, { onDelete: "restrict" })
+      .notNull(),
+    meterType: meterTypeEnum("meter_type").notNull(),
+    readingDate: timestamp("reading_date").notNull(),
+    valueMilli: integer("value_milli").notNull(),
+    voidedAt: timestamp("voided_at"),
+    voidedById: uuid("voided_by_id").references(() => users.id, {
+      onDelete: "restrict",
+    }),
+    createdById: uuid("created_by_id")
+      .references(() => users.id, { onDelete: "restrict" })
+      .notNull(),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+  },
+  (table) => ({
+    unitTypeIdx: index("mod_accounting_meter_readings_unit_idx").on(
+      table.unitEntityId,
+      table.meterType,
+      table.readingDate
+    ),
+    valueCheck: check(
+      "mod_accounting_meter_readings_value_check",
+      sql`${table.valueMilli} >= 0`
+    ),
+  })
+);
+
 // ── Supplier lookup cache (FinStat SK / ARES CZ) ───────
 
 // 24h cache per (country, ico) — spec §Supplier / IČO validation.

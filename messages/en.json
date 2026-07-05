@@ -1538,7 +1538,9 @@
       "attentionOverdueUnits": "{count, plural, one {# unit in arrears} other {# units in arrears}}",
       "projectionTitle": "Projected cash (6 months)",
       "projectionHint": "Schedule inflow × historical collection rate {rate} % minus average monthly expenses. Estimate only — nothing is booked.",
-      "projectionEstimatedNote": "* month without a published schedule — extrapolated from the last known month"
+      "projectionEstimatedNote": "* month without a published schedule — extrapolated from the last known month",
+      "navMeters": "Meter readings",
+      "navMetersHint": "Heat and water meter states for the settlement"
     },
     "settings": {
       "title": "Accounting settings",
@@ -1655,6 +1657,30 @@
       "lookup_notConfigured": "FinStat API key is not configured — lookup unavailable.",
       "lookup_error": "Lookup failed. Check the ID or try later.",
       "lookup_debtor": "⚠️ Supplier is on the debtor list — verify before saving."
+    },
+    "meters": {
+      "title": "Meter readings",
+      "subtitle": "Heat and water meter states — input for the annual settlement",
+      "backToAccounting": "Back to accounting",
+      "loadError": "Failed to load readings.",
+      "submitError": "Action failed",
+      "noUnits": "You have no access to any unit.",
+      "unit": "Unit",
+      "meterType": "Meter",
+      "readingDate": "Reading date",
+      "value": "Value",
+      "valuePlaceholder": "0.000",
+      "save": "Save reading",
+      "saving": "Saving…",
+      "empty": "No readings yet.",
+      "colDate": "Date",
+      "colType": "Meter",
+      "colValue": "Value",
+      "void": "Invalidate",
+      "type_heat": "Heat (units)",
+      "type_water_cold": "Cold water (m³)",
+      "type_water_hot": "Hot water (m³)",
+      "type_electricity": "Electricity (kWh)"
     }
   }
 }

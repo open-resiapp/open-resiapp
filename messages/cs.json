@@ -1538,7 +1538,9 @@
       "attentionOverdueUnits": "{count, plural, one {# jednotka s nedoplatkem} few {# jednotky s nedoplatkem} other {# jednotek s nedoplatkem}}",
       "projectionTitle": "Předpokládaný vývoj hotovosti (6 měsíců)",
       "projectionHint": "Příjmy z předpisu × historická úspěšnost výběru {rate} % mínus průměrné měsíční výdaje. Pouze odhad — nic se neúčtuje.",
-      "projectionEstimatedNote": "* měsíc bez publikovaného předpisu — odhad podle posledního známého měsíce"
+      "projectionEstimatedNote": "* měsíc bez publikovaného předpisu — odhad podle posledního známého měsíce",
+      "navMeters": "Odečty měřičů",
+      "navMetersHint": "Stavy měřičů tepla a vody pro vyúčtování"
     },
     "settings": {
       "title": "Nastavení účetnictví",
@@ -1655,6 +1657,30 @@
       "lookup_notConfigured": "FinStat API klíč není nastaven — vyhledávání nedostupné.",
       "lookup_error": "Vyhledání selhalo. Zkontrolujte IČO nebo zkuste později.",
       "lookup_debtor": "⚠️ Dodavatel je na seznamu dlužníků — před uložením prověřte."
+    },
+    "meters": {
+      "title": "Odečty měřičů",
+      "subtitle": "Stavy měřičů tepla a vody — podklad pro roční vyúčtování",
+      "backToAccounting": "Zpět na účetnictví",
+      "loadError": "Nepodařilo se načíst odečty.",
+      "submitError": "Akce selhala",
+      "noUnits": "Nemáte přístup k žádné jednotce.",
+      "unit": "Jednotka",
+      "meterType": "Měřič",
+      "readingDate": "Datum odečtu",
+      "value": "Stav",
+      "valuePlaceholder": "0,000",
+      "save": "Uložit odečet",
+      "saving": "Ukládá se…",
+      "empty": "Zatím žádné odečty.",
+      "colDate": "Datum",
+      "colType": "Měřič",
+      "colValue": "Stav",
+      "void": "Zneplatnit",
+      "type_heat": "Teplo (dílky)",
+      "type_water_cold": "Studená voda (m³)",
+      "type_water_hot": "Teplá voda (m³)",
+      "type_electricity": "Elektřina (kWh)"
     }
   }
 }

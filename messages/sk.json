@@ -1538,7 +1538,9 @@
       "attentionOverdueUnits": "{count, plural, one {# byt s nedoplatkom} few {# byty s nedoplatkom} other {# bytov s nedoplatkom}}",
       "projectionTitle": "Predpokladaný vývoj hotovosti (6 mesiacov)",
       "projectionHint": "Príjmy z predpisu × historická úspešnosť výberu {rate} % mínus priemerné mesačné výdavky. Iba odhad — nič sa neúčtuje.",
-      "projectionEstimatedNote": "* mesiac bez publikovaného predpisu — odhad podľa posledného známeho mesiaca"
+      "projectionEstimatedNote": "* mesiac bez publikovaného predpisu — odhad podľa posledného známeho mesiaca",
+      "navMeters": "Odpočty meračov",
+      "navMetersHint": "Stavy meračov tepla a vody pre vyúčtovanie"
     },
     "settings": {
       "title": "Nastavenia účtovníctva",
@@ -1655,6 +1657,30 @@
       "lookup_notConfigured": "FinStat API kľúč nie je nastavený — vyhľadávanie nedostupné.",
       "lookup_error": "Vyhľadanie zlyhalo. Skontrolujte IČO alebo skúste neskôr.",
       "lookup_debtor": "⚠️ Dodávateľ je v zozname dlžníkov — pred uložením si overte situáciu."
+    },
+    "meters": {
+      "title": "Odpočty meračov",
+      "subtitle": "Stavy meračov tepla a vody — podklad pre ročné vyúčtovanie",
+      "backToAccounting": "Späť na účtovníctvo",
+      "loadError": "Nepodarilo sa načítať odpočty.",
+      "submitError": "Akcia zlyhala",
+      "noUnits": "Nemáte prístup k žiadnemu bytu.",
+      "unit": "Byt",
+      "meterType": "Merač",
+      "readingDate": "Dátum odpočtu",
+      "value": "Stav",
+      "valuePlaceholder": "0,000",
+      "save": "Uložiť odpočet",
+      "saving": "Ukladá sa…",
+      "empty": "Zatiaľ žiadne odpočty.",
+      "colDate": "Dátum",
+      "colType": "Merač",
+      "colValue": "Stav",
+      "void": "Zneplatniť",
+      "type_heat": "Teplo (dieliky)",
+      "type_water_cold": "Studená voda (m³)",
+      "type_water_hot": "Teplá voda (m³)",
+      "type_electricity": "Elektrina (kWh)"
     }
   }
 }

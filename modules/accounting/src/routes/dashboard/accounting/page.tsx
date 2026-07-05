@@ -85,17 +85,30 @@ export default function AccountingHomePage() {
         <p className="text-gray-600 dark:text-gray-400 mb-6">
           {t("ownerSubtitle")}
         </p>
-        <Link
-          href="/accounting/karta"
-          className="block bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg px-5 py-4 hover:border-blue-400 dark:hover:border-blue-600"
-        >
-          <span className="text-lg font-medium text-gray-900 dark:text-gray-100">
-            🧾 {t("navKarta")}
-          </span>
-          <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-            {t("navKartaOwnerHint")}
-          </p>
-        </Link>
+        <div className="grid sm:grid-cols-2 gap-4">
+          <Link
+            href="/accounting/karta"
+            className="block bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg px-5 py-4 hover:border-blue-400 dark:hover:border-blue-600"
+          >
+            <span className="text-lg font-medium text-gray-900 dark:text-gray-100">
+              🧾 {t("navKarta")}
+            </span>
+            <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+              {t("navKartaOwnerHint")}
+            </p>
+          </Link>
+          <Link
+            href="/accounting/meters"
+            className="block bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg px-5 py-4 hover:border-blue-400 dark:hover:border-blue-600"
+          >
+            <span className="text-lg font-medium text-gray-900 dark:text-gray-100">
+              🌡️ {t("navMeters")}
+            </span>
+            <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+              {t("navMetersHint")}
+            </p>
+          </Link>
+        </div>
       </div>
     );
   }
@@ -326,6 +339,7 @@ export default function AccountingHomePage() {
               "navReconciliationHint",
             ],
             ["/accounting/expenses", "🧰", "navExpenses", "navExpensesHint"],
+            ["/accounting/meters", "🌡️", "navMeters", "navMetersHint"],
             ["/accounting/karta", "🧾", "navKarta", "navKartaHint"],
             [
               "/accounting/predpis/unit-settings",
