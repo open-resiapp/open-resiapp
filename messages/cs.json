@@ -1707,6 +1707,25 @@
       "publish": "Publikovat a uzamknout",
       "publishing": "Publikuje se…",
       "publishError": "Publikování selhalo"
+    },
+    "vyuctovaniePdf": {
+      "download": "Vyúčtování {year} (PDF)",
+      "generating": "Generuje se…",
+      "error": "Generování selhalo",
+      "unit": "Jednotka",
+      "vs": "Variabilní symbol",
+      "service": "Služba",
+      "prescribed": "Předepsáno",
+      "advances": "Uhrazené zálohy",
+      "cost": "Skutečné náklady",
+      "difference": "Rozdíl",
+      "total": "Celkem",
+      "nedoplatok": "NEDOPLATEK — k úhradě",
+      "preplatok": "PŘEPLATEK — k vrácení",
+      "settled": "Vyrovnáno",
+      "qrTitle": "Úhrada nedoplatku přes platební QR",
+      "iban": "IBAN",
+      "footer": "Vygenerováno systémem OpenResiApp."
     }
   }
 }

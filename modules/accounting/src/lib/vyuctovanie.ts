@@ -12,6 +12,8 @@ import {
   serviceCategories,
   settlements,
   settlementUnits,
+  unitSettings,
+  accountingSettings,
   auditLog,
 } from "../db/schema";
 import {
@@ -20,6 +22,7 @@ import {
   type SettlementServiceInput,
 } from "../engine/settlement";
 import { postSettlementClose } from "../engine/booking";
+import { payBySquareString } from "../qr/pay-by-square";
 import { listDomUnits } from "./dom-units";
 import { lockOpenPeriods } from "./periods";
 import { postAllDueMonths } from "./fee-schedule-publish";
@@ -266,6 +269,168 @@ export async function getVyuctovaniePreview(
       : null;
 
   return { year, gates, settlement, categorySlugs, unitLabels };
+}
+
+/** Years with a PUBLISHED settlement covering the unit (newest first). */
+export async function listSettlementYearsForUnit(
+  entityId: string,
+  unitEntityId: string
+): Promise<number[]> {
+  const rows = await db
+    .select({ year: accountingPeriods.year })
+    .from(settlementUnits)
+    .innerJoin(
+      settlements,
+      eq(settlementUnits.settlementId, settlements.id)
+    )
+    .innerJoin(
+      accountingPeriods,
+      eq(settlements.periodId, accountingPeriods.id)
+    )
+    .where(
+      and(
+        eq(settlements.entityId, entityId),
+        eq(settlementUnits.unitEntityId, unitEntityId)
+      )
+    )
+    .orderBy(sql`${accountingPeriods.year} desc`);
+  return rows.map((r) => r.year);
+}
+
+export interface VyuctovaniePdfData {
+  year: number;
+  unitLabel: string;
+  vs: string | null;
+  publishedAt: string;
+  lines: {
+    categorySlug: string;
+    prescribedCents: number;
+    advancesCents: number;
+    costShareCents: number;
+    differenceCents: number;
+  }[];
+  totalCostCents: number;
+  totalAdvancesCents: number;
+  totalDifferenceCents: number;
+  iban: string | null;
+  /** Dynamic PAY by square for the nedoplatok — null when nothing owed. */
+  payBySquare: string | null;
+}
+
+/**
+ * The unit's PUBLISHED statement for the year — read from the frozen
+ * settlement rows, never recomputed (the stored payload is the legally
+ * delivered document). SK-only for now: the statutory citations in the
+ * PDF template belong to zák. 182/1993 and must not serve a CZ instance
+ * (template-aware rule); the CZ template ships with Phase 6.
+ */
+export async function getVyuctovaniePdfData(input: {
+  entityId: string;
+  country: Country;
+  unitEntityId: string;
+  year: number;
+  beneficiaryName: string;
+}): Promise<VyuctovaniePdfData> {
+  if (input.country !== "sk") {
+    throw new Error(
+      "accounting: the CZ vyúčtování template ships with Phase 6 — SK template must not serve other countries"
+    );
+  }
+
+  const [row] = await db
+    .select({
+      payload: settlementUnits.payload,
+      totalCostCents: settlementUnits.totalCostCents,
+      totalAdvancesCents: settlementUnits.totalAdvancesCents,
+      totalDifferenceCents: settlementUnits.totalDifferenceCents,
+      publishedAt: settlements.publishedAt,
+    })
+    .from(settlementUnits)
+    .innerJoin(settlements, eq(settlementUnits.settlementId, settlements.id))
+    .innerJoin(
+      accountingPeriods,
+      eq(settlements.periodId, accountingPeriods.id)
+    )
+    .where(
+      and(
+        eq(settlements.entityId, input.entityId),
+        eq(settlementUnits.unitEntityId, input.unitEntityId),
+        eq(accountingPeriods.year, input.year)
+      )
+    );
+  if (!row) {
+    throw new Error("accounting: no published vyúčtovanie for the year");
+  }
+
+  const units = await listDomUnits(input.entityId);
+  const unit = units.find((u) => u.id === input.unitEntityId);
+  if (!unit) throw new Error("accounting: unknown unit");
+
+  const categories = await db
+    .select({ id: serviceCategories.id, slug: serviceCategories.slug })
+    .from(serviceCategories)
+    .where(eq(serviceCategories.country, input.country));
+  const slugById = new Map(categories.map((c) => [c.id, c.slug]));
+
+  const payloadLines = row.payload as {
+    serviceCategoryId: string;
+    prescribedCents: number;
+    advancesCents: number;
+    costShareCents: number;
+    differenceCents: number;
+  }[];
+  const lines = payloadLines.map((l) => ({
+    categorySlug: slugById.get(l.serviceCategoryId) ?? l.serviceCategoryId,
+    prescribedCents: l.prescribedCents,
+    advancesCents: l.advancesCents,
+    costShareCents: l.costShareCents,
+    differenceCents: l.differenceCents,
+  }));
+
+  const [vsRow] = await db
+    .select({ vs: unitSettings.vs })
+    .from(unitSettings)
+    .where(eq(unitSettings.unitEntityId, input.unitEntityId));
+
+  const settings = await getSettingsIban(input.entityId);
+  let payBySquare: string | null = null;
+  if (row.totalDifferenceCents > 0 && settings && vsRow?.vs) {
+    payBySquare = payBySquareString({
+      iban: settings,
+      amountCents: row.totalDifferenceCents,
+      vs: vsRow.vs,
+      beneficiaryName: input.beneficiaryName,
+      note: `Vyuctovanie ${input.year}`,
+    });
+  }
+
+  return {
+    year: input.year,
+    unitLabel: unit.flatNumber ?? unit.name,
+    vs: vsRow?.vs ?? null,
+    publishedAt: row.publishedAt.toISOString(),
+    lines,
+    totalCostCents: row.totalCostCents,
+    totalAdvancesCents: row.totalAdvancesCents,
+    totalDifferenceCents: row.totalDifferenceCents,
+    iban: settings,
+    payBySquare,
+  };
+}
+
+async function getSettingsIban(entityId: string): Promise<string | null> {
+  const [row] = await db
+    .select({ bankIban: accountingSettings.bankIban })
+    .from(accountingSettings)
+    .where(
+      and(
+        eq(accountingSettings.entityId, entityId),
+        sql`${accountingSettings.effectiveFrom} <= now()`
+      )
+    )
+    .orderBy(sql`${accountingSettings.effectiveFrom} desc`)
+    .limit(1);
+  return row?.bankIban ?? null;
 }
 
 /**

@@ -10,6 +10,7 @@ import { useFormatter, useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { formatEur } from "@modules/accounting/src/lib/money";
 import DownloadPredpisButton from "@modules/accounting/src/components/DownloadPredpisButton";
+import DownloadVyuctovanieButton from "@modules/accounting/src/components/DownloadVyuctovanieButton";
 
 interface LedgerLine {
   categorySlug: string | null;
@@ -43,6 +44,7 @@ export default function KartaDetailPage({ unitId }: { unitId: string }) {
   const format = useFormatter();
 
   const [ledger, setLedger] = useState<Ledger | null>(null);
+  const [settlementYears, setSettlementYears] = useState<number[]>([]);
   const [canWrite, setCanWrite] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [expanded, setExpanded] = useState<string | null>(null);
@@ -54,10 +56,17 @@ export default function KartaDetailPage({ unitId }: { unitId: string }) {
         if (!r.ok) throw new Error(String(r.status));
         return r.json();
       })
-      .then((data: { ledger: Ledger; canWrite: boolean }) => {
-        setLedger(data.ledger);
-        setCanWrite(data.canWrite);
-      })
+      .then(
+        (data: {
+          ledger: Ledger;
+          canWrite: boolean;
+          settlementYears?: number[];
+        }) => {
+          setLedger(data.ledger);
+          setCanWrite(data.canWrite);
+          setSettlementYears(data.settlementYears ?? []);
+        }
+      )
       .catch((err) =>
         setError(err instanceof Error ? err.message : "load")
       );
@@ -111,7 +120,12 @@ export default function KartaDetailPage({ unitId }: { unitId: string }) {
         <p className="text-gray-600 dark:text-gray-400">
           {ledger.vs ? t("vsLabel", { vs: ledger.vs }) : t("noVs")}
         </p>
-        <DownloadPredpisButton unitId={unitId} />
+        <span className="flex items-center gap-4">
+          {settlementYears.map((y) => (
+            <DownloadVyuctovanieButton key={y} unitId={unitId} year={y} />
+          ))}
+          <DownloadPredpisButton unitId={unitId} />
+        </span>
       </div>
 
       {/* Summary */}
