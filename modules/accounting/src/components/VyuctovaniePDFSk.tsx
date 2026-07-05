@@ -227,10 +227,9 @@ export default function VyuctovaniePDFSk(props: VyuctovaniePDFSkProps) {
         {/* SK statutory poučenie — hardcoded by design. */}
         <Text style={styles.reklamacia}>
           Prípadné námietky proti tomuto vyúčtovaniu uplatnite písomne u
-          predsedu spoločenstva bez zbytočného odkladu. Nedoplatok je
-          splatný do 30 dní od doručenia vyúčtovania, ak zmluva o
-          spoločenstve neurčuje inak; preplatok bude vrátený v rovnakej
-          lehote.
+          predsedu spoločenstva. Nedoplatok je splatný a preplatok bude
+          vrátený v lehote podľa zmluvy o spoločenstve, spravidla do 30 dní
+          od doručenia vyúčtovania.
         </Text>
 
         <Text style={styles.footer}>{props.labels.footer}</Text>

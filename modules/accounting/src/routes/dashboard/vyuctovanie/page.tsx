@@ -16,6 +16,8 @@ interface Gates {
   unmatchedBankLines: number;
   uncategorizedExpenses: number;
   unitsWithoutReadings: number;
+  yearElapsed: boolean;
+  draftSchedules: number;
   canPublish: boolean;
 }
 
@@ -38,6 +40,7 @@ interface UnitSettlement {
 interface Preview {
   year: number;
   gates: Gates;
+  unprescribedCostCategories: string[];
   settlement: {
     units: UnitSettlement[];
     perService: {
@@ -136,8 +139,10 @@ export default function VyuctovaniePage() {
           onChange={(e) => setYear(Number(e.target.value))}
           className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 text-sm"
         >
+          {/* Only ELAPSED years — a mid-year settlement would charge 12
+              months of prescriptions against a partial year. */}
           {Array.from({ length: 4 }, (_, i) => {
-            const y = new Date().getUTCFullYear() - i;
+            const y = new Date().getUTCFullYear() - 1 - i;
             return (
               <option key={y} value={y}>
                 {y}
@@ -194,6 +199,20 @@ export default function VyuctovaniePage() {
             {preview.gates.periodStatus === "published" && (
               <p className="mt-3 text-sm text-green-700 dark:text-green-400">
                 {t("alreadyPublished")}
+              </p>
+            )}
+            {preview.unprescribedCostCategories.length > 0 && (
+              <p className="mt-3 text-sm text-red-600 dark:text-red-400">
+                {t("unprescribedWarning", {
+                  categories: preview.unprescribedCostCategories.join(", "),
+                })}
+              </p>
+            )}
+            {preview.gates.draftSchedules > 0 && (
+              <p className="mt-3 text-sm text-amber-700 dark:text-amber-400">
+                {t("draftScheduleWarning", {
+                  count: preview.gates.draftSchedules,
+                })}
               </p>
             )}
           </div>
@@ -296,7 +315,8 @@ export default function VyuctovaniePage() {
               </p>
 
               {/* Publish */}
-              {preview.gates.canPublish && (
+              {preview.gates.canPublish &&
+                preview.unprescribedCostCategories.length === 0 && (
                 <div className="mt-6 bg-blue-50 dark:bg-blue-950 border border-blue-200 dark:border-blue-800 rounded-lg p-4 text-sm">
                   <label className="flex items-start gap-2 text-blue-900 dark:text-blue-200">
                     <input

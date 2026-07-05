@@ -10,6 +10,7 @@ import {
   payments,
   paymentAllocations,
   serviceCategories,
+  feeSchedules,
   settlements,
   settlementUnits,
   unitSettings,
@@ -44,7 +45,12 @@ export interface VyuctovanieGates {
   unmatchedBankLines: number;
   uncategorizedExpenses: number;
   unitsWithoutReadings: number;
-  /** Gates 1+2 clear and the period is open. */
+  /** The year must be OVER — a mid-year publish would settle 12 months
+   * of prescriptions against a partial year of postings and costs. */
+  yearElapsed: boolean;
+  /** Draft schedules for the year — locking strands them unpublishable. */
+  draftSchedules: number;
+  /** Gates clear, year over, period open. */
   canPublish: boolean;
 }
 
@@ -53,6 +59,10 @@ export interface VyuctovaniePreview {
   gates: VyuctovanieGates;
   /** Null until gates 1+2 pass — a broken preview must not look official. */
   settlement: SettlementResult | null;
+  /** Categories with real cost but ZERO prescription — the engine would
+   * fall back to an equal split no zmluva authorizes; publish refuses
+   * until the predpis covers the service or the expense is recategorized. */
+  unprescribedCostCategories: string[];
   categorySlugs: Record<string, string>;
   unitLabels: Record<string, string>;
 }
@@ -116,14 +126,35 @@ async function computeGates(
     (u) => !readingUnitIds.has(u.id)
   ).length;
 
+  const [drafts] = await db
+    .select({ n: sql<number>`count(*)::int` })
+    .from(feeSchedules)
+    .innerJoin(
+      accountingPeriods,
+      eq(feeSchedules.periodId, accountingPeriods.id)
+    )
+    .where(
+      and(
+        eq(feeSchedules.entityId, entityId),
+        eq(accountingPeriods.year, year),
+        eq(feeSchedules.status, "draft")
+      )
+    );
+
+  const yearElapsed = year < new Date().getUTCFullYear();
   const periodStatus = period?.status ?? "missing";
   return {
     periodStatus,
     unmatchedBankLines: unmatched.n,
     uncategorizedExpenses: uncategorized.n,
     unitsWithoutReadings,
+    yearElapsed,
+    draftSchedules: drafts.n,
     canPublish:
-      periodStatus === "open" && unmatched.n === 0 && uncategorized.n === 0,
+      periodStatus === "open" &&
+      yearElapsed &&
+      unmatched.n === 0 &&
+      uncategorized.n === 0,
   };
 }
 
@@ -147,7 +178,14 @@ export async function getVyuctovaniePreview(
   );
 
   if (gates.unmatchedBankLines > 0 || gates.uncategorizedExpenses > 0) {
-    return { year, gates, settlement: null, categorySlugs, unitLabels };
+    return {
+      year,
+      gates,
+      settlement: null,
+      unprescribedCostCategories: [],
+      categorySlugs,
+      unitLabels,
+    };
   }
 
   const yearStart = new Date(Date.UTC(year, 0, 1));
@@ -268,7 +306,22 @@ export async function getVyuctovaniePreview(
       ? computeSettlement({ unitIds: units.map((u) => u.id), services })
       : null;
 
-  return { year, gates, settlement, categorySlugs, unitLabels };
+  const unprescribedCostCategories = services
+    .filter(
+      (s) =>
+        s.actualCostCents > 0 &&
+        Object.values(s.prescribedByUnit).reduce((a, b) => a + b, 0) === 0
+    )
+    .map((s) => categorySlugs[s.serviceCategoryId] ?? s.serviceCategoryId);
+
+  return {
+    year,
+    gates,
+    settlement,
+    unprescribedCostCategories,
+    categorySlugs,
+    unitLabels,
+  };
 }
 
 /** Years with a PUBLISHED settlement covering the unit (newest first). */
@@ -476,7 +529,12 @@ export async function publishVyuctovanie(input: {
     );
     if (!preview.gates.canPublish) {
       throw new Error(
-        "accounting: gates not passed — reconcile bank lines and categorize invoices first"
+        "accounting: gates not passed — the year must be over, bank lines reconciled and invoices categorized"
+      );
+    }
+    if (preview.unprescribedCostCategories.length > 0) {
+      throw new Error(
+        `accounting: costs without any prescription (${preview.unprescribedCostCategories.join(", ")}) — an equal split has no legal basis; add the service to the predpis or recategorize the expense`
       );
     }
     if (!preview.settlement) {

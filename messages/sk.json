@@ -1706,7 +1706,9 @@
       "publishConfirm": "Publikovať vyúčtovanie {year} a uzamknúť obdobie. Krok je NEVRATNÝ — opravy sa už dajú robiť len opravným zápisom v aktuálnom období.",
       "publish": "Publikovať a uzamknúť",
       "publishing": "Publikuje sa…",
-      "publishError": "Publikovanie zlyhalo"
+      "publishError": "Publikovanie zlyhalo",
+      "unprescribedWarning": "⚠️ Náklady bez predpisu: {categories}. Rovnaké rozdelenie nemá právny základ — doplňte službu do predpisu alebo preradťe výdavok. Publikovanie je zablokované.",
+      "draftScheduleWarning": "{count, plural, one {Existuje # nepublikovaný návrh predpisu} few {Existujú # nepublikované návrhy predpisu} other {Existuje # nepublikovaných návrhov predpisu}} pre tento rok — po uzamknutí obdobia sa už nebude dať publikovať."
     },
     "vyuctovaniePdf": {
       "download": "Vyúčtovanie {year} (PDF)",

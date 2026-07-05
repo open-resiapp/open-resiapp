@@ -1706,7 +1706,9 @@
       "publishConfirm": "Publish the {year} settlement and lock the period. This is IRREVERSIBLE — later corrections post only as reversals in the open period.",
       "publish": "Publish & lock",
       "publishing": "Publishing…",
-      "publishError": "Publishing failed"
+      "publishError": "Publishing failed",
+      "unprescribedWarning": "⚠️ Costs without any prescription: {categories}. An equal split has no legal basis — add the service to the schedule or recategorize the expense. Publishing is blocked.",
+      "draftScheduleWarning": "{count, plural, one {# unpublished schedule draft exists} other {# unpublished schedule drafts exist}} for this year — after locking the period it can no longer be published."
     },
     "vyuctovaniePdf": {
       "download": "Settlement {year} (PDF)",
