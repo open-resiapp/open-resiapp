@@ -121,8 +121,21 @@ export function mapAresSubject(
   };
 }
 
-export function finstatDetailUrl(ico: string, apiKey: string): string {
-  return `https://www.finstat.sk/api/detail?ico=${encodeURIComponent(ico)}&apiKey=${encodeURIComponent(apiKey)}&format=json`;
+/**
+ * FinStat authenticates with apiKey + a request hash derived from the
+ * private key. `hash` is computed by the caller (server-side, node
+ * crypto) — per FinStat docs: SHA-256 of "SomeSalt+apiKey+privateKey+ico"
+ * where SomeSalt is their documented constant. VERIFY the exact recipe
+ * against a real account before production (spec open question) — the
+ * mechanism is wired, only the recipe may need adjusting in ONE place
+ * (finstatRequestHash in supplier-lookup.ts).
+ */
+export function finstatDetailUrl(
+  ico: string,
+  apiKey: string,
+  hash: string
+): string {
+  return `https://www.finstat.sk/api/detail?ico=${encodeURIComponent(ico)}&apiKey=${encodeURIComponent(apiKey)}&Hash=${encodeURIComponent(hash)}&format=json`;
 }
 
 export function aresSubjectUrl(ico: string): string {

@@ -1,5 +1,6 @@
 import "server-only";
 
+import { createHash } from "node:crypto";
 import { and, eq, sql } from "drizzle-orm";
 import { db } from "@/db";
 import { supplierLookupCache } from "../db/schema";
@@ -29,6 +30,21 @@ type FetchLike = (url: string) => Promise<{
   status: number;
   json(): Promise<unknown>;
 }>;
+
+/**
+ * FinStat request hash — per their docs SHA-256 over
+ * "SomeSalt+apiKey+privateKey+ico". VERIFY the exact salt/recipe with a
+ * real account (spec open question); this is the single adjustment point.
+ */
+function finstatRequestHash(
+  apiKey: string,
+  privateKey: string,
+  ico: string
+): string {
+  return createHash("sha256")
+    .update(`SomeSalt+${apiKey}+${privateKey}+${ico}`)
+    .digest("hex");
+}
 
 export type LookupOutcome =
   | { status: "ok"; info: SupplierInfo; cached: boolean }
@@ -74,8 +90,9 @@ export async function lookupSupplier(input: {
   let url: string;
   if (input.country === "sk") {
     const apiKey = process.env.FINSTAT_API_KEY;
-    if (!apiKey) return { status: "not_configured" };
-    url = finstatDetailUrl(ico, apiKey);
+    const privateKey = process.env.FINSTAT_PRIVATE_KEY;
+    if (!apiKey || !privateKey) return { status: "not_configured" };
+    url = finstatDetailUrl(ico, apiKey, finstatRequestHash(apiKey, privateKey, ico));
   } else {
     url = aresSubjectUrl(ico);
   }
@@ -99,30 +116,38 @@ export async function lookupSupplier(input: {
         ? mapFinstatDetail(ico, null)
         : mapAresSubject(ico, null);
   } else {
-    const payload = (await response.json()) as
-      | FinstatDetailJson
-      | AresSubjectJson;
+    let payload: FinstatDetailJson | AresSubjectJson;
+    try {
+      payload = (await response.json()) as FinstatDetailJson | AresSubjectJson;
+    } catch {
+      // 200 with a non-JSON body (gateway/maintenance page).
+      return { status: "provider_error", httpStatus: response.status };
+    }
     info =
       input.country === "sk"
         ? mapFinstatDetail(ico, payload as FinstatDetailJson)
         : mapAresSubject(ico, payload as AresSubjectJson);
   }
 
-  await db
-    .insert(supplierLookupCache)
-    .values({
-      country: input.country,
-      ico,
-      payload: info as unknown as Record<string, unknown>,
-      fetchedAt: now,
-    })
-    .onConflictDoUpdate({
-      target: [supplierLookupCache.country, supplierLookupCache.ico],
-      set: {
+  // Only HITS cache — a transient miss (provider hiccup, freshly
+  // registered company) must not be pinned for 24 hours.
+  if (info.found) {
+    await db
+      .insert(supplierLookupCache)
+      .values({
+        country: input.country,
+        ico,
         payload: info as unknown as Record<string, unknown>,
-        fetchedAt: sql`now()`,
-      },
-    });
+        fetchedAt: now,
+      })
+      .onConflictDoUpdate({
+        target: [supplierLookupCache.country, supplierLookupCache.ico],
+        set: {
+          payload: info as unknown as Record<string, unknown>,
+          fetchedAt: sql`now()`,
+        },
+      });
+  }
 
   return { status: "ok", info, cached: false };
 }

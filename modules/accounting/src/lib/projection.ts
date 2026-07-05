@@ -112,11 +112,14 @@ export async function getCashflowProjection(
       and(eq(payments.entityId, entityId), isNull(payments.voidedAt))
     );
 
-  // Recurring outflow: average monthly expense over the last 6 months.
+  // Recurring outflow: average monthly expense over the covered history —
+  // dividing by a hard 6 would understate the burn for a dom with less
+  // than 6 months of records (1 month of invoices ÷ 6 ≈ nothing).
   const sixMonthsAgo = new Date(now.getTime() - 182 * 24 * 3600 * 1000);
   const [expenseAvg] = await db
     .select({
       total: sql<number>`coalesce(sum(${expenses.amountCents}), 0)::int`,
+      earliest: sql<string | null>`min(${expenses.invoiceDate})::text`,
     })
     .from(expenses)
     .where(
@@ -126,7 +129,19 @@ export async function getCashflowProjection(
         gte(expenses.invoiceDate, sixMonthsAgo)
       )
     );
-  const monthlyExpense = Math.round((expenseAvg?.total ?? 0) / 6);
+  const historyMonths = expenseAvg?.earliest
+    ? Math.min(
+        6,
+        Math.max(
+          1,
+          Math.ceil(
+            (now.getTime() - new Date(expenseAvg.earliest).getTime()) /
+              (30 * 24 * 3600 * 1000)
+          )
+        )
+      )
+    : 6;
+  const monthlyExpense = Math.round((expenseAvg?.total ?? 0) / historyMonths);
 
   const months: ProjectionMonthInput[] = [];
   let year = now.getUTCFullYear();

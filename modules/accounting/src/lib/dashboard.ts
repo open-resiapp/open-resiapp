@@ -117,7 +117,9 @@ export async function getDashboardTiles(
       db
         .select({
           uncategorized: sql<number>`count(*) filter (where ${expenses.serviceCategoryId} is null)::int`,
-          overdue: sql<number>`count(*) filter (where ${expenses.paidAt} is null and ${expenses.dueDate} < now())::int`,
+          // Strictly BEFORE today — an invoice due today is not yet late
+          // (dueDate stores midnight UTC of the due day).
+          overdue: sql<number>`count(*) filter (where ${expenses.paidAt} is null and ${expenses.dueDate} < date_trunc('day', now()))::int`,
         })
         .from(expenses)
         .where(

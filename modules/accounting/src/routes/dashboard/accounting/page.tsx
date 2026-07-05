@@ -187,35 +187,48 @@ export default function AccountingHomePage() {
             })}
           </p>
           {(() => {
-            const maxAbs = Math.max(
+            // Bars scale against the best POSITIVE month; a negative month
+            // must never render as the tallest bar (height would read as
+            // "best month" at a glance) — it gets a fixed stub + ⚠ label.
+            const maxPositive = Math.max(
               1,
-              ...projection.months.map((m) => Math.abs(m.closingCents))
+              ...projection.months.map((m) => Math.max(0, m.closingCents))
             );
             return (
               <div className="flex items-end gap-3 h-40">
                 {projection.months.map((m) => {
-                  const height = Math.round(
-                    (Math.abs(m.closingCents) / maxAbs) * 100
-                  );
                   const negative = m.closingCents < 0;
+                  const height = negative
+                    ? 8
+                    : Math.max(
+                        4,
+                        Math.round((m.closingCents / maxPositive) * 100)
+                      );
                   return (
                     <div
                       key={`${m.year}-${m.month}`}
                       className="flex-1 flex flex-col items-center justify-end gap-1"
                       title={formatEur(m.closingCents)}
                     >
-                      <span className="text-[10px] text-gray-600 dark:text-gray-400 whitespace-nowrap">
+                      <span
+                        className={`text-[10px] whitespace-nowrap ${
+                          negative
+                            ? "text-red-600 dark:text-red-400 font-semibold"
+                            : "text-gray-600 dark:text-gray-400"
+                        }`}
+                      >
+                        {negative ? "⚠ " : ""}
                         {formatEur(m.closingCents)}
                       </span>
                       <div
                         className={`w-full rounded-t ${
                           negative
-                            ? "bg-red-400 dark:bg-red-600"
+                            ? "bg-red-500 dark:bg-red-600"
                             : m.estimated
                               ? "bg-blue-300 dark:bg-blue-800"
                               : "bg-blue-500 dark:bg-blue-600"
                         }`}
-                        style={{ height: `${Math.max(4, height)}%` }}
+                        style={{ height: `${height}%` }}
                       />
                       <span className="text-[10px] text-gray-500 dark:text-gray-400">
                         {format.dateTime(
