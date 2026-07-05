@@ -3,7 +3,7 @@ spec_id: BYT-20260512-002
 title: "Accounting module for SVB chairman/treasurer to track HOA finances"
 status: in_progress
 created: 2026-05-12
-updated: 2026-07-03
+updated: 2026-07-05
 author: byt-app
 owner: byt-app
 last_verified: 2026-06-09
@@ -617,6 +617,18 @@ Reuse RES-20260413-002. Per-country settings:
 - **Opening-balance invariant = blocking** — settled. Treasurer cannot post first business entry until banka+pokladnica = Σ FPÚO + Σ zálohy + výsledok hospodárenia. Prevents the "Excel chaos carryover" failure mode common to inherited SVB books.
 - **QR codes mandatory on every PDF** — settled. PAY by square (SK) + SPAYD (CZ), static on predpis, dynamic on nedoplatok/upomienka.
 - **CZK vyúčtování rounding to whole koruna** — settled as default, configurable per HOA; bookings stay 2-decimal.
+
+### Overnight run log (2026-07-04/05) — Phases 1–2 complete, 3 mostly, 4 started
+
+Autonomous overnight run (see WORK_LOG.md for full detail, 20 commits `251ce52..51eb3f3`):
+
+- **Phase 1 COMPLETE + hardened**: predpis editor+publish (snapshots, revisions, preview), manual payments (proportional/priority, preplatok on-ledger via 379, apply-credit), karta bytu (journal-derived, owner read-own), dashboard 4 tiles + attention list, PAY by square QR na predpis PDF (`bysquare` — open question resolved, lib exists), settings (strategy+IBAN), opening balance race-safe.
+- **Phase 2 COMPLETE + hardened**: CAMT.053 parser (SBA+ČBA, batch-safe) + fixtures, match engine (VS primary, amount-only forbidden), idempotent import + reconciliation UI, Fio connector (mocked HTTP; token in `mod_accounting_bank_connections`).
+- **Phase 3 mostly**: expense ledger (FPÚO čerpanie Dr 472 vs services 5xx; paid-expense void refused — refund flow TBD), FinStat/ARES lookup mock-first (verify Hash recipe + response shape with real key!), cash-flow projection, attention list. Remaining: attachments+visibility (needs documents-module decision), transfer flag §10/3, recategorization UX.
+- **Phase 4 started**: meter readings (owner self-service, thousandth-precision, soft-void).
+- **Phase 5 head start**: úroky engine (pure; **rate seeds need verification against official ECB/ČNB series**; simple-interest per spec Notes assumption).
+- 9 golden suites (`pnpm test:accounting-*`), migrations 0048–0062 verified on fresh DB.
+- New open questions: domain-error i18n catalog; Fio token at-rest encryption; opening-balance GET writer-only (chairman excluded — confirm).
 
 ### Phase 1 implementation log + iteration plan (2026-07-03)
 
