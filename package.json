@@ -21,6 +21,7 @@
     "test:accounting-match": "tsx scripts/accounting-match-check.ts",
     "test:accounting-fio": "tsx scripts/accounting-fio-check.ts",
     "test:accounting-interest": "tsx scripts/accounting-interest-check.ts",
+    "test:accounting-settlement": "tsx scripts/accounting-settlement-check.ts",
     "create-admin": "tsx src/scripts/create-admin.ts",
     "setup:tenant": "tsx scripts/setup-tenant.ts",
     "entity-admin": "tsx scripts/entity-admin/cli.ts"
