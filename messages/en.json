@@ -1535,7 +1535,10 @@
       "attentionUnmatched": "{count, plural, one {# unmatched payment waits} other {# unmatched payments wait}} for review",
       "attentionUncategorized": "{count, plural, one {# uncategorized invoice} other {# uncategorized invoices}}",
       "attentionOverdueInvoices": "{count, plural, one {# invoice past due} other {# invoices past due}}",
-      "attentionOverdueUnits": "{count, plural, one {# unit in arrears} other {# units in arrears}}"
+      "attentionOverdueUnits": "{count, plural, one {# unit in arrears} other {# units in arrears}}",
+      "projectionTitle": "Projected cash (6 months)",
+      "projectionHint": "Schedule inflow × historical collection rate {rate} % minus average monthly expenses. Estimate only — nothing is booked.",
+      "projectionEstimatedNote": "* month without a published schedule — extrapolated from the last known month"
     },
     "settings": {
       "title": "Accounting settings",

@@ -385,6 +385,50 @@ throws("invalid month throws", () =>
   })
 );
 
+// ── cash-flow projection (pure) ────────────────────────
+
+import {
+  projectCashflow,
+  collectionRateFrom,
+} from "@modules/accounting/src/projection/cashflow";
+
+console.log("cashflow projection");
+{
+  const p = projectCashflow({
+    openingCents: 100000,
+    collectionRate: 0.9,
+    months: [
+      { month: 8, year: 2026, predpisCents: 10000, expenseCents: 5000, estimated: false },
+      { month: 9, year: 2026, predpisCents: 10000, expenseCents: 20000, estimated: false },
+    ],
+  });
+  check("month 1 applies rate", p.months[0].expectedInflowCents === 9000);
+  check(
+    "balances roll forward",
+    p.months[0].closingCents === 104000 && p.months[1].closingCents === 93000
+  );
+  const negative = projectCashflow({
+    openingCents: 1000,
+    collectionRate: 1,
+    months: [
+      { month: 1, year: 2027, predpisCents: 0, expenseCents: 5000, estimated: true },
+    ],
+  });
+  check("projection can go negative", negative.months[0].closingCents === -4000);
+  const clamped = projectCashflow({
+    openingCents: 0,
+    collectionRate: 7,
+    months: [
+      { month: 1, year: 2027, predpisCents: 100, expenseCents: 0, estimated: false },
+    ],
+  });
+  check("rate clamps to 1", clamped.months[0].expectedInflowCents === 100);
+
+  check("collection rate paid/due", collectionRateFrom(10000, 9000) === 0.9);
+  check("no history → 1", collectionRateFrom(0, 0) === 1);
+  check("overpaid clamps to 1", collectionRateFrom(100, 150) === 1);
+}
+
 if (failures > 0) {
   console.error(`\n${failures} check(s) FAILED.`);
   process.exit(1);

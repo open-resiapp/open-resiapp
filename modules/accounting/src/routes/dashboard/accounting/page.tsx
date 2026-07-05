@@ -6,9 +6,24 @@
 // Owners (403 from the dashboard API): fall back to their own karta bytu.
 
 import { useEffect, useState } from "react";
-import { useTranslations } from "next-intl";
+import { useFormatter, useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { formatEur } from "@modules/accounting/src/lib/money";
+
+interface ProjectionMonth {
+  month: number;
+  year: number;
+  expectedInflowCents: number;
+  expenseCents: number;
+  closingCents: number;
+  estimated: boolean;
+}
+
+interface Projection {
+  openingCents: number;
+  collectionRate: number;
+  months: ProjectionMonth[];
+}
 
 interface Tiles {
   attention: {
@@ -25,8 +40,10 @@ interface Tiles {
 
 export default function AccountingHomePage() {
   const t = useTranslations("Accounting.home");
+  const format = useFormatter();
 
   const [tiles, setTiles] = useState<Tiles | null>(null);
+  const [projection, setProjection] = useState<Projection | null>(null);
   const [ownerOnly, setOwnerOnly] = useState(false);
   const [error, setError] = useState(false);
 
@@ -44,6 +61,15 @@ export default function AccountingHomePage() {
         if (data) setTiles(data);
       })
       .catch(() => setError(true));
+  }, []);
+
+  useEffect(() => {
+    fetch("/api/accounting/projection")
+      .then((r) => (r.ok ? r.json() : null))
+      .then((data: Projection | null) => {
+        if (data) setProjection(data);
+      })
+      .catch(() => {});
   }, []);
 
   if (error) {
@@ -148,6 +174,69 @@ export default function AccountingHomePage() {
           </p>
         </div>
       </div>
+
+      {/* 6-month cash-flow projection */}
+      {projection && projection.months.length > 0 && (
+        <div className="mb-8 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg p-5">
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-1">
+            {t("projectionTitle")}
+          </h2>
+          <p className="text-xs text-gray-500 dark:text-gray-400 mb-4">
+            {t("projectionHint", {
+              rate: Math.round(projection.collectionRate * 100),
+            })}
+          </p>
+          {(() => {
+            const maxAbs = Math.max(
+              1,
+              ...projection.months.map((m) => Math.abs(m.closingCents))
+            );
+            return (
+              <div className="flex items-end gap-3 h-40">
+                {projection.months.map((m) => {
+                  const height = Math.round(
+                    (Math.abs(m.closingCents) / maxAbs) * 100
+                  );
+                  const negative = m.closingCents < 0;
+                  return (
+                    <div
+                      key={`${m.year}-${m.month}`}
+                      className="flex-1 flex flex-col items-center justify-end gap-1"
+                      title={formatEur(m.closingCents)}
+                    >
+                      <span className="text-[10px] text-gray-600 dark:text-gray-400 whitespace-nowrap">
+                        {formatEur(m.closingCents)}
+                      </span>
+                      <div
+                        className={`w-full rounded-t ${
+                          negative
+                            ? "bg-red-400 dark:bg-red-600"
+                            : m.estimated
+                              ? "bg-blue-300 dark:bg-blue-800"
+                              : "bg-blue-500 dark:bg-blue-600"
+                        }`}
+                        style={{ height: `${Math.max(4, height)}%` }}
+                      />
+                      <span className="text-[10px] text-gray-500 dark:text-gray-400">
+                        {format.dateTime(
+                          new Date(Date.UTC(m.year, m.month - 1, 1)),
+                          { month: "short" }
+                        )}
+                        {m.estimated ? "*" : ""}
+                      </span>
+                    </div>
+                  );
+                })}
+              </div>
+            );
+          })()}
+          {projection.months.some((m) => m.estimated) && (
+            <p className="text-[10px] text-gray-400 dark:text-gray-500 mt-2">
+              {t("projectionEstimatedNote")}
+            </p>
+          )}
+        </div>
+      )}
 
       {/* Vyžaduje pozornosť */}
       {(tiles.attention.unmatchedBankLines > 0 ||
