@@ -1510,7 +1510,17 @@
       "colUhrada": "Úhrada",
       "colBalance": "Zůstatek",
       "lineNoCategory": "Bez služby (přeplatek / banka)",
-      "vsLabel": "Variabilní symbol: {vs}"
+      "vsLabel": "Variabilní symbol: {vs}",
+      "overdueTitle": "Prodlení a úroky",
+      "overdueHint": "Zákonný úrok z prodlení k datu {asOf} — pouze informativní výpočet, nic se neúčtuje. Zaúčtování/uplatnění je rozhodnutím předsedy.",
+      "overdueColItem": "Položka",
+      "overdueColDue": "Splatnost",
+      "overdueColDays": "Dní",
+      "overdueColOpen": "Dlužná částka",
+      "overdueColRate": "Sazba p.a.",
+      "overdueColInterest": "Úrok",
+      "overdueTotal": "Celkem",
+      "overdueDisclaimer": "Sazby: ČNB repo + 8 p.b. (nař. vlády 351/2013 Sb.). Ověřte aktuálnost sazeb před uplatněním."
     },
     "home": {
       "title": "Účetnictví",
@@ -1573,7 +1583,10 @@
       "savedOk": "Uloženo",
       "save": "Uložit",
       "saving": "Ukládá se…",
-      "ibanPlaceholder": "CZ00 0000 0000 0000 0000 0000"
+      "ibanPlaceholder": "CZ00 0000 0000 0000 0000 0000",
+      "dueDay": "Splatnost předpisu",
+      "dueDayHint": "Den v měsíci, do kterého jsou měsíční úhrady splatné (podle smlouvy společenství). Od následujícího dne běží prodlení.",
+      "dueDayEndOfMonth": "Poslední den měsíce"
     },
     "predpisPdf": {
       "title": "Měsíční předpis plateb",

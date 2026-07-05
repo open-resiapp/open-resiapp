@@ -16,6 +16,8 @@ export interface AccountingSettingsView {
   allocationStrategy: "proportional" | "priority_ordered";
   priorityOrder: string[];
   bankIban: string | null;
+  /** Day of month the predpis is due (1–28); null = last day of month. */
+  dueDay: number | null;
   /** Full catalog for the priority-order editor. */
   categorySlugs: string[];
 }
@@ -29,6 +31,7 @@ export async function getAccountingSettings(
       allocationStrategy: accountingSettings.allocationStrategy,
       priorityOrder: accountingSettings.priorityOrder,
       bankIban: accountingSettings.bankIban,
+      dueDay: accountingSettings.dueDay,
     })
     .from(accountingSettings)
     .where(
@@ -52,6 +55,7 @@ export async function getAccountingSettings(
       ? (row.priorityOrder as string[])
       : [],
     bankIban: row?.bankIban ?? null,
+    dueDay: row?.dueDay ?? null,
     categorySlugs: categories.map((c) => c.slug),
   };
 }
@@ -63,7 +67,14 @@ export async function updateAccountingSettings(input: {
   allocationStrategy: "proportional" | "priority_ordered";
   priorityOrder: string[];
   bankIban: string | null;
+  dueDay: number | null;
 }): Promise<void> {
+  if (
+    input.dueDay !== null &&
+    (!Number.isInteger(input.dueDay) || input.dueDay < 1 || input.dueDay > 28)
+  ) {
+    throw new Error("accounting: due day must be 1-28 or empty (end of month)");
+  }
   let iban: string | null = null;
   if (input.bankIban !== null && input.bankIban.trim() !== "") {
     iban = normalizeIban(input.bankIban);
@@ -103,6 +114,7 @@ export async function updateAccountingSettings(input: {
       priorityOrder:
         input.priorityOrder.length > 0 ? input.priorityOrder : null,
       bankIban: iban,
+      dueDay: input.dueDay,
       // DB clock, not app clock — reads filter with `effectiveFrom <=
       // now()` on Postgres time; app-clock skew would hide a fresh row.
       effectiveFrom: sql`now()`,
@@ -118,6 +130,7 @@ export async function updateAccountingSettings(input: {
         allocationStrategy: input.allocationStrategy,
         priorityOrder: input.priorityOrder,
         bankIban: iban,
+        dueDay: input.dueDay,
       },
     });
   });

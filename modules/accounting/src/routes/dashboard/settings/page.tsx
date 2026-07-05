@@ -14,6 +14,7 @@ interface Settings {
   allocationStrategy: "proportional" | "priority_ordered";
   priorityOrder: string[];
   bankIban: string | null;
+  dueDay: number | null;
   categorySlugs: string[];
 }
 
@@ -25,6 +26,7 @@ export default function AccountingSettingsPage() {
   const [strategy, setStrategy] = useState<Settings["allocationStrategy"]>("proportional");
   const [order, setOrder] = useState<string[]>([]);
   const [iban, setIban] = useState("");
+  const [dueDay, setDueDay] = useState<string>("");
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
@@ -44,6 +46,7 @@ export default function AccountingSettingsPage() {
         );
         setOrder([...data.priorityOrder, ...rest]);
         setIban(data.bankIban ?? "");
+        setDueDay(data.dueDay === null ? "" : String(data.dueDay));
         setLoaded(true);
       })
       .catch(() => setError("load"));
@@ -76,6 +79,7 @@ export default function AccountingSettingsPage() {
           // the proportional strategy.
           priorityOrder: order,
           bankIban: iban.trim() || null,
+          dueDay: dueDay === "" ? null : Number(dueDay),
         }),
       });
       const body = await res.json().catch(() => null);
@@ -137,6 +141,31 @@ export default function AccountingSettingsPage() {
               {t("ibanInvalid")}
             </p>
           )}
+        </div>
+
+        {/* Due day */}
+        <div>
+          <label className="block text-sm font-medium text-gray-900 dark:text-gray-100 mb-1">
+            {t("dueDay")}
+          </label>
+          <p className="text-xs text-gray-500 dark:text-gray-400 mb-2">
+            {t("dueDayHint")}
+          </p>
+          <select
+            value={dueDay}
+            onChange={(e) => {
+              setDueDay(e.target.value);
+              setSaved(false);
+            }}
+            className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+          >
+            <option value="">{t("dueDayEndOfMonth")}</option>
+            {Array.from({ length: 28 }, (_, i) => i + 1).map((d) => (
+              <option key={d} value={d}>
+                {d}.
+              </option>
+            ))}
+          </select>
         </div>
 
         {/* Strategy */}

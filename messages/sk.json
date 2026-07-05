@@ -1510,7 +1510,17 @@
       "colUhrada": "Úhrada",
       "colBalance": "Zostatok",
       "lineNoCategory": "Bez služby (preplatok / banka)",
-      "vsLabel": "Variabilný symbol: {vs}"
+      "vsLabel": "Variabilný symbol: {vs}",
+      "overdueTitle": "Omeškanie a úroky",
+      "overdueHint": "Zákonný úrok z omeškania k dátumu {asOf} — iba informatívny výpočet, nič sa neúčtuje. Zaúčtovanie/uplatnenie je rozhodnutím predsedu.",
+      "overdueColItem": "Položka",
+      "overdueColDue": "Splatnosť",
+      "overdueColDays": "Dní",
+      "overdueColOpen": "Dlžná suma",
+      "overdueColRate": "Sadzba p.a.",
+      "overdueColInterest": "Úrok",
+      "overdueTotal": "Spolu",
+      "overdueDisclaimer": "Sadzby: ECB + 5 p.b. (nar. vlády 87/1995 Z.z.). Overte aktuálnosť sadzieb pred uplatnením."
     },
     "home": {
       "title": "Účtovníctvo",
@@ -1573,7 +1583,10 @@
       "savedOk": "Uložené",
       "save": "Uložiť",
       "saving": "Ukladá sa…",
-      "ibanPlaceholder": "SK00 0000 0000 0000 0000 0000"
+      "ibanPlaceholder": "SK00 0000 0000 0000 0000 0000",
+      "dueDay": "Splatnosť predpisu",
+      "dueDayHint": "Deň v mesiaci, do ktorého sú mesačné úhrady splatné (podľa zmluvy o spoločenstve). Od nasledujúceho dňa plynie omeškanie.",
+      "dueDayEndOfMonth": "Posledný deň mesiaca"
     },
     "predpisPdf": {
       "title": "Mesačný predpis úhrad",

@@ -38,12 +38,33 @@ interface Ledger {
   rows: LedgerRow[];
 }
 
+interface OverdueItem {
+  id: string;
+  kind: "assessment" | "settlement";
+  categorySlug: string;
+  periodYear: number;
+  month: number;
+  openCents: number;
+  dueDate: string;
+  daysLate: number;
+  ratePct: number;
+  interestCents: number;
+}
+
+interface OverdueSummary {
+  asOf: string;
+  items: OverdueItem[];
+  totalOpenCents: number;
+  totalInterestCents: number;
+}
+
 export default function KartaDetailPage({ unitId }: { unitId: string }) {
   const t = useTranslations("Accounting.karta");
   const tCat = useTranslations("Accounting.serviceCategories");
   const format = useFormatter();
 
   const [ledger, setLedger] = useState<Ledger | null>(null);
+  const [overdue, setOverdue] = useState<OverdueSummary | null>(null);
   const [settlementYears, setSettlementYears] = useState<number[]>([]);
   const [canWrite, setCanWrite] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -73,6 +94,15 @@ export default function KartaDetailPage({ unitId }: { unitId: string }) {
   }, [unitId]);
 
   useEffect(load, [load]);
+
+  useEffect(() => {
+    fetch(`/api/accounting/karta/${unitId}/overdue`)
+      .then((r) => (r.ok ? r.json() : null))
+      .then((data: OverdueSummary | null) => {
+        if (data) setOverdue(data);
+      })
+      .catch(() => {});
+  }, [unitId]);
 
   async function applyCredit() {
     setApplying(true);
@@ -178,6 +208,77 @@ export default function KartaDetailPage({ unitId }: { unitId: string }) {
         <p className="text-red-600 dark:text-red-400 text-sm mb-4">
           {t("submitError")} ({error})
         </p>
+      )}
+
+      {/* Overdue + lawful interest (read-only calculator) */}
+      {overdue && overdue.items.length > 0 && (
+        <div className="mb-6 bg-white dark:bg-gray-900 border border-red-200 dark:border-red-900 rounded-lg p-5 overflow-x-auto">
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-1">
+            {t("overdueTitle")}
+          </h2>
+          <p className="text-xs text-gray-500 dark:text-gray-400 mb-3">
+            {t("overdueHint", { asOf: overdue.asOf })}
+          </p>
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="text-left text-gray-600 dark:text-gray-400 border-b border-gray-200 dark:border-gray-700">
+                <th className="py-2 pr-4">{t("overdueColItem")}</th>
+                <th className="py-2 pr-4">{t("overdueColDue")}</th>
+                <th className="py-2 pr-4 text-right">{t("overdueColDays")}</th>
+                <th className="py-2 pr-4 text-right">{t("overdueColOpen")}</th>
+                <th className="py-2 pr-4 text-right">{t("overdueColRate")}</th>
+                <th className="py-2 text-right">{t("overdueColInterest")}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {overdue.items.map((item) => (
+                <tr
+                  key={item.id}
+                  className="border-b border-gray-100 dark:border-gray-800"
+                >
+                  <td className="py-2 pr-4 text-gray-900 dark:text-gray-100">
+                    {tCat(item.categorySlug as Parameters<typeof tCat>[0])}{" "}
+                    {item.periodYear}-{String(item.month).padStart(2, "0")}
+                  </td>
+                  <td className="py-2 pr-4 text-gray-500 dark:text-gray-400 whitespace-nowrap">
+                    {format.dateTime(new Date(`${item.dueDate}T00:00:00Z`), {
+                      dateStyle: "medium",
+                    })}
+                  </td>
+                  <td className="py-2 pr-4 text-right text-gray-900 dark:text-gray-100">
+                    {item.daysLate}
+                  </td>
+                  <td className="py-2 pr-4 text-right text-red-600 dark:text-red-400">
+                    {formatEur(item.openCents)}
+                  </td>
+                  <td className="py-2 pr-4 text-right text-gray-500 dark:text-gray-400">
+                    {item.ratePct} %
+                  </td>
+                  <td className="py-2 text-right text-gray-900 dark:text-gray-100">
+                    {formatEur(item.interestCents)}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+            <tfoot>
+              <tr className="font-semibold text-gray-900 dark:text-gray-100">
+                <td className="py-2 pr-4" colSpan={3}>
+                  {t("overdueTotal")}
+                </td>
+                <td className="py-2 pr-4 text-right text-red-600 dark:text-red-400">
+                  {formatEur(overdue.totalOpenCents)}
+                </td>
+                <td />
+                <td className="py-2 text-right">
+                  {formatEur(overdue.totalInterestCents)}
+                </td>
+              </tr>
+            </tfoot>
+          </table>
+          <p className="text-[11px] text-gray-400 dark:text-gray-500 mt-2">
+            {t("overdueDisclaimer")}
+          </p>
+        </div>
       )}
 
       {/* Ledger table */}

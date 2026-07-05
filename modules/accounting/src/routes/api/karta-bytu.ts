@@ -17,6 +17,7 @@ import {
   getVyuctovaniePdfData,
   listSettlementYearsForUnit,
 } from "@modules/accounting/src/lib/vyuctovanie";
+import { getOverdueForUnit } from "@modules/accounting/src/lib/overdue";
 
 // Karta bytu API. Unlike the treasurer-only routes, owners are allowed
 // here — scoped server-side to units they hold an active owner membership
@@ -128,6 +129,33 @@ export async function handleGetLedger(
     unitEntityId
   );
   return NextResponse.json({ ledger, canWrite: isWriter, settlementYears });
+}
+
+/** GET /api/accounting/karta/[unitId]/overdue — read-only interest calc. */
+export async function handleOverdue(
+  _req: NextRequest,
+  unitEntityId: string
+): Promise<NextResponse> {
+  const ctx = await baseCtx();
+  if (ctx.error) return ctx.error;
+  const { session, root } = ctx;
+
+  const allowed = await canReadUnitLedger(
+    session.user.id,
+    session.user.role as string,
+    root.id,
+    unitEntityId
+  );
+  if (!allowed) {
+    return NextResponse.json({ error: "forbidden" }, { status: 403 });
+  }
+
+  const summary = await getOverdueForUnit({
+    entityId: root.id,
+    country: root.country,
+    unitEntityId,
+  });
+  return NextResponse.json(summary);
 }
 
 /** GET /api/accounting/karta/[unitId]/vyuctovanie-pdf?year= */

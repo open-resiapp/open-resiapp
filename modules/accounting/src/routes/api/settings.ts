@@ -24,6 +24,7 @@ export async function handlePost(req: NextRequest): Promise<NextResponse> {
     allocationStrategy?: string;
     priorityOrder?: unknown;
     bankIban?: string | null;
+    dueDay?: number | string | null;
   };
   try {
     body = await req.json();
@@ -43,6 +44,13 @@ export async function handlePost(req: NextRequest): Promise<NextResponse> {
     typeof body.bankIban === "string" && body.bankIban.trim() !== ""
       ? body.bankIban
       : null;
+  const dueDay =
+    body.dueDay === null || body.dueDay === undefined || body.dueDay === ""
+      ? null
+      : Number(body.dueDay);
+  if (dueDay !== null && !Number.isInteger(dueDay)) {
+    return NextResponse.json({ error: "invalid dueDay" }, { status: 400 });
+  }
 
   try {
     await updateAccountingSettings({
@@ -52,6 +60,7 @@ export async function handlePost(req: NextRequest): Promise<NextResponse> {
       allocationStrategy: body.allocationStrategy,
       priorityOrder,
       bankIban,
+      dueDay,
     });
     return NextResponse.json({ ok: true });
   } catch (err) {

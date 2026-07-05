@@ -1510,7 +1510,17 @@
       "colUhrada": "Payment",
       "colBalance": "Balance",
       "lineNoCategory": "No service (credit / bank)",
-      "vsLabel": "Variable symbol: {vs}"
+      "vsLabel": "Variable symbol: {vs}",
+      "overdueTitle": "Arrears & lawful interest",
+      "overdueHint": "Statutory late-payment interest as of {asOf} — informational calculation only, nothing is booked. Booking/claiming is the chairman's decision.",
+      "overdueColItem": "Item",
+      "overdueColDue": "Due",
+      "overdueColDays": "Days",
+      "overdueColOpen": "Amount owed",
+      "overdueColRate": "Rate p.a.",
+      "overdueColInterest": "Interest",
+      "overdueTotal": "Total",
+      "overdueDisclaimer": "Rates: ECB + 5 pp (gov. reg. 87/1995 Coll.). Verify current rates before claiming."
     },
     "home": {
       "title": "Accounting",
@@ -1573,7 +1583,10 @@
       "savedOk": "Saved",
       "save": "Save",
       "saving": "Saving…",
-      "ibanPlaceholder": "e.g. SK00 0000 0000 0000 0000 0000"
+      "ibanPlaceholder": "e.g. SK00 0000 0000 0000 0000 0000",
+      "dueDay": "Payment due day",
+      "dueDayHint": "Day of the month the monthly payments are due (per the community agreement). Delay starts the following day.",
+      "dueDayEndOfMonth": "Last day of the month"
     },
     "predpisPdf": {
       "title": "Monthly payment schedule",
