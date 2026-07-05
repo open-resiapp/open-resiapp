@@ -129,6 +129,64 @@ try {
   check("no transactions → empty list", empty.lines.length === 0);
 }
 
+// ── supplier lookup mappers (pure, mocked payloads) ────
+
+import {
+  mapAresSubject,
+  mapFinstatDetail,
+  normalizeIco,
+  aresSubjectUrl,
+} from "@modules/accounting/src/lib/supplier-lookup-format";
+
+console.log("supplier lookup — normalizeIco");
+check("8 digits pass", normalizeIco("36631124") === "36631124");
+check("6 digits zero-pad", normalizeIco("123456") === "00123456");
+check("spaces stripped", normalizeIco("36 631 124") === "36631124");
+check("letters rejected", normalizeIco("ABC123") === null);
+check("too long rejected", normalizeIco("123456789") === null);
+
+console.log("supplier lookup — FinStat mapper");
+{
+  const hit = mapFinstatDetail("36631124", {
+    Ico: "36631124",
+    Name: "Východoslovenská energetika a.s.",
+    Street: "Mlynská",
+    StreetNumber: "31",
+    ZipCode: "042 91",
+    City: "Košice",
+    Dic: "2022189155",
+    IcDphAdditional: "SK2022189155",
+    PaymentOrderWarning: false,
+    DebtWarning: true,
+  });
+  check("finstat found", hit.found && hit.name === "Východoslovenská energetika a.s.");
+  check("finstat address joined", hit.address === "Mlynská 31, 042 91 Košice");
+  check("finstat vat payer", hit.vatPayer === true && hit.icDph === "SK2022189155");
+  check("finstat debt flag", hit.debtFlag === true);
+  const miss = mapFinstatDetail("00000000", null);
+  check("finstat miss", !miss.found && miss.debtFlag === null);
+}
+
+console.log("supplier lookup — ARES mapper");
+{
+  const hit = mapAresSubject("19011918", {
+    ico: "19011918",
+    obchodniJmeno: "ČEZ Prodej, a.s.",
+    dic: "CZ19011918",
+    sidlo: { textovaAdresa: "Duhová 425/1, 140 00 Praha 4" },
+  });
+  check("ares found", hit.found && hit.name === "ČEZ Prodej, a.s.");
+  check("ares dic → vat payer", hit.vatPayer === true);
+  check("ares debt flag unknown (Phase 6)", hit.debtFlag === null);
+  const miss = mapAresSubject("19011918", null);
+  check("ares miss", !miss.found);
+  check(
+    "ares url shape",
+    aresSubjectUrl("19011918") ===
+      "https://ares.gov.cz/ekonomicke-subjekty-v-be/rest/ekonomicke-subjekty/19011918"
+  );
+}
+
 if (failures > 0) {
   console.error(`\n${failures} check(s) FAILED.`);
   process.exit(1);

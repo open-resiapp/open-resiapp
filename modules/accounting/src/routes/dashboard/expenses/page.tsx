@@ -54,6 +54,10 @@ export default function ExpensesPage() {
   const [dph, setDph] = useState("");
   const [dueDate, setDueDate] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [lookingUp, setLookingUp] = useState(false);
+  const [lookupNote, setLookupNote] = useState<
+    "notFound" | "notConfigured" | "debtor" | "error" | null
+  >(null);
 
   // row actions
   const [voidTarget, setVoidTarget] = useState<string | null>(null);
@@ -135,6 +139,33 @@ export default function ExpensesPage() {
       setError(err instanceof Error ? err.message : "submit");
     } finally {
       setSubmitting(false);
+    }
+  }
+
+  async function lookupIco() {
+    if (!supplierIco.trim()) return;
+    setLookingUp(true);
+    setLookupNote(null);
+    try {
+      const res = await fetch(
+        `/api/accounting/supplier-lookup?ico=${encodeURIComponent(supplierIco.trim())}`
+      );
+      const body = await res.json().catch(() => null);
+      if (!res.ok) throw new Error(body?.error ?? String(res.status));
+      if (body.status === "not_configured") {
+        setLookupNote("notConfigured");
+      } else if (body.status === "invalid_ico" || body.status === "provider_error") {
+        setLookupNote("error");
+      } else if (!body.info.found) {
+        setLookupNote("notFound");
+      } else {
+        if (body.info.name) setSupplierName(body.info.name);
+        if (body.info.debtFlag) setLookupNote("debtor");
+      }
+    } catch {
+      setLookupNote("error");
+    } finally {
+      setLookingUp(false);
     }
   }
 
@@ -222,11 +253,35 @@ export default function ExpensesPage() {
           </label>
           <label className="flex flex-col gap-1 text-sm">
             <span className="text-gray-700 dark:text-gray-300">{t("ico")}</span>
-            <input
-              value={supplierIco}
-              onChange={(e) => setSupplierIco(e.target.value)}
-              className={inputClass}
-            />
+            <span className="flex gap-2">
+              <input
+                value={supplierIco}
+                onChange={(e) => {
+                  setSupplierIco(e.target.value);
+                  setLookupNote(null);
+                }}
+                className={`${inputClass} flex-1`}
+              />
+              <button
+                type="button"
+                onClick={lookupIco}
+                disabled={lookingUp || !supplierIco.trim()}
+                className="px-3 py-2 border border-blue-600 text-blue-600 dark:text-blue-400 dark:border-blue-400 rounded-lg disabled:opacity-50 text-xs whitespace-nowrap"
+              >
+                {lookingUp ? t("lookupBusy") : t("lookup")}
+              </button>
+            </span>
+            {lookupNote && (
+              <span
+                className={`text-xs ${
+                  lookupNote === "debtor"
+                    ? "text-red-600 dark:text-red-400 font-medium"
+                    : "text-gray-500 dark:text-gray-400"
+                }`}
+              >
+                {t(`lookup_${lookupNote}`)}
+              </span>
+            )}
           </label>
           <label className="flex flex-col gap-1 text-sm">
             <span className="text-gray-700 dark:text-gray-300">

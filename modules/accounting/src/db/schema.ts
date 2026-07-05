@@ -646,6 +646,26 @@ export const bankConnections = pgTable(
   })
 );
 
+// ── Supplier lookup cache (FinStat SK / ARES CZ) ───────
+
+// 24h cache per (country, ico) — spec §Supplier / IČO validation.
+// payload stores the normalized lookup result verbatim.
+export const supplierLookupCache = pgTable(
+  "mod_accounting_supplier_lookup_cache",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    country: countryEnum("country").notNull(),
+    ico: varchar("ico", { length: 20 }).notNull(),
+    payload: jsonb("payload").notNull(),
+    fetchedAt: timestamp("fetched_at").defaultNow().notNull(),
+  },
+  (table) => ({
+    countryIcoUnique: uniqueIndex(
+      "mod_accounting_supplier_lookup_cache_country_ico_idx"
+    ).on(table.country, table.ico),
+  })
+);
+
 // ── Audit log (append-only) ────────────────────────────
 
 // Every mutation in the module writes a row here — insert, update, void.

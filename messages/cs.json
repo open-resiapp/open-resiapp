@@ -1648,7 +1648,13 @@
       "dph": "DPH",
       "dueDate": "Splatnost",
       "markPaidCash": "Uhradit z pokladny",
-      "nettoMismatch": "Bez DPH + DPH se nerovná částce s DPH."
+      "nettoMismatch": "Bez DPH + DPH se nerovná částce s DPH.",
+      "lookup": "Vyhledat",
+      "lookupBusy": "Hledá se…",
+      "lookup_notFound": "IČO nebylo v registru nalezeno.",
+      "lookup_notConfigured": "FinStat API klíč není nastaven — vyhledávání nedostupné.",
+      "lookup_error": "Vyhledání selhalo. Zkontrolujte IČO nebo zkuste později.",
+      "lookup_debtor": "⚠️ Dodavatel je na seznamu dlužníků — před uložením prověřte."
     }
   }
 }

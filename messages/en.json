@@ -1648,7 +1648,13 @@
       "dph": "VAT",
       "dueDate": "Due date",
       "markPaidCash": "Pay from cash box",
-      "nettoMismatch": "Net + VAT must equal the gross amount."
+      "nettoMismatch": "Net + VAT must equal the gross amount.",
+      "lookup": "Look up",
+      "lookupBusy": "Searching…",
+      "lookup_notFound": "Company ID not found in the register.",
+      "lookup_notConfigured": "FinStat API key is not configured — lookup unavailable.",
+      "lookup_error": "Lookup failed. Check the ID or try later.",
+      "lookup_debtor": "⚠️ Supplier is on the debtor list — verify before saving."
     }
   }
 }
