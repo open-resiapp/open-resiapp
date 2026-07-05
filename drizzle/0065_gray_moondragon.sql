@@ -1,0 +1,5 @@
+ALTER TABLE "mod_accounting_payment_allocations" ALTER COLUMN "assessment_id" DROP NOT NULL;--> statement-breakpoint
+ALTER TABLE "mod_accounting_payment_allocations" ADD COLUMN "settlement_unit_id" uuid;--> statement-breakpoint
+ALTER TABLE "mod_accounting_payment_allocations" ADD CONSTRAINT "mod_accounting_payment_allocations_settlement_unit_id_mod_accounting_settlement_units_id_fk" FOREIGN KEY ("settlement_unit_id") REFERENCES "public"."mod_accounting_settlement_units"("id") ON DELETE restrict ON UPDATE no action;--> statement-breakpoint
+CREATE INDEX "mod_accounting_payment_allocations_settlement_idx" ON "mod_accounting_payment_allocations" USING btree ("settlement_unit_id");--> statement-breakpoint
+ALTER TABLE "mod_accounting_payment_allocations" ADD CONSTRAINT "mod_accounting_payment_allocations_target_check" CHECK (("mod_accounting_payment_allocations"."assessment_id" IS NOT NULL) <> ("mod_accounting_payment_allocations"."settlement_unit_id" IS NOT NULL));

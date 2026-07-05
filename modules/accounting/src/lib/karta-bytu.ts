@@ -16,6 +16,7 @@ import {
 } from "../db/schema";
 import { ACCOUNT_CODES } from "../seeds/coa-sk";
 import { allocatePayment } from "../engine/allocation";
+import { openReceivablesForUnit } from "./payments";
 import { applyPaymentCredit } from "../engine/booking";
 import { getCurrentOpenPeriod } from "./periods";
 import { domUnitsWhere, listDomUnits } from "./dom-units";
@@ -333,52 +334,28 @@ export async function applyUnitCredit(input: {
       .map((p) => ({ id: p.id, remainder: p.amountCents - p.allocatedCents }))
       .filter((p) => p.remainder > 0);
 
-    // Open assessments — same derivation as payment allocation.
-    const allocatedSub = sql<number>`coalesce((
-      select sum(${paymentAllocations.amountCents})::int
-      from ${paymentAllocations}
-      join ${payments} p2 on p2.id = ${paymentAllocations.paymentId}
-      where ${paymentAllocations.assessmentId} = ${feeAssessments.id}
-        and p2.voided_at is null
-    ), 0)`;
-    const openRows = await tx
-      .select({
-        id: feeAssessments.id,
-        periodYear: accountingPeriods.year,
-        month: feeAssessments.month,
-        categorySlug: serviceCategories.slug,
-        okruh: serviceCategories.okruh,
-        serviceCategoryId: feeAssessments.serviceCategoryId,
-        amountCents: feeAssessments.amountCents,
-        allocatedCents: allocatedSub,
-      })
-      .from(feeAssessments)
-      .innerJoin(
-        accountingPeriods,
-        eq(feeAssessments.periodId, accountingPeriods.id)
-      )
-      .innerJoin(
-        serviceCategories,
-        eq(feeAssessments.serviceCategoryId, serviceCategories.id)
-      )
-      .where(
-        and(
-          eq(feeAssessments.unitEntityId, input.unitEntityId),
-          sql`${feeAssessments.journalEntryId} is not null`
-        )
-      );
-
-    let open = openRows
-      .map((r) => ({
-        id: r.id,
-        periodYear: r.periodYear,
-        month: r.month,
-        categorySlug: r.categorySlug,
-        okruh: r.okruh,
-        serviceCategoryId: r.serviceCategoryId,
-        openCents: r.amountCents - r.allocatedCents,
-      }))
-      .filter((r) => r.openCents > 0);
+    // Open receivables — same derivation as payment allocation (due
+    // assessments + published settlement nedoplatky).
+    let open = await openReceivablesForUnit(tx, input.unitEntityId);
+    // Category ids for assessment targets (journal lines need them).
+    const categoryIdByAssessment = new Map<string, string>();
+    {
+      const assessmentIds = open
+        .filter((o) => o.kind === "assessment")
+        .map((o) => o.id);
+      if (assessmentIds.length > 0) {
+        const rows = await tx
+          .select({
+            id: feeAssessments.id,
+            serviceCategoryId: feeAssessments.serviceCategoryId,
+          })
+          .from(feeAssessments)
+          .where(inArray(feeAssessments.id, assessmentIds));
+        for (const r of rows) {
+          categoryIdByAssessment.set(r.id, r.serviceCategoryId);
+        }
+      }
+    }
 
     let appliedTotal = 0;
     for (const payment of withRemainder) {
@@ -400,12 +377,22 @@ export async function applyUnitCredit(input: {
         unitEntityId: input.unitEntityId,
         // A person clicked "apply credit" — audit as a manual decision.
         allocatedBy: "manual",
-        allocations: result.allocations.map((a) => ({
-          assessmentId: a.assessmentId,
-          serviceCategoryId: metaById.get(a.assessmentId)!.serviceCategoryId,
-          okruh: metaById.get(a.assessmentId)!.okruh,
-          amountCents: a.amountCents,
-        })),
+        allocations: result.allocations.map((a) => {
+          const target = metaById.get(a.assessmentId)!;
+          return target.kind === "settlement"
+            ? {
+                settlementUnitId: a.assessmentId,
+                serviceCategoryId: null,
+                okruh: target.okruh,
+                amountCents: a.amountCents,
+              }
+            : {
+                assessmentId: a.assessmentId,
+                serviceCategoryId: categoryIdByAssessment.get(a.assessmentId)!,
+                okruh: target.okruh,
+                amountCents: a.amountCents,
+              };
+        }),
       });
       appliedTotal += result.allocations.reduce(
         (s, a) => s + a.amountCents,

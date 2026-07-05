@@ -1341,7 +1341,8 @@
       "SVC_LIFT": "Lift",
       "SVC_CLEANING": "Cleaning",
       "SVC_INTERNET": "Internet",
-      "SVC_OTHER": "Other"
+      "SVC_OTHER": "Other",
+      "SETTLEMENT": "Annual settlement"
     },
     "openingBalance": {
       "title": "Opening balance",

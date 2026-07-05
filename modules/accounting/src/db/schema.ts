@@ -512,6 +512,11 @@ export const payments = pgTable(
   })
 );
 
+// An allocation targets EITHER a fee assessment (monthly predpis) OR a
+// settlement-unit row (vyúčtovanie nedoplatok) — exactly one, enforced by
+// CHECK. The settlement target makes the year-end extra an allocatable
+// receivable: paying the vyúčtovanie QR closes it instead of parking as
+// phantom preplatok.
 export const paymentAllocations = pgTable(
   "mod_accounting_payment_allocations",
   {
@@ -519,9 +524,13 @@ export const paymentAllocations = pgTable(
     paymentId: uuid("payment_id")
       .references(() => payments.id, { onDelete: "cascade" })
       .notNull(),
-    assessmentId: uuid("assessment_id")
-      .references(() => feeAssessments.id, { onDelete: "restrict" })
-      .notNull(),
+    assessmentId: uuid("assessment_id").references(() => feeAssessments.id, {
+      onDelete: "restrict",
+    }),
+    settlementUnitId: uuid("settlement_unit_id").references(
+      () => settlementUnits.id,
+      { onDelete: "restrict" }
+    ),
     amountCents: integer("amount_cents").notNull(),
     allocatedBy: allocatedByEnum("allocated_by").notNull(),
     createdAt: timestamp("created_at").defaultNow().notNull(),
@@ -533,9 +542,16 @@ export const paymentAllocations = pgTable(
     assessmentIdx: index("mod_accounting_payment_allocations_assessment_idx").on(
       table.assessmentId
     ),
+    settlementIdx: index(
+      "mod_accounting_payment_allocations_settlement_idx"
+    ).on(table.settlementUnitId),
     amountCheck: check(
       "mod_accounting_payment_allocations_amount_check",
       sql`${table.amountCents} > 0`
+    ),
+    targetCheck: check(
+      "mod_accounting_payment_allocations_target_check",
+      sql`(${table.assessmentId} IS NOT NULL) <> (${table.settlementUnitId} IS NOT NULL)`
     ),
   })
 );

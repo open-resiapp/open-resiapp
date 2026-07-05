@@ -30,7 +30,10 @@ import {
   journalEntries,
   journalLines,
   payments,
+  paymentAllocations,
   serviceCategories,
+  settlements,
+  settlementUnits,
   unitSettings,
 } from "@modules/accounting/src/db/schema";
 import {
@@ -596,6 +599,112 @@ async function main() {
             )
           );
         check("nedoplatok lands on the unit's receivable", extra.debit === 3000);
+      }
+
+      // ── Settlement receivable is allocatable ──
+      console.log("settlement receivable allocation");
+      {
+        const [settlement] = await tx
+          .insert(settlements)
+          .values({
+            entityId: root.id,
+            periodId: period.id,
+            publishedById: actor.id,
+          })
+          .returning({ id: settlements.id });
+        const [su] = await tx
+          .insert(settlementUnits)
+          .values({
+            settlementId: settlement.id,
+            unitEntityId: units[0].id,
+            payload: [],
+            totalCostCents: 20000,
+            totalAdvancesCents: 0,
+            totalDifferenceCents: 20000,
+          })
+          .returning({ id: settlementUnits.id });
+
+        const svcRecvBefore = await accountBalance(
+          tx,
+          root.id,
+          ACCOUNT_CODES.POHLADAVKY_VLASTNICI_SLUZBY
+        );
+        const [setPay] = await tx
+          .insert(payments)
+          .values({
+            entityId: root.id,
+            unitEntityId: units[0].id,
+            source: "manual",
+            method: "bank",
+            receivedAt: new Date(),
+            amountCents: 20000,
+            createdById: actor.id,
+          })
+          .returning({ id: payments.id });
+        await postPaymentMatched(tx, {
+          paymentId: setPay.id,
+          entityId: root.id,
+          periodId: period.id,
+          country: "sk",
+          createdById: actor.id,
+          allocatedBy: "auto",
+          unitEntityId: units[0].id,
+          allocations: [
+            {
+              settlementUnitId: su.id,
+              unitEntityId: units[0].id,
+              serviceCategoryId: null,
+              okruh: "svc",
+              amountCents: 20000,
+            },
+          ],
+        });
+        check(
+          "settlement payment credits 311.200",
+          (await accountBalance(
+            tx,
+            root.id,
+            ACCOUNT_CODES.POHLADAVKY_VLASTNICI_SLUZBY
+          )) ===
+            svcRecvBefore - 20000
+        );
+        const [allocRow] = await tx
+          .select({
+            settlementUnitId: paymentAllocations.settlementUnitId,
+            assessmentId: paymentAllocations.assessmentId,
+          })
+          .from(paymentAllocations)
+          .where(eq(paymentAllocations.paymentId, setPay.id));
+        check(
+          "allocation row targets the settlement unit",
+          allocRow.settlementUnitId === su.id && allocRow.assessmentId === null
+        );
+        await expectThrow(
+          tx,
+          "double-target allocation refuses",
+          "exactly one target",
+          async (inner) => {
+            await postPaymentMatched(inner, {
+              paymentId: setPay.id,
+              entityId: root.id,
+              periodId: period.id,
+              country: "sk",
+              createdById: actor.id,
+              allocatedBy: "auto",
+              unitEntityId: units[0].id,
+              allocations: [
+                {
+                  assessmentId: su.id,
+                  settlementUnitId: su.id,
+                  unitEntityId: units[0].id,
+                  serviceCategoryId: null,
+                  okruh: "svc",
+                  amountCents: 1,
+                },
+              ],
+            });
+          }
+        );
       }
 
       // ── Period lock ──

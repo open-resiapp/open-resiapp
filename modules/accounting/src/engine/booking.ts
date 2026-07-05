@@ -410,15 +410,24 @@ export async function postPaymentMatched(
     allocatedBy: "auto" | "manual";
     /** Unit the payment belongs to — carries the preplatok credit line. */
     unitEntityId: string | null;
+    /** Exactly one of assessmentId / settlementUnitId per allocation. */
     allocations: {
-      assessmentId: string;
+      assessmentId?: string | null;
+      settlementUnitId?: string | null;
       unitEntityId: string;
-      serviceCategoryId: string;
+      serviceCategoryId: string | null;
       okruh: Okruh;
       amountCents: number;
     }[];
   }
 ): Promise<string> {
+  for (const a of input.allocations) {
+    if (!a.assessmentId === !a.settlementUnitId) {
+      throw new Error(
+        "accounting: allocation needs exactly one target (assessment or settlement)"
+      );
+    }
+  }
   const [payment] = await tx
     .select({
       amountCents: payments.amountCents,
@@ -491,7 +500,8 @@ export async function postPaymentMatched(
     await tx.insert(paymentAllocations).values(
       input.allocations.map((a) => ({
         paymentId: input.paymentId,
-        assessmentId: a.assessmentId,
+        assessmentId: a.assessmentId ?? null,
+        settlementUnitId: a.settlementUnitId ?? null,
         amountCents: a.amountCents,
         allocatedBy: input.allocatedBy,
       }))
@@ -740,9 +750,11 @@ export async function applyPaymentCredit(
     unitEntityId: string;
     /** "manual" when a person triggered the application (audit). */
     allocatedBy: "auto" | "manual";
+    /** Exactly one of assessmentId / settlementUnitId per allocation. */
     allocations: {
-      assessmentId: string;
-      serviceCategoryId: string;
+      assessmentId?: string | null;
+      settlementUnitId?: string | null;
+      serviceCategoryId: string | null;
       okruh: Okruh;
       amountCents: number;
     }[];
@@ -750,6 +762,13 @@ export async function applyPaymentCredit(
 ): Promise<string> {
   if (input.allocations.length === 0) {
     throw new Error("accounting: credit application needs allocations");
+  }
+  for (const a of input.allocations) {
+    if (!a.assessmentId === !a.settlementUnitId) {
+      throw new Error(
+        "accounting: allocation needs exactly one target (assessment or settlement)"
+      );
+    }
   }
   const [payment] = await tx
     .select({
@@ -815,7 +834,8 @@ export async function applyPaymentCredit(
   await tx.insert(paymentAllocations).values(
     input.allocations.map((a) => ({
       paymentId: input.paymentId,
-      assessmentId: a.assessmentId,
+      assessmentId: a.assessmentId ?? null,
+      settlementUnitId: a.settlementUnitId ?? null,
       amountCents: a.amountCents,
       allocatedBy: input.allocatedBy,
     }))

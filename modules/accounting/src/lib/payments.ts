@@ -10,6 +10,8 @@ import {
   payments,
   paymentAllocations,
   serviceCategories,
+  settlements,
+  settlementUnits,
   unitSettings,
 } from "../db/schema";
 import {
@@ -67,15 +69,26 @@ async function currentAllocationStrategy(
 
 // ── Open assessments ───────────────────────────────────
 
+export type OpenReceivable = OpenAssessment & {
+  okruh: "fpuo" | "svc" | "mgmt";
+  kind: "assessment" | "settlement";
+};
+
+/** Display slug for settlement receivables (i18n key, not a catalog row). */
+export const SETTLEMENT_SLUG = "SETTLEMENT";
+
 /**
- * A unit's open assessments: POSTED (due) rows minus what non-voided
- * payments already cover. Only due months participate — a prepayment does
- * not settle future months; it parks as preplatok (spec decision).
+ * A unit's open receivables: POSTED (due) assessments plus published
+ * settlement nedoplatky, each minus what non-voided payments already
+ * cover. Only due months participate — a prepayment does not settle
+ * future months; it parks as preplatok (spec decision). Settlement extras
+ * sort as month 12 of their settled year, so FIFO clears them before any
+ * newer year's predpis.
  */
-async function openAssessmentsForUnit(
+export async function openReceivablesForUnit(
   tx: Tx,
   unitEntityId: string
-): Promise<(OpenAssessment & { okruh: "fpuo" | "svc" | "mgmt" })[]> {
+): Promise<OpenReceivable[]> {
   const allocated = sql<number>`coalesce((
     select sum(${paymentAllocations.amountCents})::int
     from ${paymentAllocations}
@@ -110,16 +123,53 @@ async function openAssessmentsForUnit(
       )
     );
 
-  return rows
-    .map((r) => ({
+  const settlementAllocated = sql<number>`coalesce((
+    select sum(${paymentAllocations.amountCents})::int
+    from ${paymentAllocations}
+    join ${payments} on ${payments.id} = ${paymentAllocations.paymentId}
+    where ${paymentAllocations.settlementUnitId} = ${settlementUnits.id}
+      and ${payments.voidedAt} is null
+  ), 0)`;
+  const settlementRows = await tx
+    .select({
+      id: settlementUnits.id,
+      periodYear: accountingPeriods.year,
+      totalDifferenceCents: settlementUnits.totalDifferenceCents,
+      allocatedCents: settlementAllocated,
+    })
+    .from(settlementUnits)
+    .innerJoin(settlements, eq(settlementUnits.settlementId, settlements.id))
+    .innerJoin(
+      accountingPeriods,
+      eq(settlements.periodId, accountingPeriods.id)
+    )
+    .where(
+      and(
+        eq(settlementUnits.unitEntityId, unitEntityId),
+        sql`${settlementUnits.totalDifferenceCents} > 0`
+      )
+    );
+
+  return [
+    ...rows.map((r) => ({
       id: r.id,
+      kind: "assessment" as const,
       periodYear: r.periodYear,
       month: r.month,
       categorySlug: r.categorySlug,
       okruh: r.okruh,
       openCents: r.amountCents - r.allocatedCents,
-    }))
-    .filter((r) => r.openCents > 0);
+    })),
+    ...settlementRows.map((r) => ({
+      id: r.id,
+      kind: "settlement" as const,
+      periodYear: r.periodYear,
+      month: 12,
+      categorySlug: SETTLEMENT_SLUG,
+      okruh: "svc" as const,
+      openCents: r.totalDifferenceCents - r.allocatedCents,
+    })),
+  ].filter((r) => r.openCents > 0);
 }
 
 // ── Create + allocate ──────────────────────────────────
@@ -240,7 +290,7 @@ export async function allocateAndPostPayment(
     .set({ matchedBy: input.matchedBy })
     .where(eq(payments.id, input.paymentId));
 
-  const open = await openAssessmentsForUnit(tx, input.unitEntityId);
+  const open = await openReceivablesForUnit(tx, input.unitEntityId);
   const openById = new Map(open.map((a) => [a.id, a]));
 
   let allocated: { assessmentId: string; amountCents: number }[] = [];
@@ -258,9 +308,13 @@ export async function allocateAndPostPayment(
     unallocatedCents = result.unallocatedCents;
   }
 
-  // Category id per assessment for the journal lines.
+  // Category id per assessment for the journal lines (settlement
+  // receivables carry no category).
+  const assessmentTargets = allocated.filter(
+    (a) => openById.get(a.assessmentId)!.kind === "assessment"
+  );
   const categoryIdByAssessment = new Map<string, string>();
-  if (allocated.length > 0) {
+  if (assessmentTargets.length > 0) {
     const assessmentCategories = await tx
       .select({
         id: feeAssessments.id,
@@ -270,7 +324,7 @@ export async function allocateAndPostPayment(
       .where(
         inArray(
           feeAssessments.id,
-          allocated.map((a) => a.assessmentId)
+          assessmentTargets.map((a) => a.assessmentId)
         )
       );
     for (const a of assessmentCategories) {
@@ -290,13 +344,24 @@ export async function allocateAndPostPayment(
     createdById: input.actorId,
     allocatedBy: input.allocatedBy,
     unitEntityId: input.unitEntityId,
-    allocations: allocated.map((a) => ({
-      assessmentId: a.assessmentId,
-      unitEntityId: input.unitEntityId,
-      serviceCategoryId: categoryIdByAssessment.get(a.assessmentId)!,
-      okruh: openById.get(a.assessmentId)!.okruh,
-      amountCents: a.amountCents,
-    })),
+    allocations: allocated.map((a) => {
+      const target = openById.get(a.assessmentId)!;
+      return target.kind === "settlement"
+        ? {
+            settlementUnitId: a.assessmentId,
+            unitEntityId: input.unitEntityId,
+            serviceCategoryId: null,
+            okruh: target.okruh,
+            amountCents: a.amountCents,
+          }
+        : {
+            assessmentId: a.assessmentId,
+            unitEntityId: input.unitEntityId,
+            serviceCategoryId: categoryIdByAssessment.get(a.assessmentId)!,
+            okruh: target.okruh,
+            amountCents: a.amountCents,
+          };
+    }),
   });
 
   return {

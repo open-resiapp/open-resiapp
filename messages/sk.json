@@ -1341,7 +1341,8 @@
       "SVC_LIFT": "Výťah",
       "SVC_CLEANING": "Upratovanie",
       "SVC_INTERNET": "Internet",
-      "SVC_OTHER": "Ostatné"
+      "SVC_OTHER": "Ostatné",
+      "SETTLEMENT": "Vyúčtovanie"
     },
     "openingBalance": {
       "title": "Otváracia súvaha",
