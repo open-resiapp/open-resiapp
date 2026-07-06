@@ -453,7 +453,7 @@ Reuse RES-20260413-002. Per-country settings:
 ### QR + payments UX
 
 - [ ] PAY by square QR on every SK predpis PDF; scan with Tatra/SLSP/VÚB app pre-fills trvalý príkaz correctly.
-- [ ] SPAYD QR on every CZ předpis PDF; scan with major CZ banking apps pre-fills payment.
+- [x] SPAYD QR on every CZ předpis PDF; scan with major CZ banking apps pre-fills payment.
 - [x] Dynamic QR on nedoplatok rows in vyúčtovanie PDF carries exact sum + VS + reference.
 - [x] Upomienka PDF for úroky z omeškania includes dynamic QR for sum due to date.
 
@@ -466,7 +466,7 @@ Reuse RES-20260413-002. Per-country settings:
 
 ### Technical-audit link
 
-- [ ] Categories `REVIZIA_*` enforce `next_inspection_due_at` not null.
+- [x] Categories `REVIZIA_*` enforce `next_inspection_due_at` not null.
 - [ ] Revízia expirujúca v ≤ 60 dňoch appears in "Vyžaduje pozornosť"; expired escalates to chairman notification.
 - [x] Calendar export (.ics) per HOA of all upcoming revízie deadlines.
 
@@ -524,7 +524,7 @@ Reuse RES-20260413-002. Per-country settings:
 
 ### Audit trail & data lifecycle
 
-- [ ] Append-only event log records every mutation (insert / update / void) with actor, timestamp, and before/after snapshot; no in-place field overwrite occurs without a corresponding log row.
+- [x] Append-only event log records every mutation (insert / update / void) with actor, timestamp, and before/after snapshot; no in-place field overwrite occurs without a corresponding log row.
 - [x] Signed export bundle for kontrolná komisia reproduces the full ledger + event log and verifies tamper-evidently without DB access.
 - [x] No hard delete anywhere — units, payments, expenses, journal lines use `archived_at` soft-delete; archiving a unit preserves its historical journal lines and assessments.
 - [x] Opening-balance and locked-period entries cannot be voided or edited; the only correction path is a reversal posted in the current open period.
@@ -650,10 +650,19 @@ All 12 golden suites + e2e (20/20) green after this pass.
 
 ### Audit — 2026-07-06 full AC re-check (code-verified)
 
-Six parallel read-only passes over the module. Result: **52 IMPLEMENTED,
-17 PARTIAL, 20 MISSING** (89 total). AC ticks corrected to the strict
+Six parallel read-only passes over the module. Initial result: 52 IMPLEMENTED,
+17 PARTIAL, 20 MISSING (89 total). AC ticks corrected to the strict
 IMPLEMENTED set (un-ticked 439, 442, 469, 484, 507, 520, 521, 527 where the
 audit found real gaps; ticked 457).
+
+**Fixed same day (commit 879c057) → now 55 IMPLEMENTED, 16 PARTIAL, 18 MISSING:**
+- 456 — CZ predpis PDF now embeds a SPAYD / QR Platba payload (was SK-only).
+- 469 — REVIZIA_* expenses now require nextInspectionDueAt (server + form).
+- 527 — createManualPayment writes an insert audit row (was unlogged); the
+  three void paths capture a `before` snapshot. Audit trail now complete.
+- 440 — downgraded from "only invoiceNo+brutto" to **mostly met**: IČO,
+  supplier IBAN and netto+DPH are now required; only attachment-at-create
+  remains (upload is a separate endpoint), so 440 stays PARTIAL.
 
 **PARTIAL (built, but the AC is not fully met):**
 - 416 — okruh tracked, but `mgmt` okruh is enum-only (booking throws) and no
