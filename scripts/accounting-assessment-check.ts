@@ -389,6 +389,7 @@ throws("invalid month throws", () =>
 
 import {
   projectCashflow,
+  projectPools,
   collectionRateFrom,
 } from "@modules/accounting/src/projection/cashflow";
 
@@ -427,6 +428,65 @@ console.log("cashflow projection");
   check("collection rate paid/due", collectionRateFrom(10000, 9000) === 0.9);
   check("no history → 1", collectionRateFrom(0, 0) === 1);
   check("overpaid clamps to 1", collectionRateFrom(100, 150) === 1);
+}
+
+// ── per-pool projection (AC 484) ───────────────────────
+console.log("per-pool projection");
+{
+  const pooled = projectPools({
+    collectionRate: 1,
+    pools: [
+      {
+        pool: "fpuo",
+        openingCents: 50000,
+        months: [
+          { month: 8, year: 2026, predpisCents: 10000, expenseCents: 3000, estimated: false },
+          { month: 9, year: 2026, predpisCents: 10000, expenseCents: 3000, estimated: false },
+        ],
+      },
+      {
+        pool: "svc",
+        openingCents: 20000,
+        months: [
+          { month: 8, year: 2026, predpisCents: 8000, expenseCents: 9000, estimated: false },
+          { month: 9, year: 2026, predpisCents: 8000, expenseCents: 9000, estimated: true },
+        ],
+      },
+    ],
+  });
+  check("two pools returned", pooled.pools.length === 2);
+  check("fpuo opening", pooled.pools[0].openingCents === 50000);
+  check(
+    "fpuo rolls forward",
+    pooled.pools[0].months[0].closingCents === 57000 &&
+      pooled.pools[0].months[1].closingCents === 64000
+  );
+  check(
+    "svc can trend down",
+    pooled.pools[1].months[0].closingCents === 19000 &&
+      pooled.pools[1].months[1].closingCents === 18000
+  );
+  // Sum-preserving: total opening + every month total == Σ pools exactly.
+  check("total opening = Σ pool openings", pooled.openingCents === 70000);
+  check(
+    "total month = Σ pool months (no drift)",
+    pooled.months[0].closingCents ===
+      pooled.pools[0].months[0].closingCents +
+        pooled.pools[1].months[0].closingCents &&
+      pooled.months[1].closingCents ===
+        pooled.pools[0].months[1].closingCents +
+          pooled.pools[1].months[1].closingCents
+  );
+  check(
+    "total inflow = Σ pool inflow",
+    pooled.months[0].expectedInflowCents ===
+      pooled.pools[0].months[0].expectedInflowCents +
+        pooled.pools[1].months[0].expectedInflowCents
+  );
+  check(
+    "total estimated flag is OR of pools",
+    pooled.months[0].estimated === false && pooled.months[1].estimated === true
+  );
 }
 
 if (failures > 0) {

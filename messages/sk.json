@@ -1590,6 +1590,9 @@
       "projectionDrillInflow": "Očakávané príjmy",
       "projectionDrillExpense": "Predpokladané výdavky",
       "projectionDrillClosing": "Konečný zostatok",
+      "poolTotal": "Spolu",
+      "poolFpuo": "Fond opráv",
+      "poolSvc": "Služby",
       "navMeters": "Odpočty meračov",
       "navMetersHint": "Stavy meračov tepla a vody pre vyúčtovanie",
       "navVyuctovanie": "Ročné vyúčtovanie",
@@ -1735,7 +1738,9 @@
       "attachmentsToggle": "Doklady",
       "nextInspectionLabel": "Termín ďalšej revízie",
       "attachmentLabel": "Sken faktúry",
-      "attachmentHint": "Povinná príloha dokladu (PDF/JPG/PNG, max 15 MB)."
+      "attachmentHint": "Povinná príloha dokladu (PDF/JPG/PNG, max 15 MB).",
+      "recurringLabel": "Opakujúci sa výdavok",
+      "recurringHint": "Mesačný záväzok — započíta sa do projekcie cash-flow."
     },
     "meters": {
       "title": "Odpočty meračov",

@@ -57,6 +57,7 @@ export default function ExpensesPage() {
   const [dph, setDph] = useState("");
   const [dueDate, setDueDate] = useState("");
   const [nextInspection, setNextInspection] = useState("");
+  const [isRecurring, setIsRecurring] = useState(false);
   const [file, setFile] = useState<File | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [lookingUp, setLookingUp] = useState(false);
@@ -150,6 +151,7 @@ export default function ExpensesPage() {
             isRevizia && /^\d{4}-\d{2}-\d{2}$/.test(nextInspection)
               ? new Date(`${nextInspection}T00:00:00Z`).toISOString()
               : null,
+          isRecurring,
         })
       );
       form.append("file", file!);
@@ -168,6 +170,7 @@ export default function ExpensesPage() {
       setAmountNetto("");
       setDph("");
       setNextInspection("");
+      setIsRecurring(false);
       setFile(null);
       load();
     } catch (err) {
@@ -450,6 +453,20 @@ export default function ExpensesPage() {
               onChange={(e) => setDueDate(e.target.value)}
               className={inputClass}
             />
+          </label>
+          <label className="flex items-center gap-2 text-sm sm:col-span-2 lg:col-span-3">
+            <input
+              type="checkbox"
+              checked={isRecurring}
+              onChange={(e) => setIsRecurring(e.target.checked)}
+              className="h-4 w-4"
+            />
+            <span className="text-gray-700 dark:text-gray-300">
+              {t("recurringLabel")}
+            </span>
+            <span className="text-xs text-gray-500 dark:text-gray-400">
+              {t("recurringHint")}
+            </span>
           </label>
           <label className="flex flex-col gap-1 text-sm">
             <span className="text-gray-700 dark:text-gray-300">

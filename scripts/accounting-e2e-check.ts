@@ -50,6 +50,7 @@ import {
   listAttachments,
 } from "@modules/accounting/src/lib/attachments";
 import { getDashboardTiles } from "@modules/accounting/src/lib/dashboard";
+import { getCashflowProjection } from "@modules/accounting/src/lib/projection";
 import {
   getVyuctovaniePreview,
   publishVyuctovanie,
@@ -295,6 +296,40 @@ async function main() {
   check("nedoplatky counted", tiles.nedoplatky.count >= 0);
   check("overdue revízia escalated (470)", tiles.attention.revisionsOverdue >= 1);
   check("revízia due ≤60d surfaced (470)", tiles.attention.revisionsDueSoon >= 1);
+
+  // ── projection: per pool + recurring expense (AC 484/486) ──
+  console.log("cash-flow projection");
+  await createExpense({
+    entityId: dom.id,
+    country,
+    createdById: actorId,
+    supplierName: "Upratovanie s.r.o.",
+    supplierIco: "36000321",
+    supplierIban: "SK9611000000002918599669",
+    invoiceNo: `E2E-RECUR-${Date.now()}`,
+    invoiceDate: new Date(),
+    serviceCategoryId: lift.id,
+    okruh: "svc",
+    amountCents: 12000,
+    amountNettoCents: 10000,
+    dphCents: 2000,
+    isRecurring: true,
+  });
+  const projection = await getCashflowProjection(dom.id, country);
+  check("projection returns two pools (484)", projection.pools.length === 2);
+  const svcPool = projection.pools.find((p) => p.pool === "svc")!;
+  check(
+    "recurring expense feeds služby outflow (486)",
+    svcPool.months.every((m) => m.expenseCents >= 12000)
+  );
+  check(
+    "total ties out to Σ pools (no drift)",
+    projection.months.every(
+      (m, i) =>
+        m.closingCents ===
+        projection.pools.reduce((s, p) => s + p.months[i].closingCents, 0)
+    )
+  );
 
   // ── vyúčtovanie preview (current year — gate blocks publish) ──
   console.log("vyúčtovanie preview");

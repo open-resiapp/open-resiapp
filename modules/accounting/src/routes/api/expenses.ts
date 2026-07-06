@@ -108,6 +108,7 @@ export async function handleCreate(req: NextRequest): Promise<NextResponse> {
         typeof body.nextInspectionDueAt === "string" && body.nextInspectionDueAt
           ? new Date(body.nextInspectionDueAt)
           : null,
+      isRecurring: body.isRecurring === true,
       authorisationId:
         typeof body.authorisationId === "string" && body.authorisationId
           ? body.authorisationId

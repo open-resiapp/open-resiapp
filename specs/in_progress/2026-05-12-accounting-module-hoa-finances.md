@@ -481,9 +481,9 @@ Reuse RES-20260413-002. Per-country settings:
 
 ### Cash-flow projection
 
-- [ ] Dashboard chart shows 6-month projected balance per pool.
+- [x] Dashboard chart shows 6-month projected balance per pool. (Total / Fond opráv / Služby toggle; each pool rolled forward from its cash-basis fund net; the total is the sum-preserving Σ of the pools.)
 - [x] Drill-down per month lists projected revenues + expenses.
-- [ ] Recurring expenses (suppliers w/ recurrence) reflected in projection.
+- [x] Recurring expenses (suppliers w/ recurrence) reflected in projection. (is_recurring flag on expenses; the latest recurring invoice per supplier+category is modeled as a monthly outflow, split by okruh, added to the average of non-recurring expenses.)
 
 ### Owner transparency
 

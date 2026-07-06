@@ -19,10 +19,17 @@ interface ProjectionMonth {
   estimated: boolean;
 }
 
+interface PoolProjection {
+  pool: string;
+  openingCents: number;
+  months: ProjectionMonth[];
+}
+
 interface Projection {
   openingCents: number;
   collectionRate: number;
   months: ProjectionMonth[];
+  pools?: PoolProjection[];
 }
 
 interface Tiles {
@@ -53,6 +60,7 @@ export default function AccountingHomePage() {
   const [tiles, setTiles] = useState<Tiles | null>(null);
   const [projection, setProjection] = useState<Projection | null>(null);
   const [drillMonth, setDrillMonth] = useState<number | null>(null);
+  const [pool, setPool] = useState<string>("total");
   const [ownerOnly, setOwnerOnly] = useState(false);
   const [error, setError] = useState(false);
 
@@ -142,6 +150,15 @@ export default function AccountingHomePage() {
   const tileClass =
     "bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg px-5 py-4";
 
+  // Months for the selected pool (Total / FPÚO / Služby) — drives both the
+  // bar chart and the per-month drill-down (AC 484/485).
+  const projectionMonths = projection
+    ? pool === "total"
+      ? projection.months
+      : projection.pools?.find((p) => p.pool === pool)?.months ??
+        projection.months
+    : [];
+
   return (
     <div className="max-w-4xl">
       <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-1">
@@ -219,17 +236,43 @@ export default function AccountingHomePage() {
               rate: Math.round(projection.collectionRate * 100),
             })}
           </p>
+          {/* Per-pool toggle (AC 484) — Total / Fond opráv / Služby */}
+          {projection.pools && projection.pools.length > 0 && (
+            <div className="flex gap-2 mb-4">
+              {[
+                { key: "total", label: t("poolTotal") },
+                { key: "fpuo", label: t("poolFpuo") },
+                { key: "svc", label: t("poolSvc") },
+              ].map((opt) => (
+                <button
+                  key={opt.key}
+                  type="button"
+                  onClick={() => {
+                    setPool(opt.key);
+                    setDrillMonth(null);
+                  }}
+                  className={`px-3 py-1 rounded-full text-xs border ${
+                    pool === opt.key
+                      ? "bg-blue-600 text-white border-blue-600"
+                      : "border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-400"
+                  }`}
+                >
+                  {opt.label}
+                </button>
+              ))}
+            </div>
+          )}
           {(() => {
             // Bars scale against the best POSITIVE month; a negative month
             // must never render as the tallest bar (height would read as
             // "best month" at a glance) — it gets a fixed stub + ⚠ label.
             const maxPositive = Math.max(
               1,
-              ...projection.months.map((m) => Math.max(0, m.closingCents))
+              ...projectionMonths.map((m) => Math.max(0, m.closingCents))
             );
             return (
               <div className="flex items-end gap-3 h-40">
-                {projection.months.map((m, i) => {
+                {projectionMonths.map((m, i) => {
                   const negative = m.closingCents < 0;
                   const height = negative
                     ? 8
@@ -284,14 +327,14 @@ export default function AccountingHomePage() {
               </div>
             );
           })()}
-          {drillMonth !== null && projection.months[drillMonth] && (
+          {drillMonth !== null && projectionMonths[drillMonth] && (
             <div className="mt-4 bg-gray-50 dark:bg-gray-800 rounded-lg p-4 text-sm">
               <p className="font-medium text-gray-900 dark:text-gray-100 mb-2">
                 {format.dateTime(
                   new Date(
                     Date.UTC(
-                      projection.months[drillMonth].year,
-                      projection.months[drillMonth].month - 1,
+                      projectionMonths[drillMonth].year,
+                      projectionMonths[drillMonth].month - 1,
                       1
                     )
                   ),
@@ -304,7 +347,7 @@ export default function AccountingHomePage() {
                     {t("projectionDrillInflow")}
                   </dt>
                   <dd className="text-green-700 dark:text-green-400">
-                    +{formatEur(projection.months[drillMonth].expectedInflowCents)}
+                    +{formatEur(projectionMonths[drillMonth].expectedInflowCents)}
                   </dd>
                 </div>
                 <div className="flex justify-between">
@@ -312,7 +355,7 @@ export default function AccountingHomePage() {
                     {t("projectionDrillExpense")}
                   </dt>
                   <dd className="text-red-600 dark:text-red-400">
-                    −{formatEur(projection.months[drillMonth].expenseCents)}
+                    −{formatEur(projectionMonths[drillMonth].expenseCents)}
                   </dd>
                 </div>
                 <div className="flex justify-between border-t border-gray-200 dark:border-gray-700 pt-1 font-medium">
@@ -320,13 +363,13 @@ export default function AccountingHomePage() {
                     {t("projectionDrillClosing")}
                   </dt>
                   <dd className="text-gray-900 dark:text-gray-100">
-                    {formatEur(projection.months[drillMonth].closingCents)}
+                    {formatEur(projectionMonths[drillMonth].closingCents)}
                   </dd>
                 </div>
               </dl>
             </div>
           )}
-          {projection.months.some((m) => m.estimated) && (
+          {projectionMonths.some((m) => m.estimated) && (
             <p className="text-[10px] text-gray-400 dark:text-gray-500 mt-2">
               {t("projectionEstimatedNote")}
             </p>

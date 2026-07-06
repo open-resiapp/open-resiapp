@@ -1590,6 +1590,9 @@
       "projectionDrillInflow": "Expected income",
       "projectionDrillExpense": "Projected expenses",
       "projectionDrillClosing": "Closing balance",
+      "poolTotal": "Total",
+      "poolFpuo": "Repair fund",
+      "poolSvc": "Services",
       "navMeters": "Meter readings",
       "navMetersHint": "Heat and water meter states for the settlement",
       "navVyuctovanie": "Annual settlement",
@@ -1735,7 +1738,9 @@
       "attachmentsToggle": "Documents",
       "nextInspectionLabel": "Next inspection date",
       "attachmentLabel": "Invoice scan",
-      "attachmentHint": "Required document attachment (PDF/JPG/PNG, max 15 MB)."
+      "attachmentHint": "Required document attachment (PDF/JPG/PNG, max 15 MB).",
+      "recurringLabel": "Recurring expense",
+      "recurringHint": "Monthly commitment — counted in the cash-flow projection."
     },
     "meters": {
       "title": "Meter readings",

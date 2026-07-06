@@ -49,6 +49,8 @@ export interface CreateExpenseInput {
   dphRateBp?: number | null;
   dphCents?: number | null;
   nextInspectionDueAt?: Date | null;
+  /** Monthly-recurring commitment — feeds the cash-flow projection (AC 486). */
+  isRecurring?: boolean;
   /** Realises a voting-approved expense authorisation (AC 514/515). */
   authorisationId?: string | null;
 }
@@ -206,6 +208,7 @@ export async function createExpense(
         dphRateBp: input.dphRateBp ?? null,
         dphCents: input.dphCents ?? null,
         nextInspectionDueAt: input.nextInspectionDueAt ?? null,
+        isRecurring: input.isRecurring ?? false,
         createdById: input.createdById,
       })
       .returning({ id: expenses.id });

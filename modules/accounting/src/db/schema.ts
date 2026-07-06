@@ -663,6 +663,12 @@ export const expenses = pgTable(
     dphCents: integer("dph_cents"),
     /** REVIZIA_* categories: statutory next-inspection deadline. */
     nextInspectionDueAt: timestamp("next_inspection_due_at"),
+    /**
+     * Marks a monthly-recurring commitment (cleaning, lift service, energy
+     * standing order). The cash-flow projection models the latest recurring
+     * amount per (supplier, category) as a forward monthly outflow (AC 486).
+     */
+    isRecurring: boolean("is_recurring").notNull().default(false),
     // Owner-visibility of this doklad's scans (right-to-inspect). Default
     // public; restricted needs a justification (audit-logged).
     attachmentVisibility: attachmentVisibilityEnum("attachment_visibility")
