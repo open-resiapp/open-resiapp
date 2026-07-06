@@ -87,6 +87,11 @@ async function main() {
       await w(`delete from mod_accounting_settlement_units where settlement_id in (select id from mod_accounting_settlements where entity_id = $1)`);
       await w(`delete from mod_accounting_settlements where entity_id = $1`);
       await w(`delete from mod_accounting_fee_assessments where schedule_id in (select id from mod_accounting_fee_schedules where entity_id = $1)`);
+      // Attachments hold restrict FKs to BOTH entities and expenses, so they
+      // must go before the expenses delete below. Authorisations hold a
+      // restrict FK to entities (usedExpenseId → expenses is set null).
+      await w(`delete from mod_accounting_expense_attachments where entity_id = $1`);
+      await w(`delete from mod_accounting_expense_authorisations where entity_id = $1`);
       await w(`delete from mod_accounting_expenses where entity_id = $1`);
       await w(`delete from mod_accounting_journal_entries where entity_id = $1`); // cascades lines
       await w(`delete from mod_accounting_fee_schedules where entity_id = $1`); // cascades services

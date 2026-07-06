@@ -504,15 +504,15 @@ Reuse RES-20260413-002. Per-country settings:
 - [x] "Pohľad účtovníka" toggle reveals journal + chart of accounts on demand only.
 - [x] Dashboard renders 4 tiles + Vyžaduje pozornosť list on a single viewport.
 - [x] Karta bytu shows running balance in Excel-style table, drill-down to source on every row.
-- [ ] Owner portal shows only: balance, payment history, predpis breakdown, vyúčtovanie PDFs, meter reading entry, čerpanie FPÚO read-only list — nothing else.
+- [x] Owner portal shows only: balance, payment history, predpis breakdown, vyúčtovanie PDFs, meter reading entry, čerpanie FPÚO read-only list — nothing else. (Owner surface = Karta / Meters / Inspect cards; the extra debtors card was removed 2026-07-06 to satisfy the "only" clause — board keeps its debtors nav.)
 - [ ] Concierge import accepts prior-year Excel + bank statements + last-year vyúčtovanie PDF for opening balances.
 - [x] All UI text routed through `useTranslations()` / `getTranslations()` from `Accounting` namespace; no hardcoded strings.
 
 ### Voting integration (wedge)
 
-- [ ] Resolution `fpuo_rate_change` creates draft schedule revision visible to treasurer in &lt; 5 sec.
-- [ ] Resolution `expense_approval` creates draft expense authorisation linked to the vote.
-- [ ] Every `journal_entry` originating from a vote stores `voting_resolution_id`; vote detail page lists resulting financial impacts.
+- [x] Resolution `fpuo_rate_change` creates draft schedule revision visible to treasurer in &lt; 5 sec.
+- [x] Resolution `expense_approval` creates draft expense authorisation linked to the vote.
+- [x] Every `journal_entry` originating from a vote stores `voting_resolution_id`; vote detail page lists resulting financial impacts.
 
 ### Permissions & roles
 

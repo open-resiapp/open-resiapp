@@ -279,7 +279,11 @@ async function main() {
       votingItemId: rateItemId,
       title: "Zvýšenie FPÚO",
       kind: "fpuo_rate_change" as const,
-      params: { newRateCents: 35000 },
+      // Deterministic effective month (Aug of the test year) so the draft
+      // supersedes the Jan predpis and its months become due below — the
+      // pipeline's own default is firstOfNextMonth, which drifts to next
+      // year when the suite runs in December.
+      params: { newRateCents: 35000, effectiveFrom: `${year}-08-01` },
     },
     {
       votingId: randomUUID(),
@@ -328,11 +332,16 @@ async function main() {
     draft?.origin === rateItemId && draft?.status === "draft"
   );
 
+  // Publish as of year-end so the Aug–Dec months of the vote-originated
+  // schedule are due and post now — that is what stamps votingResolutionId
+  // onto their journal entries (AC 515). At real "now" a next-month-effective
+  // schedule has posted nothing yet, so there would be no entry to inspect.
   await publishSchedule({
     entityId: dom.id,
     country,
     scheduleId: draft.id,
     actorId,
+    now: new Date(Date.UTC(year, 11, 31)),
   });
   const [stamped] = await db
     .select({ c: sql<number>`count(*)::int` })
