@@ -184,6 +184,53 @@ console.log("export integrity");
   check("stringify∘parse round-trip is stable", roundTripped === payload);
 }
 
+// ── SPAYD (CZ QR Platba, Phase 6 prep) ─────────────────
+
+import { spaydString } from "@modules/accounting/src/qr/spayd";
+
+console.log("SPAYD");
+{
+  check(
+    "canonical shape",
+    spaydString({
+      iban: "CZ65 0800 0000 1920 0014 5399",
+      amountCents: 318000,
+      vs: "205",
+    }) === "SPD*1.0*ACC:CZ6508000000192000145399*AM:3180.00*CC:CZK*X-VS:205"
+  );
+  check(
+    "sub-koruna cents",
+    spaydString({ iban: "CZ6508000000192000145399", amountCents: 105 }) ===
+      "SPD*1.0*ACC:CZ6508000000192000145399*AM:1.05*CC:CZK"
+  );
+  check(
+    "message diacritics-stripped + star-escaped",
+    spaydString({
+      iban: "CZ6508000000192000145399",
+      amountCents: 100,
+      message: "Vyúčtování *2025*",
+    }).endsWith("MSG:Vyuctovani %2A2025%2A")
+  );
+  for (const bad of [
+    () => spaydString({ iban: "XX", amountCents: 100 }),
+    () => spaydString({ iban: "CZ6508000000192000145399", amountCents: 0 }),
+    () =>
+      spaydString({
+        iban: "CZ6508000000192000145399",
+        amountCents: 100,
+        vs: "abc",
+      }),
+  ]) {
+    try {
+      bad();
+      failures++;
+      console.error("  FAIL SPAYD rejection — did not throw");
+    } catch {
+      console.log("  ok  SPAYD rejects invalid input");
+    }
+  }
+}
+
 if (failures > 0) {
   console.error(`\n${failures} check(s) FAILED.`);
   process.exit(1);
