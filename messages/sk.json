@@ -1784,7 +1784,12 @@
       "colCredit": "Dal (D)",
       "colBalance": "Zostatok",
       "totals": "Spolu",
-      "journalTitle": "Účtovný denník ({total} zápisov)"
+      "journalTitle": "Účtovný denník ({total} zápisov)",
+      "exportButton": "Podpísaný export (JSON)",
+      "verifyHint": "Overenie exportu: nahrajte skôr stiahnutý súbor — systém potvrdí, že nebol zmenený.",
+      "verifyValid": "Súbor je pravý a nezmenený (vygenerovaný {generatedAt}).",
+      "verifyInvalid": "Súbor NESEDÍ — bol zmenený alebo nepochádza z tohto systému.",
+      "verifyError": "Overenie zlyhalo. Skúste znova."
     }
   }
 }

@@ -138,6 +138,52 @@ check("checksum catches swapped chars", !isValidIban("SK6911000000002918599669")
 check("empty invalid", !isValidIban(""));
 check("too short invalid", !isValidIban("SK96"));
 
+// ── signed-export integrity (pure) ─────────────────────
+
+import {
+  buildIntegrity,
+  verifyIntegrity,
+} from "@modules/accounting/src/lib/export-format";
+
+console.log("export integrity");
+{
+  const payload = JSON.stringify({ a: 1, b: [2, 3], c: "x" });
+  const secret = "test-secret";
+  const integrity = buildIntegrity(payload, secret);
+  check("verifies own output", verifyIntegrity(payload, integrity, secret).valid);
+
+  const tampered = verifyIntegrity(
+    JSON.stringify({ a: 1, b: [2, 3], c: "y" }),
+    integrity,
+    secret
+  );
+  check(
+    "tampered payload rejected",
+    !tampered.valid && tampered.reason === "sha256_mismatch"
+  );
+
+  // Attacker recomputes sha256 for the edited payload but cannot forge
+  // the HMAC without the server secret.
+  const editedPayload = JSON.stringify({ a: 999 });
+  const forged = buildIntegrity(editedPayload, "wrong-secret");
+  const forgedResult = verifyIntegrity(editedPayload, forged, secret);
+  check(
+    "forged hmac rejected",
+    !forgedResult.valid && forgedResult.reason === "hmac_mismatch"
+  );
+
+  const badKey = verifyIntegrity(
+    payload,
+    { ...integrity, keyId: "other-v9" },
+    secret
+  );
+  check("unknown key id rejected", !badKey.valid && badKey.reason === "unknown_key");
+
+  // JSON round-trip stability — the property the design relies on.
+  const roundTripped = JSON.stringify(JSON.parse(payload));
+  check("stringify∘parse round-trip is stable", roundTripped === payload);
+}
+
 if (failures > 0) {
   console.error(`\n${failures} check(s) FAILED.`);
   process.exit(1);

@@ -53,6 +53,29 @@ export default function JournalPage() {
   const [page, setPage] = useState(0);
   const [expanded, setExpanded] = useState<string | null>(null);
   const [error, setError] = useState(false);
+  const [verifyResult, setVerifyResult] = useState<
+    "valid" | "invalid" | "error" | null
+  >(null);
+  const [verifiedAt, setVerifiedAt] = useState<string | null>(null);
+
+  async function verifyBundle(file: File) {
+    setVerifyResult(null);
+    setVerifiedAt(null);
+    try {
+      const text = await file.text();
+      const res = await fetch("/api/accounting/export/verify", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: text,
+      });
+      const body = await res.json().catch(() => null);
+      if (!res.ok) throw new Error(String(res.status));
+      setVerifyResult(body.valid ? "valid" : "invalid");
+      if (body.valid && body.generatedAt) setVerifiedAt(body.generatedAt);
+    } catch {
+      setVerifyResult("error");
+    }
+  }
 
   const load = useCallback(() => {
     fetch(`/api/accounting/journal?page=${page}`)
@@ -88,10 +111,51 @@ export default function JournalPage() {
       >
         ← {t("backToAccounting")}
       </Link>
-      <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mt-2 mb-1">
-        {t("title")}
-      </h1>
-      <p className="text-gray-600 dark:text-gray-400 mb-6">{t("subtitle")}</p>
+      <div className="flex items-center justify-between mt-2 mb-1">
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
+          {t("title")}
+        </h1>
+        <a
+          href="/api/accounting/export"
+          download
+          className="px-4 py-2 border border-blue-600 text-blue-600 dark:text-blue-400 dark:border-blue-400 rounded-lg text-sm"
+        >
+          {t("exportButton")}
+        </a>
+      </div>
+      <p className="text-gray-600 dark:text-gray-400 mb-4">{t("subtitle")}</p>
+
+      {/* Bundle verification */}
+      <div className="mb-6 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg p-4 text-sm">
+        <p className="text-gray-700 dark:text-gray-300 mb-2">
+          {t("verifyHint")}
+        </p>
+        <input
+          type="file"
+          accept=".json,application/json"
+          onChange={(e) => {
+            const file = e.target.files?.[0];
+            if (file) verifyBundle(file);
+            e.target.value = "";
+          }}
+          className="text-sm text-gray-700 dark:text-gray-300"
+        />
+        {verifyResult === "valid" && (
+          <p className="mt-2 text-green-700 dark:text-green-400">
+            ✅ {t("verifyValid", { generatedAt: verifiedAt ?? "" })}
+          </p>
+        )}
+        {verifyResult === "invalid" && (
+          <p className="mt-2 text-red-600 dark:text-red-400 font-medium">
+            ❌ {t("verifyInvalid")}
+          </p>
+        )}
+        {verifyResult === "error" && (
+          <p className="mt-2 text-red-600 dark:text-red-400">
+            {t("verifyError")}
+          </p>
+        )}
+      </div>
 
       {/* Trial balance */}
       <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg p-6 mb-6 overflow-x-auto">

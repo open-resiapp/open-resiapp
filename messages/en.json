@@ -1784,7 +1784,12 @@
       "colCredit": "Credit",
       "colBalance": "Balance",
       "totals": "Totals",
-      "journalTitle": "Journal ({total} entries)"
+      "journalTitle": "Journal ({total} entries)",
+      "exportButton": "Signed export (JSON)",
+      "verifyHint": "Verify an export: upload a previously downloaded file — the system attests it was not modified.",
+      "verifyValid": "The file is authentic and unmodified (generated {generatedAt}).",
+      "verifyInvalid": "The file does NOT match — it was modified or did not originate from this system.",
+      "verifyError": "Verification failed. Try again."
     }
   }
 }
