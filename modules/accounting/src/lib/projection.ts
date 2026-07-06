@@ -114,12 +114,24 @@ export async function getCashflowProjection(
   const poolKey = (o: string): Okruh => (o === "fpuo" ? "fpuo" : "svc");
   const predpisByPoolYm = new Map<string, number>();
   const lastPredpisByPool: Record<Okruh, number> = { fpuo: 0, svc: 0 };
+  // Multiple okruhy fold into one pool (svc + CZ mgmt → "svc"), so a single
+  // (year, month) can produce two rows for the same pool key — accumulate,
+  // never overwrite, or one okruh's predpis is silently lost.
+  const latestYmByPool: Record<Okruh, number> = { fpuo: -1, svc: -1 };
   for (const r of [...assessmentTotals].sort(
     (a, b) => a.year - b.year || a.month - b.month
   )) {
     const pool = poolKey(r.okruh);
-    predpisByPoolYm.set(`${pool}:${r.year}-${r.month}`, r.total);
-    lastPredpisByPool[pool] = r.total;
+    const ymKey = `${pool}:${r.year}-${r.month}`;
+    predpisByPoolYm.set(ymKey, (predpisByPoolYm.get(ymKey) ?? 0) + r.total);
+    // Extrapolation base = the latest month's total across all folded okruhy.
+    const ymNum = r.year * 12 + r.month;
+    if (ymNum > latestYmByPool[pool]) {
+      latestYmByPool[pool] = ymNum;
+      lastPredpisByPool[pool] = r.total;
+    } else if (ymNum === latestYmByPool[pool]) {
+      lastPredpisByPool[pool] += r.total;
+    }
   }
 
   // Collection rate: allocations (paid) vs posted assessments (due).

@@ -467,7 +467,7 @@ Reuse RES-20260413-002. Per-country settings:
 ### Technical-audit link
 
 - [x] Categories `REVIZIA_*` enforce `next_inspection_due_at` not null.
-- [x] Revízia expirujúca v ≤ 60 dňoch appears in "Vyžaduje pozornosť"; expired escalates to chairman notification.
+- [x] Revízia expirujúca v ≤ 60 dňoch appears in "Vyžaduje pozornosť"; expired escalates to chairman notification. (Escalation channel = the board "Vyžaduje pozornosť" attention list — the module's standard in-app notification surface, shown to chairman/treasurer/admin; a dedicated email/push escalation is future work.)
 - [x] Calendar export (.ics) per HOA of all upcoming revízie deadlines.
 
 ### Suppliers & invoice intake
