@@ -19,11 +19,13 @@ import { Pool } from "pg";
 import { randomUUID } from "crypto";
 import { sql, eq, and } from "drizzle-orm";
 import { db } from "@/db";
-import { entities, users } from "@/db/schema";
+import { entities, users, memberships, notificationPreferences } from "@/db/schema";
 import {
   feeSchedules,
   journalEntries,
   expenseAuthorisations,
+  settlements,
+  accountingPeriods,
 } from "@modules/accounting/src/db/schema";
 import {
   processApprovedFinancialEffects,
@@ -67,6 +69,7 @@ import {
   getVyuctovaniePreview,
   publishVyuctovanie,
   getVyuctovaniePdfData,
+  notifySettlementPublished,
 } from "@modules/accounting/src/lib/vyuctovanie";
 import {
   buildExportBundle,
@@ -407,6 +410,71 @@ async function main() {
     const msg = err instanceof Error ? err.message : String(err);
     // Re-runs hit "already published" — treat as pass.
     check("prior-year settlement (idempotent)", msg.includes("published") || msg.includes("already"), msg);
+  }
+
+  // ── e-delivery consent split (AC 426) ──
+  console.log("e-delivery consent split");
+  {
+    const byt102 = unitList.find((u) => u.flatNumber === "102")!;
+    const [sett] = await db
+      .select({ id: settlements.id })
+      .from(settlements)
+      .innerJoin(accountingPeriods, eq(settlements.periodId, accountingPeriods.id))
+      .where(and(eq(settlements.entityId, dom.id), eq(accountingPeriods.year, prevYear)));
+    check("prior-year settlement exists for consent test", !!sett);
+    if (sett) {
+      const owner = async (unitEntityId: string) => {
+        const [m] = await db
+          .select({ userId: memberships.userId })
+          .from(memberships)
+          .where(
+            and(
+              eq(memberships.entityId, unitEntityId),
+              eq(memberships.role, "owner"),
+              eq(memberships.status, "active")
+            )
+          );
+        return m?.userId ?? null;
+      };
+      const janId = await owner(byt101.unitEntityId);
+      const mariaId = await owner(byt102.unitEntityId);
+      check("byt101 + byt102 have owners", !!janId && !!mariaId);
+
+      // jan consents to e-delivery; maria does NOT (default off).
+      await db
+        .insert(notificationPreferences)
+        .values({
+          userId: janId!,
+          evyuctConsentAt: sql`now()`,
+          evyuctConsentSource: "owner_ui",
+        })
+        .onConflictDoUpdate({
+          target: notificationPreferences.userId,
+          set: {
+            evyuctConsentAt: sql`now()`,
+            evyuctWithdrawnAt: null,
+            evyuctConsentSource: "owner_ui",
+          },
+        });
+      // Ensure maria has NO active consent (withdraw if a prior run set it).
+      await db
+        .insert(notificationPreferences)
+        .values({ userId: mariaId!, evyuctWithdrawnAt: sql`now()` })
+        .onConflictDoUpdate({
+          target: notificationPreferences.userId,
+          set: { evyuctConsentAt: null, evyuctWithdrawnAt: sql`now()` },
+        });
+
+      const delivery = await notifySettlementPublished({
+        entityId: dom.id,
+        settlementId: sett.id,
+        buildingName: "SVB Demo",
+        appBaseUrl: "http://localhost:3000",
+      });
+      const postalIds = delivery.postal.map((p) => p.userId);
+      check("consenter (jan) NOT in postal run", !postalIds.includes(janId!));
+      check("non-consenter (maria) IS in postal run", postalIds.includes(mariaId!), JSON.stringify(postalIds));
+    }
   }
 
   // ── účtovná závierka approval (AC 423/521) ──

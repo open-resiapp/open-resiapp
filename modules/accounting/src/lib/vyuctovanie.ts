@@ -2,7 +2,8 @@ import "server-only";
 
 import { and, desc, eq, gte, inArray, isNull, lt, sql } from "drizzle-orm";
 import { db } from "@/db";
-import { entities, memberships, users } from "@/db/schema";
+import { entities, memberships, users, notificationPreferences } from "@/db/schema";
+import { hasEDeliveryConsent } from "./e-delivery";
 import {
   accountingPeriods,
   expenses,
@@ -512,6 +513,12 @@ export interface DeliverySummary {
   skippedAlreadySent: number;
   skippedNoEmail: number;
   failed: number;
+  /**
+   * AC 426 — owners WITHOUT electronic-delivery consent. They are NOT
+   * emailed the statement; they fall back to listinné doručenie (a postal
+   * print run) — the treasurer downloads their vyúčtovanie PDFs for post.
+   */
+  postal: { userId: string; unitEntityId: string; name: string | null }[];
 }
 
 /**
@@ -543,13 +550,17 @@ export async function notifySettlementPublished(input: {
     );
   if (!header) throw new Error("accounting: settlement not found");
 
-  // Owners of the settled units, with their unit for the deep link.
+  // Owners of the settled units, with their unit for the deep link and
+  // their electronic-delivery consent (AC 426). LEFT JOIN so an owner who
+  // never touched notification settings is treated as no-consent (postal).
   const recipients = await db
     .selectDistinct({
       userId: users.id,
       name: users.name,
       email: users.email,
       unitEntityId: settlementUnits.unitEntityId,
+      consentAt: notificationPreferences.evyuctConsentAt,
+      withdrawnAt: notificationPreferences.evyuctWithdrawnAt,
     })
     .from(settlementUnits)
     .innerJoin(
@@ -557,6 +568,10 @@ export async function notifySettlementPublished(input: {
       eq(memberships.entityId, settlementUnits.unitEntityId)
     )
     .innerJoin(users, eq(memberships.userId, users.id))
+    .leftJoin(
+      notificationPreferences,
+      eq(notificationPreferences.userId, users.id)
+    )
     .where(
       and(
         eq(settlementUnits.settlementId, input.settlementId),
@@ -581,12 +596,28 @@ export async function notifySettlementPublished(input: {
     skippedAlreadySent: 0,
     skippedNoEmail: 0,
     failed: 0,
+    postal: [],
   };
   const seenUser = new Set<string>();
 
   for (const recipient of recipients) {
     if (seenUser.has(recipient.userId)) continue;
     seenUser.add(recipient.userId);
+    // AC 426 — only owners who consented to electronic delivery get the
+    // statement by email; the rest go to the postal print run.
+    if (
+      !hasEDeliveryConsent({
+        consentAt: recipient.consentAt,
+        withdrawnAt: recipient.withdrawnAt,
+      })
+    ) {
+      summary.postal.push({
+        userId: recipient.userId,
+        unitEntityId: recipient.unitEntityId,
+        name: recipient.name,
+      });
+      continue;
+    }
     if (sentTo.has(recipient.userId)) {
       summary.skippedAlreadySent += 1;
       continue;

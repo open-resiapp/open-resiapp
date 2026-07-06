@@ -6,6 +6,7 @@ import { useTranslations } from "next-intl";
 interface Preferences {
   newPost: boolean;
   votingStarted: boolean;
+  eDeliveryConsent: boolean;
 }
 
 export default function NotificationPreferences() {
@@ -13,6 +14,7 @@ export default function NotificationPreferences() {
   const [prefs, setPrefs] = useState<Preferences>({
     newPost: true,
     votingStarted: true,
+    eDeliveryConsent: false,
   });
   const [loading, setLoading] = useState(true);
 
@@ -23,6 +25,7 @@ export default function NotificationPreferences() {
         setPrefs({
           newPost: data.newPost ?? true,
           votingStarted: data.votingStarted ?? true,
+          eDeliveryConsent: data.eDeliveryConsent ?? false,
         });
       })
       .finally(() => setLoading(false));
@@ -30,21 +33,22 @@ export default function NotificationPreferences() {
 
   async function togglePref(key: keyof Preferences) {
     const previous = prefs[key];
-    const updated = { ...prefs, [key]: !previous };
-    setPrefs(updated);
+    setPrefs({ ...prefs, [key]: !previous });
 
     try {
+      // Send ONLY the changed field — the consent record must not be
+      // re-stamped when an unrelated notification toggle flips (AC 426).
       const res = await fetch("/api/notifications/preferences", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(updated),
+        body: JSON.stringify({ [key]: !previous }),
       });
 
       if (!res.ok) {
-        setPrefs({ ...prefs, [key]: previous });
+        setPrefs((p) => ({ ...p, [key]: previous }));
       }
     } catch {
-      setPrefs({ ...prefs, [key]: previous });
+      setPrefs((p) => ({ ...p, [key]: previous }));
     }
   }
 
@@ -64,6 +68,19 @@ export default function NotificationPreferences() {
         checked={prefs.votingStarted}
         onChange={() => togglePref("votingStarted")}
       />
+      {/* AC 426 — electronic delivery of the annual vyúčtovanie. Opt-in;
+          non-consenting owners receive it by post (listinné doručenie). */}
+      <div>
+        <ToggleRow
+          label={t("prefEDelivery")}
+          description={t("prefEDeliveryDesc")}
+          checked={prefs.eDeliveryConsent}
+          onChange={() => togglePref("eDeliveryConsent")}
+        />
+        <p className="mt-1 text-xs text-amber-700 dark:text-amber-400">
+          {t("prefEDeliveryLegal")}
+        </p>
+      </div>
     </div>
   );
 }

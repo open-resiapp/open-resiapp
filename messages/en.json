@@ -961,7 +961,10 @@
     "prefNewPost": "New posts",
     "prefNewPostDesc": "Get notified when a new post is added to the board.",
     "prefVotingStarted": "New voting",
-    "prefVotingStartedDesc": "Get notified when a new voting is started."
+    "prefVotingStartedDesc": "Get notified when a new voting is started.",
+    "prefEDelivery": "Electronic delivery of the settlement",
+    "prefEDeliveryDesc": "We'll send your annual settlement by e-mail. Without consent you receive it on paper (by post).",
+    "prefEDeliveryLegal": "Retroactive / after-the-fact consent: awaiting a legal opinion (§1184a NOZ / SK equivalent)."
   },
   "Consent": {
     "title": "Data processing consent",

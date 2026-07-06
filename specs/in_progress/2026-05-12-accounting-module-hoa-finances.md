@@ -423,7 +423,7 @@ Reuse RES-20260413-002. Per-country settings:
 - [x] Účtovná závierka schválenie blocked until shromáždění/zhromaždenie vote recorded (§7c ods. 9 SK / §1208 NOZ CZ).
 - [x] Right-to-inspect read-only view available to every owner of the dom (§11 ods. 6 SK / §1179 CZ).
 - [ ] SK debtor disclosure toggle only enables names + sumy for owners with nedoplatok ≥ 500 EUR (§9 ods. 3 zák. 182/1993).
-- [ ] Electronic delivery of vyúčtovanie requires recorded owner consent; non-consenting owners fall back to listinné doručenie.
+- [x] Electronic delivery of vyúčtovanie requires recorded owner consent; non-consenting owners fall back to listinné doručenie.
 - [ ] Vyúčtovanie and upomienka PDFs cite the instance country's own statutes (SK §-refs vs CZ §-refs); the SK template is never reused verbatim for a CZ instance — statutory-citation content is template-aware, not naively parametrized (project rule: legally-regulated content).
 
 ### Core flows
@@ -780,6 +780,26 @@ dismissed, per-field OCR + confidence, `posted_expense_id` restrict FK).
 - **BLOCKED (unchanged):** email inbound (AC 478 first clause) + AV/allowlist
   (AC 480) — SES/Postmark/Mailgun + antivirus infra. `source_kind='email'`
   reserved in the enum so it lands without a migration.
+
+### Notes — AC 426 e-delivery consent (2026-07-06)
+
+Opt-in electronic delivery of the annual vyúčtovanie. Consent lives on
+`notification_preferences` (per-user; migration 0077: `evyuct_consent_at`,
+`evyuct_consent_source` owner_ui|admin_import, `evyuct_withdrawn_at`).
+- Owner toggle on the notification settings (`NotificationPreferences`),
+  with the legal-pending disclaimer next to it ("Retroaktívny súhlas … čaká
+  sa na právne stanovisko §1184a NOZ / SK ekvivalent", i18n ×3). The toggle
+  sends ONLY the changed field so an unrelated notification toggle never
+  re-stamps the consent record.
+- `notifySettlementPublished` LEFT JOINs consent: consenters get the email
+  (e-delivery), non-consenters go into `DeliverySummary.postal` (the listinné
+  print run — the treasurer downloads their PDFs). Pure predicate + split in
+  `e-delivery.ts` (`test:accounting-e-delivery`, 11 checks); e2e verifies the
+  DB join (jan consents → not postal; maria doesn't → postal).
+- **Open (legal, unchanged):** retroactive consent validity is unsettled —
+  the disclaimer flags it. Consent is per-USER (global), not per-dom/per-
+  membership; a multi-SVB refinement is a possible follow-up. The postal
+  print-run list rides in the publish response for a future print-run UI.
 
 ### Open questions
 

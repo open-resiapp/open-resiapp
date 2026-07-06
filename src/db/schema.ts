@@ -610,6 +610,15 @@ export const notificationPreferences = pgTable("notification_preferences", {
     .unique(),
   newPost: boolean("new_post").notNull().default(true),
   votingStarted: boolean("voting_started").notNull().default(true),
+  // Electronic-delivery consent for the annual vyúčtovanie (accounting
+  // module, AC 426). Active consent = consentAt set AND not withdrawn.
+  // Non-consenting owners fall back to listinné doručenie (postal print
+  // run). Timestamps + source are kept for the legal audit trail; a
+  // withdrawal never clears consentAt (re-consent sets a fresh consentAt
+  // and nulls withdrawnAt). Source: `owner_ui` | `admin_import`.
+  evyuctConsentAt: timestamp("evyuct_consent_at"),
+  evyuctConsentSource: text("evyuct_consent_source"),
+  evyuctWithdrawnAt: timestamp("evyuct_withdrawn_at"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 

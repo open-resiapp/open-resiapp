@@ -822,7 +822,10 @@
     "prefNewPostDesc": "Upozornění při přidání nového příspěvku na nástěnku.",
     "prefVotingStarted": "Nové hlasování",
     "prefVotingStartedDesc": "Upozornění při spuštění nového hlasování.",
-    "pushUnsupported": "Tento prohlížeč nepodporuje push oznámení. Zkuste aplikaci nainstalovat na plochu (Přidat na plochu) nebo použijte jiný prohlížeč."
+    "pushUnsupported": "Tento prohlížeč nepodporuje push oznámení. Zkuste aplikaci nainstalovat na plochu (Přidat na plochu) nebo použijte jiný prohlížeč.",
+    "prefEDelivery": "Elektronické doručování vyúčtování",
+    "prefEDeliveryDesc": "Roční vyúčtování vám pošleme e-mailem. Bez souhlasu jej dostanete v listinné podobě (poštou).",
+    "prefEDeliveryLegal": "Zpětně poskytnutý souhlas: čeká se na právní stanovisko (§1184a NOZ / SK ekvivalent)."
   },
   "Consent": {
     "title": "Souhlas se zpracováním údajů",
