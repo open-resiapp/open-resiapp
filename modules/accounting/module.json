@@ -10,5 +10,14 @@
     "ui:inject"
   ],
   "uiSlots": ["sidebar.items", "dashboard.widgets"],
+  "cronJobs": [
+    {
+      "name": "rate-sync",
+      "endpoint": "/api/cron/accounting-rates",
+      "schedule": "30 6 * * *",
+      "description": "Sync ECB/ČNB base rates for úroky z omeškania. Registered in docker-compose.*.yml; self-gates on the accounting module being enabled.",
+      "env": ["CNB_REPO_CSV_URL"]
+    }
+  ],
   "minCoreVersion": "0.1.0"
 }
