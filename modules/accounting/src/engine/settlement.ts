@@ -24,6 +24,13 @@ export interface SettlementServiceInput {
   prescribedByUnit: Record<string, number>;
   /** Per unit: advances received (allocations against the assessments). */
   advancesByUnit: Record<string, number>;
+  /**
+   * Optional metered cost split (teplo/TÚV per vyhláška 269/2015, computed
+   * by engine/heat.ts). When present it OVERRIDES the prescribed-proportional
+   * split for this service; it MUST sum to actualCostCents. Leave undefined
+   * for services split by prescription (the default).
+   */
+  costShareByUnit?: Record<string, number>;
 }
 
 export interface SettlementServiceLine {
@@ -96,19 +103,37 @@ export function computeSettlement(input: {
       0
     );
 
-    // Cost shares proportional to prescription. A service where nothing
-    // was prescribed but money was spent cannot be split by this rule —
-    // fall back to an equal split (and the wizard must surface it).
-    const weights = unitIds.map((id) => ({
-      id,
-      weight:
-        prescribedTotal > 0 ? service.prescribedByUnit[id] ?? 0 : 1,
-    }));
-    const shares =
-      service.actualCostCents > 0
-        ? splitByWeights(service.actualCostCents, weights)
-        : unitIds.map((id) => ({ id, amountCents: 0 }));
-    const shareByUnit = new Map(shares.map((s) => [s.id, s.amountCents]));
+    // A metered service (teplo/TÚV) arrives with its cost already split by
+    // engine/heat.ts — use it verbatim, but assert it ties out (invariant
+    // 10) so a miscomputed split can't silently unbalance the settlement.
+    let shareByUnit: Map<string, number>;
+    if (service.costShareByUnit) {
+      const meteredSum = unitIds.reduce(
+        (s, id) => s + (service.costShareByUnit![id] ?? 0),
+        0
+      );
+      if (meteredSum !== service.actualCostCents) {
+        throw new Error(
+          `accounting: metered split for ${service.serviceCategoryId} sums to ${meteredSum}, expected ${service.actualCostCents}`
+        );
+      }
+      shareByUnit = new Map(
+        unitIds.map((id) => [id, service.costShareByUnit![id] ?? 0])
+      );
+    } else {
+      // Cost shares proportional to prescription. A service where nothing
+      // was prescribed but money was spent cannot be split by this rule —
+      // fall back to an equal split (and the wizard must surface it).
+      const weights = unitIds.map((id) => ({
+        id,
+        weight: prescribedTotal > 0 ? service.prescribedByUnit[id] ?? 0 : 1,
+      }));
+      const shares =
+        service.actualCostCents > 0
+          ? splitByWeights(service.actualCostCents, weights)
+          : unitIds.map((id) => ({ id, amountCents: 0 }));
+      shareByUnit = new Map(shares.map((s) => [s.id, s.amountCents]));
+    }
 
     for (const id of unitIds) {
       const unit = unitMap.get(id)!;
