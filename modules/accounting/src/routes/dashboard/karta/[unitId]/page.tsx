@@ -152,6 +152,14 @@ export default function KartaDetailPage({ unitId }: { unitId: string }) {
           {ledger.vs ? t("vsLabel", { vs: ledger.vs }) : t("noVs")}
         </p>
         <span className="flex items-center gap-4">
+          {canWrite && (
+            <Link
+              href={`/accounting/payments?unit=${unitId}`}
+              className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm"
+            >
+              {t("recordPayment")}
+            </Link>
+          )}
           {settlementYears.map((y) => (
             <DownloadVyuctovanieButton key={y} unitId={unitId} year={y} />
           ))}

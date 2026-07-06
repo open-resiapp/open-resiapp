@@ -1520,7 +1520,8 @@
       "overdueColRate": "Sazba p.a.",
       "overdueColInterest": "Úrok",
       "overdueTotal": "Celkem",
-      "overdueDisclaimer": "Sazby: ČNB repo + 8 p.b. (nař. vlády 351/2013 Sb.). Ověřte aktuálnost sazeb před uplatněním."
+      "overdueDisclaimer": "Sazby: ČNB repo + 8 p.b. (nař. vlády 351/2013 Sb.). Ověřte aktuálnost sazeb před uplatněním.",
+      "recordPayment": "Zaevidovat úhradu"
     },
     "home": {
       "title": "Účetnictví",

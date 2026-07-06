@@ -1520,7 +1520,8 @@
       "overdueColRate": "Sadzba p.a.",
       "overdueColInterest": "Úrok",
       "overdueTotal": "Spolu",
-      "overdueDisclaimer": "Sadzby: ECB + 5 p.b. (nar. vlády 87/1995 Z.z.). Overte aktuálnosť sadzieb pred uplatnením."
+      "overdueDisclaimer": "Sadzby: ECB + 5 p.b. (nar. vlády 87/1995 Z.z.). Overte aktuálnosť sadzieb pred uplatnením.",
+      "recordPayment": "Zaevidovať úhradu"
     },
     "home": {
       "title": "Účtovníctvo",

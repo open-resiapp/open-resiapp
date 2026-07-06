@@ -8,6 +8,7 @@
 // Corrections are voids with a mandatory reason — never edits.
 
 import { useCallback, useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { useFormatter, useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { parseCents, formatEur } from "@modules/accounting/src/lib/money";
@@ -50,12 +51,15 @@ export default function PaymentsPage() {
   const tCat = useTranslations("Accounting.serviceCategories");
   const format = useFormatter();
 
+  // Pre-select a flat when arriving from its karta bytu (?unit=<id>).
+  const presetUnit = useSearchParams().get("unit");
+
   const [rows, setRows] = useState<PaymentRow[] | null>(null);
   const [units, setUnits] = useState<UnitOption[]>([]);
   const [error, setError] = useState<string | null>(null);
 
   // Form state
-  const [unitId, setUnitId] = useState("");
+  const [unitId, setUnitId] = useState(presetUnit ?? "");
   const [method, setMethod] = useState<"bank" | "cash">("bank");
   const [amount, setAmount] = useState("");
   const [receivedAt, setReceivedAt] = useState(
@@ -80,7 +84,9 @@ export default function PaymentsPage() {
         setRows(data.payments);
         setUnits(data.units);
         if (data.units.length > 0) {
-          setUnitId((prev) => prev || data.units[0].id);
+          // Keep a ?unit= preset if it names a real unit, else first.
+          const validPreset = data.units.some((u) => u.id === presetUnit);
+          setUnitId((prev) => prev || (validPreset ? presetUnit! : data.units[0].id));
         }
       })
       .catch(() => setError("load"));
