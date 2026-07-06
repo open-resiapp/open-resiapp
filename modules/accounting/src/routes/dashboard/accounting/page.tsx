@@ -36,6 +36,8 @@ interface Tiles {
       daysUntil: number;
       sanctionActive: boolean;
     } | null;
+    revisionsDueSoon: number;
+    revisionsOverdue: number;
   };
   openingPosted: boolean;
   pokladnicaCents: number;
@@ -337,6 +339,8 @@ export default function AccountingHomePage() {
         tiles.attention.uncategorizedExpenses > 0 ||
         tiles.attention.overdueInvoices > 0 ||
         tiles.attention.vyuctovanieDeadline !== null ||
+        tiles.attention.revisionsOverdue > 0 ||
+        tiles.attention.revisionsDueSoon > 0 ||
         tiles.nedoplatky.count > 0) && (
         <div className="mb-8 bg-white dark:bg-gray-900 border border-amber-300 dark:border-amber-800 rounded-lg p-5">
           <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-3">
@@ -396,6 +400,30 @@ export default function AccountingHomePage() {
                 >
                   {t("attentionOverdueInvoices", {
                     count: tiles.attention.overdueInvoices,
+                  })}
+                </Link>
+              </li>
+            )}
+            {tiles.attention.revisionsOverdue > 0 && (
+              <li>
+                <Link
+                  href="/accounting/revisions"
+                  className="text-red-600 dark:text-red-400 font-medium hover:underline"
+                >
+                  {t("attentionRevisionsOverdue", {
+                    count: tiles.attention.revisionsOverdue,
+                  })}
+                </Link>
+              </li>
+            )}
+            {tiles.attention.revisionsDueSoon > 0 && (
+              <li>
+                <Link
+                  href="/accounting/revisions"
+                  className="text-amber-700 dark:text-amber-400 hover:underline"
+                >
+                  {t("attentionRevisionsDueSoon", {
+                    count: tiles.attention.revisionsDueSoon,
                   })}
                 </Link>
               </li>

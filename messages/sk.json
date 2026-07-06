@@ -1579,6 +1579,8 @@
       "attentionUnmatched": "{count, plural, one {# nespárovaná platba čaká} few {# nespárované platby čakajú} other {# nespárovaných platieb čaká}} na kontrolu",
       "attentionUncategorized": "{count, plural, one {# nezaradená faktúra} few {# nezaradené faktúry} other {# nezaradených faktúr}}",
       "attentionOverdueInvoices": "{count, plural, one {# faktúra po splatnosti} few {# faktúry po splatnosti} other {# faktúr po splatnosti}}",
+      "attentionRevisionsOverdue": "{count, plural, one {# revízia po termíne — na eskaláciu predsedovi} few {# revízie po termíne — na eskaláciu predsedovi} other {# revízií po termíne — na eskaláciu predsedovi}}",
+      "attentionRevisionsDueSoon": "{count, plural, one {# revízia s termínom do 60 dní} few {# revízie s termínom do 60 dní} other {# revízií s termínom do 60 dní}}",
       "attentionOverdueUnits": "{count, plural, one {# byt s nedoplatkom} few {# byty s nedoplatkom} other {# bytov s nedoplatkom}}",
       "attentionVyuctovanieDue": "Ročné vyúčtovanie za {year} — termín o {days} dní (do 31.5.)",
       "attentionVyuctovanieOverdue": "Ročné vyúčtovanie za {year} po termíne — hrozí strata nároku na platbu za správu (§8a ods. 4)",

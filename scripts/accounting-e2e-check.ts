@@ -185,10 +185,50 @@ async function main() {
     amountNettoCents: 12500,
     dphCents: 2500,
   });
+  // Two revízie in distinct REVIZIA_* categories (listRevisions keeps the
+  // latest inspection per category) — one overdue, one due within 60 days —
+  // so the dashboard attention list surfaces both (AC 470).
+  const revElectrical = cats.find((c) => c.slug === "REVIZIA_ELECTRICAL")!;
+  const revGas = cats.find((c) => c.slug === "REVIZIA_GAS")!;
+  const DAY = 24 * 3600 * 1000;
+  await createExpense({
+    entityId: dom.id,
+    country,
+    createdById: actorId,
+    supplierName: "Revízie Elektro s.r.o.",
+    supplierIco: "36000456",
+    supplierIban: "SK9611000000002918599669",
+    invoiceNo: `E2E-REV-OVERDUE-${Date.now()}`,
+    invoiceDate: new Date(Date.now() - 400 * DAY),
+    serviceCategoryId: revElectrical.id,
+    okruh: "svc",
+    amountCents: 6000,
+    amountNettoCents: 5000,
+    dphCents: 1000,
+    nextInspectionDueAt: new Date(Date.now() - 5 * DAY),
+  });
+  await createExpense({
+    entityId: dom.id,
+    country,
+    createdById: actorId,
+    supplierName: "Revízie Plyn s.r.o.",
+    supplierIco: "36000789",
+    supplierIban: "SK9611000000002918599669",
+    invoiceNo: `E2E-REV-SOON-${Date.now()}`,
+    invoiceDate: new Date(Date.now() - 300 * DAY),
+    serviceCategoryId: revGas.id,
+    okruh: "svc",
+    amountCents: 6000,
+    amountNettoCents: 5000,
+    dphCents: 1000,
+    nextInspectionDueAt: new Date(Date.now() + 30 * DAY),
+  });
   const tiles = await getDashboardTiles(dom.id, country);
   check("dashboard tiles compute", typeof tiles.bankaCents === "number");
   check("fond opráv tile present", typeof tiles.fondOpravCents === "number");
   check("nedoplatky counted", tiles.nedoplatky.count >= 0);
+  check("overdue revízia escalated (470)", tiles.attention.revisionsOverdue >= 1);
+  check("revízia due ≤60d surfaced (470)", tiles.attention.revisionsDueSoon >= 1);
 
   // ── vyúčtovanie preview (current year — gate blocks publish) ──
   console.log("vyúčtovanie preview");

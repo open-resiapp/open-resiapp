@@ -14,6 +14,7 @@ import { ACCOUNT_CODES } from "../seeds/coa-sk";
 import { listDomUnits } from "./dom-units";
 import { listUnitBalances } from "./karta-bytu";
 import { vyuctovanieDeadline, type VyuctovanieDeadline } from "./deadlines";
+import { listRevisions } from "./revisions";
 
 // Dashboard tiles (spec §Dashboard, Phase 1: 4 tiles). Every number is
 // derived from journal postings at read time — never a stored balance
@@ -33,6 +34,13 @@ export interface AttentionItems {
    * is within 30 days or already past (AC 418/419); null when nothing is due.
    */
   vyuctovanieDeadline: VyuctovanieDeadline | null;
+  /** Revízie whose next inspection is due within 60 days (AC 470). */
+  revisionsDueSoon: number;
+  /**
+   * Revízie already past their next-inspection deadline (AC 470). A safety +
+   * liability problem — surfaced red as a chairman escalation.
+   */
+  revisionsOverdue: number;
 }
 
 export interface DashboardTiles {
@@ -109,7 +117,7 @@ export async function getDashboardTiles(
       .where(cond)
       .then((r) => r[0].n);
 
-  const [balances, units, unmatchedBankLines, expenseCounts] =
+  const [balances, units, unmatchedBankLines, expenseCounts, revisions] =
     await Promise.all([
       accountBalances(entityId, country),
       listDomUnits(entityId),
@@ -133,7 +141,14 @@ export async function getDashboardTiles(
           and(eq(expenses.entityId, entityId), isNull(expenses.voidedAt))
         )
         .then((r) => r[0]),
+      listRevisions(entityId, country),
     ]);
+  let revisionsDueSoon = 0;
+  let revisionsOverdue = 0;
+  for (const r of revisions) {
+    if (r.status === "overdue") revisionsOverdue += 1;
+    else if (r.status === "due_soon") revisionsDueSoon += 1;
+  }
   const drMinusCr = (code: string) => balances.get(code) ?? 0;
 
   const fondLiability = -drMinusCr(ACCOUNT_CODES.ZAVAZKY_FPUO);
@@ -183,6 +198,8 @@ export async function getDashboardTiles(
       uncategorizedExpenses: expenseCounts.uncategorized,
       overdueInvoices: expenseCounts.overdue,
       vyuctovanieDeadline: deadline,
+      revisionsDueSoon,
+      revisionsOverdue,
     },
     openingPosted: !!opening,
     pokladnicaCents: drMinusCr(ACCOUNT_CODES.POKLADNICA),

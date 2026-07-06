@@ -1579,6 +1579,8 @@
       "attentionUnmatched": "{count, plural, one {# unmatched payment waits} other {# unmatched payments wait}} for review",
       "attentionUncategorized": "{count, plural, one {# uncategorized invoice} other {# uncategorized invoices}}",
       "attentionOverdueInvoices": "{count, plural, one {# invoice past due} other {# invoices past due}}",
+      "attentionRevisionsOverdue": "{count, plural, one {# inspection overdue — escalate to chairman} other {# inspections overdue — escalate to chairman}}",
+      "attentionRevisionsDueSoon": "{count, plural, one {# inspection due within 60 days} other {# inspections due within 60 days}}",
       "attentionOverdueUnits": "{count, plural, one {# unit in arrears} other {# units in arrears}}",
       "attentionVyuctovanieDue": "Annual settlement for {year} — due in {days} days",
       "attentionVyuctovanieOverdue": "Annual settlement for {year} overdue — risk of losing the management-fee claim (§8a(4))",
