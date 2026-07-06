@@ -1383,7 +1383,26 @@
       "submitError": "Zaúčtování selhalo",
       "loadError": "Nepodařilo se načíst data.",
       "alreadyPosted": "Počáteční rozvaha je již zaúčtována a nelze ji zadat znovu. Opravy se účtují jako korekční zápisy v aktuálním období.",
-      "amountPlaceholder": "0,00"
+      "amountPlaceholder": "0,00",
+      "import": {
+        "panelTitle": "Hromadný import zůstatků (CSV)",
+        "panelHint": "Stáhněte si šablonu se seznamem jednotek, doplňte zůstatky v Excelu a nahrajte soubor zpět. Tabulku níže pak můžete ještě upravit.",
+        "downloadTemplate": "Stáhnout šablonu",
+        "uploadCsv": "Nahrát vyplněné CSV",
+        "resultMatched": "Přiřazených jednotek: {count}.",
+        "resultErrors": "Chyby v {count} řádcích — tyto se nenačetly:",
+        "resultEmpty": "Bez zůstatku zůstává {count} jednotek: {units}",
+        "rowLabel": "Řádek {row} ({unit})",
+        "errUnknownUnit": "neznámá jednotka (neodpovídá žádné jednotce domu)",
+        "errAmbiguousUnit": "nejednoznačná jednotka (více jednotek se stejným označením)",
+        "errDuplicateUnit": "jednotka se v souboru opakuje",
+        "errBadFpuo": "neplatná částka fondu oprav",
+        "errBadZalohy": "neplatná částka záloh",
+        "errEmptyFile": "Soubor je prázdný.",
+        "errNoHeader": "Nebyl nalezen řádek se záhlavím. První řádek musí obsahovat názvy sloupců (např. byt; fond_oprav; zalohy).",
+        "errMissingFlatColumn": "Chybí sloupec s číslem jednotky (např. „byt“).",
+        "errMissingAmountColumn": "Chybí alespoň jeden sloupec s částkou (fond oprav nebo zálohy)."
+      }
     },
     "predpis": {
       "title": "Předpis",

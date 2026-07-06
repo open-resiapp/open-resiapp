@@ -1383,7 +1383,26 @@
       "submitError": "Zaúčtovanie zlyhalo",
       "loadError": "Nepodarilo sa načítať údaje.",
       "alreadyPosted": "Otváracia súvaha je už zaúčtovaná a nedá sa zadať znova. Opravy sa účtujú ako korekčné zápisy v aktuálnom období.",
-      "amountPlaceholder": "0,00"
+      "amountPlaceholder": "0,00",
+      "import": {
+        "panelTitle": "Hromadný import zostatkov (CSV)",
+        "panelHint": "Stiahnite si šablónu so zoznamom bytov, doplňte zostatky v Exceli a nahrajte súbor späť. Tabuľku nižšie môžete potom ešte upraviť.",
+        "downloadTemplate": "Stiahnuť šablónu",
+        "uploadCsv": "Nahrať vyplnené CSV",
+        "resultMatched": "Priradených bytov: {count}.",
+        "resultErrors": "Chyby v {count} riadkoch — tieto sa nenačítali:",
+        "resultEmpty": "Bez zostatku ostáva {count} bytov: {units}",
+        "rowLabel": "Riadok {row} ({unit})",
+        "errUnknownUnit": "neznámy byt (nezhoduje sa so žiadnym bytom domu)",
+        "errAmbiguousUnit": "nejednoznačný byt (viac bytov s rovnakým označením)",
+        "errDuplicateUnit": "byt sa v súbore opakuje",
+        "errBadFpuo": "neplatná suma fondu opráv",
+        "errBadZalohy": "neplatná suma záloh",
+        "errEmptyFile": "Súbor je prázdny.",
+        "errNoHeader": "Nenašiel sa hlavičkový riadok. Prvý riadok musí obsahovať názvy stĺpcov (napr. byt; fond_oprav; zalohy).",
+        "errMissingFlatColumn": "Chýba stĺpec s číslom bytu (napr. „byt“).",
+        "errMissingAmountColumn": "Chýba aspoň jeden stĺpec so sumou (fond opráv alebo zálohy)."
+      }
     },
     "predpis": {
       "title": "Predpis",

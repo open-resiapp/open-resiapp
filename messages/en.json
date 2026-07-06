@@ -1383,7 +1383,26 @@
       "submitError": "Posting failed",
       "loadError": "Failed to load data.",
       "alreadyPosted": "The opening balance has already been posted and cannot be entered again. Corrections are booked as adjusting entries in the current period.",
-      "amountPlaceholder": "0.00"
+      "amountPlaceholder": "0.00",
+      "import": {
+        "panelTitle": "Bulk import balances (CSV)",
+        "panelHint": "Download a template listing your units, fill in the balances in Excel and upload it back. You can still edit the table below afterwards.",
+        "downloadTemplate": "Download template",
+        "uploadCsv": "Upload filled CSV",
+        "resultMatched": "Units matched: {count}.",
+        "resultErrors": "Errors on {count} row(s) — these were not imported:",
+        "resultEmpty": "{count} unit(s) still without a balance: {units}",
+        "rowLabel": "Row {row} ({unit})",
+        "errUnknownUnit": "unknown unit (matches no unit in this building)",
+        "errAmbiguousUnit": "ambiguous unit (several units share this label)",
+        "errDuplicateUnit": "unit repeated in the file",
+        "errBadFpuo": "invalid repair-fund amount",
+        "errBadZalohy": "invalid advances amount",
+        "errEmptyFile": "The file is empty.",
+        "errNoHeader": "No header row found. The first row must name the columns (e.g. flat; repair_fund; advances).",
+        "errMissingFlatColumn": "Missing a unit-number column (e.g. “flat”).",
+        "errMissingAmountColumn": "Missing at least one amount column (repair fund or advances)."
+      }
     },
     "predpis": {
       "title": "Fee schedule",

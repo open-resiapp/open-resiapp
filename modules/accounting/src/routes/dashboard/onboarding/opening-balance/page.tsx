@@ -7,10 +7,36 @@
 // rozdiel is non-zero. Amounts are entered in EUR and converted to
 // integer cents on parse — no float math on money.
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
-import { parseCents as parseCentsBase, formatEur } from "@modules/accounting/src/lib/money";
+import {
+  parseCents as parseCentsBase,
+  centsToInput,
+  formatEur,
+} from "@modules/accounting/src/lib/money";
+import {
+  parseOpeningBalanceCsv,
+  buildOpeningBalanceTemplate,
+  type OpeningImportResult,
+  type OpeningRowErrorCode,
+  type OpeningFileErrorCode,
+} from "@modules/accounting/src/lib/opening-balance-import";
+
+// Parser error codes → i18n keys (parser stays i18n-free; UI localizes).
+const ROW_ERR_KEY: Record<OpeningRowErrorCode, string> = {
+  unknown_unit: "import.errUnknownUnit",
+  ambiguous_unit: "import.errAmbiguousUnit",
+  duplicate_unit: "import.errDuplicateUnit",
+  bad_fpuo: "import.errBadFpuo",
+  bad_zalohy: "import.errBadZalohy",
+};
+const FILE_ERR_KEY: Record<OpeningFileErrorCode, string> = {
+  empty_file: "import.errEmptyFile",
+  no_header: "import.errNoHeader",
+  missing_flat_column: "import.errMissingFlatColumn",
+  missing_amount_column: "import.errMissingAmountColumn",
+};
 
 interface UnitRow {
   id: string;
@@ -45,6 +71,10 @@ export default function OpeningBalancePage() {
   const [confirmKorekcia, setConfirmKorekcia] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [importReport, setImportReport] = useState<OpeningImportResult | null>(
+    null
+  );
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     fetch("/api/accounting/opening-balance")
@@ -121,6 +151,46 @@ export default function OpeningBalancePage() {
       setError(err instanceof Error ? err.message : "submit");
       setSubmitting(false);
     }
+  }
+
+  // Concierge import: download a per-unit template, or fill the table from
+  // a filled-in spreadsheet — the parse runs entirely client-side.
+  function downloadTemplate() {
+    if (!state) return;
+    const csv = buildOpeningBalanceTemplate(
+      state.units.map((u) => ({ label: u.flatNumber ?? u.name }))
+    );
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `otvaracia-suvaha-${state.year}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
+  async function onCsvFile(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    e.target.value = ""; // let the same file be re-selected after an edit
+    if (!file || !state) return;
+    const text = await file.text();
+    const result = parseOpeningBalanceCsv(
+      text,
+      state.units.map((u) => ({ id: u.id, label: u.flatNumber ?? u.name }))
+    );
+    setImportReport(result);
+    if (result.fileError) return;
+    // Merge every cleanly-matched row into the editable table.
+    setUnitValues((prev) => {
+      const next = { ...prev };
+      for (const [unitId, v] of Object.entries(result.matched)) {
+        next[unitId] = {
+          fpuo: centsToInput(v.fpuoCents),
+          zalohy: centsToInput(v.zalohyCents),
+        };
+      }
+      return next;
+    });
   }
 
   if (loading) {
@@ -208,6 +278,99 @@ export default function OpeningBalancePage() {
 
       {step === 2 && (
         <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg p-6">
+          {/* Concierge CSV import — fill the table from a spreadsheet. */}
+          <div className="mb-5 bg-blue-50 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-900 rounded-lg p-4">
+            <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
+              {t("import.panelTitle")}
+            </p>
+            <p className="text-xs text-gray-600 dark:text-gray-400 mt-1 mb-3">
+              {t("import.panelHint")}
+            </p>
+            <div className="flex flex-wrap gap-2">
+              <button
+                type="button"
+                onClick={downloadTemplate}
+                className="px-3 py-1.5 text-sm border border-blue-300 dark:border-blue-700 text-blue-700 dark:text-blue-300 rounded-lg hover:bg-blue-100 dark:hover:bg-blue-900"
+              >
+                ⬇ {t("import.downloadTemplate")}
+              </button>
+              <button
+                type="button"
+                onClick={() => fileInputRef.current?.click()}
+                className="px-3 py-1.5 text-sm bg-blue-600 hover:bg-blue-700 text-white rounded-lg"
+              >
+                ⬆ {t("import.uploadCsv")}
+              </button>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept=".csv,text/csv,text/plain"
+                onChange={onCsvFile}
+                className="hidden"
+              />
+            </div>
+
+            {importReport && (
+              <div className="mt-3 text-sm space-y-2">
+                {importReport.fileError ? (
+                  <p className="text-red-700 dark:text-red-400">
+                    {t(
+                      FILE_ERR_KEY[
+                        importReport.fileError
+                      ] as Parameters<typeof t>[0]
+                    )}
+                  </p>
+                ) : (
+                  <>
+                    <p className="text-green-700 dark:text-green-400">
+                      {t("import.resultMatched", {
+                        count: importReport.matchedCount,
+                      })}
+                    </p>
+                    {importReport.errorCount > 0 && (
+                      <div className="bg-amber-50 dark:bg-amber-950 border border-amber-200 dark:border-amber-800 rounded p-2 text-amber-900 dark:text-amber-200">
+                        <p className="font-medium mb-1">
+                          {t("import.resultErrors", {
+                            count: importReport.errorCount,
+                          })}
+                        </p>
+                        <ul className="list-disc pl-5 space-y-0.5">
+                          {importReport.rows
+                            .filter((r) => r.errors.length)
+                            .slice(0, 12)
+                            .map((r) => (
+                              <li key={r.rowNumber}>
+                                {t("import.rowLabel", {
+                                  row: r.rowNumber,
+                                  unit: r.rawLabel,
+                                })}
+                                :{" "}
+                                {r.errors
+                                  .map((c) =>
+                                    t(ROW_ERR_KEY[c] as Parameters<typeof t>[0])
+                                  )
+                                  .join(", ")}
+                              </li>
+                            ))}
+                        </ul>
+                      </div>
+                    )}
+                    {importReport.unmatchedUnitLabels.length > 0 && (
+                      <p className="text-amber-700 dark:text-amber-400">
+                        {t("import.resultEmpty", {
+                          count: importReport.unmatchedUnitLabels.length,
+                          units: importReport.unmatchedUnitLabels
+                            .slice(0, 10)
+                            .join(", "),
+                        })}
+                      </p>
+                    )}
+                  </>
+                )}
+              </div>
+            )}
+          </div>
+
           <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
             {t("unitsHint")}
           </p>
