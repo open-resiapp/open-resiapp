@@ -605,14 +605,14 @@ that collides with the e2e's own publish).
 57/89 acceptance criteria ticked (implemented + covered by automated tests or
 clearly present). **Left unchecked — not done, and why:**
 - **Not built (in-scope subsystems):** collector email inbox + `expense_inbox`
-  OCR queue (478–480), CZ heat/TUV rozúčtování engine per vyhl. 269/2015 (421),
-  voting→accounting pipeline (423, 513–515), CZ reklamace state machine
-  (420, 537), receipt OCR-assist (phase 4).
-- **Blocked on external inputs:** interest-rate update cron needs Filip's
-  verified ECB/ČNB rates (464); statutory e-delivery consent flow unresolved
-  in law (426); FinStat/ARES supplier lookup coded but mocked — needs a real
-  API account (475–476); CZ chart of accounts + CZK rounding to 649/549 need
+  OCR queue (478–480), voting→accounting pipeline (423, 513–515), CZ reklamace
+  state machine (420, 537), receipt OCR-assist (phase 4).
+- **Blocked on external inputs:** statutory e-delivery consent flow unresolved
+  in law (426); CZ chart of accounts + CZK rounding to 649/549 need
   CZ-accountant confirmation (415, 497–498).
+- **Implemented 2026-07-06 (see next note):** CZ heat/TÚV engine (421) and the
+  interest-rate cron (464) — moved out of the lists above. FinStat/ARES
+  supplier auto-fill (475–476) descoped (paid API).
 - **Needs manual / physical QA (code complete):** PAY-by-square + SPAYD QR
   "scan pre-fills correctly" (455–456), ≥95 % auto-match on a 1000-payment
   fixture (438), real bank-file round-trips.
