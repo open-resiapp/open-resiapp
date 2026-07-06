@@ -505,6 +505,13 @@
       "when": 1783335518715,
       "tag": "0071_premium_invaders",
       "breakpoints": true
+    },
+    {
+      "idx": 72,
+      "version": "7",
+      "when": 1783336016205,
+      "tag": "0072_cool_venus",
+      "breakpoints": true
     }
   ]
 }

@@ -6,9 +6,10 @@
 // official series before any upomienka is sent:
 //   SK: ECB main refinancing operations rate — ecb.europa.eu / nbs.sk
 //   CZ: ČNB dvoutýdenní repo sazba — cnb.cz
-// The spec requires a cron-updated `interest_rate_history` (AC: "current
-// ECB/ČNB repo always available") — this static seed is the starting
-// point; the update job is a follow-up.
+// These constants are the HISTORICAL BASELINE: lib/rate-history.ts merges
+// them with the cron-appended `interest_rate_history` rows (DB wins on a
+// shared date), and lib/rate-sync.ts fetches new observations. So the seed
+// guarantees coverage before the cron ever runs; the cron keeps it current.
 
 import type { RateEntry } from "../sanctions/interest";
 

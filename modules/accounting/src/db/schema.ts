@@ -5,6 +5,7 @@ import {
   text,
   integer,
   timestamp,
+  date,
   jsonb,
   pgEnum,
   uniqueIndex,
@@ -153,6 +154,36 @@ export const accountingSettings = pgTable(
       table.entityId,
       table.effectiveFrom
     ),
+  })
+);
+
+// Central-bank base-rate history for the úroky-z-omeškania engine (Phase 5).
+// NATIONAL reference data — not per-dom (no entityId). Seeded historically
+// from the code constants (seeds/interest-rates.ts) via the loader's merge;
+// the rate-sync cron appends new observations here so the current ECB/ČNB
+// repo is always available (AC: cron-updated rate history). Rate stored as
+// milli-percent (×1000) to stay integer-exact: 4.5 % → 4500, 3.65 % → 3650.
+export const rateSeriesEnum = pgEnum("mod_accounting_rate_series", [
+  "ecb_mro", // ECB main refinancing operations rate (SK anchor)
+  "cnb_repo", // ČNB two-week repo rate (CZ anchor)
+]);
+
+export const interestRateHistory = pgTable(
+  "mod_accounting_interest_rate_history",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    series: rateSeriesEnum("series").notNull(),
+    validFrom: date("valid_from").notNull(),
+    rateMilliPct: integer("rate_milli_pct").notNull(),
+    /** Where the row came from (URL / "manual" / "seed"). */
+    source: varchar("source", { length: 200 }),
+    fetchedAt: timestamp("fetched_at").defaultNow().notNull(),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+  },
+  (table) => ({
+    seriesFromUnique: uniqueIndex(
+      "mod_accounting_interest_rate_series_from_unique"
+    ).on(table.series, table.validFrom),
   })
 );
 

@@ -9,8 +9,8 @@ import {
   unitSettings,
 } from "../db/schema";
 import { sql } from "drizzle-orm";
-import { computeInterest, type RateEntry } from "../sanctions/interest";
-import { ECB_MRO_RATES, CNB_REPO_RATES } from "../seeds/interest-rates";
+import { computeInterest } from "../sanctions/interest";
+import { loadRateHistory, seriesForCountry } from "./rate-history";
 import { openReceivablesForUnit, type OpenReceivable } from "./payments";
 import { listDomUnits } from "./dom-units";
 import { payBySquareString } from "../qr/pay-by-square";
@@ -27,11 +27,6 @@ import { payBySquareString } from "../qr/pay-by-square";
 // Delay starts the day after the due date (engine rule).
 
 type Country = "sk" | "cz";
-
-const HISTORY: Record<Country, RateEntry[]> = {
-  sk: ECB_MRO_RATES,
-  cz: CNB_REPO_RATES,
-};
 
 function lastDayOfMonth(year: number, month: number): Date {
   // Day 0 of the next month = last day of this month.
@@ -202,7 +197,7 @@ export async function getOverdueForUnit(input: {
 
   const { lines } = computeInterest({
     country: input.country,
-    history: HISTORY[input.country],
+    history: await loadRateHistory(seriesForCountry(input.country)),
     items: withDue.map(({ item, dueDate }) => ({
       id: item.id,
       amountCents: item.openCents,
