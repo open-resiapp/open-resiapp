@@ -415,8 +415,8 @@ Reuse RES-20260413-002. Per-country settings:
 - [ ] CZ chart of accounts loaded per vyhláška 504/2002 Sb.
 - [ ] Three okruhy (FPÚO, services, MGMT_CZ) tracked separately; transfers between flagged.
 - [ ] FPÚO → služby transient cover (SK §10 ods. 3) records a return-due flag visible to treasurer.
-- [ ] Ročné vyúčtovanie generates by SK 31.05 deadline; system surfaces sanction (§8a ods. 4) 30 days prior.
-- [ ] CZ vyúčtování generates within 4 months of period end per §7 zák. 67/2013.
+- [x] Ročné vyúčtovanie generates by SK 31.05 deadline; system surfaces sanction (§8a ods. 4) 30 days prior.
+- [x] CZ vyúčtování generates within 4 months of period end per §7 zák. 67/2013.
 - [ ] CZ reklamace state machine respects 30+30 day windows per §8 zák. 67/2013.
 - [x] CZ heat/TUV rozúčtování engine implements vyhl. 269/2015 ve znění 376/2021 (base 40–60 %, ±20 %/+100 % korekce).
 - [x] 10-year retention enforced — no hard delete of journal entries, doklady, vyúčtovania.
