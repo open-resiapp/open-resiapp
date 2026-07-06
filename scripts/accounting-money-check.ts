@@ -231,6 +231,49 @@ console.log("SPAYD");
   }
 }
 
+// ── revisions .ics builder (pure) ──────────────────────
+
+import {
+  buildRevisionsIcs,
+  statusFor,
+} from "@modules/accounting/src/lib/revisions-format";
+
+console.log("revisions ics");
+{
+  const ics = buildRevisionsIcs(
+    [
+      {
+        categorySlug: "REVIZIA_GAS",
+        supplierName: "Plyn, s.r.o.",
+        lastInspectionDate: "2023-05-10T00:00:00.000Z",
+        nextDueAt: "2026-05-10T00:00:00.000Z",
+        daysUntilDue: 300,
+        status: "ok",
+      },
+    ],
+    "SVB Demo, Hlavná 1",
+    (slug) => (slug === "REVIZIA_GAS" ? "Revízia plynu" : slug)
+  );
+  check("ics has calendar envelope", ics.startsWith("BEGIN:VCALENDAR"));
+  check("ics has all-day date", ics.includes("DTSTART;VALUE=DATE:20260510"));
+  check("ics has stable uid", ics.includes("UID:revizia-REVIZIA_GAS-20260510@open-resiapp"));
+  check("ics uses CRLF", ics.includes("\r\n"));
+  check(
+    "ics escapes commas in summary",
+    ics.includes("SUMMARY:Revízia plynu — SVB Demo\\, Hlavná 1")
+  );
+
+  check("statusFor overdue", statusFor(-1) === "overdue");
+  check("statusFor due_soon boundary", statusFor(60) === "due_soon");
+  check("statusFor ok", statusFor(61) === "ok");
+
+  const empty = buildRevisionsIcs([], "Dom", (s) => s);
+  check(
+    "empty ics still a valid calendar",
+    empty.startsWith("BEGIN:VCALENDAR") && empty.includes("END:VCALENDAR")
+  );
+}
+
 if (failures > 0) {
   console.error(`\n${failures} check(s) FAILED.`);
   process.exit(1);

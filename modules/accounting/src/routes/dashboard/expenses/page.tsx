@@ -55,6 +55,7 @@ export default function ExpensesPage() {
   const [amountNetto, setAmountNetto] = useState("");
   const [dph, setDph] = useState("");
   const [dueDate, setDueDate] = useState("");
+  const [nextInspection, setNextInspection] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [lookingUp, setLookingUp] = useState(false);
   const [lookupNote, setLookupNote] = useState<
@@ -81,6 +82,9 @@ export default function ExpensesPage() {
   }, []);
 
   useEffect(load, [load]);
+
+  const selectedCategory = categories.find((c) => c.id === categoryId);
+  const isRevizia = !!selectedCategory?.slug?.startsWith("REVIZIA_");
 
   // Category drives okruh: FPUO category = fund spending.
   useEffect(() => {
@@ -128,6 +132,10 @@ export default function ExpensesPage() {
           amountCents,
           amountNettoCents,
           dphCents,
+          nextInspectionDueAt:
+            isRevizia && /^\d{4}-\d{2}-\d{2}$/.test(nextInspection)
+              ? new Date(`${nextInspection}T00:00:00Z`).toISOString()
+              : null,
         }),
       });
       const body = await res.json().catch(() => null);
@@ -347,6 +355,19 @@ export default function ExpensesPage() {
               <option value="fpuo">{t("okruhFpuo")}</option>
             </select>
           </label>
+          {isRevizia && (
+            <label className="flex flex-col gap-1 text-sm">
+              <span className="text-gray-700 dark:text-gray-300">
+                {t("nextInspectionLabel")}
+              </span>
+              <input
+                type="date"
+                value={nextInspection}
+                onChange={(e) => setNextInspection(e.target.value)}
+                className={inputClass}
+              />
+            </label>
+          )}
           <label className="flex flex-col gap-1 text-sm">
             <span className="text-gray-700 dark:text-gray-300">
               {t("amountBrutto")} *

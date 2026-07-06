@@ -1349,7 +1349,13 @@
       "SVC_CLEANING": "Cleaning",
       "SVC_INTERNET": "Internet",
       "SVC_OTHER": "Other",
-      "SETTLEMENT": "Annual settlement"
+      "SETTLEMENT": "Annual settlement",
+      "REVIZIA_ELECTRICAL": "Electrical inspection",
+      "REVIZIA_GAS": "Gas inspection",
+      "REVIZIA_LIFT": "Lift inspection",
+      "REVIZIA_CHIMNEY": "Chimney inspection",
+      "REVIZIA_FIRE": "Fire-safety inspection",
+      "REVIZIA_LIGHTNING": "Lightning-rod inspection"
     },
     "openingBalance": {
       "title": "Opening balance",
@@ -1565,7 +1571,9 @@
       "navJournal": "Accountant view",
       "navJournalHint": "Journal and trial balance for audit",
       "navInspect": "Right to inspect",
-      "navInspectHint": "Community documents and spending"
+      "navInspectHint": "Community documents and spending",
+      "navRevisions": "Inspections",
+      "navRevisionsHint": "Deadlines for mandatory inspections"
     },
     "settings": {
       "title": "Accounting settings",
@@ -1686,7 +1694,8 @@
       "lookup_notConfigured": "FinStat API key is not configured — lookup unavailable.",
       "lookup_error": "Lookup failed. Check the ID or try later.",
       "lookup_debtor": "⚠️ Supplier is on the debtor list — verify before saving.",
-      "attachmentsToggle": "Documents"
+      "attachmentsToggle": "Documents",
+      "nextInspectionLabel": "Next inspection date"
     },
     "meters": {
       "title": "Meter readings",
@@ -1830,6 +1839,24 @@
       "redactionPending": "Awaiting redaction",
       "noDoc": "No document",
       "fpuoBadge": "RF"
+    },
+    "revisions": {
+      "title": "Inspections",
+      "subtitle": "Deadlines for mandatory inspections of technical equipment",
+      "backToAccounting": "Back to accounting",
+      "loadError": "Failed to load inspections.",
+      "empty": "No inspections recorded yet. When entering an expense in an inspection category, fill in the next-inspection date.",
+      "colCategory": "Inspection",
+      "colSupplier": "Supplier",
+      "colLast": "Last",
+      "colNext": "Next",
+      "colStatus": "Status",
+      "statusOverdue": "Overdue",
+      "statusSoon": "Due soon",
+      "statusOk": "OK",
+      "daysOverdue": "{days} days overdue",
+      "daysLeft": "in {days} days",
+      "exportIcs": "Export to calendar (.ics)"
     }
   }
 }

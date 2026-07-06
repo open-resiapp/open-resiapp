@@ -1349,7 +1349,13 @@
       "SVC_CLEANING": "Upratovanie",
       "SVC_INTERNET": "Internet",
       "SVC_OTHER": "Ostatné",
-      "SETTLEMENT": "Vyúčtovanie"
+      "SETTLEMENT": "Vyúčtovanie",
+      "REVIZIA_ELECTRICAL": "Revízia elektroinštalácie",
+      "REVIZIA_GAS": "Revízia plynu",
+      "REVIZIA_LIFT": "Revízia výťahu",
+      "REVIZIA_CHIMNEY": "Revízia komínov",
+      "REVIZIA_FIRE": "Revízia požiarnych zariadení",
+      "REVIZIA_LIGHTNING": "Revízia bleskozvodu"
     },
     "openingBalance": {
       "title": "Otváracia súvaha",
@@ -1565,7 +1571,9 @@
       "navJournal": "Pohľad účtovníka",
       "navJournalHint": "Účtovný denník a predvaha pre audit",
       "navInspect": "Právo na nahliadnutie",
-      "navInspectHint": "Doklady a hospodárenie spoločenstva"
+      "navInspectHint": "Doklady a hospodárenie spoločenstva",
+      "navRevisions": "Revízie",
+      "navRevisionsHint": "Termíny povinných revízií a kontrol"
     },
     "settings": {
       "title": "Nastavenia účtovníctva",
@@ -1686,7 +1694,8 @@
       "lookup_notConfigured": "FinStat API kľúč nie je nastavený — vyhľadávanie nedostupné.",
       "lookup_error": "Vyhľadanie zlyhalo. Skontrolujte IČO alebo skúste neskôr.",
       "lookup_debtor": "⚠️ Dodávateľ je v zozname dlžníkov — pred uložením si overte situáciu.",
-      "attachmentsToggle": "Doklady"
+      "attachmentsToggle": "Doklady",
+      "nextInspectionLabel": "Termín ďalšej revízie"
     },
     "meters": {
       "title": "Odpočty meračov",
@@ -1830,6 +1839,24 @@
       "redactionPending": "Čaká na redakciu",
       "noDoc": "Bez dokladu",
       "fpuoBadge": "FO"
+    },
+    "revisions": {
+      "title": "Revízie",
+      "subtitle": "Termíny povinných revízií a kontrol technických zariadení",
+      "backToAccounting": "Späť na účtovníctvo",
+      "loadError": "Nepodarilo sa načítať revízie.",
+      "empty": "Zatiaľ žiadne evidované revízie. Pri zadaní výdavku v kategórii revízie vyplňte termín ďalšej revízie.",
+      "colCategory": "Revízia",
+      "colSupplier": "Dodávateľ",
+      "colLast": "Posledná",
+      "colNext": "Ďalšia",
+      "colStatus": "Stav",
+      "statusOverdue": "Po termíne",
+      "statusSoon": "Blíži sa",
+      "statusOk": "V poriadku",
+      "daysOverdue": "{days} dní po termíne",
+      "daysLeft": "o {days} dní",
+      "exportIcs": "Exportovať do kalendára (.ics)"
     }
   }
 }
