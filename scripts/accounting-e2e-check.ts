@@ -52,6 +52,11 @@ import {
 import { getDashboardTiles } from "@modules/accounting/src/lib/dashboard";
 import { getCashflowProjection } from "@modules/accounting/src/lib/projection";
 import {
+  approveZavierka,
+  getZavierkaStatus,
+} from "@modules/accounting/src/lib/zavierka";
+import { votings, votingItems } from "@modules/voting/src/db/schema";
+import {
   getVyuctovaniePreview,
   publishVyuctovanie,
   getVyuctovaniePdfData,
@@ -395,6 +400,69 @@ async function main() {
     const msg = err instanceof Error ? err.message : String(err);
     // Re-runs hit "already published" — treat as pass.
     check("prior-year settlement (idempotent)", msg.includes("published") || msg.includes("already"), msg);
+  }
+
+  // ── účtovná závierka approval (AC 423/521) ──
+  console.log("závierka approval");
+  {
+    // No vote → approval blocked.
+    let blocked = false;
+    try {
+      await approveZavierka({
+        entityId: dom.id,
+        year: prevYear,
+        votingItemId: "",
+        actorId,
+      });
+    } catch {
+      blocked = true;
+    }
+    check("approval blocked without a vote (423)", blocked);
+
+    // A foreign / random vote id → blocked.
+    let foreignBlocked = false;
+    try {
+      await approveZavierka({
+        entityId: dom.id,
+        year: prevYear,
+        votingItemId: randomUUID(),
+        actorId,
+      });
+    } catch {
+      foreignBlocked = true;
+    }
+    check("approval blocked with an unknown vote", foreignBlocked);
+
+    // Record a closed zhromaždenie vote for this dom, then approve.
+    const [voting] = await db
+      .insert(votings)
+      .values({
+        title: "Schválenie účtovnej závierky",
+        status: "closed",
+        startsAt: new Date(Date.UTC(prevYear, 11, 1)),
+        endsAt: new Date(Date.UTC(prevYear, 11, 15)),
+        createdById: actorId,
+        entityId: dom.id,
+      })
+      .returning({ id: votings.id });
+    const [item] = await db
+      .insert(votingItems)
+      .values({
+        votingId: voting.id,
+        idx: 1,
+        title: "Účtovná závierka",
+        quorumType: "simple_present",
+      })
+      .returning({ id: votingItems.id });
+    await approveZavierka({
+      entityId: dom.id,
+      year: prevYear,
+      votingItemId: item.id,
+      actorId,
+    });
+    const zstatus = await getZavierkaStatus(dom.id, prevYear);
+    check("závierka approved after recorded vote (423)", zstatus.approved === true);
+    check("approved period is closed", zstatus.periodStatus === "closed");
   }
 
   // ── signed export round-trip ──

@@ -420,7 +420,7 @@ Reuse RES-20260413-002. Per-country settings:
 - [ ] CZ reklamace state machine respects 30+30 day windows per §8 zák. 67/2013.
 - [x] CZ heat/TUV rozúčtování engine implements vyhl. 269/2015 ve znění 376/2021 (base 40–60 %, ±20 %/+100 % korekce).
 - [x] 10-year retention enforced — no hard delete of journal entries, doklady, vyúčtovania.
-- [ ] Účtovná závierka schválenie blocked until shromáždění/zhromaždenie vote recorded (§7c ods. 9 SK / §1208 NOZ CZ).
+- [x] Účtovná závierka schválenie blocked until shromáždění/zhromaždenie vote recorded (§7c ods. 9 SK / §1208 NOZ CZ).
 - [x] Right-to-inspect read-only view available to every owner of the dom (§11 ods. 6 SK / §1179 CZ).
 - [ ] SK debtor disclosure toggle only enables names + sumy for owners with nedoplatok ≥ 500 EUR (§9 ods. 3 zák. 182/1993).
 - [ ] Electronic delivery of vyúčtovanie requires recorded owner consent; non-consenting owners fall back to listinné doručenie.
@@ -517,8 +517,8 @@ Reuse RES-20260413-002. Per-country settings:
 ### Permissions & roles
 
 - [x] `treasurer` (pokladník) is added to the board-role model (same model as `chairman`), **not** naively to `membershipRoleEnum` — see Notes 2026-06-09 drift finding.
-- [ ] `treasurer` + `admin` can create / edit / void predpis, payments, expenses, meter readings; `chairman` and `owner` cannot post or mutate financial records.
-- [ ] `chairman` has full accounting read + approval actions (závierka, expense authorisation) but no direct ledger writes (separation of duties).
+- [x] `treasurer` + `admin` can create / edit / void predpis, payments, expenses, meter readings; `chairman` and `owner` cannot post or mutate financial records. (Meter-reading owner self-entry is intentional consumption input per AC 424/507 — not a ledger mutation; all ledger-affecting writes stay treasurer/admin-only.)
+- [x] `chairman` has full accounting read + approval actions (závierka, expense authorisation) but no direct ledger writes (separation of duties). — `requireApprover` (chairman/admin) gates `POST /api/accounting/zavierka`; the approval stamps the period + audit row, posts NO journal entry.
 - [x] Owner reads are server-side scoped: every owner query is filtered by `unit_id IN (memberships WHERE user_id = ?)`; requesting another unit's karta bytu / payments returns 403, not just a hidden UI element.
 - [x] Every server action + API route under `modules/accounting/` runs the role check before any DB read; under-privileged requests return 403.
 

@@ -1857,6 +1857,21 @@
       "verifyInvalid": "Súbor NESEDÍ — bol zmenený alebo nepochádza z tohto systému.",
       "verifyError": "Overenie zlyhalo. Skúste znova."
     },
+    "zavierka": {
+      "title": "Účtovná závierka",
+      "hint": "Ročnú účtovnú závierku schvaľuje zhromaždenie vlastníkov (§7c ods. 9 zák. 182/1993). Schválenie tu iba zaznamenáva rozhodnutie — neúčtuje sa žiaden zápis.",
+      "yearLabel": "Rok",
+      "approved": "Účtovná závierka za rok {year} bola schválená zhromaždením.",
+      "votePlaceholder": "ID bodu hlasovania zhromaždenia",
+      "voteHint": "Vložte ID uzavretého bodu hlasovania, ktorým zhromaždenie schválilo závierku (nájdete ho v detaile hlasovania).",
+      "approve": "Schváliť závierku",
+      "approving": "Schvaľuje sa…",
+      "chairmanOnly": "Závierku schvaľuje predseda (oddelenie právomocí).",
+      "blockedNotPublished": "Najprv publikujte ročné vyúčtovanie — až potom je možné závierku schváliť.",
+      "approveError": "Schválenie zlyhalo.",
+      "loading": "Načítava sa…",
+      "loadError": "Stav závierky sa nepodarilo načítať."
+    },
     "attachments": {
       "gdprWarning": "Doklad môže obsahovať osobné údaje. Pri práve na nahliadnutie ho uvidia vlastníci — ak treba, označte redakciu alebo obmedzenie.",
       "loading": "Načítava sa…",

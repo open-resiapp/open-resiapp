@@ -1857,6 +1857,21 @@
       "verifyInvalid": "The file does NOT match — it was modified or did not originate from this system.",
       "verifyError": "Verification failed. Try again."
     },
+    "zavierka": {
+      "title": "Annual accounts approval",
+      "hint": "The annual accounts are approved by the owners' assembly (§7c ods. 9 zák. 182/1993). Approving here only records the decision — nothing is posted to the ledger.",
+      "yearLabel": "Year",
+      "approved": "The annual accounts for {year} were approved by the assembly.",
+      "votePlaceholder": "Assembly voting-item ID",
+      "voteHint": "Paste the ID of the closed voting item by which the assembly approved the accounts (found on the vote detail page).",
+      "approve": "Approve accounts",
+      "approving": "Approving…",
+      "chairmanOnly": "The chairman approves the accounts (separation of duties).",
+      "blockedNotPublished": "Publish the annual settlement first — only then can the accounts be approved.",
+      "approveError": "Approval failed.",
+      "loading": "Loading…",
+      "loadError": "Could not load the accounts-approval status."
+    },
     "attachments": {
       "gdprWarning": "The document may contain personal data. Under the right to inspect, owners will see it — mark redaction or restriction if needed.",
       "loading": "Loading…",

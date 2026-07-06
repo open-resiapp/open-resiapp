@@ -50,3 +50,18 @@ export async function canReadAccounting(
   if (userRole === "admin") return true;
   return hasBoardRole(userId, entityId, ["treasurer", "chairman"]);
 }
+
+/**
+ * Approval authority (účtovná závierka §7c ods. 9 / §1208, expense
+ * authorisation): the CHAIRMAN (statutory representative), never the
+ * treasurer — separation of duties. Approvals record a decision; they never
+ * post to the ledger. `admin` (operator) keeps full access.
+ */
+export async function canApproveAccounting(
+  userId: string,
+  userRole: string,
+  entityId: string
+): Promise<boolean> {
+  if (userRole === "admin") return true;
+  return hasBoardRole(userId, entityId, ["chairman"]);
+}

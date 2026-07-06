@@ -200,6 +200,17 @@ export const accountingPeriods = pgTable(
     status: periodStatusEnum("status").notNull().default("open"),
     openedAt: timestamp("opened_at").defaultNow().notNull(),
     closedAt: timestamp("closed_at"),
+    // Účtovná závierka approval (§7c ods. 9 zák. 182/1993 SK / §1208 NOZ CZ):
+    // the annual accounts are approved by the zhromaždenie/shromáždění, never
+    // by the board alone. Recorded here once that vote concludes — an
+    // approval action, NOT a ledger write (AC 423/521). The voting item is a
+    // soft link (cross-module, no FK).
+    zavierkaApprovedAt: timestamp("zavierka_approved_at"),
+    zavierkaApprovedById: uuid("zavierka_approved_by_id").references(
+      () => users.id,
+      { onDelete: "restrict" }
+    ),
+    zavierkaVotingItemId: uuid("zavierka_voting_item_id"),
   },
   (table) => ({
     entityYearUnique: uniqueIndex("mod_accounting_periods_entity_year_idx").on(

@@ -9,6 +9,7 @@ import { useCallback, useEffect, useState } from "react";
 import { useFormatter, useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { formatEur } from "@modules/accounting/src/lib/money";
+import ZavierkaPanel from "@modules/accounting/src/components/ZavierkaPanel";
 
 interface TrialBalanceRow {
   code: string;
@@ -124,6 +125,9 @@ export default function JournalPage() {
         </a>
       </div>
       <p className="text-gray-600 dark:text-gray-400 mb-4">{t("subtitle")}</p>
+
+      {/* Účtovná závierka approval (AC 423/521) */}
+      <ZavierkaPanel />
 
       {/* Bundle verification */}
       <div className="mb-6 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg p-4 text-sm">

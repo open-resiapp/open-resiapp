@@ -1857,6 +1857,21 @@
       "verifyInvalid": "Soubor NESEDÍ — byl změněn nebo nepochází z tohoto systému.",
       "verifyError": "Ověření selhalo. Zkuste znovu."
     },
+    "zavierka": {
+      "title": "Účetní závěrka",
+      "hint": "Roční účetní závěrku schvaluje shromáždění vlastníků (§1208 NOZ). Schválení zde pouze zaznamenává rozhodnutí — neúčtuje se žádný zápis.",
+      "yearLabel": "Rok",
+      "approved": "Účetní závěrka za rok {year} byla schválena shromážděním.",
+      "votePlaceholder": "ID bodu hlasování shromáždění",
+      "voteHint": "Vložte ID uzavřeného bodu hlasování, kterým shromáždění závěrku schválilo (najdete v detailu hlasování).",
+      "approve": "Schválit závěrku",
+      "approving": "Schvaluje se…",
+      "chairmanOnly": "Závěrku schvaluje předseda (oddělení pravomocí).",
+      "blockedNotPublished": "Nejprve publikujte roční vyúčtování — teprve poté lze závěrku schválit.",
+      "approveError": "Schválení selhalo.",
+      "loading": "Načítá se…",
+      "loadError": "Stav závěrky se nepodařilo načíst."
+    },
     "attachments": {
       "gdprWarning": "Doklad může obsahovat osobní údaje. Při právu na nahlédnutí jej uvidí vlastníci — v případě potřeby označte redakci nebo omezení.",
       "loading": "Načítá se…",

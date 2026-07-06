@@ -102,6 +102,18 @@ async function main() {
       await w(`delete from mod_accounting_periods where entity_id = $1`);
       await w(`delete from mod_accounting_unit_settings where entity_id = $1`);
       await w(`delete from mod_accounting_settings where entity_id = $1`);
+      // Voting rows: the e2e závierka + voting→accounting pipeline checks
+      // create real votings/voting_items on THIS dom (restrict FK to entities),
+      // so they must be cleared before the entities delete below or re-seed
+      // dies. Delete children → parents.
+      // NB: ballots.entity_id is the UNIT entity, not the dom root — scope
+      // the whole ballot family through votings (voting_id), same as below.
+      await w(`delete from mod_voting_ballot_item_votes where ballot_id in (select b.id from mod_voting_ballots b join mod_voting_votings v on b.voting_id = v.id where v.entity_id = $1)`);
+      await w(`delete from mod_voting_ballot_photos where ballot_id in (select b.id from mod_voting_ballots b join mod_voting_votings v on b.voting_id = v.id where v.entity_id = $1)`);
+      await w(`delete from mod_voting_ballots where voting_id in (select id from mod_voting_votings where entity_id = $1)`);
+      await w(`delete from mod_voting_mandates where voting_id in (select id from mod_voting_votings where entity_id = $1)`);
+      await w(`delete from mod_voting_voting_items where voting_id in (select id from mod_voting_votings where entity_id = $1)`);
+      await w(`delete from mod_voting_votings where entity_id = $1`);
       await w(`delete from board_members where entity_id = $1`);
       await w(`delete from memberships where entity_id in (select id from entities where root_id = $1)`);
       await w(`delete from entities where root_id = $1`);

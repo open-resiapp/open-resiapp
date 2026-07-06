@@ -526,6 +526,13 @@
       "when": 1783349347105,
       "tag": "0074_last_warbound",
       "breakpoints": true
+    },
+    {
+      "idx": 75,
+      "version": "7",
+      "when": 1783349965148,
+      "tag": "0075_tricky_the_anarchist",
+      "breakpoints": true
     }
   ]
 }

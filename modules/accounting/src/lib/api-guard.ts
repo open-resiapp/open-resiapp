@@ -5,7 +5,11 @@ import type { Session } from "next-auth";
 
 import { auth } from "@/lib/auth";
 import { getCommunityRoot, type CommunityRootRow } from "@/lib/legacy-compat";
-import { canReadAccounting, canWriteAccounting } from "./authz";
+import {
+  canApproveAccounting,
+  canReadAccounting,
+  canWriteAccounting,
+} from "./authz";
 
 // Shared API guards for accounting routes. Every route resolves the
 // session + community root and runs the board-role check BEFORE any other
@@ -58,4 +62,9 @@ export function requireWriter(): Promise<GuardCtx> {
 /** Treasurer / chairman / admin — whole-dom financial read access. */
 export function requireReader(): Promise<GuardCtx> {
   return require(canReadAccounting);
+}
+
+/** Chairman / admin — approval actions (závierka), never a ledger write. */
+export function requireApprover(): Promise<GuardCtx> {
+  return require(canApproveAccounting);
 }
