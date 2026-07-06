@@ -50,6 +50,7 @@ export default function AccountingHomePage() {
 
   const [tiles, setTiles] = useState<Tiles | null>(null);
   const [projection, setProjection] = useState<Projection | null>(null);
+  const [drillMonth, setDrillMonth] = useState<number | null>(null);
   const [ownerOnly, setOwnerOnly] = useState(false);
   const [error, setError] = useState(false);
 
@@ -123,17 +124,6 @@ export default function AccountingHomePage() {
             </span>
             <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
               {t("navInspectHint")}
-            </p>
-          </Link>
-          <Link
-            href="/accounting/debtors"
-            className="block bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg px-5 py-4 hover:border-blue-400 dark:hover:border-blue-600"
-          >
-            <span className="text-lg font-medium text-gray-900 dark:text-gray-100">
-              📋 {t("navDebtors")}
-            </span>
-            <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-              {t("navDebtorsHint")}
             </p>
           </Link>
         </div>
@@ -237,7 +227,7 @@ export default function AccountingHomePage() {
             );
             return (
               <div className="flex items-end gap-3 h-40">
-                {projection.months.map((m) => {
+                {projection.months.map((m, i) => {
                   const negative = m.closingCents < 0;
                   const height = negative
                     ? 8
@@ -246,9 +236,17 @@ export default function AccountingHomePage() {
                         Math.round((m.closingCents / maxPositive) * 100)
                       );
                   return (
-                    <div
+                    <button
+                      type="button"
                       key={`${m.year}-${m.month}`}
-                      className="flex-1 flex flex-col items-center justify-end gap-1"
+                      onClick={() =>
+                        setDrillMonth((prev) => (prev === i ? null : i))
+                      }
+                      className={`flex-1 flex flex-col items-center justify-end gap-1 cursor-pointer rounded ${
+                        drillMonth === i
+                          ? "ring-2 ring-blue-400 dark:ring-blue-600"
+                          : ""
+                      }`}
                       title={formatEur(m.closingCents)}
                     >
                       <span
@@ -278,12 +276,54 @@ export default function AccountingHomePage() {
                         )}
                         {m.estimated ? "*" : ""}
                       </span>
-                    </div>
+                    </button>
                   );
                 })}
               </div>
             );
           })()}
+          {drillMonth !== null && projection.months[drillMonth] && (
+            <div className="mt-4 bg-gray-50 dark:bg-gray-800 rounded-lg p-4 text-sm">
+              <p className="font-medium text-gray-900 dark:text-gray-100 mb-2">
+                {format.dateTime(
+                  new Date(
+                    Date.UTC(
+                      projection.months[drillMonth].year,
+                      projection.months[drillMonth].month - 1,
+                      1
+                    )
+                  ),
+                  { month: "long", year: "numeric" }
+                )}
+              </p>
+              <dl className="space-y-1">
+                <div className="flex justify-between">
+                  <dt className="text-gray-600 dark:text-gray-400">
+                    {t("projectionDrillInflow")}
+                  </dt>
+                  <dd className="text-green-700 dark:text-green-400">
+                    +{formatEur(projection.months[drillMonth].expectedInflowCents)}
+                  </dd>
+                </div>
+                <div className="flex justify-between">
+                  <dt className="text-gray-600 dark:text-gray-400">
+                    {t("projectionDrillExpense")}
+                  </dt>
+                  <dd className="text-red-600 dark:text-red-400">
+                    −{formatEur(projection.months[drillMonth].expenseCents)}
+                  </dd>
+                </div>
+                <div className="flex justify-between border-t border-gray-200 dark:border-gray-700 pt-1 font-medium">
+                  <dt className="text-gray-900 dark:text-gray-100">
+                    {t("projectionDrillClosing")}
+                  </dt>
+                  <dd className="text-gray-900 dark:text-gray-100">
+                    {formatEur(projection.months[drillMonth].closingCents)}
+                  </dd>
+                </div>
+              </dl>
+            </div>
+          )}
           {projection.months.some((m) => m.estimated) && (
             <p className="text-[10px] text-gray-400 dark:text-gray-500 mt-2">
               {t("projectionEstimatedNote")}
