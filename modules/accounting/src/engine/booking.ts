@@ -869,6 +869,8 @@ export async function voidPayment(
     .select({
       journalEntryId: payments.journalEntryId,
       voidedAt: payments.voidedAt,
+      amountCents: payments.amountCents,
+      unitEntityId: payments.unitEntityId,
     })
     .from(payments)
     .where(eq(payments.id, input.paymentId));
@@ -956,7 +958,12 @@ export async function voidPayment(
     action: "void",
     tableName: "mod_accounting_payments",
     recordId: input.paymentId,
-    after: { reversalEntryId: reversalId },
+    before: {
+      amountCents: payment.amountCents,
+      unitEntityId: payment.unitEntityId,
+      journalEntryId: payment.journalEntryId,
+    },
+    after: { voidedAt: true, reversalEntryId: reversalId },
     justification: input.reason,
   });
 

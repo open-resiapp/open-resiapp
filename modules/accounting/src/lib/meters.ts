@@ -140,6 +140,9 @@ export async function voidReading(input: {
         unitEntityId: meterReadings.unitEntityId,
         createdById: meterReadings.createdById,
         voidedAt: meterReadings.voidedAt,
+        meterType: meterReadings.meterType,
+        valueMilli: meterReadings.valueMilli,
+        readingDate: meterReadings.readingDate,
       })
       .from(meterReadings)
       .where(
@@ -172,6 +175,13 @@ export async function voidReading(input: {
       action: "void",
       tableName: "mod_accounting_meter_readings",
       recordId: input.readingId,
+      before: {
+        unitEntityId: reading.unitEntityId,
+        meterType: reading.meterType,
+        valueMilli: reading.valueMilli,
+        readingDate: reading.readingDate.toISOString(),
+      },
+      after: { voidedAt: true },
       justification: "reading voided (correction by re-entry)",
     });
   });

@@ -102,13 +102,20 @@ export default function ExpensesPage() {
     amountNettoCents + dphCents === amountCents;
   const formValid =
     supplierName.trim() !== "" &&
+    supplierIco.trim() !== "" &&
+    supplierIban.trim() !== "" &&
     invoiceNo.trim() !== "" &&
     amountCents !== null &&
     amountCents > 0 &&
+    // netto + DPH are required on a supplier invoice (AC 440).
+    amountNetto.trim() !== "" &&
+    amountNettoCents !== null &&
+    dph.trim() !== "" &&
+    dphCents !== null &&
     nettoDphConsistent &&
-    (amountNetto.trim() === "" || amountNettoCents !== null) &&
-    (dph.trim() === "" || dphCents !== null) &&
-    /^\d{4}-\d{2}-\d{2}$/.test(invoiceDate);
+    /^\d{4}-\d{2}-\d{2}$/.test(invoiceDate) &&
+    // A revízia expense needs its next-inspection date (AC 469).
+    (!isRevizia || /^\d{4}-\d{2}-\d{2}$/.test(nextInspection));
 
   async function submit() {
     if (!formValid) return;
@@ -145,6 +152,9 @@ export default function ExpensesPage() {
       setSupplierIban("");
       setInvoiceNo("");
       setAmount("");
+      setAmountNetto("");
+      setDph("");
+      setNextInspection("");
       load();
     } catch (err) {
       setError(err instanceof Error ? err.message : "submit");
@@ -263,7 +273,9 @@ export default function ExpensesPage() {
             />
           </label>
           <label className="flex flex-col gap-1 text-sm">
-            <span className="text-gray-700 dark:text-gray-300">{t("ico")}</span>
+            <span className="text-gray-700 dark:text-gray-300">
+              {t("ico")} *
+            </span>
             <span className="flex gap-2">
               <input
                 value={supplierIco}
@@ -296,7 +308,7 @@ export default function ExpensesPage() {
           </label>
           <label className="flex flex-col gap-1 text-sm">
             <span className="text-gray-700 dark:text-gray-300">
-              {t("supplierIban")}
+              {t("supplierIban")} *
             </span>
             <input
               value={supplierIban}
@@ -358,7 +370,7 @@ export default function ExpensesPage() {
           {isRevizia && (
             <label className="flex flex-col gap-1 text-sm">
               <span className="text-gray-700 dark:text-gray-300">
-                {t("nextInspectionLabel")}
+                {t("nextInspectionLabel")} *
               </span>
               <input
                 type="date"
@@ -382,7 +394,7 @@ export default function ExpensesPage() {
           </label>
           <label className="flex flex-col gap-1 text-sm">
             <span className="text-gray-700 dark:text-gray-300">
-              {t("amountNetto")}
+              {t("amountNetto")} *
             </span>
             <input
               value={amountNetto}
@@ -393,7 +405,9 @@ export default function ExpensesPage() {
             />
           </label>
           <label className="flex flex-col gap-1 text-sm">
-            <span className="text-gray-700 dark:text-gray-300">{t("dph")}</span>
+            <span className="text-gray-700 dark:text-gray-300">
+              {t("dph")} *
+            </span>
             <input
               value={dph}
               onChange={(e) => setDph(e.target.value)}

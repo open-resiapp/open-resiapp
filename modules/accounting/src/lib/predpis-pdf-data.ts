@@ -13,12 +13,13 @@ import {
 import { domUnitsWhere } from "./dom-units";
 import { getAccountingSettings } from "./settings";
 import { payBySquareString } from "../qr/pay-by-square";
+import { spaydString } from "../qr/spayd";
 
 // Data for the monthly predpis PDF (spec §Predpis: per-owner PDF export
-// with VS prominently displayed + PAY by square QR). The PDF itself
-// renders client-side; this assembles the current month's amounts from
-// the ACTIVE published schedule's assessments and the QR payload.
-// QR is SK-only (PAY by square); CZ gets SPAYD in Phase 6.
+// with VS prominently displayed + payment QR). The PDF itself renders
+// client-side; this assembles the current month's amounts from the ACTIVE
+// published schedule's assessments and the QR payload — PAY by square for
+// SK, QR Platba / SPAYD for CZ (AC 455/456).
 
 type Country = "sk" | "cz";
 
@@ -30,7 +31,7 @@ export interface PredpisPdfData {
   rows: { categorySlug: string; amountCents: number }[];
   totalCents: number;
   iban: string;
-  /** PAY by square payload — null for non-SK instances. */
+  /** Payment-QR payload: PAY by square (SK) or SPAYD (CZ). */
   payBySquare: string | null;
 }
 
@@ -132,6 +133,7 @@ export async function getPredpisPdfData(input: {
     );
   }
 
+  const note = `Predpis ${year}-${String(month).padStart(2, "0")}`;
   const payBySquare =
     input.country === "sk"
       ? payBySquareString({
@@ -139,9 +141,14 @@ export async function getPredpisPdfData(input: {
           amountCents: totalCents,
           vs: unit.vs,
           beneficiaryName: input.beneficiaryName,
-          note: `Predpis ${year}-${String(month).padStart(2, "0")}`,
+          note,
         })
-      : null;
+      : spaydString({
+          iban: settings.bankIban,
+          amountCents: totalCents,
+          vs: unit.vs,
+          message: note,
+        });
 
   return {
     unitLabel: unit.flatNumber ?? unit.name,

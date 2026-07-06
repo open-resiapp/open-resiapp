@@ -22,8 +22,10 @@ import { isValidIban, normalizeIban } from "./iban";
 //   - brutto is authoritative (it leaves the account and is split among
 //     owners at vyúčtovanie); netto/DPH recorded for the doklad
 //   - FPÚO expenses debit the fund (472); services expenses hit 5xx
-//   - REVIZIA_* categories will require nextInspectionDueAt (the SK
-//     category catalog does not carry them yet — enforced when seeded)
+//   - a supplier invoice is a doklad: IČO, supplier IBAN and the
+//     netto/DPH breakdown are required (AC 440), not just the brutto
+//   - REVIZIA_* categories require nextInspectionDueAt (AC 469) — enforced
+//     below once the category slug is resolved
 //   - corrections are voids (mirror reversal), never edits of posted rows
 
 type Country = "sk" | "cz";
@@ -60,12 +62,21 @@ export async function createExpense(
   if (!input.invoiceNo.trim()) {
     throw new Error("accounting: invoice number required");
   }
-  let iban: string | null = null;
-  if (input.supplierIban && input.supplierIban.trim() !== "") {
-    iban = normalizeIban(input.supplierIban);
-    if (!iban || !isValidIban(iban)) {
-      throw new Error("accounting: invalid supplier IBAN (MOD-97)");
-    }
+  // A supplier invoice is an účtovný doklad — identity, payee account and
+  // the VAT breakdown are mandatory (AC 440). (Attachment is required too,
+  // but it's uploaded on a separate endpoint after the row is created.)
+  if (!input.supplierIco || !input.supplierIco.trim()) {
+    throw new Error("accounting: supplier IČO required");
+  }
+  if (!input.supplierIban || !input.supplierIban.trim()) {
+    throw new Error("accounting: supplier IBAN required");
+  }
+  if (input.amountNettoCents == null || input.dphCents == null) {
+    throw new Error("accounting: netto and DPH amounts required");
+  }
+  const iban = normalizeIban(input.supplierIban);
+  if (!iban || !isValidIban(iban)) {
+    throw new Error("accounting: invalid supplier IBAN (MOD-97)");
   }
   if (input.amountNettoCents != null && input.amountNettoCents < 0) {
     throw new Error("accounting: netto must be >= 0");
@@ -119,6 +130,14 @@ export async function createExpense(
       if (!category) throw new Error("accounting: unknown service category");
       categorySlug = category.slug;
       okruh = category.okruh === "fpuo" ? "fpuo" : "svc";
+    }
+
+    // Technical-audit expenses (REVIZIA_*) must carry the next inspection
+    // date — the dashboard/.ics deadlines depend on it (AC 469).
+    if (categorySlug?.startsWith("REVIZIA_") && !input.nextInspectionDueAt) {
+      throw new Error(
+        "accounting: revízia expense requires a next-inspection date"
+      );
     }
 
     // Soft duplicate guard — a resubmitted identical invoice would
@@ -270,7 +289,15 @@ export async function voidExpense(input: {
   await db.transaction(async (tx) => {
     await lockOpenPeriods(tx, input.entityId);
     const [expense] = await tx
-      .select({ voidedAt: expenses.voidedAt, paidAt: expenses.paidAt })
+      .select({
+        voidedAt: expenses.voidedAt,
+        paidAt: expenses.paidAt,
+        supplierName: expenses.supplierName,
+        invoiceNo: expenses.invoiceNo,
+        amountCents: expenses.amountCents,
+        okruh: expenses.okruh,
+        serviceCategoryId: expenses.serviceCategoryId,
+      })
       .from(expenses)
       .where(
         and(eq(expenses.id, input.expenseId), eq(expenses.entityId, input.entityId))
@@ -360,7 +387,14 @@ export async function voidExpense(input: {
       action: "void",
       tableName: "mod_accounting_expenses",
       recordId: input.expenseId,
-      after: { reversalEntryId: reversalId },
+      before: {
+        supplierName: expense.supplierName,
+        invoiceNo: expense.invoiceNo,
+        amountCents: expense.amountCents,
+        okruh: expense.okruh,
+        serviceCategoryId: expense.serviceCategoryId,
+      },
+      after: { voidedAt: true, reversalEntryId: reversalId },
       justification: input.reason.trim(),
     });
   });

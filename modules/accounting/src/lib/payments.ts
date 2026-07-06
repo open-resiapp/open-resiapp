@@ -13,6 +13,7 @@ import {
   settlements,
   settlementUnits,
   unitSettings,
+  auditLog,
 } from "../db/schema";
 import {
   allocatePayment,
@@ -258,6 +259,26 @@ export async function createManualPayment(
       allocatedBy: "auto",
       // The treasurer picked the unit by hand on the form.
       matchedBy: "manual",
+    });
+
+    // Every money mutation is audited (AC: append-only event log records
+    // every insert). The linkage updates inside allocateAndPostPayment
+    // (matchedBy / journalEntryId) belong to this same create operation, so
+    // this one row logs the whole manual-entry action.
+    await tx.insert(auditLog).values({
+      entityId: input.entityId,
+      actorId: input.createdById,
+      action: "insert",
+      tableName: "mod_accounting_payments",
+      recordId: payment.id,
+      after: {
+        unitEntityId: input.unitEntityId,
+        amountCents: input.amountCents,
+        method: input.method,
+        source: "manual",
+        allocatedCents: result.allocatedCents,
+        unallocatedCents: result.unallocatedCents,
+      },
     });
 
     return { paymentId: payment.id, ...result };

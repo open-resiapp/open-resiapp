@@ -165,11 +165,15 @@ async function main() {
     country,
     createdById: actorId,
     supplierName: "Výťahy s.r.o.",
+    supplierIco: "36000123",
+    supplierIban: "SK9611000000002918599669",
     invoiceNo: `E2E-${Date.now()}`,
     invoiceDate: new Date(),
     serviceCategoryId: lift.id,
     okruh: "svc",
     amountCents: 15000,
+    amountNettoCents: 12500,
+    dphCents: 2500,
   });
   const tiles = await getDashboardTiles(dom.id, country);
   check("dashboard tiles compute", typeof tiles.bankaCents === "number");
@@ -208,11 +212,15 @@ async function main() {
       country,
       createdById: actorId,
       supplierName: "Výťahy s.r.o.",
+      supplierIco: "36000123",
+      supplierIban: "SK9611000000002918599669",
       invoiceNo: `E2E-PREV-${Date.now()}`,
       invoiceDate: new Date(Date.UTC(prevYear, 5, 15)),
       serviceCategoryId: lift.id,
       okruh: "svc",
       amountCents: 60000,
+      amountNettoCents: 50000,
+      dphCents: 10000,
     });
 
     const prevPreview = await getVyuctovaniePreview(dom.id, country, prevYear);
