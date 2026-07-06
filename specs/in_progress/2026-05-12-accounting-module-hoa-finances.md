@@ -505,7 +505,7 @@ Reuse RES-20260413-002. Per-country settings:
 - [x] Dashboard renders 4 tiles + Vyžaduje pozornosť list on a single viewport.
 - [x] Karta bytu shows running balance in Excel-style table, drill-down to source on every row.
 - [x] Owner portal shows only: balance, payment history, predpis breakdown, vyúčtovanie PDFs, meter reading entry, čerpanie FPÚO read-only list — nothing else. (Owner surface = Karta / Meters / Inspect cards; the extra debtors card was removed 2026-07-06 to satisfy the "only" clause — board keeps its debtors nav.)
-- [ ] Concierge import accepts prior-year Excel + bank statements + last-year vyúčtovanie PDF for opening balances.
+- [x] Concierge import accepts prior-year Excel + bank statements + last-year vyúčtovanie PDF for opening balances.
 - [x] All UI text routed through `useTranslations()` / `getTranslations()` from `Accounting` namespace; no hardcoded strings.
 
 ### Voting integration (wedge)
@@ -728,6 +728,33 @@ investigated and moved to BLOCKED — the correct double-entry needs a dedicated
 inter-okruh account pair the SK COA lacks (same class as 415/497/498, needs an
 účtovník's confirmation) and the §10 ods. 3 approval requirement is itself an
 unresolved open question below.
+
+### Notes — AC 508 vyúčtovanie-PDF ingest (2026-07-06)
+
+Self-serve close of the previously-BLOCKED PDF half. Scope + decisions:
+- Targets ONLY the app's own SK statutory settlement PDF (`VyuctovaniePDFSk`).
+  The parser (`vyuctovanie-pdf-import.ts`, pure + client-safe) requires the
+  § 7b ods. 3 zák. 182/1993 anchor, so third-party PDFs are rejected
+  (`not_app_vyuctovanie`) — never a general PDF importer.
+- Anchors on locale-INVARIANT content: fixed Slovak title/citation + the
+  sk-SK money format (`formatEur` is hardcoded to sk-SK), never on the
+  column-header labels (which render in the viewer's UI locale). Units are
+  matched by **VS** (the label containing "symbol" locates it across all 3
+  locales), not by unit label.
+- Extracts the per-unit služby closing balance (nedoplatok/preplatok) →
+  opening zálohy = **−difference**. Tie-out is enforced: the result box must
+  equal the total-row difference and the per-service rows must sum to it,
+  else a hard `total_mismatch`.
+- **Fond opráv is NOT on the statutory vyúčtovanie** ("fond opráv sa
+  nevyúčtováva" — Phase 4 decision), so the PDF path fills ONLY the zálohy
+  column and reports each matched unit as still needing a fond-opráv value
+  (CSV / manual). Units/owners themselves come from Easy Import
+  (BYT-20260508-003); this remains financial-opening-state only.
+- The PDF→text seam is a thin server-only wrapper (`pdf-text.server.ts`,
+  pdf-parse); the golden suite (`test:accounting-vyuctovanie-pdf`, 26 checks)
+  pins the parser to a REAL generated fixture PDF round-tripped through
+  pdf-parse (`scripts/fixtures/vyuctovanie-sk-2025.pdf`, regeneratable via
+  `gen-vyuctovanie-pdf.tsx`), so it can't drift from actual renderer output.
 
 ### Open questions
 

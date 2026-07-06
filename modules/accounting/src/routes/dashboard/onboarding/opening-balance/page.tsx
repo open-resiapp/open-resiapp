@@ -22,6 +22,10 @@ import {
   type OpeningRowErrorCode,
   type OpeningFileErrorCode,
 } from "@modules/accounting/src/lib/opening-balance-import";
+import type {
+  VyuctovaniePdfImportResult,
+  VyuctovaniePdfErrorCode,
+} from "@modules/accounting/src/lib/vyuctovanie-pdf-import";
 
 // Parser error codes → i18n keys (parser stays i18n-free; UI localizes).
 const ROW_ERR_KEY: Record<OpeningRowErrorCode, string> = {
@@ -36,6 +40,19 @@ const FILE_ERR_KEY: Record<OpeningFileErrorCode, string> = {
   no_header: "import.errNoHeader",
   missing_flat_column: "import.errMissingFlatColumn",
   missing_amount_column: "import.errMissingAmountColumn",
+};
+// Vyúčtovanie-PDF parse + match error codes → i18n keys (AC 508).
+const PDF_ERR_KEY: Record<VyuctovaniePdfErrorCode, string> = {
+  not_app_vyuctovanie: "import.pdfErrNotApp",
+  no_year: "import.pdfErrNoYear",
+  no_vs: "import.pdfErrNoVs",
+  no_result: "import.pdfErrNoResult",
+  total_mismatch: "import.pdfErrMismatch",
+};
+const PDF_MATCH_ERR_KEY: Record<string, string> = {
+  unknown_vs: "import.pdfErrUnknownVs",
+  ambiguous_vs: "import.pdfErrAmbiguousVs",
+  duplicate_unit: "import.pdfErrDuplicate",
 };
 
 interface UnitRow {
@@ -74,7 +91,11 @@ export default function OpeningBalancePage() {
   const [importReport, setImportReport] = useState<OpeningImportResult | null>(
     null
   );
+  const [pdfReport, setPdfReport] =
+    useState<VyuctovaniePdfImportResult | null>(null);
+  const [pdfBusy, setPdfBusy] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const pdfInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     fetch("/api/accounting/opening-balance")
@@ -193,6 +214,45 @@ export default function OpeningBalancePage() {
     });
   }
 
+  // Vyúčtovanie-PDF ingest (AC 508): the PDF → text extraction runs
+  // server-side (pdf-parse), the parse + VS matching is the shared,
+  // golden-tested pure code. Only the zálohy column is filled — the
+  // statutory vyúčtovanie carries no fond-opráv balance.
+  async function onPdfFiles(e: React.ChangeEvent<HTMLInputElement>) {
+    const files = e.target.files;
+    e.target.value = "";
+    if (!files || files.length === 0 || !state) return;
+    setPdfBusy(true);
+    setError(null);
+    try {
+      const fd = new FormData();
+      for (const f of Array.from(files)) fd.append("files", f);
+      const res = await fetch("/api/accounting/opening-balance/pdf", {
+        method: "POST",
+        body: fd,
+      });
+      if (!res.ok) {
+        const body = await res.json().catch(() => null);
+        throw new Error(body?.error ?? String(res.status));
+      }
+      const result: VyuctovaniePdfImportResult = await res.json();
+      setPdfReport(result);
+      setUnitValues((prev) => {
+        const next = { ...prev };
+        for (const [unitId, v] of Object.entries(result.matched)) {
+          const existing = next[unitId] ?? { fpuo: "", zalohy: "" };
+          // PDF fills ONLY zálohy; fond opráv stays as-is (CSV / manual).
+          next[unitId] = { ...existing, zalohy: centsToInput(v.zalohyCents) };
+        }
+        return next;
+      });
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "pdf");
+    } finally {
+      setPdfBusy(false);
+    }
+  }
+
   if (loading) {
     return (
       <div className="animate-pulse h-40 bg-gray-100 dark:bg-gray-800 rounded-lg" />
@@ -308,7 +368,66 @@ export default function OpeningBalancePage() {
                 onChange={onCsvFile}
                 className="hidden"
               />
+              {/* AC 508 — ingest last year's own vyúčtovanie PDFs. */}
+              <button
+                type="button"
+                onClick={() => pdfInputRef.current?.click()}
+                disabled={pdfBusy}
+                className="px-3 py-1.5 text-sm border border-blue-300 dark:border-blue-700 text-blue-700 dark:text-blue-300 rounded-lg hover:bg-blue-100 dark:hover:bg-blue-900 disabled:opacity-50"
+              >
+                ⬆ {pdfBusy ? t("import.pdfUploading") : t("import.pdfUpload")}
+              </button>
+              <input
+                ref={pdfInputRef}
+                type="file"
+                accept=".pdf,application/pdf"
+                multiple
+                onChange={onPdfFiles}
+                className="hidden"
+              />
             </div>
+            <p className="text-xs text-gray-500 dark:text-gray-500 mt-2">
+              {t("import.pdfHint")}
+            </p>
+
+            {pdfReport && (
+              <div className="mt-3 text-sm space-y-2">
+                <p className="text-green-700 dark:text-green-400">
+                  {t("import.pdfResultMatched", {
+                    count: pdfReport.matchedCount,
+                  })}
+                </p>
+                {pdfReport.matchedCount > 0 && (
+                  <p className="text-amber-700 dark:text-amber-400">
+                    {t("import.pdfFondNote")}
+                  </p>
+                )}
+                {pdfReport.files.some(
+                  (f) => f.parsed.error || f.matchError
+                ) && (
+                  <div className="bg-amber-50 dark:bg-amber-950 border border-amber-200 dark:border-amber-800 rounded p-2 text-amber-900 dark:text-amber-200">
+                    <ul className="list-disc pl-5 space-y-0.5">
+                      {pdfReport.files
+                        .filter((f) => f.parsed.error || f.matchError)
+                        .slice(0, 12)
+                        .map((f, i) => {
+                          const key = f.parsed.error
+                            ? PDF_ERR_KEY[f.parsed.error]
+                            : PDF_MATCH_ERR_KEY[f.matchError ?? ""];
+                          return (
+                            <li key={i}>
+                              {f.fileName}:{" "}
+                              {key
+                                ? t(key as Parameters<typeof t>[0])
+                                : f.matchError}
+                            </li>
+                          );
+                        })}
+                    </ul>
+                  </div>
+                )}
+              </div>
+            )}
 
             {importReport && (
               <div className="mt-3 text-sm space-y-2">

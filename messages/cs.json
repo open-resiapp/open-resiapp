@@ -1401,7 +1401,20 @@
         "errEmptyFile": "Soubor je prázdný.",
         "errNoHeader": "Nebyl nalezen řádek se záhlavím. První řádek musí obsahovat názvy sloupců (např. byt; fond_oprav; zalohy).",
         "errMissingFlatColumn": "Chybí sloupec s číslem jednotky (např. „byt“).",
-        "errMissingAmountColumn": "Chybí alespoň jeden sloupec s částkou (fond oprav nebo zálohy)."
+        "errMissingAmountColumn": "Chybí alespoň jeden sloupec s částkou (fond oprav nebo zálohy).",
+        "pdfUpload": "Nahrát vyúčtování (PDF)",
+        "pdfUploading": "Zpracovává se…",
+        "pdfHint": "Máte loňská roční vyúčtování z této aplikace (PDF)? Nahrajte je a přeneseme z nich zůstatek služeb (nedoplatek/přeplatek) do sloupce zálohy. Jednotky se párují podle variabilního symbolu.",
+        "pdfResultMatched": "Načteno z PDF: {count} jednotek (sloupec zálohy).",
+        "pdfFondNote": "Fond oprav vyúčtování neobsahuje — doplňte jej ručně nebo přes CSV.",
+        "pdfErrNotApp": "neznámý nebo nečitelný PDF (není to vyúčtování z této aplikace)",
+        "pdfErrNoYear": "nepodařilo se přečíst rok vyúčtování",
+        "pdfErrNoVs": "chybí variabilní symbol — jednotku nelze spárovat",
+        "pdfErrNoResult": "nepodařilo se přečíst výsledek vyúčtování",
+        "pdfErrMismatch": "součty ve vyúčtování si neodpovídají (poškozený nebo upravený soubor)",
+        "pdfErrUnknownVs": "variabilní symbol neodpovídá žádné jednotce domu",
+        "pdfErrAmbiguousVs": "variabilní symbol má více jednotek",
+        "pdfErrDuplicate": "pro tuto jednotku už byl nahrán jiný PDF"
       }
     },
     "predpis": {

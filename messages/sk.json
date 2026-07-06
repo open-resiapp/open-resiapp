@@ -1401,7 +1401,20 @@
         "errEmptyFile": "Súbor je prázdny.",
         "errNoHeader": "Nenašiel sa hlavičkový riadok. Prvý riadok musí obsahovať názvy stĺpcov (napr. byt; fond_oprav; zalohy).",
         "errMissingFlatColumn": "Chýba stĺpec s číslom bytu (napr. „byt“).",
-        "errMissingAmountColumn": "Chýba aspoň jeden stĺpec so sumou (fond opráv alebo zálohy)."
+        "errMissingAmountColumn": "Chýba aspoň jeden stĺpec so sumou (fond opráv alebo zálohy).",
+        "pdfUpload": "Nahrať vyúčtovania (PDF)",
+        "pdfUploading": "Spracúva sa…",
+        "pdfHint": "Máte minuloročné ročné vyúčtovania z tejto aplikácie (PDF)? Nahrajte ich a prenesieme z nich zostatok služieb (nedoplatok/preplatok) do stĺpca zálohy. Byty sa priraďujú podľa variabilného symbolu.",
+        "pdfResultMatched": "Načítaných z PDF: {count} bytov (stĺpec zálohy).",
+        "pdfFondNote": "Fond opráv vyúčtovanie neobsahuje — doplňte ho ručne alebo cez CSV.",
+        "pdfErrNotApp": "neznámy alebo nečitateľný PDF (nie je to vyúčtovanie z tejto aplikácie)",
+        "pdfErrNoYear": "nepodarilo sa prečítať rok vyúčtovania",
+        "pdfErrNoVs": "chýba variabilný symbol — byt sa nedá priradiť",
+        "pdfErrNoResult": "nepodarilo sa prečítať výsledok vyúčtovania",
+        "pdfErrMismatch": "súčty vo vyúčtovaní si neodpovedajú (poškodený alebo upravený súbor)",
+        "pdfErrUnknownVs": "variabilný symbol sa nezhoduje so žiadnym bytom domu",
+        "pdfErrAmbiguousVs": "variabilný symbol má viac bytov",
+        "pdfErrDuplicate": "pre tento byt už bol nahraný iný PDF"
       }
     },
     "predpis": {
