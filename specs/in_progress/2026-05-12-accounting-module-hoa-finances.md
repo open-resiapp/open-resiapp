@@ -712,6 +712,23 @@ audit found real gaps; ticked 457).
   485 (projection per-month drill-down), 486 (recurring-expense model),
   537 (reklamace withdraw — no reklamace feature at all).
 
+### Status — 2026-07-06 (end of second overnight run)
+
+**71 IMPLEMENTED / 18 open (89 total).** Every remaining open AC is BLOCKED on
+external input (real bank data, a Slovak/Czech účtovník's confirmation), a
+legal decision (e-delivery consent, ≥500 € debtor-name disclosure), infra
+(collector inbox + OCR + virus-scan), a deliberate descope (FinStat/ARES paid
+API), or is CZ-only work that builds on the not-yet-loaded CZ chart of accounts
+(reklamace, CZK rounding, CZ statutory templates). **No buildable AC remains.**
+
+Closed this run: **423 / 520 / 521** (účtovná závierka approval gated on a
+recorded closed assembly vote, chairman-only, no ledger write). **416 / 417**
+(inter-okruh transfer + §10 ods. 3 transient-cover return flag) were
+investigated and moved to BLOCKED — the correct double-entry needs a dedicated
+inter-okruh account pair the SK COA lacks (same class as 415/497/498, needs an
+účtovník's confirmation) and the §10 ods. 3 approval requirement is itself an
+unresolved open question below.
+
 ### Open questions
 
 - **2026-05-12**: Confirm CZ vyhláška 269/2015 base-share % after 376/2021 amendment — research flagged 40–60 % but exact final numbers unverified.
