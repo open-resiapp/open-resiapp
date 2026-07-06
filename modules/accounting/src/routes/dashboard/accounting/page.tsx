@@ -500,6 +500,7 @@ export default function AccountingHomePage() {
               "navReconciliationHint",
             ],
             ["/accounting/expenses", "🧰", "navExpenses", "navExpensesHint"],
+            ["/accounting/inbox", "📥", "navInbox", "navInboxHint"],
             ["/accounting/meters", "🌡️", "navMeters", "navMetersHint"],
             [
               "/accounting/vyuctovanie",

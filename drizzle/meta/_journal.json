@@ -533,6 +533,13 @@
       "when": 1783349965148,
       "tag": "0075_tricky_the_anarchist",
       "breakpoints": true
+    },
+    {
+      "idx": 76,
+      "version": "7",
+      "when": 1783369064682,
+      "tag": "0076_nappy_quasar",
+      "breakpoints": true
     }
   ]
 }

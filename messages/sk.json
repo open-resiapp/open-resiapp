@@ -1617,7 +1617,9 @@
       "navRevisions": "Revízie",
       "navRevisionsHint": "Termíny povinných revízií a kontrol",
       "navDebtors": "Zoznam dlžníkov",
-      "navDebtorsHint": "Nedoplatky schválené na zverejnenie"
+      "navDebtorsHint": "Nedoplatky schválené na zverejnenie",
+      "navInbox": "Zberná schránka faktúr",
+      "navInboxHint": "Nahrajte PDF faktúry — systém z nich prečíta údaje"
     },
     "settings": {
       "title": "Nastavenia účtovníctva",
@@ -1959,6 +1961,40 @@
       "status_used": "použitý",
       "status_cancelled": "zrušený",
       "journalEntries": "{count} účtovných zápisov"
+    },
+    "inbox": {
+      "backToAccounting": "Späť na účtovníctvo",
+      "title": "Zberná schránka faktúr",
+      "subtitle": "Nahrajte faktúru (PDF alebo obrázok). Systém sa pokúsi prečítať IČO, IBAN, variabilný symbol a sumu; vy ich potvrdíte a zaúčtujete faktúru na dve kliknutia.",
+      "loadError": "Nepodarilo sa načítať schránku.",
+      "uploadLabel": "Nahrať faktúru (PDF / obrázok)",
+      "uploading": "Nahráva sa a spracúva…",
+      "uploadHint": "Digitálne PDF prečítame z textovej vrstvy. Skeny sa prečítajú cez OCR, ak je nainštalované; inak polia doplníte ručne.",
+      "actionError": "Akcia zlyhala",
+      "empty": "Schránka je prázdna. Nahrajte prvú faktúru.",
+      "ocrNone": "OCR nedostupné — doplňte údaje ručne",
+      "ocrConfidence": "Prečítané: {pct} %",
+      "supplier": "Dodávateľ",
+      "ico": "IČO",
+      "dic": "DIČ / IČ DPH",
+      "iban": "IBAN dodávateľa",
+      "invoiceNo": "Číslo faktúry",
+      "invoiceDate": "Dátum vystavenia",
+      "category": "Kategória",
+      "uncategorized": "Nezaradené",
+      "okruh": "Okruh",
+      "okruhSvc": "Služby",
+      "okruhFpuo": "Fond opráv",
+      "nextInspectionLabel": "Ďalšia revízia",
+      "amountBrutto": "Suma (brutto)",
+      "amountNetto": "Základ (netto)",
+      "dph": "DPH",
+      "cancel": "Zrušiť",
+      "postAsExpense": "Zaúčtovať",
+      "dismiss": "Zamietnuť",
+      "posting": "Účtuje sa…",
+      "postSave": "Zaúčtovať výdavok",
+      "attachmentNote": "Nahratá faktúra sa priloží ako doklad k výdavku."
     }
   }
 }

@@ -46,6 +46,13 @@ import {
 } from "@modules/accounting/src/lib/bank-import";
 import { createExpense } from "@modules/accounting/src/lib/expenses";
 import {
+  createInboxItem,
+  listInbox,
+  postInboxItemAsExpense,
+  dismissInboxItem,
+} from "@modules/accounting/src/lib/expense-inbox";
+import { readFileSync } from "fs";
+import {
   uploadAttachment,
   listAttachments,
 } from "@modules/accounting/src/lib/attachments";
@@ -610,6 +617,65 @@ async function main() {
     impacts.length === 2 &&
       impacts.every((i) => i.feeScheduleDraft || i.expenseAuthorisation)
   );
+
+  // ── expense collector inbox (AC 478/479) ──────────────
+  console.log("expense inbox — OCR + 2-click post");
+  {
+    const pdfBytes = readFileSync("scripts/fixtures/invoice-sample.pdf");
+    const { id: inboxId } = await createInboxItem({
+      entityId: dom.id,
+      actorId,
+      fileName: "faktura.pdf",
+      contentType: "application/pdf",
+      body: pdfBytes,
+    });
+    const pending = await listInbox(dom.id, "pending");
+    const parked = pending.find((r) => r.id === inboxId);
+    check("inbox row parked", !!parked);
+    check("OCR read IČO from PDF text", parked?.ocrIco === "36721530", String(parked?.ocrIco));
+    check("OCR read IBAN", parked?.ocrIban === "SK8975000000000012345671", String(parked?.ocrIban));
+    check("OCR read VS", parked?.ocrVs === "2025014", String(parked?.ocrVs));
+    check("OCR read amount", parked?.ocrAmountCents === 12300, String(parked?.ocrAmountCents));
+    check("OCR engine = pdf_text", parked?.ocrEngine === "pdf_text", String(parked?.ocrEngine));
+
+    const { expenseId: inboxExpenseId } = await postInboxItemAsExpense({
+      entityId: dom.id,
+      country,
+      id: inboxId,
+      actorId,
+      supplierName: "Výťahy Servis s.r.o.",
+      supplierIco: parked!.ocrIco!,
+      supplierDic: "SK2022334455",
+      supplierIban: parked!.ocrIban!,
+      invoiceNo: `INBOX-${Date.now()}`,
+      invoiceDate: new Date(),
+      dueDate: null,
+      serviceCategoryId: lift.id,
+      okruh: "svc",
+      amountCents: 12300,
+      amountNettoCents: 10000,
+      dphCents: 2300,
+      dphRateBp: null,
+      nextInspectionDueAt: null,
+      isRecurring: false,
+    });
+    const inboxAttach = await listAttachments(dom.id, inboxExpenseId);
+    check("posted expense has the parked scan attached", inboxAttach.length === 1);
+    const afterPost = await listInbox(dom.id, "pending");
+    check("inbox row no longer pending", !afterPost.some((r) => r.id === inboxId));
+    const posted = await listInbox(dom.id, "posted");
+    check(
+      "inbox row marked posted → expense",
+      posted.some((r) => r.id === inboxId && r.postedExpenseId === inboxExpenseId)
+    );
+    let dismissBlocked = false;
+    try {
+      await dismissInboxItem({ entityId: dom.id, id: inboxId, actorId });
+    } catch {
+      dismissBlocked = true;
+    }
+    check("cannot dismiss a posted row", dismissBlocked);
+  }
 
   await (db.$client as Pool).end();
   if (failures > 0) {

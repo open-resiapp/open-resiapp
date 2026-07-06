@@ -1617,7 +1617,9 @@
       "navRevisions": "Inspections",
       "navRevisionsHint": "Deadlines for mandatory inspections",
       "navDebtors": "Debtor list",
-      "navDebtorsHint": "Arrears approved for disclosure"
+      "navDebtorsHint": "Arrears approved for disclosure",
+      "navInbox": "Invoice inbox",
+      "navInboxHint": "Upload invoice PDFs — fields are read for you"
     },
     "settings": {
       "title": "Accounting settings",
@@ -1959,6 +1961,40 @@
       "status_used": "used",
       "status_cancelled": "cancelled",
       "journalEntries": "{count} journal entries"
+    },
+    "inbox": {
+      "backToAccounting": "Back to accounting",
+      "title": "Invoice inbox",
+      "subtitle": "Upload an invoice (PDF or image). The system tries to read IČO, IBAN, variable symbol and the amount; you confirm them and post the expense in two clicks.",
+      "loadError": "Could not load the inbox.",
+      "uploadLabel": "Upload invoice (PDF / image)",
+      "uploading": "Uploading and processing…",
+      "uploadHint": "Digital PDFs are read from the text layer. Scans are read via OCR when it's installed; otherwise you fill the fields in by hand.",
+      "actionError": "Action failed",
+      "empty": "The inbox is empty. Upload your first invoice.",
+      "ocrNone": "OCR unavailable — fill in the fields manually",
+      "ocrConfidence": "Read: {pct}%",
+      "supplier": "Supplier",
+      "ico": "IČO",
+      "dic": "DIČ / VAT ID",
+      "iban": "Supplier IBAN",
+      "invoiceNo": "Invoice number",
+      "invoiceDate": "Issue date",
+      "category": "Category",
+      "uncategorized": "Uncategorized",
+      "okruh": "Pool",
+      "okruhSvc": "Services",
+      "okruhFpuo": "Repair fund",
+      "nextInspectionLabel": "Next inspection",
+      "amountBrutto": "Amount (gross)",
+      "amountNetto": "Net",
+      "dph": "VAT",
+      "cancel": "Cancel",
+      "postAsExpense": "Post",
+      "dismiss": "Dismiss",
+      "posting": "Posting…",
+      "postSave": "Post expense",
+      "attachmentNote": "The uploaded invoice is attached to the expense as its scan."
     }
   }
 }

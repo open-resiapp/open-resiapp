@@ -475,8 +475,8 @@ Reuse RES-20260413-002. Per-country settings:
 - [ ] IČO entry triggers FinStat (SK) / ARES (CZ) lookup; result cached 24h.
 - [ ] Dlžník DPH / insolvency hit shows red flag + requires confirmation before saving expense.
 - [x] IBAN field validates MOD-97 checksum.
-- [ ] Collector email per HOA accepts inbound PDF; OCR extracts IČO/IBAN/sum/VS into `expense_inbox` row.
-- [ ] Treasurer can post inbox row as expense in ≤2 clicks.
+- [~] Collector email per HOA accepts inbound PDF; OCR extracts IČO/IBAN/sum/VS into `expense_inbox` row. (UPLOAD path + OCR + `mod_accounting_expense_inbox` shipped; email inbound BLOCKED — needs SES/Postmark + AV, `source_kind='email'` reserved.)
+- [x] Treasurer can post inbox row as expense in ≤2 clicks.
 - [ ] Inbound collector-email attachments are virus-scanned and pass the optional per-HOA from-domain allowlist before entering `expense_inbox`; failures are quarantined, never auto-posted.
 
 ### Cash-flow projection
@@ -755,6 +755,31 @@ Self-serve close of the previously-BLOCKED PDF half. Scope + decisions:
   pins the parser to a REAL generated fixture PDF round-tripped through
   pdf-parse (`scripts/fixtures/vyuctovanie-sk-2025.pdf`, regeneratable via
   `gen-vyuctovanie-pdf.tsx`), so it can't drift from actual renderer output.
+
+### Notes — AC 478/479 expense collector inbox (2026-07-06)
+
+Upload half of the collector inbox. Table `mod_accounting_expense_inbox`
+(migration 0076; `source_kind` upload|email, `status` pending|posted|
+dismissed, per-field OCR + confidence, `posted_expense_id` restrict FK).
+- **OCR pipeline** (`invoice-ocr.server.ts`): pdf-parse TEXT LAYER first
+  (digital invoices — deterministic, the golden-tested path); tesseract
+  shell-out for images IF the binary is present, else it logs and degrades
+  to engine `none` (no hard install dependency). Scanned image-PDFs need
+  poppler rasterization (not wired) → `none` + manual fill.
+- **Field extractor** (`invoice-extract.ts`, pure/client-safe): IČO, DIČ,
+  IBAN (MOD-97 validated), VS, amount (labelled total wins, else largest;
+  handles SK/CZ decimal-comma + EN decimal-dot + grouped thousands; rejects
+  dotted dates). Golden suite `test:accounting-invoice-extract` (24 checks)
+  incl. a REAL generated fixture invoice PDF round-tripped through pdf-parse.
+- **2-click post** (AC 479): the inbox row expands into a prefilled expense
+  form; confirm+save creates the doklad via `createExpense` (same AC-440
+  field enforcement) and attaches the parked PDF as the mandatory scan, with
+  the same compensating-void safety as expense-create. e2e verifies the full
+  wired flow (upload → OCR reads all 4 fields → post → expense+attachment →
+  row posted → dismiss-after-post blocked).
+- **BLOCKED (unchanged):** email inbound (AC 478 first clause) + AV/allowlist
+  (AC 480) — SES/Postmark/Mailgun + antivirus infra. `source_kind='email'`
+  reserved in the enum so it lands without a migration.
 
 ### Open questions
 

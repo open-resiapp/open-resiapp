@@ -1617,7 +1617,9 @@
       "navRevisions": "Revize",
       "navRevisionsHint": "Termíny povinných revizí a kontrol",
       "navDebtors": "Seznam dlužníků",
-      "navDebtorsHint": "Nedoplatky schválené ke zveřejnění"
+      "navDebtorsHint": "Nedoplatky schválené ke zveřejnění",
+      "navInbox": "Sběrná schránka faktur",
+      "navInboxHint": "Nahrajte PDF faktury — systém z nich přečte údaje"
     },
     "settings": {
       "title": "Nastavení účetnictví",
@@ -1959,6 +1961,40 @@
       "status_used": "použitý",
       "status_cancelled": "zrušený",
       "journalEntries": "{count} účetních zápisů"
+    },
+    "inbox": {
+      "backToAccounting": "Zpět na účetnictví",
+      "title": "Sběrná schránka faktur",
+      "subtitle": "Nahrajte fakturu (PDF nebo obrázek). Systém se pokusí přečíst IČO, IBAN, variabilní symbol a částku; vy je potvrdíte a zaúčtujete fakturu na dvě kliknutí.",
+      "loadError": "Schránku se nepodařilo načíst.",
+      "uploadLabel": "Nahrát fakturu (PDF / obrázek)",
+      "uploading": "Nahrává se a zpracovává…",
+      "uploadHint": "Digitální PDF přečteme z textové vrstvy. Skeny se přečtou přes OCR, pokud je nainstalováno; jinak pole doplníte ručně.",
+      "actionError": "Akce selhala",
+      "empty": "Schránka je prázdná. Nahrajte první fakturu.",
+      "ocrNone": "OCR nedostupné — doplňte údaje ručně",
+      "ocrConfidence": "Přečteno: {pct} %",
+      "supplier": "Dodavatel",
+      "ico": "IČO",
+      "dic": "DIČ",
+      "iban": "IBAN dodavatele",
+      "invoiceNo": "Číslo faktury",
+      "invoiceDate": "Datum vystavení",
+      "category": "Kategorie",
+      "uncategorized": "Nezařazeno",
+      "okruh": "Okruh",
+      "okruhSvc": "Služby",
+      "okruhFpuo": "Fond oprav",
+      "nextInspectionLabel": "Další revize",
+      "amountBrutto": "Částka (brutto)",
+      "amountNetto": "Základ (netto)",
+      "dph": "DPH",
+      "cancel": "Zrušit",
+      "postAsExpense": "Zaúčtovat",
+      "dismiss": "Zamítnout",
+      "posting": "Účtuje se…",
+      "postSave": "Zaúčtovat výdaj",
+      "attachmentNote": "Nahraná faktura se přiloží jako doklad k výdaji."
     }
   }
 }

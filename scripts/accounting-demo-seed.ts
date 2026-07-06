@@ -89,7 +89,10 @@ async function main() {
       await w(`delete from mod_accounting_fee_assessments where schedule_id in (select id from mod_accounting_fee_schedules where entity_id = $1)`);
       // Attachments hold restrict FKs to BOTH entities and expenses, so they
       // must go before the expenses delete below. Authorisations hold a
-      // restrict FK to entities (usedExpenseId → expenses is set null).
+      // restrict FK to entities (usedExpenseId → expenses is set null). The
+      // expense inbox holds restrict FKs to entities AND expenses
+      // (posted_expense_id), so it must go before expenses too.
+      await w(`delete from mod_accounting_expense_inbox where entity_id = $1`);
       await w(`delete from mod_accounting_expense_attachments where entity_id = $1`);
       await w(`delete from mod_accounting_expense_authorisations where entity_id = $1`);
       await w(`delete from mod_accounting_expenses where entity_id = $1`);

@@ -1031,3 +1031,66 @@ export const expenseAuthorisations = pgTable(
     ).on(table.votingItemId),
   })
 );
+
+// ── Expense collector inbox (AC 478/479) ───────────────
+
+// How an inbox item arrived. `upload` = treasurer drop-zone (this slice).
+// `email` is RESERVED for the inbound collector-email path (AC 478 second
+// half) — SES/Postmark/Mailgun + AV + domain allowlist (AC 480) is infra
+// work that stays BLOCKED; the enum value is here so the email path can
+// land later without a migration.
+export const expenseInboxSourceEnum = pgEnum(
+  "mod_accounting_expense_inbox_source",
+  ["upload", "email"]
+);
+
+export const expenseInboxStatusEnum = pgEnum(
+  "mod_accounting_expense_inbox_status",
+  ["pending", "posted", "dismissed"]
+);
+
+// A parked invoice PDF awaiting the treasurer's 2-click posting (AC 479).
+// OCR fields are best-effort suggestions (pdf-parse text layer, or tesseract
+// on images when the binary is present) — never authoritative; the treasurer
+// confirms/edits before the doklad is created. The stored PDF becomes the
+// posted expense's mandatory scan (AC 440), so it is NOT hard-deleted.
+export const expenseInbox = pgTable(
+  "mod_accounting_expense_inbox",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    entityId: uuid("entity_id")
+      .references(() => entities.id, { onDelete: "restrict" })
+      .notNull(),
+    uploadedById: uuid("uploaded_by_id")
+      .references(() => users.id, { onDelete: "restrict" })
+      .notNull(),
+    sourceKind: expenseInboxSourceEnum("source_kind")
+      .notNull()
+      .default("upload"),
+    // Storage-driver key of the parked PDF (local disk / S3).
+    pdfStorageKey: text("pdf_storage_key").notNull(),
+    fileName: varchar("file_name", { length: 255 }).notNull(),
+    contentType: varchar("content_type", { length: 100 }).notNull(),
+    sizeBytes: integer("size_bytes").notNull(),
+    // Which extractor produced the OCR fields: pdf_text | tesseract | none.
+    ocrEngine: varchar("ocr_engine", { length: 20 }),
+    ocrIco: varchar("ocr_ico", { length: 20 }),
+    ocrDic: varchar("ocr_dic", { length: 20 }),
+    ocrIban: varchar("ocr_iban", { length: 34 }),
+    ocrVs: varchar("ocr_vs", { length: 10 }),
+    ocrAmountCents: integer("ocr_amount_cents"),
+    /** Extraction confidence 0–100 (integer percent; heuristic). */
+    ocrConfidencePct: integer("ocr_confidence_pct"),
+    status: expenseInboxStatusEnum("status").notNull().default("pending"),
+    postedExpenseId: uuid("posted_expense_id").references(() => expenses.id, {
+      onDelete: "restrict",
+    }),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+  },
+  (table) => ({
+    entityStatusIdx: index("mod_accounting_expense_inbox_entity_idx").on(
+      table.entityId,
+      table.status
+    ),
+  })
+);
