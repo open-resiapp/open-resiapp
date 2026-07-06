@@ -1791,6 +1791,13 @@
       "nedoplatok": "NEDOPLATOK — na úhradu",
       "preplatok": "PREPLATOK — na vrátenie",
       "settled": "Vyrovnané",
+      "keyLabel": "kľúč",
+      "allocationKey_share": "podľa podielu",
+      "allocationKey_area_m2": "podľa plochy",
+      "allocationKey_persons": "podľa osôb",
+      "allocationKey_flat_count_equal": "rovným dielom na byt",
+      "allocationKey_fixed": "pevná suma",
+      "allocationKey_meters": "podľa meračov",
       "qrTitle": "Úhrada nedoplatku cez PAY by square",
       "iban": "IBAN",
       "footer": "Vygenerované systémom OpenResiApp."

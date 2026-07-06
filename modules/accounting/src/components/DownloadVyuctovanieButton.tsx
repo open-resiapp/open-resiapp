@@ -18,6 +18,7 @@ interface PdfData {
     advancesCents: number;
     costShareCents: number;
     differenceCents: number;
+    allocationKey: string | null;
   }[];
   totalCostCents: number;
   totalAdvancesCents: number;
@@ -89,7 +90,9 @@ export default function DownloadVyuctovanieButton({
           unitLabel={data.unitLabel}
           vs={data.vs}
           rows={data.lines.map((l) => ({
-            name: tCat(l.categorySlug as Parameters<typeof tCat>[0]),
+            name: l.allocationKey
+              ? `${tCat(l.categorySlug as Parameters<typeof tCat>[0])} (${t("keyLabel")}: ${t(`allocationKey_${l.allocationKey}` as Parameters<typeof t>[0])})`
+              : tCat(l.categorySlug as Parameters<typeof tCat>[0]),
             prescribed: formatEur(l.prescribedCents),
             advances: formatEur(l.advancesCents),
             cost: formatEur(l.costShareCents),

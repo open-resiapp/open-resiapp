@@ -31,6 +31,12 @@ export interface SettlementServiceInput {
    * for services split by prescription (the default).
    */
   costShareByUnit?: Record<string, number>;
+  /**
+   * The allocation key actually used for this service (share/area_m2/persons/
+   * flat_count_equal/fixed, or "meters" when metered) — the statutory "použitý
+   * kľúč rozúčtovania" printed on the vyúčtovanie (AC 442).
+   */
+  allocationKey?: string | null;
 }
 
 export interface SettlementServiceLine {
@@ -40,6 +46,8 @@ export interface SettlementServiceLine {
   costShareCents: number;
   /** costShare − advances; positive = owner pays (nedoplatok). */
   differenceCents: number;
+  /** Allocation key used for this service (AC 442); null if unknown. */
+  allocationKey: string | null;
 }
 
 export interface UnitSettlement {
@@ -146,6 +154,7 @@ export function computeSettlement(input: {
         advancesCents: advances,
         costShareCents: costShare,
         differenceCents: costShare - advances,
+        allocationKey: service.allocationKey ?? null,
       };
       unit.services.push(line);
       unit.totalCostCents += costShare;

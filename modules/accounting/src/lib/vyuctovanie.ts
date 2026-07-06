@@ -12,6 +12,7 @@ import {
   paymentAllocations,
   serviceCategories,
   feeSchedules,
+  feeScheduleServices,
   settlements,
   settlementUnits,
   unitSettings,
@@ -437,6 +438,31 @@ export async function getVyuctovaniePreview(
     heatBasicPct: heatSettingRow?.h ?? DEFAULT_HEAT_BASIC_PCT,
   });
 
+  // Allocation key per category from the year's published schedule(s) — the
+  // statutory "použitý kľúč rozúčtovania" on the vyúčtovanie (AC 442). A
+  // metered service reports "meters" regardless of the schedule's key.
+  const scheduleKeys = await db
+    .select({
+      serviceCategoryId: feeScheduleServices.serviceCategoryId,
+      allocationKey: feeScheduleServices.allocationKey,
+    })
+    .from(feeScheduleServices)
+    .innerJoin(feeSchedules, eq(feeScheduleServices.scheduleId, feeSchedules.id))
+    .innerJoin(
+      accountingPeriods,
+      eq(feeSchedules.periodId, accountingPeriods.id)
+    )
+    .where(
+      and(
+        eq(feeSchedules.entityId, entityId),
+        eq(accountingPeriods.year, year),
+        eq(feeSchedules.status, "published")
+      )
+    )
+    .orderBy(feeSchedules.effectiveFrom);
+  const keyByCategory = new Map<string, string>();
+  for (const r of scheduleKeys) keyByCategory.set(r.serviceCategoryId, r.allocationKey);
+
   const services: SettlementServiceInput[] = [...categoryIds].map((id) => ({
     serviceCategoryId: id,
     actualCostCents:
@@ -453,6 +479,9 @@ export async function getVyuctovaniePreview(
     ),
     // Present only for metered heat/TÚV; undefined = prescribed split.
     costShareByUnit: meteredShares.get(id),
+    allocationKey: meteredShares.get(id)
+      ? "meters"
+      : keyByCategory.get(id) ?? null,
   }));
 
   const settlement =
@@ -626,6 +655,8 @@ export interface VyuctovaniePdfData {
     advancesCents: number;
     costShareCents: number;
     differenceCents: number;
+    /** Allocation key used (AC 442); null for legacy settlements. */
+    allocationKey: string | null;
   }[];
   totalCostCents: number;
   totalAdvancesCents: number;
@@ -696,6 +727,7 @@ export async function getVyuctovaniePdfData(input: {
     advancesCents: number;
     costShareCents: number;
     differenceCents: number;
+    allocationKey?: string | null;
   }[];
   const lines = payloadLines.map((l) => ({
     categorySlug: slugById.get(l.serviceCategoryId) ?? l.serviceCategoryId,
@@ -703,6 +735,7 @@ export async function getVyuctovaniePdfData(input: {
     advancesCents: l.advancesCents,
     costShareCents: l.costShareCents,
     differenceCents: l.differenceCents,
+    allocationKey: l.allocationKey ?? null,
   }));
 
   const [vsRow] = await db

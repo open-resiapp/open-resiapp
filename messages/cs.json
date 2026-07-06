@@ -1791,6 +1791,13 @@
       "nedoplatok": "NEDOPLATEK — k úhradě",
       "preplatok": "PŘEPLATEK — k vrácení",
       "settled": "Vyrovnáno",
+      "keyLabel": "klíč",
+      "allocationKey_share": "podle podílu",
+      "allocationKey_area_m2": "podle plochy",
+      "allocationKey_persons": "podle osob",
+      "allocationKey_flat_count_equal": "rovným dílem na jednotku",
+      "allocationKey_fixed": "pevná částka",
+      "allocationKey_meters": "podle měřidel",
       "qrTitle": "Úhrada nedoplatku přes platební QR",
       "iban": "IBAN",
       "footer": "Vygenerováno systémem OpenResiApp."

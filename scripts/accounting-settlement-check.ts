@@ -35,6 +35,7 @@ console.log("worked example");
         actualCostCents: 110000,
         prescribedByUnit: { u1: 60000, u2: 30000, u3: 10000 },
         advancesByUnit: { u1: 60000, u2: 25000, u3: 10000 },
+        allocationKey: "meters",
       },
       {
         serviceCategoryId: "cleaning",
@@ -52,6 +53,8 @@ console.log("worked example");
   const clean1 = u1.services.find((s) => s.serviceCategoryId === "cleaning")!;
   check("cleaning share 100", clean1.costShareCents === 10000);
   check("cleaning rozdiel −20 (preplatok)", clean1.differenceCents === -2000);
+  check("allocationKey passes through (AC 442)", heat1.allocationKey === "meters");
+  check("allocationKey null when unset", clean1.allocationKey === null);
   check(
     "u1 total difference +40",
     u1.totalDifferenceCents === 4000,
