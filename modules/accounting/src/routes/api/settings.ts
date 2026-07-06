@@ -13,7 +13,9 @@ export async function handleGet(): Promise<NextResponse> {
   const ctx = await requireReader();
   if (!ctx.ok) return ctx.error;
   const settings = await getAccountingSettings(ctx.root.id, ctx.root.country);
-  return NextResponse.json(settings);
+  // country lets the client hide SK-only controls (e.g. the §9 ods. 3
+  // debtor-name toggle, AC 425) on a CZ instance.
+  return NextResponse.json({ ...settings, country: ctx.root.country });
 }
 
 export async function handlePost(req: NextRequest): Promise<NextResponse> {
@@ -26,6 +28,7 @@ export async function handlePost(req: NextRequest): Promise<NextResponse> {
     bankIban?: string | null;
     dueDay?: number | string | null;
     debtorDisclosureThresholdCents?: number | string | null;
+    debtorNamesEnabled?: boolean;
     heatBasicSharePct?: number | string | null;
   };
   try {
@@ -83,6 +86,7 @@ export async function handlePost(req: NextRequest): Promise<NextResponse> {
       bankIban,
       dueDay,
       debtorDisclosureThresholdCents,
+      debtorNamesEnabled: body.debtorNamesEnabled === true,
       heatBasicSharePct,
     });
     return NextResponse.json({ ok: true });

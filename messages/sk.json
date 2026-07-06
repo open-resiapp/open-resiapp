@@ -1654,7 +1654,10 @@
       "debtorThresholdOff": "Vypnuté",
       "heatBasicShare": "Teplo — základná zložka (%)",
       "heatBasicShareHint": "Podiel nákladov na teplo rozúčtovaný podľa podlahovej plochy (základná zložka); zvyšok podľa meračov / pomerových rozdeľovačov (vyhl. 269/2015). Zákonné rozpätie 30–50 %. Prázdne = 40 %. TÚV má zákonne 30 %.",
-      "heatBasicShareDefault": "40"
+      "heatBasicShareDefault": "40",
+      "debtorNames": "Zverejniť mená dlžníkov (§9 ods. 3)",
+      "debtorNamesHint": "Pri dlžníkoch s nedoplatkom 500 € a viac sa v zozname zobrazí aj meno vlastníka. Pod 500 € ostáva len byt a suma.",
+      "debtorNamesWarning": "Právne citlivé — zapnite len na základe rozhodnutia zhromaždenia. Platné len pre SK (§9 ods. 3 zák. 182/1993)."
     },
     "predpisPdf": {
       "title": "Mesačný predpis úhrad",
@@ -1952,7 +1955,9 @@
       "colAmount": "Nedoplatok",
       "legalNote": "Zverejnené v súlade s § 11 zák. 182/1993 Z.z. Uvádza sa len označenie bytu a suma, nie meno vlastníka.",
       "loadError": "Nepodarilo sa načítať zoznam.",
-      "backToAccounting": "Späť na účtovníctvo"
+      "backToAccounting": "Späť na účtovníctvo",
+      "colOwner": "Vlastník",
+      "nameWithheld": "— (pod 500 €)"
     },
     "votingImpacts": {
       "title": "Finančné dopady",

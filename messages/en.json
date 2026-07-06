@@ -1654,7 +1654,10 @@
       "debtorThresholdOff": "Off",
       "heatBasicShare": "Heating — basic component (%)",
       "heatBasicShareHint": "Share of heating cost split by floor area (basic component); the rest goes by meters / heat-cost allocators (vyhl. 269/2015). Statutory band 30–50 %. Empty = 40 %. Hot water is fixed at 30 % by law.",
-      "heatBasicShareDefault": "40"
+      "heatBasicShareDefault": "40",
+      "debtorNames": "Disclose debtor names (§9 ods. 3)",
+      "debtorNamesHint": "For debtors owing 500 € or more, the list also shows the owner's name. Below 500 € it stays unit + amount only.",
+      "debtorNamesWarning": "Legally sensitive — enable only on an assembly resolution. SK only (§9 ods. 3 zák. 182/1993)."
     },
     "predpisPdf": {
       "title": "Monthly payment schedule",
@@ -1952,7 +1955,9 @@
       "colAmount": "Arrears",
       "legalNote": "Published per §11 Act 182/1993. Only the unit label and amount are shown, not the owner's name.",
       "loadError": "Failed to load the list.",
-      "backToAccounting": "Back to accounting"
+      "backToAccounting": "Back to accounting",
+      "colOwner": "Owner",
+      "nameWithheld": "— (below 500 €)"
     },
     "votingImpacts": {
       "title": "Financial impacts",

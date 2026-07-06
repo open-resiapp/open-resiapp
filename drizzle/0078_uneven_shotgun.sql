@@ -1,0 +1,1 @@
+ALTER TABLE "mod_accounting_settings" ADD COLUMN "debtor_names_enabled" boolean DEFAULT false NOT NULL;

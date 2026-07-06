@@ -55,6 +55,12 @@ import {
 } from "@modules/accounting/src/lib/expense-inbox";
 import { readFileSync } from "fs";
 import {
+  getAccountingSettings,
+  updateAccountingSettings,
+} from "@modules/accounting/src/lib/settings";
+import { getDebtorList } from "@modules/accounting/src/lib/debtors";
+import { SK_DEBTOR_NAME_THRESHOLD_CENTS } from "@modules/accounting/src/lib/debtor-disclosure";
+import {
   uploadAttachment,
   listAttachments,
 } from "@modules/accounting/src/lib/attachments";
@@ -475,6 +481,59 @@ async function main() {
       check("consenter (jan) NOT in postal run", !postalIds.includes(janId!));
       check("non-consenter (maria) IS in postal run", postalIds.includes(mariaId!), JSON.stringify(postalIds));
     }
+  }
+
+  // ── SK debtor name disclosure (AC 425) ──
+  console.log("debtor name disclosure");
+  {
+    const cur = await getAccountingSettings(dom.id, country);
+    // Enable names + a 1-cent arrears threshold so every owing unit lists.
+    await updateAccountingSettings({
+      entityId: dom.id,
+      country,
+      actorId,
+      allocationStrategy: cur.allocationStrategy,
+      priorityOrder: cur.priorityOrder,
+      bankIban: cur.bankIban,
+      dueDay: cur.dueDay,
+      debtorDisclosureThresholdCents: 1,
+      debtorNamesEnabled: true,
+      heatBasicSharePct: cur.heatBasicSharePct,
+    });
+    const withNames = await getDebtorList(dom.id, country);
+    check("names disclosure active (SK)", withNames.namesEnabled === true);
+    check("statutory name threshold = 500 €", withNames.nameThresholdCents === SK_DEBTOR_NAME_THRESHOLD_CENTS);
+    // The KEY invariant, independent of which units owe: a name is disclosed
+    // IFF the nedoplatok is at/above the statutory 500 €.
+    const invariantHolds = withNames.debtors.every(
+      (d) => (d.balanceCents >= SK_DEBTOR_NAME_THRESHOLD_CENTS) === (d.ownerNames !== null)
+    );
+    check("name disclosed IFF ≥ 500 € (§9 ods. 3)", invariantHolds, JSON.stringify(withNames.debtors));
+    const disclosed = withNames.debtors.filter((d) => d.ownerNames !== null);
+    // Owned disclosed units carry names; the demo's byt 104 is deliberately
+    // unowned, so an empty names list there is correct (nobody to name).
+    check(
+      "owned disclosed rows carry owner names (104 unowned)",
+      disclosed.every(
+        (d) => d.unitLabel === "104" || (d.ownerNames?.length ?? 0) > 0
+      )
+    );
+
+    // Toggle OFF → no names on any row, regardless of amount.
+    await updateAccountingSettings({
+      entityId: dom.id,
+      country,
+      actorId,
+      allocationStrategy: cur.allocationStrategy,
+      priorityOrder: cur.priorityOrder,
+      bankIban: cur.bankIban,
+      dueDay: cur.dueDay,
+      debtorDisclosureThresholdCents: 1,
+      debtorNamesEnabled: false,
+      heatBasicSharePct: cur.heatBasicSharePct,
+    });
+    const noNames = await getDebtorList(dom.id, country);
+    check("toggle off strips all names", noNames.debtors.every((d) => d.ownerNames === null));
   }
 
   // ── účtovná závierka approval (AC 423/521) ──

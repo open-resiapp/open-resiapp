@@ -1654,7 +1654,10 @@
       "debtorThresholdOff": "Vypnuto",
       "heatBasicShare": "Teplo — základní složka (%)",
       "heatBasicShareHint": "Podíl nákladů na teplo rozúčtovaný podle podlahové plochy (základní složka); zbytek podle měřičů / indikátorů (vyhl. 269/2015). Zákonné rozmezí 30–50 %. Prázdné = 40 %. TUV má zákonně 30 %.",
-      "heatBasicShareDefault": "40"
+      "heatBasicShareDefault": "40",
+      "debtorNames": "Zveřejnit jména dlužníků (§9 ods. 3)",
+      "debtorNamesHint": "U dlužníků s nedoplatkem 500 € a více se v seznamu zobrazí i jméno vlastníka. Pod 500 € zůstává jen jednotka a částka.",
+      "debtorNamesWarning": "Právně citlivé — zapněte jen na základě rozhodnutí shromáždění. Platí jen pro SK (§9 ods. 3 zák. 182/1993)."
     },
     "predpisPdf": {
       "title": "Měsíční předpis plateb",
@@ -1952,7 +1955,9 @@
       "colAmount": "Nedoplatek",
       "legalNote": "Zveřejněno dle § 11 zák. 182/1993. Uvádí se jen označení jednotky a částka, nikoli jméno vlastníka.",
       "loadError": "Nepodařilo se načíst seznam.",
-      "backToAccounting": "Zpět na účetnictví"
+      "backToAccounting": "Zpět na účetnictví",
+      "colOwner": "Vlastník",
+      "nameWithheld": "— (pod 500 €)"
     },
     "votingImpacts": {
       "title": "Finanční dopady",

@@ -20,6 +20,8 @@ export interface AccountingSettingsView {
   dueDay: number | null;
   /** Arrears threshold in cents for owner-visible debtor list; null = off. */
   debtorDisclosureThresholdCents: number | null;
+  /** SK-only §9 ods. 3 owner-name disclosure for debtors ≥ 500 € (AC 425). */
+  debtorNamesEnabled: boolean;
   /** Heat základní složka percent (vyhláška 269/2015); null = default 40. */
   heatBasicSharePct: number | null;
   /** Full catalog for the priority-order editor. */
@@ -38,6 +40,7 @@ export async function getAccountingSettings(
       dueDay: accountingSettings.dueDay,
       debtorDisclosureThresholdCents:
         accountingSettings.debtorDisclosureThresholdCents,
+      debtorNamesEnabled: accountingSettings.debtorNamesEnabled,
       heatBasicSharePct: accountingSettings.heatBasicSharePct,
     })
     .from(accountingSettings)
@@ -65,6 +68,7 @@ export async function getAccountingSettings(
     dueDay: row?.dueDay ?? null,
     debtorDisclosureThresholdCents:
       row?.debtorDisclosureThresholdCents ?? null,
+    debtorNamesEnabled: row?.debtorNamesEnabled ?? false,
     heatBasicSharePct: row?.heatBasicSharePct ?? null,
     categorySlugs: categories.map((c) => c.slug),
   };
@@ -79,6 +83,7 @@ export async function updateAccountingSettings(input: {
   bankIban: string | null;
   dueDay: number | null;
   debtorDisclosureThresholdCents: number | null;
+  debtorNamesEnabled: boolean;
   heatBasicSharePct: number | null;
 }): Promise<void> {
   if (
@@ -143,6 +148,9 @@ export async function updateAccountingSettings(input: {
       bankIban: iban,
       dueDay: input.dueDay,
       debtorDisclosureThresholdCents: input.debtorDisclosureThresholdCents,
+      // CZ has no §9-ods-3 basis — never persist names-enabled for CZ.
+      debtorNamesEnabled:
+        input.country === "sk" ? input.debtorNamesEnabled : false,
       heatBasicSharePct: input.heatBasicSharePct,
       // DB clock, not app clock — reads filter with `effectiveFrom <=
       // now()` on Postgres time; app-clock skew would hide a fresh row.
@@ -161,6 +169,8 @@ export async function updateAccountingSettings(input: {
         bankIban: iban,
         dueDay: input.dueDay,
         debtorDisclosureThresholdCents: input.debtorDisclosureThresholdCents,
+        debtorNamesEnabled:
+          input.country === "sk" ? input.debtorNamesEnabled : false,
         heatBasicSharePct: input.heatBasicSharePct,
       },
     });

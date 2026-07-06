@@ -12,10 +12,13 @@ import { formatEur } from "@modules/accounting/src/lib/money";
 interface DebtorRow {
   unitLabel: string;
   balanceCents: number;
+  ownerNames: string[] | null;
 }
 interface Payload {
   enabled: boolean;
   thresholdCents: number | null;
+  namesEnabled: boolean;
+  nameThresholdCents: number;
   debtors: DebtorRow[];
 }
 
@@ -72,6 +75,9 @@ export default function DebtorsPage() {
                 <thead>
                   <tr className="text-left text-gray-600 dark:text-gray-400 border-b border-gray-200 dark:border-gray-700">
                     <th className="py-2 pr-4">{t("colUnit")}</th>
+                    {data.namesEnabled && (
+                      <th className="py-2 pr-4">{t("colOwner")}</th>
+                    )}
                     <th className="py-2 text-right">{t("colAmount")}</th>
                   </tr>
                 </thead>
@@ -84,6 +90,14 @@ export default function DebtorsPage() {
                       <td className="py-2 pr-4 text-gray-900 dark:text-gray-100">
                         {d.unitLabel}
                       </td>
+                      {data.namesEnabled && (
+                        <td className="py-2 pr-4 text-gray-700 dark:text-gray-300">
+                          {d.ownerNames && d.ownerNames.length > 0
+                            ? d.ownerNames.join(", ")
+                            : /* Below the statutory 500 € → withheld. */
+                              t("nameWithheld")}
+                        </td>
+                      )}
                       <td className="py-2 text-right font-medium text-red-600 dark:text-red-400">
                         {formatEur(d.balanceCents)}
                       </td>

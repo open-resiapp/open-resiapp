@@ -422,7 +422,7 @@ Reuse RES-20260413-002. Per-country settings:
 - [x] 10-year retention enforced — no hard delete of journal entries, doklady, vyúčtovania.
 - [x] Účtovná závierka schválenie blocked until shromáždění/zhromaždenie vote recorded (§7c ods. 9 SK / §1208 NOZ CZ).
 - [x] Right-to-inspect read-only view available to every owner of the dom (§11 ods. 6 SK / §1179 CZ).
-- [ ] SK debtor disclosure toggle only enables names + sumy for owners with nedoplatok ≥ 500 EUR (§9 ods. 3 zák. 182/1993).
+- [x] SK debtor disclosure toggle only enables names + sumy for owners with nedoplatok ≥ 500 EUR (§9 ods. 3 zák. 182/1993).
 - [x] Electronic delivery of vyúčtovanie requires recorded owner consent; non-consenting owners fall back to listinné doručenie.
 - [ ] Vyúčtovanie and upomienka PDFs cite the instance country's own statutes (SK §-refs vs CZ §-refs); the SK template is never reused verbatim for a CZ instance — statutory-citation content is template-aware, not naively parametrized (project rule: legally-regulated content).
 
@@ -800,6 +800,26 @@ Opt-in electronic delivery of the annual vyúčtovanie. Consent lives on
   the disclaimer flags it. Consent is per-USER (global), not per-dom/per-
   membership; a multi-SVB refinement is a possible follow-up. The postal
   print-run list rides in the publish response for a future print-run UI.
+
+### Notes — AC 425 SK debtor name disclosure (2026-07-06)
+
+`accountingSettings.debtorNamesEnabled` (migration 0078, default false).
+When ON, the debtor list adds owner names + sumy — but ONLY for units whose
+nedoplatok ≥ the statutory **500 €** (`SK_DEBTOR_NAME_THRESHOLD_CENTS`,
+hard-coded §9 ods. 3, NOT the configurable arrears-list threshold). Below
+500 € stays unit + amount. Pure boundary rule in `debtor-disclosure.ts`
+(`discloseDebtorName`, `test:accounting-debtor-disclosure` 9 checks).
+- **SK-only:** CZ has no §9-ods-3 basis, so the settings toggle is hidden on
+  CZ (settings GET now returns `country`) AND `updateAccountingSettings`
+  refuses to persist names-enabled for CZ, AND `getDebtorList` gates on
+  `country === 'sk'`. Three independent guards.
+- Settings toggle carries the legal warning ("právne citlivé — len na základe
+  rozhodnutia zhromaždenia", i18n ×3). Debtor page gains an Owner column when
+  active; unowned units (or < 500 €) show "—".
+- e2e verifies the live invariant: name disclosed IFF balance ≥ 500 €;
+  toggle-off strips all names; the demo's deliberately-unowned byt 104 shows
+  no name even when ≥ 500 € (nobody to name). Supersedes the earlier
+  "deliberate unit+amount-only" divergence — the statutory path is now built.
 
 ### Open questions
 

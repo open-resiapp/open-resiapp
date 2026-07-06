@@ -138,6 +138,13 @@ export const accountingSettings = pgTable(
     // unit appears on the owner-visible debtor list. NULL = disabled (the
     // list is hidden entirely — the privacy-safe default).
     debtorDisclosureThresholdCents: integer("debtor_disclosure_threshold_cents"),
+    // SK-only owner-NAME disclosure (§9 ods. 3 zák. 182/1993): when true,
+    // the debtor list additionally reveals owner names + sumy, but ONLY for
+    // units whose nedoplatok is at/above the statutory 500 € threshold (a
+    // hard-coded SK statute, not this configurable arrears threshold). CZ
+    // has no such statutory basis, so the toggle is hidden there and name
+    // disclosure is refused server-side regardless. Default OFF (privacy).
+    debtorNamesEnabled: boolean("debtor_names_enabled").notNull().default(false),
     // Heat rozúčtování (vyhláška 269/2015 §3): the ZÁKLADNÍ složka percent
     // for teplo — split by započitatelná plocha; the rest is spotřební,
     // split by indicator readings. Statutory band 30–50; NULL = engine

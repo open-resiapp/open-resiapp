@@ -26,6 +26,7 @@
     "test:accounting-vyuctovanie-pdf": "tsx scripts/accounting-vyuctovanie-pdf-check.ts",
     "test:accounting-invoice-extract": "tsx scripts/accounting-invoice-extract-check.ts",
     "test:accounting-e-delivery": "tsx scripts/accounting-e-delivery-check.ts",
+    "test:accounting-debtor-disclosure": "tsx scripts/accounting-debtor-disclosure-check.ts",
     "test:accounting-heat": "tsx scripts/accounting-heat-check.ts",
     "test:accounting-rate-sync": "tsx scripts/accounting-rate-sync-check.ts",
     "test:accounting-deadlines": "tsx scripts/accounting-deadlines-check.ts",

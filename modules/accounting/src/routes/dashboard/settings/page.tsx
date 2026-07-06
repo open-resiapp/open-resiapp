@@ -17,8 +17,10 @@ interface Settings {
   bankIban: string | null;
   dueDay: number | null;
   debtorDisclosureThresholdCents: number | null;
+  debtorNamesEnabled: boolean;
   heatBasicSharePct: number | null;
   categorySlugs: string[];
+  country: "sk" | "cz";
 }
 
 export default function AccountingSettingsPage() {
@@ -31,6 +33,8 @@ export default function AccountingSettingsPage() {
   const [iban, setIban] = useState("");
   const [dueDay, setDueDay] = useState<string>("");
   const [debtorThreshold, setDebtorThreshold] = useState<string>("");
+  const [debtorNamesEnabled, setDebtorNamesEnabled] = useState(false);
+  const [country, setCountry] = useState<"sk" | "cz">("sk");
   const [heatBasic, setHeatBasic] = useState<string>("");
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
@@ -57,6 +61,8 @@ export default function AccountingSettingsPage() {
             ? ""
             : centsToInput(data.debtorDisclosureThresholdCents)
         );
+        setDebtorNamesEnabled(data.debtorNamesEnabled ?? false);
+        setCountry(data.country ?? "sk");
         setHeatBasic(
           data.heatBasicSharePct === null ? "" : String(data.heatBasicSharePct)
         );
@@ -95,6 +101,8 @@ export default function AccountingSettingsPage() {
           dueDay: dueDay === "" ? null : Number(dueDay),
           debtorDisclosureThresholdCents:
             debtorThreshold.trim() === "" ? null : parseCents(debtorThreshold),
+          // SK-only §9 ods. 3 name disclosure (AC 425).
+          debtorNamesEnabled: country === "sk" && debtorNamesEnabled,
           heatBasicSharePct:
             heatBasic.trim() === "" ? null : Number(heatBasic),
         }),
@@ -204,6 +212,35 @@ export default function AccountingSettingsPage() {
             className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 text-right w-40"
           />
         </div>
+
+        {/* SK-only §9 ods. 3 owner-name disclosure (AC 425). Hidden on CZ —
+            no statutory basis. */}
+        {country === "sk" && (
+          <div className="rounded-lg border border-amber-200 dark:border-amber-800 bg-amber-50 dark:bg-amber-950/40 p-4">
+            <label className="flex items-start gap-3 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={debtorNamesEnabled}
+                onChange={(e) => {
+                  setDebtorNamesEnabled(e.target.checked);
+                  setSaved(false);
+                }}
+                className="mt-1 h-4 w-4"
+              />
+              <span>
+                <span className="block text-sm font-medium text-gray-900 dark:text-gray-100">
+                  {t("debtorNames")}
+                </span>
+                <span className="block text-xs text-gray-600 dark:text-gray-400 mt-0.5">
+                  {t("debtorNamesHint")}
+                </span>
+                <span className="block text-xs text-amber-700 dark:text-amber-400 mt-1 font-medium">
+                  {t("debtorNamesWarning")}
+                </span>
+              </span>
+            </label>
+          </div>
+        )}
 
         {/* Heat basic-component share (vyhláška 269/2015) */}
         <div>
