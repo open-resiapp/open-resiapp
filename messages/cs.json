@@ -1603,7 +1603,8 @@
       "footer": "Předpis není faktura. Vygenerováno systémem OpenResiApp.",
       "download": "Stáhnout předpis (PDF)",
       "generating": "Generuje se…",
-      "error": "Generování selhalo"
+      "error": "Generování selhalo",
+      "noPredpis": "Pro tento měsíc zatím není publikovaný předpis. Nejprve jej publikujte v sekci Předpis."
     },
     "reconciliation": {
       "title": "Banka a párování",

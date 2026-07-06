@@ -1603,7 +1603,8 @@
       "footer": "Predpis nie je faktúra. Vygenerované systémom OpenResiApp.",
       "download": "Stiahnuť predpis (PDF)",
       "generating": "Generuje sa…",
-      "error": "Generovanie zlyhalo"
+      "error": "Generovanie zlyhalo",
+      "noPredpis": "Pre tento mesiac zatiaľ nie je publikovaný predpis. Najprv ho publikujte v sekcii Predpis."
     },
     "reconciliation": {
       "title": "Banka a párovanie",

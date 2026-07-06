@@ -22,7 +22,7 @@
     "test:accounting-fio": "tsx scripts/accounting-fio-check.ts",
     "test:accounting-interest": "tsx scripts/accounting-interest-check.ts",
     "test:accounting-settlement": "tsx scripts/accounting-settlement-check.ts",
-    "demo:accounting": "tsx scripts/accounting-demo-seed.ts",
+    "demo:accounting": "tsx --tsconfig scripts/tsconfig.e2e.json scripts/accounting-demo-seed.ts",
     "test:accounting-e2e": "tsx --tsconfig scripts/tsconfig.e2e.json scripts/accounting-e2e-check.ts",
     "create-admin": "tsx src/scripts/create-admin.ts",
     "setup:tenant": "tsx scripts/setup-tenant.ts",

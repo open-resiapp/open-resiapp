@@ -15,6 +15,7 @@
  *   maria@test.sk    — owner of byt 102
  */
 import "dotenv/config";
+process.env.NEXTAUTH_SECRET ??= "demo-seed-secret";
 import bcrypt from "bcrypt";
 import { Pool } from "pg";
 import { drizzle } from "drizzle-orm/node-postgres";
@@ -31,6 +32,13 @@ import {
   accountingSettings,
   unitSettings,
 } from "@modules/accounting/src/db/schema";
+import { submitOpeningBalance } from "@modules/accounting/src/lib/opening-balance";
+import {
+  createFeeSchedule,
+  updateFeeScheduleDraft,
+  listServiceCategories,
+} from "@modules/accounting/src/lib/fee-schedules";
+import { publishSchedule } from "@modules/accounting/src/lib/fee-schedule-publish";
 
 const url = process.env.DATABASE_URL ?? "";
 if (!/@(localhost|127\.0\.0\.1)[:/]/.test(url)) {
@@ -230,6 +238,54 @@ async function main() {
     effectiveFrom: sql`now()`,
     createdById: adminId,
   });
+
+  // Skip the live-books setup with --bare to test onboarding from scratch.
+  const bare = process.argv.includes("--bare");
+  if (!bare) {
+    const year = new Date().getUTCFullYear();
+    const unitRows = await db
+      .select({ id: entities.id })
+      .from(entities)
+      .where(and(eq(entities.rootId, dom.id), eq(entities.kind, "unit")));
+
+    // Opening balance so the dom isn't blocked on onboarding.
+    await submitOpeningBalance({
+      entityId: dom.id,
+      country: "sk",
+      year,
+      createdById: adminId,
+      bankaCents: 500000,
+      pokladnicaCents: 20000,
+      unitBalances: unitRows.map((u) => ({
+        unitEntityId: u.id,
+        fpuoCents: 100000,
+        zalohyCents: 30000,
+      })),
+    });
+
+    // A published predpis so karta balances, PDFs and QR work immediately.
+    const cats = await listServiceCategories("sk");
+    const fpuo = cats.find((c) => c.slug === "FPUO")!;
+    const lift = cats.find((c) => c.slug === "SVC_LIFT")!;
+    const { id: scheduleId } = await createFeeSchedule({
+      entityId: dom.id,
+      year,
+      effectiveFrom: new Date(Date.UTC(year, 0, 1)),
+      createdById: adminId,
+    });
+    await updateFeeScheduleDraft({
+      entityId: dom.id,
+      country: "sk",
+      scheduleId,
+      actorId: adminId,
+      services: [
+        { serviceCategoryId: fpuo.id, allocationKey: "share", rateCents: 30000, fixedAmountCents: null },
+        { serviceCategoryId: lift.id, allocationKey: "flat_count_equal", rateCents: 4000, fixedAmountCents: null },
+      ],
+    });
+    await publishSchedule({ entityId: dom.id, country: "sk", scheduleId, actorId: adminId });
+    console.log("posted opening balance + published a live predpis");
+  }
 
   await pool.end();
   console.log(`

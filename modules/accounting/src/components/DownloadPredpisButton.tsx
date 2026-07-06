@@ -91,7 +91,14 @@ export default function DownloadPredpisButton({ unitId }: { unitId: string }) {
       a.click();
       URL.revokeObjectURL(url);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "pdf");
+      const msg = err instanceof Error ? err.message : "pdf";
+      // "No published predpis / no assessments" is not a failure — the
+      // treasurer simply hasn't published a fee schedule for this month.
+      setError(
+        msg.includes("no published predpis") || msg.includes("no assessments")
+          ? t("noPredpis")
+          : `${t("error")} (${msg})`
+      );
     } finally {
       setGenerating(false);
     }
@@ -107,8 +114,8 @@ export default function DownloadPredpisButton({ unitId }: { unitId: string }) {
         {generating ? t("generating") : t("download")}
       </button>
       {error && (
-        <p className="text-red-600 dark:text-red-400 text-xs mt-1">
-          {t("error")} ({error})
+        <p className="text-amber-700 dark:text-amber-400 text-xs mt-1">
+          {error}
         </p>
       )}
     </div>
