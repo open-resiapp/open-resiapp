@@ -39,6 +39,11 @@ import {
 import { publishSchedule } from "@modules/accounting/src/lib/fee-schedule-publish";
 import { createManualPayment } from "@modules/accounting/src/lib/payments";
 import { getUnitLedger } from "@modules/accounting/src/lib/karta-bytu";
+import {
+  importNormalizedLines,
+  listUnmatchedBankLines,
+  dismissBankLine,
+} from "@modules/accounting/src/lib/bank-import";
 import { createExpense } from "@modules/accounting/src/lib/expenses";
 import { getDashboardTiles } from "@modules/accounting/src/lib/dashboard";
 import {
@@ -166,6 +171,45 @@ async function main() {
     "karta balance drops by payment",
     (after?.balanceCents ?? 0) === (before?.balanceCents ?? 0) - 20000,
     `${before?.balanceCents} → ${after?.balanceCents}`
+  );
+
+  // ── reconciliation: import an unmatchable line → dismiss it (AC 439) ──
+  console.log("reconciliation dismiss");
+  await importNormalizedLines({
+    entityId: dom.id,
+    country,
+    actorId,
+    source: "bank_import",
+    lines: [
+      {
+        externalTxId: `E2E-BANKFEE-${Date.now()}`,
+        amountCents: 137,
+        direction: "credit",
+        bookingDate: new Date().toISOString().slice(0, 10),
+        valueDate: null,
+        // No VS, unknown IBAN/name → cannot auto-match → lands in the queue.
+        vs: null,
+        ss: null,
+        ks: null,
+        counterpartyIban: null,
+        counterpartyName: "Banka — úrok",
+        narrative: "Kreditný úrok",
+      },
+    ],
+  });
+  const unmatchedBefore = await listUnmatchedBankLines(dom.id);
+  const toDismiss = unmatchedBefore.find((l) => l.amountCents === 137);
+  check("unmatchable line lands in reconciliation queue", !!toDismiss);
+  await dismissBankLine({
+    entityId: dom.id,
+    paymentId: toDismiss!.paymentId,
+    actorId,
+    reason: "bankový úrok, nie platba vlastníka",
+  });
+  const unmatchedAfter = await listUnmatchedBankLines(dom.id);
+  check(
+    "dismissed line leaves the queue",
+    !unmatchedAfter.some((l) => l.paymentId === toDismiss!.paymentId)
   );
 
   // ── expense → dashboard tiles ──

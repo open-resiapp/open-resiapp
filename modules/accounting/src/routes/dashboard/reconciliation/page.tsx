@@ -65,6 +65,7 @@ export default function ReconciliationPage() {
   const [summary, setSummary] = useState<ImportSummary | null>(null);
   const [overrides, setOverrides] = useState<Record<string, string>>({});
   const [confirming, setConfirming] = useState<string | null>(null);
+  const [dismissing, setDismissing] = useState<string | null>(null);
   const [fio, setFio] = useState<FioState | null>(null);
   const [fioToken, setFioToken] = useState("");
   const [fioSaving, setFioSaving] = useState(false);
@@ -180,6 +181,25 @@ export default function ReconciliationPage() {
       setError(err instanceof Error ? err.message : "confirm");
     } finally {
       setConfirming(null);
+    }
+  }
+
+  async function dismiss(line: Line) {
+    if (!window.confirm(t("dismissConfirm"))) return;
+    setDismissing(line.paymentId);
+    setError(null);
+    try {
+      const res = await fetch(
+        `/api/accounting/reconciliation/${line.paymentId}`,
+        { method: "DELETE" }
+      );
+      const body = await res.json().catch(() => null);
+      if (!res.ok) throw new Error(body?.error ?? String(res.status));
+      load();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "dismiss");
+    } finally {
+      setDismissing(null);
     }
   }
 
@@ -389,6 +409,15 @@ export default function ReconciliationPage() {
                       {confirming === line.paymentId
                         ? t("confirming")
                         : t("confirm")}
+                    </button>
+                    <button
+                      onClick={() => dismiss(line)}
+                      disabled={dismissing === line.paymentId}
+                      className="px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-400 hover:border-red-400 hover:text-red-600 dark:hover:text-red-400 disabled:opacity-50 rounded-lg text-sm"
+                    >
+                      {dismissing === line.paymentId
+                        ? t("dismissing")
+                        : t("dismiss")}
                     </button>
                   </div>
                 </div>

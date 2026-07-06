@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { requireWriter } from "@modules/accounting/src/lib/api-guard";
 import {
   confirmBankLineMatch,
+  dismissBankLine,
   importCamt053Statement,
   listUnmatchedBankLines,
 } from "@modules/accounting/src/lib/bank-import";
@@ -85,6 +86,40 @@ export async function handleConfirmMatch(
     return NextResponse.json({ ok: true });
   } catch (err) {
     const message = err instanceof Error ? err.message : "match failed";
+    const status = message.includes("not found") ? 404 : 400;
+    return NextResponse.json({ error: message }, { status });
+  }
+}
+
+/**
+ * DELETE /api/accounting/reconciliation/[paymentId] — dismiss an unmatched
+ * bank line (not a member payment). Optional body { reason }.
+ */
+export async function handleDismissMatch(
+  req: NextRequest,
+  paymentId: string
+): Promise<NextResponse> {
+  const ctx = await requireWriter();
+  if (!ctx.ok) return ctx.error;
+
+  let reason: string | null = null;
+  try {
+    const body = (await req.json()) as { reason?: string };
+    if (typeof body.reason === "string") reason = body.reason;
+  } catch {
+    // Body is optional — a bare dismiss carries the default reason.
+  }
+
+  try {
+    await dismissBankLine({
+      entityId: ctx.root.id,
+      paymentId,
+      actorId: ctx.session.user.id,
+      reason,
+    });
+    return NextResponse.json({ ok: true });
+  } catch (err) {
+    const message = err instanceof Error ? err.message : "dismiss failed";
     const status = message.includes("not found") ? 404 : 400;
     return NextResponse.json({ error: message }, { status });
   }

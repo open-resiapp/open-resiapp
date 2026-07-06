@@ -630,3 +630,67 @@ export async function confirmBankLineMatch(input: {
     });
   });
 }
+
+/**
+ * Treasurer rejects an unmatched bank line — it is not a member payment
+ * (bank fee, interest credit, a transfer to another account, a duplicate the
+ * dedupe key missed). The line never posted, so there is nothing to reverse:
+ * it is marked voided (with an actor + reason) so it leaves the
+ * reconciliation queue while staying on the record (10-year retention —
+ * never hard-deleted). AC 439.
+ */
+export async function dismissBankLine(input: {
+  entityId: string;
+  paymentId: string;
+  actorId: string;
+  reason?: string | null;
+}): Promise<void> {
+  await db.transaction(async (tx) => {
+    const [payment] = await tx
+      .select({
+        source: payments.source,
+        journalEntryId: payments.journalEntryId,
+        voidedAt: payments.voidedAt,
+      })
+      .from(payments)
+      .where(
+        and(
+          eq(payments.id, input.paymentId),
+          eq(payments.entityId, input.entityId)
+        )
+      )
+      .for("update");
+    if (!payment) throw new Error("accounting: payment not found");
+    // Only unmatched imported lines are dismissable — a posted payment is
+    // corrected through the void-with-reversal path, never silently hidden.
+    if (payment.source !== "bank_import" && payment.source !== "fio_api") {
+      throw new Error("accounting: only imported bank lines can be dismissed");
+    }
+    if (payment.voidedAt) throw new Error("accounting: line already dismissed");
+    if (payment.journalEntryId) {
+      throw new Error(
+        "accounting: line is already matched — void the payment to reverse it"
+      );
+    }
+
+    const reason = input.reason?.trim() || "dismissed in reconciliation";
+    await tx
+      .update(payments)
+      .set({
+        voidedAt: sql`now()`,
+        voidedById: input.actorId,
+        voidReason: reason,
+      })
+      .where(eq(payments.id, input.paymentId));
+
+    await tx.insert(auditLog).values({
+      entityId: input.entityId,
+      actorId: input.actorId,
+      action: "void",
+      tableName: "mod_accounting_payments",
+      recordId: input.paymentId,
+      after: { dismissed: true, via: "reconciliation" },
+      justification: reason,
+    });
+  });
+}
