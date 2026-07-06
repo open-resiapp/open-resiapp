@@ -378,6 +378,7 @@ export interface ExpenseListRow {
   paidAt: string | null;
   voidedAt: string | null;
   voidReason: string | null;
+  attachmentVisibility: "public" | "redacted_required" | "restricted";
 }
 
 export async function listExpenses(
@@ -397,6 +398,7 @@ export async function listExpenses(
       paidAt: expenses.paidAt,
       voidedAt: expenses.voidedAt,
       voidReason: expenses.voidReason,
+      attachmentVisibility: expenses.attachmentVisibility,
     })
     .from(expenses)
     .leftJoin(

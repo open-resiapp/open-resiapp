@@ -1563,7 +1563,9 @@
       "navVyuctovanie": "Annual settlement",
       "navVyuctovanieHint": "Checks and preview of the service-advance settlement",
       "navJournal": "Accountant view",
-      "navJournalHint": "Journal and trial balance for audit"
+      "navJournalHint": "Journal and trial balance for audit",
+      "navInspect": "Right to inspect",
+      "navInspectHint": "Community documents and spending"
     },
     "settings": {
       "title": "Accounting settings",
@@ -1683,7 +1685,8 @@
       "lookup_notFound": "Company ID not found in the register.",
       "lookup_notConfigured": "FinStat API key is not configured — lookup unavailable.",
       "lookup_error": "Lookup failed. Check the ID or try later.",
-      "lookup_debtor": "⚠️ Supplier is on the debtor list — verify before saving."
+      "lookup_debtor": "⚠️ Supplier is on the debtor list — verify before saving.",
+      "attachmentsToggle": "Documents"
     },
     "meters": {
       "title": "Meter readings",
@@ -1792,6 +1795,41 @@
       "verifyValid": "The file is authentic and unmodified (generated {generatedAt}).",
       "verifyInvalid": "The file does NOT match — it was modified or did not originate from this system.",
       "verifyError": "Verification failed. Try again."
+    },
+    "attachments": {
+      "gdprWarning": "The document may contain personal data. Under the right to inspect, owners will see it — mark redaction or restriction if needed.",
+      "loading": "Loading…",
+      "none": "No document yet.",
+      "role_original": "original",
+      "role_redacted": "redacted",
+      "remove": "Remove",
+      "uploadOriginal": "Upload document:",
+      "uploadRedacted": "Upload redacted copy:",
+      "visibility": "Visibility",
+      "vis_public": "Public (all owners)",
+      "vis_redacted": "Redacted copy only",
+      "vis_restricted": "Board / audit only",
+      "justificationPlaceholder": "Reason for restriction (audit-logged)",
+      "save": "Save",
+      "needsRedacted": "With this setting, upload a redacted copy — otherwise owners see no document.",
+      "error": "Error"
+    },
+    "inspect": {
+      "title": "Right to inspect",
+      "subtitle": "Overview of the community's finances — documents and spending per §11(6) Act 182/1993",
+      "backToAccounting": "Back to accounting",
+      "loadError": "Failed to load the overview.",
+      "empty": "No documents yet.",
+      "colDate": "Date",
+      "colSupplier": "Supplier",
+      "colCategory": "Category",
+      "colAmount": "Amount",
+      "colDoc": "Document",
+      "viewDoc": "View",
+      "boardOnly": "Board only",
+      "redactionPending": "Awaiting redaction",
+      "noDoc": "No document",
+      "fpuoBadge": "RF"
     }
   }
 }

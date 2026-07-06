@@ -6,10 +6,11 @@
 // vyúčtovanie. Paying posts Dr 321 / Cr banka|pokladnica; corrections
 // are voids with a reason.
 
-import { useCallback, useEffect, useState } from "react";
+import { Fragment, useCallback, useEffect, useState } from "react";
 import { useFormatter, useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { parseCents, formatEur } from "@modules/accounting/src/lib/money";
+import ExpenseAttachments from "@modules/accounting/src/components/ExpenseAttachments";
 
 interface Category {
   id: string;
@@ -28,6 +29,7 @@ interface ExpenseRow {
   paidAt: string | null;
   voidedAt: string | null;
   voidReason: string | null;
+  attachmentVisibility: "public" | "redacted_required" | "restricted";
 }
 
 export default function ExpensesPage() {
@@ -60,6 +62,7 @@ export default function ExpensesPage() {
   >(null);
 
   // row actions
+  const [attachOpen, setAttachOpen] = useState<string | null>(null);
   const [voidTarget, setVoidTarget] = useState<string | null>(null);
   const [voidReason, setVoidReason] = useState("");
   const [busy, setBusy] = useState<string | null>(null);
@@ -425,8 +428,8 @@ export default function ExpensesPage() {
             </thead>
             <tbody>
               {rows.map((e) => (
+                <Fragment key={e.id}>
                 <tr
-                  key={e.id}
                   className={`border-b border-gray-100 dark:border-gray-800 ${
                     e.voidedAt ? "opacity-50 line-through" : ""
                   }`}
@@ -491,6 +494,16 @@ export default function ExpensesPage() {
                     )}
                     {!e.voidedAt && (
                       <button
+                        onClick={() =>
+                          setAttachOpen((p) => (p === e.id ? null : e.id))
+                        }
+                        className="text-gray-600 dark:text-gray-300 hover:underline text-xs mr-3"
+                      >
+                        📎 {t("attachmentsToggle")}
+                      </button>
+                    )}
+                    {!e.voidedAt && (
+                      <button
                         onClick={() => {
                           setVoidTarget(e.id);
                           setVoidReason("");
@@ -502,6 +515,17 @@ export default function ExpensesPage() {
                     )}
                   </td>
                 </tr>
+                {attachOpen === e.id && !e.voidedAt && (
+                  <tr>
+                    <td colSpan={7} className="pb-3 px-2">
+                      <ExpenseAttachments
+                        expenseId={e.id}
+                        visibility={e.attachmentVisibility}
+                      />
+                    </td>
+                  </tr>
+                )}
+                </Fragment>
               ))}
             </tbody>
           </table>

@@ -90,6 +90,25 @@ export const paymentMethodEnum = pgEnum("mod_accounting_payment_method", [
   "cash",
 ]);
 
+// Right-to-inspect (§11 ods. 6 zák. 182/1993): every owner of the dom may
+// read FPÚO čerpanie invoices + scans. Visibility governs what a
+// NON-BOARD owner sees per doklad:
+//   public            — the original scan
+//   redacted_required — only a treasurer-uploaded redacted copy (GDPR);
+//                       until it exists, owners see the metadata but no file
+//   restricted        — nothing (board/kontrolná komisia only); requires a
+//                       written justification recorded in the audit log
+export const attachmentVisibilityEnum = pgEnum(
+  "mod_accounting_attachment_visibility",
+  ["public", "redacted_required", "restricted"]
+);
+
+// role: the original invoice scan vs the redacted copy for owner viewing.
+export const attachmentRoleEnum = pgEnum("mod_accounting_attachment_role", [
+  "original",
+  "redacted",
+]);
+
 // ── Settings ───────────────────────────────────────────
 
 // Append-only: a strategy change inserts a new effective-from row, the
@@ -595,6 +614,12 @@ export const expenses = pgTable(
     dphCents: integer("dph_cents"),
     /** REVIZIA_* categories: statutory next-inspection deadline. */
     nextInspectionDueAt: timestamp("next_inspection_due_at"),
+    // Owner-visibility of this doklad's scans (right-to-inspect). Default
+    // public; restricted needs a justification (audit-logged).
+    attachmentVisibility: attachmentVisibilityEnum("attachment_visibility")
+      .notNull()
+      .default("public"),
+    redactionJustification: text("redaction_justification"),
     // Booking links: invoice posting (Dr náklady|472 / Cr 321) and the
     // payment posting (Dr 321 / Cr 221|211) once paid.
     journalEntryId: uuid("journal_entry_id").references(
@@ -629,6 +654,38 @@ export const expenses = pgTable(
     amountCheck: check(
       "mod_accounting_expenses_amount_check",
       sql`${table.amountCents} > 0`
+    ),
+  })
+);
+
+// ── Expense attachments + visibility (Phase 3 legal) ───
+
+export const expenseAttachments = pgTable(
+  "mod_accounting_expense_attachments",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    entityId: uuid("entity_id")
+      .references(() => entities.id, { onDelete: "restrict" })
+      .notNull(),
+    expenseId: uuid("expense_id")
+      .references(() => expenses.id, { onDelete: "restrict" })
+      .notNull(),
+    role: attachmentRoleEnum("role").notNull().default("original"),
+    storageKey: text("storage_key").notNull(),
+    fileName: varchar("file_name", { length: 255 }).notNull(),
+    contentType: varchar("content_type", { length: 100 }).notNull(),
+    sizeBytes: integer("size_bytes").notNull(),
+    // Soft-delete only (10-year retention) — a superseded scan is voided,
+    // never physically removed, and the storage object stays.
+    voidedAt: timestamp("voided_at"),
+    createdById: uuid("created_by_id")
+      .references(() => users.id, { onDelete: "restrict" })
+      .notNull(),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+  },
+  (table) => ({
+    expenseIdx: index("mod_accounting_expense_attachments_expense_idx").on(
+      table.expenseId
     ),
   })
 );

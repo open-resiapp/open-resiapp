@@ -1563,7 +1563,9 @@
       "navVyuctovanie": "Ročné vyúčtovanie",
       "navVyuctovanieHint": "Kontroly, náhľad vyúčtovania záloh na služby",
       "navJournal": "Pohľad účtovníka",
-      "navJournalHint": "Účtovný denník a predvaha pre audit"
+      "navJournalHint": "Účtovný denník a predvaha pre audit",
+      "navInspect": "Právo na nahliadnutie",
+      "navInspectHint": "Doklady a hospodárenie spoločenstva"
     },
     "settings": {
       "title": "Nastavenia účtovníctva",
@@ -1683,7 +1685,8 @@
       "lookup_notFound": "IČO sa nenašlo v registri.",
       "lookup_notConfigured": "FinStat API kľúč nie je nastavený — vyhľadávanie nedostupné.",
       "lookup_error": "Vyhľadanie zlyhalo. Skontrolujte IČO alebo skúste neskôr.",
-      "lookup_debtor": "⚠️ Dodávateľ je v zozname dlžníkov — pred uložením si overte situáciu."
+      "lookup_debtor": "⚠️ Dodávateľ je v zozname dlžníkov — pred uložením si overte situáciu.",
+      "attachmentsToggle": "Doklady"
     },
     "meters": {
       "title": "Odpočty meračov",
@@ -1792,6 +1795,41 @@
       "verifyValid": "Súbor je pravý a nezmenený (vygenerovaný {generatedAt}).",
       "verifyInvalid": "Súbor NESEDÍ — bol zmenený alebo nepochádza z tohto systému.",
       "verifyError": "Overenie zlyhalo. Skúste znova."
+    },
+    "attachments": {
+      "gdprWarning": "Doklad môže obsahovať osobné údaje. Pri práve na nahliadnutie ho uvidia vlastníci — ak treba, označte redakciu alebo obmedzenie.",
+      "loading": "Načítava sa…",
+      "none": "Zatiaľ žiadny doklad.",
+      "role_original": "originál",
+      "role_redacted": "redigované",
+      "remove": "Odstrániť",
+      "uploadOriginal": "Nahrať doklad:",
+      "uploadRedacted": "Nahrať redigovanú kópiu:",
+      "visibility": "Viditeľnosť",
+      "vis_public": "Verejné (všetci vlastníci)",
+      "vis_redacted": "Len redigovaná kópia",
+      "vis_restricted": "Len výbor / KK",
+      "justificationPlaceholder": "Dôvod obmedzenia (do auditu)",
+      "save": "Uložiť",
+      "needsRedacted": "Pri tomto nastavení nahrajte redigovanú kópiu — inak vlastníci doklad neuvidia.",
+      "error": "Chyba"
+    },
+    "inspect": {
+      "title": "Právo na nahliadnutie",
+      "subtitle": "Prehľad hospodárenia spoločenstva — doklady a čerpanie podľa § 11 ods. 6 zák. 182/1993 Z.z.",
+      "backToAccounting": "Späť na účtovníctvo",
+      "loadError": "Nepodarilo sa načítať prehľad.",
+      "empty": "Zatiaľ žiadne doklady.",
+      "colDate": "Dátum",
+      "colSupplier": "Dodávateľ",
+      "colCategory": "Kategória",
+      "colAmount": "Suma",
+      "colDoc": "Doklad",
+      "viewDoc": "Zobraziť",
+      "boardOnly": "Len výbor",
+      "redactionPending": "Čaká na redakciu",
+      "noDoc": "Bez dokladu",
+      "fpuoBadge": "FO"
     }
   }
 }
