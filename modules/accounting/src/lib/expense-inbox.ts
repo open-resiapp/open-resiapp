@@ -277,23 +277,32 @@ export async function postInboxItemAsExpense(
     throw attachErr;
   }
 
-  // Mark the row posted + audit. If this last update fails the doklad still
-  // stands (with its scan); the row simply stays pending and can be retried
-  // — the duplicate-invoice guard in createExpense blocks a double-post.
-  await db.transaction(async (tx) => {
-    await tx
-      .update(expenseInbox)
-      .set({ status: "posted", postedExpenseId: expenseId })
-      .where(eq(expenseInbox.id, input.id));
-    await tx.insert(auditLog).values({
-      entityId: input.entityId,
-      actorId: input.actorId,
-      action: "update",
-      tableName: "mod_accounting_expense_inbox",
-      recordId: input.id,
-      after: { status: "posted", postedExpenseId: expenseId },
+  // Mark the row posted + audit. This is best-effort: the doklad is already
+  // created + scanned, so a failure here must NOT discard that success (and
+  // must not throw — a re-post would hit createExpense's duplicate guard and
+  // fail confusingly). If it fails, the expense stands and the row stays
+  // pending; the treasurer can simply dismiss the leftover pending row.
+  try {
+    await db.transaction(async (tx) => {
+      await tx
+        .update(expenseInbox)
+        .set({ status: "posted", postedExpenseId: expenseId })
+        .where(eq(expenseInbox.id, input.id));
+      await tx.insert(auditLog).values({
+        entityId: input.entityId,
+        actorId: input.actorId,
+        action: "update",
+        tableName: "mod_accounting_expense_inbox",
+        recordId: input.id,
+        after: { status: "posted", postedExpenseId: expenseId },
+      });
     });
-  });
+  } catch (markErr) {
+    console.error(
+      `accounting: inbox ${input.id} posted expense ${expenseId} but the mark-posted update failed; dismiss the leftover pending row`,
+      markErr
+    );
+  }
 
   return { expenseId };
 }

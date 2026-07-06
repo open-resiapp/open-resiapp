@@ -103,6 +103,23 @@ async function main() {
     check("amount 99,90", f.amountCents === 9990, String(f.amountCents));
   }
 
+  // ── 4b. date tails must not read as money (2-digit + 4-digit years) ──
+  console.log("dates are not amounts");
+  {
+    const f = extractInvoiceFields("Faktúra 03.04.2025\nK úhrade do 15.05.25 suma 3,00 €");
+    check("2-digit-year date not taken as amount", f.amountCents === 300, String(f.amountCents));
+    const f2 = extractInvoiceFields("Splatnosť 31.12.2025\nCelkom k úhrade 12,00 €");
+    check("4-digit-year date not taken as amount", f2.amountCents === 1200, String(f2.amountCents));
+  }
+
+  // ── 4c. IBAN with a trailing token on the same line ──────────────────
+  console.log("IBAN followed by another token");
+  {
+    const f = extractInvoiceFields("IBAN SK8975000000000012345671 VS 2025014\nK úhrade 5,00 €");
+    check("IBAN recovered despite trailing VS", f.iban === "SK8975000000000012345671", String(f.iban));
+    check("VS still read", f.vs === "2025014", String(f.vs));
+  }
+
   // ── 5. empty / garbage → all null, zero confidence ───────────────────
   console.log("empty + garbage");
   {

@@ -1624,7 +1624,7 @@
       "navInbox": "Sběrná schránka faktur",
       "navInboxHint": "Nahrajte PDF faktury — systém z nich přečte údaje",
       "navTransfers": "Přesuny mezi okruhy",
-      "navTransfersHint": "Návratné půjčky mezi fondy (§10 ods. 3) — evidence"
+      "navTransfersHint": "Návratné půjčky mezi fondy — evidence"
     },
     "settings": {
       "title": "Nastavení účetnictví",
@@ -2009,7 +2009,7 @@
     "transfers": {
       "backToAccounting": "Zpět na účetnictví",
       "title": "Přesuny mezi okruhy",
-      "subtitle": "Evidence dočasného krytí mezi fondy (např. fond oprav → služby, §10 ods. 3) s příznakem návratné půjčky.",
+      "subtitle": "Evidence dočasného krytí mezi fondy (např. fond oprav → služby) s příznakem návratné půjčky.",
       "metadataBanner": "Pouze evidence — tento záznam NEúčtuje žádný účetní zápis a nemění zůstatky fondů. Účetní strana (meziokruhové účty) čeká na potvrzení účetního (AC 416/417).",
       "record": "Zaevidovat přesun",
       "fromOkruh": "Z okruhu",

@@ -32,15 +32,27 @@ function norm(s: string): string {
 
 // ── IBAN ───────────────────────────────────────────────
 
+// IBAN length by country code (this app's scope: SK + CZ, both 24).
+const IBAN_LEN: Record<string, number> = { SK: 24, CZ: 24 };
+
 function findIban(text: string): string | null {
   // IBANs on invoices are often grouped: "SK68 0720 0002 8919 8742 6353".
-  // Grab CC + 2 check digits + up to ~30 grouped alphanumerics, then let
+  // Grab CC + 2 check digits + a run of grouped alphanumerics, then let
   // normalizeIban strip the spaces and validate MOD-97.
-  const re = /\b([A-Z]{2}\d{2}(?:[ ]?[A-Z0-9]){10,30})\b/g;
+  const re = /\b([A-Z]{2}\d{2}(?:[ ]?[A-Z0-9]){10,40})\b/g;
   let m: RegExpExecArray | null;
   while ((m = re.exec(text)) !== null) {
     const normed = normalizeIban(m[1]);
-    if (normed && isValidIban(normed)) return normed;
+    if (!normed) continue;
+    if (isValidIban(normed)) return normed;
+    // The single-space-tolerant group can greedily swallow a following token
+    // ("IBAN SK…671 VS 2025014"), overrunning the IBAN. Retry the country's
+    // exact length (SK/CZ = 24) as a prefix.
+    const expected = IBAN_LEN[normed.slice(0, 2)];
+    if (expected && normed.length > expected) {
+      const prefix = normed.slice(0, expected);
+      if (isValidIban(prefix)) return prefix;
+    }
   }
   return null;
 }
@@ -83,9 +95,11 @@ function findVs(text: string): string | null {
 
 // A printed money amount: integer part EITHER grouped (1-3 digits + one-or-
 // more 3-digit groups: "1 234","1,234","1.234") or ungrouped ("1234"),
-// then a decimal separator + exactly 2 digits. Trailing (?![\d.,])
-// rejects dotted dates ("03.04.2025" is not money).
-const MONEY_RE = /-?(?:\d{1,3}(?:[ ,.]\d{3})+|\d+)[.,]\d{2}(?![\d.,])/g;
+// then a decimal separator + exactly 2 digits. The leading (?<![\d.,]) and
+// trailing (?![\d.,]) reject amounts that are really a fragment of a dotted
+// date — a 4-digit year ("03.04.2025") OR a 2-digit year ("15.05.25", whose
+// "05.25" tail would otherwise read as 5,25 €).
+const MONEY_RE = /(?<![\d.,])-?(?:\d{1,3}(?:[ ,.]\d{3})+|\d+)[.,]\d{2}(?![\d.,])/g;
 
 /** Parse one printed amount ("1 234,56" or "1,234.56") to cents. */
 function amountToCents(raw: string): number | null {

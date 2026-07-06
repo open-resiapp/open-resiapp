@@ -601,16 +601,18 @@ export async function notifySettlementPublished(input: {
   const seenUser = new Set<string>();
 
   for (const recipient of recipients) {
-    if (seenUser.has(recipient.userId)) continue;
-    seenUser.add(recipient.userId);
     // AC 426 — only owners who consented to electronic delivery get the
     // statement by email; the rest go to the postal print run.
-    if (
-      !hasEDeliveryConsent({
-        consentAt: recipient.consentAt,
-        withdrawnAt: recipient.withdrawnAt,
-      })
-    ) {
+    const consented = hasEDeliveryConsent({
+      consentAt: recipient.consentAt,
+      withdrawnAt: recipient.withdrawnAt,
+    });
+    if (!consented) {
+      // ONE postal mailing per UNIT: a non-consenting owner of several
+      // settled units needs each unit's statement mailed. The dedup below
+      // is deliberately AFTER this branch — it only collapses the e-mail
+      // path (one e-mail per owner links to their karta), never the postal
+      // run. selectDistinct already collapses duplicate (owner, unit) rows.
       summary.postal.push({
         userId: recipient.userId,
         unitEntityId: recipient.unitEntityId,
@@ -618,6 +620,8 @@ export async function notifySettlementPublished(input: {
       });
       continue;
     }
+    if (seenUser.has(recipient.userId)) continue;
+    seenUser.add(recipient.userId);
     if (sentTo.has(recipient.userId)) {
       summary.skippedAlreadySent += 1;
       continue;
