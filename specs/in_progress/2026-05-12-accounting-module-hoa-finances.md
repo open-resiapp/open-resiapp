@@ -436,10 +436,10 @@ Reuse RES-20260413-002. Per-country settings:
 - [x] CAMT.053 import is idempotent (re-import → 0 new rows).
 - [x] Fio API connector polls successfully with stored token and dedups by `ID operace`.
 - [ ] Auto-match by VS achieves ≥95 % accuracy on test fixture of 1000 SK SEPA payments.
-- [x] Reconciliation UI lets treasurer accept/reject/split a suggested match in ≤2 clicks.
+- [ ] Reconciliation UI lets treasurer accept/reject/split a suggested match in ≤2 clicks.
 - [ ] Expense entry requires DIČ/IČ DPH, IBAN of supplier, invoice number, attachment, netto/DPH/brutto.
 - [x] Vyúčtovanie wizard blocks progression if unreconciled bank lines or uncategorised invoices remain.
-- [x] Vyúčtovanie PDF matches statutory contents (per-service skutečné náklady, přijaté zálohy, rozdíl, použitý kľúč rozúčtovania).
+- [ ] Vyúčtovanie PDF matches statutory contents (per-service skutečné náklady, přijaté zálohy, rozdíl, použitý kľúč rozúčtovania).
 - [x] Period lock turns published year read-only; correction posts as reversal in current year.
 - [x] Cross-period overpayment applies FIFO to the oldest open assessment across periods; leftover credit parks as a `preplatok` on the unit, not silently absorbed.
 - [x] `allocation_basis_snapshot_json` is frozen on each assessment at publish; later edits to a unit's area / share / persons do not retro-alter already-published assessments.
@@ -454,7 +454,7 @@ Reuse RES-20260413-002. Per-country settings:
 
 - [ ] PAY by square QR on every SK predpis PDF; scan with Tatra/SLSP/VÚB app pre-fills trvalý príkaz correctly.
 - [ ] SPAYD QR on every CZ předpis PDF; scan with major CZ banking apps pre-fills payment.
-- [ ] Dynamic QR on nedoplatok rows in vyúčtovanie PDF carries exact sum + VS + reference.
+- [x] Dynamic QR on nedoplatok rows in vyúčtovanie PDF carries exact sum + VS + reference.
 - [x] Upomienka PDF for úroky z omeškania includes dynamic QR for sum due to date.
 
 ### Sankcie
@@ -466,7 +466,7 @@ Reuse RES-20260413-002. Per-country settings:
 
 ### Technical-audit link
 
-- [x] Categories `REVIZIA_*` enforce `next_inspection_due_at` not null.
+- [ ] Categories `REVIZIA_*` enforce `next_inspection_due_at` not null.
 - [ ] Revízia expirujúca v ≤ 60 dňoch appears in "Vyžaduje pozornosť"; expired escalates to chairman notification.
 - [x] Calendar export (.ics) per HOA of all upcoming revízie deadlines.
 
@@ -481,7 +481,7 @@ Reuse RES-20260413-002. Per-country settings:
 
 ### Cash-flow projection
 
-- [x] Dashboard chart shows 6-month projected balance per pool.
+- [ ] Dashboard chart shows 6-month projected balance per pool.
 - [ ] Drill-down per month lists projected revenues + expenses.
 - [ ] Recurring expenses (suppliers w/ recurrence) reflected in projection.
 
@@ -504,7 +504,7 @@ Reuse RES-20260413-002. Per-country settings:
 - [x] "Pohľad účtovníka" toggle reveals journal + chart of accounts on demand only.
 - [x] Dashboard renders 4 tiles + Vyžaduje pozornosť list on a single viewport.
 - [x] Karta bytu shows running balance in Excel-style table, drill-down to source on every row.
-- [x] Owner portal shows only: balance, payment history, predpis breakdown, vyúčtovanie PDFs, meter reading entry, čerpanie FPÚO read-only list — nothing else.
+- [ ] Owner portal shows only: balance, payment history, predpis breakdown, vyúčtovanie PDFs, meter reading entry, čerpanie FPÚO read-only list — nothing else.
 - [ ] Concierge import accepts prior-year Excel + bank statements + last-year vyúčtovanie PDF for opening balances.
 - [x] All UI text routed through `useTranslations()` / `getTranslations()` from `Accounting` namespace; no hardcoded strings.
 
@@ -517,14 +517,14 @@ Reuse RES-20260413-002. Per-country settings:
 ### Permissions & roles
 
 - [x] `treasurer` (pokladník) is added to the board-role model (same model as `chairman`), **not** naively to `membershipRoleEnum` — see Notes 2026-06-09 drift finding.
-- [x] `treasurer` + `admin` can create / edit / void predpis, payments, expenses, meter readings; `chairman` and `owner` cannot post or mutate financial records.
-- [x] `chairman` has full accounting read + approval actions (závierka, expense authorisation) but no direct ledger writes (separation of duties).
+- [ ] `treasurer` + `admin` can create / edit / void predpis, payments, expenses, meter readings; `chairman` and `owner` cannot post or mutate financial records.
+- [ ] `chairman` has full accounting read + approval actions (závierka, expense authorisation) but no direct ledger writes (separation of duties).
 - [x] Owner reads are server-side scoped: every owner query is filtered by `unit_id IN (memberships WHERE user_id = ?)`; requesting another unit's karta bytu / payments returns 403, not just a hidden UI element.
 - [x] Every server action + API route under `modules/accounting/` runs the role check before any DB read; under-privileged requests return 403.
 
 ### Audit trail & data lifecycle
 
-- [x] Append-only event log records every mutation (insert / update / void) with actor, timestamp, and before/after snapshot; no in-place field overwrite occurs without a corresponding log row.
+- [ ] Append-only event log records every mutation (insert / update / void) with actor, timestamp, and before/after snapshot; no in-place field overwrite occurs without a corresponding log row.
 - [x] Signed export bundle for kontrolná komisia reproduces the full ledger + event log and verifies tamper-evidently without DB access.
 - [x] No hard delete anywhere — units, payments, expenses, journal lines use `archived_at` soft-delete; archiving a unit preserves its historical journal lines and assessments.
 - [x] Opening-balance and locked-period entries cannot be voided or edited; the only correction path is a reversal posted in the current open period.
@@ -647,6 +647,61 @@ API integration, dropped by owner decision. The `supplier-lookup*` code stays
 (mocked) but is not a delivery target; IBAN MOD-97 validation (AC 477) stands.
 
 All 12 golden suites + e2e (20/20) green after this pass.
+
+### Audit — 2026-07-06 full AC re-check (code-verified)
+
+Six parallel read-only passes over the module. Result: **52 IMPLEMENTED,
+17 PARTIAL, 20 MISSING** (89 total). AC ticks corrected to the strict
+IMPLEMENTED set (un-ticked 439, 442, 469, 484, 507, 520, 521, 527 where the
+audit found real gaps; ticked 457).
+
+**PARTIAL (built, but the AC is not fully met):**
+- 416 — okruh tracked, but `mgmt` okruh is enum-only (booking throws) and no
+  inter-okruh transfer flagging.
+- 425 — debtor list shows unit label + amount, not owner names; threshold is a
+  free config, not the statutory 500 € (deliberate privacy choice).
+- 427 — SK PDFs statute-aware + guarded against CZ reuse, but CZ templates
+  don't exist, so CZ can't produce a statute-aware PDF.
+- 438 — VS auto-match works, but no 1000-payment fixture / ≥95 % accuracy test.
+- 439 — reconciliation accept/reassign works; no reject/dismiss or split.
+- 440 — expense create enforces only invoiceNo + brutto; DIČ/IBAN/netto-DPH and
+  the attachment are NOT required.
+- 442 — vyúčtovanie PDF has costs/advances/difference but NOT the allocation key
+  used (statutory content gap).
+- 455 — PAY-by-square QR present on SK predpis PDF, but encoded as a one-off
+  PaymentOrder, not a StandingOrder (trvalý príkaz), and unscanned.
+- 470 — ≤60-day revízie shown on their own page, but NOT in the dashboard
+  "Vyžaduje pozornosť" tile, and no chairman escalation for expired ones.
+- 475/476 — supplier lookup hits real ARES/FinStat + 24h cache, but FinStat auth
+  hash is a placeholder, lookup is button-triggered (not on-IČO), and the
+  debtor flag doesn't gate saving (no confirmation, CZ flag always null).
+- 484 — 6-month projection is a single dom-wide series, not per pool/okruh.
+- 507 — all six required owner surfaces exist, plus an extra debtors card
+  (violates the "only" clause; benign over-delivery).
+- 508 — concierge import covers opening-balance CSV + CAMT.053, but NOT
+  last-year vyúčtovanie PDF ingest, and doesn't create units/owners.
+- 520 — treasurer/admin-only writes hold for predpis/payments/expenses;
+  meter readings are intentionally owner-writable (per AC 507).
+- 521 — chairman read + no-writes holds; no distinct approval-action endpoint
+  (závierka/expense authorisation) exists.
+- 527 — audit log is append-only, but the `before` snapshot column is never
+  written and some `payments` mutations (manual insert, in-place matchedBy /
+  journalEntryId updates) write no audit row. **Worth fixing.**
+
+**MISSING (not built):**
+- CZ-specific: 415 (CZ chart of accounts), 419 (CZ 4-month deadline),
+  420 (reklamace state machine), 497/498 (CZK rounding → 649/549).
+- Collector inbox: 478 (expense_inbox + inbound email + OCR), 479 (post-in-2-
+  clicks), 480 (virus-scan + allowlist + quarantine).
+- Voting→accounting pipeline: 513, 514, 515 (`votingResolutionId` is a dormant
+  column, never written).
+- Legal gates: 417 (§10 ods. 3 transient-cover return flag), 418 (SK 31.05
+  deadline + §8a sanction), 423 (závierka blocked-until-vote), 426 (e-delivery
+  consent + paper fallback).
+- Other: 456 (SPAYD generated but never embedded on a CZ predpis PDF),
+  469 (REVIZIA_* `next_inspection_due_at` not enforced NOT NULL),
+  485 (projection per-month drill-down), 486 (recurring-expense model),
+  537 (reklamace withdraw — no reklamace feature at all).
 
 ### Open questions
 
