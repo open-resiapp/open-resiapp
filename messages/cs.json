@@ -1895,6 +1895,17 @@
       "legalNote": "Zveřejněno dle § 11 zák. 182/1993. Uvádí se jen označení jednotky a částka, nikoli jméno vlastníka.",
       "loadError": "Nepodařilo se načíst seznam.",
       "backToAccounting": "Zpět na účetnictví"
+    },
+    "votingImpacts": {
+      "title": "Finanční dopady",
+      "subtitle": "Schválené položky se promítly do účetnictví jako návrhy ke schválení pokladníkem.",
+      "feeScheduleDraft": "Návrh předpisu",
+      "expenseAuthorisation": "Schválený výdaj",
+      "status_draft": "návrh",
+      "status_published": "zveřejněný",
+      "status_used": "použitý",
+      "status_cancelled": "zrušený",
+      "journalEntries": "{count} účetních zápisů"
     }
   }
 }

@@ -10,10 +10,18 @@ export const VALID_QUORUM: QuorumType[] = [
   "all_unanimous",
 ];
 
+export type FinancialEffectKind = "fpuo_rate_change" | "expense_approval";
+export const VALID_FINANCIAL_EFFECT: FinancialEffectKind[] = [
+  "fpuo_rate_change",
+  "expense_approval",
+];
+
 export interface IncomingItem {
   title?: unknown;
   description?: unknown;
   quorumType?: unknown;
+  financialEffectKind?: unknown;
+  financialEffectParams?: unknown;
 }
 
 export interface NormalizedItem {
@@ -21,6 +29,26 @@ export interface NormalizedItem {
   title: string;
   description: string | null;
   quorumType: QuorumType;
+  financialEffectKind: FinancialEffectKind | null;
+  financialEffectParams: Record<string, unknown> | null;
+}
+
+/** Validate the params blob for a financial-effect kind; null on invalid. */
+function normalizeFinancialEffect(
+  kind: unknown,
+  params: unknown
+): { kind: FinancialEffectKind; params: Record<string, unknown> } | null | "invalid" {
+  if (kind === undefined || kind === null || kind === "") return null;
+  if (!VALID_FINANCIAL_EFFECT.includes(kind as FinancialEffectKind)) {
+    return "invalid";
+  }
+  const p =
+    params && typeof params === "object" ? (params as Record<string, unknown>) : {};
+  const posInt = (v: unknown) =>
+    typeof v === "number" && Number.isInteger(v) && v > 0;
+  if (kind === "fpuo_rate_change" && !posInt(p.newRateCents)) return "invalid";
+  if (kind === "expense_approval" && !posInt(p.amountCents)) return "invalid";
+  return { kind: kind as FinancialEffectKind, params: p };
 }
 
 /**
@@ -64,7 +92,21 @@ export function normalizeItems(
       typeof it.description === "string" && it.description.trim()
         ? it.description
         : null;
-    items.push({ idx, title, description, quorumType });
+    const fx = normalizeFinancialEffect(
+      it.financialEffectKind,
+      it.financialEffectParams
+    );
+    if (fx === "invalid") {
+      return { error: `Položka č. ${idx + 1}: neplatný finančný dopad` };
+    }
+    items.push({
+      idx,
+      title,
+      description,
+      quorumType,
+      financialEffectKind: fx?.kind ?? null,
+      financialEffectParams: fx?.params ?? null,
+    });
   }
   return { items };
 }

@@ -353,6 +353,10 @@ export const feeSchedules = pgTable(
     effectiveTo: timestamp("effective_to"),
     status: scheduleStatusEnum("status").notNull().default("draft"),
     publishedAt: timestamp("published_at"),
+    // Soft link to the mod_voting item that spawned this draft (the
+    // voting→accounting pipeline). No FK — cross-module, and the voting row
+    // must survive independently. Drives 515 journal stamping + idempotency.
+    originVotingItemId: uuid("origin_voting_item_id"),
     createdById: uuid("created_by_id")
       .references(() => users.id, { onDelete: "restrict" })
       .notNull(),
@@ -363,6 +367,10 @@ export const feeSchedules = pgTable(
       table.entityId,
       table.periodId
     ),
+    // Non-null unique → the pipeline creates at most one draft per item.
+    originVotingItemIdx: uniqueIndex(
+      "mod_accounting_fee_schedules_origin_voting_item_idx"
+    ).on(table.originVotingItemId),
   })
 );
 
@@ -957,5 +965,52 @@ export const auditLog = pgTable(
       table.tableName,
       table.recordId
     ),
+  })
+);
+
+// Expense authorisation (voting→accounting pipeline, AC 514). A passed
+// `expense_approval` voting item becomes one of these: a treasurer-facing
+// mandate to spend up to `amountCents` on `description`, which the treasurer
+// later realises as an actual expense (usedExpenseId + status `used`). The
+// voting link is a soft cross-module reference (no FK).
+export const expenseAuthorisationStatusEnum = pgEnum(
+  "mod_accounting_expense_authorisation_status",
+  ["draft", "used", "cancelled"]
+);
+
+export const expenseAuthorisations = pgTable(
+  "mod_accounting_expense_authorisations",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    entityId: uuid("entity_id")
+      .references(() => entities.id, { onDelete: "restrict" })
+      .notNull(),
+    /** Soft links to mod_voting (no FK — cross-module). */
+    votingId: uuid("voting_id"),
+    votingItemId: uuid("voting_item_id"),
+    amountCents: integer("amount_cents").notNull(),
+    description: text("description").notNull(),
+    serviceCategorySlug: varchar("service_category_slug", { length: 64 }),
+    status: expenseAuthorisationStatusEnum("status")
+      .notNull()
+      .default("draft"),
+    /** The expense that realised this authorisation, once spent. */
+    usedExpenseId: uuid("used_expense_id").references(() => expenses.id, {
+      onDelete: "set null",
+    }),
+    createdById: uuid("created_by_id")
+      .references(() => users.id, { onDelete: "restrict" })
+      .notNull(),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+  },
+  (table) => ({
+    entityIdx: index("mod_accounting_expense_authorisations_entity_idx").on(
+      table.entityId,
+      table.status
+    ),
+    // Non-null unique → at most one authorisation per voting item.
+    votingItemIdx: uniqueIndex(
+      "mod_accounting_expense_authorisations_voting_item_idx"
+    ).on(table.votingItemId),
   })
 );

@@ -6,6 +6,7 @@ import {
   boolean,
   integer,
   timestamp,
+  jsonb,
   pgEnum,
   uniqueIndex,
 } from "drizzle-orm/pg-core";
@@ -53,6 +54,16 @@ export const quorumTypeEnum = pgEnum("mod_voting_quorum_type", [
   "two_thirds_all",
   "all_unanimous",
 ]);
+
+// A voting item may declare a financial effect that, once the item PASSES,
+// the accounting module turns into a treasurer-reviewable draft (the
+// voting↔accounting wedge, BYT-20260512-002 §Voting integration). Voting
+// stays agnostic about the accounting specifics — it stores the kind + an
+// opaque params blob and hands them to accounting on close.
+export const financialEffectKindEnum = pgEnum(
+  "mod_voting_financial_effect_kind",
+  ["fpuo_rate_change", "expense_approval"]
+);
 
 // ── Tables ─────────────────────────────────────────────
 
@@ -134,6 +145,12 @@ export const votingItems = pgTable(
     title: varchar("title", { length: 500 }).notNull(),
     description: text("description"),
     quorumType: quorumTypeEnum("quorum_type").notNull(), // MOVED from votings
+    // Optional accounting effect — consumed by the accounting pipeline when
+    // this item passes. Params shape depends on the kind:
+    //   fpuo_rate_change → { newRateCents, effectiveFrom? (ISO date) }
+    //   expense_approval → { amountCents, description?, categorySlug? }
+    financialEffectKind: financialEffectKindEnum("financial_effect_kind"),
+    financialEffectParams: jsonb("financial_effect_params"),
     createdAt: timestamp("created_at").defaultNow().notNull(),
   },
   (table) => ({

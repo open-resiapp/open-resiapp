@@ -198,6 +198,8 @@ export async function createFeeSchedule(input: {
   year: number;
   effectiveFrom: Date;
   createdById: string;
+  /** Set when the draft originates from a passed voting item (AC 513). */
+  originVotingItemId?: string | null;
 }): Promise<{ id: string }> {
   assertMonthStartWithinYear(input.effectiveFrom, input.year);
   return db.transaction(async (tx) => {
@@ -209,6 +211,7 @@ export async function createFeeSchedule(input: {
         entityId: input.entityId,
         periodId: period.id,
         effectiveFrom: input.effectiveFrom,
+        originVotingItemId: input.originVotingItemId ?? null,
         createdById: input.createdById,
       })
       .returning({ id: feeSchedules.id });

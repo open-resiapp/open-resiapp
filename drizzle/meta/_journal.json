@@ -512,6 +512,13 @@
       "when": 1783336016205,
       "tag": "0072_cool_venus",
       "breakpoints": true
+    },
+    {
+      "idx": 73,
+      "version": "7",
+      "when": 1783343965627,
+      "tag": "0073_simple_kinsey_walden",
+      "breakpoints": true
     }
   ]
 }

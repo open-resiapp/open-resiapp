@@ -148,6 +148,8 @@ export async function POST(request: NextRequest) {
         title: it.title,
         description: it.description,
         quorumType: it.quorumType,
+        financialEffectKind: it.financialEffectKind,
+        financialEffectParams: it.financialEffectParams,
       }))
     );
 

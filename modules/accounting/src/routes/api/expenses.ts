@@ -86,6 +86,10 @@ export async function handleCreate(req: NextRequest): Promise<NextResponse> {
         typeof body.nextInspectionDueAt === "string" && body.nextInspectionDueAt
           ? new Date(body.nextInspectionDueAt)
           : null,
+      authorisationId:
+        typeof body.authorisationId === "string" && body.authorisationId
+          ? body.authorisationId
+          : null,
     });
     return NextResponse.json(result, { status: 201 });
   } catch (err) {

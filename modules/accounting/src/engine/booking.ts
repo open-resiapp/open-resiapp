@@ -20,6 +20,7 @@ import {
   journalEntries,
   journalLines,
   feeAssessments,
+  feeSchedules,
   payments,
   paymentAllocations,
   serviceCategories,
@@ -114,6 +115,8 @@ interface EntryInput {
   lines: LineInput[];
   /** Required for manual entries — recorded in the audit log. */
   justification?: string;
+  /** Soft link to the mod_voting item this posting traces back to (AC 515). */
+  votingResolutionId?: string | null;
 }
 
 async function insertEntry(tx: Tx, input: EntryInput): Promise<string> {
@@ -138,6 +141,7 @@ async function insertEntry(tx: Tx, input: EntryInput): Promise<string> {
       description: input.description,
       sourceType: input.sourceType,
       sourceId: input.sourceId,
+      votingResolutionId: input.votingResolutionId ?? null,
       createdById: input.createdById,
     })
     .returning({ id: journalEntries.id });
@@ -323,6 +327,14 @@ export async function postAssessmentsForMonth(
   const unposted = rows.filter((r) => r.journalEntryId === null);
   if (unposted.length === 0) return null;
 
+  // If this schedule was spawned by a passed voting item, every month it
+  // posts carries the link back to that resolution (AC 515).
+  const [schedule] = await tx
+    .select({ originVotingItemId: feeSchedules.originVotingItemId })
+    .from(feeSchedules)
+    .where(eq(feeSchedules.id, input.scheduleId));
+  const votingResolutionId = schedule?.originVotingItemId ?? null;
+
   // Resolve okruh per category once (seed catalog, tiny).
   const categoryIds = [...new Set(unposted.map((r) => r.serviceCategoryId))];
   const categories = await tx
@@ -372,6 +384,7 @@ export async function postAssessmentsForMonth(
     description: `Predpis ${input.year}-${String(input.month).padStart(2, "0")}`,
     sourceType: "fee_schedule_publish",
     sourceId: input.scheduleId,
+    votingResolutionId,
     createdById: input.createdById,
     lines,
   });
@@ -563,6 +576,8 @@ export async function postSupplierInvoice(
     serviceCategoryId: string | null;
     amountCents: number;
     description: string;
+    /** Set when the expense realises a voting-approved authorisation (515). */
+    votingResolutionId?: string | null;
   }
 ): Promise<string> {
   if (input.amountCents <= 0) {
@@ -589,6 +604,7 @@ export async function postSupplierInvoice(
     description: input.description,
     sourceType: "expense",
     sourceId: input.expenseId,
+    votingResolutionId: input.votingResolutionId ?? null,
     createdById: input.createdById,
     lines,
   });

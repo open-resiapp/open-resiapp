@@ -16,9 +16,19 @@ import "dotenv/config";
 process.env.NEXTAUTH_SECRET ??= "e2e-demo-secret";
 
 import { Pool } from "pg";
+import { randomUUID } from "crypto";
 import { sql, eq, and } from "drizzle-orm";
 import { db } from "@/db";
 import { entities, users } from "@/db/schema";
+import {
+  feeSchedules,
+  journalEntries,
+  expenseAuthorisations,
+} from "@modules/accounting/src/db/schema";
+import {
+  processApprovedFinancialEffects,
+  getVotingImpacts,
+} from "@modules/accounting/src/lib/voting-pipeline";
 import { submitOpeningBalance } from "@modules/accounting/src/lib/opening-balance";
 import {
   createFeeSchedule,
@@ -258,6 +268,130 @@ async function main() {
   check("export verifies", verified.valid);
   const tampered = bundle.replace(/"description":"[^"]*"/, '"description":"HACKED"');
   check("tampered export rejected", verifyExportBundle(tampered).valid === false);
+
+  // ── voting→accounting pipeline (AC 513/514/515) ──
+  console.log("voting→accounting pipeline");
+  const rateItemId = randomUUID();
+  const expenseItemId = randomUUID();
+  const effects = [
+    {
+      votingId: randomUUID(),
+      votingItemId: rateItemId,
+      title: "Zvýšenie FPÚO",
+      kind: "fpuo_rate_change" as const,
+      params: { newRateCents: 35000 },
+    },
+    {
+      votingId: randomUUID(),
+      votingItemId: expenseItemId,
+      title: "Oprava strechy",
+      kind: "expense_approval" as const,
+      params: { amountCents: 50000, description: "Oprava strechy" },
+    },
+  ];
+  const res1 = await processApprovedFinancialEffects({
+    entityId: dom.id,
+    country,
+    actorId,
+    effects,
+  });
+  check(
+    "rate change → draft schedule created",
+    res1.find((r) => r.votingItemId === rateItemId)?.outcome === "created"
+  );
+  check(
+    "expense approval → authorisation created",
+    res1.find((r) => r.votingItemId === expenseItemId)?.outcome === "created"
+  );
+
+  const res2 = await processApprovedFinancialEffects({
+    entityId: dom.id,
+    country,
+    actorId,
+    effects,
+  });
+  check(
+    "re-dispatch is idempotent",
+    res2.every((r) => r.outcome === "skipped_duplicate")
+  );
+
+  const [draft] = await db
+    .select({
+      id: feeSchedules.id,
+      status: feeSchedules.status,
+      origin: feeSchedules.originVotingItemId,
+    })
+    .from(feeSchedules)
+    .where(eq(feeSchedules.originVotingItemId, rateItemId));
+  check(
+    "draft linked to voting item",
+    draft?.origin === rateItemId && draft?.status === "draft"
+  );
+
+  await publishSchedule({
+    entityId: dom.id,
+    country,
+    scheduleId: draft.id,
+    actorId,
+  });
+  const [stamped] = await db
+    .select({ c: sql<number>`count(*)::int` })
+    .from(journalEntries)
+    .where(
+      and(
+        eq(journalEntries.entityId, dom.id),
+        eq(journalEntries.votingResolutionId, rateItemId)
+      )
+    );
+  check("published assessments carry votingResolutionId (515)", (stamped?.c ?? 0) > 0);
+
+  const [auth] = await db
+    .select({ id: expenseAuthorisations.id })
+    .from(expenseAuthorisations)
+    .where(eq(expenseAuthorisations.votingItemId, expenseItemId));
+  check("authorisation row exists", !!auth);
+  await createExpense({
+    entityId: dom.id,
+    country,
+    createdById: actorId,
+    supplierName: "Strechy s.r.o.",
+    supplierIco: "36000999",
+    supplierIban: "SK9611000000002918599669",
+    invoiceNo: `E2E-AUTH-${Date.now()}`,
+    invoiceDate: new Date(),
+    serviceCategoryId: lift.id,
+    okruh: "svc",
+    amountCents: 50000,
+    amountNettoCents: 41667,
+    dphCents: 8333,
+    authorisationId: auth.id,
+  });
+  const [usedAuth] = await db
+    .select({
+      status: expenseAuthorisations.status,
+      used: expenseAuthorisations.usedExpenseId,
+    })
+    .from(expenseAuthorisations)
+    .where(eq(expenseAuthorisations.id, auth.id));
+  check("authorisation marked used", usedAuth?.status === "used" && !!usedAuth.used);
+  const [expStamp] = await db
+    .select({ c: sql<number>`count(*)::int` })
+    .from(journalEntries)
+    .where(
+      and(
+        eq(journalEntries.entityId, dom.id),
+        eq(journalEntries.votingResolutionId, expenseItemId),
+        eq(journalEntries.sourceType, "expense")
+      )
+    );
+  check("expense entry carries votingResolutionId (515)", (expStamp?.c ?? 0) > 0);
+
+  const impacts = await getVotingImpacts(dom.id, [rateItemId, expenseItemId]);
+  check(
+    "impacts report draft + authorisation",
+    impacts.length === 2 &&
+      impacts.every((i) => i.feeScheduleDraft || i.expenseAuthorisation)
+  );
 
   await (db.$client as Pool).end();
   if (failures > 0) {

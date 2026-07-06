@@ -8,8 +8,11 @@ import { votings, votingItems, ballots } from "@modules/voting/src/db/schema";
 import { hasPermission } from "@/lib/permissions";
 import { sendPushToAll } from "@/lib/push";
 import { dispatchHook } from "@/lib/modules/dispatch";
+import { isModuleEnabled } from "@/lib/modules/route-guard";
 import { getCommunityRoot } from "@/lib/legacy-compat";
 import { normalizeItems } from "@modules/voting/src/items";
+import { getApprovedFinancialEffects } from "@modules/voting/src/results";
+import { processApprovedFinancialEffects } from "@modules/accounting/src/lib/voting-pipeline";
 import type { UserRole } from "@/types";
 
 export async function GET(
@@ -142,6 +145,8 @@ export async function PATCH(
           title: it.title,
           description: it.description,
           quorumType: it.quorumType,
+          financialEffectKind: it.financialEffectKind,
+          financialEffectParams: it.financialEffectParams,
         }))
       );
       return u;
@@ -166,6 +171,31 @@ export async function PATCH(
       title: updated.title,
       status: updated.status,
     }).catch((err) => console.error("[modules] onVoteClose failed:", err));
+
+    // Voting→accounting wedge (AC 513/514): turn passed financial items into
+    // treasurer-reviewable drafts. Called directly (not via the onVoteClose
+    // hook) because the hook bus loads modules from dist/index.js, which
+    // can't reach this TS pipeline until the module build step lands; the
+    // pipeline is idempotent, so it's safe if the hook later fires too.
+    // Non-fatal + module-gated: a failure here never blocks closing a vote.
+    if (await isModuleEnabled("accounting")) {
+      try {
+        const effects = await getApprovedFinancialEffects(updated.id);
+        if (effects.length > 0) {
+          const root = await getCommunityRoot();
+          if (root) {
+            await processApprovedFinancialEffects({
+              entityId: root.id,
+              country: root.country,
+              actorId: updated.createdById,
+              effects,
+            });
+          }
+        }
+      } catch (err) {
+        console.error("[voting] accounting pipeline failed on close:", err);
+      }
+    }
   }
 
   // Push notify owners in the voting's subtree when it goes active.

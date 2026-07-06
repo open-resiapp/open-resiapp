@@ -1895,6 +1895,17 @@
       "legalNote": "Zverejnené v súlade s § 11 zák. 182/1993 Z.z. Uvádza sa len označenie bytu a suma, nie meno vlastníka.",
       "loadError": "Nepodarilo sa načítať zoznam.",
       "backToAccounting": "Späť na účtovníctvo"
+    },
+    "votingImpacts": {
+      "title": "Finančné dopady",
+      "subtitle": "Schválené položky sa premietli do účtovníctva ako návrhy na schválenie pokladníkom.",
+      "feeScheduleDraft": "Návrh predpisu",
+      "expenseAuthorisation": "Schválený výdavok",
+      "status_draft": "návrh",
+      "status_published": "zverejnený",
+      "status_used": "použitý",
+      "status_cancelled": "zrušený",
+      "journalEntries": "{count} účtovných zápisov"
     }
   }
 }

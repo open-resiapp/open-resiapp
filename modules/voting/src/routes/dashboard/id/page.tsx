@@ -10,6 +10,7 @@ import VotingResults from "@/components/voting/VotingResults";
 import MandateModal from "@/components/voting/MandateModal";
 import PaperVoteModal from "@/components/voting/PaperVoteModal";
 import DownloadMinutesButton from "@/components/voting/DownloadMinutesButton";
+import VotingFinancialImpacts from "@modules/voting/src/ui/VotingFinancialImpacts";
 import { hasPermission } from "@/lib/permissions";
 import type {
   UserRole,
@@ -732,6 +733,9 @@ export default function VotingDetailPage() {
           })}
         </div>
       )}
+
+      {/* Voting→accounting financial impacts (drafts + posted entries) */}
+      {isClosed && canManage && <VotingFinancialImpacts votingId={id} />}
 
       {/* Per-item voting minutes */}
       {isClosed && canManage && data && buildingData && (

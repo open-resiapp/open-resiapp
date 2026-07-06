@@ -7,6 +7,7 @@ import {
   journalEntries,
   journalLines,
   serviceCategories,
+  expenseAuthorisations,
   auditLog,
 } from "../db/schema";
 import {
@@ -48,6 +49,8 @@ export interface CreateExpenseInput {
   dphRateBp?: number | null;
   dphCents?: number | null;
   nextInspectionDueAt?: Date | null;
+  /** Realises a voting-approved expense authorisation (AC 514/515). */
+  authorisationId?: string | null;
 }
 
 export async function createExpense(
@@ -160,6 +163,31 @@ export async function createExpense(
       );
     }
 
+    // Realising a voting-approved authorisation: lock it, carry its voting
+    // item onto the journal entry (515), and mark it used below.
+    let votingResolutionId: string | null = null;
+    if (input.authorisationId) {
+      const [auth] = await tx
+        .select({
+          id: expenseAuthorisations.id,
+          votingItemId: expenseAuthorisations.votingItemId,
+          status: expenseAuthorisations.status,
+        })
+        .from(expenseAuthorisations)
+        .where(
+          and(
+            eq(expenseAuthorisations.id, input.authorisationId),
+            eq(expenseAuthorisations.entityId, input.entityId)
+          )
+        )
+        .for("update");
+      if (!auth) throw new Error("accounting: authorisation not found");
+      if (auth.status !== "draft") {
+        throw new Error("accounting: authorisation already used or cancelled");
+      }
+      votingResolutionId = auth.votingItemId;
+    }
+
     const [expense] = await tx
       .insert(expenses)
       .values({
@@ -193,11 +221,20 @@ export async function createExpense(
       serviceCategoryId: input.serviceCategoryId,
       amountCents: input.amountCents,
       description: `Faktúra ${input.invoiceNo.trim()} — ${input.supplierName.trim()}`,
+      votingResolutionId,
     });
     await tx
       .update(expenses)
       .set({ journalEntryId: entryId })
       .where(eq(expenses.id, expense.id));
+
+    // Mark the authorisation spent (idempotent — locked + draft-guarded).
+    if (input.authorisationId) {
+      await tx
+        .update(expenseAuthorisations)
+        .set({ status: "used", usedExpenseId: expense.id })
+        .where(eq(expenseAuthorisations.id, input.authorisationId));
+    }
 
     await tx.insert(auditLog).values({
       entityId: input.entityId,
