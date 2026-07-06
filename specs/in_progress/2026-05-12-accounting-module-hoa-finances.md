@@ -439,7 +439,7 @@ Reuse RES-20260413-002. Per-country settings:
 - [ ] Reconciliation UI lets treasurer accept/reject/split a suggested match in ≤2 clicks.
 - [ ] Expense entry requires DIČ/IČ DPH, IBAN of supplier, invoice number, attachment, netto/DPH/brutto.
 - [x] Vyúčtovanie wizard blocks progression if unreconciled bank lines or uncategorised invoices remain.
-- [ ] Vyúčtovanie PDF matches statutory contents (per-service skutečné náklady, přijaté zálohy, rozdíl, použitý kľúč rozúčtovania).
+- [x] Vyúčtovanie PDF matches statutory contents (per-service skutečné náklady, přijaté zálohy, rozdíl, použitý kľúč rozúčtovania).
 - [x] Period lock turns published year read-only; correction posts as reversal in current year.
 - [x] Cross-period overpayment applies FIFO to the oldest open assessment across periods; leftover credit parks as a `preplatok` on the unit, not silently absorbed.
 - [x] `allocation_basis_snapshot_json` is frozen on each assessment at publish; later edits to a unit's area / share / persons do not retro-alter already-published assessments.
@@ -482,7 +482,7 @@ Reuse RES-20260413-002. Per-country settings:
 ### Cash-flow projection
 
 - [ ] Dashboard chart shows 6-month projected balance per pool.
-- [ ] Drill-down per month lists projected revenues + expenses.
+- [x] Drill-down per month lists projected revenues + expenses.
 - [ ] Recurring expenses (suppliers w/ recurrence) reflected in projection.
 
 ### Owner transparency
