@@ -26,6 +26,7 @@ export async function handlePost(req: NextRequest): Promise<NextResponse> {
     bankIban?: string | null;
     dueDay?: number | string | null;
     debtorDisclosureThresholdCents?: number | string | null;
+    heatBasicSharePct?: number | string | null;
   };
   try {
     body = await req.json();
@@ -63,6 +64,14 @@ export async function handlePost(req: NextRequest): Promise<NextResponse> {
   ) {
     return NextResponse.json({ error: "invalid threshold" }, { status: 400 });
   }
+  const rawHeat = body.heatBasicSharePct;
+  const heatBasicSharePct =
+    rawHeat === null || rawHeat === undefined || rawHeat === ""
+      ? null
+      : Number(rawHeat);
+  if (heatBasicSharePct !== null && !Number.isInteger(heatBasicSharePct)) {
+    return NextResponse.json({ error: "invalid heat share" }, { status: 400 });
+  }
 
   try {
     await updateAccountingSettings({
@@ -74,6 +83,7 @@ export async function handlePost(req: NextRequest): Promise<NextResponse> {
       bankIban,
       dueDay,
       debtorDisclosureThresholdCents,
+      heatBasicSharePct,
     });
     return NextResponse.json({ ok: true });
   } catch (err) {

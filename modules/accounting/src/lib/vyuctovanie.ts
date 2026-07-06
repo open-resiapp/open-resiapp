@@ -1,8 +1,8 @@
 import "server-only";
 
-import { and, eq, gte, inArray, isNull, lt, sql } from "drizzle-orm";
+import { and, desc, eq, gte, inArray, isNull, lt, sql } from "drizzle-orm";
 import { db } from "@/db";
-import { memberships, users } from "@/db/schema";
+import { entities, memberships, users } from "@/db/schema";
 import {
   accountingPeriods,
   expenses,
@@ -24,10 +24,12 @@ import {
   type SettlementResult,
   type SettlementServiceInput,
 } from "../engine/settlement";
+import { computeHeatSplit } from "../engine/heat";
 import { postSettlementClose } from "../engine/booking";
+import { SERVICE_CATEGORY_SLUGS } from "../seeds/service-categories-sk";
 import { payBySquareString } from "../qr/pay-by-square";
 import { sendSettlementPublishedNotification } from "@/lib/email";
-import { listDomUnits } from "./dom-units";
+import { listDomUnits, domUnitsWhere } from "./dom-units";
 import { lockOpenPeriods } from "./periods";
 import { postAllDueMonths } from "./fee-schedule-publish";
 
@@ -42,6 +44,126 @@ import { postAllDueMonths } from "./fee-schedule-publish";
 // annually per §7b zák. 182/1993).
 
 type Country = "sk" | "cz";
+
+// Heat rozúčtování defaults (vyhláška 269/2015 §3). Heat základní složka is
+// configurable within the statutory band (settings.heatBasicSharePct);
+// TÚV základní is statutorily fixed at 30 %.
+const DEFAULT_HEAT_BASIC_PCT = 40;
+const TUV_BASIC_PCT = 30;
+
+/**
+ * Metered cost split for SVC_HEAT / SVC_WATER_HOT (vyhláška 269/2015).
+ * Returns categoryId → { unitId → cost cents } only for services where the
+ * split actually applies: the category has a real cost, EVERY unit carries a
+ * započitatelná plocha, and EVERY unit has a reading for the matching meter
+ * type in the year (whole-building metering). Anything partial returns
+ * nothing for that category, so the settlement falls back to the prescribed
+ * split and the wizard's "units without a reading" list stays the signal.
+ */
+async function buildMeteredCostShares(input: {
+  entityId: string;
+  yearStart: Date;
+  yearEnd: Date;
+  units: { id: string }[];
+  categoryIdBySlug: Record<string, string>;
+  costByCategory: Map<string, number>;
+  heatBasicPct: number;
+}): Promise<Map<string, Record<string, number>>> {
+  const out = new Map<string, Record<string, number>>();
+  const plans = (
+    [
+      {
+        slug: SERVICE_CATEGORY_SLUGS.SVC_HEAT,
+        meterType: "heat" as const,
+        basicPct: input.heatBasicPct,
+      },
+      {
+        slug: SERVICE_CATEGORY_SLUGS.SVC_WATER_HOT,
+        meterType: "water_hot" as const,
+        basicPct: TUV_BASIC_PCT,
+      },
+    ]
+  )
+    .map((p) => ({ ...p, categoryId: input.categoryIdBySlug[p.slug] }))
+    .filter(
+      (p) => p.categoryId && (input.costByCategory.get(p.categoryId) ?? 0) > 0
+    );
+  if (plans.length === 0) return out;
+
+  // Areas — every unit must carry one (the split needs plocha for the basic
+  // component AND the correction bounds).
+  const areaRows = await db
+    .select({
+      id: entities.id,
+      areaMilli: sql<
+        number | null
+      >`round((${entities.data}->>'area_m2')::numeric * 1000)::int`,
+    })
+    .from(entities)
+    .where(domUnitsWhere(input.entityId));
+  const areaByUnit = new Map(areaRows.map((r) => [r.id, r.areaMilli ?? 0]));
+  if (input.units.some((u) => (areaByUnit.get(u.id) ?? 0) <= 0)) return out;
+
+  // Readings for the metered types, date-ordered.
+  const rows = await db
+    .select({
+      unitId: meterReadings.unitEntityId,
+      type: meterReadings.meterType,
+      value: meterReadings.valueMilli,
+    })
+    .from(meterReadings)
+    .where(
+      and(
+        eq(meterReadings.entityId, input.entityId),
+        isNull(meterReadings.voidedAt),
+        gte(meterReadings.readingDate, input.yearStart),
+        lt(meterReadings.readingDate, input.yearEnd),
+        inArray(
+          meterReadings.meterType,
+          plans.map((p) => p.meterType)
+        )
+      )
+    )
+    .orderBy(meterReadings.readingDate);
+
+  const byTypeUnit = new Map<string, number[]>();
+  for (const r of rows) {
+    const key = `${r.type}|${r.unitId}`;
+    const arr = byTypeUnit.get(key);
+    if (arr) arr.push(r.value);
+    else byTypeUnit.set(key, [r.value]);
+  }
+  // Consumption = counter delta (last − first) when ≥2 readings, else the
+  // single value; a negative delta (counter reset) clamps to 0.
+  const consFor = (type: string, unitId: string): number | null => {
+    const v = byTypeUnit.get(`${type}|${unitId}`);
+    if (!v || v.length === 0) return null;
+    if (v.length === 1) return v[0];
+    return Math.max(0, v[v.length - 1] - v[0]);
+  };
+
+  for (const plan of plans) {
+    const cons = input.units.map((u) => ({
+      unitId: u.id,
+      c: consFor(plan.meterType, u.id),
+    }));
+    if (cons.some((x) => x.c === null)) continue; // partial metering
+    const split = computeHeatSplit(
+      input.costByCategory.get(plan.categoryId)!,
+      input.units.map((u) => ({
+        unitId: u.id,
+        areaMilliM2: areaByUnit.get(u.id)!,
+        consumptionMilli: cons.find((x) => x.unitId === u.id)!.c!,
+      })),
+      { basicSharePct: plan.basicPct }
+    );
+    out.set(
+      plan.categoryId,
+      Object.fromEntries(split.units.map((s) => [s.unitId, s.finalCents]))
+    );
+  }
+  return out;
+}
 
 export interface VyuctovanieGates {
   periodStatus: "missing" | "open" | "reconciling" | "published" | "closed";
@@ -288,6 +410,33 @@ export async function getVyuctovaniePreview(
     }
   }
 
+  // Metered heat/TÚV split (vyhláška 269/2015) — overrides the prescribed
+  // split for those services when whole-building metering is present.
+  const [heatSettingRow] = await db
+    .select({ h: accountingSettings.heatBasicSharePct })
+    .from(accountingSettings)
+    .where(
+      and(
+        eq(accountingSettings.entityId, entityId),
+        sql`${accountingSettings.effectiveFrom} <= now()`
+      )
+    )
+    .orderBy(desc(accountingSettings.effectiveFrom))
+    .limit(1);
+  const meteredShares = await buildMeteredCostShares({
+    entityId,
+    yearStart,
+    yearEnd,
+    units,
+    categoryIdBySlug: Object.fromEntries(categories.map((c) => [c.slug, c.id])),
+    costByCategory: new Map(
+      costs
+        .filter((c) => c.serviceCategoryId)
+        .map((c) => [c.serviceCategoryId as string, c.total])
+    ),
+    heatBasicPct: heatSettingRow?.h ?? DEFAULT_HEAT_BASIC_PCT,
+  });
+
   const services: SettlementServiceInput[] = [...categoryIds].map((id) => ({
     serviceCategoryId: id,
     actualCostCents:
@@ -302,6 +451,8 @@ export async function getVyuctovaniePreview(
         .filter((a) => a.serviceCategoryId === id)
         .map((a) => [a.unitEntityId, a.total])
     ),
+    // Present only for metered heat/TÚV; undefined = prescribed split.
+    costShareByUnit: meteredShares.get(id),
   }));
 
   const settlement =

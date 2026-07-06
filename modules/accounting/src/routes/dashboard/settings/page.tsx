@@ -17,6 +17,7 @@ interface Settings {
   bankIban: string | null;
   dueDay: number | null;
   debtorDisclosureThresholdCents: number | null;
+  heatBasicSharePct: number | null;
   categorySlugs: string[];
 }
 
@@ -30,6 +31,7 @@ export default function AccountingSettingsPage() {
   const [iban, setIban] = useState("");
   const [dueDay, setDueDay] = useState<string>("");
   const [debtorThreshold, setDebtorThreshold] = useState<string>("");
+  const [heatBasic, setHeatBasic] = useState<string>("");
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
@@ -54,6 +56,9 @@ export default function AccountingSettingsPage() {
           data.debtorDisclosureThresholdCents === null
             ? ""
             : centsToInput(data.debtorDisclosureThresholdCents)
+        );
+        setHeatBasic(
+          data.heatBasicSharePct === null ? "" : String(data.heatBasicSharePct)
         );
         setLoaded(true);
       })
@@ -90,6 +95,8 @@ export default function AccountingSettingsPage() {
           dueDay: dueDay === "" ? null : Number(dueDay),
           debtorDisclosureThresholdCents:
             debtorThreshold.trim() === "" ? null : parseCents(debtorThreshold),
+          heatBasicSharePct:
+            heatBasic.trim() === "" ? null : Number(heatBasic),
         }),
       });
       const body = await res.json().catch(() => null);
@@ -196,6 +203,29 @@ export default function AccountingSettingsPage() {
             placeholder={t("debtorThresholdOff")}
             className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 text-right w-40"
           />
+        </div>
+
+        {/* Heat basic-component share (vyhláška 269/2015) */}
+        <div>
+          <label className="block text-sm font-medium text-gray-900 dark:text-gray-100 mb-1">
+            {t("heatBasicShare")}
+          </label>
+          <p className="text-xs text-gray-500 dark:text-gray-400 mb-2">
+            {t("heatBasicShareHint")}
+          </p>
+          <div className="flex items-center gap-2">
+            <input
+              value={heatBasic}
+              onChange={(e) => {
+                setHeatBasic(e.target.value);
+                setSaved(false);
+              }}
+              inputMode="numeric"
+              placeholder={t("heatBasicShareDefault")}
+              className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 text-right w-24"
+            />
+            <span className="text-gray-600 dark:text-gray-400">%</span>
+          </div>
         </div>
 
         {/* Strategy */}

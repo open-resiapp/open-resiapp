@@ -1,0 +1,1 @@
+ALTER TABLE "mod_accounting_settings" ADD COLUMN "heat_basic_share_pct" integer;

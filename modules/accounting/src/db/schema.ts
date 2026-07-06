@@ -137,6 +137,11 @@ export const accountingSettings = pgTable(
     // unit appears on the owner-visible debtor list. NULL = disabled (the
     // list is hidden entirely — the privacy-safe default).
     debtorDisclosureThresholdCents: integer("debtor_disclosure_threshold_cents"),
+    // Heat rozúčtování (vyhláška 269/2015 §3): the ZÁKLADNÍ složka percent
+    // for teplo — split by započitatelná plocha; the rest is spotřební,
+    // split by indicator readings. Statutory band 30–50; NULL = engine
+    // default 40. TÚV základní is statutorily fixed at 30 %, not stored.
+    heatBasicSharePct: integer("heat_basic_share_pct"),
     effectiveFrom: timestamp("effective_from").notNull(),
     createdById: uuid("created_by_id")
       .references(() => users.id, { onDelete: "restrict" })

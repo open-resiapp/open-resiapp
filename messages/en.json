@@ -1623,7 +1623,10 @@
       "dueDayEndOfMonth": "Last day of the month",
       "debtorThreshold": "Debtor disclosure (threshold)",
       "debtorThresholdHint": "Arrears amount at which a unit appears on the owner-visible debtor list. Empty = off. Enable only after the assembly approves it.",
-      "debtorThresholdOff": "Off"
+      "debtorThresholdOff": "Off",
+      "heatBasicShare": "Heating — basic component (%)",
+      "heatBasicShareHint": "Share of heating cost split by floor area (basic component); the rest goes by meters / heat-cost allocators (vyhl. 269/2015). Statutory band 30–50 %. Empty = 40 %. Hot water is fixed at 30 % by law.",
+      "heatBasicShareDefault": "40"
     },
     "predpisPdf": {
       "title": "Monthly payment schedule",

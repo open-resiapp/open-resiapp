@@ -498,6 +498,13 @@
       "when": 1783324160917,
       "tag": "0070_awesome_patriot",
       "breakpoints": true
+    },
+    {
+      "idx": 71,
+      "version": "7",
+      "when": 1783335518715,
+      "tag": "0071_premium_invaders",
+      "breakpoints": true
     }
   ]
 }

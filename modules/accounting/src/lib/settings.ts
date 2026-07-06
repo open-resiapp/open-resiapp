@@ -20,6 +20,8 @@ export interface AccountingSettingsView {
   dueDay: number | null;
   /** Arrears threshold in cents for owner-visible debtor list; null = off. */
   debtorDisclosureThresholdCents: number | null;
+  /** Heat základní složka percent (vyhláška 269/2015); null = default 40. */
+  heatBasicSharePct: number | null;
   /** Full catalog for the priority-order editor. */
   categorySlugs: string[];
 }
@@ -36,6 +38,7 @@ export async function getAccountingSettings(
       dueDay: accountingSettings.dueDay,
       debtorDisclosureThresholdCents:
         accountingSettings.debtorDisclosureThresholdCents,
+      heatBasicSharePct: accountingSettings.heatBasicSharePct,
     })
     .from(accountingSettings)
     .where(
@@ -62,6 +65,7 @@ export async function getAccountingSettings(
     dueDay: row?.dueDay ?? null,
     debtorDisclosureThresholdCents:
       row?.debtorDisclosureThresholdCents ?? null,
+    heatBasicSharePct: row?.heatBasicSharePct ?? null,
     categorySlugs: categories.map((c) => c.slug),
   };
 }
@@ -75,12 +79,21 @@ export async function updateAccountingSettings(input: {
   bankIban: string | null;
   dueDay: number | null;
   debtorDisclosureThresholdCents: number | null;
+  heatBasicSharePct: number | null;
 }): Promise<void> {
   if (
     input.dueDay !== null &&
     (!Number.isInteger(input.dueDay) || input.dueDay < 1 || input.dueDay > 28)
   ) {
     throw new Error("accounting: due day must be 1-28 or empty (end of month)");
+  }
+  if (
+    input.heatBasicSharePct !== null &&
+    (!Number.isInteger(input.heatBasicSharePct) ||
+      input.heatBasicSharePct < 0 ||
+      input.heatBasicSharePct > 100)
+  ) {
+    throw new Error("accounting: heat basic share must be 0-100 % or empty");
   }
   if (
     input.debtorDisclosureThresholdCents !== null &&
@@ -130,6 +143,7 @@ export async function updateAccountingSettings(input: {
       bankIban: iban,
       dueDay: input.dueDay,
       debtorDisclosureThresholdCents: input.debtorDisclosureThresholdCents,
+      heatBasicSharePct: input.heatBasicSharePct,
       // DB clock, not app clock — reads filter with `effectiveFrom <=
       // now()` on Postgres time; app-clock skew would hide a fresh row.
       effectiveFrom: sql`now()`,
@@ -147,6 +161,7 @@ export async function updateAccountingSettings(input: {
         bankIban: iban,
         dueDay: input.dueDay,
         debtorDisclosureThresholdCents: input.debtorDisclosureThresholdCents,
+        heatBasicSharePct: input.heatBasicSharePct,
       },
     });
   });

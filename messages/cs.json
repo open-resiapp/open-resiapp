@@ -1623,7 +1623,10 @@
       "dueDayEndOfMonth": "Poslední den měsíce",
       "debtorThreshold": "Zveřejňování dlužníků (hranice)",
       "debtorThresholdHint": "Částka nedoplatku, od které se jednotka zobrazí v seznamu dlužníků (viditelné vlastníkům). Prázdné = vypnuto. Zapněte jen po schválení shromážděním.",
-      "debtorThresholdOff": "Vypnuto"
+      "debtorThresholdOff": "Vypnuto",
+      "heatBasicShare": "Teplo — základní složka (%)",
+      "heatBasicShareHint": "Podíl nákladů na teplo rozúčtovaný podle podlahové plochy (základní složka); zbytek podle měřičů / indikátorů (vyhl. 269/2015). Zákonné rozmezí 30–50 %. Prázdné = 40 %. TUV má zákonně 30 %.",
+      "heatBasicShareDefault": "40"
     },
     "predpisPdf": {
       "title": "Měsíční předpis plateb",
