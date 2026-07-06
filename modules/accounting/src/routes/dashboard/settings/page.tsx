@@ -9,12 +9,14 @@ import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { isValidIban } from "@modules/accounting/src/lib/iban";
+import { parseCents, centsToInput } from "@modules/accounting/src/lib/money";
 
 interface Settings {
   allocationStrategy: "proportional" | "priority_ordered";
   priorityOrder: string[];
   bankIban: string | null;
   dueDay: number | null;
+  debtorDisclosureThresholdCents: number | null;
   categorySlugs: string[];
 }
 
@@ -27,6 +29,7 @@ export default function AccountingSettingsPage() {
   const [order, setOrder] = useState<string[]>([]);
   const [iban, setIban] = useState("");
   const [dueDay, setDueDay] = useState<string>("");
+  const [debtorThreshold, setDebtorThreshold] = useState<string>("");
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
@@ -47,6 +50,11 @@ export default function AccountingSettingsPage() {
         setOrder([...data.priorityOrder, ...rest]);
         setIban(data.bankIban ?? "");
         setDueDay(data.dueDay === null ? "" : String(data.dueDay));
+        setDebtorThreshold(
+          data.debtorDisclosureThresholdCents === null
+            ? ""
+            : centsToInput(data.debtorDisclosureThresholdCents)
+        );
         setLoaded(true);
       })
       .catch(() => setError("load"));
@@ -80,6 +88,8 @@ export default function AccountingSettingsPage() {
           priorityOrder: order,
           bankIban: iban.trim() || null,
           dueDay: dueDay === "" ? null : Number(dueDay),
+          debtorDisclosureThresholdCents:
+            debtorThreshold.trim() === "" ? null : parseCents(debtorThreshold),
         }),
       });
       const body = await res.json().catch(() => null);
@@ -166,6 +176,26 @@ export default function AccountingSettingsPage() {
               </option>
             ))}
           </select>
+        </div>
+
+        {/* Debtor disclosure threshold */}
+        <div>
+          <label className="block text-sm font-medium text-gray-900 dark:text-gray-100 mb-1">
+            {t("debtorThreshold")}
+          </label>
+          <p className="text-xs text-gray-500 dark:text-gray-400 mb-2">
+            {t("debtorThresholdHint")}
+          </p>
+          <input
+            value={debtorThreshold}
+            onChange={(e) => {
+              setDebtorThreshold(e.target.value);
+              setSaved(false);
+            }}
+            inputMode="decimal"
+            placeholder={t("debtorThresholdOff")}
+            className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 text-right w-40"
+          />
         </div>
 
         {/* Strategy */}

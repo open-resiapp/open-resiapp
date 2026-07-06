@@ -1573,7 +1573,9 @@
       "navInspect": "Právo na nahliadnutie",
       "navInspectHint": "Doklady a hospodárenie spoločenstva",
       "navRevisions": "Revízie",
-      "navRevisionsHint": "Termíny povinných revízií a kontrol"
+      "navRevisionsHint": "Termíny povinných revízií a kontrol",
+      "navDebtors": "Zoznam dlžníkov",
+      "navDebtorsHint": "Nedoplatky schválené na zverejnenie"
     },
     "settings": {
       "title": "Nastavenia účtovníctva",
@@ -1599,7 +1601,10 @@
       "ibanPlaceholder": "SK00 0000 0000 0000 0000 0000",
       "dueDay": "Splatnosť predpisu",
       "dueDayHint": "Deň v mesiaci, do ktorého sú mesačné úhrady splatné (podľa zmluvy o spoločenstve). Od nasledujúceho dňa plynie omeškanie.",
-      "dueDayEndOfMonth": "Posledný deň mesiaca"
+      "dueDayEndOfMonth": "Posledný deň mesiaca",
+      "debtorThreshold": "Zverejňovanie dlžníkov (hranica)",
+      "debtorThresholdHint": "Suma nedoplatku, od ktorej sa byt zobrazí v zozname dlžníkov (viditeľné vlastníkom). Prázdne = vypnuté. Zapnite len po schválení zhromaždením.",
+      "debtorThresholdOff": "Vypnuté"
     },
     "predpisPdf": {
       "title": "Mesačný predpis úhrad",
@@ -1857,6 +1862,17 @@
       "daysOverdue": "{days} dní po termíne",
       "daysLeft": "o {days} dní",
       "exportIcs": "Exportovať do kalendára (.ics)"
+    },
+    "debtors": {
+      "title": "Zoznam dlžníkov",
+      "subtitle": "Byty s nedoplatkom od {threshold} vyššie, schválené na zverejnenie zhromaždením.",
+      "disabled": "Zverejňovanie dlžníkov nie je zapnuté. Zapnúť ho môže výbor v nastaveniach po schválení zhromaždením.",
+      "none": "Žiadny byt neprekračuje stanovenú hranicu. 🎉",
+      "colUnit": "Byt",
+      "colAmount": "Nedoplatok",
+      "legalNote": "Zverejnené v súlade s § 11 zák. 182/1993 Z.z. Uvádza sa len označenie bytu a suma, nie meno vlastníka.",
+      "loadError": "Nepodarilo sa načítať zoznam.",
+      "backToAccounting": "Späť na účtovníctvo"
     }
   }
 }

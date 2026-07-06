@@ -18,6 +18,8 @@ export interface AccountingSettingsView {
   bankIban: string | null;
   /** Day of month the predpis is due (1–28); null = last day of month. */
   dueDay: number | null;
+  /** Arrears threshold in cents for owner-visible debtor list; null = off. */
+  debtorDisclosureThresholdCents: number | null;
   /** Full catalog for the priority-order editor. */
   categorySlugs: string[];
 }
@@ -32,6 +34,8 @@ export async function getAccountingSettings(
       priorityOrder: accountingSettings.priorityOrder,
       bankIban: accountingSettings.bankIban,
       dueDay: accountingSettings.dueDay,
+      debtorDisclosureThresholdCents:
+        accountingSettings.debtorDisclosureThresholdCents,
     })
     .from(accountingSettings)
     .where(
@@ -56,6 +60,8 @@ export async function getAccountingSettings(
       : [],
     bankIban: row?.bankIban ?? null,
     dueDay: row?.dueDay ?? null,
+    debtorDisclosureThresholdCents:
+      row?.debtorDisclosureThresholdCents ?? null,
     categorySlugs: categories.map((c) => c.slug),
   };
 }
@@ -68,12 +74,20 @@ export async function updateAccountingSettings(input: {
   priorityOrder: string[];
   bankIban: string | null;
   dueDay: number | null;
+  debtorDisclosureThresholdCents: number | null;
 }): Promise<void> {
   if (
     input.dueDay !== null &&
     (!Number.isInteger(input.dueDay) || input.dueDay < 1 || input.dueDay > 28)
   ) {
     throw new Error("accounting: due day must be 1-28 or empty (end of month)");
+  }
+  if (
+    input.debtorDisclosureThresholdCents !== null &&
+    (!Number.isInteger(input.debtorDisclosureThresholdCents) ||
+      input.debtorDisclosureThresholdCents < 0)
+  ) {
+    throw new Error("accounting: debtor threshold must be a non-negative amount");
   }
   let iban: string | null = null;
   if (input.bankIban !== null && input.bankIban.trim() !== "") {
@@ -115,6 +129,7 @@ export async function updateAccountingSettings(input: {
         input.priorityOrder.length > 0 ? input.priorityOrder : null,
       bankIban: iban,
       dueDay: input.dueDay,
+      debtorDisclosureThresholdCents: input.debtorDisclosureThresholdCents,
       // DB clock, not app clock — reads filter with `effectiveFrom <=
       // now()` on Postgres time; app-clock skew would hide a fresh row.
       effectiveFrom: sql`now()`,
@@ -131,6 +146,7 @@ export async function updateAccountingSettings(input: {
         priorityOrder: input.priorityOrder,
         bankIban: iban,
         dueDay: input.dueDay,
+        debtorDisclosureThresholdCents: input.debtorDisclosureThresholdCents,
       },
     });
   });

@@ -25,6 +25,7 @@ export async function handlePost(req: NextRequest): Promise<NextResponse> {
     priorityOrder?: unknown;
     bankIban?: string | null;
     dueDay?: number | string | null;
+    debtorDisclosureThresholdCents?: number | string | null;
   };
   try {
     body = await req.json();
@@ -51,6 +52,17 @@ export async function handlePost(req: NextRequest): Promise<NextResponse> {
   if (dueDay !== null && !Number.isInteger(dueDay)) {
     return NextResponse.json({ error: "invalid dueDay" }, { status: 400 });
   }
+  const rawThreshold = body.debtorDisclosureThresholdCents;
+  const debtorDisclosureThresholdCents =
+    rawThreshold === null || rawThreshold === undefined || rawThreshold === ""
+      ? null
+      : Number(rawThreshold);
+  if (
+    debtorDisclosureThresholdCents !== null &&
+    !Number.isInteger(debtorDisclosureThresholdCents)
+  ) {
+    return NextResponse.json({ error: "invalid threshold" }, { status: 400 });
+  }
 
   try {
     await updateAccountingSettings({
@@ -61,6 +73,7 @@ export async function handlePost(req: NextRequest): Promise<NextResponse> {
       priorityOrder,
       bankIban,
       dueDay,
+      debtorDisclosureThresholdCents,
     });
     return NextResponse.json({ ok: true });
   } catch (err) {

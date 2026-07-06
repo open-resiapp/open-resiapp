@@ -119,6 +119,17 @@ export default function AccountingHomePage() {
               {t("navInspectHint")}
             </p>
           </Link>
+          <Link
+            href="/accounting/debtors"
+            className="block bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg px-5 py-4 hover:border-blue-400 dark:hover:border-blue-600"
+          >
+            <span className="text-lg font-medium text-gray-900 dark:text-gray-100">
+              📋 {t("navDebtors")}
+            </span>
+            <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+              {t("navDebtorsHint")}
+            </p>
+          </Link>
         </div>
       </div>
     );
@@ -366,6 +377,7 @@ export default function AccountingHomePage() {
             ],
             ["/accounting/inspect", "🔍", "navInspect", "navInspectHint"],
             ["/accounting/revisions", "🔧", "navRevisions", "navRevisionsHint"],
+            ["/accounting/debtors", "📋", "navDebtors", "navDebtorsHint"],
             ["/accounting/journal", "📚", "navJournal", "navJournalHint"],
             ["/accounting/settings", "⚙️", "navSettings", "navSettingsHint"],
           ] as const

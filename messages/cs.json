@@ -1573,7 +1573,9 @@
       "navInspect": "Právo na nahlédnutí",
       "navInspectHint": "Doklady a hospodaření společenství",
       "navRevisions": "Revize",
-      "navRevisionsHint": "Termíny povinných revizí a kontrol"
+      "navRevisionsHint": "Termíny povinných revizí a kontrol",
+      "navDebtors": "Seznam dlužníků",
+      "navDebtorsHint": "Nedoplatky schválené ke zveřejnění"
     },
     "settings": {
       "title": "Nastavení účetnictví",
@@ -1599,7 +1601,10 @@
       "ibanPlaceholder": "CZ00 0000 0000 0000 0000 0000",
       "dueDay": "Splatnost předpisu",
       "dueDayHint": "Den v měsíci, do kterého jsou měsíční úhrady splatné (podle smlouvy společenství). Od následujícího dne běží prodlení.",
-      "dueDayEndOfMonth": "Poslední den měsíce"
+      "dueDayEndOfMonth": "Poslední den měsíce",
+      "debtorThreshold": "Zveřejňování dlužníků (hranice)",
+      "debtorThresholdHint": "Částka nedoplatku, od které se jednotka zobrazí v seznamu dlužníků (viditelné vlastníkům). Prázdné = vypnuto. Zapněte jen po schválení shromážděním.",
+      "debtorThresholdOff": "Vypnuto"
     },
     "predpisPdf": {
       "title": "Měsíční předpis plateb",
@@ -1857,6 +1862,17 @@
       "daysOverdue": "{days} dní po termínu",
       "daysLeft": "za {days} dní",
       "exportIcs": "Exportovat do kalendáře (.ics)"
+    },
+    "debtors": {
+      "title": "Seznam dlužníků",
+      "subtitle": "Jednotky s nedoplatkem od {threshold} výše, schválené ke zveřejnění shromážděním.",
+      "disabled": "Zveřejňování dlužníků není zapnuto. Zapnout jej může výbor v nastavení po schválení shromážděním.",
+      "none": "Žádná jednotka nepřekračuje stanovenou hranici. 🎉",
+      "colUnit": "Jednotka",
+      "colAmount": "Nedoplatek",
+      "legalNote": "Zveřejněno dle § 11 zák. 182/1993. Uvádí se jen označení jednotky a částka, nikoli jméno vlastníka.",
+      "loadError": "Nepodařilo se načíst seznam.",
+      "backToAccounting": "Zpět na účetnictví"
     }
   }
 }

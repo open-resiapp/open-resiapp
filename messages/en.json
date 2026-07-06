@@ -1573,7 +1573,9 @@
       "navInspect": "Right to inspect",
       "navInspectHint": "Community documents and spending",
       "navRevisions": "Inspections",
-      "navRevisionsHint": "Deadlines for mandatory inspections"
+      "navRevisionsHint": "Deadlines for mandatory inspections",
+      "navDebtors": "Debtor list",
+      "navDebtorsHint": "Arrears approved for disclosure"
     },
     "settings": {
       "title": "Accounting settings",
@@ -1599,7 +1601,10 @@
       "ibanPlaceholder": "e.g. SK00 0000 0000 0000 0000 0000",
       "dueDay": "Payment due day",
       "dueDayHint": "Day of the month the monthly payments are due (per the community agreement). Delay starts the following day.",
-      "dueDayEndOfMonth": "Last day of the month"
+      "dueDayEndOfMonth": "Last day of the month",
+      "debtorThreshold": "Debtor disclosure (threshold)",
+      "debtorThresholdHint": "Arrears amount at which a unit appears on the owner-visible debtor list. Empty = off. Enable only after the assembly approves it.",
+      "debtorThresholdOff": "Off"
     },
     "predpisPdf": {
       "title": "Monthly payment schedule",
@@ -1857,6 +1862,17 @@
       "daysOverdue": "{days} days overdue",
       "daysLeft": "in {days} days",
       "exportIcs": "Export to calendar (.ics)"
+    },
+    "debtors": {
+      "title": "Debtor list",
+      "subtitle": "Units in arrears of {threshold} or more, approved for disclosure by the assembly.",
+      "disabled": "Debtor disclosure is off. The board can enable it in settings after the assembly approves it.",
+      "none": "No unit exceeds the set threshold. 🎉",
+      "colUnit": "Unit",
+      "colAmount": "Arrears",
+      "legalNote": "Published per §11 Act 182/1993. Only the unit label and amount are shown, not the owner's name.",
+      "loadError": "Failed to load the list.",
+      "backToAccounting": "Back to accounting"
     }
   }
 }

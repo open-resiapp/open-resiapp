@@ -132,6 +132,11 @@ export const accountingSettings = pgTable(
     // due, per the zmluva/stanovy. NULL = last day of the month (common
     // SK default). Drives overdue detection and úroky z omeškania.
     dueDay: integer("due_day"),
+    // Debtor disclosure (§11 zák. 182/1993): when the shromaždenie approves
+    // publishing arrears, this is the threshold in cents at/above which a
+    // unit appears on the owner-visible debtor list. NULL = disabled (the
+    // list is hidden entirely — the privacy-safe default).
+    debtorDisclosureThresholdCents: integer("debtor_disclosure_threshold_cents"),
     effectiveFrom: timestamp("effective_from").notNull(),
     createdById: uuid("created_by_id")
       .references(() => users.id, { onDelete: "restrict" })
