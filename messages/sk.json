@@ -1691,6 +1691,7 @@
       "newExpense": "Nová faktúra",
       "supplier": "Dodávateľ",
       "ico": "IČO",
+      "dic": "DIČ / IČ DPH",
       "supplierIban": "IBAN dodávateľa",
       "invoiceNo": "Číslo faktúry",
       "invoiceDate": "Dátum faktúry",
@@ -1732,7 +1733,9 @@
       "lookup_error": "Vyhľadanie zlyhalo. Skontrolujte IČO alebo skúste neskôr.",
       "lookup_debtor": "⚠️ Dodávateľ je v zozname dlžníkov — pred uložením si overte situáciu.",
       "attachmentsToggle": "Doklady",
-      "nextInspectionLabel": "Termín ďalšej revízie"
+      "nextInspectionLabel": "Termín ďalšej revízie",
+      "attachmentLabel": "Sken faktúry",
+      "attachmentHint": "Povinná príloha dokladu (PDF/JPG/PNG, max 15 MB)."
     },
     "meters": {
       "title": "Odpočty meračov",

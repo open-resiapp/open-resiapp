@@ -437,7 +437,7 @@ Reuse RES-20260413-002. Per-country settings:
 - [x] Fio API connector polls successfully with stored token and dedups by `ID operace`.
 - [ ] Auto-match by VS achieves ≥95 % accuracy on test fixture of 1000 SK SEPA payments.
 - [x] Reconciliation UI lets treasurer accept/reject/split a suggested match in ≤2 clicks. (Accept = "Sedí" confirms to a unit and auto-splits receivable vs preplatok on the ledger; Reject = "Zamietnuť" dismisses a non-owner/duplicate line, DELETE endpoint, one confirm click, kept on record. Multi-unit split of a single credit is deferred — rare in HOA practice; tracked in Notes.)
-- [ ] Expense entry requires DIČ/IČ DPH, IBAN of supplier, invoice number, attachment, netto/DPH/brutto.
+- [x] Expense entry requires DIČ/IČ DPH, IBAN of supplier, invoice number, attachment, netto/DPH/brutto. (All enforced at the human-entry API + form; the scan is uploaded in the same multipart create and the expense is voided if the attachment write fails — no attachment-less doklad persists. The lib stays booking-integrity only so internal programmatic creates are not blocked.)
 - [x] Vyúčtovanie wizard blocks progression if unreconciled bank lines or uncategorised invoices remain.
 - [x] Vyúčtovanie PDF matches statutory contents (per-service skutečné náklady, přijaté zálohy, rozdíl, použitý kľúč rozúčtovania).
 - [x] Period lock turns published year read-only; correction posts as reversal in current year.

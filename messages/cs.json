@@ -1691,6 +1691,7 @@
       "newExpense": "Nová faktura",
       "supplier": "Dodavatel",
       "ico": "IČO",
+      "dic": "DIČ / IČ DPH",
       "supplierIban": "IBAN dodavatele",
       "invoiceNo": "Číslo faktury",
       "invoiceDate": "Datum faktury",
@@ -1732,7 +1733,9 @@
       "lookup_error": "Vyhledání selhalo. Zkontrolujte IČO nebo zkuste později.",
       "lookup_debtor": "⚠️ Dodavatel je na seznamu dlužníků — před uložením prověřte.",
       "attachmentsToggle": "Doklady",
-      "nextInspectionLabel": "Termín další revize"
+      "nextInspectionLabel": "Termín další revize",
+      "attachmentLabel": "Sken faktury",
+      "attachmentHint": "Povinná příloha dokladu (PDF/JPG/PNG, max 15 MB)."
     },
     "meters": {
       "title": "Odečty měřičů",

@@ -1691,6 +1691,7 @@
       "newExpense": "New invoice",
       "supplier": "Supplier",
       "ico": "Company ID",
+      "dic": "Tax ID / VAT ID",
       "supplierIban": "Supplier IBAN",
       "invoiceNo": "Invoice number",
       "invoiceDate": "Invoice date",
@@ -1732,7 +1733,9 @@
       "lookup_error": "Lookup failed. Check the ID or try later.",
       "lookup_debtor": "⚠️ Supplier is on the debtor list — verify before saving.",
       "attachmentsToggle": "Documents",
-      "nextInspectionLabel": "Next inspection date"
+      "nextInspectionLabel": "Next inspection date",
+      "attachmentLabel": "Invoice scan",
+      "attachmentHint": "Required document attachment (PDF/JPG/PNG, max 15 MB)."
     },
     "meters": {
       "title": "Meter readings",

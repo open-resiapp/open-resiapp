@@ -44,6 +44,7 @@ export default function ExpensesPage() {
   // form
   const [supplierName, setSupplierName] = useState("");
   const [supplierIco, setSupplierIco] = useState("");
+  const [supplierDic, setSupplierDic] = useState("");
   const [supplierIban, setSupplierIban] = useState("");
   const [invoiceNo, setInvoiceNo] = useState("");
   const [invoiceDate, setInvoiceDate] = useState(() =>
@@ -56,6 +57,7 @@ export default function ExpensesPage() {
   const [dph, setDph] = useState("");
   const [dueDate, setDueDate] = useState("");
   const [nextInspection, setNextInspection] = useState("");
+  const [file, setFile] = useState<File | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [lookingUp, setLookingUp] = useState(false);
   const [lookupNote, setLookupNote] = useState<
@@ -103,6 +105,7 @@ export default function ExpensesPage() {
   const formValid =
     supplierName.trim() !== "" &&
     supplierIco.trim() !== "" &&
+    supplierDic.trim() !== "" &&
     supplierIban.trim() !== "" &&
     invoiceNo.trim() !== "" &&
     amountCents !== null &&
@@ -114,6 +117,8 @@ export default function ExpensesPage() {
     dphCents !== null &&
     nettoDphConsistent &&
     /^\d{4}-\d{2}-\d{2}$/.test(invoiceDate) &&
+    // The invoice scan is a required part of the doklad (AC 440).
+    file !== null &&
     // A revízia expense needs its next-inspection date (AC 469).
     (!isRevizia || /^\d{4}-\d{2}-\d{2}$/.test(nextInspection));
 
@@ -122,12 +127,14 @@ export default function ExpensesPage() {
     setSubmitting(true);
     setError(null);
     try {
-      const res = await fetch("/api/accounting/expenses", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
+      // Multipart: JSON fields + the mandatory invoice scan (AC 440).
+      const form = new FormData();
+      form.append(
+        "payload",
+        JSON.stringify({
           supplierName: supplierName.trim(),
           supplierIco: supplierIco.trim() || null,
+          supplierDic: supplierDic.trim() || null,
           supplierIban: supplierIban.trim() || null,
           invoiceNo: invoiceNo.trim(),
           invoiceDate: new Date(`${invoiceDate}T00:00:00Z`).toISOString(),
@@ -143,18 +150,25 @@ export default function ExpensesPage() {
             isRevizia && /^\d{4}-\d{2}-\d{2}$/.test(nextInspection)
               ? new Date(`${nextInspection}T00:00:00Z`).toISOString()
               : null,
-        }),
+        })
+      );
+      form.append("file", file!);
+      const res = await fetch("/api/accounting/expenses", {
+        method: "POST",
+        body: form,
       });
       const body = await res.json().catch(() => null);
       if (!res.ok) throw new Error(body?.error ?? String(res.status));
       setSupplierName("");
       setSupplierIco("");
+      setSupplierDic("");
       setSupplierIban("");
       setInvoiceNo("");
       setAmount("");
       setAmountNetto("");
       setDph("");
       setNextInspection("");
+      setFile(null);
       load();
     } catch (err) {
       setError(err instanceof Error ? err.message : "submit");
@@ -308,6 +322,16 @@ export default function ExpensesPage() {
           </label>
           <label className="flex flex-col gap-1 text-sm">
             <span className="text-gray-700 dark:text-gray-300">
+              {t("dic")} *
+            </span>
+            <input
+              value={supplierDic}
+              onChange={(e) => setSupplierDic(e.target.value)}
+              className={inputClass}
+            />
+          </label>
+          <label className="flex flex-col gap-1 text-sm">
+            <span className="text-gray-700 dark:text-gray-300">
               {t("supplierIban")} *
             </span>
             <input
@@ -426,6 +450,20 @@ export default function ExpensesPage() {
               onChange={(e) => setDueDate(e.target.value)}
               className={inputClass}
             />
+          </label>
+          <label className="flex flex-col gap-1 text-sm">
+            <span className="text-gray-700 dark:text-gray-300">
+              {t("attachmentLabel")} *
+            </span>
+            <input
+              type="file"
+              accept=".pdf,.jpg,.jpeg,.png,.webp,application/pdf,image/jpeg,image/png,image/webp"
+              onChange={(e) => setFile(e.target.files?.[0] ?? null)}
+              className="text-sm text-gray-700 dark:text-gray-300"
+            />
+            <span className="text-xs text-gray-500 dark:text-gray-400">
+              {t("attachmentHint")}
+            </span>
           </label>
           <div className="flex items-end">
             <button

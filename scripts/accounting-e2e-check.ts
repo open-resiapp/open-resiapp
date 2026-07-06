@@ -45,6 +45,10 @@ import {
   dismissBankLine,
 } from "@modules/accounting/src/lib/bank-import";
 import { createExpense } from "@modules/accounting/src/lib/expenses";
+import {
+  uploadAttachment,
+  listAttachments,
+} from "@modules/accounting/src/lib/attachments";
 import { getDashboardTiles } from "@modules/accounting/src/lib/dashboard";
 import {
   getVyuctovaniePreview,
@@ -214,7 +218,7 @@ async function main() {
 
   // ── expense → dashboard tiles ──
   console.log("expense + dashboard");
-  await createExpense({
+  const { expenseId: firstExpenseId } = await createExpense({
     entityId: dom.id,
     country,
     createdById: actorId,
@@ -229,6 +233,24 @@ async function main() {
     amountNettoCents: 12500,
     dphCents: 2500,
   });
+  // Attach a scan (the mandatory-at-create path, AC 440 — the create route
+  // wires exactly these two calls; a 1×1 PNG proves the storage driver works
+  // in this environment). listAttachments must then return it.
+  const pngBytes = Buffer.from(
+    "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+M8AAAMEAgB2Bg8gAAAAAElFTkSuQmCC",
+    "base64"
+  );
+  await uploadAttachment({
+    entityId: dom.id,
+    expenseId: firstExpenseId,
+    role: "original",
+    fileName: "invoice.png",
+    contentType: "image/png",
+    body: pngBytes,
+    actorId,
+  });
+  const attachments = await listAttachments(dom.id, firstExpenseId);
+  check("invoice scan attaches to expense (440)", attachments.length === 1);
   // Two revízie in distinct REVIZIA_* categories (listRevisions keeps the
   // latest inspection per category) — one overdue, one due within 60 days —
   // so the dashboard attention list surfaces both (AC 470).

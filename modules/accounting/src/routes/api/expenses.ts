@@ -7,6 +7,7 @@ import {
   markExpensePaid,
   voidExpense,
 } from "@modules/accounting/src/lib/expenses";
+import { uploadAttachment } from "@modules/accounting/src/lib/attachments";
 import { listServiceCategories } from "@modules/accounting/src/lib/fee-schedules";
 
 // Expense ledger API — list: treasurer/chairman/admin; mutations:
@@ -26,9 +27,24 @@ export async function handleCreate(req: NextRequest): Promise<NextResponse> {
   const ctx = await requireWriter();
   if (!ctx.ok) return ctx.error;
 
+  // A supplier invoice is an účtovný doklad — the scan is a required part of
+  // it (AC 440), so create is multipart: `payload` (the JSON fields) + `file`
+  // (the mandatory scan). The file is read + validated BEFORE the expense is
+  // created; if the attachment write still fails after creation, the expense
+  // is voided so no attachment-less doklad ever persists.
+  let form: FormData;
+  try {
+    form = await req.formData();
+  } catch {
+    return NextResponse.json({ error: "invalid form" }, { status: 400 });
+  }
+  const file = form.get("file");
+  if (!(file instanceof File) || file.size === 0) {
+    return NextResponse.json({ error: "attachment required" }, { status: 400 });
+  }
   let body: Record<string, unknown>;
   try {
-    body = await req.json();
+    body = JSON.parse(String(form.get("payload") ?? ""));
   } catch {
     return NextResponse.json({ error: "invalid json" }, { status: 400 });
   }
@@ -38,6 +54,12 @@ export async function handleCreate(req: NextRequest): Promise<NextResponse> {
   }
   if (typeof body.supplierName !== "string" || typeof body.invoiceNo !== "string") {
     return NextResponse.json({ error: "missing fields" }, { status: 400 });
+  }
+  // A supplier invoice must name the supplier's tax identifier (AC 440:
+  // DIČ/IČ DPH). Enforced at the human-entry surface — the lib stays
+  // booking-integrity only so internal programmatic creates aren't blocked.
+  if (typeof body.supplierDic !== "string" || body.supplierDic.trim() === "") {
+    return NextResponse.json({ error: "supplier DIČ required" }, { status: 400 });
   }
   const invoiceDate = new Date(String(body.invoiceDate ?? ""));
   if (Number.isNaN(invoiceDate.getTime())) {
@@ -91,6 +113,33 @@ export async function handleCreate(req: NextRequest): Promise<NextResponse> {
           ? body.authorisationId
           : null,
     });
+
+    // Attach the mandatory scan. If it fails, void the just-created (unpaid)
+    // expense so we never leave an attachment-less doklad on the ledger.
+    try {
+      const buffer = Buffer.from(await file.arrayBuffer());
+      await uploadAttachment({
+        entityId: ctx.root.id,
+        expenseId: result.expenseId,
+        role: "original",
+        fileName: file.name || "invoice",
+        contentType: file.type || "application/octet-stream",
+        body: buffer,
+        actorId: ctx.session.user.id,
+      });
+    } catch (attachErr) {
+      await voidExpense({
+        entityId: ctx.root.id,
+        country: ctx.root.country,
+        expenseId: result.expenseId,
+        actorId: ctx.session.user.id,
+        reason: "attachment upload failed at create",
+      }).catch(() => {});
+      const message =
+        attachErr instanceof Error ? attachErr.message : "attachment failed";
+      return NextResponse.json({ error: message }, { status: 400 });
+    }
+
     return NextResponse.json(result, { status: 201 });
   } catch (err) {
     const message = err instanceof Error ? err.message : "create failed";
