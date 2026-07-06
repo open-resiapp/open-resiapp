@@ -418,7 +418,7 @@ Reuse RES-20260413-002. Per-country settings:
 - [ ] Ročné vyúčtovanie generates by SK 31.05 deadline; system surfaces sanction (§8a ods. 4) 30 days prior.
 - [ ] CZ vyúčtování generates within 4 months of period end per §7 zák. 67/2013.
 - [ ] CZ reklamace state machine respects 30+30 day windows per §8 zák. 67/2013.
-- [ ] CZ heat/TUV rozúčtování engine implements vyhl. 269/2015 ve znění 376/2021 (base 40–60 %, ±20 %/+100 % korekce).
+- [x] CZ heat/TUV rozúčtování engine implements vyhl. 269/2015 ve znění 376/2021 (base 40–60 %, ±20 %/+100 % korekce).
 - [x] 10-year retention enforced — no hard delete of journal entries, doklady, vyúčtovania.
 - [ ] Účtovná závierka schválenie blocked until shromáždění/zhromaždenie vote recorded (§7c ods. 9 SK / §1208 NOZ CZ).
 - [x] Right-to-inspect read-only view available to every owner of the dom (§11 ods. 6 SK / §1179 CZ).
@@ -461,7 +461,7 @@ Reuse RES-20260413-002. Per-country settings:
 
 - [x] Úroky-z-omeškania engine matches manually-computed reference for SK fixture (nariadenie 87/1995) ±0.01 EUR.
 - [x] CZ engine matches reference per nař. vlády 351/2013.
-- [ ] Rate history seed updates on schedule (cron); current ECB/ČNB repo always available.
+- [x] Rate history seed updates on schedule (cron); current ECB/ČNB repo always available.
 - [x] Upomienka PDF lists each overdue assessment with per-assessment interest + total + zákonné poučenie.
 
 ### Technical-audit link
@@ -622,6 +622,31 @@ clearly present). **Left unchecked — not done, and why:**
 
 Status stays `in_progress`: the buildable core is done + verified, but the
 named in-scope subsystems above remain.
+
+### Status — 2026-07-06 heat engine + rate cron pass
+
+Three of the previously-blocked items built + verified this pass (59/89 ACs now):
+
+- **CZ heat/TÚV split engine (AC 421)** — `engine/heat.ts`: základní/spotřební
+  split (configurable %, settings.heatBasicSharePct migration 0071, TÚV fixed
+  30 %) + the §4 −20 %/+100 % correction via a single sum-preserving pass.
+  Wired into `getVyuctovaniePreview` (the single source publish freezes from)
+  as `costShareByUnit` for SVC_HEAT / SVC_WATER_HOT, active only under
+  whole-building metering; partial metering falls back to the prescribed
+  split. `test:accounting-heat` (39 checks) + settlement tie-out guard.
+  ⚠️ §4 exact conformance still pending an official MMR worked example.
+- **Interest-rate cron (AC 464)** — `interest_rate_history` table (migration
+  0072), `rate-history.ts` merges the code-constant baseline with cron rows
+  (DB wins), `rate-sync.ts` + `POST /api/cron/accounting-rates` (CRON_SECRET).
+  `test:accounting-rate-sync` (13 checks, mocked fetch). ⚠️ Filip must confirm
+  the ECB series key + ČNB endpoint (CNB_REPO_CSV_URL) before scheduling.
+- **Fio bank connector** — already built; Filip is integrating his own account.
+
+**Descoped 2026-07-06:** FinStat/ARES supplier auto-fill (AC 475–476) — paid
+API integration, dropped by owner decision. The `supplier-lookup*` code stays
+(mocked) but is not a delivery target; IBAN MOD-97 validation (AC 477) stands.
+
+All 12 golden suites + e2e (20/20) green after this pass.
 
 ### Open questions
 
