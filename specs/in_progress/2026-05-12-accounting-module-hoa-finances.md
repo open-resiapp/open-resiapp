@@ -3,10 +3,10 @@ spec_id: BYT-20260512-002
 title: "Accounting module for SVB chairman/treasurer to track HOA finances"
 status: in_progress
 created: 2026-05-12
-updated: 2026-07-05
+updated: 2026-07-06
 author: byt-app
 owner: byt-app
-last_verified: 2026-06-09
+last_verified: 2026-07-06
 project_type: node
 depends_on: []
 related_handoffs: []
@@ -410,8 +410,8 @@ Reuse RES-20260413-002. Per-country settings:
 
 ### Legal compliance
 
-- [ ] Internal ledger is double-entry; sum debits = sum credits per `journal_entry` (DB CHECK).
-- [ ] SK chart of accounts loaded from Opatrenie MF SR č. MF/24342/2007-74.
+- [x] Internal ledger is double-entry; sum debits = sum credits per `journal_entry` (DB CHECK).
+- [x] SK chart of accounts loaded from Opatrenie MF SR č. MF/24342/2007-74.
 - [ ] CZ chart of accounts loaded per vyhláška 504/2002 Sb.
 - [ ] Three okruhy (FPÚO, services, MGMT_CZ) tracked separately; transfers between flagged.
 - [ ] FPÚO → služby transient cover (SK §10 ods. 3) records a return-due flag visible to treasurer.
@@ -419,94 +419,94 @@ Reuse RES-20260413-002. Per-country settings:
 - [ ] CZ vyúčtování generates within 4 months of period end per §7 zák. 67/2013.
 - [ ] CZ reklamace state machine respects 30+30 day windows per §8 zák. 67/2013.
 - [ ] CZ heat/TUV rozúčtování engine implements vyhl. 269/2015 ve znění 376/2021 (base 40–60 %, ±20 %/+100 % korekce).
-- [ ] 10-year retention enforced — no hard delete of journal entries, doklady, vyúčtovania.
+- [x] 10-year retention enforced — no hard delete of journal entries, doklady, vyúčtovania.
 - [ ] Účtovná závierka schválenie blocked until shromáždění/zhromaždenie vote recorded (§7c ods. 9 SK / §1208 NOZ CZ).
-- [ ] Right-to-inspect read-only view available to every owner of the dom (§11 ods. 6 SK / §1179 CZ).
+- [x] Right-to-inspect read-only view available to every owner of the dom (§11 ods. 6 SK / §1179 CZ).
 - [ ] SK debtor disclosure toggle only enables names + sumy for owners with nedoplatok ≥ 500 EUR (§9 ods. 3 zák. 182/1993).
 - [ ] Electronic delivery of vyúčtovanie requires recorded owner consent; non-consenting owners fall back to listinné doručenie.
 - [ ] Vyúčtovanie and upomienka PDFs cite the instance country's own statutes (SK §-refs vs CZ §-refs); the SK template is never reused verbatim for a CZ instance — statutory-citation content is template-aware, not naively parametrized (project rule: legally-regulated content).
 
 ### Core flows
 
-- [ ] Treasurer can publish a fee schedule for a period and see per-unit assessments generated correctly per each allocation key.
-- [ ] Mid-year schedule revision preserves historical assessments and applies new rates from `effective_from`.
-- [ ] Manual payment entry posts journal + allocates per configured strategy (proportional default).
-- [ ] Partial payment (received &lt; predpis) splits proportionally across services; sum-preserving rounding.
-- [ ] Strategy toggle (proportional ↔ priority_ordered) persists per HOA and is auditable.
-- [ ] CAMT.053 import is idempotent (re-import → 0 new rows).
-- [ ] Fio API connector polls successfully with stored token and dedups by `ID operace`.
+- [x] Treasurer can publish a fee schedule for a period and see per-unit assessments generated correctly per each allocation key.
+- [x] Mid-year schedule revision preserves historical assessments and applies new rates from `effective_from`.
+- [x] Manual payment entry posts journal + allocates per configured strategy (proportional default).
+- [x] Partial payment (received &lt; predpis) splits proportionally across services; sum-preserving rounding.
+- [x] Strategy toggle (proportional ↔ priority_ordered) persists per HOA and is auditable.
+- [x] CAMT.053 import is idempotent (re-import → 0 new rows).
+- [x] Fio API connector polls successfully with stored token and dedups by `ID operace`.
 - [ ] Auto-match by VS achieves ≥95 % accuracy on test fixture of 1000 SK SEPA payments.
-- [ ] Reconciliation UI lets treasurer accept/reject/split a suggested match in ≤2 clicks.
+- [x] Reconciliation UI lets treasurer accept/reject/split a suggested match in ≤2 clicks.
 - [ ] Expense entry requires DIČ/IČ DPH, IBAN of supplier, invoice number, attachment, netto/DPH/brutto.
-- [ ] Vyúčtovanie wizard blocks progression if unreconciled bank lines or uncategorised invoices remain.
-- [ ] Vyúčtovanie PDF matches statutory contents (per-service skutečné náklady, přijaté zálohy, rozdíl, použitý kľúč rozúčtovania).
-- [ ] Period lock turns published year read-only; correction posts as reversal in current year.
-- [ ] Cross-period overpayment applies FIFO to the oldest open assessment across periods; leftover credit parks as a `preplatok` on the unit, not silently absorbed.
-- [ ] `allocation_basis_snapshot_json` is frozen on each assessment at publish; later edits to a unit's area / share / persons do not retro-alter already-published assessments.
+- [x] Vyúčtovanie wizard blocks progression if unreconciled bank lines or uncategorised invoices remain.
+- [x] Vyúčtovanie PDF matches statutory contents (per-service skutečné náklady, přijaté zálohy, rozdíl, použitý kľúč rozúčtovania).
+- [x] Period lock turns published year read-only; correction posts as reversal in current year.
+- [x] Cross-period overpayment applies FIFO to the oldest open assessment across periods; leftover credit parks as a `preplatok` on the unit, not silently absorbed.
+- [x] `allocation_basis_snapshot_json` is frozen on each assessment at publish; later edits to a unit's area / share / persons do not retro-alter already-published assessments.
 
 ### Onboarding & opening balance
 
-- [ ] Opening-balance tool surfaces `Banka + Pokladnica - (Σ FPÚO + Σ Zálohy)` rozdiel in real time.
-- [ ] Cannot leave onboarding until invariant = 0 (korekčný entry required).
-- [ ] All opening entries flagged `source_type = opening_balance` and undeletable post-lock.
+- [x] Opening-balance tool surfaces `Banka + Pokladnica - (Σ FPÚO + Σ Zálohy)` rozdiel in real time.
+- [x] Cannot leave onboarding until invariant = 0 (korekčný entry required).
+- [x] All opening entries flagged `source_type = opening_balance` and undeletable post-lock.
 
 ### QR + payments UX
 
 - [ ] PAY by square QR on every SK predpis PDF; scan with Tatra/SLSP/VÚB app pre-fills trvalý príkaz correctly.
 - [ ] SPAYD QR on every CZ předpis PDF; scan with major CZ banking apps pre-fills payment.
 - [ ] Dynamic QR on nedoplatok rows in vyúčtovanie PDF carries exact sum + VS + reference.
-- [ ] Upomienka PDF for úroky z omeškania includes dynamic QR for sum due to date.
+- [x] Upomienka PDF for úroky z omeškania includes dynamic QR for sum due to date.
 
 ### Sankcie
 
-- [ ] Úroky-z-omeškania engine matches manually-computed reference for SK fixture (nariadenie 87/1995) ±0.01 EUR.
-- [ ] CZ engine matches reference per nař. vlády 351/2013.
+- [x] Úroky-z-omeškania engine matches manually-computed reference for SK fixture (nariadenie 87/1995) ±0.01 EUR.
+- [x] CZ engine matches reference per nař. vlády 351/2013.
 - [ ] Rate history seed updates on schedule (cron); current ECB/ČNB repo always available.
-- [ ] Upomienka PDF lists each overdue assessment with per-assessment interest + total + zákonné poučenie.
+- [x] Upomienka PDF lists each overdue assessment with per-assessment interest + total + zákonné poučenie.
 
 ### Technical-audit link
 
-- [ ] Categories `REVIZIA_*` enforce `next_inspection_due_at` not null.
+- [x] Categories `REVIZIA_*` enforce `next_inspection_due_at` not null.
 - [ ] Revízia expirujúca v ≤ 60 dňoch appears in "Vyžaduje pozornosť"; expired escalates to chairman notification.
-- [ ] Calendar export (.ics) per HOA of all upcoming revízie deadlines.
+- [x] Calendar export (.ics) per HOA of all upcoming revízie deadlines.
 
 ### Suppliers & invoice intake
 
 - [ ] IČO entry triggers FinStat (SK) / ARES (CZ) lookup; result cached 24h.
 - [ ] Dlžník DPH / insolvency hit shows red flag + requires confirmation before saving expense.
-- [ ] IBAN field validates MOD-97 checksum.
+- [x] IBAN field validates MOD-97 checksum.
 - [ ] Collector email per HOA accepts inbound PDF; OCR extracts IČO/IBAN/sum/VS into `expense_inbox` row.
 - [ ] Treasurer can post inbox row as expense in ≤2 clicks.
 - [ ] Inbound collector-email attachments are virus-scanned and pass the optional per-HOA from-domain allowlist before entering `expense_inbox`; failures are quarantined, never auto-posted.
 
 ### Cash-flow projection
 
-- [ ] Dashboard chart shows 6-month projected balance per pool.
+- [x] Dashboard chart shows 6-month projected balance per pool.
 - [ ] Drill-down per month lists projected revenues + expenses.
 - [ ] Recurring expenses (suppliers w/ recurrence) reflected in projection.
 
 ### Owner transparency
 
-- [ ] Every uploaded scan has visibility flag; default = `public`.
-- [ ] `redacted_required` blocks publishing until redacted PDF version uploaded.
-- [ ] `restricted` requires text justification in audit log; not visible to non-board owners.
-- [ ] Right-to-inspect view shows every FPÚO čerpanie expense + scan (respecting visibility).
+- [x] Every uploaded scan has visibility flag; default = `public`.
+- [x] `redacted_required` blocks publishing until redacted PDF version uploaded.
+- [x] `restricted` requires text justification in audit log; not visible to non-board owners.
+- [x] Right-to-inspect view shows every FPÚO čerpanie expense + scan (respecting visibility).
 
 ### Currency / rounding (CZ)
 
 - [ ] CZK vyúčtování per-unit final sum rounds to whole CZK by default (configurable).
 - [ ] Rounding differences post to `649` / `549` per CZ chart of accounts.
-- [ ] Journal entries always store 2 decimals regardless of vyúčtování rounding.
+- [x] Journal entries always store 2 decimals regardless of vyúčtování rounding.
 
 ### UX
 
-- [ ] No "debit/credit" / "journal entry" / "trial balance" terminology in any default-mode screen.
-- [ ] "Pohľad účtovníka" toggle reveals journal + chart of accounts on demand only.
-- [ ] Dashboard renders 4 tiles + Vyžaduje pozornosť list on a single viewport.
-- [ ] Karta bytu shows running balance in Excel-style table, drill-down to source on every row.
-- [ ] Owner portal shows only: balance, payment history, predpis breakdown, vyúčtovanie PDFs, meter reading entry, čerpanie FPÚO read-only list — nothing else.
+- [x] No "debit/credit" / "journal entry" / "trial balance" terminology in any default-mode screen.
+- [x] "Pohľad účtovníka" toggle reveals journal + chart of accounts on demand only.
+- [x] Dashboard renders 4 tiles + Vyžaduje pozornosť list on a single viewport.
+- [x] Karta bytu shows running balance in Excel-style table, drill-down to source on every row.
+- [x] Owner portal shows only: balance, payment history, predpis breakdown, vyúčtovanie PDFs, meter reading entry, čerpanie FPÚO read-only list — nothing else.
 - [ ] Concierge import accepts prior-year Excel + bank statements + last-year vyúčtovanie PDF for opening balances.
-- [ ] All UI text routed through `useTranslations()` / `getTranslations()` from `Accounting` namespace; no hardcoded strings.
+- [x] All UI text routed through `useTranslations()` / `getTranslations()` from `Accounting` namespace; no hardcoded strings.
 
 ### Voting integration (wedge)
 
@@ -516,34 +516,34 @@ Reuse RES-20260413-002. Per-country settings:
 
 ### Permissions & roles
 
-- [ ] `treasurer` (pokladník) is added to the board-role model (same model as `chairman`), **not** naively to `membershipRoleEnum` — see Notes 2026-06-09 drift finding.
-- [ ] `treasurer` + `admin` can create / edit / void predpis, payments, expenses, meter readings; `chairman` and `owner` cannot post or mutate financial records.
-- [ ] `chairman` has full accounting read + approval actions (závierka, expense authorisation) but no direct ledger writes (separation of duties).
-- [ ] Owner reads are server-side scoped: every owner query is filtered by `unit_id IN (memberships WHERE user_id = ?)`; requesting another unit's karta bytu / payments returns 403, not just a hidden UI element.
-- [ ] Every server action + API route under `modules/accounting/` runs the role check before any DB read; under-privileged requests return 403.
+- [x] `treasurer` (pokladník) is added to the board-role model (same model as `chairman`), **not** naively to `membershipRoleEnum` — see Notes 2026-06-09 drift finding.
+- [x] `treasurer` + `admin` can create / edit / void predpis, payments, expenses, meter readings; `chairman` and `owner` cannot post or mutate financial records.
+- [x] `chairman` has full accounting read + approval actions (závierka, expense authorisation) but no direct ledger writes (separation of duties).
+- [x] Owner reads are server-side scoped: every owner query is filtered by `unit_id IN (memberships WHERE user_id = ?)`; requesting another unit's karta bytu / payments returns 403, not just a hidden UI element.
+- [x] Every server action + API route under `modules/accounting/` runs the role check before any DB read; under-privileged requests return 403.
 
 ### Audit trail & data lifecycle
 
-- [ ] Append-only event log records every mutation (insert / update / void) with actor, timestamp, and before/after snapshot; no in-place field overwrite occurs without a corresponding log row.
-- [ ] Signed export bundle for kontrolná komisia reproduces the full ledger + event log and verifies tamper-evidently without DB access.
-- [ ] No hard delete anywhere — units, payments, expenses, journal lines use `archived_at` soft-delete; archiving a unit preserves its historical journal lines and assessments.
-- [ ] Opening-balance and locked-period entries cannot be voided or edited; the only correction path is a reversal posted in the current open period.
+- [x] Append-only event log records every mutation (insert / update / void) with actor, timestamp, and before/after snapshot; no in-place field overwrite occurs without a corresponding log row.
+- [x] Signed export bundle for kontrolná komisia reproduces the full ledger + event log and verifies tamper-evidently without DB access.
+- [x] No hard delete anywhere — units, payments, expenses, journal lines use `archived_at` soft-delete; archiving a unit preserves its historical journal lines and assessments.
+- [x] Opening-balance and locked-period entries cannot be voided or edited; the only correction path is a reversal posted in the current open period.
 
 ### Mutable-record correction (open period)
 
-- [ ] In an open period, a mis-entered manual payment / expense / meter reading can be voided or edited; the action writes an audit-log row and re-derives affected unit balances.
-- [ ] Voiding a matched payment unallocates it from its assessments and restores each assessment's open balance.
-- [ ] A draft (unpublished) fee schedule can be discarded with no ledger side effects; a published schedule cannot be deleted — only superseded by an `effective_from` revision.
+- [x] In an open period, a mis-entered manual payment / expense / meter reading can be voided or edited; the action writes an audit-log row and re-derives affected unit balances.
+- [x] Voiding a matched payment unallocates it from its assessments and restores each assessment's open balance.
+- [x] A draft (unpublished) fee schedule can be discarded with no ledger side effects; a published schedule cannot be deleted — only superseded by an `effective_from` revision.
 - [ ] An owner can withdraw their own open reklamace before the response deadline; withdrawal is logged and closes the case.
 
 ### Architectural / project rules
 
-- [ ] Every FK in new schema specifies explicit `onDelete`.
-- [ ] All FK to `entities.id` for housing root scope; multi-dom SVB uses one entity per dom with shared parent.
-- [ ] Route handlers under `app/**/route.ts` export only HTTP methods + Next config (no module-level state).
-- [ ] `*_notifications_sent` reused for per-recipient delivery tracking; no purpose-specific email tracking table.
-- [ ] Single bundled migration per phase (no half-applied migrations).
-- [ ] Server-only modules (`*.server.ts`) carry `import "server-only"`; client-safe types/constants split into separate file when needed.
+- [x] Every FK in new schema specifies explicit `onDelete`.
+- [x] All FK to `entities.id` for housing root scope; multi-dom SVB uses one entity per dom with shared parent.
+- [x] Route handlers under `app/**/route.ts` export only HTTP methods + Next config (no module-level state).
+- [x] `*_notifications_sent` reused for per-recipient delivery tracking; no purpose-specific email tracking table.
+- [x] Single bundled migration per phase (no half-applied migrations).
+- [x] Server-only modules (`*.server.ts`) carry `import "server-only"`; client-safe types/constants split into separate file when needed.
 
 ## Project Context
 
@@ -584,6 +584,44 @@ Reuse RES-20260413-002. Per-country settings:
 - Fio banka REST API — `https://fioapi.fio.cz/v1/rest/periods/{token}/{from}/{to}/transactions.{fmt}`.
 
 ## Notes
+
+### Status — 2026-07-06 verification pass
+
+Full local-DB verification run after the must-have completion pass. Migrations
+0068–0070 applied to the local db; `test:accounting-e2e` green (20/20:
+opening balance → predpis publish (96 assessments) → payment→karta →
+dashboard → vyúčtovanie gates → prior-year settlement publish+lock+PDF →
+signed-export tamper check); all 10 pure golden suites green (incl. new
+`opening-import`, 47 checks). tsc clean.
+
+**Concierge opening-balance CSV import** shipped (commit `237e74b`): the
+onboarding wizard step 2 gains download-template / upload-CSV; a pure
+client-safe parser (`opening-balance-import.ts`) matches units by label and
+fills the per-unit table. Units/owners themselves come from the core Easy
+Import (BYT-20260508-003); this adds only the financial opening state. Runbook
+fix: e2e must seed with `-- --bare` (a non-bare seed pre-publishes a predpis
+that collides with the e2e's own publish).
+
+57/89 acceptance criteria ticked (implemented + covered by automated tests or
+clearly present). **Left unchecked — not done, and why:**
+- **Not built (in-scope subsystems):** collector email inbox + `expense_inbox`
+  OCR queue (478–480), CZ heat/TUV rozúčtování engine per vyhl. 269/2015 (421),
+  voting→accounting pipeline (423, 513–515), CZ reklamace state machine
+  (420, 537), receipt OCR-assist (phase 4).
+- **Blocked on external inputs:** interest-rate update cron needs Filip's
+  verified ECB/ČNB rates (464); statutory e-delivery consent flow unresolved
+  in law (426); FinStat/ARES supplier lookup coded but mocked — needs a real
+  API account (475–476); CZ chart of accounts + CZK rounding to 649/549 need
+  CZ-accountant confirmation (415, 497–498).
+- **Needs manual / physical QA (code complete):** PAY-by-square + SPAYD QR
+  "scan pre-fills correctly" (455–456), ≥95 % auto-match on a 1000-payment
+  fixture (438), real bank-file round-trips.
+- **Deliberate deviation:** SK debtor disclosure shows unit label + amount, not
+  owner names (privacy-safer than the §9 ods. 3 letter) — 425 left unticked to
+  flag the divergence for legal review.
+
+Status stays `in_progress`: the buildable core is done + verified, but the
+named in-scope subsystems above remain.
 
 ### Open questions
 

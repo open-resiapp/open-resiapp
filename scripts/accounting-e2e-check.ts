@@ -7,7 +7,10 @@
  * demo DB (leaving a realistically populated dom to click through);
  * refuses any non-localhost DATABASE_URL.
  *
- * Run order:  pnpm demo:accounting  &&  pnpm test:accounting-e2e
+ * Run order:  pnpm demo:accounting -- --bare  &&  pnpm test:accounting-e2e
+ * (--bare: the check posts its OWN opening balance + predpis to exercise
+ *  those paths; a non-bare seed pre-publishes a predpis and the publish
+ *  step would then fail with "schedule already exists".)
  */
 import "dotenv/config";
 process.env.NEXTAUTH_SECRET ??= "e2e-demo-secret";
