@@ -712,6 +712,24 @@ audit found real gaps; ticked 457).
   485 (projection per-month drill-down), 486 (recurring-expense model),
   537 (reklamace withdraw — no reklamace feature at all).
 
+### Status — 2026-07-06 (end of third overnight run — SELF-SERVE UNBLOCK PACK)
+
+**76 IMPLEMENTED / 1 PARTIAL / 12 BLOCKED (89 total).** This run shipped 7
+previously-BLOCKED ACs that needed no signature/subscription: **508** (own
+vyúčtovanie-PDF opening-balance ingest), **478 (upload half) + 479** (expense
+collector inbox + invoice OCR + 2-click post), **426** (e-delivery consent +
+postal fallback), **425** (SK §9-ods-3 debtor-name toggle, 500 € gate), **417
+(metadata half)** (inter-okruh transfer return-due flag — NO ledger). 478 is
+PARTIAL (email inbound BLOCKED). Migrations 0076–0079. 4 new golden suites
+(vyúčtovanie-pdf, invoice-extract, e-delivery, debtor-disclosure); e2e +24
+checks; a 3-agent hardening review closed 5 confirmed findings.
+
+The 12 still-BLOCKED: 415/427/497/498 (CZ chart of accounts + CZK rounding —
+needs a CZ účtovník), 416 + 417-ledger (inter-okruh double-entry — dedicated
+account pair + §10 ods. 3 approval), 420/537 (CZ reklamace), 438 (≥95 % match
+— real bank data), 455 (standing-order QR phone QA), 475/476 (FinStat/ARES
+paid API — descoped), 480 (collector AV/allowlist), 478-email (SES/Postmark).
+
 ### Status — 2026-07-06 (end of second overnight run)
 
 **71 IMPLEMENTED / 18 open (89 total).** Every remaining open AC is BLOCKED on
