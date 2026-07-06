@@ -1580,6 +1580,8 @@
       "attentionUncategorized": "{count, plural, one {# nezaradená faktúra} few {# nezaradené faktúry} other {# nezaradených faktúr}}",
       "attentionOverdueInvoices": "{count, plural, one {# faktúra po splatnosti} few {# faktúry po splatnosti} other {# faktúr po splatnosti}}",
       "attentionOverdueUnits": "{count, plural, one {# byt s nedoplatkom} few {# byty s nedoplatkom} other {# bytov s nedoplatkom}}",
+      "attentionVyuctovanieDue": "Ročné vyúčtovanie za {year} — termín o {days} dní (do 31.5.)",
+      "attentionVyuctovanieOverdue": "Ročné vyúčtovanie za {year} po termíne — hrozí strata nároku na platbu za správu (§8a ods. 4)",
       "projectionTitle": "Predpokladaný vývoj hotovosti (6 mesiacov)",
       "projectionHint": "Príjmy z predpisu × historická úspešnosť výberu {rate} % mínus priemerné mesačné výdavky. Iba odhad — nič sa neúčtuje.",
       "projectionEstimatedNote": "* mesiac bez publikovaného predpisu — odhad podľa posledného známeho mesiaca",

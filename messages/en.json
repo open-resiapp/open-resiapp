@@ -1580,6 +1580,8 @@
       "attentionUncategorized": "{count, plural, one {# uncategorized invoice} other {# uncategorized invoices}}",
       "attentionOverdueInvoices": "{count, plural, one {# invoice past due} other {# invoices past due}}",
       "attentionOverdueUnits": "{count, plural, one {# unit in arrears} other {# units in arrears}}",
+      "attentionVyuctovanieDue": "Annual settlement for {year} — due in {days} days",
+      "attentionVyuctovanieOverdue": "Annual settlement for {year} overdue — risk of losing the management-fee claim (§8a(4))",
       "projectionTitle": "Projected cash (6 months)",
       "projectionHint": "Schedule inflow × historical collection rate {rate} % minus average monthly expenses. Estimate only — nothing is booked.",
       "projectionEstimatedNote": "* month without a published schedule — extrapolated from the last known month",

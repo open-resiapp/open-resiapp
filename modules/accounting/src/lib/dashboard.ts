@@ -1,9 +1,10 @@
 import "server-only";
 
-import { and, eq, inArray, isNull, sql } from "drizzle-orm";
+import { and, desc, eq, inArray, isNull, lt, notInArray, sql } from "drizzle-orm";
 import { db } from "@/db";
 import {
   accounts,
+  accountingPeriods,
   expenses,
   journalEntries,
   journalLines,
@@ -12,6 +13,7 @@ import {
 import { ACCOUNT_CODES } from "../seeds/coa-sk";
 import { listDomUnits } from "./dom-units";
 import { listUnitBalances } from "./karta-bytu";
+import { vyuctovanieDeadline, type VyuctovanieDeadline } from "./deadlines";
 
 // Dashboard tiles (spec §Dashboard, Phase 1: 4 tiles). Every number is
 // derived from journal postings at read time — never a stored balance
@@ -26,6 +28,11 @@ export interface AttentionItems {
   uncategorizedExpenses: number;
   /** Unpaid, non-voided expenses past their due date. */
   overdueInvoices: number;
+  /**
+   * The nearest unsettled elapsed year whose statutory vyúčtovanie deadline
+   * is within 30 days or already past (AC 418/419); null when nothing is due.
+   */
+  vyuctovanieDeadline: VyuctovanieDeadline | null;
 }
 
 export interface DashboardTiles {
@@ -149,11 +156,33 @@ export async function getDashboardTiles(
     }
   }
 
+  // Nearest elapsed year still unsettled (period open/reconciling) → drives
+  // the statutory vyúčtovanie-deadline warning (AC 418/419).
+  const currentYear = new Date().getUTCFullYear();
+  const [unsettled] = await db
+    .select({ year: accountingPeriods.year })
+    .from(accountingPeriods)
+    .where(
+      and(
+        eq(accountingPeriods.entityId, entityId),
+        lt(accountingPeriods.year, currentYear),
+        notInArray(accountingPeriods.status, ["published", "closed"])
+      )
+    )
+    .orderBy(desc(accountingPeriods.year))
+    .limit(1);
+  let deadline: VyuctovanieDeadline | null = null;
+  if (unsettled) {
+    const d = vyuctovanieDeadline(country, unsettled.year, new Date());
+    if (d.alertActive) deadline = d;
+  }
+
   return {
     attention: {
       unmatchedBankLines,
       uncategorizedExpenses: expenseCounts.uncategorized,
       overdueInvoices: expenseCounts.overdue,
+      vyuctovanieDeadline: deadline,
     },
     openingPosted: !!opening,
     pokladnicaCents: drMinusCr(ACCOUNT_CODES.POKLADNICA),

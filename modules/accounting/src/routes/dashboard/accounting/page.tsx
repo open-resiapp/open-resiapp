@@ -30,6 +30,12 @@ interface Tiles {
     unmatchedBankLines: number;
     uncategorizedExpenses: number;
     overdueInvoices: number;
+    vyuctovanieDeadline: {
+      year: number;
+      deadline: string;
+      daysUntil: number;
+      sanctionActive: boolean;
+    } | null;
   };
   openingPosted: boolean;
   pokladnicaCents: number;
@@ -290,12 +296,34 @@ export default function AccountingHomePage() {
       {(tiles.attention.unmatchedBankLines > 0 ||
         tiles.attention.uncategorizedExpenses > 0 ||
         tiles.attention.overdueInvoices > 0 ||
+        tiles.attention.vyuctovanieDeadline !== null ||
         tiles.nedoplatky.count > 0) && (
         <div className="mb-8 bg-white dark:bg-gray-900 border border-amber-300 dark:border-amber-800 rounded-lg p-5">
           <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-3">
             ⚠️ {t("attentionTitle")}
           </h2>
           <ul className="space-y-2 text-sm">
+            {tiles.attention.vyuctovanieDeadline && (
+              <li>
+                <Link
+                  href="/accounting/vyuctovanie"
+                  className={
+                    tiles.attention.vyuctovanieDeadline.sanctionActive
+                      ? "text-red-600 dark:text-red-400 font-medium hover:underline"
+                      : "text-amber-700 dark:text-amber-400 hover:underline"
+                  }
+                >
+                  {tiles.attention.vyuctovanieDeadline.sanctionActive
+                    ? t("attentionVyuctovanieOverdue", {
+                        year: tiles.attention.vyuctovanieDeadline.year,
+                      })
+                    : t("attentionVyuctovanieDue", {
+                        year: tiles.attention.vyuctovanieDeadline.year,
+                        days: tiles.attention.vyuctovanieDeadline.daysUntil,
+                      })}
+                </Link>
+              </li>
+            )}
             {tiles.attention.unmatchedBankLines > 0 && (
               <li>
                 <Link
