@@ -1,0 +1,22 @@
+{
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "paths": {
+      "@/*": [
+        "../src/*"
+      ],
+      "@open-housing/sdk": [
+        "../src/lib/modules/sdk/index.ts"
+      ],
+      "@modules/*": [
+        "../modules/*"
+      ],
+      "server-only": [
+        "./_shims/server-only.ts"
+      ],
+      "bysquare/pay": [
+        "./_shims/bysquare-pay.ts"
+      ]
+    }
+  }
+}

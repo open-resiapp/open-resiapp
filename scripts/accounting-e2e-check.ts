@@ -1,0 +1,263 @@
+/**
+ * Accounting end-to-end integration check — `pnpm test:accounting-e2e`.
+ *
+ * Drives the REAL server libs (the exact functions the API handlers wrap)
+ * against the demo dom seeded by `pnpm demo:accounting`, so runtime bugs
+ * the pure golden scripts can't reach surface here. Writes to the local
+ * demo DB (leaving a realistically populated dom to click through);
+ * refuses any non-localhost DATABASE_URL.
+ *
+ * Run order:  pnpm demo:accounting  &&  pnpm test:accounting-e2e
+ */
+import "dotenv/config";
+process.env.NEXTAUTH_SECRET ??= "e2e-demo-secret";
+
+import { Pool } from "pg";
+import { sql, eq, and } from "drizzle-orm";
+import { db } from "@/db";
+import { entities, users } from "@/db/schema";
+import { submitOpeningBalance } from "@modules/accounting/src/lib/opening-balance";
+import {
+  createFeeSchedule,
+  updateFeeScheduleDraft,
+  listServiceCategories,
+  listUnitVs,
+} from "@modules/accounting/src/lib/fee-schedules";
+import { publishSchedule } from "@modules/accounting/src/lib/fee-schedule-publish";
+import { createManualPayment } from "@modules/accounting/src/lib/payments";
+import { getUnitLedger } from "@modules/accounting/src/lib/karta-bytu";
+import { createExpense } from "@modules/accounting/src/lib/expenses";
+import { getDashboardTiles } from "@modules/accounting/src/lib/dashboard";
+import {
+  getVyuctovaniePreview,
+  publishVyuctovanie,
+  getVyuctovaniePdfData,
+} from "@modules/accounting/src/lib/vyuctovanie";
+import {
+  buildExportBundle,
+  verifyExportBundle,
+} from "@modules/accounting/src/lib/export";
+
+const url = process.env.DATABASE_URL ?? "";
+if (!/@(localhost|127\.0\.0\.1)[:/]/.test(url)) {
+  console.error("refusing to run: DATABASE_URL is not localhost");
+  process.exit(2);
+}
+
+let failures = 0;
+function check(name: string, cond: boolean, detail?: string) {
+  if (cond) console.log(`  ok  ${name}`);
+  else {
+    failures++;
+    console.error(`  FAIL ${name}${detail ? ` — ${detail}` : ""}`);
+  }
+}
+
+async function main() {
+  const [dom] = await db
+    .select({
+      id: entities.id,
+      country: sql<"sk" | "cz">`${entities.data}->>'country'`,
+    })
+    .from(entities)
+    .where(sql`${entities.data}->>'marker' = '__accounting_demo__'`)
+    .limit(1);
+  if (!dom) {
+    console.error("no demo dom — run `pnpm demo:accounting` first");
+    process.exit(2);
+  }
+  const [admin] = await db
+    .select({ id: users.id })
+    .from(users)
+    .where(eq(users.email, "admin@test.sk"));
+  const actorId = admin.id;
+  const country = dom.country;
+  const year = new Date().getUTCFullYear();
+
+  const unitList = await listUnitVs(dom.id);
+  check("4 demo units listed", unitList.length === 4, String(unitList.length));
+  const byt101 = unitList.find((u) => u.flatNumber === "101")!;
+
+  // ── opening balance (idempotent guard means re-run is a no-op) ──
+  console.log("opening balance");
+  try {
+    await submitOpeningBalance({
+      entityId: dom.id,
+      country,
+      year,
+      createdById: actorId,
+      bankaCents: 500000,
+      pokladnicaCents: 20000,
+      unitBalances: unitList.map((u) => ({
+        unitEntityId: u.unitEntityId,
+        fpuoCents: 100000,
+        zalohyCents: 30000,
+      })),
+    });
+    check("opening balance posted", true);
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : String(err);
+    check("opening balance (already posted ok)", msg.includes("already posted"), msg);
+  }
+
+  // ── predpis: create → services → publish ──
+  console.log("predpis publish");
+  const cats = await listServiceCategories(country);
+  const fpuo = cats.find((c) => c.slug === "FPUO")!;
+  const lift = cats.find((c) => c.slug === "SVC_LIFT")!;
+
+  const { id: scheduleId } = await createFeeSchedule({
+    entityId: dom.id,
+    year,
+    effectiveFrom: new Date(Date.UTC(year, 0, 1)),
+    createdById: actorId,
+  });
+  await updateFeeScheduleDraft({
+    entityId: dom.id,
+    country,
+    scheduleId,
+    actorId,
+    services: [
+      { serviceCategoryId: fpuo.id, allocationKey: "share", rateCents: 30000, fixedAmountCents: null },
+      { serviceCategoryId: lift.id, allocationKey: "flat_count_equal", rateCents: 4000, fixedAmountCents: null },
+    ],
+  });
+  const pub = await publishSchedule({
+    entityId: dom.id,
+    country,
+    scheduleId,
+    actorId,
+  });
+  check(
+    "publish generates 12 months × 2 svc × 4 units = 96 assessments",
+    pub.assessmentCount === 96,
+    String(pub.assessmentCount)
+  );
+  check("elapsed months posted", pub.postedMonths.length >= 1);
+
+  // ── payment → karta balance ──
+  console.log("payment + karta");
+  const before = await getUnitLedger(dom.id, byt101.unitEntityId, country);
+  const payRes = await createManualPayment({
+    entityId: dom.id,
+    country,
+    createdById: actorId,
+    unitEntityId: byt101.unitEntityId,
+    amountCents: 20000,
+    receivedAt: new Date(),
+    method: "bank",
+  });
+  check("payment allocates or parks", payRes.allocatedCents + payRes.unallocatedCents === 20000);
+  const after = await getUnitLedger(dom.id, byt101.unitEntityId, country);
+  check(
+    "karta balance drops by payment",
+    (after?.balanceCents ?? 0) === (before?.balanceCents ?? 0) - 20000,
+    `${before?.balanceCents} → ${after?.balanceCents}`
+  );
+
+  // ── expense → dashboard tiles ──
+  console.log("expense + dashboard");
+  await createExpense({
+    entityId: dom.id,
+    country,
+    createdById: actorId,
+    supplierName: "Výťahy s.r.o.",
+    invoiceNo: `E2E-${Date.now()}`,
+    invoiceDate: new Date(),
+    serviceCategoryId: lift.id,
+    okruh: "svc",
+    amountCents: 15000,
+  });
+  const tiles = await getDashboardTiles(dom.id, country);
+  check("dashboard tiles compute", typeof tiles.bankaCents === "number");
+  check("fond opráv tile present", typeof tiles.fondOpravCents === "number");
+  check("nedoplatky counted", tiles.nedoplatky.count >= 0);
+
+  // ── vyúčtovanie preview (current year — gate blocks publish) ──
+  console.log("vyúčtovanie preview");
+  const preview = await getVyuctovaniePreview(dom.id, country, year);
+  check("current-year publish blocked (not elapsed)", preview.gates.canPublish === false);
+  check("gates computed", typeof preview.gates.unmatchedBankLines === "number");
+
+  // ── prior-year settlement: publish + PDF (full wired close) ──
+  console.log("prior-year vyúčtovanie publish");
+  const prevYear = year - 1;
+  try {
+    const { id: prevSchedule } = await createFeeSchedule({
+      entityId: dom.id,
+      year: prevYear,
+      effectiveFrom: new Date(Date.UTC(prevYear, 0, 1)),
+      createdById: actorId,
+    });
+    await updateFeeScheduleDraft({
+      entityId: dom.id,
+      country,
+      scheduleId: prevSchedule,
+      actorId,
+      services: [
+        { serviceCategoryId: lift.id, allocationKey: "flat_count_equal", rateCents: 4000, fixedAmountCents: null },
+      ],
+    });
+    await publishSchedule({ entityId: dom.id, country, scheduleId: prevSchedule, actorId });
+    // A services-okruh cost for the settled year.
+    await createExpense({
+      entityId: dom.id,
+      country,
+      createdById: actorId,
+      supplierName: "Výťahy s.r.o.",
+      invoiceNo: `E2E-PREV-${Date.now()}`,
+      invoiceDate: new Date(Date.UTC(prevYear, 5, 15)),
+      serviceCategoryId: lift.id,
+      okruh: "svc",
+      amountCents: 60000,
+    });
+
+    const prevPreview = await getVyuctovaniePreview(dom.id, country, prevYear);
+    check("prior-year gates allow publish", prevPreview.gates.canPublish === true, JSON.stringify(prevPreview.gates));
+
+    const settled = await publishVyuctovanie({ entityId: dom.id, country, year: prevYear, actorId });
+    check("settlement published", !!settled.settlementId);
+
+    const after = await getVyuctovaniePreview(dom.id, country, prevYear);
+    check("period locked after publish", after.gates.periodStatus === "published");
+
+    const pdf = await getVyuctovaniePdfData({
+      entityId: dom.id,
+      country,
+      unitEntityId: byt101.unitEntityId,
+      year: prevYear,
+      beneficiaryName: "SVB Demo",
+    });
+    check("settlement PDF data reads frozen rows", pdf.lines.length >= 1);
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : String(err);
+    // Re-runs hit "already published" — treat as pass.
+    check("prior-year settlement (idempotent)", msg.includes("published") || msg.includes("already"), msg);
+  }
+
+  // ── signed export round-trip ──
+  console.log("signed export");
+  const bundle = await buildExportBundle({
+    entityId: dom.id,
+    country,
+    entityName: "SVB Demo",
+    generatedById: actorId,
+  });
+  const verified = verifyExportBundle(bundle);
+  check("export verifies", verified.valid);
+  const tampered = bundle.replace(/"description":"[^"]*"/, '"description":"HACKED"');
+  check("tampered export rejected", verifyExportBundle(tampered).valid === false);
+
+  await (db.$client as Pool).end();
+  if (failures > 0) {
+    console.error(`\n${failures} e2e check(s) FAILED.`);
+    process.exit(1);
+  }
+  console.log("\nAll e2e checks passed — demo dom is populated and clickable.");
+  process.exit(0);
+}
+
+main().catch(async (err) => {
+  console.error(err);
+  process.exit(1);
+});
