@@ -1622,7 +1622,9 @@
       "navDebtors": "Seznam dlužníků",
       "navDebtorsHint": "Nedoplatky schválené ke zveřejnění",
       "navInbox": "Sběrná schránka faktur",
-      "navInboxHint": "Nahrajte PDF faktury — systém z nich přečte údaje"
+      "navInboxHint": "Nahrajte PDF faktury — systém z nich přečte údaje",
+      "navTransfers": "Přesuny mezi okruhy",
+      "navTransfersHint": "Návratné půjčky mezi fondy (§10 ods. 3) — evidence"
     },
     "settings": {
       "title": "Nastavení účetnictví",
@@ -2003,6 +2005,39 @@
       "posting": "Účtuje se…",
       "postSave": "Zaúčtovat výdaj",
       "attachmentNote": "Nahraná faktura se přiloží jako doklad k výdaji."
+    },
+    "transfers": {
+      "backToAccounting": "Zpět na účetnictví",
+      "title": "Přesuny mezi okruhy",
+      "subtitle": "Evidence dočasného krytí mezi fondy (např. fond oprav → služby, §10 ods. 3) s příznakem návratné půjčky.",
+      "metadataBanner": "Pouze evidence — tento záznam NEúčtuje žádný účetní zápis a nemění zůstatky fondů. Účetní strana (meziokruhové účty) čeká na potvrzení účetního (AC 416/417).",
+      "record": "Zaevidovat přesun",
+      "fromOkruh": "Z okruhu",
+      "toOkruh": "Do okruhu",
+      "amount": "Částka",
+      "date": "Datum",
+      "note": "Poznámka",
+      "returnDueLabel": "Návratná půjčka (musí se vrátit)",
+      "returnDueNote": "Poznámka k vrácení",
+      "saving": "Ukládá se…",
+      "save": "Uložit",
+      "sameOkruhWarning": "Okruhy se musí lišit.",
+      "actionError": "Akce selhala",
+      "filterOpenReturnDue": "Zobrazit jen otevřené návratné půjčky",
+      "empty": "Zatím žádné přesuny.",
+      "colDate": "Datum",
+      "colDirection": "Směr",
+      "colAmount": "Částka",
+      "colStatus": "Stav",
+      "returnedLabel": "Vráceno",
+      "returnDueChip": "návratná půjčka",
+      "markReturned": "Označit jako vrácené",
+      "unflag": "Zrušit příznak",
+      "flag": "Označit jako návratnou",
+      "loadError": "Nepodařilo se načíst.",
+      "okruh_fpuo": "Fond oprav",
+      "okruh_svc": "Služby",
+      "okruh_mgmt": "Správa"
     }
   }
 }

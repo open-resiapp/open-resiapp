@@ -92,6 +92,7 @@ async function main() {
       // restrict FK to entities (usedExpenseId → expenses is set null). The
       // expense inbox holds restrict FKs to entities AND expenses
       // (posted_expense_id), so it must go before expenses too.
+      await w(`delete from mod_accounting_okruh_transfer where entity_id = $1`);
       await w(`delete from mod_accounting_expense_inbox where entity_id = $1`);
       await w(`delete from mod_accounting_expense_attachments where entity_id = $1`);
       await w(`delete from mod_accounting_expense_authorisations where entity_id = $1`);

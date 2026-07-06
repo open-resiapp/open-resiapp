@@ -518,6 +518,7 @@ export default function AccountingHomePage() {
             ["/accounting/inspect", "🔍", "navInspect", "navInspectHint"],
             ["/accounting/revisions", "🔧", "navRevisions", "navRevisionsHint"],
             ["/accounting/debtors", "📋", "navDebtors", "navDebtorsHint"],
+            ["/accounting/transfers", "🔁", "navTransfers", "navTransfersHint"],
             ["/accounting/journal", "📚", "navJournal", "navJournalHint"],
             ["/accounting/settings", "⚙️", "navSettings", "navSettingsHint"],
           ] as const

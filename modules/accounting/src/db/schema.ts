@@ -1101,3 +1101,48 @@ export const expenseInbox = pgTable(
     ),
   })
 );
+
+// ── Inter-okruh transfer log (AC 417, METADATA ONLY) ───
+
+// A record of a transient cover between funds — e.g. FPÚO → služby to bridge
+// a služby shortfall (SK §10 ods. 3) — flagged as a "návratná pôžička" that
+// must be returned to the source fund. THIS IS METADATA ONLY: it posts NO
+// journal entry and moves NO account balance. The correct double-entry needs
+// a dedicated inter-okruh receivable/payable account pair the SK COA lacks
+// (needs an účtovník's confirmation + the unresolved §10 ods. 3 approval
+// question) — that ledger side stays BLOCKED under AC 416/417. This table
+// gives the treasurer a visible record + a return-due reminder in the
+// meantime. `open` return-due = returnDueFlag AND returnedAt IS NULL.
+export const okruhTransfers = pgTable(
+  "mod_accounting_okruh_transfer",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    entityId: uuid("entity_id")
+      .references(() => entities.id, { onDelete: "restrict" })
+      .notNull(),
+    fromOkruh: okruhEnum("from_okruh").notNull(),
+    toOkruh: okruhEnum("to_okruh").notNull(),
+    amountCents: integer("amount_cents").notNull(),
+    transferDate: timestamp("transfer_date").notNull(),
+    note: text("note"),
+    // Marks the transfer as a návratná pôžička (must be returned).
+    returnDueFlag: boolean("return_due_flag").notNull().default(false),
+    returnDueNote: text("return_due_note"),
+    // Set when the loan has been returned to the source fund (closes it).
+    returnedAt: timestamp("returned_at"),
+    createdById: uuid("created_by_id")
+      .references(() => users.id, { onDelete: "restrict" })
+      .notNull(),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+  },
+  (table) => ({
+    entityIdx: index("mod_accounting_okruh_transfer_entity_idx").on(
+      table.entityId,
+      table.returnDueFlag
+    ),
+    amountCheck: check(
+      "mod_accounting_okruh_transfer_amount_check",
+      sql`${table.amountCents} > 0`
+    ),
+  })
+);

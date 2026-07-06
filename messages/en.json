@@ -1622,7 +1622,9 @@
       "navDebtors": "Debtor list",
       "navDebtorsHint": "Arrears approved for disclosure",
       "navInbox": "Invoice inbox",
-      "navInboxHint": "Upload invoice PDFs — fields are read for you"
+      "navInboxHint": "Upload invoice PDFs — fields are read for you",
+      "navTransfers": "Inter-fund transfers",
+      "navTransfersHint": "Return-due loans between funds (§10 ods. 3) — record"
     },
     "settings": {
       "title": "Accounting settings",
@@ -2003,6 +2005,39 @@
       "posting": "Posting…",
       "postSave": "Post expense",
       "attachmentNote": "The uploaded invoice is attached to the expense as its scan."
+    },
+    "transfers": {
+      "backToAccounting": "Back to accounting",
+      "title": "Inter-fund transfers",
+      "subtitle": "Record of transient cover between funds (e.g. repair fund → services, §10 ods. 3) with a return-due flag.",
+      "metadataBanner": "Record only — this posts NO accounting entry and does not change fund balances. The ledger side (inter-fund accounts) awaits an accountant's confirmation (AC 416/417).",
+      "record": "Record a transfer",
+      "fromOkruh": "From fund",
+      "toOkruh": "To fund",
+      "amount": "Amount",
+      "date": "Date",
+      "note": "Note",
+      "returnDueLabel": "Return-due loan (must be repaid)",
+      "returnDueNote": "Return note",
+      "saving": "Saving…",
+      "save": "Save",
+      "sameOkruhWarning": "The funds must differ.",
+      "actionError": "Action failed",
+      "filterOpenReturnDue": "Show only open return-due loans",
+      "empty": "No transfers yet.",
+      "colDate": "Date",
+      "colDirection": "Direction",
+      "colAmount": "Amount",
+      "colStatus": "Status",
+      "returnedLabel": "Returned",
+      "returnDueChip": "return-due loan",
+      "markReturned": "Mark returned",
+      "unflag": "Clear flag",
+      "flag": "Flag return-due",
+      "loadError": "Could not load.",
+      "okruh_fpuo": "Repair fund",
+      "okruh_svc": "Services",
+      "okruh_mgmt": "Management"
     }
   }
 }

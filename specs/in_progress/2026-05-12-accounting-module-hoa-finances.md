@@ -414,7 +414,7 @@ Reuse RES-20260413-002. Per-country settings:
 - [x] SK chart of accounts loaded from Opatrenie MF SR č. MF/24342/2007-74.
 - [ ] CZ chart of accounts loaded per vyhláška 504/2002 Sb.
 - [ ] Three okruhy (FPÚO, services, MGMT_CZ) tracked separately; transfers between flagged.
-- [ ] FPÚO → služby transient cover (SK §10 ods. 3) records a return-due flag visible to treasurer.
+- [x] FPÚO → služby transient cover (SK §10 ods. 3) records a return-due flag visible to treasurer. (METADATA half — flag + return-due list; the double-entry ledger side stays BLOCKED under AC 416/417, see Notes.)
 - [x] Ročné vyúčtovanie generates by SK 31.05 deadline; system surfaces sanction (§8a ods. 4) 30 days prior.
 - [x] CZ vyúčtování generates within 4 months of period end per §7 zák. 67/2013.
 - [ ] CZ reklamace state machine respects 30+30 day windows per §8 zák. 67/2013.
@@ -820,6 +820,26 @@ hard-coded §9 ods. 3, NOT the configurable arrears-list threshold). Below
   toggle-off strips all names; the demo's deliberately-unowned byt 104 shows
   no name even when ≥ 500 € (nobody to name). Supersedes the earlier
   "deliberate unit+amount-only" divergence — the statutory path is now built.
+
+### Notes — AC 417 inter-okruh transfer return-due flag (2026-07-06, METADATA HALF)
+
+This is the METADATA half of AC 417 only. New table
+`mod_accounting_okruh_transfer` (migration 0079) logs a transient cover
+between funds (from/to okruh, amount, date, note) with `returnDueFlag` +
+`returnDueNote` + `returnedAt`. Treasurer UI at `/accounting/transfers`
+(nav card): record a transfer, a "návratná pôžička" chip on flagged rows,
+and a filter for OPEN return-due entries (returnDueFlag AND returnedAt IS
+NULL). Flag / unflag / mark-returned all drop an entry off the open list.
+- **NO journal entry, NO account movement** — a prominent banner says so.
+  The correct FPÚO→služby double-entry needs a DEDICATED inter-okruh
+  receivable/payable account pair the SK COA lacks (reusing 378/379 would
+  corrupt the karta/dashboard derivations that read those accounts), plus an
+  účtovník's confirmation, plus the unresolved §10 ods. 3 approval question.
+  **That ledger side stays BLOCKED under AC 416/417** — same class as
+  415/497/498. This slice gives the treasurer a visible record + repayment
+  reminder in the meantime.
+- e2e: flag → in open list; unflag → off; mark-returned → off; same-okruh
+  rejected. demo-seed wipe extended (restrict FK to entities).
 
 ### Open questions
 

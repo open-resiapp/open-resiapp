@@ -1622,7 +1622,9 @@
       "navDebtors": "Zoznam dlžníkov",
       "navDebtorsHint": "Nedoplatky schválené na zverejnenie",
       "navInbox": "Zberná schránka faktúr",
-      "navInboxHint": "Nahrajte PDF faktúry — systém z nich prečíta údaje"
+      "navInboxHint": "Nahrajte PDF faktúry — systém z nich prečíta údaje",
+      "navTransfers": "Presuny medzi okruhmi",
+      "navTransfersHint": "Návratné pôžičky medzi fondmi (§10 ods. 3) — evidencia"
     },
     "settings": {
       "title": "Nastavenia účtovníctva",
@@ -2003,6 +2005,39 @@
       "posting": "Účtuje sa…",
       "postSave": "Zaúčtovať výdavok",
       "attachmentNote": "Nahratá faktúra sa priloží ako doklad k výdavku."
+    },
+    "transfers": {
+      "backToAccounting": "Späť na účtovníctvo",
+      "title": "Presuny medzi okruhmi",
+      "subtitle": "Evidencia dočasného krytia medzi fondmi (napr. fond opráv → služby, §10 ods. 3) s príznakom návratnej pôžičky.",
+      "metadataBanner": "Iba evidencia — tento záznam NEúčtuje žiadny účtovný zápis a nemení zostatky fondov. Účtovná strana (medziokruhové účty) čaká na potvrdenie účtovníka (AC 416/417).",
+      "record": "Zaevidovať presun",
+      "fromOkruh": "Z okruhu",
+      "toOkruh": "Do okruhu",
+      "amount": "Suma",
+      "date": "Dátum",
+      "note": "Poznámka",
+      "returnDueLabel": "Návratná pôžička (musí sa vrátiť)",
+      "returnDueNote": "Poznámka k vráteniu",
+      "saving": "Ukladá sa…",
+      "save": "Uložiť",
+      "sameOkruhWarning": "Okruhy sa musia líšiť.",
+      "actionError": "Akcia zlyhala",
+      "filterOpenReturnDue": "Zobraziť len otvorené návratné pôžičky",
+      "empty": "Zatiaľ žiadne presuny.",
+      "colDate": "Dátum",
+      "colDirection": "Smer",
+      "colAmount": "Suma",
+      "colStatus": "Stav",
+      "returnedLabel": "Vrátené",
+      "returnDueChip": "návratná pôžička",
+      "markReturned": "Označiť ako vrátené",
+      "unflag": "Zrušiť príznak",
+      "flag": "Označiť ako návratnú",
+      "loadError": "Nepodarilo sa načítať.",
+      "okruh_fpuo": "Fond opráv",
+      "okruh_svc": "Služby",
+      "okruh_mgmt": "Správa"
     }
   }
 }

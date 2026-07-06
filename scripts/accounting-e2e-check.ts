@@ -59,6 +59,12 @@ import {
   updateAccountingSettings,
 } from "@modules/accounting/src/lib/settings";
 import { getDebtorList } from "@modules/accounting/src/lib/debtors";
+import {
+  createOkruhTransfer,
+  listOkruhTransfers,
+  setTransferReturnDue,
+  markTransferReturned,
+} from "@modules/accounting/src/lib/okruh-transfers";
 import { SK_DEBTOR_NAME_THRESHOLD_CENTS } from "@modules/accounting/src/lib/debtor-disclosure";
 import {
   uploadAttachment,
@@ -534,6 +540,50 @@ async function main() {
     });
     const noNames = await getDebtorList(dom.id, country);
     check("toggle off strips all names", noNames.debtors.every((d) => d.ownerNames === null));
+  }
+
+  // ── inter-okruh transfer return-due flag (AC 417, metadata only) ──
+  console.log("inter-okruh transfer return-due flag");
+  {
+    const { id: transferId } = await createOkruhTransfer({
+      entityId: dom.id,
+      actorId,
+      fromOkruh: "fpuo",
+      toOkruh: "svc",
+      amountCents: 25000,
+      transferDate: new Date(),
+      note: "e2e transient cover",
+      returnDueFlag: true,
+      returnDueNote: "vrátiť do konca roka",
+    });
+    const openAfterCreate = await listOkruhTransfers(dom.id, true);
+    check("flagged transfer is in the open return-due list", openAfterCreate.some((r) => r.id === transferId));
+
+    // Unflag → drops off the open list.
+    await setTransferReturnDue({ entityId: dom.id, id: transferId, actorId, returnDueFlag: false, returnDueNote: null });
+    const openAfterUnflag = await listOkruhTransfers(dom.id, true);
+    check("unflagged transfer drops off the open list", !openAfterUnflag.some((r) => r.id === transferId));
+    const all = await listOkruhTransfers(dom.id, false);
+    check("transfer still listed (metadata retained)", all.some((r) => r.id === transferId && !r.returnDueFlag));
+
+    // Re-flag then mark returned → also drops off open (returnedAt set).
+    await setTransferReturnDue({ entityId: dom.id, id: transferId, actorId, returnDueFlag: true, returnDueNote: "re-flag" });
+    await markTransferReturned({ entityId: dom.id, id: transferId, actorId });
+    const openAfterReturn = await listOkruhTransfers(dom.id, true);
+    check("returned loan drops off the open list", !openAfterReturn.some((r) => r.id === transferId));
+
+    // Same-okruh transfer is rejected.
+    let sameOkruhRejected = false;
+    try {
+      await createOkruhTransfer({
+        entityId: dom.id, actorId, fromOkruh: "svc", toOkruh: "svc",
+        amountCents: 100, transferDate: new Date(), note: null,
+        returnDueFlag: false, returnDueNote: null,
+      });
+    } catch {
+      sameOkruhRejected = true;
+    }
+    check("same-okruh transfer rejected", sameOkruhRejected);
   }
 
   // ── účtovná závierka approval (AC 423/521) ──
