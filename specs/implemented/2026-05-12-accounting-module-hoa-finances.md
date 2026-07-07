@@ -1,12 +1,12 @@
 ---
 spec_id: BYT-20260512-002
 title: "Accounting module for SVB chairman/treasurer to track HOA finances"
-status: in_progress
+status: implemented
 created: 2026-05-12
-updated: 2026-07-06
+updated: 2026-07-07
 author: byt-app
 owner: byt-app
-last_verified: 2026-07-06
+last_verified: 2026-07-07
 project_type: node
 depends_on: []
 related_handoffs: []
@@ -584,6 +584,22 @@ Reuse RES-20260413-002. Per-country settings:
 - Fio banka REST API — `https://fioapi.fio.cz/v1/rest/periods/{token}/{from}/{to}/transactions.{fmt}`.
 
 ## Notes
+
+### Promoted to `implemented` — 2026-07-07 (SK scope)
+
+Marked complete for the **SK scope**: 76/89 ACs implemented + verified on the live
+DB (17 golden suites + e2e green, tsc + build clean). The 12 remaining ACs + 1
+partial are all **externally blocked**, tracked as follow-up — promotion does not
+claim them done:
+- CZ chart of accounts + everything on it (415/427/497/498/420/537) — needs a CZ účtovník.
+- Inter-okruh ledger double-entry (416 + 417 ledger half) — needs the SK COA account pair + §10 ods. 3 legal answer.
+- Real-data / hardware ACs (438 ≥95 % match, 455 standing-order QR scan) — real bank files + phone QA.
+- Infra / paid (478-email + 480 collector AV, 475/476 FinStat/ARES descoped).
+- Legal-copy sign-off on all statutory PDFs — release blocker, Filip/lawyer.
+
+Retro captured at `docs/2026-07-07-retro-accounting-module.md` (kept out of
+`specs/` by owner request). When the blocked ACs unblock, reopen a follow-up
+spec rather than reverting this one to `in_progress`.
 
 ### Status — 2026-07-06 verification pass
 
