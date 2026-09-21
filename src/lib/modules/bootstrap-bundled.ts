@@ -36,6 +36,10 @@ const BUNDLED_MODULES: ReadonlyArray<BundledModuleConfig> = [
     name: "voting",
     autoEnableKinds: ["community", "building"],
   },
+  {
+    name: "accounting",
+    autoEnableKinds: ["community", "building"],
+  },
 ];
 
 const BUNDLED_NAMES = new Set(BUNDLED_MODULES.map((m) => m.name));
