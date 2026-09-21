@@ -61,7 +61,9 @@ RETENTION="${PREMIGRATION_BACKUP_RETENTION:-5}"
 if [ "${DISABLE_PREMIGRATION_BACKUP:-0}" = "1" ]; then
   echo "Pre-migration backup disabled via DISABLE_PREMIGRATION_BACKUP=1."
 else
-  PENDING=$(node -e "
+  # Prints "<pending>:<fresh>" — fresh=1 when the migrations table is absent,
+  # i.e. a brand-new database that has never been migrated.
+  MIGRATION_STATE=$(node -e "
     const { Client } = require('pg');
     const fs = require('fs');
     const journal = JSON.parse(fs.readFileSync('./drizzle/meta/_journal.json', 'utf8'));
@@ -70,18 +72,25 @@ else
       .then(async () => {
         try {
           const r = await c.query(\"SELECT COUNT(*)::int AS c FROM drizzle.__drizzle_migrations\");
-          console.log(journal.entries.length - r.rows[0].c);
+          console.log((journal.entries.length - r.rows[0].c) + ':0');
         } catch (e) {
           // Table doesn't exist yet — fresh install, all migrations pending.
-          console.log(journal.entries.length);
+          console.log(journal.entries.length + ':1');
         } finally {
           await c.end();
         }
       })
-      .catch(() => { console.log('0'); });
-  " 2>/dev/null || echo "0")
+      .catch(() => { console.log('0:0'); });
+  " 2>/dev/null || echo "0:0")
+  PENDING=${MIGRATION_STATE%%:*}
+  FRESH=${MIGRATION_STATE##*:}
 
-  if [ "$PENDING" -gt 0 ]; then
+  if [ "$FRESH" = "1" ]; then
+    # Nothing to protect yet: an empty database dumps to ~800 bytes, which the
+    # size guard below would (correctly, for an existing tenant) read as a
+    # failed backup and refuse to start on.
+    echo "Fresh database — no data to back up; skipping pre-migration dump."
+  elif [ "$PENDING" -gt 0 ]; then
     mkdir -p "$BACKUP_DIR"
     STAMP=$(date -u +"%Y%m%d-%H%M%SZ")
     DUMP_FILE="$BACKUP_DIR/pre-migrate-${STAMP}.dump"
