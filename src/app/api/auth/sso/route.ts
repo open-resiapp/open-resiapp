@@ -105,7 +105,10 @@ export async function GET(req: NextRequest) {
   const publicBase =
     process.env.NEXTAUTH_URL ?? process.env.AUTH_URL ?? url.origin;
   const loginTarget = new URL(`/${locale}/login`, publicBase);
-  const dashboardTarget = new URL(`/${locale}/dashboard`, publicBase);
+  // The dashboard lives at the locale root — `(dashboard)` is a route group and
+  // contributes no path segment, so `/{locale}/dashboard` is a 404. Cloud's
+  // "Open app" button landed users there.
+  const homeTarget = new URL(`/${locale}`, publicBase);
 
   let user;
   try {
@@ -129,5 +132,5 @@ export async function GET(req: NextRequest) {
   }
 
   await fireLoginHook(user);
-  return redirectWithNoReferrer(dashboardTarget);
+  return redirectWithNoReferrer(homeTarget);
 }
