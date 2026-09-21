@@ -52,3 +52,7 @@ docker-compose.*.local.yml
 
 # module staging dir — populated when admin uploads a module zip
 /modules/.staging/
+
+# Python bytecode (stray from local tooling)
+__pycache__/
+*.pyc
