@@ -29,6 +29,12 @@ type BundledModuleConfig = {
     | "unit"
     | "generic_group"
   >;
+  /**
+   * Status of the install row on first insert. Defaults to "enabled".
+   * "disabled" = ships off; an admin opts in via Settings → Modules
+   * (the existing row's status is never touched again by bootstrap).
+   */
+  defaultStatus?: "enabled" | "disabled";
 };
 
 const BUNDLED_MODULES: ReadonlyArray<BundledModuleConfig> = [
@@ -39,6 +45,14 @@ const BUNDLED_MODULES: ReadonlyArray<BundledModuleConfig> = [
   {
     name: "accounting",
     autoEnableKinds: ["community", "building"],
+  },
+  {
+    // BYT-20261117-001: MCP server + OAuth for AI apps. Ships DISABLED —
+    // enabling sends community data to a third-party AI provider, so the
+    // admin must opt in explicitly. No entity grants (no module code runs).
+    name: "mcp",
+    autoEnableKinds: [],
+    defaultStatus: "disabled",
   },
 ];
 
@@ -86,19 +100,22 @@ export async function bootstrapBundledModules(
       );
       continue;
     }
-    await ensureInstallRow(manifest);
+    await ensureInstallRow(manifest, config.defaultStatus ?? "enabled");
     await ensureGrantsForHousingRoots(manifest, config);
   }
 }
 
-async function ensureInstallRow(manifest: ModuleManifest): Promise<void> {
+async function ensureInstallRow(
+  manifest: ModuleManifest,
+  defaultStatus: "enabled" | "disabled"
+): Promise<void> {
   const installPath = path.join(MODULES_DIR, manifest.name);
   await db
     .insert(coreModules)
     .values({
       name: manifest.name,
       version: manifest.version,
-      status: "enabled",
+      status: defaultStatus,
       installPath,
     })
     .onConflictDoUpdate({
@@ -118,6 +135,7 @@ async function ensureGrantsForHousingRoots(
 ): Promise<void> {
   // Phase 9.1d: iterate root entities directly via the compat helper.
   // Single-tenant: one root. Cloud per-tenant: also one root per process.
+  if (config.autoEnableKinds.length === 0) return;
   const communityRoots = await listCommunityRoots();
   if (communityRoots.length === 0) return;
 

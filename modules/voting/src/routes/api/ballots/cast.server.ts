@@ -388,7 +388,7 @@ export async function recordConfirmedBallot(input: {
         mandateId: null,
         ballotHash,
         signature: input.signature,
-        confirmationMethod: method,
+        confirmationKind: method,
         confirmedAt: recordedAt,
         recordedAt,
       };

@@ -32,12 +32,14 @@ interface Props {
 const slug = (s: string) => s.replace(/[^a-zA-Z0-9]+/g, "_");
 
 export default function ModulesAdminClient({ installed }: Props) {
+  const tMcp = useTranslations("Mcp.module");
   const [staged, setStaged] = useState<StagedView | null>(null);
   const [approved, setApproved] = useState<Set<Permission>>(new Set());
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
   const [toUninstall, setToUninstall] = useState<string | null>(null);
+  const [mcpToggle, setMcpToggle] = useState<"enabled" | "disabled" | null>(null);
   // Enabled modules feed the shell nav (ShellData) — refresh the server
   // layout after install / uninstall / toggle so the sidebar follows.
   const router = useRouter();
@@ -115,6 +117,16 @@ export default function ModulesAdminClient({ installed }: Props) {
   }
 
   function handleToggle(name: string, next: "enabled" | "disabled") {
+    // BYT-20261117-001: enabling MCP sends community data to the AI provider
+    // a member connects; disabling revokes every connection — confirm first.
+    if (name === "mcp") {
+      setMcpToggle(next);
+      return;
+    }
+    runToggle(name, next);
+  }
+
+  function runToggle(name: string, next: "enabled" | "disabled") {
     startTransition(async () => {
       const res = await toggleModuleAction(name, next);
       if (!res.ok) setError(res.error);
@@ -225,6 +237,9 @@ export default function ModulesAdminClient({ installed }: Props) {
                       {tm("grants")}:{" "}
                       {m.grantedPermissions.length === 0 ? "—" : m.grantedPermissions.map(permLabel).join(", ")}
                     </p>
+                    {m.name === "mcp" && (
+                      <p className="max-w-prose text-base text-ui-warning">{tMcp("description")}</p>
+                    )}
                     {m.lastFailureMessage ? (
                       <p className="text-base text-ui-danger">
                         {tm("lastError")}: {m.lastFailureMessage}
@@ -272,6 +287,19 @@ export default function ModulesAdminClient({ installed }: Props) {
         confirmLabel={tm("uninstall")}
         onConfirm={() => toUninstall && handleUninstall(toUninstall)}
         onCancel={() => setToUninstall(null)}
+      />
+      <ConfirmDialog
+        open={mcpToggle !== null}
+        tone={mcpToggle === "disabled" ? "danger" : "default"}
+        title={mcpToggle === "disabled" ? tm("disable") : tm("enable")}
+        description={mcpToggle === "disabled" ? tMcp("disableWarning") : tMcp("enableWarning")}
+        confirmLabel={mcpToggle === "disabled" ? tm("disable") : tm("enable")}
+        onConfirm={() => {
+          const next = mcpToggle;
+          setMcpToggle(null);
+          if (next) runToggle("mcp", next);
+        }}
+        onCancel={() => setMcpToggle(null)}
       />
     </div>
   );

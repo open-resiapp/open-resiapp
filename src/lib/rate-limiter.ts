@@ -25,6 +25,12 @@ export const RATE_LIMITS = {
   pair: { maxRequests: 5, windowMs: 60 * 60 * 1000 } as RateLimitConfig, // 5/hr
   health: { maxRequests: 30, windowMs: 60 * 1000 } as RateLimitConfig, // 30/min
   api: { maxRequests: 100, windowMs: 60 * 1000 } as RateLimitConfig, // 100/min
+  // BYT-20261117-001 §7: MCP calls per access token.
+  mcpToken: { maxRequests: 60, windowMs: 60 * 1000 } as RateLimitConfig, // 60/min
+  // OAuth endpoints (authorize / token / register / revoke) per IP.
+  oauth: { maxRequests: 30, windowMs: 60 * 1000 } as RateLimitConfig, // 30/min
+  // BYT-20261117-001 §6: ballot email-link confirm page + decision, per user.
+  ballotConfirm: { maxRequests: 20, windowMs: 60 * 60 * 1000 } as RateLimitConfig, // 20/hr
 };
 
 export function getClientIp(request: NextRequest): string {
@@ -81,6 +87,30 @@ export function checkRateLimit(
     );
   }
 
+  return null;
+}
+
+/**
+ * Fixed-window limit on an arbitrary key (e.g. a token fingerprint) instead
+ * of the client IP. Returns the Retry-After seconds when limited, else null.
+ * In-process like the IP limiter — each replica counts separately.
+ */
+export function checkRateLimitKey(
+  key: string,
+  config: RateLimitConfig,
+  tier: string
+): number | null {
+  const store = getStore(tier);
+  const now = Date.now();
+  const entry = store.get(key);
+  if (!entry || now > entry.resetAt) {
+    store.set(key, { count: 1, resetAt: now + config.windowMs });
+    return null;
+  }
+  entry.count++;
+  if (entry.count > config.maxRequests) {
+    return Math.ceil((entry.resetAt - now) / 1000);
+  }
   return null;
 }
 

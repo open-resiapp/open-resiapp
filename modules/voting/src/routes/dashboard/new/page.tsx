@@ -57,7 +57,12 @@ function defaultEnd(country: Country): Date {
   return d;
 }
 
-export default function NovaHlasovaniePage() {
+export default function NovaHlasovaniePage({
+  canCreate,
+}: {
+  /** Server-resolved board check (admin OR active chairman). */
+  canCreate?: boolean;
+} = {}) {
   const { data: session } = useSession();
   const router = useRouter();
   const t = useTranslations("VotingNew");
@@ -153,7 +158,7 @@ export default function NovaHlasovaniePage() {
     if (p) setSelectedProjectId(p);
   }, []);
 
-  if (!hasPermission(role, "createVoting")) {
+  if (!(canCreate ?? hasPermission(role, "createVoting"))) {
     return (
       <div className="py-12 text-center text-lg text-ui-text-muted">
         {t("noPermission")}

@@ -9,13 +9,19 @@ import {
   jsonb,
   pgEnum,
   uniqueIndex,
+  index,
 } from "drizzle-orm/pg-core";
-import { relations } from "drizzle-orm";
+import { relations, sql } from "drizzle-orm";
 
 // Module schema imports core symbols (entities, users) directly from
 // the core schema. Phase 9.2 dropped the legacy entrances/flats tables;
 // scope + share data live on entities + housing_unit_data now.
-import { entities, users, documentProjects } from "@/db/schema";
+import {
+  entities,
+  users,
+  documentProjects,
+  mcpPendingActions,
+} from "@/db/schema";
 
 // ── Enums ──────────────────────────────────────────────
 // votingMethodEnum stays in core (it's a property of the housing root,
@@ -190,10 +196,15 @@ export const ballots = pgTable(
     }),
     ballotHash: varchar("ballot_hash", { length: 64 }).notNull(), // commitment over all item choices
     signature: text("signature"), // passkey assertion (one, over ballotHash)
-    // BYT-20261117-002 Phase 6: how an electronic ballot was actively
-    // confirmed ("passkey" | "email") and when. NULL for paper ballots and
-    // for electronic ballots recorded before the confirmation gate existed.
-    confirmationMethod: varchar("confirmation_method", { length: 16 }),
+    // How the owner actively confirmed this electronic ballot
+    // (docs/domain/voting.md): 'passkey' = WebAuthn assertion over the ballot
+    // digest (web, BYT-20261117-002 Phase 6); 'email' = single-use email link
+    // confirmed while signed in (web Phase 6 or MCP path, BYT-20261117-001 §6).
+    // NULL = paper ballot or a legacy web cast recorded before the
+    // confirmation gate existed.
+    confirmationKind: varchar("confirmation_kind", { length: 16 }).$type<
+      "email" | "passkey"
+    >(),
     confirmedAt: timestamp("confirmed_at"),
     recordedAt: timestamp("recorded_at").defaultNow().notNull(),
     disputed: boolean("disputed").notNull().default(false),
@@ -241,6 +252,74 @@ export const ballotPhotos = pgTable("mod_voting_ballot_photos", {
   idx: integer("idx").notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
+
+// ── Pending ballots (BYT-20261117-001 §6) ──────────────
+// A ballot proposed through MCP waits here until the owner clicks the
+// emailed single-use link and confirms while signed in as the same owner.
+// Deliberately a SEPARATE table: no results / participation / turnout /
+// external API / audit-bundle query reads it, so a pending ballot can never
+// be counted. Expiry is evaluated at read time (no background job).
+
+export const pendingBallotStatusEnum = pgEnum(
+  "mod_voting_pending_ballot_status",
+  ["pending", "confirmed", "cancelled", "superseded", "expired", "failed"]
+);
+
+export const pendingBallots = pgTable(
+  "mod_voting_pending_ballots",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    votingId: uuid("voting_id")
+      .references(() => votings.id, { onDelete: "cascade" })
+      .notNull(),
+    unitId: uuid("unit_id")
+      .references(() => entities.id, { onDelete: "cascade" })
+      .notNull(),
+    ownerId: uuid("owner_id")
+      .references(() => users.id, { onDelete: "cascade" })
+      .notNull(),
+    // [{ itemId, choice }] — exactly what ballotHash commits to.
+    items: jsonb("items")
+      .$type<{ itemId: string; choice: "za" | "proti" | "zdrzal_sa" }[]>()
+      .notNull(),
+    ballotHash: varchar("ballot_hash", { length: 64 }).notNull(),
+    // SHA-256 of the emailed single-use token (the raw token is never stored).
+    tokenHash: varchar("token_hash", { length: 64 }).notNull(),
+    status: pendingBallotStatusEnum("status").notNull().default("pending"),
+    expiresAt: timestamp("expires_at").notNull(),
+    // Set when the owner confirmed or cancelled through the email link.
+    usedAt: timestamp("used_at"),
+    failureCode: varchar("failure_code", { length: 64 }),
+    source: varchar("source", { length: 16 }).$type<"mcp">().notNull().default("mcp"),
+    // OAuth client_id string of the AI app that proposed the ballot.
+    clientId: varchar("client_id", { length: 2048 }),
+    // The MCP pending action whose confirm sent the email (audit link).
+    pendingActionId: uuid("pending_action_id").references(
+      () => mcpPendingActions.id,
+      { onDelete: "set null" }
+    ),
+    // The ballot written on confirm (soft link for audit).
+    ballotId: uuid("ballot_id").references(() => ballots.id, {
+      onDelete: "set null",
+    }),
+    // Language of the email + confirm page.
+    locale: varchar("locale", { length: 8 }).notNull().default("sk"),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+  },
+  (table) => ({
+    tokenHashIdx: uniqueIndex("mod_voting_pending_ballots_token_hash_idx").on(
+      table.tokenHash
+    ),
+    // At most ONE live request per (voting, unit, owner): a new request
+    // supersedes the previous one (no-resend rule, voting.md).
+    onePendingIdx: uniqueIndex("mod_voting_pending_ballots_one_pending_idx")
+      .on(table.votingId, table.unitId, table.ownerId)
+      .where(sql`${table.status} = 'pending'`),
+    votingOwnerCreatedIdx: index(
+      "mod_voting_pending_ballots_voting_owner_created_idx"
+    ).on(table.votingId, table.ownerId, table.createdAt),
+  })
+);
 
 // ── Relations ──────────────────────────────────────────
 

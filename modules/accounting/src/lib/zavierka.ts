@@ -78,6 +78,8 @@ export async function approveZavierka(input: {
   year: number;
   votingItemId: string;
   actorId: string;
+  /** Appended to the statutory justification, e.g. "MCP: Claude". */
+  justification?: string | null;
 }): Promise<void> {
   if (!input.votingItemId?.trim()) {
     throw new Error(
@@ -154,7 +156,9 @@ export async function approveZavierka(input: {
         year: input.year,
         votingItemId: input.votingItemId,
       },
-      justification: `Schválenie účtovnej závierky ${input.year} zhromaždením`,
+      justification: input.justification
+        ? `Schválenie účtovnej závierky ${input.year} zhromaždením (${input.justification})`
+        : `Schválenie účtovnej závierky ${input.year} zhromaždením`,
     });
   });
 }

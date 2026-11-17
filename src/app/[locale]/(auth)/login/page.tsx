@@ -51,6 +51,18 @@ export default function LoginPage() {
       setError(t("invalidCredentials"));
       setLoading(false);
     } else {
+      // Same-origin relative callbacks only (e.g. back to the OAuth consent
+      // page, BYT-20261117-001) — never an absolute / protocol-relative URL.
+      const callbackUrl = searchParams.get("callbackUrl");
+      if (
+        callbackUrl &&
+        callbackUrl.startsWith("/") &&
+        !callbackUrl.startsWith("//") &&
+        !callbackUrl.startsWith("/\\")
+      ) {
+        window.location.assign(callbackUrl);
+        return;
+      }
       router.push("/");
       router.refresh();
     }

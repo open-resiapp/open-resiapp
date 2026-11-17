@@ -11,6 +11,7 @@ import NotificationPreferences, { type NotificationPrefs } from "@/components/no
 import PushSubscriptionManager from "@/components/notifications/PushSubscriptionManager";
 import ConsentManagement from "@/components/consent/ConsentManagement";
 import PasskeysCard from "@/components/profile/PasskeysCard";
+import ConnectedAiApps from "@/components/profile/ConnectedAiApps";
 import ThemeToggle from "@/components/ThemeToggle";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
 
@@ -36,7 +37,7 @@ interface ProfileViewProps {
 export default function ProfileView({ flats, prefs }: ProfileViewProps) {
   const t = useTranslations("Profile");
   const tp = useTranslations("ProfileHub");
-  const { user } = useShell();
+  const { user, enabledModules } = useShell();
 
   const [passwordOpen, setPasswordOpen] = useState(false);
   const [currentPassword, setCurrentPassword] = useState("");
@@ -141,6 +142,9 @@ export default function ProfileView({ flats, prefs }: ProfileViewProps) {
 
       {/* Passkeys: confirm a vote with fingerprint / face (Phase 6) */}
       <PasskeysCard />
+
+      {/* Connected AI apps (MCP / OAuth grants) — only while MCP is enabled */}
+      {enabledModules.includes("mcp") ? <ConnectedAiApps /> : null}
 
       {/* Notifications */}
       <Card as="section" padding="lg" aria-labelledby="notifications-heading" className="space-y-5">

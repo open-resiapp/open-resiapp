@@ -1,11 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
-import { aliasedTable, and, eq, inArray, isNull } from "drizzle-orm";
+import { and, eq, inArray, isNull } from "drizzle-orm";
 
 import { auth } from "@/lib/auth";
 import { db } from "@/db";
-import { users, entities, memberships } from "@/db/schema";
+import { entities, memberships } from "@/db/schema";
 import { votings, votingItems, ballots } from "@modules/voting/src/db/schema";
-import { hasPermission } from "@/lib/permissions";
+import { getVotingDetail } from "@modules/voting/src/votings";
+import { assertBoard } from "@/lib/mcp/authz";
+import { isMcpError, mcpErrorStatus } from "@/lib/mcp/errors";
+import { principalFromSession } from "@/lib/mcp/principal";
 import { sendPushToAll } from "@/lib/push";
 import { dispatchHook } from "@/lib/modules/dispatch";
 import { isModuleEnabled } from "@/lib/modules/route-guard";
@@ -14,7 +17,6 @@ import { normalizeItems } from "@modules/voting/src/items";
 import { checkQuorumForVotingPatch } from "@modules/voting/src/quorum-guard.server";
 import { getApprovedFinancialEffects } from "@modules/voting/src/results";
 import { processApprovedFinancialEffects } from "@modules/accounting/src/lib/voting-pipeline";
-import type { UserRole } from "@/types";
 
 export async function GET(
   _request: NextRequest,
@@ -26,46 +28,14 @@ export async function GET(
   }
 
   const { id } = await params;
-  const entrance = aliasedTable(entities, "entrance");
-
-  const [voting] = await db
-    .select({
-      id: votings.id,
-      title: votings.title,
-      description: votings.description,
-      status: votings.status,
-      votingType: votings.votingType,
-      initiatedBy: votings.initiatedBy,
-      startsAt: votings.startsAt,
-      endsAt: votings.endsAt,
-      createdAt: votings.createdAt,
-      voteCounterId: votings.voteCounterId,
-      entityId: votings.entityId,
-      documentProjectId: votings.documentProjectId,
-      entranceName: entrance.name,
-      createdBy: {
-        id: users.id,
-        name: users.name,
-      },
-    })
-    .from(votings)
-    .leftJoin(users, eq(votings.createdById, users.id))
-    .leftJoin(entrance, eq(entrance.id, votings.entityId))
-    .where(eq(votings.id, id))
-    .limit(1);
-
+  // No visibility check here — pre-existing (spec Notes → found gaps);
+  // MCP uses getVisibleVotingDetail.
+  const voting = await getVotingDetail(id);
   if (!voting) {
     return NextResponse.json({ error: "Hlasovanie nenájdené" }, { status: 404 });
   }
 
-  // BYT-20260609-008: ordered ballot items (each with its own quorumType).
-  const items = await db
-    .select()
-    .from(votingItems)
-    .where(eq(votingItems.votingId, id))
-    .orderBy(votingItems.idx);
-
-  return NextResponse.json({ ...voting, items });
+  return NextResponse.json(voting);
 }
 
 export async function PATCH(
@@ -77,8 +47,18 @@ export async function PATCH(
     return NextResponse.json({ error: "Neautorizovaný prístup" }, { status: 401 });
   }
 
-  if (!hasPermission(session.user.role as UserRole, "createVoting")) {
-    return NextResponse.json({ error: "Nemáte oprávnenie" }, { status: 403 });
+  // BYT-20261117-001 Decided 1: admin OR active chairman may edit /
+  // activate / close a voting — same authority as createVoting.
+  try {
+    assertBoard(await principalFromSession(session));
+  } catch (err) {
+    if (isMcpError(err)) {
+      return NextResponse.json(
+        { error: err.code === "forbidden" ? "Nemáte oprávnenie" : err.code },
+        { status: mcpErrorStatus(err.code) }
+      );
+    }
+    throw err;
   }
 
   const { id } = await params;

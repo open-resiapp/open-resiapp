@@ -812,6 +812,166 @@ export const externalApiLogs = pgTable("external_api_logs", {
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 
+// ── MCP / OAuth 2.1 (BYT-20261117-001 §2, §8) ──────────
+//
+// The instance is its own OAuth authorization server for the MCP endpoint
+// (`<origin>/api/mcp`). Codes and tokens are opaque random strings; only
+// their SHA-256 hex digests are stored.
+
+/** CIMD cache rows (client_id = HTTPS URL) and DCR registrations. */
+export const oauthClients = pgTable(
+  "oauth_clients",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    /** The OAuth `client_id` — the metadata-document URL (CIMD) or a random id (DCR). */
+    clientId: varchar("client_id", { length: 2048 }).notNull(),
+    source: varchar("source", { length: 8 }).$type<"cimd" | "dcr">().notNull(),
+    name: varchar("name", { length: 255 }).notNull(),
+    logoUri: text("logo_uri"),
+    clientUri: text("client_uri"),
+    redirectUris: jsonb("redirect_uris").$type<string[]>().notNull(),
+    /** When the CIMD document was last fetched (cache TTL); null for DCR. */
+    fetchedAt: timestamp("fetched_at"),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+  },
+  (table) => ({
+    clientIdIdx: uniqueIndex("oauth_clients_client_id_idx").on(table.clientId),
+  })
+);
+
+/** Single-use authorization codes (60 s), PKCE-S256 bound. */
+export const oauthAuthorizationCodes = pgTable(
+  "oauth_authorization_codes",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    codeHash: varchar("code_hash", { length: 64 }).notNull(),
+    clientId: uuid("client_id")
+      .references(() => oauthClients.id, { onDelete: "cascade" })
+      .notNull(),
+    userId: uuid("user_id")
+      .references(() => users.id, { onDelete: "cascade" })
+      .notNull(),
+    codeChallenge: varchar("code_challenge", { length: 128 }).notNull(),
+    redirectUri: text("redirect_uri").notNull(),
+    resource: text("resource").notNull(),
+    scopes: jsonb("scopes").$type<string[]>().notNull(),
+    expiresAt: timestamp("expires_at").notNull(),
+    usedAt: timestamp("used_at"),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+  },
+  (table) => ({
+    codeHashIdx: uniqueIndex("oauth_codes_code_hash_idx").on(table.codeHash),
+  })
+);
+
+/**
+ * Access + refresh token pair. A refresh rotates into a NEW row of the same
+ * `familyId`; the old row is stamped `refreshUsedAt` + `revokedAt`. Presenting
+ * an already-used refresh token revokes the whole family (reuse detection).
+ * A family = one grant ("Connected AI app" in the profile).
+ */
+export const oauthTokens = pgTable(
+  "oauth_tokens",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    accessHash: varchar("access_hash", { length: 64 }).notNull(),
+    refreshHash: varchar("refresh_hash", { length: 64 }),
+    familyId: uuid("family_id").notNull(),
+    clientId: uuid("client_id")
+      .references(() => oauthClients.id, { onDelete: "cascade" })
+      .notNull(),
+    userId: uuid("user_id")
+      .references(() => users.id, { onDelete: "cascade" })
+      .notNull(),
+    scopes: jsonb("scopes").$type<string[]>().notNull(),
+    resource: text("resource").notNull(),
+    accessExpiresAt: timestamp("access_expires_at").notNull(),
+    refreshExpiresAt: timestamp("refresh_expires_at"),
+    refreshUsedAt: timestamp("refresh_used_at"),
+    revokedAt: timestamp("revoked_at"),
+    lastUsedAt: timestamp("last_used_at"),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+  },
+  (table) => ({
+    accessHashIdx: uniqueIndex("oauth_tokens_access_hash_idx").on(table.accessHash),
+    refreshHashIdx: uniqueIndex("oauth_tokens_refresh_hash_idx")
+      .on(table.refreshHash)
+      .where(sql`${table.refreshHash} IS NOT NULL`),
+    familyIdx: index("oauth_tokens_family_idx").on(table.familyId),
+    userIdx: index("oauth_tokens_user_idx").on(table.userId),
+  })
+);
+
+/**
+ * Pending write actions (§5). A write tool only PROPOSES: the validated,
+ * normalised payload is parked here with a single-use confirm token
+ * (SHA-256 stored) for 10 minutes. Only a human click (MCP App view or the
+ * in-app fallback page) commits it. Rows are kept after a decision
+ * (confirmed / cancelled / expired / failed) for audit.
+ */
+export const mcpPendingActions = pgTable(
+  "mcp_pending_actions",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    userId: uuid("user_id")
+      .references(() => users.id, { onDelete: "cascade" })
+      .notNull(),
+    /** OAuth client_id string of the proposing client. */
+    clientId: varchar("client_id", { length: 2048 }),
+    kind: varchar("kind", { length: 64 }).notNull(),
+    payload: jsonb("payload").$type<Record<string, unknown>>().notNull(),
+    /** Rendered preview shown to the human (same on view + fallback page). */
+    preview: jsonb("preview").$type<Record<string, unknown>>().notNull(),
+    previewHash: varchar("preview_hash", { length: 64 }).notNull(),
+    tokenHash: varchar("token_hash", { length: 64 }).notNull(),
+    status: varchar("status", { length: 16 })
+      .$type<"pending" | "confirmed" | "cancelled" | "expired" | "failed">()
+      .notNull()
+      .default("pending"),
+    /** UI locale the preview was rendered in (sk | en | cs). */
+    locale: varchar("locale", { length: 8 }).notNull().default("sk"),
+    expiresAt: timestamp("expires_at").notNull(),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    decidedAt: timestamp("decided_at"),
+    resultCode: varchar("result_code", { length: 64 }),
+    /** Small machine-readable commit result (created ids, links). */
+    result: jsonb("result").$type<Record<string, unknown>>(),
+  },
+  (table) => ({
+    userCreatedIdx: index("mcp_pending_actions_user_created_idx").on(
+      table.userId,
+      table.createdAt
+    ),
+  })
+);
+
+/** One row per MCP tools/call (§7). Retention 90 days. */
+export const mcpAuditLog = pgTable(
+  "mcp_audit_log",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    userId: uuid("user_id").references(() => users.id, {
+      onDelete: "set null",
+    }),
+    /** OAuth client_id string (kept even if the client row is gone). */
+    clientId: varchar("client_id", { length: 2048 }),
+    tool: varchar("tool", { length: 64 }).notNull(),
+    argsRedacted: jsonb("args_redacted"),
+    resultCode: varchar("result_code", { length: 64 }).notNull(),
+    durationMs: integer("duration_ms").notNull(),
+    /** Pending action proposed / confirmed / cancelled by this call. */
+    pendingActionId: uuid("pending_action_id").references(
+      (): AnyPgColumn => mcpPendingActions.id,
+      { onDelete: "set null" }
+    ),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+  },
+  (table) => ({
+    createdAtIdx: index("mcp_audit_log_created_at_idx").on(table.createdAt),
+    userIdx: index("mcp_audit_log_user_idx").on(table.userId),
+  })
+);
+
 export const communityPosts = pgTable("community_posts", {
   id: uuid("id").primaryKey().defaultRandom(),
   type: communityPostTypeEnum("type").notNull(),

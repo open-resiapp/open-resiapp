@@ -494,6 +494,25 @@
       "intro": "Spoločenstvo {building} publikovalo ročné vyúčtovanie záloh na služby za rok {year}. Kompletný rozpis a PDF nájdete na karte svojho bytu.",
       "button": "Otvoriť kartu bytu",
       "hint": "Ak odkaz nefunguje, prihláste sa do aplikácie a otvorte Účtovníctvo → Karta bytu."
+    },
+    "ballotConfirm": {
+      "subject": "Potvrďte svoj hlas: {voting}",
+      "heading": "Potvrdenie hlasu",
+      "intro": "Cez AI aplikáciu „{client}“ ste požiadali o odovzdanie hlasu v hlasovaní „{voting}“ za {unit}.",
+      "notCastYet": "Váš hlas zatiaľ NIE JE odovzdaný.",
+      "itemsHeading": "Váš hlasovací lístok",
+      "itemColumn": "Bod",
+      "choiceColumn": "Voľba",
+      "choiceFor": "ZA",
+      "choiceAgainst": "PROTI",
+      "choiceAbstain": "ZDRŽAL SA",
+      "choiceUnmarked": "nevyznačené",
+      "hashLabel": "Kontrolný kód lístka:",
+      "button": "Skontrolovať a potvrdiť hlas",
+      "loginNote": "Po kliknutí sa prihláste svojím účtom. Hlas sa započíta až po stlačení tlačidla „Potvrdzujem hlas“; kontrolný kód na stránke musí byť rovnaký ako v tomto emaile.",
+      "expiryNote": "Odkaz platí {minutes} minút a dá sa použiť iba raz. Po vypršaní ho nie je možné poslať znova — začnite odznova.",
+      "ignoreNote": "Ak ste o to nežiadali, tento email ignorujte. Bez vášho potvrdenia sa žiadny hlas neodovzdá.",
+      "fallback": "Ak tlačidlo nefunguje, skopírujte tento odkaz do prehliadača:"
     }
   },
   "Header": {
@@ -2698,7 +2717,11 @@
       "loadError": "Nepodarilo sa načítať zoznam.",
       "backToAccounting": "Späť na účtovníctvo",
       "colOwner": "Vlastník",
-      "nameWithheld": "— (pod 500 €)"
+      "nameWithheld": "— (pod 500 €)",
+      "boardSubtitle": "Všetky byty s nedoplatkom vrátane mien vlastníkov — interný prehľad výboru (predseda, pokladník, správca).",
+      "boardNone": "Žiadny byt nemá nedoplatok.",
+      "boardNote": "Interný zoznam pre výbor. Nezverejňujte ho vlastníkom — na zverejnenie platí § 11 zák. 182/1993 Z.z. a hranica nastavená výborom.",
+      "boardNoOwner": "— (bez aktívneho vlastníka)"
     },
     "votingImpacts": {
       "title": "Finančné dopady",
@@ -3091,5 +3114,265 @@
     "cancel": "Zrušiť",
     "moreActions": "Ďalšie akcie",
     "loading": "Načítavam…"
+  },
+  "Mcp": {
+    "module": {
+      "description": "Umožní členom pripojiť AI aplikácie (Claude, ChatGPT a ďalšie) cez MCP. Pripojená aplikácia číta údaje spoločenstva v mene prihláseného člena a posiela ich poskytovateľovi AI mimo tejto inštancie.",
+      "enableWarning": "Zapnutím MCP umožníte členom pripojiť AI aplikácie. Údaje spoločenstva (oznamy, hlasovania, dokumenty, financie podľa roly člena) sa budú posielať poskytovateľovi AI, ktorého si člen pripojí — mimo tejto inštancie. Pokračovať?",
+      "disableWarning": "Vypnutím MCP sa okamžite zrušia všetky pripojené AI aplikácie všetkých členov. Pokračovať?"
+    },
+    "consent": {
+      "title": "{client} žiada o prístup",
+      "verifiedHost": "Overená aplikácia z domény {host}",
+      "unverifiedHost": "Neoverená aplikácia (presmerovanie na {host})",
+      "intro": "Prihlásený/á ako {user}. Aplikácia bude konať vo vašom mene a uvidí len to, čo vidíte vy v tejto aplikácii.",
+      "scopesHeading": "Aplikácia bude môcť:",
+      "roleNote": "O tom, čo smiete, vždy rozhoduje vaša rola v spoločenstve — povolenie ju nerozširuje.",
+      "dataWarning": "Údaje, ktoré si aplikácia {client} vyžiada, opustia túto inštanciu a spracuje ich poskytovateľ AI podľa svojich podmienok. Žiadna zmena sa nevykoná bez vášho potvrdenia v aplikácii.",
+      "inactiveUser": "Váš účet ešte nie je aktívny (čaká na schválenie alebo bol zamietnutý). Prístup nemôžete povoliť.",
+      "allow": "Povoliť",
+      "deny": "Zamietnuť",
+      "revokeHint": "Prístup môžete kedykoľvek zrušiť v Profile → Pripojené AI aplikácie.",
+      "errorTitle": "Požiadavku nie je možné spracovať",
+      "errorInvalidClient": "Aplikáciu sa nepodarilo overiť. Skúste ju v AI aplikácii pripojiť znova.",
+      "errorInvalidRedirect": "Adresa návratu nepatrí tejto aplikácii. Z bezpečnostných dôvodov sme požiadavku zastavili."
+    },
+    "scopes": {
+      "read": "čítať vaše údaje v spoločenstve: profil, oznamy, hlasovania a dokumenty, ktoré vidíte",
+      "finance_read": "čítať financie spoločenstva podľa vašej roly (pokladňa, banka, fond opráv, dlžníci, karta bytu)",
+      "finance_write": "navrhovať účtovné zmeny (párovanie platieb, výdavky) — každú musíte potvrdiť",
+      "governance_write": "navrhovať oznamy a koncepty hlasovaní — každý musíte potvrdiť",
+      "vote": "pripraviť váš hlas, ktorý potvrdíte kliknutím v e-maile"
+    },
+    "scopeNames": {
+      "read": "čítanie",
+      "finance_read": "financie (čítanie)",
+      "finance_write": "financie (návrhy zmien)",
+      "governance_write": "oznamy a hlasovania (návrhy)",
+      "vote": "hlasovanie"
+    },
+    "profile": {
+      "title": "Pripojené AI aplikácie",
+      "description": "AI aplikácie, ktorým ste povolili prístup k údajom spoločenstva vo vašom mene.",
+      "loading": "Načítavam…",
+      "empty": "Nemáte pripojenú žiadnu AI aplikáciu.",
+      "error": "Operácia zlyhala. Skúste to znova.",
+      "scopes": "Oprávnenia",
+      "lastUsed": "Naposledy použité {date}",
+      "neverUsed": "Zatiaľ nepoužité",
+      "revoke": "Zrušiť prístup",
+      "revokeConsequence": "Aplikácia {name} okamžite stratí prístup k údajom spoločenstva. Ak ju budete chcieť znova používať, musíte ju pripojiť odznova.",
+      "confirmRevoke": "Áno, zrušiť",
+      "cancel": "Ponechať"
+    },
+    "actions": {
+      "match_payment": {
+        "title": "Priradiť platbu z banky",
+        "summary": "Priradiť platbu {amount} k bytu {unit}",
+        "done": "Platba bola priradená."
+      },
+      "record_payment": {
+        "title": "Zaevidovať platbu",
+        "summary": "Zaevidovať platbu {amount} od bytu {unit}",
+        "done": "Platba bola zaevidovaná."
+      },
+      "post_expense_from_inbox": {
+        "title": "Zaúčtovať faktúru zo schránky",
+        "summary": "Zaúčtovať faktúru {invoiceNo} na {amount}",
+        "done": "Faktúra bola zaúčtovaná ako výdavok."
+      },
+      "dismiss_inbox_item": {
+        "title": "Vyradiť položku zo schránky",
+        "summary": "Vyradiť sken {file} zo schránky faktúr",
+        "done": "Položka bola vyradená."
+      },
+      "submit_meter_reading": {
+        "title": "Zapísať odpočet meradla",
+        "summary": "Zapísať odpočet {value} pre byt {unit}",
+        "done": "Odpočet bol zapísaný."
+      },
+      "approve_zavierka": {
+        "title": "Schváliť účtovnú závierku",
+        "summary": "Schváliť závierku za rok {year} a uzavrieť obdobie",
+        "done": "Závierka bola schválená a obdobie uzavreté."
+      },
+      "create_announcement": {
+        "title": "Zverejniť oznam",
+        "summary": "Zverejniť oznam „{title}“",
+        "done": "Oznam bol zverejnený."
+      },
+      "draft_voting": {
+        "title": "Pripraviť návrh hlasovania",
+        "summary": "Vytvoriť návrh hlasovania „{title}“ ({count, plural, one {# bod} few {# body} other {# bodov}})",
+        "done": "Návrh hlasovania bol vytvorený. Spustiť ho môžete len v aplikácii."
+      },
+      "request_ballot_confirmation": {
+        "title": "Požiadať o potvrdenie hlasu",
+        "summary": "Hlasovací lístok pre „{title}“ — potvrdenie emailom",
+        "confirmLabel": "Poslať potvrdzovací email",
+        "done": "Potvrdzovací email bol odoslaný. Hlas sa započíta až po kliknutí na odkaz v emaile a potvrdení v aplikácii."
+      }
+    },
+    "preview": {
+      "amount": "Suma",
+      "receivedAt": "Dátum pripísania",
+      "vs": "Variabilný symbol",
+      "counterparty": "Platiteľ",
+      "narrative": "Správa pre prijímateľa",
+      "unit": "Byt",
+      "unmatched": "Nepriradená",
+      "unitBalance": "Saldo bytu (kladné = dlh)",
+      "method": "Spôsob",
+      "method_bank": "Bankový účet",
+      "method_cash": "Pokladnica",
+      "note": "Poznámka",
+      "file": "Súbor",
+      "supplier": "Dodávateľ",
+      "ico": "IČO",
+      "dic": "DIČ",
+      "iban": "IBAN dodávateľa",
+      "invoiceNo": "Číslo faktúry",
+      "invoiceDate": "Dátum vystavenia",
+      "dueDate": "Splatnosť",
+      "category": "Kategória",
+      "uncategorized": "Bez kategórie",
+      "okruh": "Okruh",
+      "okruh_fpuo": "Fond prevádzky, údržby a opráv",
+      "okruh_svc": "Služby (vyúčtovanie vlastníkom)",
+      "netto": "Suma bez DPH",
+      "dph": "DPH",
+      "brutto": "Suma s DPH",
+      "inboxStatus": "Stav v schránke",
+      "inboxPending": "Čaká",
+      "inboxPosted": "Zaúčtovaná",
+      "inboxDismissed": "Vyradená",
+      "ocrAmount": "Suma podľa OCR",
+      "meterType": "Meradlo",
+      "readingDate": "Dátum odpočtu",
+      "meterValue": "Stav meradla",
+      "year": "Rok",
+      "voting": "Hlasovanie",
+      "votingItem": "Bod hlasovania",
+      "periodStatus": "Stav obdobia",
+      "periodPublished": "Vyúčtovanie zverejnené",
+      "periodClosed": "Uzavreté",
+      "postTitle": "Nadpis",
+      "postContent": "Text oznamu",
+      "pinned": "Pripnúť navrch",
+      "yes": "Áno",
+      "no": "Nie",
+      "audience": "Pre koho",
+      "wholeCommunity": "Celé spoločenstvo",
+      "votingTitle": "Názov hlasovania",
+      "description": "Popis",
+      "votingType": "Typ hlasovania",
+      "votingType_written": "Písomné (per rollam)",
+      "votingType_meeting": "Na schôdzi",
+      "startsAt": "Začiatok",
+      "endsAt": "Koniec",
+      "itemN": "Bod {n}",
+      "status": "Stav",
+      "statusDraft": "Návrh",
+      "effect_fpuo_rate_change": "nový príspevok do FPÚO {amount}",
+      "effect_expense_approval": "schválenie výdavku {amount}",
+      "choice_za": "ZA",
+      "choice_proti": "PROTI",
+      "choice_zdrzal_sa": "ZDRŽAL SA",
+      "choice_unmarked": "nevyznačené",
+      "ballotHash": "Kontrolný kód lístka",
+      "emailTo": "Potvrdzovací email príde na"
+    },
+    "consequences": {
+      "allocatePayment": "Platba sa započíta na najstaršie predpisy bytu a zmení jeho saldo.",
+      "expenseBooked": "Výdavok sa zaúčtuje a sken sa presunie zo schránky medzi výdavky.",
+      "expenseFromFund": "Výdavok zníži zostatok fondu prevádzky, údržby a opráv.",
+      "expenseToSettlement": "Výdavok vstúpi do ročného vyúčtovania služieb vlastníkom.",
+      "inboxDismissed": "Sken sa zo schránky vyradí a nezaúčtuje sa.",
+      "publishedImmediately": "Oznam sa zverejní okamžite.",
+      "pushToAll": "Všetci obyvatelia s povolenými notifikáciami dostanú push notifikáciu.",
+      "readingForSettlement": "Odpočet sa použije pri ročnom vyúčtovaní služieb.",
+      "votingDraftOnly": "Vznikne iba návrh — hlasovanie sa nespustí. Spustiť ho môžete len v aplikácii.",
+      "zavierkaClosed": "Účtovné obdobie sa uzavrie a už ho nebude možné meniť.",
+      "ballotNotCastYet": "Týmto krokom sa hlas NEODOVZDÁVA.",
+      "ballotEmailSent": "Pošle sa vám email s odkazom platným {minutes} minút, použiteľným iba raz.",
+      "ballotConfirmSignedIn": "Hlas sa započíta až keď odkaz otvoríte, prihlásite sa svojím účtom a stlačíte „Potvrdzujem hlas“."
+    },
+    "warnings": {
+      "ocrAmountMismatch": "Suma sa líši od sumy rozpoznanej na skene ({ocr}).",
+      "readingLower": "Odpočet je nižší ako predchádzajúci ({previous}).",
+      "ballotReplacesExisting": "V tomto hlasovaní už za túto jednotku máte odovzdaný hlas — po potvrdení ho tento lístok nahradí.",
+      "ballotUnmarkedItems": "{count, plural, one {# bod nemáte} few {# body nemáte} other {# bodov nemáte}} vyznačených — v nich voľbu neodovzdáte."
+    },
+    "view": {
+      "confirm": "Potvrdiť",
+      "cancel": "Zrušiť",
+      "working": "Spracúvam…",
+      "expires": "Platí do {time}.",
+      "consequences": "Čo sa stane",
+      "warnings": "Upozornenie",
+      "untrusted": "Texty s okrajom pochádzajú od ľudí alebo z dokladov — skontrolujte ich.",
+      "openInApp": "Otvoriť v aplikácii",
+      "fallbackHint": "Nevidíte tlačidlá?",
+      "confirmedTitle": "Potvrdené.",
+      "cancelledMessage": "Zmena bola zrušená. Nič sa nezapísalo.",
+      "pendingText": "Čaká na tvoje potvrdenie: {summary}. Nič sa zatiaľ nezapísalo.",
+      "fallbackText": "Potvrď alebo zruš v okne nižšie, alebo v aplikácii: {url} (platí do {time})."
+    },
+    "errors": {
+      "action_expired": "Platnosť žiadosti vypršala alebo už bola vybavená. Požiadajte AI asistenta o nový návrh.",
+      "forbidden": "Na túto akciu nemáte oprávnenie.",
+      "conflict_state_changed": "Údaje sa medzitým zmenili, preto sa nič nezapísalo. Požiadajte o nový návrh.",
+      "module_disabled": "Tento modul je v spoločenstve vypnutý.",
+      "scope_required": "Pripojenie AI aplikácie nemá potrebné povolenie. Pripojte ju znova a povoľte ho.",
+      "rate_limited": "Príliš veľa požiadaviek. Skúste to o chvíľu.",
+      "internal": "Nastala neočakávaná chyba. Skúste to znova.",
+      "validation": "Návrh obsahuje neplatné údaje.",
+      "generic": "Akciu sa nepodarilo dokončiť."
+    },
+    "confirmPage": {
+      "title": "Potvrdenie zmeny navrhnutej AI",
+      "intro": "AI asistent navrhol túto zmenu vo vašom mene. Zapíše sa až po vašom potvrdení.",
+      "otherUser": "Táto žiadosť patrí inému používateľovi. Prihláste sa účtom, ktorý ju vytvoril.",
+      "done": "Hotovo — zmena bola zapísaná.",
+      "expiresAt": "Žiadosť platí do {time}."
+    }
+  },
+  "VotingConfirm": {
+    "title": "Potvrdenie hlasu",
+    "intro": "Tento hlasovací lístok ste pripravili cez AI aplikáciu. Skontrolujte každý bod.",
+    "notCastYet": "Hlas zatiaľ nie je odovzdaný. Odovzdá sa až stlačením „Potvrdzujem hlas“.",
+    "unitLabel": "Jednotka",
+    "endsLabel": "Hlasovanie končí",
+    "itemsHeading": "Hlasovací lístok",
+    "choice_za": "ZA",
+    "choice_proti": "PROTI",
+    "choice_zdrzal_sa": "ZDRŽAL SA",
+    "choice_unmarked": "nevyznačené",
+    "hashLabel": "Kontrolný kód lístka:",
+    "hashHint": "Musí sa zhodovať s kódom v emaile.",
+    "confirmButton": "Potvrdzujem hlas",
+    "cancelButton": "Zrušiť — neodovzdať hlas",
+    "confirmed": "Váš hlas bol zaznamenaný.",
+    "cancelled": "Žiadosť bola zrušená. Hlas nebol odovzdaný.",
+    "superseded": "Tento odkaz už neplatí — medzitým ste požiadali o nový lístok. Použite najnovší email.",
+    "expired": "Platnosť odkazu vypršala. Odkaz nie je možné poslať znova — začnite odznova alebo hlasujte priamo v aplikácii.",
+    "invalid": "Odkaz je neplatný alebo už bol použitý.",
+    "otherOwner": "Tento odkaz patrí inému vlastníkovi. Odhláste sa a prihláste účtom, na ktorého email prišiel.",
+    "openVoting": "Otvoriť hlasovanie",
+    "changeHint": "Chcete hlasovať inak? Zrušte túto žiadosť a hlasujte v aplikácii.",
+    "expiresAt": "Odkaz platí do {time}.",
+    "errors": {
+      "action_expired": "Platnosť odkazu vypršala alebo už bol použitý. Hlas nebol odovzdaný.",
+      "forbidden": "Na túto akciu nemáte oprávnenie.",
+      "voting_not_active": "Hlasovanie už nie je aktívne. Hlas nebol odovzdaný.",
+      "electronic_blocked": "V tomto hlasovaní nie je elektronické hlasovanie povolené.",
+      "not_unit_owner": "Nie ste vlastníkom tejto jednotky. Hlas nebol odovzdaný.",
+      "unit_out_of_scope": "Jednotka nepatrí do rozsahu tohto hlasovania.",
+      "conflict_state_changed": "Hlasovanie sa medzitým zmenilo, preto sa hlas neodovzdal. Začnite odznova.",
+      "rate_limited": "Príliš veľa pokusov. Skúste to neskôr.",
+      "internal": "Nastala neočakávaná chyba. Hlas nebol odovzdaný.",
+      "email_failed": "Potvrdzovací email sa nepodarilo odoslať.",
+      "generic": "Hlas sa nepodarilo odovzdať."
+    }
   }
 }

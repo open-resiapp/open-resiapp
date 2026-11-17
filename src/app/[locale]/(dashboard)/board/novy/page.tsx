@@ -6,7 +6,9 @@ import { redirect } from "@/i18n/navigation";
 import { auth } from "@/lib/auth";
 import { parseCreateType, type CreateType } from "@/lib/feed";
 import { listEntrances } from "@/lib/feed.server";
+import { isBoard } from "@/lib/mcp/authz";
 import { hasPermission } from "@/lib/permissions";
+import { getShellData } from "@/lib/shell.server";
 
 // One create flow for every feed type (BYT-20261117-002 Phase 5).
 // `?typ=oznam|udalost|pomoc|predaj` preselects the type (old /komunita/*/nov*
@@ -27,7 +29,12 @@ export default async function NewFeedPostPage({ params, searchParams }: Props) {
   if (!session?.user?.id) return null; // the layout already redirects to /login
 
   const role = session.user.role;
-  const canNotice = hasPermission(role, "createPost");
+  // Same authority as POST /api/posts (createPost → assertBoard with
+  // caretaker): admin, active chairman or caretaker (BYT-20261117-001).
+  const shell = await getShellData(session);
+  const canNotice =
+    shell.user.status === "active" &&
+    isBoard({ role, boardRoles: shell.user.boardRoles }, { allowCaretaker: true });
   const canCommunity = hasPermission(role, "createCommunityPost");
 
   // Board first sees "Oznam"; owners only the resident types.

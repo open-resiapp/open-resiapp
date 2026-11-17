@@ -8,6 +8,7 @@ import {
   listUnmatchedBankLines,
 } from "@modules/accounting/src/lib/bank-import";
 import { listPayableUnits } from "@modules/accounting/src/lib/payments";
+import { validateMatchInput } from "@modules/accounting/src/lib/input-validators";
 
 // Bank import + reconciliation API — treasurer/admin only (whole-dom
 // financial mutation surface).
@@ -65,14 +66,15 @@ export async function handleConfirmMatch(
   const ctx = await requireWriter();
   if (!ctx.ok) return ctx.error;
 
-  let body: { unitEntityId?: string };
+  let body: Record<string, unknown>;
   try {
     body = await req.json();
   } catch {
     return NextResponse.json({ error: "invalid json" }, { status: 400 });
   }
-  if (typeof body.unitEntityId !== "string") {
-    return NextResponse.json({ error: "invalid unit" }, { status: 400 });
+  const parsed = validateMatchInput(body);
+  if (!parsed.ok) {
+    return NextResponse.json({ error: parsed.message }, { status: 400 });
   }
 
   try {
@@ -80,7 +82,7 @@ export async function handleConfirmMatch(
       entityId: ctx.root.id,
       country: ctx.root.country,
       paymentId,
-      unitEntityId: body.unitEntityId,
+      unitEntityId: parsed.value.unitEntityId,
       actorId: ctx.session.user.id,
     });
     return NextResponse.json({ ok: true });

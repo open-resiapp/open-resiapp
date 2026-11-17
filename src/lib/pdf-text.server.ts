@@ -1,6 +1,8 @@
 import "server-only";
 
-// Thin server-only wrapper around pdf-parse (pdfjs under the hood). This is
+// Thin server-only wrapper around pdf-parse (pdfjs under the hood). Lives in
+// core (BYT-20261117-001) so non-accounting callers (MCP document text) can
+// use it without importing the accounting module. Originally
 // the ONLY non-pure seam of the vyúčtovanie-PDF ingest (AC 508): turning
 // uploaded PDF BYTES into text. The text parsing / unit matching / money
 // math all live in the client-safe, golden-tested vyuctovanie-pdf-import.ts.

@@ -11,7 +11,6 @@ CREATE TABLE "webauthn_credentials" (
 	"activated_at" timestamp
 );
 --> statement-breakpoint
-ALTER TABLE "mod_voting_ballots" ADD COLUMN "confirmation_method" varchar(16);--> statement-breakpoint
 ALTER TABLE "mod_voting_ballots" ADD COLUMN "confirmed_at" timestamp;--> statement-breakpoint
 ALTER TABLE "webauthn_credentials" ADD CONSTRAINT "webauthn_credentials_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 CREATE UNIQUE INDEX "webauthn_credentials_credential_id_idx" ON "webauthn_credentials" USING btree ("credential_id");--> statement-breakpoint

@@ -17,7 +17,12 @@ import OwnerBallot from "./OwnerBallot";
 import BoardConsole, { EditVotingForm, ManageActions } from "./BoardConsole";
 import type { BallotData, BuildingInfo, VotingDetail } from "./types";
 
-export default function VotingDetailPage() {
+export default function VotingDetailPage({
+  canManage,
+}: {
+  /** Admin OR active chairman (assertBoard, BYT-20261117-001 Decided 1) — resolved server-side. */
+  canManage: boolean;
+}) {
   const { data: session } = useSession();
   const t = useTranslations("Voting");
   const tCommon = useTranslations("Common");
@@ -38,7 +43,6 @@ export default function VotingDetailPage() {
   const canVote = hasPermission(role, "vote");
   const canRecordPaper = hasPermission(role, "recordPaperVote");
   const canMandate = hasPermission(role, "grantMandate");
-  const canManage = hasPermission(role, "createVoting");
 
   const fetchVoteData = useCallback(async () => {
     if (!hasPermission(role, "viewVotingResults")) return;

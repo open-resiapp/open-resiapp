@@ -5,6 +5,7 @@ import { db } from "@/db";
 import { coreModules } from "@/db/schema";
 import { withExternalAuth } from "@/lib/external-auth";
 import { clearModuleStatusCache } from "@/lib/modules/route-guard";
+import { onModuleStatusChanged } from "@/lib/mcp/module-state";
 
 async function handler(
   _request: NextRequest,
@@ -32,6 +33,8 @@ async function handler(
     .set({ status: "disabled", updatedAt: new Date() })
     .where(eq(coreModules.name, name));
   clearModuleStatusCache();
+  // BYT-20261117-001: disabling `mcp` revokes every OAuth token.
+  await onModuleStatusChanged(name, "disabled");
 
   // Note: data is preserved. Voting (and any other bundled module
   // with retention rules) refuses uninstall, but disable is always

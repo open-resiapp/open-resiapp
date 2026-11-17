@@ -185,6 +185,8 @@ export interface CreatePaymentInput {
   /** Where the money arrived — bank account (221) or cash box (211). */
   method: "bank" | "cash";
   note?: string;
+  /** Audit-log justification, e.g. "MCP: Claude" for AI-proposed writes. */
+  justification?: string | null;
 }
 
 export interface CreatePaymentResult {
@@ -279,6 +281,7 @@ export async function createManualPayment(
         allocatedCents: result.allocatedCents,
         unallocatedCents: result.unallocatedCents,
       },
+      justification: input.justification ?? null,
     });
 
     return { paymentId: payment.id, ...result };

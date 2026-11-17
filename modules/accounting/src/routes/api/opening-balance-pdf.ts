@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 import { requireWriter } from "@modules/accounting/src/lib/api-guard";
 import { listUnitVs } from "@modules/accounting/src/lib/fee-schedules";
-import { extractPdfText } from "@modules/accounting/src/lib/pdf-text.server";
+import { extractPdfText } from "@/lib/pdf-text.server";
 import {
   matchVyuctovaniePdfsToUnits,
   type VyuctovaniePdfUnit,

@@ -2,9 +2,12 @@ import "server-only";
 
 import { and, desc, eq, inArray, sql } from "drizzle-orm";
 import { db } from "@/db";
-import { memberships, users } from "@/db/schema";
+import { entities, memberships, users } from "@/db/schema";
+import { McpError } from "@/lib/mcp/errors";
+import type { Principal } from "@/lib/mcp/principal";
 import { accountingSettings } from "../db/schema";
-import { listDomUnits } from "./dom-units";
+import { domUnitsWhere, listDomUnits } from "./dom-units";
+import { isAccountingReader } from "./authz";
 import { listUnitBalances } from "./karta-bytu";
 import {
   discloseDebtorName,
@@ -26,13 +29,25 @@ import {
 type Country = "sk" | "cz";
 
 export interface DebtorRow {
+  /** Present for the board audience only. */
+  unitId?: string;
   unitLabel: string;
   balanceCents: number;
   /** Owner names when statutory disclosure applies; null = not disclosed. */
   ownerNames: string[] | null;
 }
 
+/**
+ * Who the list is built for (BYT-20261117-001 Decided 2):
+ *   - "board": treasurer / chairman / admin — every unit in debt, with
+ *     owner names, regardless of the disclosure settings or unit ownership.
+ *   - "owner": a dom owner — the §11 disclosure view (threshold + SK 500 €
+ *     name rule).
+ */
+export type DebtorAudience = "board" | "owner";
+
 export interface DebtorList {
+  audience: DebtorAudience;
   enabled: boolean;
   thresholdCents: number | null;
   /** Whether SK name disclosure is active (informs the UI legend). */
@@ -96,6 +111,7 @@ export async function getDebtorList(
   const namesActive = namesEnabled && country === "sk";
   if (thresholdCents === null) {
     return {
+      audience: "owner",
       enabled: false,
       thresholdCents: null,
       namesEnabled: namesActive,
@@ -144,10 +160,95 @@ export async function getDebtorList(
   }));
 
   return {
+    audience: "owner",
     enabled: true,
     thresholdCents,
     namesEnabled: namesActive,
     nameThresholdCents: SK_DEBTOR_NAME_THRESHOLD_CENTS,
     debtors,
   };
+}
+
+/**
+ * Board view (Decided 2): every unit with a positive balance (= debt), with
+ * all active owner names. Internal to the board — not the §11 publication,
+ * so neither the disclosure threshold nor the 500 € name rule applies.
+ * `thresholdCents: 0` / `namesEnabled: true` keep the UI payload shape.
+ */
+export async function getBoardDebtorList(
+  entityId: string,
+  country: Country
+): Promise<DebtorList> {
+  const units = await listDomUnits(entityId);
+  const balances = await listUnitBalances(
+    entityId,
+    country,
+    units.map((u) => u.id)
+  );
+  const debtorsRaw = units
+    .map((u) => ({
+      unitId: u.id,
+      unitLabel: u.flatNumber ?? u.name,
+      balanceCents: balances.get(u.id) ?? 0,
+    }))
+    .filter((d) => d.balanceCents > 0)
+    .sort((a, b) => b.balanceCents - a.balanceCents);
+  const namesByUnit = await ownerNamesForUnits(debtorsRaw.map((d) => d.unitId));
+  return {
+    audience: "board",
+    enabled: true,
+    thresholdCents: 0,
+    namesEnabled: true,
+    nameThresholdCents: SK_DEBTOR_NAME_THRESHOLD_CENTS,
+    debtors: debtorsRaw.map((d) => ({
+      unitId: d.unitId,
+      unitLabel: d.unitLabel,
+      balanceCents: d.balanceCents,
+      ownerNames: namesByUnit.get(d.unitId) ?? [],
+    })),
+  };
+}
+
+/** Does the user hold an active OWNER membership on any unit of the dom? */
+async function isDomOwner(userId: string, entityId: string): Promise<boolean> {
+  const [row] = await db
+    .select({ id: memberships.id })
+    .from(memberships)
+    .innerJoin(entities, eq(memberships.entityId, entities.id))
+    .where(
+      and(
+        eq(memberships.userId, userId),
+        eq(memberships.role, "owner"),
+        eq(memberships.status, "active"),
+        domUnitsWhere(entityId)
+      )
+    )
+    .limit(1);
+  return !!row;
+}
+
+/** Which debtor view the principal gets; null = no access. */
+export async function resolveDebtorAudience(
+  p: Pick<Principal, "userId" | "role" | "status" | "entityId" | "boardRoles">
+): Promise<DebtorAudience | null> {
+  if (p.status !== "active") return null;
+  if (isAccountingReader(p.role, p.boardRoles)) return "board";
+  if (await isDomOwner(p.userId, p.entityId)) return "owner";
+  return null;
+}
+
+/**
+ * Debtor list for a principal — shared by GET /api/accounting/debtors and
+ * the MCP `list_debtors` tool. Throws McpError("forbidden") for anyone who
+ * is neither a reader nor a dom owner (e.g. tenants).
+ */
+export async function getDebtorListForPrincipal(
+  p: Pick<Principal, "userId" | "role" | "status" | "entityId" | "boardRoles">,
+  country: Country
+): Promise<DebtorList> {
+  const audience = await resolveDebtorAudience(p);
+  if (!audience) throw new McpError("forbidden");
+  return audience === "board"
+    ? getBoardDebtorList(p.entityId, country)
+    : getDebtorList(p.entityId, country);
 }

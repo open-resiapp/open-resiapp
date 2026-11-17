@@ -562,6 +562,8 @@ export async function confirmBankLineMatch(input: {
   paymentId: string;
   unitEntityId: string;
   actorId: string;
+  /** Audit-log justification, e.g. "MCP: Claude" for AI-proposed writes. */
+  justification?: string | null;
 }): Promise<void> {
   await db.transaction(async (tx) => {
     await postAllDueMonths(tx, {
@@ -627,6 +629,7 @@ export async function confirmBankLineMatch(input: {
       tableName: "mod_accounting_payments",
       recordId: input.paymentId,
       after: { matchedUnitEntityId: input.unitEntityId, via: "reconciliation" },
+      justification: input.justification ?? null,
     });
   });
 }

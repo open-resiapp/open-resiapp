@@ -29,6 +29,8 @@ import {
   type LoadedModule,
 } from "./registry";
 import { assertNotBundled } from "./bootstrap-bundled";
+import { clearModuleStatusCache } from "./route-guard";
+import { onModuleStatusChanged } from "@/lib/mcp/module-state";
 
 const STAGING_DIR = path.join(MODULES_DIR, ".staging");
 
@@ -363,6 +365,9 @@ export async function setModuleStatus(
       updatedAt: new Date(),
     })
     .where(eq(coreModules.name, name));
+  clearModuleStatusCache();
+  // BYT-20261117-001: disabling `mcp` revokes every OAuth token.
+  await onModuleStatusChanged(name, status);
   if (status === "disabled") unregisterModule(name);
   else {
     const { loadAllModules } = await import("./loader");

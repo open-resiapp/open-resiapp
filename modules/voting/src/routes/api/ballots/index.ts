@@ -14,31 +14,17 @@ import { db } from "@/db";
 import { users, entities, memberships } from "@/db/schema";
 import {
   votings,
-  votingItems,
   ballots,
   ballotItemVotes,
   ballotPhotos,
 } from "@modules/voting/src/db/schema";
 import { hasPermission } from "@/lib/permissions";
+import { getVotingResults } from "@modules/voting/src/results";
 import {
-  calculateItemResults,
   computeItemAuditHash,
 } from "@modules/voting/src/engine";
-import { getCommunityRoot } from "@/lib/legacy-compat";
 import { userPasskeyState } from "@/lib/webauthn.server";
-import {
-  computeMemberWeight,
-  computeUnitWeight,
-  isUnitScoped,
-  normalizeVotingMethod,
-} from "@/lib/voting-method";
-import type {
-  UserRole,
-  VoteChoice,
-  VoteWithOwnership,
-  Country,
-  QuorumType,
-} from "@/types";
+import type { UserRole } from "@/types";
 import { deleteBallotAsBoard, validateCast } from "./cast.server";
 import { castConfirmed, withdrawConfirmed } from "./confirm.server";
 
@@ -58,142 +44,20 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: "Nemáte oprávnenie" }, { status: 403 });
   }
 
-  const root = await getCommunityRoot();
-  const votingMethod = normalizeVotingMethod(root?.votingMethod);
-  const country = (root?.country ?? "sk") as Country;
-
-  const [voting] = await db
-    .select({ entityId: votings.entityId })
-    .from(votings)
-    .where(eq(votings.id, votingId))
-    .limit(1);
-  if (!voting) {
+  // Per-item tallies — the single shared implementation (also used by the
+  // accounting pipeline and the MCP get_voting_results tool).
+  const bundle = await getVotingResults(votingId);
+  if (!bundle) {
     return NextResponse.json({ error: "Hlasovanie nenájdené" }, { status: 404 });
   }
-
-  // Ordered ballot items (each with its own quorumType).
-  const items = await db
-    .select({
-      id: votingItems.id,
-      idx: votingItems.idx,
-      title: votingItems.title,
-      description: votingItems.description,
-      quorumType: votingItems.quorumType,
-    })
-    .from(votingItems)
-    .where(eq(votingItems.votingId, votingId))
-    .orderBy(votingItems.idx);
-
-  // Every item-vote in this voting, with full ownership context so the
-  // engine can group by unit and resolve §14 ods. 4 per item. Mirrors the
-  // legacy votes GET join, but keyed to (item, ballot).
-  const itemVoteRows = await db
-    .select({
-      itemId: ballotItemVotes.itemId,
-      choice: ballotItemVotes.choice,
-      ownerId: ballots.ownerId,
-      unitEntityId: ballots.entityId,
-      ownerName: users.name,
-      shareNumerator: sql<number>`(${entities.data}->>'share_numerator')::int`,
-      shareDenominator: sql<number>`(${entities.data}->>'share_denominator')::int`,
-      area: sql<number | null>`(${entities.data}->>'area_m2')::int`,
-      ownerUnitShareNumerator: memberships.ownerUnitShareNumerator,
-      ownerUnitShareDenominator: memberships.ownerUnitShareDenominator,
-      membershipWeight: memberships.weight,
-    })
-    .from(ballotItemVotes)
-    .innerJoin(ballots, eq(ballots.id, ballotItemVotes.ballotId))
-    .leftJoin(users, eq(ballots.ownerId, users.id))
-    .innerJoin(entities, eq(entities.id, ballots.entityId))
-    .leftJoin(
-      memberships,
-      and(
-        eq(memberships.entityId, ballots.entityId),
-        eq(memberships.userId, ballots.ownerId),
-        eq(memberships.status, "active")
-      )
-    )
-    .where(eq(ballots.votingId, votingId));
-
-  const votesByItem = new Map<string, VoteWithOwnership[]>();
-  for (const r of itemVoteRows) {
-    const vow: VoteWithOwnership = {
-      unitEntityId: r.unitEntityId,
-      userId: r.ownerId,
-      userName: r.ownerName,
-      choice: r.choice as VoteChoice,
-      unitShareNumerator: r.shareNumerator,
-      unitShareDenominator: r.shareDenominator,
-      area: r.area,
-      ownerUnitShareNumerator: r.ownerUnitShareNumerator ?? 1,
-      ownerUnitShareDenominator: r.ownerUnitShareDenominator ?? 1,
-      membershipWeight: r.membershipWeight ?? 1,
-    };
-    const slot = votesByItem.get(r.itemId) ?? [];
-    slot.push(vow);
-    votesByItem.set(r.itemId, slot);
-  }
-
-  // Total possible weight over the voting's scope subtree (same rule as the
-  // legacy votes GET): unit-scoped sums unit weights; member-scoped counts /
-  // sums membership weights.
-  let totalPossibleWeight = 0;
-  if (isUnitScoped(votingMethod)) {
-    const flatsForScope = await db
-      .select({
-        shareNumerator: sql<number>`(${entities.data}->>'share_numerator')::int`,
-        shareDenominator: sql<number>`(${entities.data}->>'share_denominator')::int`,
-        area: sql<number | null>`(${entities.data}->>'area_m2')::int`,
-      })
-      .from(entities)
-      .where(
-        and(
-          eq(entities.kind, "unit"),
-          isNull(entities.archivedAt),
-          voting.entityId
-            ? sql`${entities.path} LIKE (SELECT path || '%' FROM ${entities} WHERE id = ${voting.entityId})`
-            : sql`true`
-        )
-      );
-    for (const f of flatsForScope) {
-      totalPossibleWeight += computeUnitWeight(
-        {
-          shareNumerator: f.shareNumerator,
-          shareDenominator: f.shareDenominator,
-          area: f.area,
-        },
-        votingMethod
-      );
-    }
-  } else {
-    const scopeMembers = await db
-      .select({ weight: memberships.weight })
-      .from(memberships)
-      .innerJoin(entities, eq(entities.id, memberships.entityId))
-      .where(
-        and(
-          eq(memberships.status, "active"),
-          isNull(entities.archivedAt),
-          voting.entityId
-            ? sql`${entities.path} LIKE (SELECT path || '%' FROM ${entities} WHERE id = ${voting.entityId})`
-            : sql`true`
-        )
-      );
-    for (const m of scopeMembers) {
-      totalPossibleWeight += computeMemberWeight(
-        { membershipWeight: m.weight },
-        votingMethod
-      );
-    }
-  }
-
-  const results = calculateItemResults(
-    items.map((i) => ({ id: i.id, quorumType: i.quorumType as QuorumType })),
-    votesByItem,
-    votingMethod,
-    totalPossibleWeight,
-    { country }
-  );
+  const items = bundle.items.map((i) => ({
+    id: i.id,
+    idx: i.idx,
+    title: i.title,
+    description: i.description,
+    quorumType: i.quorumType,
+  }));
+  const { results, totalPossibleWeight } = bundle;
 
   // All ballots in this voting (for admin display + paper photos), plus the
   // caller's own ballots (for pre-filling the cast form).
@@ -208,7 +72,7 @@ export async function GET(request: NextRequest) {
       ballotHash: ballots.ballotHash,
       recordedAt: ballots.recordedAt,
       disputed: ballots.disputed,
-      confirmationMethod: ballots.confirmationMethod,
+      confirmationMethod: ballots.confirmationKind,
       confirmedAt: ballots.confirmedAt,
     })
     .from(ballots)
@@ -402,7 +266,7 @@ export async function POST(request: NextRequest) {
     ballotHash,
     // A paper ballot replaces any electronic confirmation metadata.
     signature: null,
-    confirmationMethod: null,
+    confirmationKind: null,
     confirmedAt: null,
     recordedAt,
   };

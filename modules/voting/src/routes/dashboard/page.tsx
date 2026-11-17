@@ -20,7 +20,12 @@ interface VotingData {
   createdBy: { id: string; name: string } | null;
 }
 
-export default function HlasovaniePage() {
+export default function HlasovaniePage({
+  canCreate: canCreateProp,
+}: {
+  /** Server-resolved board check (admin OR active chairman). */
+  canCreate?: boolean;
+} = {}) {
   const { user, audience } = useShell();
   const t = useTranslations("Voting");
   const tl = useTranslations("VotingList");
@@ -28,7 +33,7 @@ export default function HlasovaniePage() {
   const [votings, setVotings] = useState<VotingData[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const canCreate = hasPermission(user.role as UserRole, "createVoting");
+  const canCreate = canCreateProp ?? hasPermission(user.role as UserRole, "createVoting");
   const isBoard = audience === "board";
 
   useEffect(() => {

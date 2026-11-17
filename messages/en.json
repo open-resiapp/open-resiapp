@@ -494,6 +494,25 @@
       "intro": "The community {building} published the annual service-advance settlement for {year}. Full breakdown and PDF are on your unit ledger.",
       "button": "Open unit ledger",
       "hint": "If the link doesn't work, sign in to the app and open Accounting → Unit ledger."
+    },
+    "ballotConfirm": {
+      "subject": "Confirm your vote: {voting}",
+      "heading": "Vote confirmation",
+      "intro": "Through the AI app “{client}” you asked to cast a vote in “{voting}” for {unit}.",
+      "notCastYet": "Your vote has NOT been cast yet.",
+      "itemsHeading": "Your ballot",
+      "itemColumn": "Item",
+      "choiceColumn": "Choice",
+      "choiceFor": "FOR",
+      "choiceAgainst": "AGAINST",
+      "choiceAbstain": "ABSTAIN",
+      "choiceUnmarked": "not marked",
+      "hashLabel": "Ballot check code:",
+      "button": "Review and confirm the vote",
+      "loginNote": "After clicking, sign in with your account. The vote counts only after you press “I confirm my vote”; the check code on the page must match the one in this email.",
+      "expiryNote": "The link is valid for {minutes} minutes and can be used only once. It cannot be resent after it expires — start over.",
+      "ignoreNote": "If you did not ask for this, ignore this email. No vote is cast without your confirmation.",
+      "fallback": "If the button does not work, copy this link into your browser:"
     }
   },
   "Header": {
@@ -2698,7 +2717,11 @@
       "loadError": "Failed to load the list.",
       "backToAccounting": "Back to accounting",
       "colOwner": "Owner",
-      "nameWithheld": "— (below 500 €)"
+      "nameWithheld": "— (below 500 €)",
+      "boardSubtitle": "Every unit in arrears, with owner names — the board's internal view (chairman, treasurer, administrator).",
+      "boardNone": "No unit is in arrears.",
+      "boardNote": "Internal list for the board. Do not publish it to owners — publication follows the statutory rules approved by the owners' meeting and the threshold set by the board.",
+      "boardNoOwner": "— (no active owner)"
     },
     "votingImpacts": {
       "title": "Financial impacts",
@@ -3091,5 +3114,265 @@
     "cancel": "Cancel",
     "moreActions": "More actions",
     "loading": "Loading…"
+  },
+  "Mcp": {
+    "module": {
+      "description": "Lets members connect AI apps (Claude, ChatGPT and others) via MCP. A connected app reads community data on behalf of the signed-in member and sends it to the AI provider outside this instance.",
+      "enableWarning": "Enabling MCP lets members connect AI apps. Community data (announcements, votings, documents, finances according to the member's role) will be sent to the AI provider the member connects — outside this instance. Continue?",
+      "disableWarning": "Disabling MCP immediately revokes every connected AI app of every member. Continue?"
+    },
+    "consent": {
+      "title": "{client} requests access",
+      "verifiedHost": "Verified app from {host}",
+      "unverifiedHost": "Unverified app (redirects to {host})",
+      "intro": "Signed in as {user}. The app will act on your behalf and will only see what you can see in this app.",
+      "scopesHeading": "The app will be able to:",
+      "roleNote": "Your role in the community always decides what you may do — this permission never extends it.",
+      "dataWarning": "Data that {client} requests will leave this instance and be processed by the AI provider under its own terms. No change is made without your confirmation in the app.",
+      "inactiveUser": "Your account is not active yet (awaiting approval or rejected). You cannot grant access.",
+      "allow": "Allow",
+      "deny": "Deny",
+      "revokeHint": "You can revoke access at any time in Profile → Connected AI apps.",
+      "errorTitle": "This request cannot be processed",
+      "errorInvalidClient": "The app could not be verified. Try connecting it again from your AI app.",
+      "errorInvalidRedirect": "The return address does not belong to this app. The request was stopped for your safety."
+    },
+    "scopes": {
+      "read": "read your community data: profile, announcements, votings and documents you can see",
+      "finance_read": "read community finances according to your role (cash box, bank, repair fund, debtors, unit ledger)",
+      "finance_write": "propose accounting changes (payment matching, expenses) — you confirm each one",
+      "governance_write": "propose announcements and voting drafts — you confirm each one",
+      "vote": "prepare your vote, which you confirm by clicking a link in an e-mail"
+    },
+    "scopeNames": {
+      "read": "read",
+      "finance_read": "finances (read)",
+      "finance_write": "finances (proposals)",
+      "governance_write": "announcements and votings (proposals)",
+      "vote": "voting"
+    },
+    "profile": {
+      "title": "Connected AI apps",
+      "description": "AI apps you allowed to access community data on your behalf.",
+      "loading": "Loading…",
+      "empty": "You have no connected AI apps.",
+      "error": "The operation failed. Please try again.",
+      "scopes": "Permissions",
+      "lastUsed": "Last used {date}",
+      "neverUsed": "Not used yet",
+      "revoke": "Revoke access",
+      "revokeConsequence": "{name} immediately loses access to the community data. To use it again you will have to connect it again.",
+      "confirmRevoke": "Yes, revoke",
+      "cancel": "Keep"
+    },
+    "actions": {
+      "match_payment": {
+        "title": "Match a bank payment",
+        "summary": "Credit the payment of {amount} to unit {unit}",
+        "done": "The payment was matched."
+      },
+      "record_payment": {
+        "title": "Record a payment",
+        "summary": "Record a payment of {amount} from unit {unit}",
+        "done": "The payment was recorded."
+      },
+      "post_expense_from_inbox": {
+        "title": "Post an invoice from the inbox",
+        "summary": "Post invoice {invoiceNo} for {amount}",
+        "done": "The invoice was posted as an expense."
+      },
+      "dismiss_inbox_item": {
+        "title": "Dismiss an inbox item",
+        "summary": "Dismiss scan {file} from the invoice inbox",
+        "done": "The item was dismissed."
+      },
+      "submit_meter_reading": {
+        "title": "Record a meter reading",
+        "summary": "Record reading {value} for unit {unit}",
+        "done": "The reading was recorded."
+      },
+      "approve_zavierka": {
+        "title": "Approve the annual accounts",
+        "summary": "Approve the accounts for {year} and close the period",
+        "done": "The accounts were approved and the period closed."
+      },
+      "create_announcement": {
+        "title": "Publish an announcement",
+        "summary": "Publish the announcement “{title}”",
+        "done": "The announcement was published."
+      },
+      "draft_voting": {
+        "title": "Draft a voting",
+        "summary": "Create a draft voting “{title}” ({count, plural, one {# item} other {# items}})",
+        "done": "The draft voting was created. It can only be started in the app."
+      },
+      "request_ballot_confirmation": {
+        "title": "Request a vote confirmation",
+        "summary": "Ballot for “{title}” — confirmation by email",
+        "confirmLabel": "Send confirmation email",
+        "done": "The confirmation email has been sent. The vote counts only after you click the link in the email and confirm in the app."
+      }
+    },
+    "preview": {
+      "amount": "Amount",
+      "receivedAt": "Received on",
+      "vs": "Variable symbol",
+      "counterparty": "Payer",
+      "narrative": "Payment message",
+      "unit": "Unit",
+      "unmatched": "Unmatched",
+      "unitBalance": "Unit balance (positive = debt)",
+      "method": "Method",
+      "method_bank": "Bank account",
+      "method_cash": "Cash box",
+      "note": "Note",
+      "file": "File",
+      "supplier": "Supplier",
+      "ico": "Company ID (IČO)",
+      "dic": "Tax ID (DIČ)",
+      "iban": "Supplier IBAN",
+      "invoiceNo": "Invoice number",
+      "invoiceDate": "Issue date",
+      "dueDate": "Due date",
+      "category": "Category",
+      "uncategorized": "Uncategorised",
+      "okruh": "Ledger",
+      "okruh_fpuo": "Repair and maintenance fund",
+      "okruh_svc": "Services (billed to owners)",
+      "netto": "Net amount",
+      "dph": "VAT",
+      "brutto": "Gross amount",
+      "inboxStatus": "Inbox status",
+      "inboxPending": "Pending",
+      "inboxPosted": "Posted",
+      "inboxDismissed": "Dismissed",
+      "ocrAmount": "Amount read by OCR",
+      "meterType": "Meter",
+      "readingDate": "Reading date",
+      "meterValue": "Meter value",
+      "year": "Year",
+      "voting": "Voting",
+      "votingItem": "Voting item",
+      "periodStatus": "Period status",
+      "periodPublished": "Settlement published",
+      "periodClosed": "Closed",
+      "postTitle": "Title",
+      "postContent": "Text",
+      "pinned": "Pin to top",
+      "yes": "Yes",
+      "no": "No",
+      "audience": "Audience",
+      "wholeCommunity": "Whole community",
+      "votingTitle": "Voting title",
+      "description": "Description",
+      "votingType": "Voting type",
+      "votingType_written": "Written (per rollam)",
+      "votingType_meeting": "At a meeting",
+      "startsAt": "Starts",
+      "endsAt": "Ends",
+      "itemN": "Item {n}",
+      "status": "Status",
+      "statusDraft": "Draft",
+      "effect_fpuo_rate_change": "new repair fund contribution {amount}",
+      "effect_expense_approval": "approval of an expense of {amount}",
+      "choice_za": "FOR",
+      "choice_proti": "AGAINST",
+      "choice_zdrzal_sa": "ABSTAIN",
+      "choice_unmarked": "not marked",
+      "ballotHash": "Ballot check code",
+      "emailTo": "Confirmation email goes to"
+    },
+    "consequences": {
+      "allocatePayment": "The payment is allocated to the unit’s oldest charges and changes its balance.",
+      "expenseBooked": "The expense is booked and the scan moves from the inbox to expenses.",
+      "expenseFromFund": "The expense reduces the repair and maintenance fund balance.",
+      "expenseToSettlement": "The expense enters the owners’ annual service settlement.",
+      "inboxDismissed": "The scan is removed from the inbox and not booked.",
+      "publishedImmediately": "The announcement is published immediately.",
+      "pushToAll": "All residents with notifications enabled receive a push notification.",
+      "readingForSettlement": "The reading is used in the annual service settlement.",
+      "votingDraftOnly": "Only a draft is created — the voting does not start. It can only be started in the app.",
+      "zavierkaClosed": "The accounting period is closed and can no longer be changed.",
+      "ballotNotCastYet": "This step does NOT cast the vote.",
+      "ballotEmailSent": "You will receive an email with a link valid for {minutes} minutes that can be used only once.",
+      "ballotConfirmSignedIn": "The vote counts only when you open the link, sign in with your account and press “I confirm my vote”."
+    },
+    "warnings": {
+      "ocrAmountMismatch": "The amount differs from the amount read from the scan ({ocr}).",
+      "readingLower": "The reading is lower than the previous one ({previous}).",
+      "ballotReplacesExisting": "You have already voted for this unit in this voting — once confirmed, this ballot replaces it.",
+      "ballotUnmarkedItems": "{count, plural, one {# item is} other {# items are}} not marked — no choice will be cast for them."
+    },
+    "view": {
+      "confirm": "Confirm",
+      "cancel": "Cancel",
+      "working": "Working…",
+      "expires": "Valid until {time}.",
+      "consequences": "What happens",
+      "warnings": "Warning",
+      "untrusted": "Text with a side border comes from people or documents — please check it.",
+      "openInApp": "Open in the app",
+      "fallbackHint": "No buttons?",
+      "confirmedTitle": "Confirmed.",
+      "cancelledMessage": "The change was cancelled. Nothing was written.",
+      "pendingText": "Waiting for your confirmation: {summary}. Nothing has been written yet.",
+      "fallbackText": "Confirm or cancel in the card below, or in the app: {url} (valid until {time})."
+    },
+    "errors": {
+      "action_expired": "This request has expired or was already handled. Ask the AI assistant for a new proposal.",
+      "forbidden": "You are not allowed to do this.",
+      "conflict_state_changed": "The data changed in the meantime, so nothing was written. Ask for a new proposal.",
+      "module_disabled": "This module is disabled in the community.",
+      "scope_required": "The AI app connection lacks the required permission. Reconnect it and grant it.",
+      "rate_limited": "Too many requests. Try again shortly.",
+      "internal": "An unexpected error occurred. Please try again.",
+      "validation": "The proposal contains invalid data.",
+      "generic": "The action could not be completed."
+    },
+    "confirmPage": {
+      "title": "Confirm a change proposed by AI",
+      "intro": "An AI assistant proposed this change on your behalf. It is written only after you confirm.",
+      "otherUser": "This request belongs to another user. Sign in with the account that created it.",
+      "done": "Done — the change was written.",
+      "expiresAt": "The request is valid until {time}."
+    }
+  },
+  "VotingConfirm": {
+    "title": "Vote confirmation",
+    "intro": "You prepared this ballot through an AI app. Check every item.",
+    "notCastYet": "The vote has not been cast yet. It is cast only when you press “I confirm my vote”.",
+    "unitLabel": "Unit",
+    "endsLabel": "Voting ends",
+    "itemsHeading": "Ballot",
+    "choice_za": "FOR",
+    "choice_proti": "AGAINST",
+    "choice_zdrzal_sa": "ABSTAIN",
+    "choice_unmarked": "not marked",
+    "hashLabel": "Ballot check code:",
+    "hashHint": "Must match the code in the email.",
+    "confirmButton": "I confirm my vote",
+    "cancelButton": "Cancel — do not vote",
+    "confirmed": "Your vote has been recorded.",
+    "cancelled": "The request was cancelled. No vote was cast.",
+    "superseded": "This link is no longer valid — you have requested a newer ballot since. Use the latest email.",
+    "expired": "The link has expired. It cannot be resent — start over or vote directly in the app.",
+    "invalid": "The link is invalid or has already been used.",
+    "otherOwner": "This link belongs to another owner. Sign out and sign in with the account the email was sent to.",
+    "openVoting": "Open the voting",
+    "changeHint": "Want to vote differently? Cancel this request and vote in the app.",
+    "expiresAt": "The link is valid until {time}.",
+    "errors": {
+      "action_expired": "The link has expired or was already used. No vote was cast.",
+      "forbidden": "You are not allowed to do this.",
+      "voting_not_active": "The voting is no longer active. No vote was cast.",
+      "electronic_blocked": "Electronic voting is not allowed in this voting.",
+      "not_unit_owner": "You are not an owner of this unit. No vote was cast.",
+      "unit_out_of_scope": "The unit is outside the scope of this voting.",
+      "conflict_state_changed": "The voting changed in the meantime, so no vote was cast. Start over.",
+      "rate_limited": "Too many attempts. Try again later.",
+      "internal": "An unexpected error occurred. No vote was cast.",
+      "email_failed": "The confirmation email could not be sent.",
+      "generic": "The vote could not be cast."
+    }
   }
 }
