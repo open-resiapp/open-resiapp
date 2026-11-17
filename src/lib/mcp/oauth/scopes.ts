@@ -1,10 +1,13 @@
 import { MCP_SCOPES, type Scope } from "../principal";
 
-// Scope parsing (BYT-20261117-001 §2). Only `read` is advertised in
-// `scopes_supported`; the others are obtained by step-up.
+// Scope parsing (BYT-20261117-001 §2). Every scope is advertised in
+// `scopes_supported` and granted by default: Claude does not re-authorize on
+// a 403 insufficient_scope, so step-up never happened and finance/write tools
+// stayed unusable. The consent screen lists each scope, and the user's role in
+// the community still limits what any tool may do.
 
-export const ADVERTISED_SCOPES: readonly Scope[] = ["read"];
-export const DEFAULT_SCOPES: readonly Scope[] = ["read"];
+export const ADVERTISED_SCOPES: readonly Scope[] = MCP_SCOPES;
+export const DEFAULT_SCOPES: readonly Scope[] = MCP_SCOPES;
 
 export function isScope(s: string): s is Scope {
   return (MCP_SCOPES as readonly string[]).includes(s);

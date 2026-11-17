@@ -78,7 +78,7 @@ const whoami = defineTool({
     };
     const board = p.boardRoles.length ? `, board: ${p.boardRoles.join("/")}` : "";
     return {
-      summary: `${user?.name ?? "User"} — role ${p.role}${board} in ${root.name} (${root.country.toUpperCase()}); ${ownUnits.length} unit(s); scopes: ${p.scopes.join(" ")}.`,
+      summary: `${user?.name ?? "User"} — role ${p.role}${board} in ${root.name}${root.country ? ` (${root.country.toUpperCase()})` : ""}; ${ownUnits.length} unit(s); scopes: ${p.scopes.join(" ")}.`,
       data,
     };
   },

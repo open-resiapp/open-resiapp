@@ -19,7 +19,12 @@ export default function LanguageSwitcher() {
         // ignore quota / private-mode errors
       }
     }
-    router.replace(pathname, { locale: newLocale as (typeof routing.locales)[number] });
+    // Keep the query string: on /oauth/authorize, /vote-confirm and the claim
+    // pages it carries the request itself, and dropping it breaks the page.
+    const search = typeof window !== "undefined" ? window.location.search : "";
+    router.replace(`${pathname}${search}`, {
+      locale: newLocale as (typeof routing.locales)[number],
+    });
   }
 
   return (

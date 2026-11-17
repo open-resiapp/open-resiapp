@@ -16,11 +16,15 @@ export default async function AuthLayout({
   const logoUrl = branding ? brandingAssetPath("logo", branding.branding.v) : null;
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4 relative dark:bg-gray-950">
-      <div className="absolute top-4 right-4 flex items-center gap-3">
+    // Switchers sit in normal flow above the content (not absolutely
+    // positioned): a page taller than the viewport — e.g. the OAuth consent
+    // screen on a phone — would otherwise scroll its title under them.
+    <div className="min-h-dvh flex flex-col bg-gray-50 px-4 dark:bg-gray-950">
+      <div className="flex items-center justify-end gap-2 pt-4">
         <LanguageSwitcher />
         <ThemeToggle />
       </div>
+      <div className="flex-1 flex items-center justify-center py-6 pb-[max(1.5rem,env(safe-area-inset-bottom))]">
       <div className="w-full max-w-md">
         {logoUrl && (
           // Fixed-height slot reserves space so the swap causes no layout shift.
@@ -34,6 +38,7 @@ export default async function AuthLayout({
           </div>
         )}
         {children}
+      </div>
       </div>
     </div>
   );
