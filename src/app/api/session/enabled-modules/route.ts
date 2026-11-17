@@ -1,22 +1,15 @@
 import { NextResponse } from "next/server";
-import { eq } from "drizzle-orm";
 
 import { auth } from "@/lib/auth";
-import { db } from "@/db";
-import { coreModules } from "@/db/schema";
+import { listEnabledModuleNames } from "@/lib/modules/enabled.server";
 
-// Lightweight endpoint the Sidebar (and any other client UI) hits to
-// learn which modules are currently enabled. Lets nav items flagged
-// `requiresModule` hide themselves when the operator disabled the
-// module in /settings/modules.
+// Lightweight endpoint for client UI that needs the enabled-module set.
+// The dashboard shell no longer calls it — the server layout resolves the
+// same list once (ShellData.enabledModules).
 export async function GET() {
   const session = await auth();
   if (!session) {
     return NextResponse.json({ error: "Neautorizovaný prístup" }, { status: 401 });
   }
-  const rows = await db
-    .select({ name: coreModules.name })
-    .from(coreModules)
-    .where(eq(coreModules.status, "enabled"));
-  return NextResponse.json(rows.map((r) => r.name));
+  return NextResponse.json(await listEnabledModuleNames());
 }

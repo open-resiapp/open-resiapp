@@ -1,152 +1,105 @@
 "use client";
 
 import { useTranslations } from "next-intl";
+
 import { Link, usePathname } from "@/i18n/navigation";
-import { useState, useEffect } from "react";
-import type { UserRole } from "@/types";
-import { hasPermission } from "@/lib/permissions";
+import { Icon } from "@/components/ui";
+import { isNavItemActive } from "@/lib/navigation";
+import { useShell } from "@/components/layout/ShellContext";
 
-interface NavItem {
-  href: string;
-  labelKey: string;
-  icon: string;
-  permission?: Parameters<typeof hasPermission>[1];
-  // When set, the nav item is hidden unless the named module is
-  // installed and enabled (core_modules.status = 'enabled'). The
-  // Sidebar fetches the enabled set from /api/session/enabled-modules.
-  requiresModule?: string;
-}
-
-const navItems: NavItem[] = [
-  { href: "/", labelKey: "dashboard", icon: "📊" },
-  { href: "/board", labelKey: "board", icon: "📋" },
-  { href: "/voting", labelKey: "voting", icon: "🗳️", requiresModule: "voting" },
-  { href: "/accounting", labelKey: "accounting", icon: "💶", requiresModule: "accounting" },
-  { href: "/komunita", labelKey: "community", icon: "🏘️", permission: "viewCommunity" },
-  { href: "/owners", labelKey: "owners", icon: "👥", permission: "manageUsers" },
-  { href: "/documents", labelKey: "documents", icon: "📄", permission: "viewDocuments" },
-  // RES-20260609-001: Import is a once-per-lifetime bootstrap, not a
-  // daily destination. It moved under Settings (+ the /onboarding guide)
-  // so it stops occupying a permanent top-level nav slot.
-  { href: "/settings", labelKey: "settings", icon: "⚙️", permission: "viewSettings" },
-];
+// BYT-20261117-002 Phase 1/3. Items come from the typed nav config
+// (src/lib/navigation.ts) filtered for this user; building name, template,
+// logo and enabled modules come from ShellData — no fetch on mount.
+//
+// Board audience: static sidebar on desktop, slide-in drawer on mobile.
+// Owner audience: desktop sidebar only — mobile uses <BottomTabBar>.
 
 export default function Sidebar({
-  role,
   isOpen,
   onClose,
 }: {
-  role: UserRole;
   isOpen: boolean;
   onClose: () => void;
 }) {
   const t = useTranslations("Sidebar");
+  const tNav = useTranslations("Nav");
   const tRoot = useTranslations();
   const pathname = usePathname();
-  const [buildingName, setBuildingName] = useState<string | null>(null);
-  const [templateSlug, setTemplateSlug] = useState<string | null>(null);
-  const [logoUrl, setLogoUrl] = useState<string | null>(null);
-  const [enabledModules, setEnabledModules] = useState<Set<string> | null>(null);
+  const { community, branding, navItems, badges, audience } = useShell();
 
-  useEffect(() => {
-    fetch("/api/building")
-      .then((r) => (r.ok ? r.json() : null))
-      .then((data) => {
-        if (data?.name) setBuildingName(data.name);
-        if (data?.templateSlug) setTemplateSlug(data.templateSlug);
-      })
-      .catch(() => {});
-  }, []);
+  const buildingName = community?.name || t("appName");
 
-  // BYT-20260512-008: white-label logo. Built from the branding version token
-  // so a new upload busts the cached image.
-  useEffect(() => {
-    fetch("/api/branding")
-      .then((r) => (r.ok ? r.json() : null))
-      .then((data) => {
-        if (data?.hasLogo && data?.v) {
-          setLogoUrl(`/api/branding/asset/logo?v=${encodeURIComponent(data.v)}`);
-        }
-      })
-      .catch(() => {});
-  }, []);
+  // Never show a raw i18n key: displayTemplateSlug is already mapped to
+  // a catalog slug (legacy kind slugs → hoa), and `has` guards the rest.
+  const slug = community?.displayTemplateSlug;
+  const templateKey = slug ? `Templates.${slug}.name` : null;
+  const subtitle =
+    templateKey && tRoot.has(templateKey) ? tRoot(templateKey) : t("appDescription");
 
-  // BYT-20260515-001 Phase 7: the subtitle reflects the install
-  // template's display name when available — "Bytový dom / SVB" for
-  // HOA installs, "Záhradkárska osada" for gardens, etc. Falls back
-  // to the legacy "appDescription" key on pre-Phase-5 installs that
-  // never persisted a template_slug.
-  const subtitle = templateSlug
-    ? tRoot(`Templates.${templateSlug}.name`)
-    : t("appDescription");
-
-  useEffect(() => {
-    fetch("/api/session/enabled-modules")
-      .then((r) => (r.ok ? r.json() : []))
-      .then((names: string[]) => setEnabledModules(new Set(names)))
-      .catch(() => setEnabledModules(new Set()));
-  }, []);
-
-  const visibleItems = navItems.filter((item) => {
-    if (item.permission && !hasPermission(role, item.permission)) return false;
-    if (item.requiresModule) {
-      // Hide module-gated items until the fetch resolves to avoid
-      // flashing a link the user can't follow.
-      if (enabledModules === null) return false;
-      if (!enabledModules.has(item.requiresModule)) return false;
-    }
-    return true;
-  });
+  const isDrawer = audience === "board";
 
   return (
     <>
-      {isOpen && (
+      {isDrawer && isOpen && (
         <div
           className="fixed inset-0 bg-black/50 z-40 lg:hidden"
           onClick={onClose}
+          aria-hidden="true"
         />
       )}
 
       <aside
-        className={`fixed top-0 left-0 z-50 h-full w-64 bg-white border-r border-gray-200 transform transition-transform lg:translate-x-0 lg:static lg:z-auto dark:bg-gray-900 dark:border-gray-800 ${
-          isOpen ? "translate-x-0" : "-translate-x-full"
-        }`}
+        id="app-sidebar"
+        className={
+          isDrawer
+            ? `fixed top-0 left-0 z-50 h-full w-72 overflow-y-auto bg-white border-r border-gray-200 transform transition-transform lg:translate-x-0 lg:static lg:z-auto lg:w-64 dark:bg-gray-900 dark:border-gray-800 ${
+                isOpen ? "translate-x-0" : "-translate-x-full"
+              }`
+            : "hidden lg:block lg:w-64 shrink-0 bg-white border-r border-gray-200 dark:bg-gray-900 dark:border-gray-800"
+        }
       >
         <div className="p-6 border-b border-gray-200 dark:border-gray-800">
-          {logoUrl && (
+          {branding.logoUrl && (
             <div className="mb-3">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
-                src={logoUrl}
-                alt={buildingName || t("appName")}
+                src={branding.logoUrl}
+                alt={buildingName}
                 className="h-10 w-auto max-w-[180px] object-contain"
               />
             </div>
           )}
-          <h2 className="text-lg font-bold text-blue-600 dark:text-blue-400">{buildingName || t("appName")}</h2>
-          <p className="text-sm text-gray-500 mt-1 dark:text-gray-400">{subtitle}</p>
+          <h2 className="text-lg font-bold text-blue-700 dark:text-blue-300">{buildingName}</h2>
+          <p className="text-sm text-gray-600 mt-1 dark:text-gray-300">{subtitle}</p>
         </div>
 
-        <nav className="p-4 space-y-1">
-          {visibleItems.map((item) => {
-            const isActive =
-              item.href === "/"
-                ? pathname === "/"
-                : pathname.startsWith(item.href);
+        <nav className="p-4 space-y-1" aria-label={tNav("menu")}>
+          {navItems.map((item) => {
+            const isActive = isNavItemActive(item, pathname);
+            const count = item.badgeKey ? badges[item.badgeKey] : undefined;
 
             return (
               <Link
-                key={item.href}
+                key={item.id}
                 href={item.href}
                 onClick={onClose}
-                className={`flex items-center gap-3 px-4 py-3 rounded-lg text-base font-medium transition-colors ${
+                aria-current={isActive ? "page" : undefined}
+                className={`flex items-center gap-3 min-h-[48px] px-4 py-3 rounded-lg text-base font-medium transition-colors ${
                   isActive
-                    ? "bg-blue-50 text-blue-700 dark:bg-blue-900/40 dark:text-blue-200"
-                    : "text-gray-700 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-800"
+                    ? "bg-blue-50 text-blue-800 dark:bg-blue-900/40 dark:text-blue-100"
+                    : "text-gray-800 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-800"
                 }`}
               >
-                <span className="text-xl">{item.icon}</span>
-                {t(item.labelKey)}
+                <Icon name={item.icon} size={22} className="shrink-0" />
+                <span className="flex-1 min-w-0 truncate">{tNav(item.labelKey)}</span>
+                {count ? (
+                  <span
+                    className="inline-flex items-center justify-center min-w-[1.75rem] h-7 px-2 rounded-full bg-red-600 text-white text-sm font-semibold"
+                    aria-label={tNav("badgeWaiting", { count })}
+                  >
+                    {count}
+                  </span>
+                ) : null}
               </Link>
             );
           })}

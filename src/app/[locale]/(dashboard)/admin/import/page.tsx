@@ -5,6 +5,7 @@ import { useCallback, useEffect, useMemo, useRef, useState, useTransition } from
 import { useRouter } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
 
+import { PageHeader, useConfirm } from "@/components/ui";
 import { useLocalStorage } from "@/hooks/useLocalStorage";
 import {
   communityColumns,
@@ -106,6 +107,8 @@ function downloadBlob(filename: string, base64: string, mimeType: string) {
 
 export default function ImportWizardPage() {
   const t = useTranslations("Import");
+  const confirm = useConfirm();
+  const tHub = useTranslations("SettingsHub");
   const router = useRouter();
 
   const [structure, setStructure] = useState<StructureVariant>(
@@ -341,9 +344,15 @@ export default function ImportWizardPage() {
     reader.readAsArrayBuffer(file);
   }
 
-  function onClearGrid() {
+  async function onClearGrid() {
     if (rows.length === 0) return;
-    if (!window.confirm(t("clearGridConfirm"))) return;
+    const ok = await confirm({
+      title: t("clearGrid"),
+      description: t("clearGridConfirm"),
+      confirmLabel: t("clearGrid"),
+      tone: "danger",
+    });
+    if (!ok) return;
     setRows([]);
     setPreview(null);
     setGeneralError(null);
@@ -450,14 +459,13 @@ export default function ImportWizardPage() {
 
   return (
     <div className="max-w-7xl mx-auto space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
-          {t("title")}
-        </h1>
-        <p className="mt-1 text-sm text-gray-600 dark:text-gray-300">
-          {t("subtitle")}
-        </p>
-      </div>
+      <PageHeader
+        title={t("title")}
+        description={t("subtitle")}
+        backHref="/settings/advanced"
+        backLabel={tHub("backToAdvanced")}
+        className="mb-0"
+      />
 
       {/* Step 1a: Template (Phase 6) */}
       <section className="rounded-lg border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-4">

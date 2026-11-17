@@ -2,10 +2,16 @@
 
 import { useTranslations } from "next-intl";
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import type { VotingMethod } from "@/types";
+import { Badge, Button, Card, Field, Icon, Textarea } from "@/components/ui";
+import Notice, { type NoticeState } from "./Notice";
 
 interface VotingSettingsTabProps {
   canEdit: boolean;
+  /** Stored voting settings, resolved by the server page. */
+  initialMethod: string;
+  initialLegalNotice: string | null;
 }
 
 const methods: { value: VotingMethod; labelKey: string; descKey: string }[] = [
@@ -14,50 +20,63 @@ const methods: { value: VotingMethod; labelKey: string; descKey: string }[] = [
   { value: "per_area", labelKey: "votingMethodPerArea", descKey: "votingMethodPerAreaDesc" },
 ];
 
-export default function VotingSettingsTab({ canEdit }: VotingSettingsTabProps) {
+// Both the Slovak (zák. 182/1993) and Czech (SVJ) default is "by co-ownership
+// share". Stored values may use the canonical names; show them on the radio
+// that means the same thing.
+const DEFAULT_METHOD: VotingMethod = "per_share";
+function toRadioValue(stored: string): string {
+  if (stored === "weighted_by_share") return "per_share";
+  if (stored === "one_per_unit") return "per_flat";
+  return stored;
+}
+
+export default function VotingSettingsTab({ canEdit, initialMethod, initialLegalNotice }: VotingSettingsTabProps) {
   const t = useTranslations("Settings");
+  const th = useTranslations("SettingsHub");
   const tc = useTranslations("Common");
-  const [currentMethod, setCurrentMethod] = useState<VotingMethod>("per_share");
-  const [selectedMethod, setSelectedMethod] = useState<VotingMethod>("per_share");
-  const [legalNotice, setLegalNotice] = useState("");
-  const [savedLegalNotice, setSavedLegalNotice] = useState("");
-  const [loading, setLoading] = useState(true);
+  const router = useRouter();
+  const startMethod = toRadioValue(initialMethod || DEFAULT_METHOD);
+  const [currentMethod, setCurrentMethod] = useState<string>(startMethod);
+  const [selectedMethod, setSelectedMethod] = useState<string>(startMethod);
+  const [legalNotice, setLegalNotice] = useState(initialLegalNotice ?? "");
+  const [savedLegalNotice, setSavedLegalNotice] = useState(initialLegalNotice ?? "");
   const [saving, setSaving] = useState(false);
   const [savingNotice, setSavingNotice] = useState(false);
   const [missingAreas, setMissingAreas] = useState(false);
-  const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
+  const [message, setMessage] = useState<NoticeState>(null);
 
+  // The flat list is only needed to warn about missing areas when the
+  // "by area" method is chosen — fetch it lazily, once.
+  const [areasChecked, setAreasChecked] = useState(false);
   useEffect(() => {
-    Promise.all([
-      fetch("/api/building").then((r) => r.ok ? r.json() : null),
-      fetch("/api/flats").then((r) => r.ok ? r.json() : []),
-    ]).then(([building, flats]) => {
-      if (building?.votingMethod) {
-        setCurrentMethod(building.votingMethod);
-        setSelectedMethod(building.votingMethod);
-      }
-      if (building?.legalNotice != null) {
-        setLegalNotice(building.legalNotice);
-        setSavedLegalNotice(building.legalNotice);
-      }
-      const hasNullAreas = flats.some((f: { area: number | null }) => f.area === null);
-      setMissingAreas(hasNullAreas);
-      setLoading(false);
-    }).catch(() => setLoading(false));
-  }, []);
+    if (selectedMethod !== "per_area" || areasChecked) return;
+    setAreasChecked(true);
+    fetch("/api/flats")
+      .then((r) => (r.ok ? r.json() : []))
+      .then((flats: { area: number | null }[]) => setMissingAreas(flats.some((f) => f.area === null)))
+      .catch(() => {});
+  }, [selectedMethod, areasChecked]);
+
+  const hasChanges = selectedMethod !== currentMethod;
+  const hasNoticeChanges = legalNotice !== savedLegalNotice;
+
+  const patch = async (body: Record<string, unknown>) => {
+    const res = await fetch("/api/building", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+    });
+    if (!res.ok) throw new Error();
+  };
 
   const handleSave = async () => {
     setSaving(true);
     setMessage(null);
     try {
-      const res = await fetch("/api/building", {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ votingMethod: selectedMethod }),
-      });
-      if (!res.ok) throw new Error();
+      await patch({ votingMethod: selectedMethod });
       setCurrentMethod(selectedMethod);
       setMessage({ type: "success", text: t("votingMethodSaved") });
+      router.refresh();
     } catch {
       setMessage({ type: "error", text: t("votingMethodSaveFailed") });
     } finally {
@@ -65,30 +84,14 @@ export default function VotingSettingsTab({ canEdit }: VotingSettingsTabProps) {
     }
   };
 
-  if (loading) {
-    return (
-      <div className="animate-pulse space-y-4">
-        <div className="h-8 bg-gray-200 rounded w-1/3 dark:bg-gray-700" />
-        <div className="h-32 bg-gray-200 rounded dark:bg-gray-700" />
-      </div>
-    );
-  }
-
-  const hasChanges = selectedMethod !== currentMethod;
-  const hasNoticeChanges = legalNotice !== savedLegalNotice;
-
   const handleSaveNotice = async () => {
     setSavingNotice(true);
     setMessage(null);
     try {
-      const res = await fetch("/api/building", {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ legalNotice: legalNotice || null }),
-      });
-      if (!res.ok) throw new Error();
+      await patch({ legalNotice: legalNotice || null });
       setSavedLegalNotice(legalNotice);
       setMessage({ type: "success", text: t("legalNoticeSaved") });
+      router.refresh();
     } catch {
       setMessage({ type: "error", text: t("legalNoticeSaveFailed") });
     } finally {
@@ -97,100 +100,93 @@ export default function VotingSettingsTab({ canEdit }: VotingSettingsTabProps) {
   };
 
   return (
-    <div className="bg-white rounded-2xl shadow-sm p-6 dark:bg-gray-800 dark:shadow-black/40">
-      <h2 className="text-lg font-bold text-gray-900 mb-4 dark:text-gray-100">{t("votingSettings")}</h2>
-
-      {message && (
-        <div
-          className={`mb-4 p-3 rounded-lg text-base ${
-            message.type === "success" ? "bg-green-50 text-green-700 dark:bg-green-900/30 dark:text-green-200" : "bg-red-50 text-red-700 dark:bg-red-900/30 dark:text-red-200"
-          }`}
-        >
-          {message.text}
-        </div>
-      )}
-
-      <div className="space-y-3">
-        {methods.map((method) => (
-          <label
-            key={method.value}
-            className={`flex items-start gap-3 p-4 rounded-lg border cursor-pointer transition-colors ${
-              selectedMethod === method.value
-                ? "border-blue-500 bg-blue-50 dark:bg-blue-900/30"
-                : "border-gray-200 hover:border-gray-300 dark:border-gray-700 dark:hover:border-gray-600"
-            } ${!canEdit ? "cursor-default" : ""}`}
-          >
-            <input
-              type="radio"
-              name="votingMethod"
-              value={method.value}
-              checked={selectedMethod === method.value}
-              onChange={() => canEdit && setSelectedMethod(method.value)}
-              disabled={!canEdit}
-              className="mt-1 h-4 w-4 text-blue-600"
-            />
-            <div>
-              <p className="text-base font-medium text-gray-900 dark:text-gray-100">{t(method.labelKey)}</p>
-              <p className="text-sm text-gray-500 mt-0.5 dark:text-gray-400">{t(method.descKey)}</p>
-            </div>
-          </label>
-        ))}
+    <Card as="section" padding="lg" aria-labelledby="voting-heading" className="space-y-5">
+      <div>
+        <h2 id="voting-heading" className="text-xl font-semibold text-ui-text">
+          {t("votingSettings")}
+        </h2>
+        <p className="mt-1 text-base text-ui-text-muted">{th("votingIntro")}</p>
       </div>
 
-      {selectedMethod === "per_area" && missingAreas && (
-        <div className="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg text-base text-yellow-700 dark:bg-yellow-900/30 dark:border-yellow-800 dark:text-yellow-200">
+      <Notice state={message} />
+
+      <fieldset className="space-y-3">
+        <legend className="sr-only">{t("votingMethod")}</legend>
+        {methods.map((method) => {
+          const selected = selectedMethod === method.value;
+          return (
+            <label
+              key={method.value}
+              className={`flex min-h-14 items-start gap-3 rounded-lg border p-4 transition-colors ${
+                selected ? "border-ui-primary bg-ui-surface-muted" : "border-ui-border hover:border-ui-border-strong"
+              } ${canEdit ? "cursor-pointer" : "cursor-default"}`}
+            >
+              <input
+                type="radio"
+                name="votingMethod"
+                value={method.value}
+                checked={selected}
+                onChange={() => canEdit && setSelectedMethod(method.value)}
+                disabled={!canEdit}
+                className="mt-1 h-5 w-5 shrink-0 accent-ui-primary"
+              />
+              <span className="min-w-0">
+                <span className="flex flex-wrap items-center gap-2">
+                  <span className="text-base font-medium text-ui-text">{t(method.labelKey)}</span>
+                  {method.value === DEFAULT_METHOD ? <Badge tone="info">{th("defaultBadge")}</Badge> : null}
+                </span>
+                <span className="mt-0.5 block text-base text-ui-text-muted">{t(method.descKey)}</span>
+              </span>
+            </label>
+          );
+        })}
+      </fieldset>
+
+      {selectedMethod === "per_area" && missingAreas ? (
+        <p className="rounded-lg border border-ui-warning/40 bg-ui-warning/10 p-3 text-base text-ui-text">
           {t("missingAreaWarning")}
-        </div>
-      )}
+        </p>
+      ) : null}
 
-      {canEdit && hasChanges && (
-        <div className="flex gap-3 mt-4">
-          <button
-            onClick={handleSave}
-            disabled={saving}
-            className="px-5 py-3 bg-blue-600 hover:bg-blue-700 text-white text-base font-medium rounded-lg transition-colors disabled:opacity-50"
-          >
+      {canEdit && hasChanges ? (
+        <div className="flex flex-wrap gap-3">
+          <Button onClick={handleSave} loading={saving}>
             {saving ? tc("saving") : tc("save")}
-          </button>
-          <button
-            onClick={() => setSelectedMethod(currentMethod)}
-            className="px-5 py-3 text-gray-700 hover:text-gray-900 text-base font-medium transition-colors dark:text-gray-200 dark:hover:text-gray-100"
-          >
+          </Button>
+          <Button variant="secondary" onClick={() => setSelectedMethod(currentMethod)}>
             {tc("cancel")}
-          </button>
+          </Button>
         </div>
-      )}
+      ) : null}
 
-      <div className="mt-8 pt-6 border-t border-gray-200 dark:border-gray-700">
-        <label className="block text-base font-medium text-gray-900 mb-2 dark:text-gray-100">
-          {t("legalNoticeLabel")}
-        </label>
-        <textarea
-          value={legalNotice}
-          onChange={(e) => canEdit && setLegalNotice(e.target.value)}
-          disabled={!canEdit}
-          rows={4}
-          placeholder={t("legalNoticePlaceholder")}
-          className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none resize-vertical disabled:bg-gray-50 disabled:text-gray-500 dark:bg-gray-900 dark:border-gray-700 dark:text-gray-100 dark:disabled:bg-gray-800 dark:disabled:text-gray-500"
-        />
-        {canEdit && hasNoticeChanges && (
-          <div className="flex gap-3 mt-3">
-            <button
-              onClick={handleSaveNotice}
-              disabled={savingNotice}
-              className="px-5 py-3 bg-blue-600 hover:bg-blue-700 text-white text-base font-medium rounded-lg transition-colors disabled:opacity-50"
-            >
-              {savingNotice ? tc("saving") : tc("save")}
-            </button>
-            <button
-              onClick={() => setLegalNotice(savedLegalNotice)}
-              className="px-5 py-3 text-gray-700 hover:text-gray-900 text-base font-medium transition-colors dark:text-gray-200 dark:hover:text-gray-100"
-            >
-              {tc("cancel")}
-            </button>
-          </div>
-        )}
-      </div>
-    </div>
+      {/* Rarely changed: legal notice printed on voting documents. */}
+      <details className="group rounded-lg border border-ui-border">
+        <summary className="flex min-h-11 cursor-pointer list-none items-center justify-between gap-2 px-4 py-2 text-base font-medium text-ui-text [&::-webkit-details-marker]:hidden">
+          {th("moreOptions")}
+          <Icon name="chevronDown" size={20} className="transition-transform group-open:rotate-180" />
+        </summary>
+        <div className="space-y-3 border-t border-ui-border p-4">
+          <Field label={t("legalNoticeLabel")} hint={th("legalNoticeHint")}>
+            <Textarea
+              value={legalNotice}
+              onChange={(e) => canEdit && setLegalNotice(e.target.value)}
+              disabled={!canEdit}
+              rows={4}
+              placeholder={t("legalNoticePlaceholder")}
+            />
+          </Field>
+          {canEdit && hasNoticeChanges ? (
+            <div className="flex flex-wrap gap-3">
+              <Button onClick={handleSaveNotice} loading={savingNotice}>
+                {savingNotice ? tc("saving") : tc("save")}
+              </Button>
+              <Button variant="secondary" onClick={() => setLegalNotice(savedLegalNotice)}>
+                {tc("cancel")}
+              </Button>
+            </div>
+          ) : null}
+        </div>
+      </details>
+    </Card>
   );
 }

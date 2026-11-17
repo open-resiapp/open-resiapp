@@ -11,7 +11,6 @@
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
     "db:studio": "drizzle-kit studio",
-    "db:seed": "tsx src/db/seed.ts",
     "test:voting-golden": "tsx scripts/voting-golden-check.ts",
     "test:accounting-allocation": "tsx scripts/accounting-allocation-check.ts",
     "test:accounting-money": "tsx scripts/accounting-money-check.ts",
@@ -40,7 +39,8 @@
     "@aws-sdk/client-s3": "^3.1063.0",
     "@aws-sdk/s3-request-presigner": "^3.1063.0",
     "@react-pdf/renderer": "^4.3.2",
-    "@tanstack/react-table": "^8.21.3",
+    "@simplewebauthn/browser": "^9.0.1",
+    "@simplewebauthn/server": "^9.0.3",
     "@types/adm-zip": "^0.5.8",
     "@types/qrcode": "^1.5.6",
     "adm-zip": "^0.5.17",
@@ -61,7 +61,8 @@
     "resend": "^6.9.2",
     "unpdf": "^1.6.2",
     "web-push": "^3.6.7",
-    "xlsx": "^0.18.5"
+    "xlsx": "^0.18.5",
+    "zod": "^3.25.76"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4.2.1",

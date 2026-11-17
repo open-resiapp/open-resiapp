@@ -190,6 +190,11 @@ export const ballots = pgTable(
     }),
     ballotHash: varchar("ballot_hash", { length: 64 }).notNull(), // commitment over all item choices
     signature: text("signature"), // passkey assertion (one, over ballotHash)
+    // BYT-20261117-002 Phase 6: how an electronic ballot was actively
+    // confirmed ("passkey" | "email") and when. NULL for paper ballots and
+    // for electronic ballots recorded before the confirmation gate existed.
+    confirmationMethod: varchar("confirmation_method", { length: 16 }),
+    confirmedAt: timestamp("confirmed_at"),
     recordedAt: timestamp("recorded_at").defaultNow().notNull(),
     disputed: boolean("disputed").notNull().default(false),
     disputeNote: text("dispute_note"),

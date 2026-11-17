@@ -2,18 +2,11 @@
 
 import { useState } from "react";
 import { useTranslations } from "next-intl";
+
+import { Button, Field, Input, Modal, Textarea } from "@/components/ui";
 import type { PostCategory } from "@/types";
 
-const categoryValues: PostCategory[] = ["info", "urgent", "event", "maintenance"];
-const categoryKeys: Record<PostCategory, string> = {
-  info: "categoryInfo",
-  urgent: "categoryUrgent",
-  event: "categoryEvent",
-  maintenance: "categoryMaintenance",
-};
-
 interface EditPostModalProps {
-  isOpen: boolean;
   post: {
     id: string;
     title: string;
@@ -25,140 +18,101 @@ interface EditPostModalProps {
   onSaved: () => void;
 }
 
-export default function EditPostModal({
-  isOpen,
-  post,
-  onClose,
-  onSaved,
-}: EditPostModalProps) {
-  const t = useTranslations("PostModal");
-  const tPost = useTranslations("PostCard");
-  const tCommon = useTranslations("Common");
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+// Edit a board notice (PATCH /api/posts/:id). Same three fields as the create
+// form: title, text, "Dôležité" (= category urgent + pinned).
+export default function EditPostModal({ post, onClose, onSaved }: EditPostModalProps) {
+  const t = useTranslations("Feed");
+  const [title, setTitle] = useState(post.title);
+  const [content, setContent] = useState(post.content);
+  const [important, setImportant] = useState(post.category === "urgent");
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  if (!isOpen) return null;
-
-  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    setLoading(true);
-    setError("");
-
-    const formData = new FormData(e.currentTarget);
-
+  async function save() {
+    if (!title.trim() || !content.trim()) {
+      setError(t("create.error.required"));
+      return;
+    }
+    setSaving(true);
+    setError(null);
+    const wasUrgent = post.category === "urgent";
+    const body: Record<string, unknown> = { title: title.trim(), content: content.trim() };
+    if (important && !wasUrgent) {
+      body.category = "urgent";
+      body.isPinned = true;
+    } else if (!important && wasUrgent) {
+      body.category = "info";
+      body.isPinned = false;
+    }
     const res = await fetch(`/api/posts/${post.id}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        title: formData.get("title"),
-        content: formData.get("content"),
-        category: formData.get("category"),
-        isPinned: formData.get("isPinned") === "on",
-      }),
-    });
-
-    if (!res.ok) {
-      const data = await res.json();
-      setError(data.error || t("editFailed"));
-      setLoading(false);
+      body: JSON.stringify(body),
+    }).catch(() => null);
+    setSaving(false);
+    if (!res?.ok) {
+      setError(t("edit.failed"));
       return;
     }
-
-    setLoading(false);
     onSaved();
     onClose();
   }
 
   return (
-    <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-      <div className="bg-white rounded-2xl w-full max-w-lg p-6 dark:bg-gray-800">
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">{t("editTitle")}</h2>
-          <button
-            onClick={onClose}
-            className="text-gray-500 hover:text-gray-700 text-2xl leading-none dark:text-gray-400 dark:hover:text-gray-200"
-          >
-            &times;
-          </button>
-        </div>
-
-        {error && (
-          <div className="bg-red-50 text-red-700 px-4 py-3 rounded-lg text-base mb-4 dark:bg-red-900/30 dark:text-red-200">
+    <Modal
+      open
+      onClose={saving ? () => {} : onClose}
+      title={t("edit.title")}
+      footer={
+        <>
+          <Button variant="secondary" onClick={onClose} disabled={saving}>
+            {t("create.cancel")}
+          </Button>
+          <Button onClick={save} loading={saving}>
+            {t("edit.save")}
+          </Button>
+        </>
+      }
+    >
+      <div className="space-y-4">
+        <Field label={t("create.field.title")} required>
+          <Input value={title} onChange={(e) => setTitle(e.target.value)} maxLength={500} />
+        </Field>
+        <Field label={t("create.field.text")} required>
+          <Textarea value={content} onChange={(e) => setContent(e.target.value)} rows={6} />
+        </Field>
+        <ImportantCheckbox checked={important} onChange={setImportant} />
+        {error ? (
+          <p role="alert" className="text-base font-medium text-ui-danger">
             {error}
-          </div>
-        )}
-
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label className="block text-base font-medium text-gray-700 mb-1 dark:text-gray-200">
-              {t("titleLabel")}
-            </label>
-            <input
-              name="title"
-              required
-              defaultValue={post.title}
-              className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none dark:bg-gray-900 dark:border-gray-700 dark:text-gray-100"
-            />
-          </div>
-
-          <div>
-            <label className="block text-base font-medium text-gray-700 mb-1 dark:text-gray-200">
-              {t("categoryLabel")}
-            </label>
-            <select
-              name="category"
-              defaultValue={post.category}
-              className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none dark:bg-gray-900 dark:border-gray-700 dark:text-gray-100"
-            >
-              {categoryValues.map((c) => (
-                <option key={c} value={c}>
-                  {tPost(categoryKeys[c])}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <div>
-            <label className="block text-base font-medium text-gray-700 mb-1 dark:text-gray-200">
-              {t("contentLabel")}
-            </label>
-            <textarea
-              name="content"
-              required
-              rows={5}
-              defaultValue={post.content}
-              className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none resize-vertical dark:bg-gray-900 dark:border-gray-700 dark:text-gray-100"
-            />
-          </div>
-
-          <label className="flex items-center gap-2 text-base text-gray-700 dark:text-gray-200">
-            <input
-              name="isPinned"
-              type="checkbox"
-              defaultChecked={post.isPinned}
-              className="w-5 h-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-900"
-            />
-            {t("pinLabel")}
-          </label>
-
-          <div className="flex gap-3 pt-2">
-            <button
-              type="button"
-              onClick={onClose}
-              className="flex-1 py-3 px-4 text-base font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors dark:text-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600"
-            >
-              {tCommon("cancel")}
-            </button>
-            <button
-              type="submit"
-              disabled={loading}
-              className="flex-1 py-3 px-4 text-base font-medium text-white bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 rounded-lg transition-colors"
-            >
-              {loading ? tCommon("saving") : tCommon("save")}
-            </button>
-          </div>
-        </form>
+          </p>
+        ) : null}
       </div>
-    </div>
+    </Modal>
+  );
+}
+
+/** "Dôležité" checkbox shared by the create and edit forms. */
+export function ImportantCheckbox({
+  checked,
+  onChange,
+}: {
+  checked: boolean;
+  onChange: (v: boolean) => void;
+}) {
+  const t = useTranslations("Feed.create.field");
+  return (
+    <label className="flex min-h-11 cursor-pointer items-start gap-3 rounded-lg border border-ui-border p-3">
+      <input
+        type="checkbox"
+        checked={checked}
+        onChange={(e) => onChange(e.target.checked)}
+        className="mt-0.5 h-6 w-6 shrink-0 accent-[var(--ui-primary)]"
+      />
+      <span>
+        <span className="block text-base font-medium text-ui-text">{t("important")}</span>
+        <span className="block text-base text-ui-text-muted">{t("importantHint")}</span>
+      </span>
+    </label>
   );
 }

@@ -11,6 +11,7 @@ import { dispatchHook } from "@/lib/modules/dispatch";
 import { isModuleEnabled } from "@/lib/modules/route-guard";
 import { getCommunityRoot } from "@/lib/legacy-compat";
 import { normalizeItems } from "@modules/voting/src/items";
+import { checkQuorumForVotingPatch } from "@modules/voting/src/quorum-guard.server";
 import { getApprovedFinancialEffects } from "@modules/voting/src/results";
 import { processApprovedFinancialEffects } from "@modules/accounting/src/lib/voting-pipeline";
 import type { UserRole } from "@/types";
@@ -111,6 +112,9 @@ export async function PATCH(
   // allowed before any ballot is cast — item ids are referenced by
   // ballot_item_votes (on delete restrict), and reshuffling resolutions
   // mid-vote would invalidate cast choices.
+  const quorumError = await checkQuorumForVotingPatch(id, body);
+  if (quorumError) return NextResponse.json(quorumError, { status: 400 });
+
   let updated: typeof votings.$inferSelect | null | undefined;
   if (Array.isArray(body.items)) {
     const existingBallot = await db

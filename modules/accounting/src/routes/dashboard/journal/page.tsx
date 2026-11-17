@@ -273,7 +273,7 @@ export default function JournalPage() {
                   — {entry.description}
                 </span>
                 <span className="text-xs text-gray-500 dark:text-gray-400 whitespace-nowrap">
-                  {entry.periodYear} · {entry.sourceType}
+                  {entry.periodYear} · {t.has(`sourceType.${entry.sourceType}`) ? t(`sourceType.${entry.sourceType}`) : entry.sourceType}
                 </span>
               </button>
               {expanded === entry.id && (

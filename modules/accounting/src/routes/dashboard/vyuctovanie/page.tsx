@@ -62,6 +62,8 @@ export default function VyuctovaniePage() {
   const [year, setYear] = useState(() => new Date().getUTCFullYear() - 1);
   const [preview, setPreview] = useState<Preview | null>(null);
   const [error, setError] = useState(false);
+  // 403 = plain owner: board-wide preview is not for them.
+  const [forbidden, setForbidden] = useState(false);
   const [publishError, setPublishError] = useState<string | null>(null);
   const [confirmPublish, setConfirmPublish] = useState(false);
   const [publishing, setPublishing] = useState(false);
@@ -70,10 +72,16 @@ export default function VyuctovaniePage() {
     setPreview(null);
     fetch(`/api/accounting/vyuctovanie?year=${year}`)
       .then((r) => {
+        if (r.status === 403) {
+          setForbidden(true);
+          return null;
+        }
         if (!r.ok) throw new Error(String(r.status));
         return r.json();
       })
-      .then((data: Preview) => setPreview(data))
+      .then((data: Preview | null) => {
+        if (data) setPreview(data);
+      })
       .catch(() => setError(true));
   }, [year]);
 
@@ -97,6 +105,25 @@ export default function VyuctovaniePage() {
     } finally {
       setPublishing(false);
     }
+  }
+
+  if (forbidden) {
+    return (
+      <div className="max-w-xl space-y-3">
+        <p className="text-base font-medium text-gray-900 dark:text-gray-100">
+          {t("ownerNotReady", { year })}
+        </p>
+        <p className="text-base text-gray-600 dark:text-gray-300">
+          {t("ownerNotReadyHint")}
+        </p>
+        <Link
+          href="/accounting/karta"
+          className="inline-block min-h-11 rounded bg-blue-600 px-4 py-2.5 text-base text-white hover:bg-blue-700"
+        >
+          {t("ownerOpenKarta")}
+        </Link>
+      </div>
+    );
   }
 
   if (error) {
@@ -168,7 +195,7 @@ export default function VyuctovaniePage() {
                 t("gateUnmatched", {
                   count: preview.gates.unmatchedBankLines,
                 }),
-                { href: "/accounting/reconciliation", text: t("resolve") }
+                { href: "/accounting/payments?tab=bank", text: t("resolve") }
               )}
               {gateItem(
                 preview.gates.uncategorizedExpenses === 0,

@@ -1,36 +1,28 @@
 "use client";
 
-// Accounting landing page (BYT-20260512-002 Phase 1 slice 5).
-// Board roles: 4 tiles (Pokladnica, Banka, Fond opráv, Nedoplatky) +
-// navigation cards; onboarding CTA until the opening balance is posted.
-// Owners (403 from the dashboard API): fall back to their own karta bytu.
+// Financie — Prehľad (BYT-20261117-002 Phase 5; was the 15-tile landing of
+// BYT-20260512-002). Three numbers, then an ordered "Čo treba teraz"
+// checklist built from the dashboard attention data, each row linking to
+// the one place where it is solved. The cash projection is one sentence
+// with the chart behind "Podrobnosti".
+// Owners never land here — they are sent to /moje-platby.
 
 import { useEffect, useState } from "react";
-import { useFormatter, useTranslations } from "next-intl";
-import { Link } from "@/i18n/navigation";
+import { useTranslations } from "next-intl";
+import { Link, useRouter } from "@/i18n/navigation";
+import {
+  Badge,
+  Card,
+  EmptyState,
+  Icon,
+  LoadingBlock,
+  PageHeader,
+  cn,
+  type BadgeTone,
+} from "@/components/ui";
 import { formatEur } from "@modules/accounting/src/lib/money";
-
-interface ProjectionMonth {
-  month: number;
-  year: number;
-  expectedInflowCents: number;
-  expenseCents: number;
-  closingCents: number;
-  estimated: boolean;
-}
-
-interface PoolProjection {
-  pool: string;
-  openingCents: number;
-  months: ProjectionMonth[];
-}
-
-interface Projection {
-  openingCents: number;
-  collectionRate: number;
-  months: ProjectionMonth[];
-  pools?: PoolProjection[];
-}
+import CashProjection, { type Projection } from "@modules/accounting/src/components/CashProjection";
+import { useAccountingAccess } from "@modules/accounting/src/components/useAccountingAccess";
 
 interface Tiles {
   attention: {
@@ -53,34 +45,46 @@ interface Tiles {
   nedoplatky: { count: number; totalCents: number };
 }
 
+interface TodoItem {
+  key: string;
+  text: string;
+  count?: number;
+  tone: BadgeTone;
+  href: string;
+  action: string;
+}
+
 export default function AccountingHomePage() {
+  const { canRead } = useAccountingAccess();
+  const router = useRouter();
+
+  // Owners (no board read access) have their own screen.
+  useEffect(() => {
+    if (!canRead) router.replace("/moje-platby");
+  }, [canRead, router]);
+
+  if (!canRead) return <LoadingBlock />;
+  return <BoardOverview />;
+}
+
+function BoardOverview() {
   const t = useTranslations("Accounting.home");
-  const format = useFormatter();
+  // Matching bank lines needs write access (admin / treasurer); the
+  // chairman only reads, so the row would lead to a dead end.
+  const { canWrite } = useAccountingAccess();
 
   const [tiles, setTiles] = useState<Tiles | null>(null);
   const [projection, setProjection] = useState<Projection | null>(null);
-  const [drillMonth, setDrillMonth] = useState<number | null>(null);
-  const [pool, setPool] = useState<string>("total");
-  const [ownerOnly, setOwnerOnly] = useState(false);
   const [error, setError] = useState(false);
 
   useEffect(() => {
     fetch("/api/accounting/dashboard")
       .then((r) => {
-        if (r.status === 403) {
-          setOwnerOnly(true);
-          return null;
-        }
         if (!r.ok) throw new Error(String(r.status));
         return r.json();
       })
-      .then((data: Tiles | null) => {
-        if (data) setTiles(data);
-      })
+      .then((data: Tiles) => setTiles(data))
       .catch(() => setError(true));
-  }, []);
-
-  useEffect(() => {
     fetch("/api/accounting/projection")
       .then((r) => (r.ok ? r.json() : null))
       .then((data: Projection | null) => {
@@ -89,454 +93,213 @@ export default function AccountingHomePage() {
       .catch(() => {});
   }, []);
 
-  if (error) {
-    return <p className="text-red-600 dark:text-red-400">{t("loadError")}</p>;
-  }
+  const header = <PageHeader title={t("title")} description={t("subtitle")} />;
 
-  if (ownerOnly) {
+  if (error) {
     return (
-      <div className="max-w-2xl">
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-1">
-          {t("title")}
-        </h1>
-        <p className="text-gray-600 dark:text-gray-400 mb-6">
-          {t("ownerSubtitle")}
-        </p>
-        <div className="grid sm:grid-cols-2 gap-4">
-          <Link
-            href="/accounting/karta"
-            className="block bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg px-5 py-4 hover:border-blue-400 dark:hover:border-blue-600"
-          >
-            <span className="text-lg font-medium text-gray-900 dark:text-gray-100">
-              🧾 {t("navKarta")}
-            </span>
-            <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-              {t("navKartaOwnerHint")}
-            </p>
-          </Link>
-          <Link
-            href="/accounting/meters"
-            className="block bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg px-5 py-4 hover:border-blue-400 dark:hover:border-blue-600"
-          >
-            <span className="text-lg font-medium text-gray-900 dark:text-gray-100">
-              🌡️ {t("navMeters")}
-            </span>
-            <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-              {t("navMetersHint")}
-            </p>
-          </Link>
-          <Link
-            href="/accounting/inspect"
-            className="block bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg px-5 py-4 hover:border-blue-400 dark:hover:border-blue-600"
-          >
-            <span className="text-lg font-medium text-gray-900 dark:text-gray-100">
-              🔍 {t("navInspect")}
-            </span>
-            <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-              {t("navInspectHint")}
-            </p>
-          </Link>
-        </div>
+      <div className="max-w-4xl">
+        {header}
+        <p className="text-base text-ui-danger">{t("loadError")}</p>
+      </div>
+    );
+  }
+  if (!tiles) {
+    return (
+      <div className="max-w-4xl">
+        {header}
+        <LoadingBlock />
       </div>
     );
   }
 
-  if (!tiles) {
-    return (
-      <div className="animate-pulse h-40 bg-gray-100 dark:bg-gray-800 rounded-lg" />
-    );
+  const a = tiles.attention;
+  const todos: TodoItem[] = [];
+  if (!tiles.openingPosted) {
+    todos.push({
+      key: "opening",
+      text: t("todoOpening"),
+      tone: "warning",
+      href: "/accounting/onboarding/opening-balance",
+      action: t("todoOpeningAction"),
+    });
+  }
+  // A settlement already past its statutory deadline outranks everything.
+  const settlement = a.vyuctovanieDeadline
+    ? {
+        key: "settlement",
+        text: a.vyuctovanieDeadline.sanctionActive
+          ? t("attentionVyuctovanieOverdue", { year: a.vyuctovanieDeadline.year })
+          : t("attentionVyuctovanieDue", {
+              year: a.vyuctovanieDeadline.year,
+              days: a.vyuctovanieDeadline.daysUntil,
+            }),
+        tone: (a.vyuctovanieDeadline.sanctionActive ? "danger" : "warning") as BadgeTone,
+        href: "/accounting/vyuctovanie",
+        action: t("todoSettlementAction"),
+      }
+    : null;
+  if (settlement && a.vyuctovanieDeadline?.sanctionActive) todos.push(settlement);
+  if (canWrite && a.unmatchedBankLines > 0) {
+    todos.push({
+      key: "unmatched",
+      text: t("todoUnmatched"),
+      count: a.unmatchedBankLines,
+      tone: "warning",
+      href: "/accounting/payments?tab=bank",
+      action: t("todoUnmatchedAction"),
+    });
+  }
+  if (a.overdueInvoices > 0) {
+    todos.push({
+      key: "invoices",
+      text: t("todoOverdueInvoices"),
+      count: a.overdueInvoices,
+      tone: "danger",
+      href: "/accounting/expenses",
+      action: t("todoInvoicesAction"),
+    });
+  }
+  if (a.revisionsOverdue > 0) {
+    todos.push({
+      key: "revisionsOverdue",
+      text: t("todoRevisionsOverdue"),
+      count: a.revisionsOverdue,
+      tone: "danger",
+      href: "/accounting/revisions",
+      action: t("todoRevisionsAction"),
+    });
+  }
+  if (tiles.nedoplatky.count > 0) {
+    todos.push({
+      key: "arrears",
+      text: t("todoArrears", { amount: formatEur(tiles.nedoplatky.totalCents) }),
+      count: tiles.nedoplatky.count,
+      tone: "warning",
+      href: "/accounting/karta",
+      action: t("todoArrearsAction"),
+    });
+  }
+  if (settlement && !a.vyuctovanieDeadline?.sanctionActive) todos.push(settlement);
+  if (a.revisionsDueSoon > 0) {
+    todos.push({
+      key: "revisionsSoon",
+      text: t("todoRevisionsDueSoon"),
+      count: a.revisionsDueSoon,
+      tone: "info",
+      href: "/accounting/revisions",
+      action: t("todoRevisionsAction"),
+    });
+  }
+  if (a.uncategorizedExpenses > 0) {
+    todos.push({
+      key: "uncategorized",
+      text: t("todoUncategorized"),
+      count: a.uncategorizedExpenses,
+      tone: "neutral",
+      href: "/accounting/expenses",
+      action: t("todoInvoicesAction"),
+    });
   }
 
-  const tileClass =
-    "bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg px-5 py-4";
-
-  // Months for the selected pool (Total / FPÚO / Služby) — drives both the
-  // bar chart and the per-month drill-down (AC 484/485).
-  const projectionMonths = projection
-    ? pool === "total"
-      ? projection.months
-      : projection.pools?.find((p) => p.pool === pool)?.months ??
-        projection.months
-    : [];
+  const moneyCents = tiles.bankaCents + tiles.pokladnicaCents;
 
   return (
-    <div className="max-w-4xl">
-      <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-1">
-        {t("title")}
-      </h1>
-      <p className="text-gray-600 dark:text-gray-400 mb-6">{t("subtitle")}</p>
+    <div className="max-w-4xl space-y-8">
+      {header}
 
-      {!tiles.openingPosted && (
-        <Link
-          href="/accounting/onboarding/opening-balance"
-          className="block mb-6 bg-amber-50 dark:bg-amber-950 border border-amber-300 dark:border-amber-800 rounded-lg px-5 py-4 hover:border-amber-400"
-        >
-          <span className="font-medium text-amber-900 dark:text-amber-200">
-            ⚠️ {t("onboardingCta")}
-          </span>
-          <p className="text-sm text-amber-800 dark:text-amber-300 mt-1">
-            {t("onboardingHint")}
+      {/* Three numbers */}
+      <section aria-label={t("numbersLabel")} className="grid gap-4 sm:grid-cols-3">
+        <Card>
+          <p className="text-base text-ui-text-muted">{t("numberMoney")}</p>
+          <p className="mt-1 text-2xl font-semibold tabular-nums text-ui-text">
+            {formatEur(moneyCents)}
           </p>
-        </Link>
-      )}
-
-      {/* 4 tiles */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-        <div className={tileClass}>
-          <p className="text-sm text-gray-600 dark:text-gray-400">
-            {t("tilePokladnica")}
+          <p className="mt-1 text-base text-ui-text-muted">
+            {t("numberMoneyDetail", {
+              bank: formatEur(tiles.bankaCents),
+              cash: formatEur(tiles.pokladnicaCents),
+            })}
           </p>
-          <p className="text-xl font-bold text-gray-900 dark:text-gray-100">
-            {formatEur(tiles.pokladnicaCents)}
-          </p>
-        </div>
-        <div className={tileClass}>
-          <p className="text-sm text-gray-600 dark:text-gray-400">
-            {t("tileBanka")}
-          </p>
-          <p className="text-xl font-bold text-gray-900 dark:text-gray-100">
-            {formatEur(tiles.bankaCents)}
-          </p>
-        </div>
-        <div className={tileClass}>
-          <p className="text-sm text-gray-600 dark:text-gray-400">
-            {t("tileFondOprav")}
-          </p>
-          <p className="text-xl font-bold text-gray-900 dark:text-gray-100">
+        </Card>
+        <Card>
+          <p className="text-base text-ui-text-muted">{t("tileFondOprav")}</p>
+          <p className="mt-1 text-2xl font-semibold tabular-nums text-ui-text">
             {formatEur(tiles.fondOpravCents)}
           </p>
-        </div>
-        <div className={tileClass}>
-          <p className="text-sm text-gray-600 dark:text-gray-400">
-            {t("tileNedoplatky")}
-          </p>
+          <p className="mt-1 text-base text-ui-text-muted">{t("numberFundDetail")}</p>
+        </Card>
+        <Card>
+          <p className="text-base text-ui-text-muted">{t("numberOwed")}</p>
           <p
-            className={`text-xl font-bold ${
-              tiles.nedoplatky.count > 0
-                ? "text-red-600 dark:text-red-400"
-                : "text-gray-900 dark:text-gray-100"
-            }`}
+            className={cn(
+              "mt-1 text-2xl font-semibold tabular-nums",
+              tiles.nedoplatky.count > 0 ? "text-ui-danger" : "text-ui-text",
+            )}
           >
             {formatEur(tiles.nedoplatky.totalCents)}
           </p>
-          <p className="text-xs text-gray-500 dark:text-gray-400">
+          <p className="mt-1 text-base text-ui-text-muted">
             {t("nedoplatkyCount", { count: tiles.nedoplatky.count })}
           </p>
-        </div>
-      </div>
+        </Card>
+      </section>
 
-      {/* 6-month cash-flow projection */}
+      {/* Čo treba teraz */}
+      <section aria-labelledby="todo-title">
+        <h2 id="todo-title" className="mb-3 text-xl font-semibold text-ui-text">
+          {t("todoTitle")}
+        </h2>
+        {todos.length === 0 ? (
+          <Card>
+            <EmptyState icon="check" title={t("todoEmptyTitle")} description={t("todoEmptyText")} />
+          </Card>
+        ) : (
+          <ol className="space-y-3">
+            {todos.map((item, i) => (
+              <li key={item.key}>
+                <Card padding="none">
+                  <Link
+                    href={item.href}
+                    className="flex min-h-11 flex-col gap-3 rounded-xl p-4 hover:bg-ui-surface-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ui-focus sm:flex-row sm:items-center sm:justify-between"
+                  >
+                    <span className="flex items-start gap-3">
+                      <span
+                        aria-hidden="true"
+                        className="mt-0.5 inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-ui-surface-muted text-base font-semibold text-ui-text"
+                      >
+                        {i + 1}
+                      </span>
+                      <span className="text-base text-ui-text">
+                        {item.text}
+                        {item.count !== undefined && (
+                          <Badge tone={item.tone} className="ml-2 align-middle">
+                            {item.count}
+                          </Badge>
+                        )}
+                      </span>
+                    </span>
+                    <span className="inline-flex shrink-0 items-center gap-1 pl-10 text-base font-medium text-ui-primary sm:pl-0">
+                      {item.action}
+                      <Icon name="chevronRight" size={20} />
+                    </span>
+                  </Link>
+                </Card>
+              </li>
+            ))}
+          </ol>
+        )}
+      </section>
+
       {projection && projection.months.length > 0 && (
-        <div className="mb-8 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg p-5">
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-1">
+        <section aria-labelledby="projection-title">
+          <h2 id="projection-title" className="mb-3 text-xl font-semibold text-ui-text">
             {t("projectionTitle")}
           </h2>
-          <p className="text-xs text-gray-500 dark:text-gray-400 mb-4">
-            {t("projectionHint", {
-              rate: Math.round(projection.collectionRate * 100),
-            })}
-          </p>
-          {/* Per-pool toggle (AC 484) — Total / Fond opráv / Služby */}
-          {projection.pools && projection.pools.length > 0 && (
-            <div className="flex gap-2 mb-4">
-              {[
-                { key: "total", label: t("poolTotal") },
-                { key: "fpuo", label: t("poolFpuo") },
-                { key: "svc", label: t("poolSvc") },
-              ].map((opt) => (
-                <button
-                  key={opt.key}
-                  type="button"
-                  onClick={() => {
-                    setPool(opt.key);
-                    setDrillMonth(null);
-                  }}
-                  className={`px-3 py-1 rounded-full text-xs border ${
-                    pool === opt.key
-                      ? "bg-blue-600 text-white border-blue-600"
-                      : "border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-400"
-                  }`}
-                >
-                  {opt.label}
-                </button>
-              ))}
-            </div>
-          )}
-          {(() => {
-            // Bars scale against the best POSITIVE month; a negative month
-            // must never render as the tallest bar (height would read as
-            // "best month" at a glance) — it gets a fixed stub + ⚠ label.
-            const maxPositive = Math.max(
-              1,
-              ...projectionMonths.map((m) => Math.max(0, m.closingCents))
-            );
-            return (
-              <div className="flex items-end gap-3 h-40">
-                {projectionMonths.map((m, i) => {
-                  const negative = m.closingCents < 0;
-                  const height = negative
-                    ? 8
-                    : Math.max(
-                        4,
-                        Math.round((m.closingCents / maxPositive) * 100)
-                      );
-                  return (
-                    <button
-                      type="button"
-                      key={`${m.year}-${m.month}`}
-                      onClick={() =>
-                        setDrillMonth((prev) => (prev === i ? null : i))
-                      }
-                      className={`flex-1 flex flex-col items-center justify-end gap-1 cursor-pointer rounded ${
-                        drillMonth === i
-                          ? "ring-2 ring-blue-400 dark:ring-blue-600"
-                          : ""
-                      }`}
-                      title={formatEur(m.closingCents)}
-                    >
-                      <span
-                        className={`text-[10px] whitespace-nowrap ${
-                          negative
-                            ? "text-red-600 dark:text-red-400 font-semibold"
-                            : "text-gray-600 dark:text-gray-400"
-                        }`}
-                      >
-                        {negative ? "⚠ " : ""}
-                        {formatEur(m.closingCents)}
-                      </span>
-                      <div
-                        className={`w-full rounded-t ${
-                          negative
-                            ? "bg-red-500 dark:bg-red-600"
-                            : m.estimated
-                              ? "bg-blue-300 dark:bg-blue-800"
-                              : "bg-blue-500 dark:bg-blue-600"
-                        }`}
-                        style={{ height: `${height}%` }}
-                      />
-                      <span className="text-[10px] text-gray-500 dark:text-gray-400">
-                        {format.dateTime(
-                          new Date(Date.UTC(m.year, m.month - 1, 1)),
-                          { month: "short" }
-                        )}
-                        {m.estimated ? "*" : ""}
-                      </span>
-                    </button>
-                  );
-                })}
-              </div>
-            );
-          })()}
-          {drillMonth !== null && projectionMonths[drillMonth] && (
-            <div className="mt-4 bg-gray-50 dark:bg-gray-800 rounded-lg p-4 text-sm">
-              <p className="font-medium text-gray-900 dark:text-gray-100 mb-2">
-                {format.dateTime(
-                  new Date(
-                    Date.UTC(
-                      projectionMonths[drillMonth].year,
-                      projectionMonths[drillMonth].month - 1,
-                      1
-                    )
-                  ),
-                  { month: "long", year: "numeric" }
-                )}
-              </p>
-              <dl className="space-y-1">
-                <div className="flex justify-between">
-                  <dt className="text-gray-600 dark:text-gray-400">
-                    {t("projectionDrillInflow")}
-                  </dt>
-                  <dd className="text-green-700 dark:text-green-400">
-                    +{formatEur(projectionMonths[drillMonth].expectedInflowCents)}
-                  </dd>
-                </div>
-                <div className="flex justify-between">
-                  <dt className="text-gray-600 dark:text-gray-400">
-                    {t("projectionDrillExpense")}
-                  </dt>
-                  <dd className="text-red-600 dark:text-red-400">
-                    −{formatEur(projectionMonths[drillMonth].expenseCents)}
-                  </dd>
-                </div>
-                <div className="flex justify-between border-t border-gray-200 dark:border-gray-700 pt-1 font-medium">
-                  <dt className="text-gray-900 dark:text-gray-100">
-                    {t("projectionDrillClosing")}
-                  </dt>
-                  <dd className="text-gray-900 dark:text-gray-100">
-                    {formatEur(projectionMonths[drillMonth].closingCents)}
-                  </dd>
-                </div>
-              </dl>
-            </div>
-          )}
-          {projectionMonths.some((m) => m.estimated) && (
-            <p className="text-[10px] text-gray-400 dark:text-gray-500 mt-2">
-              {t("projectionEstimatedNote")}
-            </p>
-          )}
-        </div>
+          <Card>
+            <CashProjection projection={projection} />
+          </Card>
+        </section>
       )}
-
-      {/* Vyžaduje pozornosť */}
-      {(tiles.attention.unmatchedBankLines > 0 ||
-        tiles.attention.uncategorizedExpenses > 0 ||
-        tiles.attention.overdueInvoices > 0 ||
-        tiles.attention.vyuctovanieDeadline !== null ||
-        tiles.attention.revisionsOverdue > 0 ||
-        tiles.attention.revisionsDueSoon > 0 ||
-        tiles.nedoplatky.count > 0) && (
-        <div className="mb-8 bg-white dark:bg-gray-900 border border-amber-300 dark:border-amber-800 rounded-lg p-5">
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-3">
-            ⚠️ {t("attentionTitle")}
-          </h2>
-          <ul className="space-y-2 text-sm">
-            {tiles.attention.vyuctovanieDeadline && (
-              <li>
-                <Link
-                  href="/accounting/vyuctovanie"
-                  className={
-                    tiles.attention.vyuctovanieDeadline.sanctionActive
-                      ? "text-red-600 dark:text-red-400 font-medium hover:underline"
-                      : "text-amber-700 dark:text-amber-400 hover:underline"
-                  }
-                >
-                  {tiles.attention.vyuctovanieDeadline.sanctionActive
-                    ? t("attentionVyuctovanieOverdue", {
-                        year: tiles.attention.vyuctovanieDeadline.year,
-                      })
-                    : t("attentionVyuctovanieDue", {
-                        year: tiles.attention.vyuctovanieDeadline.year,
-                        days: tiles.attention.vyuctovanieDeadline.daysUntil,
-                      })}
-                </Link>
-              </li>
-            )}
-            {tiles.attention.unmatchedBankLines > 0 && (
-              <li>
-                <Link
-                  href="/accounting/reconciliation"
-                  className="text-blue-600 dark:text-blue-400 hover:underline"
-                >
-                  {t("attentionUnmatched", {
-                    count: tiles.attention.unmatchedBankLines,
-                  })}
-                </Link>
-              </li>
-            )}
-            {tiles.attention.uncategorizedExpenses > 0 && (
-              <li>
-                <Link
-                  href="/accounting/expenses"
-                  className="text-blue-600 dark:text-blue-400 hover:underline"
-                >
-                  {t("attentionUncategorized", {
-                    count: tiles.attention.uncategorizedExpenses,
-                  })}
-                </Link>
-              </li>
-            )}
-            {tiles.attention.overdueInvoices > 0 && (
-              <li>
-                <Link
-                  href="/accounting/expenses"
-                  className="text-blue-600 dark:text-blue-400 hover:underline"
-                >
-                  {t("attentionOverdueInvoices", {
-                    count: tiles.attention.overdueInvoices,
-                  })}
-                </Link>
-              </li>
-            )}
-            {tiles.attention.revisionsOverdue > 0 && (
-              <li>
-                <Link
-                  href="/accounting/revisions"
-                  className="text-red-600 dark:text-red-400 font-medium hover:underline"
-                >
-                  {t("attentionRevisionsOverdue", {
-                    count: tiles.attention.revisionsOverdue,
-                  })}
-                </Link>
-              </li>
-            )}
-            {tiles.attention.revisionsDueSoon > 0 && (
-              <li>
-                <Link
-                  href="/accounting/revisions"
-                  className="text-amber-700 dark:text-amber-400 hover:underline"
-                >
-                  {t("attentionRevisionsDueSoon", {
-                    count: tiles.attention.revisionsDueSoon,
-                  })}
-                </Link>
-              </li>
-            )}
-            {tiles.nedoplatky.count > 0 && (
-              <li>
-                <Link
-                  href="/accounting/karta"
-                  className="text-blue-600 dark:text-blue-400 hover:underline"
-                >
-                  {t("attentionOverdueUnits", {
-                    count: tiles.nedoplatky.count,
-                  })}
-                </Link>
-              </li>
-            )}
-          </ul>
-        </div>
-      )}
-
-      {/* Navigation */}
-      <div className="grid sm:grid-cols-2 gap-4">
-        {(
-          [
-            ["/accounting/predpis", "🧮", "navPredpis", "navPredpisHint"],
-            ["/accounting/payments", "💳", "navPayments", "navPaymentsHint"],
-            [
-              "/accounting/reconciliation",
-              "🏦",
-              "navReconciliation",
-              "navReconciliationHint",
-            ],
-            ["/accounting/expenses", "🧰", "navExpenses", "navExpensesHint"],
-            ["/accounting/inbox", "📥", "navInbox", "navInboxHint"],
-            ["/accounting/meters", "🌡️", "navMeters", "navMetersHint"],
-            [
-              "/accounting/vyuctovanie",
-              "📑",
-              "navVyuctovanie",
-              "navVyuctovanieHint",
-            ],
-            ["/accounting/karta", "🧾", "navKarta", "navKartaHint"],
-            [
-              "/accounting/predpis/unit-settings",
-              "🔢",
-              "navVs",
-              "navVsHint",
-            ],
-            ["/accounting/inspect", "🔍", "navInspect", "navInspectHint"],
-            ["/accounting/revisions", "🔧", "navRevisions", "navRevisionsHint"],
-            ["/accounting/debtors", "📋", "navDebtors", "navDebtorsHint"],
-            ["/accounting/transfers", "🔁", "navTransfers", "navTransfersHint"],
-            ["/accounting/journal", "📚", "navJournal", "navJournalHint"],
-            ["/accounting/settings", "⚙️", "navSettings", "navSettingsHint"],
-          ] as const
-        ).map(([href, icon, label, hint]) => (
-          <Link
-            key={href}
-            href={href}
-            className="block bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg px-5 py-4 hover:border-blue-400 dark:hover:border-blue-600"
-          >
-            <span className="text-lg font-medium text-gray-900 dark:text-gray-100">
-              {icon} {t(label)}
-            </span>
-            <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-              {t(hint)}
-            </p>
-          </Link>
-        ))}
-      </div>
     </div>
   );
 }

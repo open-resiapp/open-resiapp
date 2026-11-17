@@ -11,6 +11,7 @@ export default async function CommunityInfoPage() {
   const session = await auth();
   if (!session) redirect({ href: "/login", locale: "sk" });
 
+  const isPending = session?.user.status === "pending";
   const t = await getTranslations("CommunityInfo");
 
   const buildingRow = await getCommunityRoot();
@@ -34,11 +35,15 @@ export default async function CommunityInfoPage() {
 
   return (
     <div className="max-w-3xl mx-auto space-y-6">
-      <PendingStatusPoller />
-      <div className="rounded-lg border border-amber-300 bg-amber-50 p-4 text-amber-900 dark:border-amber-800 dark:bg-amber-900/30 dark:text-amber-100">
-        <p className="font-semibold text-base">{t("pendingHeading")}</p>
-        <p className="mt-1 text-sm">{t("pendingBody")}</p>
-      </div>
+      {isPending && (
+        <>
+          <PendingStatusPoller />
+          <div className="rounded-lg border border-amber-300 bg-amber-50 p-4 text-amber-900 dark:border-amber-800 dark:bg-amber-900/30 dark:text-amber-100">
+            <p className="font-semibold text-base">{t("pendingHeading")}</p>
+            <p className="mt-1 text-sm">{t("pendingBody")}</p>
+          </div>
+        </>
+      )}
 
       {buildingRow ? (
         <section className="rounded-lg border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-700 dark:bg-gray-800 dark:shadow-black/20">

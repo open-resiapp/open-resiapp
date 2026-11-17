@@ -1,51 +1,35 @@
 "use client";
 
-import { useTranslations, useFormatter } from "next-intl";
+import { useFormatter, useTranslations } from "next-intl";
 
 export interface CommunityResponse {
   id: string;
   content: string;
   createdAt: string;
-  author: { id: string; name: string };
+  author: { id: string; name: string } | null;
 }
 
-interface ResponseListProps {
-  responses: CommunityResponse[];
-  isAdmin?: boolean;
-  onDelete?: (responseId: string) => void;
-}
-
-export default function ResponseList({ responses, isAdmin, onDelete }: ResponseListProps) {
-  const t = useTranslations("Community");
+export default function ResponseList({ responses }: { responses: CommunityResponse[] }) {
+  const t = useTranslations("Feed.responses");
   const format = useFormatter();
 
   if (responses.length === 0) {
-    return <p className="text-sm text-gray-500">{t("noResponses")}</p>;
+    return <p className="text-base text-ui-text-muted">{t("none")}</p>;
   }
 
   return (
-    <div className="space-y-3">
+    <ul className="space-y-3">
       {responses.map((r) => (
-        <div key={r.id} className="bg-gray-50 rounded-lg p-3">
-          <div className="flex items-start justify-between gap-2 mb-1">
-            <span className="text-sm font-medium text-gray-900">{r.author.name}</span>
-            <div className="flex items-center gap-2">
-              <time className="text-xs text-gray-500">
-                {format.relativeTime(new Date(r.createdAt), new Date())}
-              </time>
-              {isAdmin && onDelete && (
-                <button
-                  onClick={() => onDelete(r.id)}
-                  className="text-xs text-red-600 hover:text-red-700"
-                >
-                  {t("delete")}
-                </button>
-              )}
-            </div>
+        <li key={r.id} className="rounded-lg bg-ui-surface-muted p-3">
+          <div className="mb-1 flex flex-wrap items-baseline justify-between gap-x-2">
+            <span className="text-base font-medium text-ui-text">{r.author?.name ?? "—"}</span>
+            <time dateTime={r.createdAt} className="text-base text-ui-text-muted">
+              {format.dateTime(new Date(r.createdAt), { day: "numeric", month: "long" })}
+            </time>
           </div>
-          <p className="text-sm text-gray-700 whitespace-pre-wrap">{r.content}</p>
-        </div>
+          <p className="whitespace-pre-wrap text-base text-ui-text break-words">{r.content}</p>
+        </li>
       ))}
-    </div>
+    </ul>
   );
 }

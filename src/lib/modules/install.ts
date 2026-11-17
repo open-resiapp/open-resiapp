@@ -21,7 +21,7 @@ import {
 } from "./sdk";
 import { CORE_VERSION } from "./core-version";
 import { MODULES_DIR } from "./loader";
-import { buildContextFor, dropModuleTables } from "./sdk-runtime";
+import { buildContextFor, dropModuleTables, moduleHasData } from "./sdk-runtime";
 import {
   registerModule,
   unregisterModule,
@@ -40,6 +40,9 @@ export interface StagedModule {
   previousVersion: string | null;
   warnings: string[];
 }
+
+/** Stable error code returned by uninstall when module tables hold data. */
+export const MODULE_HAS_DATA = "module_has_data";
 
 export class ModuleInstallError extends Error {
   constructor(message: string) {
@@ -287,6 +290,12 @@ export async function uninstallModule(name: string): Promise<void> {
   // honours updates if a future upgrade flips the flag.
   await assertManifestUninstallable(row.installPath, name);
 
+  // Uninstall drops the module's tables — refuse while they hold rows.
+  // Stable code, mapped to i18n by the UI.
+  if (await moduleHasData(name)) {
+    throw new ModuleInstallError(MODULE_HAS_DATA);
+  }
+
   if (loaded) {
     await runOnUninstallSafe(loaded);
     unregisterModule(name);
@@ -372,6 +381,8 @@ export interface InstalledModuleView {
   installedAt: Date;
   grantedPermissions: Permission[];
   declaredPermissions: Permission[];
+  /** Module tables hold rows — uninstall is blocked. */
+  hasData: boolean;
 }
 
 export async function listInstalledModules(): Promise<InstalledModuleView[]> {
@@ -404,6 +415,7 @@ export async function listInstalledModules(): Promise<InstalledModuleView[]> {
       installedAt: row.installedAt,
       declaredPermissions: declared,
       grantedPermissions: Array.from(granted),
+      hasData: await moduleHasData(row.name).catch(() => true),
     });
   }
   return out.sort((a, b) => a.name.localeCompare(b.name));

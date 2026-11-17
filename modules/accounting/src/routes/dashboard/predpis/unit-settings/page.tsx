@@ -97,7 +97,7 @@ export default function UnitVsPage() {
   return (
     <div className="max-w-2xl">
       <Link
-        href="/accounting/predpis"
+        href="/accounting/settings"
         className="text-sm text-blue-600 dark:text-blue-400 hover:underline"
       >
         ← {t("backToList")}

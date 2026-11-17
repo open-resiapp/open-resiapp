@@ -58,6 +58,72 @@
   --color-red-900: #401818;
 }
 
+/* ─────────────────────────────────────────────────────────────────
+   UI KIT SEMANTIC TOKENS (src/components/ui). Light = :root, dark = html.dark
+   (same class switch as the `dark:` variant above). Kit components use
+   classes like bg-ui-primary / text-ui-text-muted — never the blue/gray
+   remap. Contrast (calculated, WCAG): text/bg 19.8 light, 18.2 dark;
+   text-muted/bg 7.8 / 8.3; primary-text/primary 19.8 / 18.2; danger and
+   success and warning text on bg/surface >= 5.7 light, >= 7.3 dark;
+   border-strong/bg 3.5 / 4.6 (UI component boundary, >= 3:1).
+   ───────────────────────────────────────────────────────────────── */
+:root {
+  --ui-bg: #ffffff;
+  --ui-surface: #ffffff;
+  --ui-surface-muted: #f5f5f5;
+  --ui-border: #d6d6d6;
+  --ui-border-strong: #8a8a8a;
+  --ui-text: #0a0a0a;
+  --ui-text-muted: #525252;
+  --ui-primary: #0a0a0a;
+  --ui-primary-text: #ffffff;
+  --ui-danger: #a13838;
+  --ui-danger-text: #ffffff;
+  --ui-success: #2f5d48;
+  --ui-warning: #8a5a00;
+  --ui-info: #2a2a2a;
+  --ui-focus: #0a0a0a;
+  --ui-overlay: rgb(10 10 10 / 0.5);
+}
+
+html.dark {
+  --ui-bg: #0a0a0a;
+  --ui-surface: #141414;
+  --ui-surface-muted: #1f1f1f;
+  --ui-border: #2f2f2f;
+  --ui-border-strong: #7a7a7a;
+  --ui-text: #f5f5f5;
+  --ui-text-muted: #a8a8a8;
+  --ui-primary: #f5f5f5;
+  --ui-primary-text: #0a0a0a;
+  --ui-danger: #e58a8a;
+  --ui-danger-text: #0a0a0a;
+  --ui-success: #7fc8a0;
+  --ui-warning: #e6b04a;
+  --ui-info: #d6d6d6;
+  --ui-focus: #f5f5f5;
+  --ui-overlay: rgb(0 0 0 / 0.7);
+}
+
+@theme inline {
+  --color-ui-bg: var(--ui-bg);
+  --color-ui-surface: var(--ui-surface);
+  --color-ui-surface-muted: var(--ui-surface-muted);
+  --color-ui-border: var(--ui-border);
+  --color-ui-border-strong: var(--ui-border-strong);
+  --color-ui-text: var(--ui-text);
+  --color-ui-text-muted: var(--ui-text-muted);
+  --color-ui-primary: var(--ui-primary);
+  --color-ui-primary-text: var(--ui-primary-text);
+  --color-ui-danger: var(--ui-danger);
+  --color-ui-danger-text: var(--ui-danger-text);
+  --color-ui-success: var(--ui-success);
+  --color-ui-warning: var(--ui-warning);
+  --color-ui-info: var(--ui-info);
+  --color-ui-focus: var(--ui-focus);
+  --color-ui-overlay: var(--ui-overlay);
+}
+
 /* Paint the canvas (html) itself, not just <body>. Without this, the browser
    shows its default white background during route transitions before body
    paints, which looks like a flash of white between dark pages. */

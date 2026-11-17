@@ -10,6 +10,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
+import { PageHeader } from "@/components/ui";
 import {
   parseCents as parseCentsBase,
   centsToInput,
@@ -266,10 +267,13 @@ export default function OpeningBalancePage() {
   if (state.alreadyPosted) {
     return (
       <div className="max-w-2xl">
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4">
-          {t("title")}
-        </h1>
-        <p className="text-gray-700 dark:text-gray-300">{t("alreadyPosted")}</p>
+        {/* Posted once, never again — give a way out (BYT-20261117-002). */}
+        <PageHeader
+          title={t("title")}
+          backHref="/accounting/settings"
+          backLabel={t("backToSettings")}
+        />
+        <p className="text-base text-ui-text">{t("alreadyPosted")}</p>
       </div>
     );
   }
@@ -279,12 +283,12 @@ export default function OpeningBalancePage() {
 
   return (
     <div className="max-w-3xl">
-      <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-1">
-        {t("title")}
-      </h1>
-      <p className="text-gray-600 dark:text-gray-400 mb-6">
-        {t("subtitle", { year: state.year })}
-      </p>
+      <PageHeader
+        title={t("title")}
+        description={t("subtitle", { year: state.year })}
+        backHref="/accounting/settings"
+        backLabel={t("backToSettings")}
+      />
 
       {/* Step indicator */}
       <ol className="flex gap-2 mb-6 text-sm">

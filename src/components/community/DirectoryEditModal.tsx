@@ -1,9 +1,11 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useTranslations } from "next-intl";
 
-interface DirectoryValues {
+import { Button, ConfirmDialog, Field, Input, Modal } from "@/components/ui";
+
+export interface DirectoryValues {
   sharePhone: boolean;
   shareEmail: boolean;
   note: string;
@@ -11,142 +13,138 @@ interface DirectoryValues {
 }
 
 interface DirectoryEditModalProps {
-  open: boolean;
   initial: DirectoryValues;
-  onClose: () => void;
-  onSave: (values: DirectoryValues) => Promise<void>;
-  onDelete: () => Promise<void>;
   hasEntry: boolean;
+  onClose: () => void;
+  /** Resolve true on success. */
+  onSave: (values: DirectoryValues) => Promise<boolean>;
+  onDelete: () => Promise<boolean>;
 }
 
+// Opt-in to the neighbours' directory. Mounted only while open, so the form
+// starts from `initial` every time.
 export default function DirectoryEditModal({
-  open,
   initial,
+  hasEntry,
   onClose,
   onSave,
   onDelete,
-  hasEntry,
 }: DirectoryEditModalProps) {
   const t = useTranslations("Community.directory");
+  const tFeed = useTranslations("Feed.directory");
   const [values, setValues] = useState<DirectoryValues>(initial);
   const [submitting, setSubmitting] = useState(false);
+  const [confirmDelete, setConfirmDelete] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    setValues(initial);
-  }, [initial, open]);
-
-  if (!open) return null;
-
-  async function handleSave() {
+  async function run(action: () => Promise<boolean>) {
     setSubmitting(true);
-    try {
-      await onSave(values);
+    setError(null);
+    const ok = await action().catch(() => false);
+    setSubmitting(false);
+    if (ok) {
       onClose();
-    } finally {
-      setSubmitting(false);
-    }
-  }
-
-  async function handleDelete() {
-    if (!confirm(t("confirmDelete"))) return;
-    setSubmitting(true);
-    try {
-      await onDelete();
-      onClose();
-    } finally {
-      setSubmitting(false);
+    } else {
+      setConfirmDelete(false);
+      setError(tFeed("failed"));
     }
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-      <div className="bg-white rounded-xl w-full max-w-lg p-6 dark:bg-gray-800">
-        <h3 className="text-lg font-semibold text-gray-900 mb-4 dark:text-gray-100">{t("editTitle")}</h3>
-
+    <>
+      <Modal
+        open={!confirmDelete}
+        onClose={submitting ? () => {} : onClose}
+        title={t("editTitle")}
+        footer={
+          <>
+            {hasEntry ? (
+              <Button
+                variant="ghost"
+                className="text-ui-danger sm:mr-auto"
+                onClick={() => setConfirmDelete(true)}
+                disabled={submitting}
+              >
+                {t("removeFully")}
+              </Button>
+            ) : null}
+            <Button variant="secondary" onClick={onClose} disabled={submitting}>
+              {t("cancel")}
+            </Button>
+            <Button onClick={() => run(() => onSave(values))} loading={submitting}>
+              {t("save")}
+            </Button>
+          </>
+        }
+      >
         <div className="space-y-4">
-          <label className="flex items-center gap-3">
-            <input
-              type="checkbox"
-              checked={values.sharePhone}
-              onChange={(e) =>
-                setValues({ ...values, sharePhone: e.target.checked })
-              }
-              className="rounded border-gray-300 dark:border-gray-600 dark:bg-gray-900"
-            />
-            <span className="text-base text-gray-700 dark:text-gray-200">{t("sharePhone")}</span>
-          </label>
-
-          <label className="flex items-center gap-3">
-            <input
-              type="checkbox"
-              checked={values.shareEmail}
-              onChange={(e) =>
-                setValues({ ...values, shareEmail: e.target.checked })
-              }
-              className="rounded border-gray-300 dark:border-gray-600 dark:bg-gray-900"
-            />
-            <span className="text-base text-gray-700 dark:text-gray-200">{t("shareEmail")}</span>
-          </label>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1 dark:text-gray-200">
-              {t("note")}
-            </label>
-            <input
-              type="text"
-              value={values.note}
-              onChange={(e) => setValues({ ...values, note: e.target.value })}
-              maxLength={255}
-              placeholder={t("notePlaceholder")}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-base dark:bg-gray-900 dark:border-gray-700 dark:text-gray-100 dark:placeholder-gray-500"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1 dark:text-gray-200">
-              {t("skills")}
-            </label>
-            <input
-              type="text"
+          <p className="text-base text-ui-text-muted">{tFeed("intro")}</p>
+          <CheckRow
+            label={t("sharePhone")}
+            checked={values.sharePhone}
+            onChange={(v) => setValues({ ...values, sharePhone: v })}
+          />
+          <CheckRow
+            label={t("shareEmail")}
+            checked={values.shareEmail}
+            onChange={(v) => setValues({ ...values, shareEmail: v })}
+          />
+          <Field label={t("skills")}>
+            <Input
               value={values.skills}
               onChange={(e) => setValues({ ...values, skills: e.target.value })}
               maxLength={500}
               placeholder={t("skillsPlaceholder")}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-base dark:bg-gray-900 dark:border-gray-700 dark:text-gray-100 dark:placeholder-gray-500"
             />
-          </div>
+          </Field>
+          <Field label={t("note")}>
+            <Input
+              value={values.note}
+              onChange={(e) => setValues({ ...values, note: e.target.value })}
+              maxLength={255}
+              placeholder={t("notePlaceholder")}
+            />
+          </Field>
+          {error ? (
+            <p role="alert" className="text-base font-medium text-ui-danger">
+              {error}
+            </p>
+          ) : null}
         </div>
+      </Modal>
 
-        <div className="mt-6 flex items-center justify-between gap-2 flex-wrap">
-          {hasEntry ? (
-            <button
-              onClick={handleDelete}
-              disabled={submitting}
-              className="px-4 py-2 text-sm font-medium text-red-600 bg-red-50 hover:bg-red-100 rounded-lg dark:text-red-300 dark:bg-red-900/30 dark:hover:bg-red-900/50"
-            >
-              {t("removeFully")}
-            </button>
-          ) : (
-            <span />
-          )}
-          <div className="flex items-center gap-2">
-            <button
-              onClick={onClose}
-              disabled={submitting}
-              className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg dark:text-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600"
-            >
-              {t("cancel")}
-            </button>
-            <button
-              onClick={handleSave}
-              disabled={submitting}
-              className="px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg disabled:opacity-50"
-            >
-              {submitting ? t("saving") : t("save")}
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
+      <ConfirmDialog
+        open={confirmDelete}
+        tone="danger"
+        title={t("removeFully")}
+        description={tFeed("removeOwnConsequence")}
+        confirmLabel={t("removeFully")}
+        loading={submitting}
+        onCancel={() => setConfirmDelete(false)}
+        onConfirm={() => run(onDelete)}
+      />
+    </>
+  );
+}
+
+function CheckRow({
+  label,
+  checked,
+  onChange,
+}: {
+  label: string;
+  checked: boolean;
+  onChange: (v: boolean) => void;
+}) {
+  return (
+    <label className="flex min-h-11 cursor-pointer items-center gap-3 rounded-lg border border-ui-border p-3">
+      <input
+        type="checkbox"
+        checked={checked}
+        onChange={(e) => onChange(e.target.checked)}
+        className="h-6 w-6 shrink-0 accent-[var(--ui-primary)]"
+      />
+      <span className="text-base text-ui-text">{label}</span>
+    </label>
   );
 }

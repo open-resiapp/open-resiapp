@@ -3,6 +3,9 @@
 import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
 import { useEffect, useRef, useState } from "react";
+import { useShell } from "@/components/layout/ShellContext";
+import { Button, Card, ConfirmDialog, Icon } from "@/components/ui";
+import Notice, { type NoticeState } from "./Notice";
 import {
   ACCEPTED_LOGO_MIME,
   ACCEPTED_LOGO_ACCEPT,
@@ -76,27 +79,18 @@ function loadImage(src: string): Promise<HTMLImageElement> {
 
 export default function BrandingTab({ canEdit }: { canEdit: boolean }) {
   const t = useTranslations("Branding");
+  const th = useTranslations("SettingsHub");
   const tc = useTranslations("Common");
   const router = useRouter();
+  const shell = useShell();
   const fileRef = useRef<HTMLInputElement>(null);
 
-  const [loading, setLoading] = useState(true);
-  const [currentLogoUrl, setCurrentLogoUrl] = useState<string | null>(null);
+  // Logo URL comes from the server shell — no extra /api/branding fetch.
+  const [currentLogoUrl, setCurrentLogoUrl] = useState<string | null>(shell.branding.logoUrl);
   const [pending, setPending] = useState<PendingUpload | null>(null);
   const [busy, setBusy] = useState(false);
-  const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
-
-  useEffect(() => {
-    fetch("/api/branding")
-      .then((r) => (r.ok ? r.json() : null))
-      .then((data) => {
-        if (data?.hasLogo && data?.v) {
-          setCurrentLogoUrl(`/api/branding/asset/logo?v=${encodeURIComponent(data.v)}`);
-        }
-        setLoading(false);
-      })
-      .catch(() => setLoading(false));
-  }, []);
+  const [confirmRemove, setConfirmRemove] = useState(false);
+  const [message, setMessage] = useState<NoticeState>(null);
 
   // Revoke object URLs when the pending preview is replaced/cleared.
   useEffect(() => {
@@ -184,7 +178,6 @@ export default function BrandingTab({ canEdit }: { canEdit: boolean }) {
   }
 
   async function handleRemove() {
-    if (!window.confirm(t("removeConfirm"))) return;
     setBusy(true);
     setMessage(null);
     try {
@@ -199,118 +192,109 @@ export default function BrandingTab({ canEdit }: { canEdit: boolean }) {
       setMessage({ type: "error", text: t("removeFailed") });
     } finally {
       setBusy(false);
+      setConfirmRemove(false);
     }
   }
 
-  if (loading) {
-    return (
-      <div className="animate-pulse space-y-4">
-        <div className="h-8 bg-gray-200 rounded w-1/3 dark:bg-gray-700" />
-        <div className="h-32 bg-gray-200 rounded dark:bg-gray-700" />
-      </div>
-    );
-  }
-
   return (
-    <div className="bg-white rounded-2xl shadow-sm p-6 space-y-6 dark:bg-gray-800 dark:shadow-black/40">
+    <Card as="section" padding="lg" aria-labelledby="branding-heading" className="space-y-5">
       <div>
-        <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100">{t("title")}</h2>
-        <p className="text-base text-gray-500 mt-1 dark:text-gray-400">{t("description")}</p>
+        <h2 id="branding-heading" className="text-xl font-semibold text-ui-text">
+          {t("title")}
+        </h2>
+        <p className="mt-1 text-base text-ui-text-muted">{t("description")}</p>
       </div>
 
-      {message && (
-        <div
-          className={`p-3 rounded-lg text-base ${
-            message.type === "success"
-              ? "bg-green-50 text-green-700 dark:bg-green-900/30 dark:text-green-200"
-              : "bg-red-50 text-red-700 dark:bg-red-900/30 dark:text-red-200"
-          }`}
-        >
-          {message.text}
-        </div>
-      )}
+      <Notice state={message} />
 
-      {/* Current logo */}
       <div>
-        <h3 className="text-sm font-medium text-gray-500 mb-2 dark:text-gray-400">{t("currentLogo")}</h3>
-        <div className="flex items-center justify-center h-24 rounded-lg border border-dashed border-gray-300 bg-gray-50 dark:border-gray-700 dark:bg-gray-900">
+        <h3 className="mb-2 text-base font-medium text-ui-text">{t("currentLogo")}</h3>
+        <div className="flex h-24 items-center justify-center rounded-lg border border-dashed border-ui-border-strong bg-ui-surface-muted">
           {currentLogoUrl ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img src={currentLogoUrl} alt={t("logoAlt")} className="h-16 w-auto max-w-[220px] object-contain" />
           ) : (
-            <span className="text-base text-gray-400 dark:text-gray-500">{t("noLogo")}</span>
+            <span className="text-base text-ui-text-muted">{t("noLogo")}</span>
           )}
         </div>
       </div>
 
-      {canEdit && (
+      {canEdit ? (
         <>
-          {/* Pending preview (new selection, not yet saved) */}
-          {pending && (
+          {pending ? (
             <div className="space-y-3">
-              <h3 className="text-sm font-medium text-gray-500 dark:text-gray-400">{t("preview")}</h3>
+              <h3 className="text-base font-medium text-ui-text">{t("preview")}</h3>
               <div className="flex flex-wrap items-end gap-6">
                 <div className="text-center">
-                  <div className="flex items-center justify-center h-20 w-44 rounded-lg border border-gray-200 bg-gray-50 dark:border-gray-700 dark:bg-gray-900">
+                  <div className="flex h-20 w-44 items-center justify-center rounded-lg border border-ui-border bg-ui-surface-muted">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img src={pending.logoPreview} alt="" className="h-14 w-auto max-w-[160px] object-contain" />
                   </div>
-                  <span className="text-xs text-gray-400 dark:text-gray-500">{t("logoLabel")}</span>
+                  <span className="text-base text-ui-text-muted">{t("logoLabel")}</span>
                 </div>
                 <div className="text-center">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={pending.icon512Preview} alt="" className="h-20 w-20 rounded-2xl border border-gray-200 object-cover dark:border-gray-700" />
-                  <span className="text-xs text-gray-400 dark:text-gray-500">{t("appIconLabel")}</span>
+                  <img src={pending.icon512Preview} alt="" className="h-20 w-20 rounded-2xl border border-ui-border object-cover" />
+                  <span className="text-base text-ui-text-muted">{t("appIconLabel")}</span>
                 </div>
                 <div className="text-center">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={pending.maskablePreview} alt="" className="h-20 w-20 rounded-full border border-gray-200 object-cover dark:border-gray-700" />
-                  <span className="text-xs text-gray-400 dark:text-gray-500">{t("maskableLabel")}</span>
+                  <img src={pending.maskablePreview} alt="" className="h-20 w-20 rounded-full border border-ui-border object-cover" />
+                  <span className="text-base text-ui-text-muted">{t("maskableLabel")}</span>
                 </div>
               </div>
             </div>
-          )}
+          ) : null}
 
           <div className="flex flex-wrap items-center gap-3">
+            {/* Visually hidden native input + kit button: 44 px target, same behaviour. */}
             <input
               ref={fileRef}
+              id="logo-file"
               type="file"
               accept={ACCEPTED_LOGO_ACCEPT}
               disabled={busy}
+              className="sr-only"
               onChange={(e) => {
                 const f = e.target.files?.[0];
                 if (f) handleSelect(f);
               }}
-              className="block text-base text-gray-700 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-base file:font-medium file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 dark:text-gray-300 dark:file:bg-blue-900/40 dark:file:text-blue-200"
             />
-            {pending && (
-              <button
-                onClick={handleUpload}
-                disabled={busy}
-                className="px-5 py-3 bg-blue-600 hover:bg-blue-700 text-white text-base font-medium rounded-lg transition-colors disabled:opacity-50"
-              >
+            <Button variant="secondary" disabled={busy} onClick={() => fileRef.current?.click()}>
+              <Icon name="upload" size={20} />
+              {currentLogoUrl || pending ? th("logoChoose") : th("logoUpload")}
+            </Button>
+            {pending ? (
+              <Button onClick={handleUpload} loading={busy}>
                 {busy ? t("uploading") : tc("save")}
-              </button>
-            )}
-            {currentLogoUrl && !pending && (
-              <button
-                onClick={handleRemove}
-                disabled={busy}
-                className="px-5 py-3 text-red-600 hover:text-red-700 text-base font-medium transition-colors disabled:opacity-50 dark:text-red-400 dark:hover:text-red-300"
-              >
-                {busy ? t("removing") : t("remove")}
-              </button>
-            )}
+              </Button>
+            ) : null}
+            {currentLogoUrl && !pending ? (
+              <Button variant="ghost" onClick={() => setConfirmRemove(true)} disabled={busy}>
+                <Icon name="trash" size={20} />
+                {t("remove")}
+              </Button>
+            ) : null}
           </div>
 
-          <p className="text-sm text-gray-400 dark:text-gray-500">{t("formatsHint")}</p>
+          <p className="text-base text-ui-text-muted">{t("formatsHint")}</p>
 
-          {/* PWA caveat — installed home-screen icons don't update */}
-          <div className="rounded-lg bg-amber-50 border border-amber-200 p-3 text-sm text-amber-800 dark:bg-amber-900/20 dark:border-amber-800/60 dark:text-amber-200">
+          <p className="rounded-lg border border-ui-warning/40 bg-ui-warning/10 p-3 text-base text-ui-text">
             <strong className="font-medium">{t("pwaTitle")}</strong> {t("pwaNote")}
-          </div>
+          </p>
         </>
-      )}
-    </div>
+      ) : null}
+
+      <ConfirmDialog
+        open={confirmRemove}
+        tone="danger"
+        title={t("remove")}
+        description={t("removeConfirm")}
+        confirmLabel={t("remove")}
+        loading={busy}
+        onConfirm={handleRemove}
+        onCancel={() => setConfirmRemove(false)}
+      />
+    </Card>
   );
 }

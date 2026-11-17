@@ -1,287 +1,45 @@
-"use client";
+import { getTranslations } from "next-intl/server";
 
-import { useSession } from "next-auth/react";
-import { useTranslations } from "next-intl";
-import { useEffect, useState } from "react";
-import { Link } from "@/i18n/navigation";
-import PendingCountBadge from "@/components/owners/PendingCountBadge";
+import { EmptyState } from "@/components/ui";
+import OwnersBoard, { type OwnersFilter } from "@/components/owners/OwnersBoard";
+import { auth } from "@/lib/auth";
+import { OWNER_STATUSES, type OwnerStatus } from "@/lib/owners-board";
+import { loadOwnersBoard } from "@/lib/owners-board.server";
 import { hasPermission } from "@/lib/permissions";
-import InvitationModal from "@/components/owners/InvitationModal";
+import { getShellData } from "@/lib/shell.server";
 import type { UserRole } from "@/types";
 
-interface UserData {
-  id: string;
-  name: string;
-  email: string;
-  phone: string | null;
-  role: UserRole;
-  isActive: boolean;
-  flatNumber: string | null;
-  createdAt: string;
-}
+// BYT-20261117-002 Phase 5 — Vlastníci: one page for every way a person gets
+// into the system (owner records, invitations, self-registrations). Loaded
+// once on the server; the client part only handles interaction and calls
+// router.refresh() after a mutation.
 
-const roleKeys: Record<UserRole, string> = {
-  admin: "roleAdmin",
-  owner: "roleOwner",
-  tenant: "roleTenant",
-  vote_counter: "roleVoteCounter",
-  caretaker: "roleCaretaker",
-};
+export default async function OwnersPage({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ locale: string }>;
+  searchParams: Promise<{ status?: string | string[] }>;
+}) {
+  const [{ locale }, sp, session] = await Promise.all([params, searchParams, auth()]);
+  const t = await getTranslations("Owners.board");
 
-export default function VlastniciPage() {
-  const { data: session } = useSession();
-  const t = useTranslations("Owners");
-  const tCommon = useTranslations("Common");
-  const [usersList, setUsersList] = useState<UserData[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [showForm, setShowForm] = useState(false);
-  const [formError, setFormError] = useState("");
-  const [formLoading, setFormLoading] = useState(false);
-  const [showInviteModal, setShowInviteModal] = useState(false);
-
-  const role = (session?.user?.role || "owner") as UserRole;
-
+  // Same gate the old client page and every owners API route use.
+  const role = (session?.user?.role ?? "owner") as UserRole;
   if (!hasPermission(role, "manageUsers")) {
-    return (
-      <div className="text-center py-12 text-gray-500 text-lg dark:text-gray-400">
-        {t("noPermission")}
-      </div>
-    );
+    return <EmptyState icon="users" title={t("noPermission")} />;
   }
 
-  async function fetchUsers() {
-    setLoading(true);
-    const res = await fetch("/api/users");
-    if (res.ok) {
-      setUsersList(await res.json());
-    }
-    setLoading(false);
-  }
+  const raw = Array.isArray(sp.status) ? sp.status[0] : sp.status;
+  const initialFilter: OwnersFilter = OWNER_STATUSES.includes(raw as OwnerStatus)
+    ? (raw as OwnerStatus)
+    : "all";
 
-  // eslint-disable-next-line react-hooks/rules-of-hooks
-  useEffect(() => {
-    fetchUsers();
-  }, []);
-
-  async function handleAddUser(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    setFormLoading(true);
-    setFormError("");
-
-    const formData = new FormData(e.currentTarget);
-
-    const res = await fetch("/api/users", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        name: formData.get("name"),
-        email: formData.get("email"),
-        password: formData.get("password"),
-        phone: formData.get("phone"),
-        role: formData.get("role"),
-      }),
-    });
-
-    if (!res.ok) {
-      const data = await res.json();
-      setFormError(data.error || t("createFailed"));
-      setFormLoading(false);
-      return;
-    }
-
-    setFormLoading(false);
-    setShowForm(false);
-    fetchUsers();
-  }
-
-  return (
-    <div>
-      <div className="flex flex-col gap-4 mb-6 sm:flex-row sm:items-center sm:justify-between">
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">{t("title")}</h1>
-        <div className="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap sm:gap-3">
-          <Link
-            href="/owners/pending"
-            className="inline-flex items-center justify-center gap-2 px-4 py-2.5 sm:px-5 sm:py-3 bg-blue-700 hover:bg-blue-800 text-white text-sm sm:text-base font-medium rounded-lg transition-colors text-center"
-          >
-            {t("pendingShellUsers")}
-          </Link>
-          <Link
-            href="/owners/pending-registrations"
-            className="inline-flex items-center justify-center gap-2 px-4 py-2.5 sm:px-5 sm:py-3 bg-amber-600 hover:bg-amber-700 text-white text-sm sm:text-base font-medium rounded-lg transition-colors text-center"
-          >
-            {t("pendingRegistrationsLink")}
-            <PendingCountBadge />
-          </Link>
-          <button
-            onClick={() => setShowInviteModal(true)}
-            className="inline-flex items-center justify-center px-4 py-2.5 sm:px-5 sm:py-3 bg-green-600 hover:bg-green-700 text-white text-sm sm:text-base font-medium rounded-lg transition-colors"
-          >
-            {t("invite")}
-          </button>
-          <button
-            onClick={() => setShowForm(!showForm)}
-            className="inline-flex items-center justify-center px-4 py-2.5 sm:px-5 sm:py-3 bg-blue-600 hover:bg-blue-700 text-white text-sm sm:text-base font-medium rounded-lg transition-colors"
-          >
-            {showForm ? tCommon("close") : t("addUser")}
-          </button>
-        </div>
-      </div>
-
-      {showForm && (
-        <div className="bg-white rounded-2xl shadow-sm p-6 mb-6 dark:bg-gray-800 dark:shadow-black/40">
-          <h2 className="text-lg font-bold text-gray-900 mb-4 dark:text-gray-100">
-            {t("newUser")}
-          </h2>
-          {formError && (
-            <div className="bg-red-50 text-red-700 px-4 py-3 rounded-lg text-base mb-4 dark:bg-red-900/30 dark:text-red-200">
-              {formError}
-            </div>
-          )}
-          <form onSubmit={handleAddUser} className="space-y-4">
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-base font-medium text-gray-700 mb-1 dark:text-gray-200">
-                  {t("nameLabel")}
-                </label>
-                <input
-                  name="name"
-                  required
-                  className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none dark:bg-gray-900 dark:border-gray-700 dark:text-gray-100"
-                />
-              </div>
-              <div>
-                <label className="block text-base font-medium text-gray-700 mb-1 dark:text-gray-200">
-                  {t("emailLabel")}
-                </label>
-                <input
-                  name="email"
-                  type="email"
-                  required
-                  className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none dark:bg-gray-900 dark:border-gray-700 dark:text-gray-100"
-                />
-              </div>
-              <div>
-                <label className="block text-base font-medium text-gray-700 mb-1 dark:text-gray-200">
-                  {t("passwordLabel")}
-                </label>
-                <input
-                  name="password"
-                  type="password"
-                  required
-                  className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none dark:bg-gray-900 dark:border-gray-700 dark:text-gray-100"
-                />
-              </div>
-              <div>
-                <label className="block text-base font-medium text-gray-700 mb-1 dark:text-gray-200">
-                  {t("phoneLabel")}
-                </label>
-                <input
-                  name="phone"
-                  className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none dark:bg-gray-900 dark:border-gray-700 dark:text-gray-100"
-                />
-              </div>
-            </div>
-            <div>
-              <label className="block text-base font-medium text-gray-700 mb-1 dark:text-gray-200">
-                {t("roleLabel")}
-              </label>
-              <select
-                name="role"
-                className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none dark:bg-gray-900 dark:border-gray-700 dark:text-gray-100"
-              >
-                <option value="owner">{t("roleOwner")}</option>
-                <option value="tenant">{t("roleTenant")}</option>
-                <option value="admin">{t("roleAdmin")}</option>
-                <option value="vote_counter">{t("roleVoteCounter")}</option>
-                <option value="caretaker">{t("roleCaretaker")}</option>
-              </select>
-            </div>
-            <button
-              type="submit"
-              disabled={formLoading}
-              className="px-6 py-3 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white text-base font-medium rounded-lg transition-colors"
-            >
-              {formLoading ? tCommon("saving") : t("add")}
-            </button>
-          </form>
-        </div>
-      )}
-
-      {loading ? (
-        <div className="bg-white rounded-2xl shadow-sm p-6 animate-pulse dark:bg-gray-800 dark:shadow-black/40">
-          <div className="space-y-3">
-            {[1, 2, 3].map((i) => (
-              <div key={i} className="h-12 bg-gray-200 rounded dark:bg-gray-700" />
-            ))}
-          </div>
-        </div>
-      ) : usersList.length === 0 ? (
-        <div className="text-center py-12 text-gray-500 text-lg dark:text-gray-400">
-          {t("empty")}
-        </div>
-      ) : (
-        <div className="bg-white rounded-2xl shadow-sm overflow-hidden dark:bg-gray-800 dark:shadow-black/40">
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead className="bg-gray-50 border-b border-gray-200 dark:bg-gray-900 dark:border-gray-700">
-                <tr>
-                  <th className="text-left px-6 py-3 text-sm font-medium text-gray-500 dark:text-gray-400">
-                    {t("nameLabel")}
-                  </th>
-                  <th className="text-left px-6 py-3 text-sm font-medium text-gray-500 dark:text-gray-400">
-                    {t("emailLabel")}
-                  </th>
-                  <th className="text-left px-6 py-3 text-sm font-medium text-gray-500 dark:text-gray-400">
-                    {t("flatLabel")}
-                  </th>
-                  <th className="text-left px-6 py-3 text-sm font-medium text-gray-500 dark:text-gray-400">
-                    {t("roleLabel")}
-                  </th>
-                  <th className="text-left px-6 py-3 text-sm font-medium text-gray-500 dark:text-gray-400">
-                    {t("statusLabel")}
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
-                {usersList.map((u) => (
-                  <tr key={u.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/50">
-                    <td className="px-6 py-4 text-base text-gray-900 dark:text-gray-100">
-                      <Link href={`/owners/${u.id}`} className="text-blue-600 hover:underline dark:text-blue-400">
-                        {u.name}
-                      </Link>
-                    </td>
-                    <td className="px-6 py-4 text-base text-gray-600 dark:text-gray-300">
-                      {u.email}
-                    </td>
-                    <td className="px-6 py-4 text-base text-gray-600 dark:text-gray-300">
-                      {u.flatNumber || tCommon("noDash")}
-                    </td>
-                    <td className="px-6 py-4 text-base text-gray-600 dark:text-gray-300">
-                      {t(roleKeys[u.role])}
-                    </td>
-                    <td className="px-6 py-4">
-                      <span
-                        className={`px-2.5 py-0.5 rounded-full text-sm font-medium ${
-                          u.isActive
-                            ? "bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-200"
-                            : "bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-200"
-                        }`}
-                      >
-                        {u.isActive ? t("statusActive") : t("statusInactive")}
-                      </span>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      )}
-
-      <InvitationModal
-        isOpen={showInviteModal}
-        onClose={() => setShowInviteModal(false)}
-      />
-    </div>
-  );
+  // Request-cached: the layout already resolved the shell. Skip the load
+  // while the layout shows PendingShell / ConsentGate instead of this page.
+  const shell = session ? await getShellData(session) : null;
+  if (!shell || shell.user.status !== "active" || shell.consent.needsConsent) return null;
+  const rootId = shell.entities.currentId;
+  const data = await loadOwnersBoard(rootId);
+  return <OwnersBoard data={data} initialFilter={initialFilter} locale={locale} />;
 }

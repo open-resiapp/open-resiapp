@@ -324,6 +324,31 @@ export async function dropModuleTables(
   void installPath;
 }
 
+/**
+ * Read-only: true when any of the module's tables (excluding the migrations
+ * bookkeeping table) holds at least one row. Used to block uninstall, which
+ * drops the tables.
+ */
+export async function moduleHasData(moduleName: string): Promise<boolean> {
+  const prefix = tablePrefixFor(moduleName);
+  const migrationsTable = migrationsTableFor(moduleName);
+  const pool = getPool();
+  // Escape LIKE wildcards so "mod_a_" does not also match "mod_ab_*".
+  const pattern = prefix.replace(/[\\_%]/g, (c) => `\\${c}`) + "%";
+  const { rows } = await pool.query(
+    `SELECT tablename FROM pg_tables WHERE schemaname = 'public' AND tablename LIKE $1`,
+    [pattern]
+  );
+  for (const row of rows as { tablename: string }[]) {
+    if (row.tablename === migrationsTable) continue;
+    const res = await pool.query(
+      `SELECT EXISTS (SELECT 1 FROM "${row.tablename.replace(/"/g, '""')}" LIMIT 1) AS has`
+    );
+    if (res.rows[0]?.has) return true;
+  }
+  return false;
+}
+
 // ── In-process event bus ─────────────────────────────────
 
 type Bus = Map<string, Set<(p: unknown) => void>>;

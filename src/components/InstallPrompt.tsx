@@ -94,7 +94,7 @@ export default function InstallPrompt() {
   if (!mode) return null;
 
   return (
-    <div className="fixed inset-x-0 bottom-0 z-50 flex justify-center p-4 pointer-events-none">
+    <div className="fixed inset-x-0 bottom-[var(--shell-bottom-offset,0px)] z-50 flex justify-center p-4 pointer-events-none">
       <div className="pointer-events-auto w-full max-w-md rounded-xl border border-gray-200 bg-white p-4 shadow-lg dark:border-gray-700 dark:bg-gray-900">
         <div className="flex items-start gap-3">
           {/* eslint-disable-next-line @next/next/no-img-element */}

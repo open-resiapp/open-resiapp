@@ -1,8 +1,10 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { useTranslations } from "next-intl";
+import { useFormatter, useTranslations } from "next-intl";
 import QRCode from "qrcode";
+
+import { Button, Field, Input, Modal } from "@/components/ui";
 
 interface ShellClaimDialogProps {
   shellId: string;
@@ -20,9 +22,17 @@ interface ClaimResult {
   emailSent: boolean;
 }
 
+/**
+ * Invite one owner record (shell user) to claim its account: by e-mail or as
+ * a printable QR letter. Request unchanged: POST /api/admin/shell-users/claim
+ * {shellId, mode, locale, email?}. Mounted only while open.
+ */
 export default function ShellClaimDialog(props: ShellClaimDialogProps) {
   const t = useTranslations("Owners.pending");
+  const tBoard = useTranslations("Owners.board");
   const tCommon = useTranslations("Common");
+  const format = useFormatter();
+  const [mode, setMode] = useState<"email" | "qr">(props.mode);
   const [email, setEmail] = useState(props.existingEmail ?? "");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -30,32 +40,31 @@ export default function ShellClaimDialog(props: ShellClaimDialogProps) {
   const [qrDataUrl, setQrDataUrl] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
   const printRef = useRef<HTMLDivElement | null>(null);
+  // Guards the QR auto-submit against a double effect run (one invitation per open).
+  const qrRequested = useRef(false);
 
-  // QR mode skips the email step entirely — auto-submit on open.
+  // QR mode skips the e-mail step entirely — submit as soon as it is chosen.
   useEffect(() => {
-    if (props.mode !== "qr" || result) return;
-    void submit();
+    if (mode !== "qr" || result || qrRequested.current) return;
+    qrRequested.current = true;
+    void submit("qr");
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [props.mode]);
+  }, [mode]);
 
   useEffect(() => {
     if (!result) return;
-    QRCode.toDataURL(result.claimUrl, { width: 320, margin: 2 }).then(
-      setQrDataUrl
-    );
+    QRCode.toDataURL(result.claimUrl, { width: 320, margin: 2 }).then(setQrDataUrl);
   }, [result]);
 
-  async function submit(emailOverride?: string) {
+  async function submit(submitMode: "email" | "qr") {
     setSubmitting(true);
     setError(null);
     const payload: Record<string, unknown> = {
       shellId: props.shellId,
-      mode: props.mode,
+      mode: submitMode,
       locale: props.locale,
     };
-    if (props.mode === "email") {
-      payload.email = emailOverride ?? email;
-    }
+    if (submitMode === "email") payload.email = email;
     const res = await fetch("/api/admin/shell-users/claim", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -67,8 +76,7 @@ export default function ShellClaimDialog(props: ShellClaimDialogProps) {
       setSubmitting(false);
       return;
     }
-    const data = (await res.json()) as ClaimResult;
-    setResult(data);
+    setResult((await res.json()) as ClaimResult);
     setSubmitting(false);
   }
 
@@ -84,9 +92,11 @@ export default function ShellClaimDialog(props: ShellClaimDialogProps) {
     const printContent = printRef.current.innerHTML;
     const w = window.open("", "_blank", "width=600,height=800");
     if (!w) return;
-    w.document.write(`<!DOCTYPE html><html><head><title>QR — ${escapeHtml(
-      props.shellName
-    )}</title><style>body{font-family:Arial,sans-serif;padding:24px;text-align:center;}img{max-width:100%;}h1{font-size:24px;}p{font-size:18px;}</style></head><body>${printContent}</body></html>`);
+    w.document.write(
+      `<!DOCTYPE html><html><head><title>QR — ${escapeHtml(
+        props.shellName
+      )}</title><style>body{font-family:Arial,sans-serif;padding:24px;text-align:center;}img{max-width:100%;}h1{font-size:24px;}p{font-size:18px;word-break:break-all;}</style></head><body>${printContent}</body></html>`
+    );
     w.document.close();
     w.focus();
     setTimeout(() => {
@@ -95,63 +105,57 @@ export default function ShellClaimDialog(props: ShellClaimDialogProps) {
     }, 250);
   }
 
-  return (
-    <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-      <div className="bg-white rounded-2xl w-full max-w-md p-6 max-h-[90vh] overflow-y-auto dark:bg-gray-800">
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">
-            {props.mode === "email" ? t("inviteByEmailTitle") : t("qrTitle")}
-          </h2>
-          <button
-            onClick={props.onClose}
-            className="text-gray-500 hover:text-gray-700 text-2xl leading-none dark:text-gray-400 dark:hover:text-gray-200"
-          >
-            &times;
-          </button>
-        </div>
+  const title = mode === "email" ? t("inviteByEmailTitle") : t("qrTitle");
 
-        <p className="text-base text-gray-600 mb-4 dark:text-gray-300">
-          {t("inviteForOwner", { name: props.shellName })}
-        </p>
+  return (
+    <Modal
+      open
+      onClose={props.onClose}
+      title={title}
+      footer={
+        result ? (
+          <Button variant="secondary" onClick={props.onClose}>
+            {tCommon("close")}
+          </Button>
+        ) : undefined
+      }
+    >
+      <div className="space-y-4">
+        <p className="text-ui-text-muted">{t("inviteForOwner", { name: props.shellName })}</p>
 
         {error && (
-          <div className="bg-red-50 text-red-700 px-4 py-3 rounded-lg text-base mb-4 dark:bg-red-900/30 dark:text-red-200">
+          <p role="alert" className="rounded-lg border border-ui-danger/30 bg-ui-danger/10 px-4 py-3 text-ui-danger">
             {error}
-          </div>
+          </p>
         )}
 
-        {!result && props.mode === "email" && (
+        {!result && mode === "email" && (
           <form
             onSubmit={(e) => {
               e.preventDefault();
-              void submit();
+              void submit("email");
             }}
             className="space-y-4"
           >
-            <div>
-              <label className="block text-base font-medium text-gray-700 mb-1 dark:text-gray-200">
-                {t("emailLabel")}
-              </label>
-              <input
+            <Field label={t("emailLabel")} required>
+              <Input
                 type="email"
-                required
+                autoComplete="off"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none dark:bg-gray-900 dark:border-gray-700 dark:text-gray-100"
               />
-            </div>
-            <button
-              type="submit"
-              disabled={submitting}
-              className="w-full py-3 px-4 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white text-base font-medium rounded-lg transition-colors"
-            >
+            </Field>
+            <Button type="submit" loading={submitting} fullWidth>
               {submitting ? t("sending") : t("sendInvitation")}
-            </button>
+            </Button>
+            <Button variant="ghost" fullWidth onClick={() => setMode("qr")} disabled={submitting}>
+              {tBoard("switchToQr")}
+            </Button>
           </form>
         )}
 
-        {!result && props.mode === "qr" && submitting && (
-          <p className="text-base text-gray-500 dark:text-gray-400">
+        {!result && mode === "qr" && submitting && (
+          <p className="text-ui-text-muted" role="status">
             {t("generating")}
           </p>
         )}
@@ -159,60 +163,46 @@ export default function ShellClaimDialog(props: ShellClaimDialogProps) {
         {result && (
           <div className="space-y-4">
             {result.emailSent && (
-              <p className="bg-green-50 text-green-700 px-4 py-3 rounded-lg text-base dark:bg-green-900/30 dark:text-green-200">
+              <p role="status" className="rounded-lg border border-ui-success/30 bg-ui-success/10 px-4 py-3 text-ui-success">
                 {t("emailSent")}
               </p>
             )}
 
-            <div className="bg-gray-50 border border-gray-200 rounded-lg p-3 dark:bg-gray-900 dark:border-gray-700">
-              <p className="text-sm text-gray-600 break-all dark:text-gray-300">
-                {result.claimUrl}
-              </p>
-            </div>
+            <p className="break-all rounded-lg border border-ui-border bg-ui-surface-muted p-3 text-base text-ui-text">
+              {result.claimUrl}
+            </p>
 
-            <button
-              onClick={copyLink}
-              className="w-full py-3 px-4 bg-blue-600 hover:bg-blue-700 text-white text-base font-medium rounded-lg transition-colors"
-            >
+            <Button variant="secondary" fullWidth onClick={copyLink}>
               {copied ? t("copied") : t("copyLink")}
-            </button>
+            </Button>
 
             {qrDataUrl && (
               <>
                 <div ref={printRef} className="text-center">
-                  <h1>{props.shellName}</h1>
+                  <h1 className="text-lg font-semibold">{props.shellName}</h1>
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src={qrDataUrl}
-                    alt="QR"
+                    alt={t("qrTitle")}
                     width={320}
                     height={320}
-                    className="mx-auto rounded-lg border border-gray-200 bg-white dark:border-gray-700"
+                    className="mx-auto max-w-full rounded-lg border border-ui-border bg-white"
                   />
                   <p>
                     {t("expiresOn", {
-                      date: new Date(result.expiresAt).toLocaleDateString(),
+                      date: format.dateTime(new Date(result.expiresAt), { dateStyle: "medium" }),
                     })}
                   </p>
                 </div>
-                <button
-                  onClick={printQr}
-                  className="w-full py-3 px-4 bg-gray-200 hover:bg-gray-300 text-gray-800 text-base font-medium rounded-lg transition-colors dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-gray-100"
-                >
+                <Button fullWidth onClick={printQr}>
                   {t("print")}
-                </button>
+                </Button>
               </>
             )}
-
-            <button
-              onClick={props.onClose}
-              className="w-full py-3 px-4 bg-gray-100 hover:bg-gray-200 text-gray-700 text-base font-medium rounded-lg transition-colors dark:text-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600"
-            >
-              {tCommon("close")}
-            </button>
           </div>
         )}
       </div>
-    </div>
+    </Modal>
   );
 }
 

@@ -1,79 +1,58 @@
-"use client";
+import { SessionProvider } from "next-auth/react";
 
-import { useSession } from "next-auth/react";
-import { useRouter, usePathname } from "@/i18n/navigation";
-import { useTranslations } from "next-intl";
-import { useEffect, useState } from "react";
-import Sidebar from "@/components/layout/Sidebar";
-import Header from "@/components/layout/Header";
-import ServiceWorkerRegistration from "@/components/ServiceWorkerRegistration";
-import InstallPrompt from "@/components/InstallPrompt";
+import { auth } from "@/lib/auth";
+import { redirect } from "@/i18n/navigation";
+import { getShellData } from "@/lib/shell.server";
+import { ShellProvider } from "@/components/layout/ShellContext";
+import AppShell from "@/components/layout/AppShell";
+import PendingShell from "@/components/layout/PendingShell";
 import ConsentGate from "@/components/consent/ConsentGate";
-import ShareSumInvariantBanner from "@/components/admin/ShareSumInvariantBanner";
-import OnboardingBanner from "@/components/onboarding/OnboardingBanner";
-import type { UserRole } from "@/types";
 
-const PENDING_ALLOWED_PATH = "/community-info";
+// BYT-20261117-002 Phase 1: server shell. Session, community, branding,
+// enabled modules, entity scope, consent, onboarding, share-sum state,
+// board roles and owned units are resolved ONCE here (src/lib/shell.server.ts)
+// and provided via <ShellProvider>. The chrome renders with real data on
+// the first paint; no client fetches on mount.
+//
+// Dynamic by nature (auth() reads cookies). RSC navigation between pages
+// reuses this layout without re-rendering it; `router.refresh()` after a
+// shell-relevant mutation re-resolves it.
 
-export default function DashboardLayout({
+export default async function DashboardLayout({
   children,
+  params,
 }: {
   children: React.ReactNode;
+  params: Promise<{ locale: string }>;
 }) {
-  const { data: session, status } = useSession();
-  const router = useRouter();
-  const pathname = usePathname();
-  const t = useTranslations("Common");
-  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [{ locale }, session] = await Promise.all([params, auth()]);
 
-  useEffect(() => {
-    if (status === "unauthenticated") {
-      router.push("/login");
-      return;
-    }
-    if (
-      status === "authenticated" &&
-      session?.user.status === "pending" &&
-      pathname !== PENDING_ALLOWED_PATH
-    ) {
-      router.replace(PENDING_ALLOWED_PATH);
-    }
-  }, [status, session?.user.status, pathname, router]);
-
-  if (!session) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-950">
-        <div className="text-lg text-gray-500 dark:text-gray-400">{t("loading")}</div>
-      </div>
-    );
+  if (!session?.user?.id) {
+    redirect({ href: "/login", locale });
+    // `redirect` throws; the return keeps TypeScript's narrowing honest.
+    return null;
   }
 
-  const isPending = session.user.status === "pending";
+  const shell = await getShellData(session);
 
+  let body: React.ReactNode;
+  if (shell.user.status === "pending") {
+    body = <PendingShell>{children}</PendingShell>;
+  } else if (shell.consent.needsConsent) {
+    // Full-screen consent step instead of the chrome — no flash of the app.
+    body = <ConsentGate />;
+  } else {
+    body = <AppShell>{children}</AppShell>;
+  }
+
+  // Nested SessionProvider seeded with the server session: existing pages
+  // that call useSession() get `authenticated` on their first render (the
+  // old client layout withheld children until the session loaded, and
+  // several pages still assume that). Window-focus refetch stays with the
+  // root provider to avoid doubling /api/auth/session traffic.
   return (
-    <div className="min-h-screen bg-gray-50 flex dark:bg-gray-950">
-      <ServiceWorkerRegistration />
-      <InstallPrompt />
-      {!isPending && (
-        <Sidebar
-          role={session.user.role as UserRole}
-          isOpen={sidebarOpen}
-          onClose={() => setSidebarOpen(false)}
-        />
-      )}
-      <div className="flex-1 flex flex-col min-w-0">
-        <Header
-          userName={session.user.name || ""}
-          onMenuToggle={isPending ? undefined : () => setSidebarOpen(!sidebarOpen)}
-          showMenu={!isPending}
-          showProfileLink={!isPending}
-        />
-        <main className="flex-1 p-4 lg:p-6">
-          {!isPending && <OnboardingBanner />}
-          {!isPending && <ShareSumInvariantBanner />}
-          {isPending ? children : <ConsentGate>{children}</ConsentGate>}
-        </main>
-      </div>
-    </div>
+    <SessionProvider session={session} refetchOnWindowFocus={false}>
+      <ShellProvider data={shell}>{body}</ShellProvider>
+    </SessionProvider>
   );
 }

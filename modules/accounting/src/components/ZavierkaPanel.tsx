@@ -69,7 +69,8 @@ export default function ZavierkaPanel() {
     "px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 text-sm";
 
   return (
-    <div className="mb-6 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg p-4 text-sm">
+    // id: deep link target from the "Ročné úlohy" hub (/accounting/journal#zavierka).
+    <div id="zavierka" className="mb-6 scroll-mt-6 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg p-4 text-sm">
       <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-1">
         {t("title")}
       </h2>

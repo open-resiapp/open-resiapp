@@ -1,8 +1,9 @@
 "use client";
 
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { useState, useEffect, useCallback } from "react";
 import type { ApiKeyPermission, ConnectionType } from "@/types";
+import { Badge, Button, Card, ConfirmDialog, Field, Icon, Input, LoadingBlock, Modal, Select, type BadgeTone } from "@/components/ui";
 
 interface Connection {
   id: string;
@@ -60,6 +61,10 @@ const PERMISSIONS: { value: ApiKeyPermission; labelKey: string }[] = [
 
 export default function ExternalConnectionsTab() {
   const t = useTranslations("Settings");
+  const th = useTranslations("SettingsHub");
+  const locale = useLocale();
+  const [toRevoke, setToRevoke] = useState<Connection | null>(null);
+  const [revoking, setRevoking] = useState(false);
   const [connections, setConnections] = useState<Connection[]>([]);
   const [pendingPairings, setPendingPairings] = useState<PendingPairing[]>([]);
   const [showModal, setShowModal] = useState(false);
@@ -163,11 +168,11 @@ export default function ExternalConnectionsTab() {
     }
   };
 
-  const handleRevoke = async (id: string) => {
-    if (!confirm(t("confirmRevoke"))) return;
-
+  const handleRevoke = async () => {
+    if (!toRevoke) return;
+    setRevoking(true);
     try {
-      const res = await fetch(`/api/external-connections/${id}`, {
+      const res = await fetch(`/api/external-connections/${toRevoke.id}`, {
         method: "DELETE",
       });
       if (res.ok) {
@@ -175,6 +180,9 @@ export default function ExternalConnectionsTab() {
       }
     } catch {
       // silently fail
+    } finally {
+      setRevoking(false);
+      setToRevoke(null);
     }
   };
 
@@ -202,20 +210,16 @@ export default function ExternalConnectionsTab() {
     }
   };
 
+  const TYPE_TONE: Record<string, BadgeTone> = {
+    druzstvo: "info",
+    energy: "warning",
+    housekeeper: "success",
+    other: "neutral",
+  };
   const getTypeBadge = (type: string) => {
-    const colors: Record<string, string> = {
-      druzstvo: "bg-blue-100 text-blue-800 dark:bg-blue-900/40 dark:text-blue-200",
-      energy: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/40 dark:text-yellow-200",
-      housekeeper: "bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-200",
-      other: "bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-200",
-    };
     const typeEntry = CONNECTION_TYPES.find((ct) => ct.value === type);
     const label = typeEntry ? t(typeEntry.labelKey as Parameters<typeof t>[0]) : type;
-    return (
-      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-sm font-medium ${colors[type] || colors.other}`}>
-        {label}
-      </span>
-    );
+    return <Badge tone={TYPE_TONE[type] ?? "neutral"}>{label}</Badge>;
   };
 
   const getPermissionLabel = (perm: ApiKeyPermission) => {
@@ -225,7 +229,7 @@ export default function ExternalConnectionsTab() {
 
   const formatDate = (dateStr: string | null) => {
     if (!dateStr) return t("neverUsed");
-    return new Date(dateStr).toLocaleDateString("sk-SK", {
+    return new Date(dateStr).toLocaleDateString(locale, {
       day: "2-digit",
       month: "2-digit",
       year: "numeric",
@@ -234,99 +238,59 @@ export default function ExternalConnectionsTab() {
     });
   };
 
-  const getAuthResultColor = (result: string) => {
-    switch (result) {
-      case "success":
-        return "text-green-700 bg-green-50 dark:text-green-200 dark:bg-green-900/30";
-      case "rate_limited":
-        return "text-yellow-700 bg-yellow-50 dark:text-yellow-200 dark:bg-yellow-900/30";
-      case "invalid_key":
-      case "insufficient_permission":
-        return "text-red-700 bg-red-50 dark:text-red-200 dark:bg-red-900/30";
-      default:
-        return "text-gray-700 bg-gray-50 dark:text-gray-200 dark:bg-gray-700";
-    }
-  };
+  const authResultLabel = (result: string) =>
+    th.has(`authResult_${result}`) ? th(`authResult_${result}`) : result;
+  const authResultTone = (result: string): BadgeTone =>
+    result === "success"
+      ? "success"
+      : result === "rate_limited"
+        ? "warning"
+        : result === "invalid_key" || result === "insufficient_permission"
+          ? "danger"
+          : "neutral";
 
-  if (loading) {
-    return <div className="text-center py-8 text-gray-500 dark:text-gray-400">...</div>;
-  }
+  if (loading) return <LoadingBlock />;
 
   return (
-    <div>
-      {/* Alerts Banner */}
-      {alerts && alerts.totalAlerts > 0 && (
-        <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg dark:bg-red-900/30 dark:border-red-800">
-          <h3 className="text-base font-semibold text-red-800 mb-2 dark:text-red-200">
-            {t("securityAlerts")}
-          </h3>
-          <ul className="text-sm text-red-700 space-y-1 dark:text-red-200">
-            {alerts.failedAuth > 0 && (
-              <li>
-                {t("alertFailedAuth", { count: alerts.failedAuth })}
-              </li>
-            )}
-            {alerts.rateLimited > 0 && (
-              <li>
-                {t("alertRateLimited", { count: alerts.rateLimited })}
-              </li>
-            )}
-            {alerts.lockedPairings > 0 && (
-              <li>
-                {t("alertLockedPairings", { count: alerts.lockedPairings })}
-              </li>
-            )}
+    <div className="space-y-6">
+      {/* Alerts banner */}
+      {alerts && alerts.totalAlerts > 0 ? (
+        <div role="alert" className="rounded-lg border border-ui-danger/40 bg-ui-danger/10 p-4">
+          <h3 className="mb-2 text-base font-semibold text-ui-danger">{t("securityAlerts")}</h3>
+          <ul className="space-y-1 text-base text-ui-text">
+            {alerts.failedAuth > 0 ? <li>{t("alertFailedAuth", { count: alerts.failedAuth })}</li> : null}
+            {alerts.rateLimited > 0 ? <li>{t("alertRateLimited", { count: alerts.rateLimited })}</li> : null}
+            {alerts.lockedPairings > 0 ? <li>{t("alertLockedPairings", { count: alerts.lockedPairings })}</li> : null}
           </ul>
         </div>
-      )}
+      ) : null}
 
-      <div className="flex items-center justify-between mb-6">
-        <div>
-          <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100">
-            {t("connectionsTitle")}
-          </h2>
-          <p className="text-base text-gray-500 mt-1 dark:text-gray-400">
-            {t("connectionsDescription")}
-          </p>
-        </div>
-        <button
-          onClick={() => setShowModal(true)}
-          className="px-5 py-3 bg-blue-600 hover:bg-blue-700 text-white text-base font-medium rounded-lg transition-colors"
-        >
-          {t("addConnection")}
-        </button>
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <p className="min-w-0 max-w-prose text-base text-ui-text-muted">{t("connectionsDescription")}</p>
+        <Button onClick={() => setShowModal(true)}>{t("addConnection")}</Button>
       </div>
 
-      {successMessage && (
-        <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg text-green-800 text-base dark:bg-green-900/30 dark:border-green-800 dark:text-green-200">
+      {successMessage ? (
+        <p role="status" className="rounded-lg border border-ui-success/40 bg-ui-success/10 p-4 text-base font-medium text-ui-success">
           {successMessage}
-        </div>
-      )}
+        </p>
+      ) : null}
 
-      {/* Active Connections */}
+      {/* Active connections */}
       {connections.length === 0 && pendingPairings.length === 0 ? (
-        <div className="text-center py-12 text-gray-500 text-base dark:text-gray-400">
-          {t("noConnections")}
-        </div>
+        <p className="py-8 text-center text-base text-ui-text-muted">{t("noConnections")}</p>
       ) : (
         <div className="space-y-4">
           {connections.map((conn) => (
-            <div
-              key={conn.id}
-              className="bg-white rounded-2xl shadow-sm p-6 dark:bg-gray-800 dark:shadow-black/40"
-            >
-              <div className="flex items-start justify-between">
-                <div>
-                  <div className="flex items-center gap-3 mb-2">
-                    <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100">
-                      {conn.name}
-                    </h3>
+            <Card key={conn.id} padding="lg">
+              <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+                <div className="min-w-0">
+                  <div className="mb-2 flex flex-wrap items-center gap-2">
+                    <h3 className="text-base font-semibold text-ui-text break-words">{conn.name}</h3>
                     {getTypeBadge(conn.type)}
-                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-sm font-medium bg-emerald-100 text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-200">
-                      {t("active")}
-                    </span>
+                    <Badge tone="success">{t("active")}</Badge>
                   </div>
-                  <div className="text-base text-gray-500 space-y-1 dark:text-gray-400">
+                  <div className="space-y-1 text-base text-ui-text-muted">
                     <p>
                       {t("permissionLabel")}: {getPermissionLabel(conn.permissions)}
                     </p>
@@ -336,277 +300,195 @@ export default function ExternalConnectionsTab() {
                     <p>
                       {t("lastActivity")}: {formatDate(conn.lastUsedAt)}
                     </p>
-                    <p className="text-sm text-gray-400 font-mono dark:text-gray-500">
-                      Key: {conn.apiKeyPrefix}...
+                    <p className="font-mono text-base">
+                      {th("keyLabel")}: {conn.apiKeyPrefix}…
                     </p>
                   </div>
                 </div>
-                <div className="flex gap-2">
-                  <button
+                <div className="flex flex-wrap gap-2">
+                  <Button
+                    variant="secondary"
                     onClick={() => {
                       setRotatingId(rotatingId === conn.id ? null : conn.id);
                       setRotationEmail("");
                     }}
-                    className="px-4 py-2 text-base text-blue-600 hover:text-blue-700 hover:bg-blue-50 rounded-lg transition-colors dark:text-blue-400 dark:hover:text-blue-300 dark:hover:bg-blue-900/30"
                   >
-                    {t("rotateKey")}
-                  </button>
-                  <button
-                    onClick={() => handleRevoke(conn.id)}
-                    className="px-4 py-2 text-base text-red-600 hover:text-red-700 hover:bg-red-50 rounded-lg transition-colors dark:text-red-400 dark:hover:text-red-300 dark:hover:bg-red-900/30"
-                  >
+                    {th("rotateKeyLabel")}
+                  </Button>
+                  <Button variant="danger" onClick={() => setToRevoke(conn)}>
                     {t("revokeConnection")}
-                  </button>
+                  </Button>
                 </div>
               </div>
-              {/* Key Rotation Form */}
-              {rotatingId === conn.id && (
-                <div className="mt-4 p-4 bg-blue-50 rounded-lg border border-blue-200 dark:bg-blue-900/30 dark:border-blue-800">
-                  <p className="text-sm text-blue-800 mb-3 dark:text-blue-200">{t("rotateKeyDescription")}</p>
-                  <div className="flex gap-3">
-                    <input
+              {rotatingId === conn.id ? (
+                <div className="mt-4 space-y-3 rounded-lg border border-ui-border bg-ui-surface-muted p-4">
+                  <p className="text-base text-ui-text">{th("rotateKeyHelp")}</p>
+                  <Field label={t("connectionEmail")}>
+                    <Input
                       type="email"
                       value={rotationEmail}
                       onChange={(e) => setRotationEmail(e.target.value)}
                       placeholder={t("connectionEmailPlaceholder")}
-                      className="flex-1 px-4 py-2 text-base border border-blue-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none dark:bg-gray-900 dark:border-blue-800 dark:text-gray-100"
                     />
-                    <button
-                      onClick={() => handleRotateKey(conn.id)}
-                      disabled={submitting || !rotationEmail}
-                      className="px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white text-base font-medium rounded-lg transition-colors disabled:opacity-50"
-                    >
-                      {submitting ? "..." : t("send")}
-                    </button>
-                    <button
-                      onClick={() => setRotatingId(null)}
-                      className="px-4 py-2 text-base text-gray-600 hover:bg-gray-100 rounded-lg transition-colors dark:text-gray-300 dark:hover:bg-gray-700"
-                    >
+                  </Field>
+                  <div className="flex flex-wrap gap-2">
+                    <Button onClick={() => handleRotateKey(conn.id)} loading={submitting} disabled={!rotationEmail}>
+                      {t("send")}
+                    </Button>
+                    <Button variant="secondary" onClick={() => setRotatingId(null)}>
                       {t("cancel")}
-                    </button>
+                    </Button>
                   </div>
                 </div>
-              )}
-            </div>
+              ) : null}
+            </Card>
           ))}
 
-          {/* Pending Pairings */}
-          {pendingPairings.length > 0 && (
+          {/* Pending pairings */}
+          {pendingPairings.length > 0 ? (
             <>
-              <h3 className="text-base font-semibold text-gray-700 mt-6 dark:text-gray-200">
-                {t("pendingPairings")}
-              </h3>
+              <h3 className="pt-2 text-base font-semibold text-ui-text">{t("pendingPairings")}</h3>
               {pendingPairings.map((pairing) => (
-                <div
-                  key={pairing.id}
-                  className="bg-white rounded-xl border border-yellow-200 p-6 dark:bg-gray-800 dark:border-yellow-800"
-                >
-                  <div className="flex items-start justify-between">
-                    <div>
-                      <div className="flex items-center gap-3 mb-2">
-                        <h3 className="text-base font-semibold text-gray-900 dark:text-gray-100">
-                          {pairing.email}
-                        </h3>
-                        {getTypeBadge(pairing.connectionType)}
-                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-sm font-medium bg-yellow-100 text-yellow-800 dark:bg-yellow-900/40 dark:text-yellow-200">
-                          {t("pairingPending")}
-                        </span>
-                      </div>
-                      <div className="text-base text-gray-500 dark:text-gray-400">
-                        <p>
-                          {t("permissionLabel")}: {getPermissionLabel(pairing.permissions)}
-                        </p>
-                        <p>
-                          {t("expiresAt")}: {formatDate(pairing.expiresAt)}
-                        </p>
-                      </div>
-                    </div>
+                <Card key={pairing.id} padding="lg" className="border-ui-warning/50">
+                  <div className="mb-2 flex flex-wrap items-center gap-2">
+                    <h3 className="text-base font-semibold text-ui-text break-words">{pairing.email}</h3>
+                    {getTypeBadge(pairing.connectionType)}
+                    <Badge tone="warning">{t("pairingPending")}</Badge>
                   </div>
-                </div>
+                  <div className="text-base text-ui-text-muted">
+                    <p>
+                      {t("permissionLabel")}: {getPermissionLabel(pairing.permissions)}
+                    </p>
+                    <p>
+                      {t("expiresAt")}: {formatDate(pairing.expiresAt)}
+                    </p>
+                  </div>
+                </Card>
               ))}
             </>
-          )}
+          ) : null}
         </div>
       )}
 
-      {/* Activity Log Section */}
-      <div className="mt-8">
+      {/* Activity log */}
+      <div>
         <button
+          type="button"
+          aria-expanded={showLogs}
           onClick={() => setShowLogs(!showLogs)}
-          className="flex items-center gap-2 text-base font-semibold text-gray-700 hover:text-gray-900 dark:text-gray-200 dark:hover:text-gray-100"
+          className="flex min-h-11 items-center gap-2 text-base font-semibold text-ui-text"
         >
-          <span>{showLogs ? "\u25BC" : "\u25B6"}</span>
+          <Icon name={showLogs ? "chevronDown" : "chevronRight"} size={20} />
           {t("activityLog")}
         </button>
-        {showLogs && (
-          <div className="mt-4">
+        {showLogs ? (
+          <div className="mt-3">
             {logs.length === 0 ? (
-              <p className="text-base text-gray-500 dark:text-gray-400">{t("noLogs")}</p>
+              <p className="text-base text-ui-text-muted">{t("noLogs")}</p>
             ) : (
               <>
-                <div className="overflow-x-auto">
-                  <table className="w-full text-sm">
+                <div className="overflow-x-auto rounded-lg border border-ui-border">
+                  <table className="w-full text-base">
                     <thead>
-                      <tr className="border-b border-gray-200 dark:border-gray-700">
-                        <th className="text-left py-2 px-3 font-medium text-gray-600 dark:text-gray-300">
-                          {t("logTime")}
-                        </th>
-                        <th className="text-left py-2 px-3 font-medium text-gray-600 dark:text-gray-300">
-                          {t("logEndpoint")}
-                        </th>
-                        <th className="text-left py-2 px-3 font-medium text-gray-600 dark:text-gray-300">
-                          {t("logMethod")}
-                        </th>
-                        <th className="text-left py-2 px-3 font-medium text-gray-600 dark:text-gray-300">
-                          {t("logStatus")}
-                        </th>
-                        <th className="text-left py-2 px-3 font-medium text-gray-600 dark:text-gray-300">
-                          {t("logAuthResult")}
-                        </th>
-                        <th className="text-left py-2 px-3 font-medium text-gray-600 dark:text-gray-300">
-                          IP
-                        </th>
+                      <tr className="border-b border-ui-border bg-ui-surface-muted text-left">
+                        <th className="px-3 py-2 font-medium text-ui-text-muted">{t("logTime")}</th>
+                        <th className="px-3 py-2 font-medium text-ui-text-muted">{th("logAddress")}</th>
+                        <th className="px-3 py-2 font-medium text-ui-text-muted">{th("logRequestType")}</th>
+                        <th className="px-3 py-2 font-medium text-ui-text-muted">{t("logStatus")}</th>
+                        <th className="px-3 py-2 font-medium text-ui-text-muted">{t("logAuthResult")}</th>
+                        <th className="px-3 py-2 font-medium text-ui-text-muted">IP</th>
                       </tr>
                     </thead>
                     <tbody>
                       {logs.map((log) => (
-                        <tr key={log.id} className="border-b border-gray-100 dark:border-gray-700">
-                          <td className="py-2 px-3 text-gray-600 dark:text-gray-300">
-                            {formatDate(log.createdAt)}
+                        <tr key={log.id} className="border-b border-ui-border last:border-0">
+                          <td className="whitespace-nowrap px-3 py-2 text-ui-text-muted">{formatDate(log.createdAt)}</td>
+                          <td className="px-3 py-2 font-mono text-ui-text">{log.endpoint}</td>
+                          <td className="px-3 py-2 text-ui-text-muted">{log.method}</td>
+                          <td className="px-3 py-2">
+                            <Badge tone={log.statusCode < 400 ? "success" : "danger"}>{log.statusCode}</Badge>
                           </td>
-                          <td className="py-2 px-3 font-mono text-gray-700 dark:text-gray-200">
-                            {log.endpoint}
+                          <td className="px-3 py-2">
+                            <Badge tone={authResultTone(log.authResult)}>{authResultLabel(log.authResult)}</Badge>
                           </td>
-                          <td className="py-2 px-3 text-gray-600 dark:text-gray-300">{log.method}</td>
-                          <td className="py-2 px-3">
-                            <span
-                              className={`inline-flex px-2 py-0.5 rounded text-xs font-medium ${
-                                log.statusCode < 400
-                                  ? "bg-green-50 text-green-700 dark:bg-green-900/30 dark:text-green-200"
-                                  : "bg-red-50 text-red-700 dark:bg-red-900/30 dark:text-red-200"
-                              }`}
-                            >
-                              {log.statusCode}
-                            </span>
-                          </td>
-                          <td className="py-2 px-3">
-                            <span
-                              className={`inline-flex px-2 py-0.5 rounded text-xs font-medium ${getAuthResultColor(
-                                log.authResult
-                              )}`}
-                            >
-                              {log.authResult}
-                            </span>
-                          </td>
-                          <td className="py-2 px-3 font-mono text-gray-500 text-xs dark:text-gray-400">
-                            {log.ipAddress || "-"}
-                          </td>
+                          <td className="px-3 py-2 font-mono text-ui-text-muted">{log.ipAddress || "-"}</td>
                         </tr>
                       ))}
                     </tbody>
                   </table>
                 </div>
-                <div className="flex gap-3 mt-4">
-                  <button
-                    onClick={() => setLogsPage(Math.max(1, logsPage - 1))}
-                    disabled={logsPage <= 1}
-                    className="px-4 py-2 text-sm text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-lg disabled:opacity-50 dark:text-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600"
-                  >
+                <div className="mt-4 flex flex-wrap items-center gap-3">
+                  <Button variant="secondary" onClick={() => setLogsPage(Math.max(1, logsPage - 1))} disabled={logsPage <= 1}>
                     {t("logPrevPage")}
-                  </button>
-                  <span className="px-4 py-2 text-sm text-gray-500 dark:text-gray-400">
-                    {t("logPage", { page: logsPage })}
-                  </span>
-                  <button
-                    onClick={() => setLogsPage(logsPage + 1)}
-                    disabled={logs.length < 20}
-                    className="px-4 py-2 text-sm text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-lg disabled:opacity-50 dark:text-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600"
-                  >
+                  </Button>
+                  <span className="text-base text-ui-text-muted">{t("logPage", { page: logsPage })}</span>
+                  <Button variant="secondary" onClick={() => setLogsPage(logsPage + 1)} disabled={logs.length < 20}>
                     {t("logNextPage")}
-                  </button>
+                  </Button>
                 </div>
               </>
             )}
           </div>
-        )}
+        ) : null}
       </div>
 
-      {/* Add Connection Modal */}
-      {showModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-xl p-6 w-full max-w-md mx-4 dark:bg-gray-800">
-            <h2 className="text-xl font-semibold text-gray-900 mb-4 dark:text-gray-100">
-              {t("addConnection")}
-            </h2>
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div>
-                <label className="block text-base font-medium text-gray-700 mb-1 dark:text-gray-200">
-                  {t("connectionType")}
-                </label>
-                <select
-                  value={connectionType}
-                  onChange={(e) => setConnectionType(e.target.value as ConnectionType)}
-                  className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none dark:bg-gray-900 dark:border-gray-700 dark:text-gray-100"
-                >
-                  {CONNECTION_TYPES.map((ct) => (
-                    <option key={ct.value} value={ct.value}>
-                      {t(ct.labelKey as Parameters<typeof t>[0])}
-                    </option>
-                  ))}
-                </select>
-              </div>
+      {/* Add connection */}
+      <Modal
+        open={showModal}
+        onClose={() => setShowModal(false)}
+        title={t("addConnection")}
+        footer={
+          <>
+            <Button variant="secondary" onClick={() => setShowModal(false)}>
+              {t("cancel")}
+            </Button>
+            <Button type="submit" form="add-connection-form" loading={submitting}>
+              {t("send")}
+            </Button>
+          </>
+        }
+      >
+        <form id="add-connection-form" onSubmit={handleSubmit} className="space-y-4">
+          <Field label={t("connectionType")}>
+            <Select value={connectionType} onChange={(e) => setConnectionType(e.target.value as ConnectionType)}>
+              {CONNECTION_TYPES.map((ct) => (
+                <option key={ct.value} value={ct.value}>
+                  {t(ct.labelKey as Parameters<typeof t>[0])}
+                </option>
+              ))}
+            </Select>
+          </Field>
+          <Field label={t("connectionEmail")} required>
+            <Input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder={t("connectionEmailPlaceholder")}
+              required
+            />
+          </Field>
+          <Field label={t("permissionLabel")}>
+            <Select value={permissions} onChange={(e) => setPermissions(e.target.value as ApiKeyPermission)}>
+              {PERMISSIONS.map((p) => (
+                <option key={p.value} value={p.value}>
+                  {t(p.labelKey as Parameters<typeof t>[0])}
+                </option>
+              ))}
+            </Select>
+          </Field>
+        </form>
+      </Modal>
 
-              <div>
-                <label className="block text-base font-medium text-gray-700 mb-1 dark:text-gray-200">
-                  {t("connectionEmail")}
-                </label>
-                <input
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder={t("connectionEmailPlaceholder")}
-                  required
-                  className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none dark:bg-gray-900 dark:border-gray-700 dark:text-gray-100"
-                />
-              </div>
-
-              <div>
-                <label className="block text-base font-medium text-gray-700 mb-1 dark:text-gray-200">
-                  {t("permissionLabel")}
-                </label>
-                <select
-                  value={permissions}
-                  onChange={(e) => setPermissions(e.target.value as ApiKeyPermission)}
-                  className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none dark:bg-gray-900 dark:border-gray-700 dark:text-gray-100"
-                >
-                  {PERMISSIONS.map((p) => (
-                    <option key={p.value} value={p.value}>
-                      {t(p.labelKey as Parameters<typeof t>[0])}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              <div className="flex gap-3 pt-2">
-                <button
-                  type="button"
-                  onClick={() => setShowModal(false)}
-                  className="flex-1 px-5 py-3 text-base font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors dark:text-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600"
-                >
-                  {t("cancel")}
-                </button>
-                <button
-                  type="submit"
-                  disabled={submitting}
-                  className="flex-1 px-5 py-3 bg-blue-600 hover:bg-blue-700 text-white text-base font-medium rounded-lg transition-colors disabled:opacity-50"
-                >
-                  {submitting ? "..." : t("send")}
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
+      <ConfirmDialog
+        open={toRevoke !== null}
+        tone="danger"
+        title={t("confirmRevoke")}
+        description={t("revokeWarning")}
+        confirmLabel={t("revokeConnection")}
+        loading={revoking}
+        onConfirm={handleRevoke}
+        onCancel={() => setToRevoke(null)}
+      />
     </div>
   );
 }

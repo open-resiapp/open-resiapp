@@ -135,6 +135,15 @@ const styles = StyleSheet.create({
   colDate: { width: 75, fontSize: 8 },
   colHash: { flex: 1, fontSize: 6, color: "#777" },
   headerText: { fontWeight: 700, fontSize: 8 },
+  // BYT-20261117-002 Phase 6: confirmation line under an electronic ballot.
+  ballotRowBlock: {
+    borderBottomWidth: 0.5,
+    borderBottomColor: "#eee",
+    paddingVertical: 3,
+    paddingHorizontal: 4,
+  },
+  ballotRowCells: { flexDirection: "row" },
+  confirmationLine: { fontSize: 7, color: "#555", marginTop: 1, marginLeft: 20 },
   mandateRow: {
     flexDirection: "row",
     marginBottom: 4,
@@ -248,6 +257,12 @@ export interface BallotRowPDF {
   voteType: string;
   recordedAt: string;
   ballotHash: string;
+  /**
+   * BYT-20261117-002 Phase 6: how and when an electronic ballot was
+   * confirmed, already worded by the caller (passkey / e-mail link / legacy
+   * "without confirmation"). Absent for paper ballots.
+   */
+  confirmation?: string | null;
 }
 
 // BYT-20260609-008: per-item (resolution) result + its own vote list.
@@ -545,15 +560,20 @@ export default function VotingMinutesPDF({
             <Text style={[styles.colHash, styles.headerText]}>Ballot hash</Text>
           </View>
           {ballots.map((b, i) => (
-            <View key={b.id} style={styles.tableRow} wrap={false}>
-              <Text style={styles.colNum}>{i + 1}</Text>
-              <Text style={styles.colFlat}>{b.flatNumber}</Text>
-              <Text style={styles.colOwner}>{b.ownerName || "—"}</Text>
-              <Text style={styles.colType}>
-                {b.voteType === "paper" ? "Listinný" : "Elektronický"}
-              </Text>
-              <Text style={styles.colDate}>{formatDateTime(b.recordedAt)}</Text>
-              <Text style={styles.colHash}>{b.ballotHash}</Text>
+            <View key={b.id} style={styles.ballotRowBlock} wrap={false}>
+              <View style={styles.ballotRowCells}>
+                <Text style={styles.colNum}>{i + 1}</Text>
+                <Text style={styles.colFlat}>{b.flatNumber}</Text>
+                <Text style={styles.colOwner}>{b.ownerName || "—"}</Text>
+                <Text style={styles.colType}>
+                  {b.voteType === "paper" ? "Listinný" : "Elektronický"}
+                </Text>
+                <Text style={styles.colDate}>{formatDateTime(b.recordedAt)}</Text>
+                <Text style={styles.colHash}>{b.ballotHash}</Text>
+              </View>
+              {b.confirmation ? (
+                <Text style={styles.confirmationLine}>{b.confirmation}</Text>
+              ) : null}
             </View>
           ))}
         </View>

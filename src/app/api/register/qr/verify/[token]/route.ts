@@ -29,7 +29,7 @@ async function notifyAdminsOfPending(userId: string) {
     .where(inArray(users.role, ["admin"]));
 
   const baseUrl = process.env.NEXTAUTH_URL || "http://localhost:3000";
-  const queueUrl = `${baseUrl}/${routing.defaultLocale}/owners/pending`;
+  const queueUrl = `${baseUrl}/${routing.defaultLocale}/owners#inbox`;
 
   for (const admin of admins) {
     if (admin.id === pendingUser.id) continue;

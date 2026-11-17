@@ -390,6 +390,41 @@ export const users = pgTable(
   })
 );
 
+// BYT-20261117-002 Phase 6: WebAuthn passkeys. One row per registered
+// authenticator credential. Used to confirm an electronic ballot (the
+// assertion challenge is bound to the ballot digest). Core table — a
+// passkey belongs to the person, not to the voting module. Rows go with
+// the user (cascade). `credentialId` / `publicKey` are base64url strings.
+export const webauthnCredentials = pgTable(
+  "webauthn_credentials",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    userId: uuid("user_id")
+      .references(() => users.id, { onDelete: "cascade" })
+      .notNull(),
+    credentialId: text("credential_id").notNull(),
+    publicKey: text("public_key").notNull(),
+    // Signature counter (cloned-authenticator detection). Synced passkeys
+    // often report 0 forever; the verifier accepts 0→0 but never a regression.
+    counter: integer("counter").notNull().default(0),
+    transports: text("transports").array(),
+    deviceLabel: varchar("device_label", { length: 120 }),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    lastUsedAt: timestamp("last_used_at"),
+    // NULL until the owner clicks the single-use activation link sent by
+    // e-mail (or the e-mail vote link of the first vote that registered it).
+    // A pending passkey never confirms a ballot: a session alone must not be
+    // enough to add a voting credential.
+    activatedAt: timestamp("activated_at"),
+  },
+  (table) => ({
+    credentialIdIdx: uniqueIndex("webauthn_credentials_credential_id_idx").on(
+      table.credentialId
+    ),
+    userIdx: index("webauthn_credentials_user_idx").on(table.userId),
+  })
+);
+
 // votings, votes, mandates moved to modules/voting/src/db/schema.ts
 // under RES-20260505-001.
 

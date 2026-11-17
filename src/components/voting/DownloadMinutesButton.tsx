@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useTranslations } from "next-intl";
 import type { VotingResults, QuorumType } from "@/types";
 import { useCommunityKinds } from "@/hooks/useCommunityKinds";
+import { timeZoneForCountry } from "@/lib/time-zone";
 
 // BYT-20260609-008 multi-item ballot shapes (from /api/ballots).
 interface BallotChoice {
@@ -19,6 +20,9 @@ interface BallotRow {
   voteType: string;
   ballotHash: string;
   recordedAt: string;
+  /** BYT-20261117-002 Phase 6 ("passkey" | "email" | null = before the gate). */
+  confirmationMethod?: string | null;
+  confirmedAt?: string | null;
   choices: BallotChoice[];
 }
 interface VotingItemRow {
@@ -143,6 +147,27 @@ export default function DownloadMinutesButton({
           };
         });
 
+      // Confirmation method + time of each electronic ballot, in the
+      // community's time zone (paper ballots carry none).
+      const timeZone = timeZoneForCountry(building.country);
+      const confirmationText = (b: BallotRow): string | null => {
+        if (b.voteType === "paper") return null;
+        if (b.confirmationMethod !== "passkey" && b.confirmationMethod !== "email") {
+          return t("confirmation.legacy");
+        }
+        const at = b.confirmedAt ?? b.recordedAt;
+        const date = new Date(at).toLocaleString("sk-SK", {
+          day: "numeric",
+          month: "long",
+          year: "numeric",
+          hour: "2-digit",
+          minute: "2-digit",
+          second: "2-digit",
+          timeZone,
+        });
+        return t(`confirmation.${b.confirmationMethod}`, { date });
+      };
+
       const ballots = ballotData.ballots.map((b) => ({
         id: b.id,
         ownerName: b.ownerName,
@@ -150,6 +175,7 @@ export default function DownloadMinutesButton({
         voteType: b.voteType,
         recordedAt: b.recordedAt,
         ballotHash: b.ballotHash,
+        confirmation: confirmationText(b),
       }));
 
       const doc = (

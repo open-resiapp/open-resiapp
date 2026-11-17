@@ -1,67 +1,52 @@
 "use client";
 
-import { signOut } from "next-auth/react";
 import { useTranslations } from "next-intl";
-import { Link } from "@/i18n/navigation";
-import EntitySwitcher from "@/components/layout/EntitySwitcher";
 
+import { Icon } from "@/components/ui";
+import EntitySwitcher from "@/components/layout/EntitySwitcher";
+import UserMenu from "@/components/layout/UserMenu";
+import { useShell } from "@/components/layout/ShellContext";
+
+/**
+ * Top bar. Board audience gets a "Menu" button (icon + visible label) on
+ * mobile that opens the sidebar drawer; owners get no hamburger — they
+ * navigate with the bottom tab bar. Profile + logout live in the avatar
+ * menu. BYT-20261117-002 Phase 3.
+ */
 export default function Header({
-  userName,
   onMenuToggle,
-  showMenu = true,
+  menuOpen = false,
   showProfileLink = true,
 }: {
-  userName: string;
+  /** Omit to hide the menu button (owner audience, pending users). */
   onMenuToggle?: () => void;
-  showMenu?: boolean;
+  menuOpen?: boolean;
   showProfileLink?: boolean;
 }) {
   const t = useTranslations("Header");
+  const tNav = useTranslations("Nav");
+  const { user } = useShell();
 
   return (
-    <header className="bg-white px-4 lg:px-6 py-3 dark:bg-gray-900">
-      <div className="flex items-center justify-between gap-3">
-        {showMenu && onMenuToggle ? (
+    <header className="bg-white px-4 lg:px-6 py-2 border-b border-gray-200 lg:border-b-0 dark:bg-gray-900 dark:border-gray-800">
+      <div className="flex items-center justify-between gap-3 min-h-12">
+        {onMenuToggle ? (
           <button
+            type="button"
             onClick={onMenuToggle}
-            className="lg:hidden flex items-center justify-center w-10 h-10 rounded-full text-gray-700 hover:bg-gray-100 transition-colors dark:text-gray-200 dark:hover:bg-gray-800"
+            aria-expanded={menuOpen}
+            aria-controls="app-sidebar"
             aria-label={t("openMenu")}
+            className="lg:hidden inline-flex items-center gap-2 min-h-11 px-3 rounded-lg text-base font-medium text-gray-800 hover:bg-gray-100 transition-colors dark:text-gray-100 dark:hover:bg-gray-800"
           >
-            <svg
-              className="w-6 h-6"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M4 6h16M4 12h16M4 18h16"
-              />
-            </svg>
+            <Icon name="menu" size={24} />
+            <span>{tNav("menu")}</span>
           </button>
         ) : null}
 
         <div className="flex items-center gap-2 sm:gap-3 ml-auto min-w-0">
           <EntitySwitcher />
-          {showProfileLink ? (
-            <Link
-              href="/profile"
-              className="inline-flex items-center h-10 px-3 sm:px-4 rounded-full text-sm font-medium text-gray-700 hover:bg-gray-100 transition-colors dark:text-gray-200 dark:hover:bg-gray-800 truncate max-w-[8rem] sm:max-w-none"
-              title={t("profile")}
-            >
-              {userName}
-            </Link>
-          ) : (
-            <span className="text-sm text-gray-700 truncate max-w-[8rem] dark:text-gray-200">{userName}</span>
-          )}
-          <button
-            onClick={() => signOut({ callbackUrl: "/login" })}
-            className="inline-flex items-center h-10 px-3 sm:px-4 text-sm font-medium text-gray-700 hover:bg-gray-100 rounded-full transition-colors dark:text-gray-200 dark:hover:bg-gray-800"
-          >
-            {t("logout")}
-          </button>
+          <UserMenu userName={user.name} showProfile={showProfileLink} />
         </div>
       </div>
     </header>

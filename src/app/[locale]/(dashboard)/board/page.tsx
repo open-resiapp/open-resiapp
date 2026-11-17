@@ -1,154 +1,178 @@
-"use client";
+import { getTranslations } from "next-intl/server";
 
-import { useSession } from "next-auth/react";
-import { useTranslations } from "next-intl";
-import { useEffect, useState, useCallback } from "react";
-import PostCard from "@/components/nastenka/PostCard";
-import NewPostModal from "@/components/nastenka/NewPostModal";
-import EditPostModal from "@/components/nastenka/EditPostModal";
+import FeedHeader from "@/components/nastenka/FeedHeader";
+import FeedList, { type FeedViewerCaps } from "@/components/nastenka/FeedList";
+import { ButtonLink, EmptyState, Icon, cn } from "@/components/ui";
+import { Link } from "@/i18n/navigation";
+import { auth } from "@/lib/auth";
+import {
+  FEED_FILTERS,
+  FILTER_CREATE_TYPE,
+  parseFeedFilter,
+  parseItemKey,
+  parsePage,
+  type FeedFilter,
+} from "@/lib/feed";
+import { loadFeed } from "@/lib/feed.server";
 import { hasPermission } from "@/lib/permissions";
-import type { UserRole, PostCategory } from "@/types";
+import { getShellData } from "@/lib/shell.server";
 
-interface PostData {
-  id: string;
-  title: string;
-  content: string;
-  category: PostCategory;
-  isPinned: boolean;
-  createdAt: string;
-  entranceId: string | null;
-  entranceName: string | null;
-  author: { id: string; name: string } | null;
-}
+// "Oznamy" — one feed for board notices + community posts (events, help,
+// sale/gift). BYT-20261117-002 Phase 5. Server-rendered; filters and paging
+// are plain links (`?typ=`, `?strana=`) so they are shareable. Nothing live.
 
-interface Entrance {
-  id: string;
-  name: string;
-}
+type SearchParams = Promise<Record<string, string | string[] | undefined>>;
 
-export default function NastenkaPage() {
-  const { data: session } = useSession();
-  const t = useTranslations("Board");
-  const tCommon = useTranslations("Common");
-  const [posts, setPosts] = useState<PostData[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [showModal, setShowModal] = useState(false);
-  const [editingPost, setEditingPost] = useState<PostData | null>(null);
-  const [entrances, setEntrances] = useState<Entrance[]>([]);
+export default async function BoardPage({ searchParams }: { searchParams: SearchParams }) {
+  const [session, sp, t] = await Promise.all([auth(), searchParams, getTranslations("Feed")]);
+  if (!session?.user?.id) return null; // the layout already redirects to /login
+  // Request-cached shell: skip the feed load while the layout shows
+  // PendingShell / ConsentGate instead of this page.
+  const shell = await getShellData(session);
+  if (shell.user.status !== "active" || shell.consent.needsConsent) return null;
 
-  const role = (session?.user?.role || "owner") as UserRole;
-  const canCreate = hasPermission(role, "createPost");
-  const isAdmin = role === "admin";
+  const role = session.user.role;
+  const filter = parseFeedFilter(sp.typ);
+  const page = parsePage(sp.strana);
+  const focus = parseItemKey(sp.prispevok);
 
-  const fetchPosts = useCallback(async () => {
-    setLoading(true);
-    const res = await fetch("/api/posts");
-    if (res.ok) {
-      setPosts(await res.json());
-    }
-    setLoading(false);
-  }, []);
+  const canCreateNotice = hasPermission(role, "createPost");
+  const canSeeCommunity = hasPermission(role, "viewCommunity");
+  const canCreateCommunity = hasPermission(role, "createCommunityPost");
+  const canCreate = canCreateNotice || canCreateCommunity;
 
-  useEffect(() => {
-    fetchPosts();
-    if (isAdmin) {
-      fetch("/api/entrances")
-        .then((r) => r.json())
-        .then((data) => setEntrances(data))
-        .catch(() => {});
-    }
-  }, [fetchPosts, isAdmin]);
+  // A chip is shown when the viewer may create that type or it has content.
+  const creatable: Record<Exclude<FeedFilter, "all">, boolean> = {
+    oznamy: canCreateNotice,
+    udalosti: canCreateCommunity,
+    pomoc: canCreateCommunity,
+    predaj: canCreateCommunity,
+  };
+  const visible: Record<Exclude<FeedFilter, "all">, boolean> = {
+    oznamy: true,
+    udalosti: canSeeCommunity,
+    pomoc: canSeeCommunity,
+    predaj: canSeeCommunity,
+  };
+  const countFilters = (Object.keys(creatable) as Exclude<FeedFilter, "all">[]).filter(
+    (f) => visible[f] && !creatable[f]
+  );
 
-  async function handleDelete(postId: string) {
-    if (!confirm(t("confirmDelete"))) return;
+  const feed = await loadFeed({ id: session.user.id, role }, { filter, page, focus, countFilters });
 
-    const res = await fetch(`/api/posts/${postId}`, { method: "DELETE" });
-    if (res.ok) {
-      fetchPosts();
-    }
-  }
+  const chips = FEED_FILTERS.filter(
+    (f) => f === "all" || f === filter || (visible[f] && (creatable[f] || feed.nonEmpty[f]))
+  );
 
+  const viewer: FeedViewerCaps = {
+    userId: session.user.id,
+    canManageNotices: canCreateNotice,
+    canManageAllNotices:
+      canCreateNotice && (role === "admin" || shell.user.boardRoles.length > 0),
+    canModerate: hasPermission(role, "moderateCommunityResponse"),
+    canRespond: hasPermission(role, "respondToCommunityPost"),
+  };
 
-  async function handleTogglePin(post: PostData) {
-    const res = await fetch(`/api/posts/${post.id}`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ isPinned: !post.isPinned }),
-    });
-    if (res.ok) {
-      fetchPosts();
-    }
-  }
+  const filterCreate = FILTER_CREATE_TYPE[filter];
+  const newHref =
+    filterCreate && creatable[filter as Exclude<FeedFilter, "all">]
+      ? { pathname: "/board/novy", query: { typ: filterCreate } }
+      : "/board/novy";
+
+  const hrefFor = (f: FeedFilter, p?: number) => ({
+    pathname: "/board",
+    query: {
+      ...(f !== "all" ? { typ: f } : {}),
+      ...(p && p > 1 ? { strana: String(p) } : {}),
+    },
+  });
+
+  const empty = feed.items.length === 0 && !feed.focused;
 
   return (
-    <div>
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">{t("title")}</h1>
-        {canCreate && (
-          <button
-            onClick={() => setShowModal(true)}
-            className="px-5 py-3 bg-blue-600 hover:bg-blue-700 text-white text-base font-medium rounded-lg transition-colors"
-          >
-            {t("newPost")}
-          </button>
-        )}
-      </div>
-
-      {loading ? (
-        <div className="space-y-4">
-          {[1, 2, 3].map((i) => (
-            <div
-              key={i}
-              className="bg-white rounded-2xl shadow-sm p-6 animate-pulse dark:bg-gray-800 dark:shadow-black/40"
-            >
-              <div className="h-4 bg-gray-200 rounded w-1/4 mb-3 dark:bg-gray-700" />
-              <div className="h-5 bg-gray-200 rounded w-3/4 mb-2 dark:bg-gray-700" />
-              <div className="h-4 bg-gray-200 rounded w-full mb-1 dark:bg-gray-700" />
-              <div className="h-4 bg-gray-200 rounded w-2/3 dark:bg-gray-700" />
-            </div>
-          ))}
-        </div>
-      ) : posts.length === 0 ? (
-        <div className="text-center py-12 text-gray-500 text-lg dark:text-gray-400">
-          {t("empty")}
-        </div>
-      ) : (
-        <div className="space-y-4">
-          {posts.map((post) => (
-            <PostCard
-              key={post.id}
-              postId={post.id}
-              title={post.title}
-              content={post.content}
-              category={post.category}
-              authorName={post.author?.name || tCommon("unknown")}
-              createdAt={post.createdAt}
-              isPinned={post.isPinned}
-              entranceName={post.entranceName}
-              isAdmin={isAdmin}
-              onEdit={() => setEditingPost(post)}
-              onDelete={() => handleDelete(post.id)}
-              onTogglePin={() => handleTogglePin(post)}
-            />
-          ))}
-        </div>
-      )}
-
-      <NewPostModal
-        isOpen={showModal}
-        onClose={() => setShowModal(false)}
-        onCreated={fetchPosts}
-        entrances={entrances}
+    <div className="mx-auto max-w-3xl">
+      <FeedHeader
+        actions={
+          canCreate ? (
+            <ButtonLink href={newHref}>
+              <Icon name="plus" size={20} />
+              {t("new")}
+            </ButtonLink>
+          ) : undefined
+        }
       />
 
-      {editingPost && (
-        <EditPostModal
-          isOpen={true}
-          post={editingPost}
-          onClose={() => setEditingPost(null)}
-          onSaved={fetchPosts}
+      {chips.length > 1 ? (
+        <nav aria-label={t("filtersLabel")} className="mb-5">
+          <ul className="flex flex-wrap gap-2">
+            {chips.map((f) => {
+              const active = f === filter;
+              return (
+                <li key={f}>
+                  <Link
+                    href={hrefFor(f)}
+                    aria-current={active ? "page" : undefined}
+                    className={cn(
+                      "inline-flex min-h-11 items-center rounded-full border px-4 text-base font-medium transition-colors",
+                      "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ui-focus",
+                      active
+                        ? "border-transparent bg-ui-primary text-ui-primary-text"
+                        : "border-ui-border-strong bg-ui-surface text-ui-text hover:bg-ui-surface-muted"
+                    )}
+                  >
+                    {t(`filter.${f}`)}
+                  </Link>
+                </li>
+              );
+            })}
+          </ul>
+        </nav>
+      ) : null}
+
+      {feed.focused ? (
+        <section aria-label={t("linkedItem")} className="mb-6">
+          <h2 className="mb-2 text-base font-medium text-ui-text-muted">{t("linkedItem")}</h2>
+          <FeedList items={[feed.focused]} viewer={viewer} highlightKey={feed.focused.key} />
+        </section>
+      ) : null}
+
+      {empty ? (
+        <EmptyState
+          icon="megaphone"
+          title={filter === "all" ? t("empty.title") : t("empty.filteredTitle")}
+          description={
+            filter !== "all"
+              ? undefined
+              : canCreateNotice
+                ? t("empty.boardText")
+                : canCreateCommunity
+                  ? t("empty.ownerText")
+                  : t("empty.readOnlyText")
+          }
+          action={
+            canCreate ? (
+              <ButtonLink href={newHref} variant="secondary">
+                <Icon name="plus" size={20} />
+                {t("new")}
+              </ButtonLink>
+            ) : filter !== "all" ? (
+              <ButtonLink href="/board" variant="secondary">
+                {t("showAll")}
+              </ButtonLink>
+            ) : undefined
+          }
         />
+      ) : (
+        <FeedList items={feed.items} viewer={viewer} />
       )}
+
+      {feed.hasMore ? (
+        <div className="mt-6 flex justify-center">
+          <ButtonLink href={hrefFor(filter, page + 1)} variant="secondary" scroll={false}>
+            {t("loadOlder")}
+          </ButtonLink>
+        </div>
+      ) : null}
     </div>
   );
 }

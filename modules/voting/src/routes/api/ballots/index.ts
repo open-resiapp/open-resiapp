@@ -1,9 +1,11 @@
 // BYT-20260609-008 Phase 4a: multi-item ballot casting.
 //
 // One signed ballot per (voting, unit, owner-share) committing to all item
-// choices at once. Supersedes the single-choice mod_voting_votes path (kept
-// live until Phase 6). Co-owners of the same unit each submit their own
+// choices at once. Co-owners of the same unit each submit their own
 // ballot — the per-share engine (BYT-20260511-001) resolves the unit.
+//
+// BYT-20261117-002 Phase 6: electronic ballots require an active
+// confirmation (passkey or e-mail link) — ./confirm.server.ts.
 import { NextRequest, NextResponse } from "next/server";
 import { and, eq, inArray, isNull, sql } from "drizzle-orm";
 
@@ -20,11 +22,10 @@ import {
 import { hasPermission } from "@/lib/permissions";
 import {
   calculateItemResults,
-  computeBallotHash,
   computeItemAuditHash,
 } from "@modules/voting/src/engine";
-import { isElectronicVotingBlocked } from "@modules/voting/src/rules";
 import { getCommunityRoot } from "@/lib/legacy-compat";
+import { userPasskeyState } from "@/lib/webauthn.server";
 import {
   computeMemberWeight,
   computeUnitWeight,
@@ -38,13 +39,8 @@ import type {
   Country,
   QuorumType,
 } from "@/types";
-
-const VALID_CHOICES: VoteChoice[] = ["za", "proti", "zdrzal_sa"];
-
-interface IncomingItemChoice {
-  itemId?: unknown;
-  choice?: unknown;
-}
+import { deleteBallotAsBoard, validateCast } from "./cast.server";
+import { castConfirmed, withdrawConfirmed } from "./confirm.server";
 
 // ── GET: items + per-item results + caller's ballots ──────
 export async function GET(request: NextRequest) {
@@ -212,6 +208,8 @@ export async function GET(request: NextRequest) {
       ballotHash: ballots.ballotHash,
       recordedAt: ballots.recordedAt,
       disputed: ballots.disputed,
+      confirmationMethod: ballots.confirmationMethod,
+      confirmedAt: ballots.confirmedAt,
     })
     .from(ballots)
     .leftJoin(users, eq(ballots.ownerId, users.id))
@@ -271,6 +269,9 @@ export async function GET(request: NextRequest) {
       flatId: b.entityId,
       voteType: b.voteType,
       recordedAt: b.recordedAt,
+      ballotHash: b.ballotHash,
+      confirmationMethod: b.confirmationMethod,
+      confirmedAt: b.confirmedAt,
       choices: Object.fromEntries(b.choices.map((c) => [c.itemId, c.choice])),
     }));
 
@@ -291,6 +292,14 @@ export async function GET(request: NextRequest) {
       )
     );
 
+  // Whether the caller has an ACTIVE passkey (and whether one waits for its
+  // e-mail activation) — lets the cast UI pick its primary confirmation
+  // button without a second request.
+  const passkeyState =
+    userFlats.length > 0
+      ? await userPasskeyState(session.user.id)
+      : { active: false, pending: false };
+
   return NextResponse.json({
     items,
     results,
@@ -299,22 +308,43 @@ export async function GET(request: NextRequest) {
     userFlats,
     totalBallots: ballotRows.length,
     totalPossibleWeight,
+    hasPasskey: passkeyState.active,
+    hasPendingPasskey: passkeyState.pending,
   });
 }
 
 // ── POST: cast (or supersede) one ballot ─────────────────
+// Electronic ballots (BYT-20261117-002 Phase 6) are recorded only with a
+// confirmation proof (passkey assertion or e-mail link token) bound to the
+// exact ballot content — see ./confirm.server.ts. A session alone is
+// rejected with CONFIRMATION_REQUIRED. Paper ballots (counter/admin with a
+// photo) keep the pre-Phase-6 behaviour and messages.
 export async function POST(request: NextRequest) {
+  let body: Record<string, unknown> | null = null;
+  try {
+    body = await request.json();
+  } catch {
+    body = null;
+  }
+  if (!body || typeof body !== "object") {
+    return NextResponse.json({ error: "INVALID_REQUEST" }, { status: 400 });
+  }
+  if (body.voteType !== "paper") {
+    return castConfirmed(request, body);
+  }
+
   const session = await auth();
   if (!session) {
     return NextResponse.json({ error: "Neautorizovaný prístup" }, { status: 401 });
   }
 
-  const body = await request.json();
-  const { votingId, flatId, ownerId, voteType, mandateId } = body;
+  const votingId = typeof body.votingId === "string" ? body.votingId : "";
+  const flatId = typeof body.flatId === "string" ? body.flatId : "";
+  const ownerId = typeof body.ownerId === "string" ? body.ownerId : "";
+  const mandateId = typeof body.mandateId === "string" ? body.mandateId : null;
   const photoUrls: string[] = Array.isArray(body.photoUrls)
-    ? body.photoUrls.filter((u: unknown) => typeof u === "string")
+    ? body.photoUrls.filter((u: unknown): u is string => typeof u === "string")
     : [];
-  const incoming: IncomingItemChoice[] = Array.isArray(body.items) ? body.items : [];
 
   if (!votingId || !flatId) {
     return NextResponse.json(
@@ -323,121 +353,34 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  const isPaper = voteType === "paper";
-  const voterId = isPaper ? ownerId : session.user.id;
-  if (isPaper && !voterId) {
+  const voterId = ownerId;
+  if (!voterId) {
     return NextResponse.json({ error: "ownerId je povinný pre listinný hlas" }, { status: 400 });
   }
 
   // Permission.
-  if (isPaper) {
-    if (photoUrls.length === 0) {
-      return NextResponse.json({ error: "PAPER_PHOTO_REQUIRED" }, { status: 400 });
-    }
-    if (!hasPermission(session.user.role as UserRole, "recordPaperVote")) {
-      return NextResponse.json(
-        { error: "Nemáte oprávnenie zapisovať listinné hlasy" },
-        { status: 403 }
-      );
-    }
-  } else if (!hasPermission(session.user.role as UserRole, "vote")) {
-    return NextResponse.json({ error: "Nemáte oprávnenie hlasovať" }, { status: 403 });
+  if (photoUrls.length === 0) {
+    return NextResponse.json({ error: "PAPER_PHOTO_REQUIRED" }, { status: 400 });
   }
-
-  const [voting] = await db
-    .select()
-    .from(votings)
-    .where(eq(votings.id, votingId))
-    .limit(1);
-  if (!voting || voting.status !== "active") {
-    return NextResponse.json({ error: "Hlasovanie nie je aktívne" }, { status: 400 });
-  }
-
-  const root = await getCommunityRoot();
-  const country = (root?.country ?? "sk") as Country;
-  if (!isPaper && isElectronicVotingBlocked(country, voting.votingType, voting.initiatedBy)) {
+  if (!hasPermission(session.user.role as UserRole, "recordPaperVote")) {
     return NextResponse.json(
-      {
-        error:
-          voting.votingType === "meeting"
-            ? "Elektronické hlasovanie nie je povolené pre hlasovanie na schôdzi"
-            : "Elektronické hlasovanie nie je povolené pre hlasovanie iniciované štvrtinou vlastníkov",
-      },
-      { status: 400 }
+      { error: "Nemáte oprávnenie zapisovať listinné hlasy" },
+      { status: 403 }
     );
   }
 
-  // Ownership: the voter must hold an active membership on the unit.
-  const [ownerFlat] = await db
-    .select({ id: memberships.id })
-    .from(memberships)
-    .where(
-      and(
-        eq(memberships.userId, voterId),
-        eq(memberships.entityId, flatId),
-        eq(memberships.status, "active")
-      )
-    )
-    .limit(1);
-  if (!ownerFlat) {
-    return NextResponse.json({ error: "Vlastník nevlastní tento byt" }, { status: 400 });
+  const v = await validateCast({
+    votingId,
+    flatId,
+    voterId,
+    incoming: body.items,
+    electronic: false,
+  });
+  if (!v.ok) {
+    return NextResponse.json({ error: v.legacyMessage }, { status: v.status });
   }
-
-  // Scope: the flat must sit within the voting's subtree.
-  if (voting.entityId) {
-    const [flatRow] = await db
-      .select({ flatPath: entities.path })
-      .from(entities)
-      .where(eq(entities.id, flatId))
-      .limit(1);
-    const [scopeRow] = await db
-      .select({ scopePath: entities.path })
-      .from(entities)
-      .where(eq(entities.id, voting.entityId))
-      .limit(1);
-    if (flatRow && scopeRow && !flatRow.flatPath.startsWith(scopeRow.scopePath)) {
-      return NextResponse.json(
-        { error: "Tento byt nie je v hlasovanom rozsahu" },
-        { status: 403 }
-      );
-    }
-  }
-
-  // Validate the submitted item choices against this voting's items. Unmarked
-  // items are allowed (silence/abstain per jurisdiction rule) — they simply
-  // produce no ballot_item_vote row.
-  const items = await db
-    .select({ id: votingItems.id })
-    .from(votingItems)
-    .where(eq(votingItems.votingId, votingId));
-  const validItemIds = new Set(items.map((i) => i.id));
-
-  const marked: { itemId: string; choice: VoteChoice }[] = [];
-  const seen = new Set<string>();
-  for (const it of incoming) {
-    const itemId = typeof it.itemId === "string" ? it.itemId : "";
-    const choice = it.choice as VoteChoice;
-    if (!itemId || !validItemIds.has(itemId)) {
-      return NextResponse.json(
-        { error: "Neplatná položka hlasovania" },
-        { status: 400 }
-      );
-    }
-    if (!VALID_CHOICES.includes(choice)) {
-      return NextResponse.json({ error: "Neplatná voľba" }, { status: 400 });
-    }
-    if (seen.has(itemId)) {
-      return NextResponse.json(
-        { error: "Duplicitná voľba pre položku" },
-        { status: 400 }
-      );
-    }
-    seen.add(itemId);
-    marked.push({ itemId, choice });
-  }
-
+  const { marked, ballotHash } = v;
   const recordedAt = new Date();
-  const ballotHash = computeBallotHash(marked);
 
   // Upsert: a re-submitted ballot supersedes (not appends) the prior one.
   const [existing] = await db
@@ -452,35 +395,29 @@ export async function POST(request: NextRequest) {
     )
     .limit(1);
 
+  const paperValues = {
+    voteType: "paper" as const,
+    recordedById: session.user.id,
+    mandateId: mandateId || null,
+    ballotHash,
+    // A paper ballot replaces any electronic confirmation metadata.
+    signature: null,
+    confirmationMethod: null,
+    confirmedAt: null,
+    recordedAt,
+  };
+
   const ballotId = await db.transaction(async (tx) => {
     let bId: string;
     if (existing) {
       bId = existing.id;
-      await tx
-        .update(ballots)
-        .set({
-          voteType: isPaper ? "paper" : "electronic",
-          recordedById: isPaper ? session.user.id : null,
-          mandateId: mandateId || null,
-          ballotHash,
-          recordedAt,
-        })
-        .where(eq(ballots.id, bId));
+      await tx.update(ballots).set(paperValues).where(eq(ballots.id, bId));
       await tx.delete(ballotItemVotes).where(eq(ballotItemVotes.ballotId, bId));
       await tx.delete(ballotPhotos).where(eq(ballotPhotos.ballotId, bId));
     } else {
       const [created] = await tx
         .insert(ballots)
-        .values({
-          votingId,
-          entityId: flatId,
-          ownerId: voterId,
-          voteType: isPaper ? "paper" : "electronic",
-          recordedById: isPaper ? session.user.id : null,
-          mandateId: mandateId || null,
-          ballotHash,
-          recordedAt,
-        })
+        .values({ votingId, entityId: flatId, ownerId: voterId, ...paperValues })
         .returning({ id: ballots.id });
       bId = created.id;
     }
@@ -519,16 +456,37 @@ export async function POST(request: NextRequest) {
 }
 
 // ── DELETE: withdraw a ballot before close ───────────────
+// Owner (no ownerId, or ownerId = self): requires a confirmation bound to
+// withdrawing exactly the current ballot — see withdrawConfirmed. A paper
+// ballot cannot be withdrawn by its owner (PAPER_BALLOT_LOCKED).
+// Board / counter (ownerId of someone else, recordPaperVote permission):
+// deletes without owner confirmation, and — like an owner withdrawal —
+// invalidates every confirmation token issued before it.
 export async function DELETE(request: NextRequest) {
-  const session = await auth();
-  if (!session) {
-    return NextResponse.json({ error: "Neautorizovaný prístup" }, { status: 401 });
-  }
-
   const { searchParams } = new URL(request.url);
   const votingId = searchParams.get("votingId");
   const flatId = searchParams.get("flatId");
   const ownerParam = searchParams.get("ownerId");
+
+  let body: Record<string, unknown> | null = null;
+  try {
+    const parsed = await request.json();
+    body = parsed && typeof parsed === "object" ? (parsed as Record<string, unknown>) : null;
+  } catch {
+    body = null;
+  }
+
+  // E-mail withdraw link: the signed token names voter, voting and unit; no
+  // session needed (the link may be opened on another device).
+  const confirmation = body?.confirmation as { method?: unknown } | undefined;
+  if (confirmation?.method === "email") {
+    return withdrawConfirmed(request, body, { votingId, flatId });
+  }
+
+  const session = await auth();
+  if (!session) {
+    return NextResponse.json({ error: "Neautorizovaný prístup" }, { status: 401 });
+  }
   if (!votingId || !flatId) {
     return NextResponse.json(
       { error: "votingId a flatId sú povinné" },
@@ -536,13 +494,13 @@ export async function DELETE(request: NextRequest) {
     );
   }
 
-  // Withdrawing someone else's ballot requires the paper-recorder permission.
   const targetOwnerId = ownerParam && ownerParam !== session.user.id ? ownerParam : session.user.id;
-  if (targetOwnerId !== session.user.id) {
-    if (!hasPermission(session.user.role as UserRole, "recordPaperVote")) {
-      return NextResponse.json({ error: "Nemáte oprávnenie" }, { status: 403 });
-    }
-  } else if (!hasPermission(session.user.role as UserRole, "vote")) {
+  if (targetOwnerId === session.user.id) {
+    return withdrawConfirmed(request, body, { votingId, flatId });
+  }
+
+  // Withdrawing someone else's ballot requires the paper-recorder permission.
+  if (!hasPermission(session.user.role as UserRole, "recordPaperVote")) {
     return NextResponse.json({ error: "Nemáte oprávnenie" }, { status: 403 });
   }
 
@@ -558,19 +516,8 @@ export async function DELETE(request: NextRequest) {
     );
   }
 
-  // ballot_item_votes + ballot_photos cascade on ballot delete.
-  const deleted = await db
-    .delete(ballots)
-    .where(
-      and(
-        eq(ballots.votingId, votingId),
-        eq(ballots.entityId, flatId),
-        eq(ballots.ownerId, targetOwnerId)
-      )
-    )
-    .returning({ id: ballots.id });
-
-  if (deleted.length === 0) {
+  const deleted = await deleteBallotAsBoard({ votingId, flatId, ownerId: targetOwnerId });
+  if (!deleted) {
     return NextResponse.json({ error: "Hlas nenájdený" }, { status: 404 });
   }
   return NextResponse.json({ ok: true }, { status: 200 });

@@ -56,6 +56,22 @@ export function getVotingRules(country: Country): CountryVotingRules {
 }
 
 /**
+ * Quorum types a voting item may use for the given country and voting type.
+ * "simple_present" measures the majority of owners present, which only makes
+ * sense at a meeting — a written (per rollam) vote needs a majority of all
+ * owners, so it is not offered there. Pure; does not touch the engine.
+ */
+export function getAvailableQuorumTypes(
+  country: Country,
+  votingType: string
+): QuorumType[] {
+  const types = getVotingRules(country).availableQuorumTypes;
+  return votingType === "meeting"
+    ? types
+    : types.filter((q) => q !== "simple_present");
+}
+
+/**
  * Validates per rollam end date against country minimum duration.
  * Returns null if valid, or the minimum required Date if invalid.
  */

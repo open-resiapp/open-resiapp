@@ -1,10 +1,14 @@
 "use client";
 
+import { getDisplayTemplateSlug } from "@/lib/templates/display-slug";
 import { useTranslations } from "next-intl";
-import { useState, useEffect } from "react";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { useCommunityKinds } from "@/hooks/useCommunityKinds";
+import { Button, Card, Field, Input, Select } from "@/components/ui";
+import Notice, { type NoticeState } from "./Notice";
 
-interface BuildingInfo {
+export interface BuildingInfo {
   id: string;
   name: string;
   address: string;
@@ -12,51 +16,43 @@ interface BuildingInfo {
   votingMethod: string;
   country: string;
   governanceModel: string;
+  legalNotice: string | null;
 }
 
 interface BuildingInfoTabProps {
   canEdit: boolean;
+  /** Community root resolved by the server page (null = not set up yet). */
+  initial: BuildingInfo | null;
 }
 
-export default function BuildingInfoTab({ canEdit }: BuildingInfoTabProps) {
+export default function BuildingInfoTab({ canEdit, initial }: BuildingInfoTabProps) {
   const t = useTranslations("Settings");
   const tc = useTranslations("Common");
   const tRoot = useTranslations();
-  // Phase 7b: "Informácie o bytovom dome" is HOA-flavoured. Use the
-  // template's name when known so a garden / garage tenant gets the
+  const router = useRouter();
+  // The template's own name when known, so a garden / garage tenant gets the
   // right vocabulary in the heading.
   const { templateSlug } = useCommunityKinds();
-  const sectionTitle = templateSlug
-    ? tRoot(`Templates.${templateSlug}.name`)
-    : t("buildingInfo");
-  const [building, setBuilding] = useState<BuildingInfo | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [editing, setEditing] = useState(false);
+  const displaySlug = getDisplayTemplateSlug(templateSlug);
+  const sectionTitle = displaySlug ? tRoot(`Templates.${displaySlug}.name`) : t("buildingInfo");
+
+  const [saved, setSaved] = useState<BuildingInfo | null>(initial);
   const [saving, setSaving] = useState(false);
-  const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
+  const [message, setMessage] = useState<NoticeState>(null);
 
-  const [name, setName] = useState("");
-  const [address, setAddress] = useState("");
-  const [ico, setIco] = useState("");
-  const [country, setCountry] = useState("sk");
-  const [governanceModel, setGovernanceModel] = useState("chairman_council");
+  const [name, setName] = useState(initial?.name ?? "");
+  const [address, setAddress] = useState(initial?.address ?? "");
+  const [ico, setIco] = useState(initial?.ico ?? "");
+  const [country, setCountry] = useState(initial?.country || "sk");
+  const [governanceModel, setGovernanceModel] = useState(initial?.governanceModel || "chairman_council");
 
-  useEffect(() => {
-    fetch("/api/building")
-      .then((r) => (r.ok ? r.json() : null))
-      .then((data) => {
-        setBuilding(data);
-        if (data) {
-          setName(data.name);
-          setAddress(data.address);
-          setIco(data.ico || "");
-          setCountry(data.country || "sk");
-          setGovernanceModel(data.governanceModel || "chairman_council");
-        }
-        setLoading(false);
-      })
-      .catch(() => setLoading(false));
-  }, []);
+  const dirty =
+    !saved ||
+    name !== saved.name ||
+    address !== saved.address ||
+    ico !== (saved.ico ?? "") ||
+    country !== (saved.country || "sk") ||
+    governanceModel !== (saved.governanceModel || "chairman_council");
 
   const handleSave = async () => {
     setSaving(true);
@@ -71,9 +67,9 @@ export default function BuildingInfoTab({ canEdit }: BuildingInfoTabProps) {
         const data = await res.json().catch(() => null);
         throw new Error(data?.error || "");
       }
-      const updated = await res.json();
-      setBuilding(updated);
-      setEditing(false);
+      setSaved(await res.json());
+      // Name shows in the shell sidebar — re-resolve the server layout.
+      router.refresh();
       setMessage({ type: "success", text: t("buildingSaved") });
     } catch {
       setMessage({ type: "error", text: t("buildingSaveFailed") });
@@ -82,220 +78,82 @@ export default function BuildingInfoTab({ canEdit }: BuildingInfoTabProps) {
     }
   };
 
-  const handleCancel = () => {
-    if (building) {
-      setName(building.name);
-      setAddress(building.address);
-      setIco(building.ico || "");
-      setCountry(building.country || "sk");
-      setGovernanceModel(building.governanceModel || "chairman_council");
-    }
-    setEditing(false);
-  };
-
-  if (loading) {
-    return (
-      <div className="animate-pulse space-y-4">
-        <div className="h-8 bg-gray-200 rounded w-1/3" />
-        <div className="h-32 bg-gray-200 rounded" />
-      </div>
-    );
+  if (!saved && !canEdit) {
+    return <p className="text-base text-ui-text-muted">{t("noInfo")}</p>;
   }
 
-  if (!building && !canEdit) {
-    return <p className="text-base text-gray-500 dark:text-gray-400">{t("noInfo")}</p>;
-  }
-
-  if (!building) {
-    return (
-      <div className="bg-white rounded-2xl shadow-sm p-6 dark:bg-gray-800 dark:shadow-black/40">
-        <h2 className="text-lg font-bold text-gray-900 mb-4 dark:text-gray-100">{sectionTitle}</h2>
-
-        {message && (
-          <div
-            className={`mb-4 p-3 rounded-lg text-base ${
-              message.type === "success"
-                ? "bg-green-50 text-green-700 dark:bg-green-900/30 dark:text-green-200"
-                : "bg-red-50 text-red-700 dark:bg-red-900/30 dark:text-red-200"
-            }`}
-          >
-            {message.text}
-          </div>
-        )}
-
-        <p className="text-base text-gray-500 mb-4 dark:text-gray-400">{t("noInfo")}</p>
-        <div className="space-y-4">
-          <div>
-            <label className="block text-sm text-gray-500 mb-1 dark:text-gray-400">{t("name")} *</label>
-            <input
-              type="text"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              required
-              className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none dark:bg-gray-900 dark:border-gray-700 dark:text-gray-100"
-            />
-          </div>
-          <div>
-            <label className="block text-sm text-gray-500 mb-1 dark:text-gray-400">{t("address")} *</label>
-            <input
-              type="text"
-              value={address}
-              onChange={(e) => setAddress(e.target.value)}
-              required
-              className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none dark:bg-gray-900 dark:border-gray-700 dark:text-gray-100"
-            />
-          </div>
-          <div>
-            <label className="block text-sm text-gray-500 mb-1 dark:text-gray-400">{t("ico")}</label>
-            <input
-              type="text"
-              value={ico}
-              onChange={(e) => setIco(e.target.value)}
-              className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none dark:bg-gray-900 dark:border-gray-700 dark:text-gray-100"
-            />
-          </div>
-          <button
-            onClick={handleSave}
-            disabled={saving || !name || !address}
-            className="px-5 py-3 bg-blue-600 hover:bg-blue-700 text-white text-base font-medium rounded-lg transition-colors disabled:opacity-50"
-          >
-            {saving ? tc("saving") : tc("save")}
-          </button>
-        </div>
-      </div>
-    );
-  }
+  const governanceLabel =
+    governanceModel === "committee"
+      ? t("governanceCommittee")
+      : governanceModel === "chairman_only"
+        ? t("governanceChairmanOnly")
+        : t("governanceChairmanCouncil");
 
   return (
-    <div className="bg-white rounded-2xl shadow-sm p-6 dark:bg-gray-800 dark:shadow-black/40">
-      <div className="flex items-center justify-between mb-4">
-        <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100">{sectionTitle}</h2>
-        {canEdit && !editing && (
-          <button
-            onClick={() => setEditing(true)}
-            className="px-4 py-2 text-base text-blue-600 hover:text-blue-700 font-medium transition-colors dark:text-blue-400 dark:hover:text-blue-300"
-          >
-            {tc("edit")}
-          </button>
-        )}
-      </div>
+    <Card as="section" padding="lg" aria-labelledby="community-heading" className="space-y-5">
+      <h2 id="community-heading" className="text-xl font-semibold text-ui-text">
+        {sectionTitle}
+      </h2>
 
-      {message && (
-        <div
-          className={`mb-4 p-3 rounded-lg text-base ${
-            message.type === "success"
-              ? "bg-green-50 text-green-700"
-              : "bg-red-50 text-red-700"
-          }`}
+      {!saved ? <p className="text-base text-ui-text-muted">{t("noInfo")}</p> : null}
+      <Notice state={message} />
+
+      {canEdit ? (
+        <form
+          className="space-y-4"
+          onSubmit={(e) => {
+            e.preventDefault();
+            if (dirty && name && address) handleSave();
+          }}
         >
-          {message.text}
-        </div>
-      )}
-
-      {editing ? (
-        <div className="space-y-4">
-          <div>
-            <label className="block text-sm text-gray-500 mb-1 dark:text-gray-400">{t("name")}</label>
-            <input
-              type="text"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none dark:bg-gray-900 dark:border-gray-700 dark:text-gray-100"
-            />
-          </div>
-          <div>
-            <label className="block text-sm text-gray-500 mb-1 dark:text-gray-400">{t("address")}</label>
-            <input
-              type="text"
-              value={address}
-              onChange={(e) => setAddress(e.target.value)}
-              className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none dark:bg-gray-900 dark:border-gray-700 dark:text-gray-100"
-            />
-          </div>
-          <div>
-            <label className="block text-sm text-gray-500 mb-1 dark:text-gray-400">{t("ico")}</label>
-            <input
-              type="text"
-              value={ico}
-              onChange={(e) => setIco(e.target.value)}
-              className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none dark:bg-gray-900 dark:border-gray-700 dark:text-gray-100"
-            />
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm text-gray-500 mb-1 dark:text-gray-400">{t("country")}</label>
-              <select
-                value={country}
-                onChange={(e) => setCountry(e.target.value)}
-                className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none dark:bg-gray-900 dark:border-gray-700 dark:text-gray-100"
-              >
+          <Field label={t("name")} required>
+            <Input value={name} onChange={(e) => setName(e.target.value)} />
+          </Field>
+          <Field label={t("address")} required>
+            <Input value={address} onChange={(e) => setAddress(e.target.value)} />
+          </Field>
+          <Field label={t("ico")}>
+            <Input value={ico} onChange={(e) => setIco(e.target.value)} inputMode="numeric" />
+          </Field>
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <Field label={t("country")}>
+              <Select value={country} onChange={(e) => setCountry(e.target.value)}>
                 <option value="sk">{t("countrySk")}</option>
                 <option value="cz">{t("countryCz")}</option>
-              </select>
-            </div>
-            <div>
-              <label className="block text-sm text-gray-500 mb-1 dark:text-gray-400">{t("governanceModel")}</label>
-              <select
-                value={governanceModel}
-                onChange={(e) => setGovernanceModel(e.target.value)}
-                className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none dark:bg-gray-900 dark:border-gray-700 dark:text-gray-100"
-              >
+              </Select>
+            </Field>
+            <Field label={t("governanceModel")}>
+              <Select value={governanceModel} onChange={(e) => setGovernanceModel(e.target.value)}>
                 <option value="chairman_council">{t("governanceChairmanCouncil")}</option>
                 <option value="committee">{t("governanceCommittee")}</option>
                 <option value="chairman_only">{t("governanceChairmanOnly")}</option>
-              </select>
-            </div>
+              </Select>
+            </Field>
           </div>
-          <div className="flex gap-3 pt-2">
-            <button
-              onClick={handleSave}
-              disabled={saving}
-              className="px-5 py-3 bg-blue-600 hover:bg-blue-700 text-white text-base font-medium rounded-lg transition-colors disabled:opacity-50"
-            >
+          <div className="flex flex-wrap gap-3 pt-1">
+            <Button type="submit" loading={saving} disabled={!dirty || !name || !address}>
               {saving ? tc("saving") : tc("save")}
-            </button>
-            <button
-              onClick={handleCancel}
-              className="px-5 py-3 text-gray-700 hover:text-gray-900 text-base font-medium transition-colors dark:text-gray-200 dark:hover:text-gray-100"
-            >
-              {tc("cancel")}
-            </button>
+            </Button>
           </div>
-        </div>
-      ) : (
+        </form>
+      ) : saved ? (
         <dl className="space-y-3">
-          <div>
-            <dt className="text-sm text-gray-500 dark:text-gray-400">{t("name")}</dt>
-            <dd className="text-base text-gray-900 dark:text-gray-100">{building.name}</dd>
-          </div>
-          <div>
-            <dt className="text-sm text-gray-500 dark:text-gray-400">{t("address")}</dt>
-            <dd className="text-base text-gray-900 dark:text-gray-100">{building.address}</dd>
-          </div>
-          {building.ico && (
-            <div>
-              <dt className="text-sm text-gray-500 dark:text-gray-400">{t("ico")}</dt>
-              <dd className="text-base text-gray-900 dark:text-gray-100">{building.ico}</dd>
-            </div>
-          )}
-          <div>
-            <dt className="text-sm text-gray-500 dark:text-gray-400">{t("country")}</dt>
-            <dd className="text-base text-gray-900 dark:text-gray-100">
-              {building.country === "cz" ? t("countryCz") : t("countrySk")}
-            </dd>
-          </div>
-          <div>
-            <dt className="text-sm text-gray-500 dark:text-gray-400">{t("governanceModel")}</dt>
-            <dd className="text-base text-gray-900 dark:text-gray-100">
-              {building.governanceModel === "committee"
-                ? t("governanceCommittee")
-                : building.governanceModel === "chairman_only"
-                  ? t("governanceChairmanOnly")
-                  : t("governanceChairmanCouncil")}
-            </dd>
-          </div>
+          <Row label={t("name")} value={saved.name} />
+          <Row label={t("address")} value={saved.address} />
+          {saved.ico ? <Row label={t("ico")} value={saved.ico} /> : null}
+          <Row label={t("country")} value={saved.country === "cz" ? t("countryCz") : t("countrySk")} />
+          <Row label={t("governanceModel")} value={governanceLabel} />
         </dl>
-      )}
+      ) : null}
+    </Card>
+  );
+}
+
+function Row({ label, value }: { label: string; value: string }) {
+  return (
+    <div>
+      <dt className="text-base text-ui-text-muted">{label}</dt>
+      <dd className="text-base text-ui-text">{value}</dd>
     </div>
   );
 }

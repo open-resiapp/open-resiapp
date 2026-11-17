@@ -44,6 +44,26 @@ export async function resolveCurrentEntityId(
   return roots[0].id;
 }
 
+/**
+ * Options + resolved current id with a single roots query. Used by the
+ * dashboard server layout (ShellData) instead of calling
+ * `listCurrentEntityOptions` + `resolveCurrentEntityId` back to back.
+ */
+export async function resolveCurrentEntityContext(userId: string): Promise<{
+  options: { id: string; name: string; kind: string }[];
+  currentId: string | null;
+}> {
+  const [fromCookie, roots] = await Promise.all([
+    getCurrentEntityIdFromCookie(),
+    listUserRoots(userId),
+  ]);
+  const options = roots.map((r) => ({ id: r.id, name: r.name, kind: r.kind }));
+  if (roots.length === 0) return { options, currentId: null };
+  const currentId =
+    fromCookie && roots.some((r) => r.id === fromCookie) ? fromCookie : roots[0].id;
+  return { options, currentId };
+}
+
 /** Used by the header switcher to render the dropdown options. */
 export async function listCurrentEntityOptions(userId: string) {
   const roots = await listUserRoots(userId);

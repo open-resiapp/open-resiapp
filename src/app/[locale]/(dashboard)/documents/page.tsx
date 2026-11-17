@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
+import { useConfirm } from "@/components/ui";
 import { DOCUMENT_TYPES, type DocumentType } from "@/lib/documents";
 import DocumentCard, {
   type DocumentItem,
@@ -41,6 +42,7 @@ function SkeletonList() {
 
 export default function DocumentsPage() {
   const t = useTranslations("Documents");
+  const confirm = useConfirm();
   const [data, setData] = useState<DocumentsResponse | null>(null);
   const [projectsData, setProjectsData] = useState<ProjectsResponse | null>(null);
   const [loading, setLoading] = useState(true);
@@ -67,7 +69,13 @@ export default function DocumentsPage() {
   }, [fetchAll]);
 
   async function handleDelete(id: string) {
-    if (!confirm(t("confirmDelete"))) return;
+    const ok = await confirm({
+      title: t("delete"),
+      description: t("confirmDelete"),
+      confirmLabel: t("delete"),
+      tone: "danger",
+    });
+    if (!ok) return;
     const res = await fetch(`/api/documents/${id}`, { method: "DELETE" });
     if (res.ok) fetchAll();
   }

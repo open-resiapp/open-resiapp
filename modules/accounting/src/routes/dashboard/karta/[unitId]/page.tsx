@@ -61,6 +61,7 @@ interface OverdueSummary {
 
 export default function KartaDetailPage({ unitId }: { unitId: string }) {
   const t = useTranslations("Accounting.karta");
+  const tMy = useTranslations("MyPayments");
   const tCat = useTranslations("Accounting.serviceCategories");
   const format = useFormatter();
 
@@ -147,11 +148,11 @@ export default function KartaDetailPage({ unitId }: { unitId: string }) {
       <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mt-2 mb-1">
         {t("detailTitle", { unit: ledger.flatNumber ?? ledger.name })}
       </h1>
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
         <p className="text-gray-600 dark:text-gray-400">
           {ledger.vs ? t("vsLabel", { vs: ledger.vs }) : t("noVs")}
         </p>
-        <span className="flex items-center gap-4">
+        <span className="flex flex-wrap items-center gap-4">
           {canWrite && (
             <Link
               href={`/accounting/payments?unit=${unitId}`}
@@ -220,14 +221,27 @@ export default function KartaDetailPage({ unitId }: { unitId: string }) {
       )}
 
       {/* Overdue + lawful interest (read-only calculator) */}
+      {/* BYT-20261117-002 Phase 4: one plain sentence first; the statutory
+          interest table stays available behind a disclosure (collapsed by
+          default for everyone — board expands it when needed). */}
       {overdue && overdue.items.length > 0 && (
-        <div className="mb-6 bg-white dark:bg-gray-900 border border-red-200 dark:border-red-900 rounded-lg p-5 overflow-x-auto">
-          <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-1">
-            {t("overdueTitle")}
-          </h2>
+        <div className="mb-6 bg-white dark:bg-gray-900 border border-red-200 dark:border-red-900 rounded-lg p-5">
+          <p className="text-base font-semibold text-red-700 dark:text-red-400">
+            {tMy("overdueSentence", {
+              amount: formatEur(overdue.totalOpenCents),
+              months: new Set(
+                overdue.items.map((i) => `${i.periodYear}-${i.month}`)
+              ).size,
+            })}
+          </p>
+          <details className="mt-2 group">
+            <summary className="flex min-h-11 cursor-pointer items-center text-base font-medium text-gray-900 dark:text-gray-100 underline underline-offset-4">
+              {t("overdueTitle")}
+            </summary>
           <p className="text-xs text-gray-500 dark:text-gray-400 mb-3">
             {t("overdueHint", { asOf: overdue.asOf })}
           </p>
+          <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
               <tr className="text-left text-gray-600 dark:text-gray-400 border-b border-gray-200 dark:border-gray-700">
@@ -284,12 +298,14 @@ export default function KartaDetailPage({ unitId }: { unitId: string }) {
               </tr>
             </tfoot>
           </table>
-          <div className="flex items-center justify-between mt-2">
+          </div>
+          <div className="flex flex-wrap items-center justify-between gap-2 mt-2">
             <p className="text-[11px] text-gray-400 dark:text-gray-500">
               {t("overdueDisclaimer")}
             </p>
             {canWrite && <DownloadUpomienkaButton unitId={unitId} />}
           </div>
+          </details>
         </div>
       )}
 
@@ -297,7 +313,48 @@ export default function KartaDetailPage({ unitId }: { unitId: string }) {
       {ledger.rows.length === 0 ? (
         <p className="text-gray-600 dark:text-gray-400">{t("empty")}</p>
       ) : (
-        <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg p-6 overflow-x-auto">
+        <>
+        {/* < sm: stacked rows (390 px readable, no page overflow). Same
+            data and column semantics as the table below. */}
+        <ul className="sm:hidden bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg divide-y divide-gray-100 dark:divide-gray-800">
+          {ledger.rows.map((row) => (
+            <li key={row.journalEntryId} className="px-4 py-3">
+              <div className="flex items-baseline justify-between gap-3">
+                <span className="text-sm text-gray-600 dark:text-gray-400">
+                  {format.dateTime(new Date(row.postedAt), {
+                    dateStyle: "medium",
+                  })}
+                </span>
+                <span
+                  className={`text-base font-semibold ${
+                    row.sourceType === "payment"
+                      ? "text-green-700 dark:text-green-400"
+                      : "text-gray-900 dark:text-gray-100"
+                  }`}
+                >
+                  {row.deltaCents === 0
+                    ? ""
+                    : row.sourceType === "payment"
+                      ? `${t("colUhrada")}: ${formatEur(-row.deltaCents)}`
+                      : `${t("colPredpis")}: ${formatEur(row.deltaCents)}`}
+                </span>
+              </div>
+              <p className="text-base text-gray-900 dark:text-gray-100 break-words">
+                {row.description}
+              </p>
+              <p
+                className={`text-sm ${
+                  row.balanceCents > 0
+                    ? "text-red-600 dark:text-red-400"
+                    : "text-gray-600 dark:text-gray-400"
+                }`}
+              >
+                {t("colBalance")}: {formatEur(row.balanceCents)}
+              </p>
+            </li>
+          ))}
+        </ul>
+        <div className="hidden sm:block bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg p-6 overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
               <tr className="text-left text-gray-600 dark:text-gray-400 border-b border-gray-200 dark:border-gray-700">
@@ -383,6 +440,7 @@ export default function KartaDetailPage({ unitId }: { unitId: string }) {
             </tbody>
           </table>
         </div>
+        </>
       )}
     </div>
   );

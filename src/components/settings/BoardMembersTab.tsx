@@ -3,6 +3,8 @@
 import { useTranslations } from "next-intl";
 import { useState, useEffect } from "react";
 import type { GovernanceModel, BoardMemberRole } from "@/types";
+import { ActionMenu, Badge, Button, Card, ConfirmDialog, Field, Input, LoadingBlock, Modal, Select } from "@/components/ui";
+import Notice, { type NoticeState } from "./Notice";
 
 interface BoardMemberRow {
   id: string;
@@ -33,73 +35,75 @@ const ROLE_LABELS_BY_MODEL: Record<GovernanceModel, BoardMemberRole[]> = {
 
 export default function BoardMembersTab({ canEdit }: BoardMembersTabProps) {
   const t = useTranslations("BoardMembers");
+  const th = useTranslations("SettingsHub");
   const tc = useTranslations("Common");
   const [members, setMembers] = useState<BoardMemberRow[]>([]);
   const [governanceModel, setGovernanceModel] = useState<GovernanceModel | string>("chairman_council");
-  const [users, setUsers] = useState<UserOption[]>([]);
+  const [users, setUsers] = useState<UserOption[] | null>(null);
   const [loading, setLoading] = useState(true);
   const [adding, setAdding] = useState(false);
   const [saving, setSaving] = useState(false);
-  const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
+  const [message, setMessage] = useState<NoticeState>(null);
+  const [toRemove, setToRemove] = useState<BoardMemberRow | null>(null);
+  const [removing, setRemoving] = useState(false);
 
-  // Form state
   const [userId, setUserId] = useState("");
   const [role, setRole] = useState<BoardMemberRole>("chairman");
   const [electedAt, setElectedAt] = useState("");
   const [termEndsAt, setTermEndsAt] = useState("");
 
   useEffect(() => {
-    Promise.all([
-      fetch("/api/board-members").then((r) => r.json()),
-      fetch("/api/users").then((r) => r.json()),
-    ])
-      .then(([boardData, usersData]) => {
+    fetch("/api/board-members")
+      .then((r) => r.json())
+      .then((boardData) => {
         setMembers(boardData.members || []);
-        setGovernanceModel(boardData.governanceModel || "chairman_council");
-        setUsers(
-          (usersData || []).map((u: UserOption) => ({
-            id: u.id,
-            name: u.name,
-            email: u.email,
-          }))
-        );
-        // Set default role based on governance model
         const gm = (boardData.governanceModel || "chairman_council") as GovernanceModel;
-        const roles = ROLE_LABELS_BY_MODEL[gm];
-        setRole(roles[0]);
-        setLoading(false);
+        setGovernanceModel(gm);
+        setRole((ROLE_LABELS_BY_MODEL[gm] ?? ROLE_LABELS_BY_MODEL.chairman_council)[0]);
       })
-      .catch(() => setLoading(false));
+      .catch(() => {})
+      .finally(() => setLoading(false));
   }, []);
 
+  // The user picker is only needed once the add form opens — fetch it then.
+  const openAdd = () => {
+    setAdding(true);
+    if (users === null) {
+      fetch("/api/users")
+        .then((r) => r.json())
+        .then((usersData) =>
+          setUsers(
+            (usersData || []).map((u: UserOption) => ({ id: u.id, name: u.name, email: u.email })),
+          ),
+        )
+        .catch(() => setUsers([]));
+    }
+  };
+
+  const closeAdd = () => {
+    setAdding(false);
+    setUserId("");
+    setElectedAt("");
+    setTermEndsAt("");
+  };
+
   const availableRoles = ROLE_LABELS_BY_MODEL[governanceModel as GovernanceModel] || [];
+  const roleLabel = (r: string) => (t.has(`role_${r}`) ? t(`role_${r}`) : r);
 
   const handleAdd = async () => {
     if (!userId || !role || !electedAt) return;
     setSaving(true);
     setMessage(null);
-
     try {
       const res = await fetch("/api/board-members", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          userId,
-          role,
-          electedAt,
-          termEndsAt: termEndsAt || null,
-        }),
+        body: JSON.stringify({ userId, role, electedAt, termEndsAt: termEndsAt || null }),
       });
-
       if (!res.ok) throw new Error();
-
-      // Refresh
       const boardData = await fetch("/api/board-members").then((r) => r.json());
       setMembers(boardData.members || []);
-      setAdding(false);
-      setUserId("");
-      setElectedAt("");
-      setTermEndsAt("");
+      closeAdd();
       setMessage({ type: "success", text: t("memberAdded") });
     } catch {
       setMessage({ type: "error", text: t("memberAddFailed") });
@@ -108,203 +112,142 @@ export default function BoardMembersTab({ canEdit }: BoardMembersTabProps) {
     }
   };
 
-  const handleRemove = async (id: string) => {
+  const handleRemove = async () => {
+    if (!toRemove) return;
+    setRemoving(true);
     setMessage(null);
     try {
-      const res = await fetch(`/api/board-members?id=${id}`, { method: "DELETE" });
+      const res = await fetch(`/api/board-members?id=${toRemove.id}`, { method: "DELETE" });
       if (!res.ok) throw new Error();
-      setMembers((prev) => prev.filter((m) => m.id !== id));
+      setMembers((prev) => prev.filter((m) => m.id !== toRemove.id));
       setMessage({ type: "success", text: t("memberRemoved") });
     } catch {
       setMessage({ type: "error", text: t("memberRemoveFailed") });
+    } finally {
+      setRemoving(false);
+      setToRemove(null);
     }
   };
 
-  const isTermExpiring = (termEndsAt: string | null) => {
-    if (!termEndsAt) return false;
-    const end = new Date(termEndsAt);
+  const isTermExpiring = (end: string | null) => {
+    if (!end) return false;
+    const e = new Date(end);
     const now = new Date();
-    const sixtyDays = 60 * 24 * 60 * 60 * 1000;
-    return end.getTime() - now.getTime() < sixtyDays && end > now;
+    return e.getTime() - now.getTime() < 60 * 24 * 60 * 60 * 1000 && e > now;
   };
+  const isTermExpired = (end: string | null) => (end ? new Date(end) < new Date() : false);
 
-  const isTermExpired = (termEndsAt: string | null) => {
-    if (!termEndsAt) return false;
-    return new Date(termEndsAt) < new Date();
-  };
-
-  if (loading) {
-    return (
-      <div className="animate-pulse space-y-4">
-        <div className="h-8 bg-gray-200 rounded w-1/3 dark:bg-gray-700" />
-        <div className="h-32 bg-gray-200 rounded dark:bg-gray-700" />
-      </div>
-    );
-  }
+  if (loading) return <LoadingBlock />;
 
   const activeMembers = members.filter((m) => m.isActive);
 
   return (
-    <div className="space-y-6">
-      <div className="bg-white rounded-2xl shadow-sm p-6 dark:bg-gray-800 dark:shadow-black/40">
-        <div className="flex items-center justify-between mb-4">
-          <div>
-            <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100">{t("title")}</h2>
-            <p className="text-sm text-gray-500 mt-1 dark:text-gray-400">
-              {t(`model_${governanceModel}`)}
-            </p>
-          </div>
-          {canEdit && !adding && (
-            <button
-              onClick={() => setAdding(true)}
-              className="px-4 py-2 text-base text-white bg-blue-600 hover:bg-blue-700 font-medium rounded-lg transition-colors"
-            >
-              {t("addMember")}
-            </button>
-          )}
+    <Card as="section" padding="lg" aria-labelledby="board-heading" className="space-y-5">
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div className="min-w-0">
+          <h2 id="board-heading" className="text-xl font-semibold text-ui-text">
+            {t("title")}
+          </h2>
+          <p className="mt-1 text-base text-ui-text-muted">{t(`model_${governanceModel}`)}</p>
         </div>
-
-        {message && (
-          <div
-            className={`mb-4 p-3 rounded-lg text-base ${
-              message.type === "success"
-                ? "bg-green-50 text-green-700 dark:bg-green-900/30 dark:text-green-200"
-                : "bg-red-50 text-red-700 dark:bg-red-900/30 dark:text-red-200"
-            }`}
-          >
-            {message.text}
-          </div>
-        )}
-
-        {/* Add form */}
-        {adding && (
-          <div className="bg-gray-50 rounded-lg p-4 mb-4 space-y-3 dark:bg-gray-900/40">
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <div>
-                <label className="block text-sm text-gray-500 mb-1 dark:text-gray-400">{t("userLabel")}</label>
-                <select
-                  value={userId}
-                  onChange={(e) => setUserId(e.target.value)}
-                  className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none dark:bg-gray-900 dark:border-gray-700 dark:text-gray-100"
-                >
-                  <option value="">{t("selectUser")}</option>
-                  {users.map((u) => (
-                    <option key={u.id} value={u.id}>
-                      {u.name} ({u.email})
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <div>
-                <label className="block text-sm text-gray-500 mb-1 dark:text-gray-400">{t("roleLabel")}</label>
-                <select
-                  value={role}
-                  onChange={(e) => setRole(e.target.value as BoardMemberRole)}
-                  className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none dark:bg-gray-900 dark:border-gray-700 dark:text-gray-100"
-                >
-                  {availableRoles.map((r) => (
-                    <option key={r} value={r}>
-                      {t(`role_${r}`)}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <div>
-                <label className="block text-sm text-gray-500 mb-1 dark:text-gray-400">{t("electedAtLabel")}</label>
-                <input
-                  type="date"
-                  value={electedAt}
-                  onChange={(e) => setElectedAt(e.target.value)}
-                  className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none dark:bg-gray-900 dark:border-gray-700 dark:text-gray-100"
-                />
-              </div>
-              <div>
-                <label className="block text-sm text-gray-500 mb-1 dark:text-gray-400">{t("termEndsAtLabel")}</label>
-                <input
-                  type="date"
-                  value={termEndsAt}
-                  onChange={(e) => setTermEndsAt(e.target.value)}
-                  className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none dark:bg-gray-900 dark:border-gray-700 dark:text-gray-100"
-                />
-              </div>
-            </div>
-            <div className="flex gap-3 pt-1">
-              <button
-                onClick={handleAdd}
-                disabled={saving || !userId || !electedAt}
-                className="px-5 py-3 bg-blue-600 hover:bg-blue-700 text-white text-base font-medium rounded-lg transition-colors disabled:opacity-50"
-              >
-                {saving ? tc("saving") : tc("save")}
-              </button>
-              <button
-                onClick={() => setAdding(false)}
-                className="px-5 py-3 text-gray-700 hover:text-gray-900 text-base font-medium transition-colors dark:text-gray-200 dark:hover:text-gray-100"
-              >
-                {tc("cancel")}
-              </button>
-            </div>
-          </div>
-        )}
-
-        {/* Members list */}
-        {activeMembers.length === 0 ? (
-          <p className="text-base text-gray-500 dark:text-gray-400">{t("noMembers")}</p>
-        ) : (
-          <div className="space-y-3">
-            {activeMembers.map((member) => (
-              <div
-                key={member.id}
-                className="flex items-center justify-between p-4 bg-gray-50 rounded-lg dark:bg-gray-900/40"
-              >
-                <div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-base font-medium text-gray-900 dark:text-gray-100">
-                      {member.userName || member.userEmail}
-                    </span>
-                    <span className="px-2 py-0.5 text-xs font-medium bg-blue-100 text-blue-700 rounded dark:bg-blue-900/40 dark:text-blue-200">
-                      {t(`role_${member.role}`)}
-                    </span>
-                    {isTermExpired(member.termEndsAt) && (
-                      <span className="px-2 py-0.5 text-xs font-medium bg-red-100 text-red-700 rounded dark:bg-red-900/40 dark:text-red-200">
-                        {t("termExpired")}
-                      </span>
-                    )}
-                    {isTermExpiring(member.termEndsAt) && !isTermExpired(member.termEndsAt) && (
-                      <span className="px-2 py-0.5 text-xs font-medium bg-amber-100 text-amber-700 rounded dark:bg-amber-900/40 dark:text-amber-200">
-                        {t("termExpiring")}
-                      </span>
-                    )}
-                  </div>
-                  <div className="text-sm text-gray-500 mt-1 dark:text-gray-400">
-                    {t("electedOn", {
-                      date: new Date(member.electedAt).toLocaleDateString(),
-                    })}
-                    {member.termEndsAt && (
-                      <>
-                        {" "}
-                        &middot;{" "}
-                        {t("termUntil", {
-                          date: new Date(member.termEndsAt).toLocaleDateString(),
-                        })}
-                      </>
-                    )}
-                  </div>
-                </div>
-                {canEdit && (
-                  <button
-                    onClick={() => handleRemove(member.id)}
-                    className="text-sm text-red-600 hover:text-red-700 font-medium dark:text-red-400 dark:hover:text-red-300"
-                  >
-                    {t("remove")}
-                  </button>
-                )}
-              </div>
-            ))}
-          </div>
-        )}
+        {canEdit ? <Button onClick={openAdd}>{t("addMember")}</Button> : null}
       </div>
-    </div>
+
+      <Notice state={message} />
+
+      {activeMembers.length === 0 ? (
+        <p className="text-base text-ui-text-muted">{t("noMembers")}</p>
+      ) : (
+        <ul className="space-y-3">
+          {activeMembers.map((member) => {
+            const name = member.userName || member.userEmail || "—";
+            return (
+              <li
+                key={member.id}
+                className="flex items-center justify-between gap-3 rounded-lg border border-ui-border bg-ui-surface-muted p-4"
+              >
+                <div className="min-w-0">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <span className="text-base font-medium text-ui-text break-words">{name}</span>
+                    <Badge tone="info">{roleLabel(member.role)}</Badge>
+                    {isTermExpired(member.termEndsAt) ? <Badge tone="danger">{t("termExpired")}</Badge> : null}
+                    {isTermExpiring(member.termEndsAt) && !isTermExpired(member.termEndsAt) ? (
+                      <Badge tone="warning">{t("termExpiring")}</Badge>
+                    ) : null}
+                  </div>
+                  <p className="mt-1 text-base text-ui-text-muted">
+                    {t("electedOn", { date: new Date(member.electedAt).toLocaleDateString() })}
+                    {member.termEndsAt
+                      ? ` · ${t("termUntil", { date: new Date(member.termEndsAt).toLocaleDateString() })}`
+                      : ""}
+                  </p>
+                </div>
+                {canEdit ? (
+                  <ActionMenu
+                    label={th("actionsFor", { name })}
+                    items={[{ label: t("remove"), tone: "danger", onSelect: () => setToRemove(member) }]}
+                  />
+                ) : null}
+              </li>
+            );
+          })}
+        </ul>
+      )}
+
+      <Modal
+        open={adding && canEdit}
+        onClose={closeAdd}
+        title={t("addMember")}
+        footer={
+          <>
+            <Button variant="secondary" onClick={closeAdd}>
+              {tc("cancel")}
+            </Button>
+            <Button onClick={handleAdd} loading={saving} disabled={!userId || !electedAt}>
+              {tc("save")}
+            </Button>
+          </>
+        }
+      >
+        <div className="space-y-4">
+          <Field label={t("userLabel")} required>
+            <Select value={userId} onChange={(e) => setUserId(e.target.value)}>
+              <option value="">{users === null ? tc("loading") : t("selectUser")}</option>
+              {(users ?? []).map((u) => (
+                <option key={u.id} value={u.id}>
+                  {u.name} ({u.email})
+                </option>
+              ))}
+            </Select>
+          </Field>
+          <Field label={t("roleLabel")} required>
+            <Select value={role} onChange={(e) => setRole(e.target.value as BoardMemberRole)}>
+              {availableRoles.map((r) => (
+                <option key={r} value={r}>
+                  {roleLabel(r)}
+                </option>
+              ))}
+            </Select>
+          </Field>
+          <Field label={t("electedAtLabel")} required>
+            <Input type="date" value={electedAt} onChange={(e) => setElectedAt(e.target.value)} />
+          </Field>
+          <Field label={t("termEndsAtLabel")}>
+            <Input type="date" value={termEndsAt} onChange={(e) => setTermEndsAt(e.target.value)} />
+          </Field>
+        </div>
+      </Modal>
+
+      <ConfirmDialog
+        open={toRemove !== null}
+        tone="danger"
+        title={th("removeMemberTitle", { name: toRemove?.userName || toRemove?.userEmail || "" })}
+        description={th("removeMemberBody")}
+        confirmLabel={t("remove")}
+        loading={removing}
+        onConfirm={handleRemove}
+        onCancel={() => setToRemove(null)}
+      />
+    </Card>
   );
 }

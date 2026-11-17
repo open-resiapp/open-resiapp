@@ -115,7 +115,7 @@ export async function POST(
           recipientName: author.name,
           responderName: responder.name,
           postTitle: post.title,
-          postUrl: `${appUrl}/komunita`,
+          postUrl: `${appUrl}/board?prispevok=c-${id}`,
           responseContent: content.trim(),
         }).catch(() => {});
       }

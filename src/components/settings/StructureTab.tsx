@@ -1,32 +1,44 @@
 "use client";
 
-import BuildingInfoTab from "./BuildingInfoTab";
-import EntrancesTab from "./EntrancesTab";
-import FlatsTab from "./FlatsTab";
+import { useCallback, useEffect, useState } from "react";
+import { LoadingBlock } from "@/components/ui";
+import EntrancesTab, { type Entrance } from "./EntrancesTab";
+import FlatsTab, { type FlatRow } from "./FlatsTab";
 
 interface StructureTabProps {
   canEdit: boolean;
 }
 
 /**
- * RES-20260609-002: the community structure tree (building → entrances →
- * flats) used to be three separate top-level settings tabs. They are one
- * hierarchy, so they're now stacked as sections of a single "Structure"
- * tab. Each child stays self-contained (own header, own data fetch); this
- * wrapper only owns the vertical rhythm and the dividers between levels.
+ * "Budova a byty": entrances + flats. One fetch of each list, shared by both
+ * sections (previously each section fetched /api/entrances on its own).
  */
 export default function StructureTab({ canEdit }: StructureTabProps) {
+  const [entrances, setEntrances] = useState<Entrance[]>([]);
+  const [flats, setFlats] = useState<FlatRow[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  const load = useCallback(async () => {
+    try {
+      const [flatsRes, entrancesRes] = await Promise.all([fetch("/api/flats"), fetch("/api/entrances")]);
+      if (flatsRes.ok) setFlats(await flatsRes.json());
+      if (entrancesRes.ok) setEntrances(await entrancesRes.json());
+    } catch {
+      /* keep what we have */
+    }
+    setLoading(false);
+  }, []);
+
+  useEffect(() => {
+    load();
+  }, [load]);
+
+  if (loading) return <LoadingBlock />;
+
   return (
     <div className="space-y-10">
-      <section>
-        <BuildingInfoTab canEdit={canEdit} />
-      </section>
-      <section className="border-t border-gray-200 pt-10 dark:border-gray-700">
-        <EntrancesTab canEdit={canEdit} />
-      </section>
-      <section className="border-t border-gray-200 pt-10 dark:border-gray-700">
-        <FlatsTab canEdit={canEdit} />
-      </section>
+      <EntrancesTab canEdit={canEdit} entrances={entrances} onChanged={load} />
+      <FlatsTab canEdit={canEdit} flats={flats} entrances={entrances} onChanged={load} />
     </div>
   );
 }

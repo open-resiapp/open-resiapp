@@ -1,20 +1,8 @@
 "use client";
 
 import { useTranslations, useFormatter } from "next-intl";
-import { Link } from "@/i18n/navigation";
+import { Badge, ButtonLink, Card, Icon } from "@/components/ui";
 import type { VotingStatus, VotingType } from "@/types";
-
-const statusKeys: Record<VotingStatus, string> = {
-  draft: "statusDraft",
-  active: "statusActive",
-  closed: "statusClosed",
-};
-
-const statusStyles: Record<VotingStatus, { bg: string; text: string }> = {
-  draft: { bg: "bg-gray-100 dark:bg-gray-700", text: "text-gray-700 dark:text-gray-200" },
-  active: { bg: "bg-green-100 dark:bg-green-900/40", text: "text-green-700 dark:text-green-200" },
-  closed: { bg: "bg-red-100 dark:bg-red-900/40", text: "text-red-700 dark:text-red-200" },
-};
 
 interface VotingCardProps {
   id: string;
@@ -24,7 +12,15 @@ interface VotingCardProps {
   entranceName?: string | null;
   startsAt: string;
   endsAt: string;
-  createdByName: string;
+  /** Board sees authorship and drafts clearly marked; owners get a calmer card. */
+  audience: "owner" | "board";
+  createdByName?: string;
+  /** The list API does not return whether the user already voted; only pass when known. */
+  hasVoted?: boolean;
+}
+
+function startOfDay(d: Date): number {
+  return new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime();
 }
 
 export default function VotingCard({
@@ -35,65 +31,99 @@ export default function VotingCard({
   entranceName,
   startsAt,
   endsAt,
+  audience,
   createdByName,
+  hasVoted,
 }: VotingCardProps) {
-  const t = useTranslations("Voting");
+  const t = useTranslations("VotingList");
+  const tv = useTranslations("Voting");
   const format = useFormatter();
-  const style = statusStyles[status] || statusStyles.draft;
+
+  const now = new Date();
+  const start = new Date(startsAt);
+  const end = new Date(endsAt);
+  const dateFmt = (d: Date) =>
+    format.dateTime(d, { day: "numeric", month: "long", year: "numeric" });
+  const days = Math.round((startOfDay(end) - startOfDay(now)) / 86_400_000);
+
+  const notStarted = status === "active" && start > now;
+  const expired = status === "active" && end < now;
+  const open = status === "active" && !notStarted && !expired;
+
+  let deadline: string | null = null;
+  if (open) {
+    deadline =
+      days <= 0
+        ? t("deadlineToday")
+        : days === 1
+          ? t("deadlineTomorrow")
+          : t("deadlineDays", { days, date: dateFmt(end) });
+  } else if (notStarted) {
+    deadline = t("startsOn", { date: dateFmt(start) });
+  } else if (expired) {
+    deadline = t("deadlineExpired", { date: dateFmt(end) });
+  } else if (status === "closed") {
+    deadline = t("closedOn", { date: dateFmt(end) });
+  } else {
+    deadline = t("draftDates", { from: dateFmt(start), to: dateFmt(end) });
+  }
+
+  const typeLabel = votingType === "meeting" ? tv("typeMeeting") : votingType ? tv("typeWritten") : null;
+
+  let action: React.ReactNode;
+  if (audience === "owner") {
+    if (open && hasVoted) {
+      action = (
+        <span className="inline-flex min-h-11 items-center gap-2 text-base font-medium text-ui-success">
+          <Icon name="check" size={20} />
+          {t("voted")}
+        </span>
+      );
+    } else if (open) {
+      action = <ButtonLink href={`/voting/${id}`}>{t("vote")}</ButtonLink>;
+    } else if (status === "closed") {
+      action = (
+        <ButtonLink href={`/voting/${id}`} variant="secondary">
+          {t("showResults")}
+        </ButtonLink>
+      );
+    } else {
+      action = (
+        <ButtonLink href={`/voting/${id}`} variant="secondary">
+          {t("open")}
+        </ButtonLink>
+      );
+    }
+  } else {
+    action = (
+      <ButtonLink href={`/voting/${id}`} variant="secondary">
+        {status === "closed" ? t("showResults") : t("open")}
+      </ButtonLink>
+    );
+  }
 
   return (
-    <Link
-      href={`/voting/${id}`}
-      className="block bg-white rounded-2xl p-5 sm:p-6 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all dark:bg-gray-800 dark:shadow-black/40"
-    >
-      <div className="flex items-start justify-between gap-4 mb-3">
-        <div>
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">{title}</h3>
-          {entranceName && (
-            <span className="inline-block mt-1 px-2.5 py-0.5 rounded-full text-sm font-medium bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300">
-              {entranceName}
-            </span>
-          )}
-        </div>
-        <div className="flex gap-2 flex-shrink-0">
-          {votingType && (
-            <span
-              className={`px-3 py-1 rounded-full text-sm font-medium whitespace-nowrap ${
-                votingType === "meeting"
-                  ? "bg-purple-100 text-purple-700 dark:bg-purple-900/40 dark:text-purple-200"
-                  : "bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-200"
-              }`}
-            >
-              {votingType === "meeting" ? t("typeMeeting") : t("typeWritten")}
-            </span>
-          )}
-          <span
-            className={`px-3 py-1 rounded-full text-sm font-medium whitespace-nowrap ${style.bg} ${style.text}`}
-          >
-            {t(statusKeys[status])}
-          </span>
-        </div>
+    <Card as="article" padding="md" className="flex flex-col gap-3">
+      <div className="flex flex-wrap items-center gap-2">
+        {status === "draft" && <Badge tone="warning">{t("draftBadge")}</Badge>}
+        {status === "closed" && <Badge tone="neutral">{tv("statusClosed")}</Badge>}
+        {open && <Badge tone="success">{tv("statusActive")}</Badge>}
+        {typeLabel && <Badge tone="info">{typeLabel}</Badge>}
+        {entranceName && <Badge tone="neutral">{entranceName}</Badge>}
       </div>
 
-      <div className="flex flex-wrap gap-4 text-sm text-gray-500 dark:text-gray-400">
-        <span>
-          {t("from")}{" "}
-          {format.dateTime(new Date(startsAt), {
-            day: "numeric",
-            month: "short",
-            year: "numeric",
-          })}
-        </span>
-        <span>
-          {t("to")}{" "}
-          {format.dateTime(new Date(endsAt), {
-            day: "numeric",
-            month: "short",
-            year: "numeric",
-          })}
-        </span>
-        <span>{t("createdBy", { name: createdByName })}</span>
-      </div>
-    </Link>
+      <h3 className="break-words text-lg font-semibold text-ui-text">{title}</h3>
+
+      <p className="text-base text-ui-text-muted">{deadline}</p>
+      {audience === "board" && createdByName && (
+        <p className="text-sm text-ui-text-muted">{tv("createdBy", { name: createdByName })}</p>
+      )}
+
+      {audience === "owner" && open && !hasVoted && hasVoted !== undefined && (
+        <p className="text-base font-medium text-ui-text">{t("notVotedYet")}</p>
+      )}
+
+      <div className="mt-1">{action}</div>
+    </Card>
   );
 }

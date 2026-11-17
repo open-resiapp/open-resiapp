@@ -1,12 +1,17 @@
 "use client";
 
-// Predpis list (BYT-20260512-002 Phase 1). Lists fee schedules per year,
-// creates drafts, links to the editor and to VS assignment. Publish flow
-// lives on the schedule detail page.
+// Ročné úlohy (BYT-20261117-002 Phase 5) + the Mesačné platby (predpis)
+// list (BYT-20260512-002 Phase 1). The hub on top lists the yearly jobs in
+// order; below it the fee schedules per year, draft creation and links to
+// the editor. Publish flow lives on the schedule detail page. Variable
+// symbols moved to Nastavenia a pre účtovníka.
 
 import { useEffect, useState } from "react";
 import { useFormatter, useTranslations } from "next-intl";
 import { Link, useRouter } from "@/i18n/navigation";
+import { Badge, Button, Card, EmptyState, Field, Input, LoadingBlock, PageHeader } from "@/components/ui";
+import AnnualTasksHub, { type AnnualTaskStatus } from "@modules/accounting/src/components/AnnualTasksHub";
+import { useAccountingAccess } from "@modules/accounting/src/components/useAccountingAccess";
 
 interface ScheduleRow {
   id: string;
@@ -19,8 +24,10 @@ interface ScheduleRow {
 
 export default function PredpisListPage() {
   const t = useTranslations("Accounting.predpis");
+  const ta = useTranslations("Accounting.annual");
   const format = useFormatter();
   const router = useRouter();
+  const { canWrite } = useAccountingAccess();
 
   const [schedules, setSchedules] = useState<ScheduleRow[] | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -55,94 +62,97 @@ export default function PredpisListPage() {
     }
   }
 
-  if (error === "load") {
-    return <p className="text-red-600 dark:text-red-400">{t("loadError")}</p>;
-  }
-  if (!schedules) {
-    return (
-      <div className="animate-pulse h-40 bg-gray-100 dark:bg-gray-800 rounded-lg" />
-    );
+  // Status of this year's monthly payments — already loaded for the list.
+  const currentYear = new Date().getFullYear();
+  let predpisStatus: AnnualTaskStatus | undefined;
+  if (schedules) {
+    const thisYear = schedules.filter((s) => s.year === currentYear);
+    if (thisYear.some((s) => s.status === "published")) {
+      predpisStatus = { label: ta("statusPublished", { year: currentYear }), tone: "success" };
+    } else if (thisYear.length > 0) {
+      predpisStatus = { label: ta("statusDraft", { year: currentYear }), tone: "warning" };
+    } else {
+      predpisStatus = { label: ta("statusMissing", { year: currentYear }), tone: "warning" };
+    }
   }
 
   return (
     <div className="max-w-3xl">
-      <div className="flex items-start justify-between mb-6">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-1">
-            {t("title")}
-          </h1>
-          <p className="text-gray-600 dark:text-gray-400">{t("subtitle")}</p>
-        </div>
-        <Link
-          href="/accounting/predpis/unit-settings"
-          className="text-sm text-blue-600 dark:text-blue-400 hover:underline whitespace-nowrap"
-        >
-          {t("unitSettingsLink")}
-        </Link>
-      </div>
+      <PageHeader title={ta("title")} description={ta("subtitle")} />
 
-      <div className="flex items-center gap-3 mb-6">
-        <input
-          type="number"
-          value={year}
-          onChange={(e) => setYear(Number(e.target.value))}
-          min={2000}
-          max={2100}
-          className="w-28 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
-        />
-        <button
-          onClick={createDraft}
-          disabled={creating || !Number.isInteger(year)}
-          className="px-5 py-2 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white rounded-lg"
-        >
-          {creating ? t("creating") : t("newSchedule")}
-        </button>
-      </div>
+      <AnnualTasksHub predpisStatus={predpisStatus} />
 
-      {error && error !== "load" && (
-        <p className="text-red-600 dark:text-red-400 text-sm mb-4">
-          {t("submitError")} ({error})
-        </p>
-      )}
+      <section id="mesacne-platby" aria-labelledby="predpis-title" className="scroll-mt-6">
+        <h2 id="predpis-title" className="text-xl font-semibold text-ui-text">
+          {t("title")}
+        </h2>
+        <p className="mb-4 mt-1 text-base text-ui-text-muted">{t("subtitle")}</p>
 
-      {schedules.length === 0 ? (
-        <p className="text-gray-600 dark:text-gray-400">{t("empty")}</p>
-      ) : (
-        <ul className="space-y-2">
-          {schedules.map((s) => (
-            <li key={s.id}>
-              <Link
-                href={`/accounting/predpis/${s.id}`}
-                className="flex items-center justify-between gap-4 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg px-4 py-3 hover:border-blue-400 dark:hover:border-blue-600"
-              >
-                <div>
-                  <span className="font-medium text-gray-900 dark:text-gray-100">
-                    {s.year}
-                  </span>
-                  <span className="text-sm text-gray-500 dark:text-gray-400 ml-3">
-                    {t("effectiveFromShort")}{" "}
-                    {format.dateTime(new Date(s.effectiveFrom), {
-                      dateStyle: "medium",
-                    })}
-                  </span>
-                  <span className="text-sm text-gray-500 dark:text-gray-400 ml-3">
-                    {t("serviceCount", { count: s.serviceCount })}
-                  </span>
-                </div>
-                <span
-                  className={`text-xs px-2 py-1 rounded-full ${
-                    s.status === "published"
-                      ? "bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200"
-                      : "bg-amber-100 dark:bg-amber-900 text-amber-800 dark:text-amber-200"
-                  }`}
-                >
-                  {t(`status.${s.status}`)}
-                </span>
-              </Link>
-            </li>
-          ))}
-        </ul>
-      )}
+        {canWrite && (
+          <div className="mb-6 flex flex-wrap items-end gap-3">
+            <Field label={t("yearLabel")} className="w-32">
+              <Input
+                type="number"
+                value={year}
+                onChange={(e) => setYear(Number(e.target.value))}
+                min={2000}
+                max={2100}
+              />
+            </Field>
+            <Button
+              variant="secondary"
+              onClick={createDraft}
+              loading={creating}
+              disabled={!Number.isInteger(year)}
+            >
+              {creating ? t("creating") : t("newSchedule")}
+            </Button>
+          </div>
+        )}
+
+        {error && error !== "load" && (
+          <p role="alert" className="mb-4 text-base font-medium text-ui-danger">
+            {t("submitError")} ({error})
+          </p>
+        )}
+
+        {error === "load" ? (
+          <p className="text-base text-ui-danger">{t("loadError")}</p>
+        ) : !schedules ? (
+          <LoadingBlock />
+        ) : schedules.length === 0 ? (
+          <Card>
+            <EmptyState icon="calendar" title={t("empty")} />
+          </Card>
+        ) : (
+          <ul className="space-y-2">
+            {schedules.map((s) => (
+              <li key={s.id}>
+                <Card padding="none">
+                  <Link
+                    href={`/accounting/predpis/${s.id}`}
+                    className="flex min-h-11 flex-col gap-2 rounded-xl px-4 py-3 hover:bg-ui-surface-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ui-focus sm:flex-row sm:items-center sm:justify-between"
+                  >
+                    <span className="text-base">
+                      <span className="font-semibold text-ui-text">{s.year}</span>
+                      <span className="ml-3 text-ui-text-muted">
+                        {t("effectiveFromShort")}{" "}
+                        {format.dateTime(new Date(s.effectiveFrom), { dateStyle: "medium" })}
+                      </span>
+                      <span className="ml-3 text-ui-text-muted">
+                        {t("serviceCount", { count: s.serviceCount })}
+                      </span>
+                    </span>
+                    <Badge tone={s.status === "published" ? "success" : "warning"}>
+                      {t(`status.${s.status}`)}
+                    </Badge>
+                  </Link>
+                </Card>
+              </li>
+            ))}
+          </ul>
+        )}
+      </section>
     </div>
   );
 }

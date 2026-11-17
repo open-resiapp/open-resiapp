@@ -1,8 +1,12 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useTranslations } from "next-intl";
+
+import { Button, Field, Modal, Select } from "@/components/ui";
+import type { UnitOption } from "@/lib/owners-board";
 import type { UserRole } from "@/types";
+import { approveRegistration } from "./owner-requests";
 
 interface PendingUser {
   id: string;
@@ -10,26 +14,21 @@ interface PendingUser {
   email: string;
 }
 
-interface FlatOption {
-  id: string;
-  flatNumber: string;
-  entranceName: string | null;
-}
+const ROLE_OPTIONS: UserRole[] = ["owner", "tenant", "admin", "vote_counter", "caretaker"];
 
-const ROLE_OPTIONS: UserRole[] = [
-  "owner",
-  "tenant",
-  "admin",
-  "vote_counter",
-  "caretaker",
-];
-
+/**
+ * Approve a self-registration as a new account. Request unchanged:
+ * POST /api/registrations/[id]/approve {flatId|null, role}. The unit list
+ * comes from the server-rendered page (no /api/flats fetch).
+ */
 export default function PendingApprovalModal({
   user,
+  units,
   onClose,
   onApproved,
 }: {
   user: PendingUser;
+  units: UnitOption[];
   onClose: () => void;
   onApproved: () => void;
 }) {
@@ -37,18 +36,10 @@ export default function PendingApprovalModal({
   const tOwners = useTranslations("Owners");
   const tCommon = useTranslations("Common");
 
-  const [flats, setFlats] = useState<FlatOption[]>([]);
   const [flatId, setFlatId] = useState("");
   const [role, setRole] = useState<UserRole>("owner");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    fetch("/api/flats")
-      .then((res) => (res.ok ? res.json() : []))
-      .then((rows: FlatOption[]) => setFlats(rows))
-      .catch(() => setFlats([]));
-  }, []);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -56,14 +47,9 @@ export default function PendingApprovalModal({
     // without assigning a flat.
     setSubmitting(true);
     setError(null);
-    const res = await fetch(`/api/registrations/${user.id}/approve`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ flatId: flatId || null, role }),
-    });
-    if (!res.ok) {
-      const body = await res.json().catch(() => ({}));
-      setError(body.error || tCommon("saveFailed"));
+    const err = await approveRegistration(user.id, flatId || null, role);
+    if (err !== null) {
+      setError(err || tCommon("saveFailed"));
       setSubmitting(false);
       return;
     }
@@ -78,77 +64,57 @@ export default function PendingApprovalModal({
     caretaker: tOwners("roleCaretaker"),
   };
 
+  const formId = `approve-${user.id}`;
+
   return (
-    <div className="fixed inset-0 z-50 bg-black/40 flex items-center justify-center p-4">
-      <div className="bg-white rounded-xl shadow-xl max-w-md w-full p-6 dark:bg-gray-800 dark:shadow-black/40">
-        <h2 className="text-xl font-semibold text-gray-900 mb-1 dark:text-gray-100">
-          {t("approveTitle")}
-        </h2>
-        <p className="text-base text-gray-600 mb-4 dark:text-gray-300">
+    <Modal
+      open
+      onClose={onClose}
+      title={t("approveTitle")}
+      footer={
+        <>
+          <Button variant="secondary" onClick={onClose} disabled={submitting}>
+            {tCommon("cancel")}
+          </Button>
+          <Button type="submit" form={formId} loading={submitting}>
+            {t("approve")}
+          </Button>
+        </>
+      }
+    >
+      <form id={formId} onSubmit={handleSubmit} className="space-y-4">
+        <p className="break-words text-ui-text-muted">
           {user.name} · {user.email}
         </p>
 
         {error && (
-          <div className="bg-red-50 text-red-700 px-3 py-2 rounded-lg text-sm mb-4 dark:bg-red-900/30 dark:text-red-200">
+          <p role="alert" className="rounded-lg border border-ui-danger/30 bg-ui-danger/10 px-4 py-3 text-ui-danger">
             {error}
-          </div>
+          </p>
         )}
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label className="block text-base font-medium text-gray-700 mb-1 dark:text-gray-200">
-              {t("flatLabel")}
-            </label>
-            <select
-              value={flatId}
-              onChange={(e) => setFlatId(e.target.value)}
-              className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none dark:bg-gray-900 dark:border-gray-700 dark:text-gray-100"
-            >
-              <option value="">{t("noFlatOption")}</option>
-              {flats.map((f) => (
-                <option key={f.id} value={f.id}>
-                  {f.entranceName ? `${f.entranceName} — ` : ""}
-                  {f.flatNumber}
-                </option>
-              ))}
-            </select>
-          </div>
+        <Field label={t("flatLabel")}>
+          <Select value={flatId} onChange={(e) => setFlatId(e.target.value)}>
+            <option value="">{t("noFlatOption")}</option>
+            {units.map((f) => (
+              <option key={f.id} value={f.id}>
+                {f.entranceName ? `${f.entranceName} — ` : ""}
+                {f.flatNumber}
+              </option>
+            ))}
+          </Select>
+        </Field>
 
-          <div>
-            <label className="block text-base font-medium text-gray-700 mb-1 dark:text-gray-200">
-              {t("roleLabel")}
-            </label>
-            <select
-              value={role}
-              onChange={(e) => setRole(e.target.value as UserRole)}
-              className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none dark:bg-gray-900 dark:border-gray-700 dark:text-gray-100"
-            >
-              {ROLE_OPTIONS.map((r) => (
-                <option key={r} value={r}>
-                  {roleLabels[r]}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <div className="flex justify-end gap-3 pt-2">
-            <button
-              type="button"
-              onClick={onClose}
-              className="px-4 py-3 text-base text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-gray-100"
-            >
-              {tCommon("cancel")}
-            </button>
-            <button
-              type="submit"
-              disabled={submitting}
-              className="px-5 py-3 bg-green-600 hover:bg-green-700 disabled:bg-green-400 text-white text-base font-medium rounded-lg transition-colors"
-            >
-              {submitting ? tCommon("saving") : t("approve")}
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
+        <Field label={t("roleLabel")}>
+          <Select value={role} onChange={(e) => setRole(e.target.value as UserRole)}>
+            {ROLE_OPTIONS.map((r) => (
+              <option key={r} value={r}>
+                {roleLabels[r]}
+              </option>
+            ))}
+          </Select>
+        </Field>
+      </form>
+    </Modal>
   );
 }

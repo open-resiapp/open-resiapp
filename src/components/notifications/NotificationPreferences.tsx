@@ -1,122 +1,147 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useTranslations } from "next-intl";
+import { Badge, Button, ConfirmDialog, Icon, cn } from "@/components/ui";
 
-interface Preferences {
+export interface NotificationPrefs {
   newPost: boolean;
   votingStarted: boolean;
   eDeliveryConsent: boolean;
 }
 
-export default function NotificationPreferences() {
+/**
+ * Stored model (notification_preferences): newPost, votingStarted (both
+ * default true) and the e-delivery consent (opt-in, default false).
+ *
+ * UI: vote + notice notifications are presented as ON (default) with the
+ * ability to switch them off tucked behind "Ďalšie možnosti". The settlement
+ * e-delivery stays a prominent, explicit opt-in.
+ */
+export default function NotificationPreferences({ initial }: { initial: NotificationPrefs }) {
   const t = useTranslations("Notifications");
-  const [prefs, setPrefs] = useState<Preferences>({
-    newPost: true,
-    votingStarted: true,
-    eDeliveryConsent: false,
-  });
-  const [loading, setLoading] = useState(true);
+  const tp = useTranslations("ProfileHub");
+  const [prefs, setPrefs] = useState<NotificationPrefs>(initial);
+  const [confirmEDelivery, setConfirmEDelivery] = useState(false);
+  const [failed, setFailed] = useState(false);
 
-  useEffect(() => {
-    fetch("/api/notifications/preferences")
-      .then((res) => res.json())
-      .then((data) => {
-        setPrefs({
-          newPost: data.newPost ?? true,
-          votingStarted: data.votingStarted ?? true,
-          eDeliveryConsent: data.eDeliveryConsent ?? false,
-        });
-      })
-      .finally(() => setLoading(false));
-  }, []);
-
-  async function togglePref(key: keyof Preferences) {
+  async function savePref(key: keyof NotificationPrefs, value: boolean) {
     const previous = prefs[key];
-    setPrefs({ ...prefs, [key]: !previous });
-
+    setFailed(false);
+    setPrefs((p) => ({ ...p, [key]: value }));
     try {
       // Send ONLY the changed field — the consent record must not be
       // re-stamped when an unrelated notification toggle flips (AC 426).
       const res = await fetch("/api/notifications/preferences", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ [key]: !previous }),
+        body: JSON.stringify({ [key]: value }),
       });
-
-      if (!res.ok) {
-        setPrefs((p) => ({ ...p, [key]: previous }));
-      }
+      if (!res.ok) throw new Error();
     } catch {
       setPrefs((p) => ({ ...p, [key]: previous }));
+      setFailed(true);
     }
   }
 
-  if (loading) return null;
-
   return (
-    <div className="space-y-4">
-      <ToggleRow
-        label={t("prefNewPost")}
-        description={t("prefNewPostDesc")}
-        checked={prefs.newPost}
-        onChange={() => togglePref("newPost")}
-      />
-      <ToggleRow
-        label={t("prefVotingStarted")}
-        description={t("prefVotingStartedDesc")}
-        checked={prefs.votingStarted}
-        onChange={() => togglePref("votingStarted")}
-      />
+    <div className="space-y-5">
       {/* AC 426 — electronic delivery of the annual vyúčtovanie. Opt-in;
           non-consenting owners receive it by post (listinné doručenie). */}
-      <div>
-        <ToggleRow
-          label={t("prefEDelivery")}
-          description={t("prefEDeliveryDesc")}
-          checked={prefs.eDeliveryConsent}
-          onChange={() => togglePref("eDeliveryConsent")}
-        />
-        <p className="mt-1 text-xs text-amber-700 dark:text-amber-400">
-          {t("prefEDeliveryLegal")}
-        </p>
+      <SwitchRow
+        label={tp("eDeliveryLabel")}
+        description={tp("eDeliveryDesc")}
+        checked={prefs.eDeliveryConsent}
+        onText={tp("on")}
+        offText={tp("off")}
+        onChange={() => (prefs.eDeliveryConsent ? setConfirmEDelivery(true) : savePref("eDeliveryConsent", true))}
+      />
+
+      <div className="flex flex-wrap items-center gap-2 text-base text-ui-text">
+        <Icon name="bell" size={20} className="text-ui-text-muted" />
+        <span>{tp("defaultOnNote")}</span>
+        <Badge tone="success">{tp("on")}</Badge>
       </div>
+
+      <details className="group rounded-lg border border-ui-border">
+        <summary className="flex min-h-11 cursor-pointer list-none items-center justify-between gap-2 px-4 py-2 text-base font-medium text-ui-text [&::-webkit-details-marker]:hidden">
+          {tp("moreOptions")}
+          <Icon name="chevronDown" size={20} className="transition-transform group-open:rotate-180" />
+        </summary>
+        <div className="space-y-4 border-t border-ui-border p-4">
+          <SwitchRow
+            label={t("prefNewPost")}
+            description={t("prefNewPostDesc")}
+            checked={prefs.newPost}
+            onText={tp("on")}
+            offText={tp("off")}
+            onChange={() => savePref("newPost", !prefs.newPost)}
+          />
+          <SwitchRow
+            label={t("prefVotingStarted")}
+            description={t("prefVotingStartedDesc")}
+            checked={prefs.votingStarted}
+            onText={tp("on")}
+            offText={tp("off")}
+            onChange={() => savePref("votingStarted", !prefs.votingStarted)}
+          />
+        </div>
+      </details>
+
+      {failed ? (
+        <p role="alert" className="text-base font-medium text-ui-danger">
+          {tp("saveFailed")}
+        </p>
+      ) : null}
+
+      <ConfirmDialog
+        open={confirmEDelivery}
+        tone="danger"
+        title={tp("eDeliveryWithdrawTitle")}
+        description={tp("eDeliveryWithdrawBody")}
+        confirmLabel={tp("eDeliveryWithdrawConfirm")}
+        onConfirm={() => {
+          setConfirmEDelivery(false);
+          savePref("eDeliveryConsent", false);
+        }}
+        onCancel={() => setConfirmEDelivery(false)}
+      />
     </div>
   );
 }
 
-function ToggleRow({
+function SwitchRow({
   label,
   description,
   checked,
+  onText,
+  offText,
   onChange,
 }: {
   label: string;
   description: string;
   checked: boolean;
+  onText: string;
+  offText: string;
   onChange: () => void;
 }) {
   return (
-    <div className="flex items-center justify-between">
-      <div>
-        <p className="text-base font-medium text-gray-900 dark:text-gray-100">{label}</p>
-        <p className="text-sm text-gray-500 dark:text-gray-400">{description}</p>
+    <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+      <div className="min-w-0">
+        <p className="text-base font-medium text-ui-text">{label}</p>
+        <p className="text-base text-ui-text-muted">{description}</p>
       </div>
-      <button
-        type="button"
+      <Button
         role="switch"
         aria-checked={checked}
+        aria-label={`${label}: ${checked ? onText : offText}`}
+        variant={checked ? "primary" : "secondary"}
         onClick={onChange}
-        className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors ${
-          checked ? "bg-blue-600" : "bg-gray-200 dark:bg-gray-600"
-        }`}
+        className={cn("min-w-28 shrink-0 self-start sm:self-center")}
       >
-        <span
-          className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition-transform ${
-            checked ? "translate-x-5" : "translate-x-0"
-          }`}
-        />
-      </button>
+        <Icon name={checked ? "check" : "x"} size={20} />
+        {checked ? onText : offText}
+      </Button>
     </div>
   );
 }

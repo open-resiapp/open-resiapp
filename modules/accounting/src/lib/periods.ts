@@ -1,6 +1,6 @@
 import "server-only";
 
-import { and, eq } from "drizzle-orm";
+import { and, asc, eq } from "drizzle-orm";
 import { accountingPeriods } from "../db/schema";
 import type { Tx } from "../engine/booking";
 
@@ -27,6 +27,9 @@ export async function lockOpenPeriods(
         eq(accountingPeriods.status, "open")
       )
     )
+    // Deterministic lock order: two transactions locking the same rows in
+    // a different order could deadlock.
+    .orderBy(asc(accountingPeriods.id))
     .for("update");
 }
 

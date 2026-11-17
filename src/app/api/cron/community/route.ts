@@ -103,7 +103,7 @@ async function runCron() {
       recipientEmail: post.authorEmail,
       recipientName: post.authorName,
       postTitle: post.title,
-      postUrl: `${appUrl()}/komunita`,
+      postUrl: `${appUrl()}/board?prispevok=c-${post.id}`,
       expiresAt: post.expiresAt,
     });
     if (ok) expiryRemindersSent++;
@@ -175,7 +175,7 @@ async function runCron() {
         eventTitle: post.title,
         eventDate: post.eventDate,
         eventLocation: post.eventLocation,
-        postUrl: `${appUrl()}/komunita`,
+        postUrl: `${appUrl()}/board?prispevok=c-${post.id}`,
       });
       if (ok) eventRemindersSent++;
     }

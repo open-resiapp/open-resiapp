@@ -1,43 +1,23 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useSession } from "next-auth/react";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 
-import { hasPermission } from "@/lib/permissions";
-import type { UserRole } from "@/types";
-
-interface InvalidUnit {
-  unitEntityId: string;
-  flatNumber: string;
-  sumNumerator: string;
-  sumDenominator: string;
-}
+import { useShell } from "@/components/layout/ShellContext";
 
 /**
  * BYT-20260511-001 admin banner. Warns the admin when at least one
  * housing_unit's active memberships' owner_unit_share_* do not sum to 1/1.
  *
  * Renders nothing when there are no violations or the viewer is not an admin.
+ * The violation list is resolved by the server layout (ShellData — empty
+ * for non-admins), so the banner paints with the page, no client fetch.
  */
 export default function ShareSumInvariantBanner() {
-  const { data: session, status } = useSession();
   const t = useTranslations("ShareSumInvariant");
-  const [invalid, setInvalid] = useState<InvalidUnit[] | null>(null);
+  const { shareSumViolations: invalid } = useShell();
 
-  const role = (session?.user?.role || "owner") as UserRole;
-  const isAdmin = hasPermission(role, "manageUsers");
-
-  useEffect(() => {
-    if (status !== "authenticated" || !isAdmin) return;
-    fetch("/api/admin/share-sum-invariants")
-      .then((r) => (r.ok ? r.json() : { invalid: [] }))
-      .then((data: { invalid: InvalidUnit[] }) => setInvalid(data.invalid))
-      .catch(() => setInvalid([]));
-  }, [status, isAdmin]);
-
-  if (!isAdmin || !invalid || invalid.length === 0) {
+  if (invalid.length === 0) {
     return null;
   }
 

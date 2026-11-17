@@ -9,6 +9,7 @@ import { hasPermission } from "@/lib/permissions";
 import { getCommunityRoot } from "@/lib/legacy-compat";
 import { validatePerRollamDuration } from "@modules/voting/src/rules";
 import { normalizeItems } from "@modules/voting/src/items";
+import { findDisallowedQuorum } from "@modules/voting/src/quorum-guard.server";
 import type { UserRole, Country } from "@/types";
 
 export async function GET() {
@@ -123,6 +124,8 @@ export async function POST(request: NextRequest) {
   if ("error" in normalized) {
     return NextResponse.json({ error: normalized.error }, { status: 400 });
   }
+  const quorumError = findDisallowedQuorum(normalized.items, country, resolvedVotingType);
+  if (quorumError) return NextResponse.json(quorumError, { status: 400 });
 
   const voting = await db.transaction(async (tx) => {
     const [created] = await tx

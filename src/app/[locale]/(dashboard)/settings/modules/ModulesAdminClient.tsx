@@ -1,16 +1,18 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 
 import type { InstalledModuleView } from "@/lib/modules/install";
-import { PERMISSIONS, type Permission } from "@/lib/modules/sdk";
+import type { Permission } from "@/lib/modules/sdk";
 import {
   approveStagedAction,
   toggleModuleAction,
   uninstallAction,
   uploadModuleAction,
 } from "./actions";
-import SettingsTabs from "@/components/settings/SettingsTabs";
+import { Badge, Button, Card, ConfirmDialog, Field, Input, PageHeader, type BadgeTone } from "@/components/ui";
 
 interface StagedView {
   stagingId: string;
@@ -27,12 +29,26 @@ interface Props {
   canManageUsers?: boolean;
 }
 
-export default function ModulesAdminClient({ installed, canManageUsers }: Props) {
+const slug = (s: string) => s.replace(/[^a-zA-Z0-9]+/g, "_");
+
+export default function ModulesAdminClient({ installed }: Props) {
   const [staged, setStaged] = useState<StagedView | null>(null);
   const [approved, setApproved] = useState<Set<Permission>>(new Set());
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
+  const [toUninstall, setToUninstall] = useState<string | null>(null);
+  // Enabled modules feed the shell nav (ShellData) — refresh the server
+  // layout after install / uninstall / toggle so the sidebar follows.
+  const router = useRouter();
+  const tm = useTranslations("ModulesAdmin");
+
+  const permLabel = (p: Permission) => (tm.has(`perm_${slug(p)}`) ? tm(`perm_${slug(p)}`) : p);
+  const statusTone: Record<InstalledModuleView["status"], BadgeTone> = {
+    enabled: "success",
+    disabled: "neutral",
+    failed: "danger",
+  };
 
   function reset() {
     setStaged(null);
@@ -41,7 +57,8 @@ export default function ModulesAdminClient({ installed, canManageUsers }: Props)
 
   async function handleUpload(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    const fd = new FormData(e.currentTarget);
+    const form = e.currentTarget;
+    const fd = new FormData(form);
     setError(null);
     setSuccess(null);
     const res = await uploadModuleAction(fd);
@@ -59,22 +76,20 @@ export default function ModulesAdminClient({ installed, canManageUsers }: Props)
       warnings: res.staged.warnings,
     });
     setApproved(new Set(res.staged.declaredPermissions));
-    (e.target as HTMLFormElement).reset();
+    form.reset();
   }
 
   async function handleApprove() {
     if (!staged) return;
     setError(null);
-    const res = await approveStagedAction(
-      staged.stagingId,
-      Array.from(approved)
-    );
+    const res = await approveStagedAction(staged.stagingId, Array.from(approved));
     if (!res.ok) {
       setError(res.error);
       return;
     }
-    setSuccess(`installed ${res.name}`);
+    setSuccess(tm("installedOk", { name: res.name }));
     reset();
+    router.refresh();
   }
 
   function toggleApproved(p: Permission) {
@@ -87,11 +102,15 @@ export default function ModulesAdminClient({ installed, canManageUsers }: Props)
   }
 
   function handleUninstall(name: string) {
-    if (!confirm(`Uninstall "${name}"? Module tables will be dropped.`)) return;
+    setToUninstall(null);
     startTransition(async () => {
       const res = await uninstallAction(name);
-      if (!res.ok) setError(res.error);
-      else setSuccess(`uninstalled ${name}`);
+      if (!res.ok) {
+        setError(tm.has(`errors.${res.error}`) ? tm(`errors.${res.error}`) : res.error);
+      } else {
+        setSuccess(tm("uninstalledOk", { name }));
+        router.refresh();
+      }
     });
   }
 
@@ -99,180 +118,161 @@ export default function ModulesAdminClient({ installed, canManageUsers }: Props)
     startTransition(async () => {
       const res = await toggleModuleAction(name, next);
       if (!res.ok) setError(res.error);
+      else router.refresh();
     });
   }
 
+  const moduleDescription = (name: string) =>
+    tm.has(`desc_${slug(name)}`) ? tm(`desc_${slug(name)}`) : tm("desc_default");
+
   return (
-    <div className="space-y-6 max-w-4xl">
-      <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">Modules</h1>
-      <SettingsTabs
-        activeTab={null}
-        onTabChange={() => {}}
-        showModules
-        showRegistrationQr={canManageUsers}
+    <div className="max-w-4xl space-y-6">
+      <PageHeader
+        title={tm("title")}
+        description={tm("intro")}
+        backHref="/settings/advanced"
+        backLabel={tm("backToAdvanced")}
+        className="mb-0"
       />
 
-      {error && (
-        <div className="rounded border border-red-300 bg-red-50 p-3 text-sm text-red-700 dark:border-red-800 dark:bg-red-900/30 dark:text-red-200">
+      {error ? (
+        <p role="alert" className="rounded-lg border border-ui-danger/40 bg-ui-danger/10 p-3 text-base font-medium text-ui-danger">
           {error}
-        </div>
-      )}
-      {success && (
-        <div className="rounded border border-green-300 bg-green-50 p-3 text-sm text-green-700 dark:border-green-800 dark:bg-green-900/30 dark:text-green-200">
+        </p>
+      ) : null}
+      {success ? (
+        <p role="status" className="rounded-lg border border-ui-success/40 bg-ui-success/10 p-3 text-base font-medium text-ui-success">
           {success}
-        </div>
-      )}
+        </p>
+      ) : null}
 
-      <section className="rounded-2xl shadow-sm bg-white p-5 dark:border-gray-700 dark:bg-gray-800">
-        <h2 className="mb-3 text-lg font-semibold dark:text-gray-100">Install module</h2>
+      <Card as="section" padding="lg" aria-labelledby="install-heading" className="space-y-4">
+        <h2 id="install-heading" className="text-xl font-semibold text-ui-text">
+          {tm("installTitle")}
+        </h2>
         {!staged ? (
-          <form onSubmit={handleUpload} className="flex items-center gap-3">
-            <input
-              type="file"
-              name="file"
-              accept=".zip"
-              required
-              className="block text-sm dark:text-gray-200"
-            />
-            <button
-              type="submit"
-              className="rounded bg-blue-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-blue-700"
-            >
-              Upload zip
-            </button>
+          <form onSubmit={handleUpload} className="space-y-3">
+            <Field label={tm("zipLabel")} hint={tm("zipHint")}>
+              <Input type="file" name="file" accept=".zip" required />
+            </Field>
+            <Button type="submit">{tm("uploadZip")}</Button>
           </form>
         ) : (
-          <div className="space-y-3">
-            <p className="text-sm dark:text-gray-200">
+          <div className="space-y-4">
+            <p className="text-base text-ui-text">
               <strong>{staged.name}</strong> v{staged.version}
-              {staged.isUpgrade && (
-                <span className="ml-2 text-xs text-amber-700 dark:text-amber-300">
-                  upgrade from {staged.previousVersion}
-                </span>
-              )}
+              {staged.isUpgrade ? (
+                <Badge tone="warning" className="ml-2">
+                  {tm("upgradeFrom", { version: staged.previousVersion ?? "" })}
+                </Badge>
+              ) : null}
             </p>
-            {staged.warnings.length > 0 && (
-              <ul className="text-xs text-amber-700 dark:text-amber-300">
+            {staged.warnings.length > 0 ? (
+              <ul className="space-y-1 text-base text-ui-warning">
                 {staged.warnings.map((w) => (
-                  <li key={w}>⚠ {w}</li>
+                  <li key={w}>{w}</li>
                 ))}
               </ul>
-            )}
-            <fieldset className="space-y-1.5">
-              <legend className="text-sm font-medium dark:text-gray-200">
-                Permissions requested
-              </legend>
+            ) : null}
+            <fieldset className="space-y-2">
+              <legend className="text-base font-medium text-ui-text">{tm("permissionsRequested")}</legend>
               {staged.declaredPermissions.map((p) => (
-                <label key={p} className="flex items-center gap-2 text-sm dark:text-gray-200">
+                <label key={p} className="flex min-h-11 items-center gap-3 text-base text-ui-text">
                   <input
                     type="checkbox"
+                    className="h-5 w-5 accent-ui-primary"
                     checked={approved.has(p)}
                     onChange={() => toggleApproved(p)}
                   />
-                  <code className="rounded bg-gray-100 px-1 dark:bg-gray-700 dark:text-gray-200">{p}</code>
+                  {permLabel(p)}
                 </label>
               ))}
             </fieldset>
-            <div className="flex gap-2">
-              <button
-                onClick={handleApprove}
-                disabled={pending}
-                className="rounded bg-green-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-green-700 disabled:opacity-50"
-              >
-                Approve & install
-              </button>
-              <button
-                onClick={reset}
-                className="rounded border px-3 py-1.5 text-sm font-medium hover:bg-gray-50 dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-700"
-              >
-                Cancel
-              </button>
+            <div className="flex flex-wrap gap-3">
+              <Button onClick={handleApprove} loading={pending}>
+                {tm("approveInstall")}
+              </Button>
+              <Button variant="secondary" onClick={reset}>
+                {tm("cancel")}
+              </Button>
             </div>
           </div>
         )}
-      </section>
+      </Card>
 
-      <section className="rounded-2xl shadow-sm bg-white dark:border-gray-700 dark:bg-gray-800">
-        <h2 className="border-b px-5 py-3 text-lg font-semibold dark:border-gray-700 dark:text-gray-100">Installed</h2>
+      <section aria-labelledby="installed-heading" className="space-y-3">
+        <h2 id="installed-heading" className="text-xl font-semibold text-ui-text">
+          {tm("installedTitle")}
+        </h2>
         {installed.length === 0 ? (
-          <p className="px-5 py-4 text-sm text-gray-500 dark:text-gray-400">
-            no modules installed
-          </p>
+          <p className="text-base text-ui-text-muted">{tm("noModules")}</p>
         ) : (
-          <ul>
+          <ul className="space-y-3">
             {installed.map((m) => (
-              <li key={m.name} className="border-b px-5 py-3 last:border-b-0 dark:border-gray-700">
-                <div className="flex items-start justify-between gap-3">
-                  <div>
-                    <p className="text-sm font-medium dark:text-gray-100">
-                      {m.name}{" "}
-                      <span className="text-xs text-gray-500 dark:text-gray-400">v{m.version}</span>
+              <Card as="li" key={m.name} padding="lg">
+                <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+                  <div className="min-w-0 space-y-1">
+                    <p className="flex flex-wrap items-center gap-2 text-lg font-semibold text-ui-text">
+                      {m.name}
+                      <span className="text-base font-normal text-ui-text-muted">v{m.version}</span>
+                      <Badge tone={statusTone[m.status]}>{tm(`status_${m.status}`)}</Badge>
                     </p>
-                    <p className="mt-0.5 text-xs">
-                      <StatusPill status={m.status} />{" "}
-                      {m.failureCount > 0 && (
-                        <span className="text-amber-700 dark:text-amber-300">
-                          {m.failureCount} failure(s)
-                        </span>
-                      )}
+                    <p className="text-base text-ui-text">{moduleDescription(m.name)}</p>
+                    {m.failureCount > 0 ? (
+                      <p className="text-base text-ui-warning">{tm("failures", { count: m.failureCount })}</p>
+                    ) : null}
+                    <p className="text-base text-ui-text-muted">
+                      {tm("grants")}:{" "}
+                      {m.grantedPermissions.length === 0 ? "—" : m.grantedPermissions.map(permLabel).join(", ")}
                     </p>
-                    <p className="mt-1 text-xs text-gray-600 dark:text-gray-300">
-                      grants:{" "}
-                      {m.grantedPermissions.length === 0
-                        ? "—"
-                        : m.grantedPermissions.join(", ")}
-                    </p>
-                    {m.lastFailureMessage && (
-                      <p className="mt-1 text-xs text-red-600 dark:text-red-400">
-                        last error: {m.lastFailureMessage}
+                    {m.lastFailureMessage ? (
+                      <p className="text-base text-ui-danger">
+                        {tm("lastError")}: {m.lastFailureMessage}
                       </p>
-                    )}
+                    ) : null}
                   </div>
-                  <div className="flex shrink-0 gap-2">
-                    {m.status === "enabled" ? (
-                      <button
-                        onClick={() => handleToggle(m.name, "disabled")}
-                        disabled={pending}
-                        className="rounded border px-2 py-1 text-xs hover:bg-gray-50 dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-700"
+                  <div className="flex shrink-0 flex-col gap-2 sm:items-end">
+                    <div className="flex flex-wrap gap-2">
+                      {m.status === "enabled" ? (
+                        <Button variant="secondary" onClick={() => handleToggle(m.name, "disabled")} disabled={pending}>
+                          {tm("disable")}
+                        </Button>
+                      ) : (
+                        <Button variant="secondary" onClick={() => handleToggle(m.name, "enabled")} disabled={pending}>
+                          {tm("enable")}
+                        </Button>
+                      )}
+                      <Button
+                        variant="danger"
+                        onClick={() => setToUninstall(m.name)}
+                        disabled={pending || m.hasData}
+                        title={m.hasData ? tm("uninstallBlockedHasData") : undefined}
                       >
-                        Disable
-                      </button>
-                    ) : (
-                      <button
-                        onClick={() => handleToggle(m.name, "enabled")}
-                        disabled={pending}
-                        className="rounded border px-2 py-1 text-xs hover:bg-gray-50 dark:border-gray-600 dark:text-gray-200 dark:hover:bg-gray-700"
-                      >
-                        Enable
-                      </button>
-                    )}
-                    <button
-                      onClick={() => handleUninstall(m.name)}
-                      disabled={pending}
-                      className="rounded border border-red-300 px-2 py-1 text-xs text-red-700 hover:bg-red-50 dark:border-red-800 dark:text-red-300 dark:hover:bg-red-900/30"
-                    >
-                      Uninstall
-                    </button>
+                        {tm("uninstall")}
+                      </Button>
+                    </div>
+                    {m.hasData ? (
+                      <p className="max-w-xs text-base text-ui-text-muted sm:text-right">
+                        {tm("uninstallBlockedHasData")}
+                      </p>
+                    ) : null}
                   </div>
                 </div>
-              </li>
+              </Card>
             ))}
           </ul>
         )}
       </section>
-    </div>
-  );
-}
 
-function StatusPill({ status }: { status: "enabled" | "disabled" | "failed" }) {
-  const map = {
-    enabled: "bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-200",
-    disabled: "bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-300",
-    failed: "bg-red-100 text-red-800 dark:bg-red-900/40 dark:text-red-200",
-  } as const;
-  return (
-    <span className={`rounded px-1.5 py-0.5 text-xs ${map[status]}`}>
-      {status}
-    </span>
+      <ConfirmDialog
+        open={toUninstall !== null}
+        tone="danger"
+        title={tm("uninstall")}
+        description={tm("uninstallConfirm", { name: toUninstall ?? "" })}
+        confirmLabel={tm("uninstall")}
+        onConfirm={() => toUninstall && handleUninstall(toUninstall)}
+        onCancel={() => setToUninstall(null)}
+      />
+    </div>
   );
 }

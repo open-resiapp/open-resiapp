@@ -3,6 +3,7 @@
 import { useCallback, useState } from "react";
 import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
+import { useConfirm } from "@/components/ui";
 import {
   DOCUMENT_AUDIENCES,
   DOCUMENT_PROJECT_STATUSES,
@@ -247,6 +248,7 @@ function ProjectRow({
 }) {
   const t = useTranslations("Documents");
   const tCommon = useTranslations("Common");
+  const confirm = useConfirm();
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [docs, setDocs] = useState<DocumentItem[] | null>(null);
@@ -355,13 +357,25 @@ function ProjectRow({
   }
 
   async function deleteDoc(docId: string) {
-    if (!confirm(t("confirmDelete"))) return;
+    const ok = await confirm({
+      title: t("delete"),
+      description: t("confirmDelete"),
+      confirmLabel: t("delete"),
+      tone: "danger",
+    });
+    if (!ok) return;
     const res = await fetch(`/api/documents/${docId}`, { method: "DELETE" });
     if (res.ok) await load();
   }
 
   async function del() {
-    if (!confirm(t("projects.confirmDelete"))) return;
+    const ok = await confirm({
+      title: t("projects.delete"),
+      description: t("projects.confirmDelete"),
+      confirmLabel: t("projects.delete"),
+      tone: "danger",
+    });
+    if (!ok) return;
     const res = await fetch(`/api/documents/projects/${project.id}`, {
       method: "DELETE",
     });

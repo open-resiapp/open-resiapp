@@ -1,124 +1,149 @@
 "use client";
 
-import { useTranslations, useFormatter } from "next-intl";
+import { useFormatter, useTranslations } from "next-intl";
+import type { ReactNode } from "react";
+
+import { Badge, Card, Icon, cn } from "@/components/ui";
+import type { FeedAttachment } from "@/lib/feed";
 import type { PostCategory } from "@/types";
-import PostAttachments from "@/components/documents/PostAttachments";
 
-const categoryKeys: Record<PostCategory, string> = {
-  info: "categoryInfo",
-  urgent: "categoryUrgent",
-  event: "categoryEvent",
-  maintenance: "categoryMaintenance",
-};
+// The ONE post card for the whole app (CLAUDE.md "reuse shared card
+// components"): board notices, events, help and sale/gift posts all render
+// through it. Type-specific parts are injected:
+//   - `category` (notices) → official badge + urgency/maintenance badge
+//   - `badges`   → extra type badges (event, help offer/request, sale …)
+//   - `meta`     → block under the title (event date/place, price)
+//   - `actions`  → owner/moderator overflow menu (ActionMenu)
+//   - `children` → footer (RSVP buttons, responses)
 
-const categoryStyles: Record<PostCategory, { bg: string; text: string }> = {
-  info: { bg: "bg-blue-100", text: "text-blue-700" },
-  urgent: { bg: "bg-red-100", text: "text-red-700" },
-  event: { bg: "bg-green-100", text: "text-green-700" },
-  maintenance: { bg: "bg-yellow-100", text: "text-yellow-700" },
-};
-
-interface PostCardProps {
-  postId?: string;
+export interface PostCardProps {
+  /** DOM id (deep-link anchor). */
+  anchorId?: string;
   title: string;
   content: string;
-  category: PostCategory;
   authorName: string;
   createdAt: string;
-  isPinned: boolean;
+  /** Board notice category — marks the card as an official notice. */
+  category?: PostCategory;
+  isPinned?: boolean;
   entranceName?: string | null;
-  isAdmin?: boolean;
-  onEdit?: () => void;
-  onDelete?: () => void;
-  onTogglePin?: () => void;
+  badges?: ReactNode;
+  meta?: ReactNode;
+  photoUrl?: string | null;
+  attachments?: FeedAttachment[];
+  /** Resolved / expired / past: dimmed. */
+  muted?: boolean;
+  highlighted?: boolean;
+  actions?: ReactNode;
+  children?: ReactNode;
 }
 
 export default function PostCard({
-  postId,
+  anchorId,
   title,
   content,
-  category,
   authorName,
   createdAt,
-  isPinned,
+  category,
+  isPinned = false,
   entranceName,
-  isAdmin,
-  onEdit,
-  onDelete,
-  onTogglePin,
+  badges,
+  meta,
+  photoUrl,
+  attachments,
+  muted = false,
+  highlighted = false,
+  actions,
+  children,
 }: PostCardProps) {
-  const t = useTranslations("PostCard");
+  const t = useTranslations("Feed");
   const format = useFormatter();
-  const style = categoryStyles[category] || categoryStyles.info;
+  const isNotice = category !== undefined;
+  const urgent = category === "urgent";
 
   return (
-    <div
-      className={`bg-white rounded-xl border p-6 dark:bg-gray-800 ${
-        isPinned
-          ? "border-blue-300 ring-1 ring-blue-100 dark:border-blue-700 dark:ring-blue-900/40"
-          : "border-gray-200 dark:border-gray-700"
-      }`}
+    <Card
+      as="article"
+      padding="lg"
+      id={anchorId}
+      aria-labelledby={anchorId ? `${anchorId}-title` : undefined}
+      className={cn(
+        "scroll-mt-24",
+        urgent && "border-ui-danger/50",
+        !urgent && isPinned && "border-ui-primary/50",
+        highlighted && "ring-2 ring-ui-focus",
+        muted && "opacity-75",
+      )}
     >
-      <div className="flex items-start justify-between gap-3 mb-3 flex-wrap">
-        <div className="flex items-center gap-2 flex-wrap">
-          {isPinned && (
-            <span className="text-sm font-medium text-blue-600 dark:text-blue-400">
-              {t("pinned")}
-            </span>
-          )}
-          <span
-            className={`px-2.5 py-0.5 rounded-full text-sm font-medium ${style.bg} ${style.text}`}
-          >
-            {t(categoryKeys[category])}
-          </span>
-          {entranceName && (
-            <span className="px-2.5 py-0.5 rounded-full text-sm font-medium bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300">
-              {entranceName}
-            </span>
-          )}
+      <div className="mb-3 flex items-start justify-between gap-3">
+        <div className="flex flex-wrap items-center gap-2">
+          {isNotice ? (
+            <Badge tone="info">
+              <Icon name="megaphone" size={16} />
+              {t("badge.official")}
+            </Badge>
+          ) : null}
+          {urgent ? (
+            <Badge tone="danger">
+              <Icon name="alert" size={16} />
+              {t("badge.urgent")}
+            </Badge>
+          ) : null}
+          {category === "maintenance" ? <Badge tone="warning">{t("badge.maintenance")}</Badge> : null}
+          {category === "event" ? <Badge tone="neutral">{t("badge.event")}</Badge> : null}
+          {isPinned ? <Badge tone="neutral">{t("badge.pinned")}</Badge> : null}
+          {badges}
+          {entranceName ? <Badge tone="neutral">{entranceName}</Badge> : null}
         </div>
-
-        {isAdmin && (
-          <div className="flex items-center gap-2 flex-wrap">
-            <button
-              onClick={onTogglePin}
-              className="px-3 py-1.5 text-sm font-medium text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors dark:text-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600"
-            >
-              {isPinned ? t("unpin") : t("pin")}
-            </button>
-            <button
-              onClick={onEdit}
-              className="px-3 py-1.5 text-sm font-medium text-blue-600 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors dark:text-blue-300 dark:bg-blue-900/40 dark:hover:bg-blue-900/60"
-            >
-              {t("edit")}
-            </button>
-            <button
-              onClick={onDelete}
-              className="px-3 py-1.5 text-sm font-medium text-red-600 bg-red-50 hover:bg-red-100 rounded-lg transition-colors dark:text-red-300 dark:bg-red-900/40 dark:hover:bg-red-900/60"
-            >
-              {t("delete")}
-            </button>
-          </div>
-        )}
+        {actions ? <div className="-mr-2 -mt-2 shrink-0">{actions}</div> : null}
       </div>
 
-      <h3 className="text-lg font-semibold text-gray-900 mb-2 dark:text-gray-100">{title}</h3>
-      <p className="text-base text-gray-700 whitespace-pre-wrap mb-4 dark:text-gray-200">
-        {content}
-      </p>
+      <h3
+        id={anchorId ? `${anchorId}-title` : undefined}
+        className="mb-2 text-lg font-semibold text-ui-text break-words"
+      >
+        {title}
+      </h3>
 
-      {postId && <PostAttachments targetType="board_post" targetId={postId} />}
+      {meta ? <div className="mb-3">{meta}</div> : null}
 
-      <div className="flex items-center justify-between text-sm text-gray-500 dark:text-gray-400">
+      {content ? (
+        <p className="mb-3 whitespace-pre-wrap text-base text-ui-text break-words">{content}</p>
+      ) : null}
+
+      {photoUrl ? (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
+          src={photoUrl}
+          alt={title}
+          className="mb-3 max-h-80 w-auto max-w-full rounded-lg object-cover"
+        />
+      ) : null}
+
+      {attachments && attachments.length > 0 ? (
+        <ul className="mb-3 flex flex-wrap gap-2" aria-label={t("card.attachments")}>
+          {attachments.map((d) => (
+            <li key={d.id}>
+              <a
+                href={`/api/documents/${d.id}`}
+                className="inline-flex min-h-11 items-center gap-2 rounded-lg border border-ui-border bg-ui-surface-muted px-3 text-base text-ui-text hover:border-ui-border-strong"
+              >
+                <Icon name="file" size={20} />
+                <span className="break-all">{d.name}</span>
+              </a>
+            </li>
+          ))}
+        </ul>
+      ) : null}
+
+      <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1 text-base text-ui-text-muted">
         <span>{authorName}</span>
-        <time>
-          {format.dateTime(new Date(createdAt), {
-            day: "numeric",
-            month: "long",
-            year: "numeric",
-          })}
+        <time dateTime={createdAt}>
+          {format.dateTime(new Date(createdAt), { day: "numeric", month: "long", year: "numeric" })}
         </time>
       </div>
-    </div>
+
+      {children ? <div className="mt-4 border-t border-ui-border pt-4">{children}</div> : null}
+    </Card>
   );
 }

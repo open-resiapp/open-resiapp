@@ -6,7 +6,7 @@ import { useTranslations } from "next-intl";
 import QRCode from "qrcode";
 import { hasPermission } from "@/lib/permissions";
 import type { UserRole } from "@/types";
-import SettingsTabs from "@/components/settings/SettingsTabs";
+import { Button, Card, ConfirmDialog, LoadingBlock, PageHeader } from "@/components/ui";
 
 interface ActiveToken {
   id: string;
@@ -19,12 +19,14 @@ export default function RegistrationQrPage() {
   const { data: session } = useSession();
   const t = useTranslations("RegistrationQr");
   const tCommon = useTranslations("Common");
+  const tOwners = useTranslations("Owners.board");
 
   const [active, setActive] = useState<ActiveToken | null>(null);
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState(false);
   const [qrDataUrl, setQrDataUrl] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [pendingConfirm, setPendingConfirm] = useState<"rotate" | "disable" | null>(null);
 
   const role = (session?.user?.role || "owner") as UserRole;
   const canManage = hasPermission(role, "manageUsers");
@@ -55,14 +57,14 @@ export default function RegistrationQrPage() {
 
   if (!canManage) {
     return (
-      <div className="text-center py-12 text-gray-500 text-lg dark:text-gray-400">
+      <div className="py-12 text-center text-lg text-ui-text-muted">
         {t("noPermission")}
       </div>
     );
   }
 
-  async function handleGenerate(rotate: boolean) {
-    if (rotate && !confirm(t("confirmRotate"))) return;
+  async function handleGenerate() {
+    setPendingConfirm(null);
     setBusy(true);
     setError(null);
     const res = await fetch("/api/registration-tokens", { method: "POST" });
@@ -77,7 +79,7 @@ export default function RegistrationQrPage() {
   }
 
   async function handleDisable() {
-    if (!confirm(t("confirmDisable"))) return;
+    setPendingConfirm(null);
     setBusy(true);
     setError(null);
     const res = await fetch("/api/registration-tokens", { method: "DELETE" });
@@ -132,91 +134,82 @@ export default function RegistrationQrPage() {
 
   return (
     <div className="max-w-4xl">
-      <h1 className="text-2xl font-bold text-gray-900 mb-6 dark:text-gray-100">{t("title")}</h1>
-      <SettingsTabs
-        activeTab={null}
-        onTabChange={() => {}}
-        showModules={hasPermission(role, "manageSettings")}
-        showRegistrationQr={canManage}
+      {/* Reached from Vlastníci ("QR na registráciu pre celý dom"). */}
+      <PageHeader
+        title={t("title")}
+        description={t("subtitle")}
+        backHref="/owners"
+        backLabel={tOwners("backToOwners")}
       />
-      <p className="text-base text-gray-500 mb-6 dark:text-gray-400">{t("subtitle")}</p>
 
       {error && (
-        <div className="bg-red-50 text-red-700 px-4 py-3 rounded-lg text-base mb-4 dark:bg-red-900/30 dark:text-red-200">
+        <div
+          role="alert"
+          className="mb-4 rounded-lg border border-ui-danger px-4 py-3 text-base text-ui-danger"
+        >
           {error}
         </div>
       )}
 
       {loading ? (
-        <div className="bg-white rounded-2xl shadow-sm p-6 animate-pulse dark:bg-gray-800 dark:shadow-black/40">
-          <div className="h-40 bg-gray-200 rounded dark:bg-gray-700" />
-        </div>
+        <LoadingBlock />
       ) : !active ? (
-        <div className="bg-white rounded-2xl shadow-sm p-6 dark:bg-gray-800 dark:shadow-black/40">
-          <p className="text-base text-gray-700 mb-4 dark:text-gray-200">{t("noActive")}</p>
-          <button
-            onClick={() => handleGenerate(false)}
-            disabled={busy}
-            className="px-5 py-3 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white text-base font-medium rounded-lg transition-colors"
-          >
+        <Card as="section" padding="lg">
+          <p className="mb-4 text-base text-ui-text">{t("noActive")}</p>
+          <Button onClick={handleGenerate} loading={busy}>
             {busy ? tCommon("saving") : t("generate")}
-          </button>
-        </div>
+          </Button>
+        </Card>
       ) : (
-        <div className="bg-white rounded-2xl shadow-sm p-6 space-y-6 dark:bg-gray-800 dark:shadow-black/40">
-          <div className="flex flex-col sm:flex-row gap-6 items-start">
+        <Card as="section" padding="lg" className="space-y-6">
+          <div className="flex flex-col items-start gap-6 sm:flex-row">
             {qrDataUrl && (
+              // eslint-disable-next-line @next/next/no-img-element
               <img
                 src={qrDataUrl}
                 alt="QR"
-                className="w-48 h-48 rounded border border-gray-200 bg-white dark:border-gray-700"
+                className="h-48 w-48 rounded border border-ui-border bg-white"
               />
             )}
-            <div className="flex-1 min-w-0 space-y-3">
+            <div className="min-w-0 flex-1 space-y-3">
               <div>
-                <p className="text-sm font-medium text-gray-500 dark:text-gray-400">
-                  {t("urlLabel")}
-                </p>
-                <p className="text-base text-gray-900 break-all dark:text-gray-100">
-                  {active.url}
-                </p>
+                <p className="text-base font-medium text-ui-text-muted">{t("urlLabel")}</p>
+                <p className="break-all text-base text-ui-text">{active.url}</p>
               </div>
               <div>
-                <p className="text-sm font-medium text-gray-500 dark:text-gray-400">
-                  {t("createdLabel")}
-                </p>
-                <p className="text-base text-gray-700 dark:text-gray-200">
+                <p className="text-base font-medium text-ui-text-muted">{t("createdLabel")}</p>
+                <p className="text-base text-ui-text">
                   {new Date(active.createdAt).toLocaleString()}
                 </p>
               </div>
             </div>
           </div>
 
-          <div className="flex flex-wrap gap-3 border-t border-gray-200 pt-4 dark:border-gray-700">
-            <button
-              onClick={handlePrint}
-              disabled={!qrDataUrl}
-              className="px-5 py-3 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white text-base font-medium rounded-lg transition-colors"
-            >
+          <div className="flex flex-wrap gap-3 border-t border-ui-border pt-4">
+            <Button onClick={handlePrint} disabled={!qrDataUrl}>
               {t("print")}
-            </button>
-            <button
-              onClick={() => handleGenerate(true)}
-              disabled={busy}
-              className="px-5 py-3 bg-amber-600 hover:bg-amber-700 disabled:bg-amber-400 text-white text-base font-medium rounded-lg transition-colors"
-            >
-              {busy ? tCommon("saving") : t("rotate")}
-            </button>
-            <button
-              onClick={handleDisable}
-              disabled={busy}
-              className="px-5 py-3 bg-red-600 hover:bg-red-700 disabled:bg-red-400 text-white text-base font-medium rounded-lg transition-colors"
-            >
+            </Button>
+            <Button variant="secondary" onClick={() => setPendingConfirm("rotate")} disabled={busy}>
+              {t("rotate")}
+            </Button>
+            <Button variant="danger" onClick={() => setPendingConfirm("disable")} disabled={busy}>
               {t("disable")}
-            </button>
+            </Button>
           </div>
-        </div>
+        </Card>
       )}
+
+      <ConfirmDialog
+        open={pendingConfirm !== null}
+        title={pendingConfirm === "disable" ? t("disable") : t("rotate")}
+        description={pendingConfirm === "disable" ? t("confirmDisable") : t("confirmRotate")}
+        confirmLabel={pendingConfirm === "disable" ? t("disable") : t("rotate")}
+        cancelLabel={tCommon("cancel")}
+        tone={pendingConfirm === "disable" ? "danger" : "default"}
+        loading={busy}
+        onConfirm={pendingConfirm === "disable" ? handleDisable : handleGenerate}
+        onCancel={() => setPendingConfirm(null)}
+      />
     </div>
   );
 }

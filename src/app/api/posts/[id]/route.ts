@@ -5,7 +5,39 @@ import { posts, users } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { hasPermission } from "@/lib/permissions";
 import { deleteLinksForTarget } from "@/lib/documents.server";
+import { getRequestCommunityRoot, listActiveBoardRoles } from "@/lib/shell.server";
 import type { UserRole } from "@/types";
+
+/**
+ * Who may edit / pin / delete a board notice: admins and board members
+ * (active board role on the community) any notice; everyone else holding
+ * `createPost` (the caretaker) only the notices they wrote.
+ * Mirrored in FeedList (FeedViewerCaps.canManageAllNotices).
+ */
+async function checkNoticeAccess(
+  userId: string,
+  role: UserRole,
+  postId: string
+): Promise<"ok" | "forbidden" | "not_found"> {
+  if (!hasPermission(role, "createPost")) return "forbidden";
+  if (role === "admin") return "ok";
+  const [post] = await db
+    .select({ authorId: posts.authorId })
+    .from(posts)
+    .where(eq(posts.id, postId))
+    .limit(1);
+  if (!post) return "not_found";
+  if (post.authorId === userId) return "ok";
+  const root = await getRequestCommunityRoot();
+  const boardRoles = root ? await listActiveBoardRoles(userId, root.id) : [];
+  return boardRoles.length > 0 ? "ok" : "forbidden";
+}
+
+function accessError(result: "forbidden" | "not_found") {
+  return result === "not_found"
+    ? NextResponse.json({ error: "Príspevok nenájdený" }, { status: 404 })
+    : NextResponse.json({ error: "Nemáte oprávnenie" }, { status: 403 });
+}
 
 export async function GET(
   _request: NextRequest,
@@ -54,11 +86,9 @@ export async function PATCH(
     return NextResponse.json({ error: "Neautorizovaný prístup" }, { status: 401 });
   }
 
-  if (!hasPermission(session.user.role as UserRole, "createPost")) {
-    return NextResponse.json({ error: "Nemáte oprávnenie" }, { status: 403 });
-  }
-
   const { id } = await params;
+  const access = await checkNoticeAccess(session.user.id, session.user.role as UserRole, id);
+  if (access !== "ok") return accessError(access);
   const body = await request.json();
   const updateData: Record<string, unknown> = {};
 
@@ -90,11 +120,9 @@ export async function DELETE(
     return NextResponse.json({ error: "Neautorizovaný prístup" }, { status: 401 });
   }
 
-  if (!hasPermission(session.user.role as UserRole, "createPost")) {
-    return NextResponse.json({ error: "Nemáte oprávnenie" }, { status: 403 });
-  }
-
   const { id } = await params;
+  const access = await checkNoticeAccess(session.user.id, session.user.role as UserRole, id);
+  if (access !== "ok") return accessError(access);
 
   const [deleted] = await db
     .delete(posts)
