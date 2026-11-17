@@ -103,12 +103,16 @@ export function parseClientMetadata(
       "only public clients (token_endpoint_auth_method=none) are supported"
     );
   }
+  // Grant types we don't support are ignored, not rejected (RFC 7591 §2):
+  // Claude's CIMD lists jwt-bearer too. The token endpoint only ever issues
+  // authorization_code / refresh_token grants, so extras grant nothing.
   if (m.grant_types !== undefined) {
     if (
       !Array.isArray(m.grant_types) ||
-      !m.grant_types.every((g) => g === "authorization_code" || g === "refresh_token")
+      !m.grant_types.every((g) => typeof g === "string") ||
+      !m.grant_types.includes("authorization_code")
     ) {
-      throw new ClientError("invalid_client_metadata", "unsupported grant_types");
+      throw new ClientError("invalid_client_metadata", "grant_types must include authorization_code");
     }
   }
   if (m.response_types !== undefined) {
