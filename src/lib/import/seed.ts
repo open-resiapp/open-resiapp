@@ -1,6 +1,6 @@
 import "server-only";
 
-import { and, eq, isNotNull, isNull, sql } from "drizzle-orm";
+import { and, count, eq, inArray, isNotNull, isNull, sql } from "drizzle-orm";
 
 import { db } from "@/db";
 import {
@@ -106,6 +106,8 @@ const WEIGHT_SCALE = 1_000_000n;
 
 const unitKey = (r: ImportRow) =>
   `${r.block_name ?? ""}|${r.entrance_label ?? ""}|${r.unit_number}`;
+/** The seeder's per-unit row key ("block|entrance|unit_number"). */
+export const importUnitKey = unitKey;
 const entranceKey = (r: ImportRow) =>
   `${r.block_name ?? ""}|${r.entrance_label ?? ""}`;
 const blockKey = (r: ImportRow) => r.block_name ?? "";
@@ -564,4 +566,99 @@ export async function seedImport(input: SeedInput): Promise<SeedResult> {
       membershipsCreated,
     };
   });
+}
+
+export interface ExistingUnitMatch {
+  unitId: string;
+  /** Active owner memberships on the unit right now. */
+  activeOwners: number;
+}
+
+/**
+ * Read-only dry run of the seeder's append matching: which import rows
+ * point at a unit that already exists under `communityId` (same parent +
+ * "Byt <N>" lookup as seedImport with existingCommunityId), keyed by
+ * importUnitKey. A row whose block / entrance does not exist yet cannot
+ * match — the seeder would create it, and the unit with it.
+ */
+export async function matchExistingUnits(input: {
+  rows: ImportRow[];
+  communityId: string;
+  templateSlug?: string;
+}): Promise<Map<string, ExistingUnitMatch>> {
+  const kinds = await resolveKindChain(input.templateSlug);
+  const children = await db
+    .select({
+      id: entities.id,
+      parentId: entities.parentId,
+      kind: entities.kind,
+      name: entities.name,
+    })
+    .from(entities)
+    .where(and(eq(entities.rootId, input.communityId), isNull(entities.archivedAt)));
+  const byKey = new Map<string, string>();
+  for (const e of children) {
+    if (kinds.block && e.kind === kinds.block) byKey.set(`block|${e.name}`, e.id);
+    else if (kinds.entrance && e.kind === kinds.entrance && e.parentId) {
+      byKey.set(`entrance|${e.parentId}|${e.name}`, e.id);
+    } else if (e.kind === kinds.leaf && e.parentId) {
+      byKey.set(`unit|${e.parentId}|${e.name}`, e.id);
+    }
+  }
+
+  const unitIdByKey = new Map<string, string>();
+  for (const r of input.rows) {
+    const k = unitKey(r);
+    if (unitIdByKey.has(k)) continue;
+    let blockId: string | null = null;
+    if (kinds.block && r.block_name) {
+      blockId = byKey.get(`block|${r.block_name}`) ?? null;
+      if (!blockId) continue;
+    }
+    let parentId: string = input.communityId;
+    if (kinds.entrance && r.entrance_label) {
+      const entranceId = byKey.get(`entrance|${blockId ?? input.communityId}|${r.entrance_label}`);
+      if (!entranceId) continue;
+      parentId = entranceId;
+    } else if (blockId) {
+      parentId = blockId;
+    }
+    const unitId = byKey.get(`unit|${parentId}|Byt ${r.unit_number}`);
+    if (unitId) unitIdByKey.set(k, unitId);
+  }
+
+  const ids = [...new Set(unitIdByKey.values())];
+  const owners = ids.length
+    ? await db
+        .select({ unitId: memberships.entityId, n: count() })
+        .from(memberships)
+        .where(
+          and(
+            inArray(memberships.entityId, ids),
+            eq(memberships.role, "owner"),
+            eq(memberships.status, "active")
+          )
+        )
+        .groupBy(memberships.entityId)
+    : [];
+  const ownersById = new Map(owners.map((o) => [o.unitId, Number(o.n)]));
+  const out = new Map<string, ExistingUnitMatch>();
+  for (const [k, unitId] of unitIdByKey) {
+    out.set(k, { unitId, activeOwners: ownersById.get(unitId) ?? 0 });
+  }
+  return out;
+}
+
+/**
+ * Lower-cased e-mails (from `emails`) that already belong to a user — the
+ * accounts seedImport would REUSE instead of creating a new owner.
+ */
+export async function findExistingOwnerEmails(emails: string[]): Promise<Set<string>> {
+  const wanted = [...new Set(emails.map((e) => e.trim().toLowerCase()).filter(Boolean))];
+  if (wanted.length === 0) return new Set();
+  const rows = await db
+    .select({ email: users.email })
+    .from(users)
+    .where(inArray(sql<string>`lower(${users.email})`, wanted));
+  return new Set(rows.map((r) => (r.email ?? "").toLowerCase()).filter(Boolean));
 }

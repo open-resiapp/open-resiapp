@@ -3211,6 +3211,16 @@
         "summary": "Ballot for “{title}” — confirmation by email",
         "confirmLabel": "Send confirmation email",
         "done": "The confirmation email has been sent. The vote counts only after you click the link in the email and confirm in the app."
+      },
+      "import_owners": {
+        "title": "Import units and owners",
+        "summary": "Add {units, plural, one {# unit} other {# units}} and {rows, plural, one {# ownership} other {# ownerships}}",
+        "done": "The units and owners were imported."
+      },
+      "assign_unit_owner": {
+        "title": "Assign an owner to a unit",
+        "summary": "Assign {name} as an owner of unit {unit}",
+        "done": "The owner was assigned to the unit."
       }
     },
     "preview": {
@@ -3280,7 +3290,28 @@
       "choice_zdrzal_sa": "ABSTAIN",
       "choice_unmarked": "not marked",
       "ballotHash": "Ballot check code",
-      "emailTo": "Confirmation email goes to"
+      "emailTo": "Confirmation email goes to",
+      "community": "Community",
+      "unitsInFile": "Units in the table",
+      "unitsToCreate": "New units",
+      "unitsToFill": "Existing units without an owner (owners are added)",
+      "unitsSkipped": "Skipped units (already exist with an owner)",
+      "skippedUnitList": "Skipped units",
+      "ownerLinks": "Ownerships",
+      "newAccounts": "New owners without login",
+      "matchedAccounts": "Existing accounts matched by e-mail",
+      "unitShareSum": "Sum of unit shares",
+      "unitShareSumOk": "1/1 ✓",
+      "importRowN": "Row {n}",
+      "moreRows": "… and {count} more",
+      "person": "Person",
+      "personKind": "Type",
+      "personExisting": "Existing person in the community",
+      "personNew": "New person (without login)",
+      "email": "E-mail",
+      "phone": "Phone",
+      "ownerShare": "Ownership share",
+      "unitOwnerShareSum": "Sum of the unit's owner shares"
     },
     "consequences": {
       "allocatePayment": "The payment is allocated to the unit’s oldest charges and changes its balance.",
@@ -3295,13 +3326,21 @@
       "zavierkaClosed": "The accounting period is closed and can no longer be changed.",
       "ballotNotCastYet": "This step does NOT cast the vote.",
       "ballotEmailSent": "You will receive an email with a link valid for {minutes} minutes that can be used only once.",
-      "ballotConfirmSignedIn": "The vote counts only when you open the link, sign in with your account and press “I confirm my vote”."
+      "ballotConfirmSignedIn": "The vote counts only when you open the link, sign in with your account and press “I confirm my vote”.",
+      "importCreates": "Creates {units, plural, one {# unit} other {# units}} and {owners, plural, one {# owner} other {# owners}} without login; no invitations are sent.",
+      "importFillsExisting": "Owners are added to {count, plural, one {# existing unit} other {# existing units}} without an owner; the unit data (floor, share, area) stays unchanged.",
+      "importSkipsExisting": "{count, plural, one {# unit already exists} other {# units already exist}} with an owner — skipped together with its owners from the table.",
+      "importMatchedByEmail": "{count, plural, one {# owner is linked} other {# owners are linked}} to an existing account by e-mail.",
+      "ownerAssigned": "The person becomes an owner of the unit; the voting weight is derived from the share.",
+      "ownerCreatedNoInvite": "An owner without login is created; no invitation is sent — you can invite them in the app."
     },
     "warnings": {
       "ocrAmountMismatch": "The amount differs from the amount read from the scan ({ocr}).",
       "readingLower": "The reading is lower than the previous one ({previous}).",
       "ballotReplacesExisting": "You have already voted for this unit in this voting — once confirmed, this ballot replaces it.",
-      "ballotUnmarkedItems": "{count, plural, one {# item is} other {# items are}} not marked — no choice will be cast for them."
+      "ballotUnmarkedItems": "{count, plural, one {# item is} other {# items are}} not marked — no choice will be cast for them.",
+      "unitShareSumIncomplete": "The unit's owner shares will sum to {sum} — less than 1/1.",
+      "ownerCannotVote": "The person does not have the owner role in the app, so they cannot vote until you change their role."
     },
     "view": {
       "confirm": "Confirm",

@@ -3211,6 +3211,16 @@
         "summary": "Hlasovací lístok pre „{title}“ — potvrdenie emailom",
         "confirmLabel": "Poslať potvrdzovací email",
         "done": "Potvrdzovací email bol odoslaný. Hlas sa započíta až po kliknutí na odkaz v emaile a potvrdení v aplikácii."
+      },
+      "import_owners": {
+        "title": "Importovať byty a vlastníkov",
+        "summary": "Pridať {units, plural, one {# byt} few {# byty} other {# bytov}} a {rows, plural, one {# vlastnícky vzťah} few {# vlastnícke vzťahy} other {# vlastníckych vzťahov}}",
+        "done": "Byty a vlastníci boli naimportovaní."
+      },
+      "assign_unit_owner": {
+        "title": "Priradiť vlastníka k bytu",
+        "summary": "Priradiť {name} ako vlastníka bytu {unit}",
+        "done": "Vlastník bol priradený k bytu."
       }
     },
     "preview": {
@@ -3280,7 +3290,28 @@
       "choice_zdrzal_sa": "ZDRŽAL SA",
       "choice_unmarked": "nevyznačené",
       "ballotHash": "Kontrolný kód lístka",
-      "emailTo": "Potvrdzovací email príde na"
+      "emailTo": "Potvrdzovací email príde na",
+      "community": "Komunita",
+      "unitsInFile": "Bytov v tabuľke",
+      "unitsToCreate": "Nové byty",
+      "unitsToFill": "Existujúce byty bez vlastníka (doplnia sa vlastníci)",
+      "unitsSkipped": "Preskočené byty (už existujú s vlastníkom)",
+      "skippedUnitList": "Preskočené byty",
+      "ownerLinks": "Vlastnícke vzťahy",
+      "newAccounts": "Noví vlastníci bez prihlásenia",
+      "matchedAccounts": "Existujúce účty podľa e-mailu",
+      "unitShareSum": "Súčet podielov bytov",
+      "unitShareSumOk": "1/1 ✓",
+      "importRowN": "Riadok {n}",
+      "moreRows": "… a ďalších {count}",
+      "person": "Osoba",
+      "personKind": "Typ",
+      "personExisting": "Existujúca osoba v komunite",
+      "personNew": "Nová osoba (bez prihlásenia)",
+      "email": "E-mail",
+      "phone": "Telefón",
+      "ownerShare": "Vlastnícky podiel",
+      "unitOwnerShareSum": "Súčet podielov vlastníkov bytu"
     },
     "consequences": {
       "allocatePayment": "Platba sa započíta na najstaršie predpisy bytu a zmení jeho saldo.",
@@ -3295,13 +3326,21 @@
       "zavierkaClosed": "Účtovné obdobie sa uzavrie a už ho nebude možné meniť.",
       "ballotNotCastYet": "Týmto krokom sa hlas NEODOVZDÁVA.",
       "ballotEmailSent": "Pošle sa vám email s odkazom platným {minutes} minút, použiteľným iba raz.",
-      "ballotConfirmSignedIn": "Hlas sa započíta až keď odkaz otvoríte, prihlásite sa svojím účtom a stlačíte „Potvrdzujem hlas“."
+      "ballotConfirmSignedIn": "Hlas sa započíta až keď odkaz otvoríte, prihlásite sa svojím účtom a stlačíte „Potvrdzujem hlas“.",
+      "importCreates": "Vytvorí {units, plural, one {# byt} few {# byty} other {# bytov}} a {owners, plural, one {# vlastníka} few {# vlastníkov} other {# vlastníkov}} bez prihlásenia; pozvánky sa neposielajú.",
+      "importFillsExisting": "K {count, plural, one {# existujúcemu bytu} other {# existujúcim bytom}} bez vlastníka sa doplnia vlastníci; údaje bytu (poschodie, podiel, výmera) sa nezmenia.",
+      "importSkipsExisting": "{count, plural, one {# byt už existuje} few {# byty už existujú} other {# bytov už existuje}} s vlastníkom — preskočí sa aj s vlastníkmi z tabuľky.",
+      "importMatchedByEmail": "{count, plural, one {# vlastník sa priradí} few {# vlastníci sa priradia} other {# vlastníkov sa priradí}} k existujúcemu účtu podľa e-mailu.",
+      "ownerAssigned": "Osoba sa stane vlastníkom bytu; hlasovacia váha sa vypočíta z podielu.",
+      "ownerCreatedNoInvite": "Vytvorí sa vlastník bez prihlásenia; pozvánka sa neposiela — pozvať ho môžete v aplikácii."
     },
     "warnings": {
       "ocrAmountMismatch": "Suma sa líši od sumy rozpoznanej na skene ({ocr}).",
       "readingLower": "Odpočet je nižší ako predchádzajúci ({previous}).",
       "ballotReplacesExisting": "V tomto hlasovaní už za túto jednotku máte odovzdaný hlas — po potvrdení ho tento lístok nahradí.",
-      "ballotUnmarkedItems": "{count, plural, one {# bod nemáte} few {# body nemáte} other {# bodov nemáte}} vyznačených — v nich voľbu neodovzdáte."
+      "ballotUnmarkedItems": "{count, plural, one {# bod nemáte} few {# body nemáte} other {# bodov nemáte}} vyznačených — v nich voľbu neodovzdáte.",
+      "unitShareSumIncomplete": "Súčet podielov vlastníkov bytu bude {sum} — menej ako 1/1.",
+      "ownerCannotVote": "Osoba nemá v aplikácii rolu vlastníka, preto nebude môcť hlasovať, kým jej rolu nezmeníte."
     },
     "view": {
       "confirm": "Potvrdiť",

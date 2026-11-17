@@ -23,6 +23,8 @@ export const ACTION_KINDS = [
   "create_announcement",
   "draft_voting",
   "request_ballot_confirmation",
+  "import_owners",
+  "assign_unit_owner",
 ] as const;
 export type ActionKind = (typeof ACTION_KINDS)[number];
 

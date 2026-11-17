@@ -3211,6 +3211,16 @@
         "summary": "Hlasovací lístek pro „{title}“ — potvrzení e-mailem",
         "confirmLabel": "Poslat potvrzovací e-mail",
         "done": "Potvrzovací e-mail byl odeslán. Hlas se započítá až po kliknutí na odkaz v e-mailu a potvrzení v aplikaci."
+      },
+      "import_owners": {
+        "title": "Importovat jednotky a vlastníky",
+        "summary": "Přidat {units, plural, one {# jednotku} few {# jednotky} other {# jednotek}} a {rows, plural, one {# vlastnický vztah} few {# vlastnické vztahy} other {# vlastnických vztahů}}",
+        "done": "Jednotky a vlastníci byli naimportováni."
+      },
+      "assign_unit_owner": {
+        "title": "Přiřadit vlastníka k jednotce",
+        "summary": "Přiřadit {name} jako vlastníka jednotky {unit}",
+        "done": "Vlastník byl přiřazen k jednotce."
       }
     },
     "preview": {
@@ -3280,7 +3290,28 @@
       "choice_zdrzal_sa": "ZDRŽEL SE",
       "choice_unmarked": "nevyznačeno",
       "ballotHash": "Kontrolní kód lístku",
-      "emailTo": "Potvrzovací e-mail přijde na"
+      "emailTo": "Potvrzovací e-mail přijde na",
+      "community": "Společenství",
+      "unitsInFile": "Jednotek v tabulce",
+      "unitsToCreate": "Nové jednotky",
+      "unitsToFill": "Existující jednotky bez vlastníka (doplní se vlastníci)",
+      "unitsSkipped": "Přeskočené jednotky (již existují s vlastníkem)",
+      "skippedUnitList": "Přeskočené jednotky",
+      "ownerLinks": "Vlastnické vztahy",
+      "newAccounts": "Noví vlastníci bez přihlášení",
+      "matchedAccounts": "Existující účty podle e-mailu",
+      "unitShareSum": "Součet podílů jednotek",
+      "unitShareSumOk": "1/1 ✓",
+      "importRowN": "Řádek {n}",
+      "moreRows": "… a dalších {count}",
+      "person": "Osoba",
+      "personKind": "Typ",
+      "personExisting": "Existující osoba ve společenství",
+      "personNew": "Nová osoba (bez přihlášení)",
+      "email": "E-mail",
+      "phone": "Telefon",
+      "ownerShare": "Vlastnický podíl",
+      "unitOwnerShareSum": "Součet podílů vlastníků jednotky"
     },
     "consequences": {
       "allocatePayment": "Platba se započte na nejstarší předpisy jednotky a změní její saldo.",
@@ -3295,13 +3326,21 @@
       "zavierkaClosed": "Účetní období se uzavře a už ho nebude možné měnit.",
       "ballotNotCastYet": "Tímto krokem se hlas NEODEVZDÁVÁ.",
       "ballotEmailSent": "Pošleme vám e-mail s odkazem platným {minutes} minut, použitelným pouze jednou.",
-      "ballotConfirmSignedIn": "Hlas se započítá až když odkaz otevřete, přihlásíte se svým účtem a stisknete „Potvrzuji hlas“."
+      "ballotConfirmSignedIn": "Hlas se započítá až když odkaz otevřete, přihlásíte se svým účtem a stisknete „Potvrzuji hlas“.",
+      "importCreates": "Vytvoří {units, plural, one {# jednotku} few {# jednotky} other {# jednotek}} a {owners, plural, one {# vlastníka} few {# vlastníky} other {# vlastníků}} bez přihlášení; pozvánky se neposílají.",
+      "importFillsExisting": "K {count, plural, one {# existující jednotce} other {# existujícím jednotkám}} bez vlastníka se doplní vlastníci; údaje jednotky (podlaží, podíl, výměra) se nezmění.",
+      "importSkipsExisting": "{count, plural, one {# jednotka již existuje} few {# jednotky již existují} other {# jednotek již existuje}} s vlastníkem — přeskočí se i s vlastníky z tabulky.",
+      "importMatchedByEmail": "{count, plural, one {# vlastník se přiřadí} few {# vlastníci se přiřadí} other {# vlastníků se přiřadí}} k existujícímu účtu podle e-mailu.",
+      "ownerAssigned": "Osoba se stane vlastníkem jednotky; hlasovací váha se vypočte z podílu.",
+      "ownerCreatedNoInvite": "Vytvoří se vlastník bez přihlášení; pozvánka se neposílá — pozvat ho můžete v aplikaci."
     },
     "warnings": {
       "ocrAmountMismatch": "Částka se liší od částky rozpoznané na skenu ({ocr}).",
       "readingLower": "Odečet je nižší než předchozí ({previous}).",
       "ballotReplacesExisting": "V tomto hlasování už za tuto jednotku máte odevzdaný hlas — po potvrzení jej tento lístek nahradí.",
-      "ballotUnmarkedItems": "{count, plural, one {# bod nemáte} few {# body nemáte} other {# bodů nemáte}} vyznačeno — v nich volbu neodevzdáte."
+      "ballotUnmarkedItems": "{count, plural, one {# bod nemáte} few {# body nemáte} other {# bodů nemáte}} vyznačeno — v nich volbu neodevzdáte.",
+      "unitShareSumIncomplete": "Součet podílů vlastníků jednotky bude {sum} — méně než 1/1.",
+      "ownerCannotVote": "Osoba nemá v aplikaci roli vlastníka, proto nebude moci hlasovat, dokud jí roli nezměníte."
     },
     "view": {
       "confirm": "Potvrdit",

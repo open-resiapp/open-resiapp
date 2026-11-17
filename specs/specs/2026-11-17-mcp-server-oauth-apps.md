@@ -179,6 +179,7 @@ decided — see Notes) · **O** = unit owner (own units).
 | 20 | `get_zavierka_status` (year) | R | `getZavierkaStatus` `zavierka.ts:32` |
 | 21 | `search_documents` (type, name contains, year) | all, per-doc visibility | `listVisibleDocuments` + new name filter |
 | 22 | `get_document_text` — text-layer PDFs only, truncated, logs access | all, per-doc visibility | `getViewableDocument` + `extractPdfText` + `logDocumentAccess` |
+| 32 | `list_units` — every unit (entrance/block, floor, area, share) with owners (owner share, account status); contacts only for admin; totals + share-sum checks | admin (`manageUsers`) or B | `loadUnitRoster` (statuses via `loadOwnersBoard`) |
 
 #### Write tools (all go through §5 — the model only *proposes*)
 
@@ -193,6 +194,8 @@ decided — see Notes) · **O** = unit owner (own units).
 | 29 | `create_announcement` (title, content, category, pinned, entrance) | B (+caretaker) | extracted `createPost` (push to all) |
 | 30 | `draft_voting` (title, type, dates, items w/ quorum + financial effect) | B | extracted `createVoting`, `status` forced `draft`; result links to the voting in the app — **activation stays UI-only** |
 | 31 | `request_ballot_confirmation` (voting, unit, item choices) | O, scope `vote` | §6 |
+| 33 | `import_owners` (structure, rows in the import column schema; community columns from the current root) | admin (`manageSettings`), scope `governance:write` | `validateImport` + `seedImport` append mode; units that already exist **with** owners are dropped with their rows (the seeder alone would add duplicate owner records) |
+| 34 | `assign_unit_owner` (unitId, userId \| newOwner, share) | admin (`manageUsers`), scope `governance:write` | `addUnitOwner` (existing person) / `createShellOwner` (new, no login) |
 
 **Never via MCP:** activate/close a voting, cast a ballot directly, paper ballots,
 mandates, any void, publish vyúčtovanie / predpis, opening balance, bank import,

@@ -112,6 +112,36 @@ const WRITE_TOOLS: readonly WriteToolSpec[] = [
       "Unit owners only. The vote is cast ONLY when the owner opens the emailed link (valid 30 min), signs in and confirms in the app — never by this tool.",
     visible: (ctx) => ctx.isDomOwner && hasPermission(ctx.principal.role as UserRole, "vote"),
   },
+  {
+    kind: "import_owners",
+    title: "Import units and owners",
+    description:
+      "Proposes adding units and their owners to the current community from a table (e.g. an Excel the user shared).\n" +
+      "Admin only. One row per (unit, owner); co-owners repeat the unit on their own row. Row keys:\n" +
+      "- unit_number (required, text as in the land register)\n" +
+      "- unit_floor (required, integer ≥ 0; 'prízemie' = 0)\n" +
+      "- unit_share_numerator, unit_share_denominator (required, positive integers: the unit's share of the building, e.g. 1/96 → 1 and 96)\n" +
+      "- unit_area_m2 (optional, m², decimals truncated)\n" +
+      "- owner_name (required)\n" +
+      "- owner_unit_share_numerator, owner_unit_share_denominator (required, positive integers: the owner's share of the unit; sole owner 1 and 1)\n" +
+      "- owner_email, owner_phone, owner_address (optional)\n" +
+      "- entrance_label (required for structure community_entrance_unit and community_block_entrance_unit), block_name (required for community_block_entrance_unit)\n" +
+      "Do not send community-level columns (community_name, community_address, country sk|cz, voting_method per_share|per_flat|per_area): they are taken from the current community.\n" +
+      "Rules: owner shares of each unit must sum to 1; unit shares of all units in the table must sum to 1 (send the whole building). " +
+      "Units that already exist WITH owners are skipped with their rows; existing units without owners get the owners. " +
+      "Owners are created without login (no invitation is sent); an e-mail of an existing account links that account. " +
+      "Validation errors return {row, column, code}; fix the mapping and call again.",
+    visible: (ctx) => hasPermission(ctx.principal.role as UserRole, "manageSettings"),
+  },
+  {
+    kind: "assign_unit_owner",
+    title: "Assign an owner to a unit",
+    description:
+      "Proposes making a person an owner of one unit with an ownership share (default 1/1).\n" +
+      "Admin only. Give unitId (from list_units) and either userId (a person already in this community) or newOwner {name, email?, phone?} " +
+      "(created without login, no invitation sent). The unit's owner shares must not exceed 1 in total.",
+    visible: (ctx) => hasPermission(ctx.principal.role as UserRole, "manageUsers"),
+  },
 ];
 
 const localeArg = z

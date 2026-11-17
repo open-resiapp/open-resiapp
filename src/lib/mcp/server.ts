@@ -21,6 +21,7 @@ import { McpError, toMcpError, validationError, type McpErrorCode } from "./erro
 import { ACCOUNTING_TOOLS } from "./tools/accounting";
 import { APP_ONLY_TOOLS, WRITE_TOOL_DEFS } from "./tools/actions";
 import { CORE_TOOLS } from "./tools/core";
+import { OWNER_TOOLS } from "./tools/owners";
 import type { ToolContext, ToolDef } from "./tools/types";
 import { VOTING_TOOLS } from "./tools/voting";
 import { CONFIRM_VIEW_HTML, CONFIRM_VIEW_URI, confirmViewDomain } from "./view/confirm-view";
@@ -46,6 +47,7 @@ export const ALL_TOOLS: readonly ToolDef[] = [
   ...CORE_TOOLS,
   ...VOTING_TOOLS,
   ...ACCOUNTING_TOOLS,
+  ...OWNER_TOOLS,
   ...WRITE_TOOL_DEFS,
   ...APP_ONLY_TOOLS,
 ];
@@ -144,7 +146,8 @@ const ERROR_MESSAGES: Partial<Record<string, string>> = {
 };
 
 /** Only these detail keys may leave the server (never `raw`). */
-const SAFE_DETAIL_KEYS = ["missing", "module", "reason", "minEnd", "itemIdx", "allowed"] as const;
+// `errors` = import_owners row errors as {row, column, code} only (no cell values).
+const SAFE_DETAIL_KEYS = ["missing", "module", "reason", "minEnd", "itemIdx", "allowed", "errors"] as const;
 
 function errorResult(err: McpError): CallToolResult {
   const message = err.code.startsWith("validation.")

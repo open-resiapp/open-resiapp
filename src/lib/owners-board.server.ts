@@ -354,6 +354,42 @@ export async function loadOwnerDetail(
 // to an integer.
 const WEIGHT_SCALE = 1_000_000n;
 
+/**
+ * Voting weight of an owner holding `shareNum/shareDen` of the unit
+ * (unit share × owner share × WEIGHT_SCALE). A unit without a recorded
+ * share counts as 1/1. Null when the unit is not an active unit of `rootId`.
+ */
+async function unitOwnerWeight(
+  rootId: string,
+  unitId: string,
+  shareNum: number,
+  shareDen: number
+): Promise<number | null> {
+  const [unit] = await db
+    .select({
+      id: entities.id,
+      num: sql<number | null>`(${entities.data}->>'share_numerator')::int`,
+      den: sql<number | null>`(${entities.data}->>'share_denominator')::int`,
+    })
+    .from(entities)
+    .where(
+      and(
+        eq(entities.id, unitId),
+        eq(entities.kind, "unit"),
+        eq(entities.rootId, rootId),
+        isNull(entities.archivedAt)
+      )
+    )
+    .limit(1);
+  if (!unit) return null;
+  const unitShare =
+    unit.num != null && unit.den != null && unit.den !== 0
+      ? rational(unit.num, unit.den)
+      : rational(1, 1);
+  const w = mul(unitShare, rational(shareNum, shareDen));
+  return Number((w.num * WEIGHT_SCALE) / w.den);
+}
+
 export interface CreateOwnerInput {
   name: string;
   email?: string | null;
@@ -365,6 +401,8 @@ export interface CreateOwnerInput {
   actorUserId: string;
   /** Current community root of the actor; the unit must belong to it. */
   rootId: string | null;
+  /** Audit `source` tag (default "owners.add"). */
+  source?: string;
 }
 
 /**
@@ -420,29 +458,9 @@ export async function createShellOwner(
 
   let weight = 1;
   if (unitId) {
-    const [unit] = await db
-      .select({
-        id: entities.id,
-        num: sql<number | null>`(${entities.data}->>'share_numerator')::int`,
-        den: sql<number | null>`(${entities.data}->>'share_denominator')::int`,
-      })
-      .from(entities)
-      .where(
-        and(
-          eq(entities.id, unitId),
-          eq(entities.kind, "unit"),
-          eq(entities.rootId, rootId),
-          isNull(entities.archivedAt)
-        )
-      )
-      .limit(1);
-    if (!unit) return { ok: false, error: "unit_not_found" };
-    const unitShare =
-      unit.num != null && unit.den != null && unit.den !== 0
-        ? rational(unit.num, unit.den)
-        : rational(1, 1);
-    const w = mul(unitShare, rational(shareNum, shareDen));
-    weight = Number((w.num * WEIGHT_SCALE) / w.den);
+    const w = await unitOwnerWeight(rootId, unitId, shareNum, shareDen);
+    if (w === null) return { ok: false, error: "unit_not_found" };
+    weight = w;
   }
 
   try {
@@ -482,7 +500,7 @@ export async function createShellOwner(
           userId: created.id,
           role: input.role,
           ...(isOwner && unitId ? { ownerUnitShare: `${shareNum}/${shareDen}` } : {}),
-          source: "owners.add",
+          source: input.source ?? "owners.add",
         }),
       });
       return created.id;
@@ -513,4 +531,281 @@ export async function revokeShellInvitations(
     )
     .returning({ id: invitations.id });
   return rows.length;
+}
+
+// ── Unit roster / ownership (MCP list_units, assign_unit_owner) ──────────
+
+export interface UnitRosterOwner {
+  userId: string;
+  name: string;
+  email: string | null;
+  phone: string | null;
+  status: OwnerStatus;
+  deactivated: boolean;
+  shareNum: number;
+  shareDen: number;
+}
+
+export interface UnitRosterEntry {
+  id: string;
+  unitNumber: string;
+  name: string;
+  block: string | null;
+  entrance: string | null;
+  floor: number | null;
+  areaM2: number | null;
+  shareNum: number | null;
+  shareDen: number | null;
+  owners: UnitRosterOwner[];
+}
+
+/**
+ * Every active unit of the community with its active OWNER memberships and
+ * each owner's account status (same derivation as the Vlastníci page —
+ * statuses come from loadOwnersBoard). Read-only; block / entrance are the
+ * unit's ancestors below the root ("building" kind = block).
+ */
+export async function loadUnitRoster(rootId: string): Promise<UnitRosterEntry[]> {
+  const [nodes, ownerRows, board] = await Promise.all([
+    db
+      .select({
+        id: entities.id,
+        parentId: entities.parentId,
+        kind: entities.kind,
+        name: entities.name,
+        flatNumber: sql<string | null>`${entities.data}->>'flat_number'`,
+        floor: sql<number | null>`(${entities.data}->>'floor')::int`,
+        area: sql<string | null>`${entities.data}->>'area_m2'`,
+        num: sql<number | null>`(${entities.data}->>'share_numerator')::int`,
+        den: sql<number | null>`(${entities.data}->>'share_denominator')::int`,
+      })
+      .from(entities)
+      .where(and(eq(entities.rootId, rootId), isNull(entities.archivedAt))),
+    db
+      .select({
+        userId: memberships.userId,
+        unitId: memberships.entityId,
+        shareNum: memberships.ownerUnitShareNumerator,
+        shareDen: memberships.ownerUnitShareDenominator,
+      })
+      .from(memberships)
+      .innerJoin(entities, eq(memberships.entityId, entities.id))
+      .where(
+        and(
+          eq(memberships.status, "active"),
+          eq(memberships.role, "owner"),
+          eq(entities.kind, "unit"),
+          eq(entities.rootId, rootId),
+          isNull(entities.archivedAt)
+        )
+      ),
+    loadOwnersBoard(rootId),
+  ]);
+
+  const byId = new Map(nodes.map((n) => [n.id, n]));
+  const people = new Map(board.people.map((p) => [p.id, p]));
+  const ownersByUnit = new Map<string, UnitRosterOwner[]>();
+  for (const m of ownerRows) {
+    const p = people.get(m.userId);
+    const list = ownersByUnit.get(m.unitId) ?? [];
+    list.push({
+      userId: m.userId,
+      name: p?.name ?? "",
+      email: p?.email ?? null,
+      phone: p?.phone ?? null,
+      status: p?.status ?? "no_account",
+      deactivated: p?.deactivated ?? false,
+      shareNum: m.shareNum,
+      shareDen: m.shareDen,
+    });
+    ownersByUnit.set(m.unitId, list);
+  }
+
+  const units: UnitRosterEntry[] = [];
+  for (const n of nodes) {
+    if (n.kind !== "unit") continue;
+    // Ancestors strictly below the root, top-down.
+    const chain: { kind: string; name: string }[] = [];
+    let cur = n.parentId ? byId.get(n.parentId) : undefined;
+    while (cur && cur.id !== rootId) {
+      chain.unshift({ kind: cur.kind, name: cur.name });
+      cur = cur.parentId ? byId.get(cur.parentId) : undefined;
+    }
+    let block: string | null = null;
+    let entrance: string | null = null;
+    if (chain.length >= 2) {
+      block = chain[chain.length - 2].name;
+      entrance = chain[chain.length - 1].name;
+    } else if (chain.length === 1) {
+      if (chain[0].kind === "building") block = chain[0].name;
+      else entrance = chain[0].name;
+    }
+    const area = n.area != null ? Number(n.area) : null;
+    units.push({
+      id: n.id,
+      unitNumber: n.flatNumber ?? n.name,
+      name: n.name,
+      block,
+      entrance,
+      floor: n.floor,
+      areaM2: area != null && Number.isFinite(area) ? area : null,
+      shareNum: n.num,
+      shareDen: n.den,
+      owners: (ownersByUnit.get(n.id) ?? []).sort((a, b) => a.name.localeCompare(b.name, "sk")),
+    });
+  }
+  units.sort(
+    (a, b) =>
+      compareFlat(a.block ?? "", b.block ?? "") ||
+      compareFlat(a.entrance ?? "", b.entrance ?? "") ||
+      compareFlat(a.unitNumber, b.unitNumber)
+  );
+  return units;
+}
+
+export interface UnitOwnership {
+  unit: {
+    id: string;
+    flatNumber: string;
+    entranceName: string | null;
+    shareNum: number | null;
+    shareDen: number | null;
+  };
+  /** Every membership on the unit, any role / status (unique per user). */
+  members: {
+    userId: string;
+    name: string;
+    role: string;
+    status: string;
+    shareNum: number;
+    shareDen: number;
+  }[];
+}
+
+/** One active unit of `rootId` with all its memberships; null when not found. */
+export async function loadUnitOwnership(
+  rootId: string,
+  unitId: string
+): Promise<UnitOwnership | null> {
+  const parent = aliasedTable(entities, "parent");
+  // Explicit row type: drizzle infers `never` for a leftJoin on an aliasedTable.
+  const unitRows: {
+    id: string;
+    name: string;
+    flatNumber: string | null;
+    parentId: string | null;
+    parentName: string | null;
+    num: number | null;
+    den: number | null;
+  }[] = await db
+    .select({
+      id: entities.id,
+      name: entities.name,
+      flatNumber: sql<string | null>`${entities.data}->>'flat_number'`,
+      parentId: entities.parentId,
+      parentName: parent.name,
+      num: sql<number | null>`(${entities.data}->>'share_numerator')::int`,
+      den: sql<number | null>`(${entities.data}->>'share_denominator')::int`,
+    })
+    .from(entities)
+    .leftJoin(parent, eq(parent.id, entities.parentId))
+    .where(
+      and(
+        eq(entities.id, unitId),
+        eq(entities.kind, "unit"),
+        eq(entities.rootId, rootId),
+        isNull(entities.archivedAt)
+      )
+    )
+    .limit(1);
+  const unit = unitRows[0];
+  if (!unit) return null;
+  const members = await db
+    .select({
+      userId: memberships.userId,
+      name: users.name,
+      role: memberships.role,
+      status: memberships.status,
+      shareNum: memberships.ownerUnitShareNumerator,
+      shareDen: memberships.ownerUnitShareDenominator,
+    })
+    .from(memberships)
+    .innerJoin(users, eq(users.id, memberships.userId))
+    .where(eq(memberships.entityId, unitId));
+  return {
+    unit: {
+      id: unit.id,
+      flatNumber: unit.flatNumber ?? unit.name,
+      entranceName: unit.parentId && unit.parentId !== rootId ? unit.parentName : null,
+      shareNum: unit.num,
+      shareDen: unit.den,
+    },
+    members,
+  };
+}
+
+export type AddUnitOwnerErrorCode = "unit_not_found" | "not_in_root" | "invalid_share" | "already_member" | "failed";
+
+/**
+ * Make an EXISTING person of the community an owner of a unit: one active
+ * owner membership with the owner share and the derived voting weight
+ * (same formula as the import seeder and createShellOwner). The person's
+ * flat users.role is left untouched, like PATCH /api/users/[id].
+ */
+export async function addUnitOwner(input: {
+  userId: string;
+  unitId: string;
+  rootId: string;
+  shareNum: number;
+  shareDen: number;
+  actorUserId: string;
+  source?: string;
+}): Promise<{ ok: true } | { ok: false; error: AddUnitOwnerErrorCode }> {
+  const { shareNum, shareDen } = input;
+  if (
+    !Number.isInteger(shareNum) ||
+    !Number.isInteger(shareDen) ||
+    shareNum <= 0 ||
+    shareDen <= 0 ||
+    shareNum > shareDen
+  ) {
+    return { ok: false, error: "invalid_share" };
+  }
+  if (!(await isUserInRoot(input.userId, input.rootId))) return { ok: false, error: "not_in_root" };
+  const weight = await unitOwnerWeight(input.rootId, input.unitId, shareNum, shareDen);
+  if (weight === null) return { ok: false, error: "unit_not_found" };
+
+  try {
+    await db.transaction(async (tx) => {
+      await tx.insert(memberships).values({
+        userId: input.userId,
+        entityId: input.unitId,
+        role: "owner",
+        weight,
+        ownerUnitShareNumerator: shareNum,
+        ownerUnitShareDenominator: shareDen,
+        status: "active",
+      });
+      await tx.insert(entityAuditLog).values({
+        actorUserId: input.actorUserId,
+        action: "membership.create",
+        entityId: input.unitId,
+        afterJson: JSON.stringify({
+          userId: input.userId,
+          role: "owner",
+          ownerUnitShare: `${shareNum}/${shareDen}`,
+          source: input.source ?? "owners.assign",
+        }),
+      });
+    });
+    return { ok: true };
+  } catch (err) {
+    // memberships_user_entity_idx: the person got a membership on this
+    // unit between the caller's check and the insert.
+    const e = err as { code?: string; cause?: { code?: string } } | null;
+    const code = e?.code ?? e?.cause?.code;
+    if (code === "23505") return { ok: false, error: "already_member" };
+    console.error("[owners] addUnitOwner failed", err);
+    return { ok: false, error: "failed" };
+  }
 }
