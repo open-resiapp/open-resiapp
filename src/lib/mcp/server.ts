@@ -154,9 +154,12 @@ function errorResult(err: McpError): CallToolResult {
   for (const k of SAFE_DETAIL_KEYS) {
     if (err.details && err.details[k] !== undefined) details[k] = err.details[k];
   }
+  // Hosts show the model only `content`, so the safe details go there too —
+  // without them it cannot correct the call (e.g. which quorums are allowed).
+  const detailText = Object.keys(details).length ? ` ${JSON.stringify(details)}` : "";
   return {
     isError: true,
-    content: [{ type: "text", text: `${err.code}: ${message}` }],
+    content: [{ type: "text", text: `${err.code}: ${message}${detailText}` }],
     structuredContent: { error: { code: err.code, message, ...details } },
   };
 }
