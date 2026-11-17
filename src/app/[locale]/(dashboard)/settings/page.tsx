@@ -19,7 +19,7 @@ const TAB_ALIASES: Record<string, SettingsTab> = {
   community: "community",
   structure: "community",
   branding: "community",
-  building: "community",
+  building: "building",
   entrances: "building",
   flats: "building",
   boardMembers: "board",
