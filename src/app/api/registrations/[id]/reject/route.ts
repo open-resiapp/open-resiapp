@@ -1,9 +1,7 @@
 import { NextResponse } from "next/server";
-import { and, eq } from "drizzle-orm";
 import { auth } from "@/lib/auth";
-import { db } from "@/db";
-import { users } from "@/db/schema";
 import { hasPermission } from "@/lib/permissions";
+import { rejectPendingRegistration } from "@/lib/registration-review.server";
 import type { UserRole } from "@/types";
 
 export async function POST(
@@ -23,23 +21,12 @@ export async function POST(
 
   const { id } = await params;
 
-  const [pending] = await db
-    .select({ id: users.id })
-    .from(users)
-    .where(and(eq(users.id, id), eq(users.status, "pending")))
-    .limit(1);
-
-  if (!pending) {
+  if (!(await rejectPendingRegistration(id))) {
     return NextResponse.json(
       { error: "Žiadosť nebola nájdená" },
       { status: 404 }
     );
   }
-
-  await db
-    .update(users)
-    .set({ status: "rejected", isActive: false })
-    .where(eq(users.id, id));
 
   return NextResponse.json({ success: true });
 }

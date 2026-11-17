@@ -116,21 +116,15 @@ const WRITE_TOOLS: readonly WriteToolSpec[] = [
     kind: "import_owners",
     title: "Import units and owners",
     description:
-      "Proposes adding units and their owners to the current community from a table (e.g. an Excel the user shared).\n" +
-      "Admin only. One row per (unit, owner); co-owners repeat the unit on their own row. Row keys:\n" +
-      "- unit_number (required, text as in the land register)\n" +
-      "- unit_floor (required, integer ≥ 0; 'prízemie' = 0)\n" +
-      "- unit_share_numerator, unit_share_denominator (required, positive integers: the unit's share of the building, e.g. 1/96 → 1 and 96)\n" +
-      "- unit_area_m2 (optional, m², decimals truncated)\n" +
-      "- owner_name (required)\n" +
-      "- owner_unit_share_numerator, owner_unit_share_denominator (required, positive integers: the owner's share of the unit; sole owner 1 and 1)\n" +
-      "- owner_email, owner_phone, owner_address (optional)\n" +
-      "- entrance_label (required for structure community_entrance_unit and community_block_entrance_unit), block_name (required for community_block_entrance_unit)\n" +
-      "Do not send community-level columns (community_name, community_address, country sk|cz, voting_method per_share|per_flat|per_area): they are taken from the current community.\n" +
-      "Rules: owner shares of each unit must sum to 1; unit shares of all units in the table must sum to 1 (send the whole building). " +
-      "Units that already exist WITH owners are skipped with their rows; existing units without owners get the owners. " +
-      "Owners are created without login (no invitation is sent); an e-mail of an existing account links that account. " +
-      "Validation errors return {row, column, code}; fix the mapping and call again.",
+      "Proposes adding units and their owners to the current community from a table the user shared (Excel, CSV, pasted).\n" +
+      "Admin only. Read ANY layout yourself (any column names/order, merged name columns) and map it to the row keys; ask the user only when a mapping is genuinely ambiguous. " +
+      "One row per (unit, owner); co-owners repeat the unit. Keys: unit_number, unit_floor (int ≥ 0, 'prízemie' = 0), " +
+      "unit_share_numerator/_denominator (unit's share of the building), owner_name, owner_unit_share_numerator/_denominator (sole owner 1/1) — required; " +
+      "unit_area_m2, owner_email, owner_phone, owner_address — optional; entrance_label / block_name per structure. " +
+      "Shares are positive integers: '1/2' → 1,2; '50 %' → 1,2; '2800/10000' → 2800,10000. Community columns come from the current community. " +
+      "Owner shares per unit sum to 1; unit shares of the whole table sum to 1 (send the whole building). " +
+      "Units existing WITH owners are skipped; owners are created without login (no invitation); an existing account's e-mail links it. " +
+      "Errors return {row, column, code}: fix the mapping and retry. After the import, call list_units / list_pending_registrations to propose account links.",
     visible: (ctx) => hasPermission(ctx.principal.role as UserRole, "manageSettings"),
   },
   {
@@ -140,6 +134,35 @@ const WRITE_TOOLS: readonly WriteToolSpec[] = [
       "Proposes making a person an owner of one unit with an ownership share (default 1/1).\n" +
       "Admin only. Give unitId (from list_units) and either userId (a person already in this community) or newOwner {name, email?, phone?} " +
       "(created without login, no invitation sent). The unit's owner shares must not exceed 1 in total.",
+    visible: (ctx) => hasPermission(ctx.principal.role as UserRole, "manageUsers"),
+  },
+  {
+    kind: "approve_registration",
+    title: "Approve a self-registration",
+    description:
+      "Proposes approving a pending self-registration (from list_pending_registrations) so the person gets access to the app as an owner.\n" +
+      "Admin only. Without linkToOwnerId: plain approval (no unit assigned). With linkToOwnerId: first merges that owner record without login " +
+      "(e.g. the suggested match from the import) into the account — its units and shares move over — then approves. " +
+      "The owner record must have no e-mail. No e-mail is sent to the person.",
+    visible: (ctx) => hasPermission(ctx.principal.role as UserRole, "manageUsers"),
+  },
+  {
+    kind: "reject_registration",
+    title: "Reject a self-registration",
+    description:
+      "Proposes rejecting a pending self-registration (from list_pending_registrations); the person cannot sign in and the e-mail cannot register again.\n" +
+      "Admin only. No reason is recorded and no e-mail is sent.",
+    visible: (ctx) => hasPermission(ctx.principal.role as UserRole, "manageUsers"),
+  },
+  {
+    kind: "link_owner_account",
+    title: "Link an owner record to an account",
+    description:
+      "Proposes linking an owner record without login to the account of the same person, moving the record's units, shares and history to the account.\n" +
+      "Admin only. Use it when the import (or manual entry) created an owner record for someone who already has an account, " +
+      "AND when a person registered and you want to attach the owner record / units to their account — it is one operation. " +
+      "ownerId: owner record (status no_account / invited, no e-mail) from list_units; accountUserId: active account or pending registration in this community. " +
+      "A pending account is also approved. No e-mail is sent.",
     visible: (ctx) => hasPermission(ctx.principal.role as UserRole, "manageUsers"),
   },
 ];

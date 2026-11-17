@@ -544,6 +544,13 @@ export interface UnitRosterOwner {
   deactivated: boolean;
   shareNum: number;
   shareDen: number;
+  /** Owner record without login that the shell merge accepts (no e-mail, pending). */
+  mergeable: boolean;
+  /**
+   * Pending self-registration the owners inbox suggests for this record
+   * (same name match as the inbox; best score when several point here).
+   */
+  accountMatch: { userId: string; name: string; score: number } | null;
 }
 
 export interface UnitRosterEntry {
@@ -604,6 +611,15 @@ export async function loadUnitRoster(rootId: string): Promise<UnitRosterEntry[]>
 
   const byId = new Map(nodes.map((n) => [n.id, n]));
   const people = new Map(board.people.map((p) => [p.id, p]));
+  const matchByShell = new Map<string, UnitRosterOwner["accountMatch"]>();
+  for (const item of board.inbox) {
+    const s = item.suggestion;
+    if (!s) continue;
+    const prev = matchByShell.get(s.shellId);
+    if (!prev || s.score > prev.score) {
+      matchByShell.set(s.shellId, { userId: item.id, name: item.name, score: s.score });
+    }
+  }
   const ownersByUnit = new Map<string, UnitRosterOwner[]>();
   for (const m of ownerRows) {
     const p = people.get(m.userId);
@@ -617,6 +633,8 @@ export async function loadUnitRoster(rootId: string): Promise<UnitRosterEntry[]>
       deactivated: p?.deactivated ?? false,
       shareNum: m.shareNum,
       shareDen: m.shareDen,
+      mergeable: p?.mergeable ?? false,
+      accountMatch: matchByShell.get(m.userId) ?? null,
     });
     ownersByUnit.set(m.unitId, list);
   }

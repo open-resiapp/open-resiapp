@@ -3221,6 +3221,23 @@
         "title": "Assign an owner to a unit",
         "summary": "Assign {name} as an owner of unit {unit}",
         "done": "The owner was assigned to the unit."
+      },
+      "approve_registration": {
+        "title": "Approve registration",
+        "summary": "Approve the registration of {name}",
+        "summaryLink": "Link {name} to the owner record {owner} and approve",
+        "done": "The registration was approved."
+      },
+      "reject_registration": {
+        "title": "Reject registration",
+        "summary": "Reject the registration of {name}",
+        "done": "The registration was rejected."
+      },
+      "link_owner_account": {
+        "title": "Link owner to account",
+        "summary": "Link the owner record {owner} to the account of {name}",
+        "summaryApprove": "Link the owner record {owner} to the registration of {name} and approve it",
+        "done": "The owner record was linked to the account."
       }
     },
     "preview": {
@@ -3311,7 +3328,16 @@
       "email": "E-mail",
       "phone": "Phone",
       "ownerShare": "Ownership share",
-      "unitOwnerShareSum": "Sum of the unit's owner shares"
+      "unitOwnerShareSum": "Sum of the unit's owner shares",
+      "registeredAt": "Registered",
+      "ownerRecord": "Owner record (no login)",
+      "ownerRecordUnits": "Units of the record",
+      "unitsAfter": "Units after approval",
+      "noUnits": "none",
+      "account": "Account",
+      "accountStatus": "Account status",
+      "accountStatus_active": "Active",
+      "accountStatus_pending": "Awaiting approval"
     },
     "consequences": {
       "allocatePayment": "The payment is allocated to the unit’s oldest charges and changes its balance.",
@@ -3332,7 +3358,12 @@
       "importSkipsExisting": "{count, plural, one {# unit already exists} other {# units already exist}} with an owner — skipped together with its owners from the table.",
       "importMatchedByEmail": "{count, plural, one {# owner is linked} other {# owners are linked}} to an existing account by e-mail.",
       "ownerAssigned": "The person becomes an owner of the unit; the voting weight is derived from the share.",
-      "ownerCreatedNoInvite": "An owner without login is created; no invitation is sent — you can invite them in the app."
+      "ownerCreatedNoInvite": "An owner without login is created; no invitation is sent — you can invite them in the app.",
+      "mergeOwnerRecord": "The owner record {name} is merged into the account: units, shares and history move to the account and the separate record is deleted. This cannot be undone.",
+      "accessGranted": "The person gets access to the app as an owner.",
+      "noEmailSent": "No notification e-mail is sent to the person.",
+      "rejectBlocksLogin": "The registration is rejected and the person cannot sign in to the app.",
+      "rejectEmailBlocked": "This e-mail can no longer be used for a new registration."
     },
     "warnings": {
       "ocrAmountMismatch": "The amount differs from the amount read from the scan ({ocr}).",
@@ -3340,7 +3371,11 @@
       "ballotReplacesExisting": "You have already voted for this unit in this voting — once confirmed, this ballot replaces it.",
       "ballotUnmarkedItems": "{count, plural, one {# item is} other {# items are}} not marked — no choice will be cast for them.",
       "unitShareSumIncomplete": "The unit's owner shares will sum to {sum} — less than 1/1.",
-      "ownerCannotVote": "The person does not have the owner role in the app, so they cannot vote until you change their role."
+      "ownerCannotVote": "The person does not have the owner role in the app, so they cannot vote until you change their role.",
+      "emailNotVerified": "The person has not confirmed their e-mail yet.",
+      "namesDiffer": "The names differ — check that this is the same person.",
+      "suggestedOwnerRecord": "The app suggests linking to the owner record {name}. Approving without linking creates a second record of the same person.",
+      "approveWithoutUnit": "The person will have no unit assigned — you can assign one later in the app."
     },
     "view": {
       "confirm": "Confirm",

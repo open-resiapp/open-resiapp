@@ -179,7 +179,8 @@ decided — see Notes) · **O** = unit owner (own units).
 | 20 | `get_zavierka_status` (year) | R | `getZavierkaStatus` `zavierka.ts:32` |
 | 21 | `search_documents` (type, name contains, year) | all, per-doc visibility | `listVisibleDocuments` + new name filter |
 | 22 | `get_document_text` — text-layer PDFs only, truncated, logs access | all, per-doc visibility | `getViewableDocument` + `extractPdfText` + `logDocumentAccess` |
-| 32 | `list_units` — every unit (entrance/block, floor, area, share) with owners (owner share, account status); contacts only for admin; totals + share-sum checks | admin (`manageUsers`) or B | `loadUnitRoster` (statuses via `loadOwnersBoard`) |
+| 32 | `list_units` — every unit (entrance/block, floor, area, share) with owners (owner share, account status); contacts only for admin; totals + share-sum checks; for admin per owner `linkable` (shell merge accepts it) + `accountMatch` (inbox name suggestion pointing at it) | admin (`manageUsers`) or B | `loadUnitRoster` (statuses + matches via `loadOwnersBoard`) |
+| 35 | `list_pending_registrations` — the owners inbox: pending self-registrations (name, e-mail, phone, registered at, e-mail verified, linked units) + suggested owner record (id, name, units, `name_similarity` score) | admin (`manageUsers`) | `loadOwnersBoard().inbox` (same population + `rankCandidates` suggestion as the web inbox) |
 
 #### Write tools (all go through §5 — the model only *proposes*)
 
@@ -196,6 +197,9 @@ decided — see Notes) · **O** = unit owner (own units).
 | 31 | `request_ballot_confirmation` (voting, unit, item choices) | O, scope `vote` | §6 |
 | 33 | `import_owners` (structure, rows in the import column schema; community columns from the current root) | admin (`manageSettings`), scope `governance:write` | `validateImport` + `seedImport` append mode; units that already exist **with** owners are dropped with their rows (the seeder alone would add duplicate owner records) |
 | 34 | `assign_unit_owner` (unitId, userId \| newOwner, share) | admin (`manageUsers`), scope `governance:write` | `addUnitOwner` (existing person) / `createShellOwner` (new, no login) |
+| 36 | `approve_registration` (registrationId, linkToOwnerId?) | admin (`manageUsers`), scope `governance:write` | plain = inbox "Schváliť": `approvePendingRegistration` {flatId null, role owner} (extracted from `POST /api/registrations/[id]/approve`); with linkToOwnerId = inbox "Spojiť": `mergeShellIntoUser` then approve. No e-mail to the person |
+| 37 | `reject_registration` (registrationId) — web flow takes no reason | admin (`manageUsers`), scope `governance:write` | `rejectPendingRegistration` (extracted from `POST /api/registrations/[id]/reject`). No e-mail |
+| 38 | `link_owner_account` (ownerId = shell without login/e-mail, accountUserId = active or pending account in the community) | admin (`manageUsers`), scope `governance:write` | `mergeShellIntoUser` (ShellMergeDialog); pending account also approved like `mergeAndApprove` |
 
 **Never via MCP:** activate/close a voting, cast a ballot directly, paper ballots,
 mandates, any void, publish vyúčtovanie / predpis, opening balance, bank import,

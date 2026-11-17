@@ -3221,6 +3221,23 @@
         "title": "Přiřadit vlastníka k jednotce",
         "summary": "Přiřadit {name} jako vlastníka jednotky {unit}",
         "done": "Vlastník byl přiřazen k jednotce."
+      },
+      "approve_registration": {
+        "title": "Schválit registraci",
+        "summary": "Schválit registraci {name}",
+        "summaryLink": "Spojit {name} se záznamem vlastníka {owner} a schválit",
+        "done": "Registrace byla schválena."
+      },
+      "reject_registration": {
+        "title": "Zamítnout registraci",
+        "summary": "Zamítnout registraci {name}",
+        "done": "Registrace byla zamítnuta."
+      },
+      "link_owner_account": {
+        "title": "Propojit vlastníka s účtem",
+        "summary": "Propojit záznam vlastníka {owner} s účtem {name}",
+        "summaryApprove": "Propojit záznam vlastníka {owner} s registrací {name} a schválit ji",
+        "done": "Záznam vlastníka byl propojen s účtem."
       }
     },
     "preview": {
@@ -3311,7 +3328,16 @@
       "email": "E-mail",
       "phone": "Telefon",
       "ownerShare": "Vlastnický podíl",
-      "unitOwnerShareSum": "Součet podílů vlastníků jednotky"
+      "unitOwnerShareSum": "Součet podílů vlastníků jednotky",
+      "registeredAt": "Registrace",
+      "ownerRecord": "Záznam vlastníka (bez přihlášení)",
+      "ownerRecordUnits": "Jednotky záznamu",
+      "unitsAfter": "Jednotky po schválení",
+      "noUnits": "žádné",
+      "account": "Účet",
+      "accountStatus": "Stav účtu",
+      "accountStatus_active": "Aktivní",
+      "accountStatus_pending": "Čeká na schválení"
     },
     "consequences": {
       "allocatePayment": "Platba se započte na nejstarší předpisy jednotky a změní její saldo.",
@@ -3332,7 +3358,12 @@
       "importSkipsExisting": "{count, plural, one {# jednotka již existuje} few {# jednotky již existují} other {# jednotek již existuje}} s vlastníkem — přeskočí se i s vlastníky z tabulky.",
       "importMatchedByEmail": "{count, plural, one {# vlastník se přiřadí} few {# vlastníci se přiřadí} other {# vlastníků se přiřadí}} k existujícímu účtu podle e-mailu.",
       "ownerAssigned": "Osoba se stane vlastníkem jednotky; hlasovací váha se vypočte z podílu.",
-      "ownerCreatedNoInvite": "Vytvoří se vlastník bez přihlášení; pozvánka se neposílá — pozvat ho můžete v aplikaci."
+      "ownerCreatedNoInvite": "Vytvoří se vlastník bez přihlášení; pozvánka se neposílá — pozvat ho můžete v aplikaci.",
+      "mergeOwnerRecord": "Záznam vlastníka {name} se sloučí s účtem: jednotky, podíly a historie přejdou na účet a samostatný záznam se odstraní. Nelze to vrátit zpět.",
+      "accessGranted": "Osoba získá přístup do aplikace s rolí vlastník.",
+      "noEmailSent": "Osobě se neposílá e-mail s oznámením.",
+      "rejectBlocksLogin": "Registrace se zamítne a osoba se do aplikace nepřihlásí.",
+      "rejectEmailBlocked": "Tento e-mail už nebude možné použít pro novou registraci."
     },
     "warnings": {
       "ocrAmountMismatch": "Částka se liší od částky rozpoznané na skenu ({ocr}).",
@@ -3340,7 +3371,11 @@
       "ballotReplacesExisting": "V tomto hlasování už za tuto jednotku máte odevzdaný hlas — po potvrzení jej tento lístek nahradí.",
       "ballotUnmarkedItems": "{count, plural, one {# bod nemáte} few {# body nemáte} other {# bodů nemáte}} vyznačeno — v nich volbu neodevzdáte.",
       "unitShareSumIncomplete": "Součet podílů vlastníků jednotky bude {sum} — méně než 1/1.",
-      "ownerCannotVote": "Osoba nemá v aplikaci roli vlastníka, proto nebude moci hlasovat, dokud jí roli nezměníte."
+      "ownerCannotVote": "Osoba nemá v aplikaci roli vlastníka, proto nebude moci hlasovat, dokud jí roli nezměníte.",
+      "emailNotVerified": "Osoba ještě nepotvrdila svůj e-mail.",
+      "namesDiffer": "Jména se liší — zkontrolujte, že jde o tutéž osobu.",
+      "suggestedOwnerRecord": "Aplikace navrhuje spojení se záznamem vlastníka {name}. Schválením bez spojení vznikne druhý záznam téže osoby.",
+      "approveWithoutUnit": "Osoba nebude mít přiřazenou žádnou jednotku — přiřadit ji můžete později v aplikaci."
     },
     "view": {
       "confirm": "Potvrdit",

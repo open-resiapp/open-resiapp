@@ -25,6 +25,9 @@ export const ACTION_KINDS = [
   "request_ballot_confirmation",
   "import_owners",
   "assign_unit_owner",
+  "approve_registration",
+  "reject_registration",
+  "link_owner_account",
 ] as const;
 export type ActionKind = (typeof ACTION_KINDS)[number];
 

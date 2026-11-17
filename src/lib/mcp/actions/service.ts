@@ -14,6 +14,7 @@ import { appLink, translatorFor } from "./format";
 import { BALLOT_ACTIONS } from "./ballot";
 import { GOVERNANCE_ACTIONS } from "./governance";
 import { OWNER_ACTIONS } from "./owners";
+import { REGISTRATION_ACTIONS } from "./registrations";
 import {
   isActionKind,
   type ActionContext,
@@ -51,7 +52,13 @@ export const PENDING_ACTION_TTL_MS = 10 * 60 * 1000;
 export const PENDING_ACTION_RATE_LIMIT = 10;
 
 const ACTIONS: ReadonlyMap<ActionKind, ActionDef> = new Map(
-  [...ACCOUNTING_ACTIONS, ...GOVERNANCE_ACTIONS, ...BALLOT_ACTIONS, ...OWNER_ACTIONS].map((a) => [a.kind, a])
+  [
+    ...ACCOUNTING_ACTIONS,
+    ...GOVERNANCE_ACTIONS,
+    ...BALLOT_ACTIONS,
+    ...OWNER_ACTIONS,
+    ...REGISTRATION_ACTIONS,
+  ].map((a) => [a.kind, a])
 );
 
 export function getActionDef(kind: string): ActionDef | null {
