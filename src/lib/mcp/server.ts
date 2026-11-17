@@ -257,6 +257,9 @@ export function buildMcpServer(ctx: ToolContext): McpServer {
       description: def.description,
       inputSchema: advertisedSchema(def.input),
       annotations: toolAnnotations(def),
+      // registerAppTool reads `_meta.ui` straight off the config; without it
+      // building the server threw on every request.
+      ...(meta ? { _meta: meta } : {}),
       // Missing scope → HTTP 403 insufficient_scope BEFORE the handler,
       // listing every scope the call needs (step-up, §2).
       scopeChallenge: ({ request, authInfo }: ScopeChallengeArgs) => {
