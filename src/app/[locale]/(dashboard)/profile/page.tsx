@@ -6,6 +6,7 @@ import { useState } from "react";
 import PushSubscriptionManager from "@/components/notifications/PushSubscriptionManager";
 import NotificationPreferences from "@/components/notifications/NotificationPreferences";
 import ConsentManagement from "@/components/consent/ConsentManagement";
+import ConnectedAiApps from "@/components/profile/ConnectedAiApps";
 import ThemeToggle from "@/components/ThemeToggle";
 import LanguageSwitcher from "@/components/LanguageSwitcher";
 import type { UserRole } from "@/types";
@@ -191,6 +192,9 @@ export default function ProfilePage() {
 
       {/* Consent management */}
       <ConsentManagement />
+
+      {/* Connected AI apps (MCP / OAuth grants) — hidden while MCP is off */}
+      <ConnectedAiApps />
 
       {/* Notifications card */}
       <div className="bg-white rounded-2xl shadow-sm p-6 dark:bg-gray-800 dark:shadow-black/40">

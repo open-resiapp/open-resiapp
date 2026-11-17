@@ -1,6 +1,6 @@
 import "server-only";
 
-import { and, desc, eq, inArray, isNull, sql } from "drizzle-orm";
+import { and, desc, eq, gte, ilike, inArray, isNull, lt, sql } from "drizzle-orm";
 import { db } from "@/db";
 import {
   expenses,
@@ -455,10 +455,35 @@ export interface ExpenseListRow {
   attachmentVisibility: "public" | "redacted_required" | "restricted";
 }
 
+export interface ExpenseListFilter {
+  /** Invoice-date calendar year. */
+  year?: number;
+  okruh?: "fpuo" | "svc" | "mgmt";
+  /** Case-insensitive supplier-name fragment. */
+  supplierContains?: string;
+  /** Exclude voided expenses. */
+  excludeVoided?: boolean;
+}
+
 export async function listExpenses(
   entityId: string,
-  limit = 200
+  limit = 200,
+  filter: ExpenseListFilter = {}
 ): Promise<ExpenseListRow[]> {
+  const conditions = [eq(expenses.entityId, entityId)];
+  if (filter.year !== undefined) {
+    conditions.push(
+      gte(expenses.invoiceDate, new Date(Date.UTC(filter.year, 0, 1))),
+      lt(expenses.invoiceDate, new Date(Date.UTC(filter.year + 1, 0, 1)))
+    );
+  }
+  if (filter.okruh) conditions.push(eq(expenses.okruh, filter.okruh));
+  if (filter.supplierContains) {
+    const escaped = filter.supplierContains.replace(/[\\%_]/g, (c) => `\\${c}`);
+    conditions.push(ilike(expenses.supplierName, `%${escaped}%`));
+  }
+  if (filter.excludeVoided) conditions.push(isNull(expenses.voidedAt));
+
   const rows = await db
     .select({
       id: expenses.id,
@@ -479,7 +504,7 @@ export async function listExpenses(
       serviceCategories,
       eq(expenses.serviceCategoryId, serviceCategories.id)
     )
-    .where(eq(expenses.entityId, entityId))
+    .where(and(...conditions))
     .orderBy(desc(expenses.invoiceDate), desc(expenses.createdAt))
     .limit(limit);
 

@@ -15,6 +15,8 @@ interface DebtorRow {
   ownerNames: string[] | null;
 }
 interface Payload {
+  /** "board" = treasurer / chairman / admin full list (BYT-20261117-001 Decided 2). */
+  audience: "board" | "owner";
   enabled: boolean;
   thresholdCents: number | null;
   namesEnabled: boolean;
@@ -65,10 +67,14 @@ export default function DebtorsPage() {
       ) : (
         <>
           <p className="text-gray-600 dark:text-gray-400 mb-6">
-            {t("subtitle", { threshold: formatEur(data.thresholdCents ?? 0) })}
+            {data.audience === "board"
+              ? t("boardSubtitle")
+              : t("subtitle", { threshold: formatEur(data.thresholdCents ?? 0) })}
           </p>
           {data.debtors.length === 0 ? (
-            <p className="text-green-700 dark:text-green-400">{t("none")}</p>
+            <p className="text-green-700 dark:text-green-400">
+              {data.audience === "board" ? t("boardNone") : t("none")}
+            </p>
           ) : (
             <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg p-6">
               <table className="w-full text-sm">
@@ -94,8 +100,10 @@ export default function DebtorsPage() {
                         <td className="py-2 pr-4 text-gray-700 dark:text-gray-300">
                           {d.ownerNames && d.ownerNames.length > 0
                             ? d.ownerNames.join(", ")
-                            : /* Below the statutory 500 € → withheld. */
-                              t("nameWithheld")}
+                            : data.audience === "board"
+                              ? t("boardNoOwner")
+                              : /* Below the statutory 500 € → withheld. */
+                                t("nameWithheld")}
                         </td>
                       )}
                       <td className="py-2 text-right font-medium text-red-600 dark:text-red-400">
@@ -108,7 +116,7 @@ export default function DebtorsPage() {
             </div>
           )}
           <p className="text-xs text-gray-400 dark:text-gray-500 mt-3">
-            {t("legalNote")}
+            {data.audience === "board" ? t("boardNote") : t("legalNote")}
           </p>
         </>
       )}

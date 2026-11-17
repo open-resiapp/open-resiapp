@@ -10,6 +10,13 @@ const WRITE_METHODS = new Set(["POST", "PUT", "PATCH", "DELETE"]);
 export default function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
+  // OAuth / MCP discovery documents (BYT-20261117-001) are locale-free —
+  // never let the i18n middleware prefix or rewrite them. (Paths with a dot
+  // are already outside the matcher; this keeps it explicit.)
+  if (pathname.startsWith("/.well-known/")) {
+    return NextResponse.next();
+  }
+
   // Read-only gate: when `IS_READONLY=true`, block non-GET API calls except
   // for the auth/health allowlist. Server actions are NOT covered here —
   // they bypass middleware; mutating actions must call `assertWritable()`.

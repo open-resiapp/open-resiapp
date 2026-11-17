@@ -561,6 +561,27 @@
       "when": 1783371151738,
       "tag": "0079_spotty_cardiac",
       "breakpoints": true
+    },
+    {
+      "idx": 80,
+      "version": "7",
+      "when": 1794932025778,
+      "tag": "0080_calm_wolfsbane",
+      "breakpoints": true
+    },
+    {
+      "idx": 81,
+      "version": "7",
+      "when": 1794933131322,
+      "tag": "0081_tough_colonel_america",
+      "breakpoints": true
+    },
+    {
+      "idx": 82,
+      "version": "7",
+      "when": 1794934440506,
+      "tag": "0082_public_vivisector",
+      "breakpoints": true
     }
   ]
 }

@@ -77,6 +77,8 @@ export async function createReading(input: {
   readingDate: Date;
   valueMilli: number;
   actorId: string;
+  /** Audit-log justification, e.g. "MCP: Claude" for AI-proposed writes. */
+  justification?: string | null;
 }): Promise<{ id: string }> {
   if (!Number.isInteger(input.valueMilli) || input.valueMilli < 0) {
     throw new Error("accounting: reading value must be >= 0");
@@ -118,6 +120,7 @@ export async function createReading(input: {
         readingDate: input.readingDate.toISOString(),
         valueMilli: input.valueMilli,
       },
+      justification: input.justification ?? null,
     });
 
     return { id: reading.id };

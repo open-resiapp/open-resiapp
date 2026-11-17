@@ -1,6 +1,6 @@
 import "server-only";
 
-import { and, eq, isNull, sql } from "drizzle-orm";
+import { and, eq, isNotNull, isNull, sql } from "drizzle-orm";
 import { db } from "@/db";
 import { entities, memberships, users } from "@/db/schema";
 import { votings, votingItems, ballots, ballotItemVotes } from "./db/schema";
@@ -15,31 +15,46 @@ import { getCommunityRoot } from "@/lib/legacy-compat";
 import type {
   VoteChoice,
   VoteWithOwnership,
+  VotingItemResult,
   Country,
   QuorumType,
 } from "@/types";
 
-// Approved-financial-effects loader for the voting→accounting pipeline
-// (BYT-20260512-002 §Voting integration). Returns the passed items of a
-// voting that carry a financial effect, so the accounting module can turn
-// each into a treasurer-reviewable draft on close.
+// Voting results (BYT-20261117-001 §3): ONE implementation of the per-item
+// tally, shared by GET /api/ballots (UI results panel), the voting→accounting
+// pipeline (`getApprovedFinancialEffects`) and the MCP `get_voting_results`
+// tool. Previously duplicated here and in routes/api/ballots/index.ts.
 //
-// NOTE: the results computation below MIRRORS the ballots GET handler
-// (routes/api/ballots/index.ts). It is duplicated deliberately for now to
-// avoid refactoring the legal results path while it can't be re-verified;
-// factor both onto one shared helper once they can.
+// NOTE: `results[].unitBreakdowns` / `memberBreakdowns` may carry voter
+// names (VoteWithOwnership.userName). MCP callers MUST strip them — the tool
+// contract is per-item tallies only.
 
-export interface ApprovedFinancialEffect {
-  votingId: string;
-  votingItemId: string;
+export interface VotingResultsItem {
+  id: string;
+  idx: number;
   title: string;
-  kind: "fpuo_rate_change" | "expense_approval";
-  params: Record<string, unknown>;
+  description: string | null;
+  quorumType: string;
+  financialEffectKind: string | null;
+  financialEffectParams: unknown;
 }
 
-export async function getApprovedFinancialEffects(
+export interface VotingResultsBundle {
+  votingId: string;
+  /** The voting's scope entity (null = community-wide). */
+  entityId: string | null;
+  items: VotingResultsItem[];
+  results: VotingItemResult[];
+  totalPossibleWeight: number;
+}
+
+/**
+ * Per-item results for a voting, or null when the voting doesn't exist.
+ * No authz — callers gate it (`viewVotingResults` in the route / tool).
+ */
+export async function getVotingResults(
   votingId: string
-): Promise<ApprovedFinancialEffect[]> {
+): Promise<VotingResultsBundle | null> {
   const root = await getCommunityRoot();
   const votingMethod = normalizeVotingMethod(root?.votingMethod);
   const country = (root?.country ?? "sk") as Country;
@@ -49,23 +64,25 @@ export async function getApprovedFinancialEffects(
     .from(votings)
     .where(eq(votings.id, votingId))
     .limit(1);
-  if (!voting) return [];
+  if (!voting) return null;
 
+  // Ordered ballot items (each with its own quorumType).
   const items = await db
     .select({
       id: votingItems.id,
-      quorumType: votingItems.quorumType,
+      idx: votingItems.idx,
       title: votingItems.title,
+      description: votingItems.description,
+      quorumType: votingItems.quorumType,
       financialEffectKind: votingItems.financialEffectKind,
       financialEffectParams: votingItems.financialEffectParams,
     })
     .from(votingItems)
-    .where(eq(votingItems.votingId, votingId));
+    .where(eq(votingItems.votingId, votingId))
+    .orderBy(votingItems.idx);
 
-  // Nothing to do unless at least one item declares a financial effect.
-  const financialItems = items.filter((i) => i.financialEffectKind);
-  if (financialItems.length === 0) return [];
-
+  // Every item-vote in this voting, with full ownership context so the
+  // engine can group by unit and resolve §14 ods. 4 per item.
   const itemVoteRows = await db
     .select({
       itemId: ballotItemVotes.itemId,
@@ -113,6 +130,8 @@ export async function getApprovedFinancialEffects(
     votesByItem.set(r.itemId, slot);
   }
 
+  // Total possible weight over the voting's scope subtree: unit-scoped sums
+  // unit weights; member-scoped counts / sums membership weights.
   let totalPossibleWeight = 0;
   if (isUnitScoped(votingMethod)) {
     const flatsForScope = await db
@@ -170,10 +189,54 @@ export async function getApprovedFinancialEffects(
     totalPossibleWeight,
     { country }
   );
-  const passedById = new Map(results.map((r) => [r.itemId, r.passed]));
+
+  return {
+    votingId,
+    entityId: voting.entityId,
+    items,
+    results,
+    totalPossibleWeight,
+  };
+}
+
+// Approved-financial-effects loader for the voting→accounting pipeline
+// (BYT-20260512-002 §Voting integration). Returns the passed items of a
+// voting that carry a financial effect, so the accounting module can turn
+// each into a treasurer-reviewable draft on close.
+
+export interface ApprovedFinancialEffect {
+  votingId: string;
+  votingItemId: string;
+  title: string;
+  kind: "fpuo_rate_change" | "expense_approval";
+  params: Record<string, unknown>;
+}
+
+export async function getApprovedFinancialEffects(
+  votingId: string
+): Promise<ApprovedFinancialEffect[]> {
+  // Cheap pre-check: nothing to do unless at least one item declares a
+  // financial effect — skip the full tally otherwise.
+  const [hasEffect] = await db
+    .select({ id: votingItems.id })
+    .from(votingItems)
+    .where(
+      and(
+        eq(votingItems.votingId, votingId),
+        isNotNull(votingItems.financialEffectKind)
+      )
+    )
+    .limit(1);
+  if (!hasEffect) return [];
+
+  const bundle = await getVotingResults(votingId);
+  if (!bundle) return [];
+
+  const passedById = new Map(bundle.results.map((r) => [r.itemId, r.passed]));
 
   const effects: ApprovedFinancialEffect[] = [];
-  for (const item of financialItems) {
+  for (const item of bundle.items) {
+    if (!item.financialEffectKind) continue;
     if (!passedById.get(item.id)) continue;
     effects.push({
       votingId,

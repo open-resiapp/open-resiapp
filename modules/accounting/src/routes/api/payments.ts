@@ -7,6 +7,7 @@ import {
   listPayableUnits,
   voidManualPayment,
 } from "@modules/accounting/src/lib/payments";
+import { validateManualPaymentInput } from "@modules/accounting/src/lib/input-validators";
 
 // Manual payment API — list (treasurer/chairman/admin), create + void
 // (treasurer/admin). Void requires a reason (audit-logged reversal).
@@ -25,50 +26,28 @@ export async function handleCreate(req: NextRequest): Promise<NextResponse> {
   const ctx = await requireWriter();
   if (!ctx.ok) return ctx.error;
 
-  let body: {
-    unitEntityId?: string;
-    amountCents?: number;
-    receivedAt?: string;
-    method?: string;
-    note?: string;
-  };
+  let body: Record<string, unknown>;
   try {
     body = await req.json();
   } catch {
     return NextResponse.json({ error: "invalid json" }, { status: 400 });
   }
-  if (typeof body.unitEntityId !== "string") {
-    return NextResponse.json({ error: "invalid unit" }, { status: 400 });
+  const parsed = validateManualPaymentInput(body);
+  if (!parsed.ok) {
+    return NextResponse.json({ error: parsed.message }, { status: 400 });
   }
-  const method = body.method ?? "bank";
-  if (method !== "bank" && method !== "cash") {
-    return NextResponse.json({ error: "invalid method" }, { status: 400 });
-  }
-  const amountCents = Number(body.amountCents);
-  if (!Number.isInteger(amountCents) || amountCents <= 0) {
-    return NextResponse.json({ error: "invalid amount" }, { status: 400 });
-  }
-  const receivedAt = body.receivedAt ? new Date(body.receivedAt) : new Date();
-  if (Number.isNaN(receivedAt.getTime())) {
-    return NextResponse.json({ error: "invalid receivedAt" }, { status: 400 });
-  }
-  if (receivedAt.getTime() > Date.now() + 24 * 3600 * 1000) {
-    return NextResponse.json(
-      { error: "receivedAt cannot be in the future" },
-      { status: 400 }
-    );
-  }
+  const input = parsed.value;
 
   try {
     const result = await createManualPayment({
       entityId: ctx.root.id,
       country: ctx.root.country,
       createdById: ctx.session.user.id,
-      unitEntityId: body.unitEntityId,
-      amountCents,
-      receivedAt,
-      method,
-      note: typeof body.note === "string" ? body.note : undefined,
+      unitEntityId: input.unitEntityId,
+      amountCents: input.amountCents,
+      receivedAt: input.receivedAt,
+      method: input.method,
+      note: input.note,
     });
     return NextResponse.json(result, { status: 201 });
   } catch (err) {

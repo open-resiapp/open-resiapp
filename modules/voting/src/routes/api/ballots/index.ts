@@ -12,39 +12,21 @@ import { db } from "@/db";
 import { users, entities, memberships } from "@/db/schema";
 import {
   votings,
-  votingItems,
   ballots,
   ballotItemVotes,
   ballotPhotos,
 } from "@modules/voting/src/db/schema";
 import { hasPermission } from "@/lib/permissions";
+import { getVotingResults } from "@modules/voting/src/results";
 import {
-  calculateItemResults,
-  computeBallotHash,
-  computeItemAuditHash,
-} from "@modules/voting/src/engine";
-import { isElectronicVotingBlocked } from "@modules/voting/src/rules";
-import { getCommunityRoot } from "@/lib/legacy-compat";
-import {
-  computeMemberWeight,
-  computeUnitWeight,
-  isUnitScoped,
-  normalizeVotingMethod,
-} from "@/lib/voting-method";
-import type {
-  UserRole,
-  VoteChoice,
-  VoteWithOwnership,
-  Country,
-  QuorumType,
-} from "@/types";
-
-const VALID_CHOICES: VoteChoice[] = ["za", "proti", "zdrzal_sa"];
-
-interface IncomingItemChoice {
-  itemId?: unknown;
-  choice?: unknown;
-}
+  persistConfirmedBallot,
+  validateBallotCast,
+  type IncomingItemChoice,
+  type ValidatedBallot,
+} from "@modules/voting/src/ballots";
+import { viewerFromSession } from "@/lib/mcp/principal";
+import { isMcpError } from "@/lib/mcp/errors";
+import type { UserRole } from "@/types";
 
 // ── GET: items + per-item results + caller's ballots ──────
 export async function GET(request: NextRequest) {
@@ -62,142 +44,20 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: "Nemáte oprávnenie" }, { status: 403 });
   }
 
-  const root = await getCommunityRoot();
-  const votingMethod = normalizeVotingMethod(root?.votingMethod);
-  const country = (root?.country ?? "sk") as Country;
-
-  const [voting] = await db
-    .select({ entityId: votings.entityId })
-    .from(votings)
-    .where(eq(votings.id, votingId))
-    .limit(1);
-  if (!voting) {
+  // Per-item tallies — the single shared implementation (also used by the
+  // accounting pipeline and the MCP get_voting_results tool).
+  const bundle = await getVotingResults(votingId);
+  if (!bundle) {
     return NextResponse.json({ error: "Hlasovanie nenájdené" }, { status: 404 });
   }
-
-  // Ordered ballot items (each with its own quorumType).
-  const items = await db
-    .select({
-      id: votingItems.id,
-      idx: votingItems.idx,
-      title: votingItems.title,
-      description: votingItems.description,
-      quorumType: votingItems.quorumType,
-    })
-    .from(votingItems)
-    .where(eq(votingItems.votingId, votingId))
-    .orderBy(votingItems.idx);
-
-  // Every item-vote in this voting, with full ownership context so the
-  // engine can group by unit and resolve §14 ods. 4 per item. Mirrors the
-  // legacy votes GET join, but keyed to (item, ballot).
-  const itemVoteRows = await db
-    .select({
-      itemId: ballotItemVotes.itemId,
-      choice: ballotItemVotes.choice,
-      ownerId: ballots.ownerId,
-      unitEntityId: ballots.entityId,
-      ownerName: users.name,
-      shareNumerator: sql<number>`(${entities.data}->>'share_numerator')::int`,
-      shareDenominator: sql<number>`(${entities.data}->>'share_denominator')::int`,
-      area: sql<number | null>`(${entities.data}->>'area_m2')::int`,
-      ownerUnitShareNumerator: memberships.ownerUnitShareNumerator,
-      ownerUnitShareDenominator: memberships.ownerUnitShareDenominator,
-      membershipWeight: memberships.weight,
-    })
-    .from(ballotItemVotes)
-    .innerJoin(ballots, eq(ballots.id, ballotItemVotes.ballotId))
-    .leftJoin(users, eq(ballots.ownerId, users.id))
-    .innerJoin(entities, eq(entities.id, ballots.entityId))
-    .leftJoin(
-      memberships,
-      and(
-        eq(memberships.entityId, ballots.entityId),
-        eq(memberships.userId, ballots.ownerId),
-        eq(memberships.status, "active")
-      )
-    )
-    .where(eq(ballots.votingId, votingId));
-
-  const votesByItem = new Map<string, VoteWithOwnership[]>();
-  for (const r of itemVoteRows) {
-    const vow: VoteWithOwnership = {
-      unitEntityId: r.unitEntityId,
-      userId: r.ownerId,
-      userName: r.ownerName,
-      choice: r.choice as VoteChoice,
-      unitShareNumerator: r.shareNumerator,
-      unitShareDenominator: r.shareDenominator,
-      area: r.area,
-      ownerUnitShareNumerator: r.ownerUnitShareNumerator ?? 1,
-      ownerUnitShareDenominator: r.ownerUnitShareDenominator ?? 1,
-      membershipWeight: r.membershipWeight ?? 1,
-    };
-    const slot = votesByItem.get(r.itemId) ?? [];
-    slot.push(vow);
-    votesByItem.set(r.itemId, slot);
-  }
-
-  // Total possible weight over the voting's scope subtree (same rule as the
-  // legacy votes GET): unit-scoped sums unit weights; member-scoped counts /
-  // sums membership weights.
-  let totalPossibleWeight = 0;
-  if (isUnitScoped(votingMethod)) {
-    const flatsForScope = await db
-      .select({
-        shareNumerator: sql<number>`(${entities.data}->>'share_numerator')::int`,
-        shareDenominator: sql<number>`(${entities.data}->>'share_denominator')::int`,
-        area: sql<number | null>`(${entities.data}->>'area_m2')::int`,
-      })
-      .from(entities)
-      .where(
-        and(
-          eq(entities.kind, "unit"),
-          isNull(entities.archivedAt),
-          voting.entityId
-            ? sql`${entities.path} LIKE (SELECT path || '%' FROM ${entities} WHERE id = ${voting.entityId})`
-            : sql`true`
-        )
-      );
-    for (const f of flatsForScope) {
-      totalPossibleWeight += computeUnitWeight(
-        {
-          shareNumerator: f.shareNumerator,
-          shareDenominator: f.shareDenominator,
-          area: f.area,
-        },
-        votingMethod
-      );
-    }
-  } else {
-    const scopeMembers = await db
-      .select({ weight: memberships.weight })
-      .from(memberships)
-      .innerJoin(entities, eq(entities.id, memberships.entityId))
-      .where(
-        and(
-          eq(memberships.status, "active"),
-          isNull(entities.archivedAt),
-          voting.entityId
-            ? sql`${entities.path} LIKE (SELECT path || '%' FROM ${entities} WHERE id = ${voting.entityId})`
-            : sql`true`
-        )
-      );
-    for (const m of scopeMembers) {
-      totalPossibleWeight += computeMemberWeight(
-        { membershipWeight: m.weight },
-        votingMethod
-      );
-    }
-  }
-
-  const results = calculateItemResults(
-    items.map((i) => ({ id: i.id, quorumType: i.quorumType as QuorumType })),
-    votesByItem,
-    votingMethod,
-    totalPossibleWeight,
-    { country }
-  );
+  const items = bundle.items.map((i) => ({
+    id: i.id,
+    idx: i.idx,
+    title: i.title,
+    description: i.description,
+    quorumType: i.quorumType,
+  }));
+  const { results, totalPossibleWeight } = bundle;
 
   // All ballots in this voting (for admin display + paper photos), plus the
   // caller's own ballots (for pre-filling the cast form).
@@ -328,194 +188,74 @@ export async function POST(request: NextRequest) {
   if (isPaper && !voterId) {
     return NextResponse.json({ error: "ownerId je povinný pre listinný hlas" }, { status: 400 });
   }
-
-  // Permission.
-  if (isPaper) {
-    if (photoUrls.length === 0) {
-      return NextResponse.json({ error: "PAPER_PHOTO_REQUIRED" }, { status: 400 });
-    }
-    if (!hasPermission(session.user.role as UserRole, "recordPaperVote")) {
-      return NextResponse.json(
-        { error: "Nemáte oprávnenie zapisovať listinné hlasy" },
-        { status: 403 }
-      );
-    }
-  } else if (!hasPermission(session.user.role as UserRole, "vote")) {
-    return NextResponse.json({ error: "Nemáte oprávnenie hlasovať" }, { status: 403 });
+  if (isPaper && photoUrls.length === 0) {
+    return NextResponse.json({ error: "PAPER_PHOTO_REQUIRED" }, { status: 400 });
   }
 
-  const [voting] = await db
-    .select()
-    .from(votings)
-    .where(eq(votings.id, votingId))
-    .limit(1);
-  if (!voting || voting.status !== "active") {
-    return NextResponse.json({ error: "Hlasovanie nie je aktívne" }, { status: 400 });
+  // Validate (permission, voting active, electronic allowed, ownership,
+  // scope, items) then persist — the same two lib steps the MCP ballot
+  // confirmation uses, run back to back here (no confirmation step yet —
+  // spec Notes → found gaps).
+  let validated: ValidatedBallot;
+  try {
+    validated = await validateBallotCast(viewerFromSession(session), {
+      votingId,
+      unitId: flatId,
+      items: incoming,
+      paper: isPaper ? { ownerId: voterId } : undefined,
+    });
+  } catch (err) {
+    const mapped = ballotErrorResponse(err);
+    if (mapped) return mapped;
+    throw err;
   }
 
-  const root = await getCommunityRoot();
-  const country = (root?.country ?? "sk") as Country;
-  if (!isPaper && isElectronicVotingBlocked(country, voting.votingType, voting.initiatedBy)) {
-    return NextResponse.json(
-      {
-        error:
-          voting.votingType === "meeting"
-            ? "Elektronické hlasovanie nie je povolené pre hlasovanie na schôdzi"
-            : "Elektronické hlasovanie nie je povolené pre hlasovanie iniciované štvrtinou vlastníkov",
-      },
-      { status: 400 }
-    );
-  }
-
-  // Ownership: the voter must hold an active membership on the unit.
-  const [ownerFlat] = await db
-    .select({ id: memberships.id })
-    .from(memberships)
-    .where(
-      and(
-        eq(memberships.userId, voterId),
-        eq(memberships.entityId, flatId),
-        eq(memberships.status, "active")
-      )
-    )
-    .limit(1);
-  if (!ownerFlat) {
-    return NextResponse.json({ error: "Vlastník nevlastní tento byt" }, { status: 400 });
-  }
-
-  // Scope: the flat must sit within the voting's subtree.
-  if (voting.entityId) {
-    const [flatRow] = await db
-      .select({ flatPath: entities.path })
-      .from(entities)
-      .where(eq(entities.id, flatId))
-      .limit(1);
-    const [scopeRow] = await db
-      .select({ scopePath: entities.path })
-      .from(entities)
-      .where(eq(entities.id, voting.entityId))
-      .limit(1);
-    if (flatRow && scopeRow && !flatRow.flatPath.startsWith(scopeRow.scopePath)) {
-      return NextResponse.json(
-        { error: "Tento byt nie je v hlasovanom rozsahu" },
-        { status: 403 }
-      );
-    }
-  }
-
-  // Validate the submitted item choices against this voting's items. Unmarked
-  // items are allowed (silence/abstain per jurisdiction rule) — they simply
-  // produce no ballot_item_vote row.
-  const items = await db
-    .select({ id: votingItems.id })
-    .from(votingItems)
-    .where(eq(votingItems.votingId, votingId));
-  const validItemIds = new Set(items.map((i) => i.id));
-
-  const marked: { itemId: string; choice: VoteChoice }[] = [];
-  const seen = new Set<string>();
-  for (const it of incoming) {
-    const itemId = typeof it.itemId === "string" ? it.itemId : "";
-    const choice = it.choice as VoteChoice;
-    if (!itemId || !validItemIds.has(itemId)) {
-      return NextResponse.json(
-        { error: "Neplatná položka hlasovania" },
-        { status: 400 }
-      );
-    }
-    if (!VALID_CHOICES.includes(choice)) {
-      return NextResponse.json({ error: "Neplatná voľba" }, { status: 400 });
-    }
-    if (seen.has(itemId)) {
-      return NextResponse.json(
-        { error: "Duplicitná voľba pre položku" },
-        { status: 400 }
-      );
-    }
-    seen.add(itemId);
-    marked.push({ itemId, choice });
-  }
-
-  const recordedAt = new Date();
-  const ballotHash = computeBallotHash(marked);
-
-  // Upsert: a re-submitted ballot supersedes (not appends) the prior one.
-  const [existing] = await db
-    .select({ id: ballots.id })
-    .from(ballots)
-    .where(
-      and(
-        eq(ballots.votingId, votingId),
-        eq(ballots.entityId, flatId),
-        eq(ballots.ownerId, voterId)
-      )
-    )
-    .limit(1);
-
-  const ballotId = await db.transaction(async (tx) => {
-    let bId: string;
-    if (existing) {
-      bId = existing.id;
-      await tx
-        .update(ballots)
-        .set({
-          voteType: isPaper ? "paper" : "electronic",
-          recordedById: isPaper ? session.user.id : null,
-          mandateId: mandateId || null,
-          ballotHash,
-          recordedAt,
-        })
-        .where(eq(ballots.id, bId));
-      await tx.delete(ballotItemVotes).where(eq(ballotItemVotes.ballotId, bId));
-      await tx.delete(ballotPhotos).where(eq(ballotPhotos.ballotId, bId));
-    } else {
-      const [created] = await tx
-        .insert(ballots)
-        .values({
-          votingId,
-          entityId: flatId,
-          ownerId: voterId,
-          voteType: isPaper ? "paper" : "electronic",
-          recordedById: isPaper ? session.user.id : null,
-          mandateId: mandateId || null,
-          ballotHash,
-          recordedAt,
-        })
-        .returning({ id: ballots.id });
-      bId = created.id;
-    }
-
-    if (marked.length > 0) {
-      await tx.insert(ballotItemVotes).values(
-        marked.map((m) => ({
-          ballotId: bId,
-          itemId: m.itemId,
-          choice: m.choice,
-          itemAuditHash: computeItemAuditHash({
-            votingId,
-            itemId: m.itemId,
-            entityId: flatId,
-            ownerId: voterId,
-            choice: m.choice,
-            recordedAt,
-          }),
-        }))
-      );
-    }
-
-    if (photoUrls.length > 0) {
-      await tx.insert(ballotPhotos).values(
-        photoUrls.map((url, idx) => ({ ballotId: bId, storageKey: url, idx }))
-      );
-    }
-
-    return bId;
+  const result = await persistConfirmedBallot(validated, {
+    recordedById: isPaper ? session.user.id : null,
+    mandateId: mandateId || null,
+    photoUrls,
   });
 
   return NextResponse.json(
-    { ballotId, ballotHash, recordedAt, superseded: Boolean(existing) },
-    { status: existing ? 200 : 201 }
+    {
+      ballotId: result.ballotId,
+      ballotHash: result.ballotHash,
+      recordedAt: result.recordedAt,
+      superseded: result.superseded,
+    },
+    { status: result.superseded ? 200 : 201 }
   );
+}
+
+/** Maps validateBallotCast's McpError codes back to the route's messages. */
+function ballotErrorResponse(err: unknown): NextResponse | null {
+  if (!isMcpError(err)) return null;
+  const json = (error: string, status: number) =>
+    NextResponse.json({ error }, { status });
+  switch (err.code) {
+    case "forbidden":
+      return err.details?.kind === "paper"
+        ? json("Nemáte oprávnenie zapisovať listinné hlasy", 403)
+        : json("Nemáte oprávnenie hlasovať", 403);
+    case "voting_not_active":
+      return json("Hlasovanie nie je aktívne", 400);
+    case "electronic_blocked":
+      return err.details?.reason === "meeting"
+        ? json("Elektronické hlasovanie nie je povolené pre hlasovanie na schôdzi", 400)
+        : json("Elektronické hlasovanie nie je povolené pre hlasovanie iniciované štvrtinou vlastníkov", 400);
+    case "not_unit_owner":
+      return json("Vlastník nevlastní tento byt", 400);
+    case "unit_out_of_scope":
+      return json("Tento byt nie je v hlasovanom rozsahu", 403);
+    case "validation.itemId":
+      return json("Neplatná položka hlasovania", 400);
+    case "validation.choice":
+      return json("Neplatná voľba", 400);
+    case "validation.items":
+      return json("Duplicitná voľba pre položku", 400);
+    default:
+      return null;
+  }
 }
 
 // ── DELETE: withdraw a ballot before close ───────────────

@@ -140,6 +140,8 @@ export async function dismissInboxItem(input: {
   entityId: string;
   id: string;
   actorId: string;
+  /** Audit-log justification, e.g. "MCP: Claude" for AI-proposed writes. */
+  justification?: string | null;
 }): Promise<void> {
   await db.transaction(async (tx) => {
     const [row] = await tx
@@ -164,6 +166,7 @@ export async function dismissInboxItem(input: {
       tableName: "mod_accounting_expense_inbox",
       recordId: input.id,
       after: { status: "dismissed" },
+      justification: input.justification ?? null,
     });
   });
 }
@@ -189,6 +192,8 @@ export interface PostInboxInput {
   dphRateBp: number | null;
   nextInspectionDueAt: Date | null;
   isRecurring: boolean;
+  /** Audit-log justification, e.g. "MCP: Claude" for AI-proposed writes. */
+  justification?: string | null;
 }
 
 /**
@@ -295,6 +300,7 @@ export async function postInboxItemAsExpense(
         tableName: "mod_accounting_expense_inbox",
         recordId: input.id,
         after: { status: "posted", postedExpenseId: expenseId },
+        justification: input.justification ?? null,
       });
     });
   } catch (markErr) {

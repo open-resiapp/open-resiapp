@@ -18,7 +18,7 @@ import "server-only";
 // + AV + allowlist, AC 480) stays BLOCKED.
 
 import { spawn } from "child_process";
-import { extractPdfText } from "./pdf-text.server";
+import { extractPdfText } from "@/lib/pdf-text.server";
 
 export type OcrEngine = "pdf_text" | "tesseract" | "none";
 

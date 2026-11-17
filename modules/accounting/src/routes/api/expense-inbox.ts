@@ -7,6 +7,7 @@ import {
   dismissInboxItem,
   postInboxItemAsExpense,
 } from "@modules/accounting/src/lib/expense-inbox";
+import { validateExpenseInput } from "@modules/accounting/src/lib/input-validators";
 
 // Expense collector inbox API (AC 478/479) — write-privileged (treasurer /
 // admin) only. Upload a PDF/image invoice → OCR-parked row → post as a real
@@ -94,51 +95,14 @@ export async function handlePost(
     return NextResponse.json({ error: "invalid json" }, { status: 400 });
   }
 
-  const amountCents = Number(body.amountCents);
-  if (!Number.isInteger(amountCents) || amountCents <= 0) {
-    return NextResponse.json({ error: "invalid amount" }, { status: 400 });
+  // Same doklad requirements (AC 440) as expense create — shared validator.
+  const parsed = validateExpenseInput(body);
+  if (!parsed.ok) {
+    return NextResponse.json({ error: parsed.message }, { status: 400 });
   }
-  // Mirror the expense-create doklad requirements (AC 440) so posting from
-  // the inbox can't bypass them.
-  const reqStr = (v: unknown) => typeof v === "string" && v.trim() !== "";
-  for (const [field, value] of [
-    ["supplierName", body.supplierName],
-    ["supplierIco", body.supplierIco],
-    ["supplierDic", body.supplierDic],
-    ["supplierIban", body.supplierIban],
-    ["invoiceNo", body.invoiceNo],
-  ] as Array<[string, unknown]>) {
-    if (!reqStr(value)) {
-      return NextResponse.json({ error: `${field} required` }, { status: 400 });
-    }
-  }
-  const invoiceDate = new Date(String(body.invoiceDate ?? ""));
-  if (Number.isNaN(invoiceDate.getTime())) {
-    return NextResponse.json({ error: "invalid invoiceDate" }, { status: 400 });
-  }
-  const okruh = body.okruh === "fpuo" ? "fpuo" : body.okruh === "svc" ? "svc" : null;
-  if (!okruh) {
-    return NextResponse.json({ error: "invalid okruh" }, { status: 400 });
-  }
-  const optInt = (v: unknown) =>
-    v === null || v === undefined || v === "" ? null : Number(v);
-  const amountNettoCents = optInt(body.amountNettoCents);
-  const dphCents = optInt(body.dphCents);
-  const dphRateBp = optInt(body.dphRateBp);
-  for (const n of [amountNettoCents, dphCents, dphRateBp]) {
-    if (n !== null && !Number.isInteger(n)) {
-      return NextResponse.json({ error: "invalid amounts" }, { status: 400 });
-    }
-  }
-  if (amountNettoCents === null || dphCents === null) {
-    return NextResponse.json({ error: "netto + DPH required" }, { status: 400 });
-  }
-  if (amountNettoCents + dphCents !== amountCents) {
-    return NextResponse.json(
-      { error: "netto + DPH must equal brutto" },
-      { status: 400 }
-    );
-  }
+  // Inbox posting never links an expense authorisation (historical shape).
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { authorisationId: _ignored, ...input } = parsed.value;
 
   try {
     const result = await postInboxItemAsExpense({
@@ -146,30 +110,7 @@ export async function handlePost(
       country: ctx.root.country,
       id,
       actorId: ctx.session.user.id,
-      supplierName: String(body.supplierName).trim(),
-      supplierIco: String(body.supplierIco).trim(),
-      supplierDic: String(body.supplierDic).trim(),
-      supplierIban: String(body.supplierIban).trim(),
-      invoiceNo: String(body.invoiceNo).trim(),
-      invoiceDate,
-      dueDate:
-        typeof body.dueDate === "string" && body.dueDate
-          ? new Date(body.dueDate)
-          : null,
-      serviceCategoryId:
-        typeof body.serviceCategoryId === "string" && body.serviceCategoryId
-          ? body.serviceCategoryId
-          : null,
-      okruh,
-      amountCents,
-      amountNettoCents,
-      dphCents,
-      dphRateBp,
-      nextInspectionDueAt:
-        typeof body.nextInspectionDueAt === "string" && body.nextInspectionDueAt
-          ? new Date(body.nextInspectionDueAt)
-          : null,
-      isRecurring: body.isRecurring === true,
+      ...input,
     });
     return NextResponse.json(result, { status: 201 });
   } catch (err) {

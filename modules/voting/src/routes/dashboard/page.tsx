@@ -20,7 +20,12 @@ interface VotingData {
   createdBy: { id: string; name: string } | null;
 }
 
-export default function HlasovaniePage() {
+export default function HlasovaniePage({
+  canCreate: canCreateProp,
+}: {
+  /** Server-resolved board check (admin OR active chairman). */
+  canCreate?: boolean;
+} = {}) {
   const { data: session } = useSession();
   const t = useTranslations("Voting");
   const tCommon = useTranslations("Common");
@@ -28,7 +33,7 @@ export default function HlasovaniePage() {
   const [loading, setLoading] = useState(true);
 
   const role = (session?.user?.role || "owner") as UserRole;
-  const canCreate = hasPermission(role, "createVoting");
+  const canCreate = canCreateProp ?? hasPermission(role, "createVoting");
 
   useEffect(() => {
     fetch("/api/votings")

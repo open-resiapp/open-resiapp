@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import { useTranslations } from "next-intl";
 
 import type { InstalledModuleView } from "@/lib/modules/install";
 import { PERMISSIONS, type Permission } from "@/lib/modules/sdk";
@@ -28,6 +29,7 @@ interface Props {
 }
 
 export default function ModulesAdminClient({ installed, canManageUsers }: Props) {
+  const tMcp = useTranslations("Mcp.module");
   const [staged, setStaged] = useState<StagedView | null>(null);
   const [approved, setApproved] = useState<Set<Permission>>(new Set());
   const [error, setError] = useState<string | null>(null);
@@ -96,6 +98,12 @@ export default function ModulesAdminClient({ installed, canManageUsers }: Props)
   }
 
   function handleToggle(name: string, next: "enabled" | "disabled") {
+    // BYT-20261117-001: enabling MCP sends community data to the AI provider
+    // a member connects; disabling revokes every connection.
+    if (name === "mcp") {
+      const warning = next === "enabled" ? tMcp("enableWarning") : tMcp("disableWarning");
+      if (!confirm(warning)) return;
+    }
     startTransition(async () => {
       const res = await toggleModuleAction(name, next);
       if (!res.ok) setError(res.error);
@@ -222,6 +230,11 @@ export default function ModulesAdminClient({ installed, canManageUsers }: Props)
                         ? "—"
                         : m.grantedPermissions.join(", ")}
                     </p>
+                    {m.name === "mcp" && (
+                      <p className="mt-2 max-w-prose text-base text-amber-800 dark:text-amber-200">
+                        {tMcp("description")}
+                      </p>
+                    )}
                     {m.lastFailureMessage && (
                       <p className="mt-1 text-xs text-red-600 dark:text-red-400">
                         last error: {m.lastFailureMessage}

@@ -599,3 +599,126 @@ export async function sendSettlementPublishedNotification(params: {
     return false;
   }
 }
+
+function escapeHtml(s: string): string {
+  return s
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
+/**
+ * BYT-20261117-001 §6: ballot confirmation for a ballot an owner requested
+ * through an AI app (MCP `request_ballot_confirmation`). Lists every item +
+ * choice + the short ballot hash; the link opens the confirm page, which
+ * requires login as the same owner and an explicit "confirm" click. The
+ * vote is NOT cast by this email. Statutory content — legal-copy sign-off
+ * pending (spec AC).
+ *
+ * Returns false when the mail could not be sent (the caller kills the
+ * request: there is nothing for the owner to click). Without SMTP in
+ * non-production the link is logged and treated as delivered so the flow
+ * stays testable locally.
+ */
+export async function sendBallotConfirmation(params: {
+  recipientEmail: string;
+  recipientName: string;
+  votingTitle: string;
+  unitName: string;
+  clientName: string;
+  items: { n: number; title: string; choice: "za" | "proti" | "zdrzal_sa" | null }[];
+  shortHash: string;
+  confirmUrl: string;
+  expiryMinutes: number;
+  locale?: string;
+}): Promise<boolean> {
+  const transporter = getTransporter();
+  if (!transporter) {
+    if (process.env.NODE_ENV !== "production") {
+      console.warn("[email] SMTP not configured — ballot confirmation link (dev only):", params.confirmUrl);
+      return true;
+    }
+    console.warn("[email] SMTP not configured — cannot send ballot confirmation");
+    return false;
+  }
+
+  const locale = resolveLocale(params.locale);
+  const tCommon = await getTranslations({ locale, namespace: "Email.common" });
+  const t = await getTranslations({ locale, namespace: "Email.ballotConfirm" });
+
+  const choiceLabel = (c: "za" | "proti" | "zdrzal_sa" | null) =>
+    c === "za"
+      ? t("choiceFor")
+      : c === "proti"
+        ? t("choiceAgainst")
+        : c === "zdrzal_sa"
+          ? t("choiceAbstain")
+          : t("choiceUnmarked");
+
+  const rows = params.items
+    .map(
+      (it) => `
+        <tr>
+          <td style="padding: 8px; border-bottom: 1px solid #e5e7eb; vertical-align: top; color: #6b7280;">${it.n}.</td>
+          <td style="padding: 8px; border-bottom: 1px solid #e5e7eb; vertical-align: top;">${escapeHtml(it.title)}</td>
+          <td style="padding: 8px; border-bottom: 1px solid #e5e7eb; vertical-align: top; font-weight: bold; white-space: nowrap;">${escapeHtml(choiceLabel(it.choice))}</td>
+        </tr>`
+    )
+    .join("");
+
+  const html = `
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+      ${await brandingEmailHeader()}
+      <h2 style="color: #1d4ed8;">${escapeHtml(t("heading"))}</h2>
+      <p>${escapeHtml(tCommon("greeting", { name: params.recipientName }))}</p>
+      <p>${escapeHtml(
+        t("intro", {
+          voting: params.votingTitle,
+          unit: params.unitName,
+          client: params.clientName,
+        })
+      )}</p>
+      <p style="font-weight: bold;">${escapeHtml(t("notCastYet"))}</p>
+      <h3 style="margin-top: 24px;">${escapeHtml(t("itemsHeading"))}</h3>
+      <table style="width: 100%; border-collapse: collapse; font-size: 15px;">
+        <thead>
+          <tr>
+            <th style="text-align: left; padding: 8px; border-bottom: 2px solid #d1d5db;">#</th>
+            <th style="text-align: left; padding: 8px; border-bottom: 2px solid #d1d5db;">${escapeHtml(t("itemColumn"))}</th>
+            <th style="text-align: left; padding: 8px; border-bottom: 2px solid #d1d5db;">${escapeHtml(t("choiceColumn"))}</th>
+          </tr>
+        </thead>
+        <tbody>${rows}</tbody>
+      </table>
+      <p style="margin-top: 16px;">${escapeHtml(t("hashLabel"))} <code style="font-size: 15px;">${escapeHtml(params.shortHash)}</code></p>
+      <div style="margin: 24px 0; text-align: center;">
+        <a href="${escapeHtml(params.confirmUrl)}"
+           style="display: inline-block; padding: 12px 32px; background-color: #2563eb; color: #ffffff; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 16px;">
+          ${escapeHtml(t("button"))}
+        </a>
+      </div>
+      <p>${escapeHtml(t("loginNote"))}</p>
+      <p style="color: #6b7280; font-size: 14px;">${escapeHtml(t("expiryNote", { minutes: params.expiryMinutes }))}</p>
+      <p style="color: #6b7280; font-size: 14px;">${escapeHtml(t("ignoreNote"))}</p>
+      <p style="color: #6b7280; font-size: 12px; margin-top: 32px; border-top: 1px solid #e5e7eb; padding-top: 16px;">
+        ${escapeHtml(t("fallback"))}<br/>
+        <span style="word-break: break-all;">${escapeHtml(params.confirmUrl)}</span>
+      </p>
+    </div>
+  `;
+
+  try {
+    await transporter.sendMail({
+      from: emailFrom,
+      to: params.recipientEmail,
+      subject: t("subject", { voting: params.votingTitle }),
+      html,
+    });
+    return true;
+  } catch (error) {
+    console.error("[email] Failed to send ballot confirmation:", error);
+    return false;
+  }
+}

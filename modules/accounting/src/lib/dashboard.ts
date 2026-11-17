@@ -95,6 +95,33 @@ async function accountBalances(
   return new Map(rows.map((r) => [r.code, r.balance]));
 }
 
+/**
+ * The statutory vyúčtovanie deadline of the nearest ELAPSED year whose
+ * period is still unsettled (open / reconciling), or null when every elapsed
+ * year is published / closed. Shared by the dashboard tile (which shows it
+ * only inside the 30-day alert window) and the MCP `list_upcoming_deadlines`
+ * tool (which always reports it).
+ */
+export async function getPendingVyuctovanieDeadline(
+  entityId: string,
+  country: Country,
+  now: Date = new Date()
+): Promise<VyuctovanieDeadline | null> {
+  const [unsettled] = await db
+    .select({ year: accountingPeriods.year })
+    .from(accountingPeriods)
+    .where(
+      and(
+        eq(accountingPeriods.entityId, entityId),
+        lt(accountingPeriods.year, now.getUTCFullYear()),
+        notInArray(accountingPeriods.status, ["published", "closed"])
+      )
+    )
+    .orderBy(desc(accountingPeriods.year))
+    .limit(1);
+  return unsettled ? vyuctovanieDeadline(country, unsettled.year, now) : null;
+}
+
 export async function getDashboardTiles(
   entityId: string,
   country: Country
@@ -171,26 +198,11 @@ export async function getDashboardTiles(
     }
   }
 
-  // Nearest elapsed year still unsettled (period open/reconciling) → drives
-  // the statutory vyúčtovanie-deadline warning (AC 418/419).
-  const currentYear = new Date().getUTCFullYear();
-  const [unsettled] = await db
-    .select({ year: accountingPeriods.year })
-    .from(accountingPeriods)
-    .where(
-      and(
-        eq(accountingPeriods.entityId, entityId),
-        lt(accountingPeriods.year, currentYear),
-        notInArray(accountingPeriods.status, ["published", "closed"])
-      )
-    )
-    .orderBy(desc(accountingPeriods.year))
-    .limit(1);
-  let deadline: VyuctovanieDeadline | null = null;
-  if (unsettled) {
-    const d = vyuctovanieDeadline(country, unsettled.year, new Date());
-    if (d.alertActive) deadline = d;
-  }
+  // Nearest elapsed year still unsettled → statutory vyúčtovanie-deadline
+  // warning (AC 418/419), only once the alert window is open.
+  const pending = await getPendingVyuctovanieDeadline(entityId, country);
+  const deadline: VyuctovanieDeadline | null =
+    pending && pending.alertActive ? pending : null;
 
   return {
     attention: {

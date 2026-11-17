@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 
-import { auth } from "@/lib/auth";
-import { getCommunityRoot } from "@/lib/legacy-compat";
+import { sessionAccountingCtx } from "@modules/accounting/src/lib/accounting-ctx";
 import { db } from "@/db";
 import { canWriteAccounting } from "@modules/accounting/src/lib/authz";
 import {
@@ -26,43 +25,20 @@ import {
 // here — scoped server-side to units they hold an active owner membership
 // on (403 otherwise, never just a hidden button).
 
-import type { Session } from "next-auth";
-import type { CommunityRootRow } from "@/lib/legacy-compat";
-
-type BaseCtx =
-  | { error: NextResponse; session?: never; root?: never }
-  | { error?: never; session: Session; root: CommunityRootRow };
-
-async function baseCtx(): Promise<BaseCtx> {
-  const session = await auth();
-  if (!session) {
-    return {
-      error: NextResponse.json({ error: "unauthorized" }, { status: 401 }),
-    };
-  }
-  const root = await getCommunityRoot();
-  if (!root) {
-    return {
-      error: NextResponse.json({ error: "no community" }, { status: 404 }),
-    };
-  }
-  return { session, root };
-}
-
 /** GET /api/accounting/karta — accessible units with balances. */
 export async function handleListUnits(): Promise<NextResponse> {
-  const ctx = await baseCtx();
+  const ctx = await sessionAccountingCtx();
   if (ctx.error) return ctx.error;
-  const { session, root } = ctx;
+  const { principal, root } = ctx;
 
   const isWriter = await canWriteAccounting(
-    session.user.id,
-    session.user.role as string,
+    principal.userId,
+    principal.role,
     root.id
   );
   const units = await listAccessibleUnits(
-    session.user.id,
-    session.user.role as string,
+    principal.userId,
+    principal.role,
     root.id
   );
   // Due months post lazily on karta reads — an owner's balance must never
@@ -97,13 +73,13 @@ export async function handleGetLedger(
   _req: NextRequest,
   unitEntityId: string
 ): Promise<NextResponse> {
-  const ctx = await baseCtx();
+  const ctx = await sessionAccountingCtx();
   if (ctx.error) return ctx.error;
-  const { session, root } = ctx;
+  const { principal, root } = ctx;
 
   const allowed = await canReadUnitLedger(
-    session.user.id,
-    session.user.role as string,
+    principal.userId,
+    principal.role,
     root.id,
     unitEntityId
   );
@@ -112,8 +88,8 @@ export async function handleGetLedger(
   }
 
   const isWriter = await canWriteAccounting(
-    session.user.id,
-    session.user.role as string,
+    principal.userId,
+    principal.role,
     root.id
   );
   await db.transaction((tx) =>
@@ -139,13 +115,13 @@ export async function handleOverdue(
   _req: NextRequest,
   unitEntityId: string
 ): Promise<NextResponse> {
-  const ctx = await baseCtx();
+  const ctx = await sessionAccountingCtx();
   if (ctx.error) return ctx.error;
-  const { session, root } = ctx;
+  const { principal, root } = ctx;
 
   const allowed = await canReadUnitLedger(
-    session.user.id,
-    session.user.role as string,
+    principal.userId,
+    principal.role,
     root.id,
     unitEntityId
   );
@@ -170,13 +146,13 @@ export async function handleUpomienkaPdfData(
   _req: NextRequest,
   unitEntityId: string
 ): Promise<NextResponse> {
-  const ctx = await baseCtx();
+  const ctx = await sessionAccountingCtx();
   if (ctx.error) return ctx.error;
-  const { session, root } = ctx;
+  const { principal, root } = ctx;
 
   const isWriter = await canWriteAccounting(
-    session.user.id,
-    session.user.role as string,
+    principal.userId,
+    principal.role,
     root.id
   );
   if (!isWriter) {
@@ -206,13 +182,13 @@ export async function handleVyuctovaniePdfData(
   req: NextRequest,
   unitEntityId: string
 ): Promise<NextResponse> {
-  const ctx = await baseCtx();
+  const ctx = await sessionAccountingCtx();
   if (ctx.error) return ctx.error;
-  const { session, root } = ctx;
+  const { principal, root } = ctx;
 
   const allowed = await canReadUnitLedger(
-    session.user.id,
-    session.user.role as string,
+    principal.userId,
+    principal.role,
     root.id,
     unitEntityId
   );
@@ -248,13 +224,13 @@ export async function handlePredpisPdfData(
   _req: NextRequest,
   unitEntityId: string
 ): Promise<NextResponse> {
-  const ctx = await baseCtx();
+  const ctx = await sessionAccountingCtx();
   if (ctx.error) return ctx.error;
-  const { session, root } = ctx;
+  const { principal, root } = ctx;
 
   const allowed = await canReadUnitLedger(
-    session.user.id,
-    session.user.role as string,
+    principal.userId,
+    principal.role,
     root.id,
     unitEntityId
   );
@@ -284,13 +260,13 @@ export async function handleApplyCredit(
   _req: NextRequest,
   unitEntityId: string
 ): Promise<NextResponse> {
-  const ctx = await baseCtx();
+  const ctx = await sessionAccountingCtx();
   if (ctx.error) return ctx.error;
-  const { session, root } = ctx;
+  const { principal, root } = ctx;
 
   const isWriter = await canWriteAccounting(
-    session.user.id,
-    session.user.role as string,
+    principal.userId,
+    principal.role,
     root.id
   );
   if (!isWriter) {
@@ -302,7 +278,7 @@ export async function handleApplyCredit(
       entityId: root.id,
       country: root.country,
       unitEntityId,
-      actorId: session.user.id,
+      actorId: principal.userId,
     });
     return NextResponse.json(result);
   } catch (err) {

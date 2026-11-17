@@ -35,6 +35,15 @@ export async function isModuleEnabled(name: string): Promise<boolean> {
   return map.get(name) === "enabled";
 }
 
+/** Names of every module with status='enabled' (shares the 60 s cache). */
+export async function listEnabledModules(): Promise<string[]> {
+  const map = await loadCache();
+  return [...map.entries()]
+    .filter(([, status]) => status === "enabled")
+    .map(([name]) => name)
+    .sort();
+}
+
 /**
  * Wraps a Next.js route handler so it returns 404 when the named
  * module is disabled or absent. Use on every module-owned route entry

@@ -20,7 +20,12 @@ interface ItemDraft {
   quorumType: string;
 }
 
-export default function NovaHlasovaniePage() {
+export default function NovaHlasovaniePage({
+  canCreate,
+}: {
+  /** Server-resolved board check (admin OR active chairman). */
+  canCreate?: boolean;
+} = {}) {
   const { data: session } = useSession();
   const router = useRouter();
   const t = useTranslations("VotingNew");
@@ -84,7 +89,7 @@ export default function NovaHlasovaniePage() {
     if (p) setSelectedProjectId(p);
   }, []);
 
-  if (!hasPermission(role, "createVoting")) {
+  if (!(canCreate ?? hasPermission(role, "createVoting"))) {
     return (
       <div className="text-center py-12 text-gray-500 text-lg dark:text-gray-400">
         {t("noPermission")}

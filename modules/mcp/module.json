@@ -1,0 +1,10 @@
+{
+  "name": "mcp",
+  "version": "0.1.0",
+  "description": "MCP server + OAuth 2.1 for AI apps (Claude, ChatGPT, …) — board tools for treasurer / chairman (BYT-20261117-001). Disabled by default: enabling it lets members send community data to the AI provider they connect.",
+  "author": "open-housing",
+  "entry": "dist/index.js",
+  "permissions": [],
+  "uiSlots": [],
+  "minCoreVersion": "0.1.0"
+}
