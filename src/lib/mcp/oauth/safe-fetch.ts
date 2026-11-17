@@ -15,7 +15,11 @@ import { BlockList, isIP, type LookupFunction } from "net";
 const MAX_BYTES = 64 * 1024;
 const TIMEOUT_MS = 5_000;
 
-const blocked = new BlockList();
+// Two lists on purpose: in one shared BlockList the IPv6 rule ::ffff:0:0/96
+// also matches every plain IPv4 address, so all public IPv4 hosts were
+// refused. v4-mapped v6 addresses are unwrapped and checked against v4 below.
+const blockedV4 = new BlockList();
+const blockedV6 = new BlockList();
 for (const [net, prefix] of [
   ["0.0.0.0", 8],
   ["10.0.0.0", 8],
@@ -33,7 +37,7 @@ for (const [net, prefix] of [
   ["224.0.0.0", 4],
   ["240.0.0.0", 4],
 ] as const) {
-  blocked.addSubnet(net, prefix, "ipv4");
+  blockedV4.addSubnet(net, prefix, "ipv4");
 }
 for (const [net, prefix] of [
   ["::", 128],
@@ -47,16 +51,16 @@ for (const [net, prefix] of [
   ["fec0::", 10], // site-local (deprecated)
   ["ff00::", 8], // multicast
 ] as const) {
-  blocked.addSubnet(net, prefix, "ipv6");
+  blockedV6.addSubnet(net, prefix, "ipv6");
 }
 
 export function isPublicAddress(address: string): boolean {
   const family = isIP(address);
-  if (family === 4) return !blocked.check(address, "ipv4");
+  if (family === 4) return !blockedV4.check(address, "ipv4");
   if (family === 6) {
     const mapped = /^::ffff:(\d+\.\d+\.\d+\.\d+)$/i.exec(address);
-    if (mapped) return !blocked.check(mapped[1], "ipv4");
-    return !blocked.check(address, "ipv6");
+    if (mapped) return !blockedV4.check(mapped[1], "ipv4");
+    return !blockedV6.check(address, "ipv6");
   }
   return false;
 }
