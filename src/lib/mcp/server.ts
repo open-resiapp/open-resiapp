@@ -144,7 +144,7 @@ const ERROR_MESSAGES: Partial<Record<string, string>> = {
 };
 
 /** Only these detail keys may leave the server (never `raw`). */
-const SAFE_DETAIL_KEYS = ["missing", "module", "reason", "minEnd"] as const;
+const SAFE_DETAIL_KEYS = ["missing", "module", "reason", "minEnd", "itemIdx", "allowed"] as const;
 
 function errorResult(err: McpError): CallToolResult {
   const message = err.code.startsWith("validation.")

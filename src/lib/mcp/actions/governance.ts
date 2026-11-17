@@ -7,6 +7,7 @@ import type { Country } from "@/types";
 import { normalizeItems, VALID_FINANCIAL_EFFECT, VALID_QUORUM } from "@modules/voting/src/items";
 import { validatePerRollamDuration } from "@modules/voting/src/rules";
 import { createVoting } from "@modules/voting/src/votings";
+import { findDisallowedQuorum } from "@modules/voting/src/quorum-guard.server";
 import { assertBoard } from "../authz";
 import { validationError } from "../errors";
 import { fmtDate, fmtDateTime, fmtMoney, translatorFor } from "./format";
@@ -92,7 +93,7 @@ const itemSchema = z.object({
   title: z.string().trim().min(1).max(500),
   description: z.string().max(5000).optional(),
   quorumType: z.enum(VALID_QUORUM as [string, ...string[]]).describe(
-    "simple_present | simple_all | two_thirds_all | all_unanimous."
+    "simple_present | simple_all | two_thirds_all | all_unanimous. Only types allowed for the community's country and voting type are accepted: simple_present (majority of those present) is for meetings only, never for written (per rollam) votings."
   ),
   financialEffectKind: z
     .enum(VALID_FINANCIAL_EFFECT as [string, ...string[]])
@@ -122,8 +123,10 @@ const draftVoting = defineAction({
     if (Number.isNaN(start.getTime())) throw validationError("startsAt");
     if (Number.isNaN(end.getTime()) || end <= start) throw validationError("endsAt");
     const votingType = p.votingType ?? "written";
+    // Same fallback as createVoting: a community without a country is SK.
+    const country = (ctx.root.country ?? "sk") as Country;
     if (votingType === "written") {
-      const minEnd = validatePerRollamDuration(ctx.root.country as Country, start, end);
+      const minEnd = validatePerRollamDuration(country, start, end);
       if (minEnd) {
         throw validationError("endsAt", {
           reason: "per_rollam_min_duration",
@@ -133,6 +136,16 @@ const draftVoting = defineAction({
     }
     const normalized = normalizeItems({ items: p.items }, p.title, p.description ?? null);
     if ("error" in normalized) throw validationError("items");
+    // Run the same quorum guard createVoting runs at commit, so a proposal
+    // that would fail on confirm is rejected now, with the allowed types.
+    const quorumError = findDisallowedQuorum(normalized.items, country, votingType);
+    if (quorumError) {
+      throw validationError("items", {
+        reason: "quorum_not_allowed",
+        itemIdx: quorumError.itemIdx,
+        allowed: quorumError.allowed,
+      });
+    }
     return {
       ...p,
       votingType,

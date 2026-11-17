@@ -235,6 +235,14 @@ const CONFIRM_PASSTHROUGH = new Set<McpErrorCode>([
   "rate_limited",
 ]);
 
+/**
+ * A validation failure at confirm is a rule the proposal broke, not drift:
+ * reporting it as "the data changed" sent users round in circles.
+ */
+function keepsMeaningAtConfirm(code: McpErrorCode): boolean {
+  return CONFIRM_PASSTHROUGH.has(code) || code.startsWith("validation.");
+}
+
 export async function confirmAction(
   ctx: ActionContext,
   actionId: string,
@@ -267,7 +275,7 @@ export async function confirmAction(
     }
   } catch (err) {
     const e = toMcpError(err);
-    const code: McpErrorCode = CONFIRM_PASSTHROUGH.has(e.code) ? e.code : "conflict.state_changed";
+    const code: McpErrorCode = keepsMeaningAtConfirm(e.code) ? e.code : "conflict.state_changed";
     await markFailed(actionId, code);
     throw new McpError(code, { pendingActionId: actionId, module: e.details?.module });
   }
@@ -279,7 +287,7 @@ export async function confirmAction(
     const e = toMcpError(err);
     if (e.code === "internal") console.error(`[mcp] commit ${def.kind} ${actionId} failed:`, err);
     const code: McpErrorCode =
-      e.code === "internal" || CONFIRM_PASSTHROUGH.has(e.code) ? e.code : "conflict.state_changed";
+      e.code === "internal" || keepsMeaningAtConfirm(e.code) ? e.code : "conflict.state_changed";
     await markFailed(actionId, code);
     throw new McpError(code, { pendingActionId: actionId });
   }
