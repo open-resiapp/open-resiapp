@@ -20,6 +20,8 @@ import {
 } from "@modules/voting/src/db/schema";
 import { hasPermission } from "@/lib/permissions";
 import { getVotingResults } from "@modules/voting/src/results";
+import { getVotingParticipation } from "@modules/voting/src/participation";
+import { sessionIsBoard } from "@/lib/mcp/authz";
 import {
   computeItemAuditHash,
 } from "@modules/voting/src/engine";
@@ -164,9 +166,32 @@ export async function GET(request: NextRequest) {
       ? await userPasskeyState(session.user.id)
       : { active: false, pending: false };
 
+  // Turnout + who has not voted yet: board and vote counters only (the
+  // same people who record paper ballots for the missing units).
+  const canSeeParticipation =
+    hasPermission(session.user.role as UserRole, "recordPaperVote") ||
+    (await sessionIsBoard());
+  const participation = canSeeParticipation
+    ? await getVotingParticipation(votingId)
+    : null;
+
   return NextResponse.json({
     items,
     results,
+    participation: participation
+      ? {
+          eligibleCount: participation.eligibleCount,
+          votedCount: participation.votedCount,
+          eligibleWeight: participation.eligibleWeight,
+          votedWeight: participation.votedWeight,
+          notVoted: participation.notVoted.map((r) => ({
+            unitId: r.unitId,
+            unitLabel: r.unitLabel,
+            ownerId: r.ownerId,
+            ownerName: r.ownerName,
+          })),
+        }
+      : null,
     ballots: ballotsList,
     userBallots,
     userFlats,

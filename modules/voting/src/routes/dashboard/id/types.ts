@@ -82,6 +82,14 @@ export interface BallotData {
   hasPasskey: boolean;
   /** Caller has a passkey still waiting for its e-mail activation link. */
   hasPendingPasskey?: boolean;
+  /** Board / vote counter only: turnout and the owners who have not voted. */
+  participation?: {
+    eligibleCount: number;
+    votedCount: number;
+    eligibleWeight: number;
+    votedWeight: number;
+    notVoted: { unitId: string; unitLabel: string; ownerId: string; ownerName: string | null }[];
+  } | null;
 }
 
 export interface BuildingInfo {

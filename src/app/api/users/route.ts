@@ -13,6 +13,20 @@ export async function GET(request: NextRequest) {
   if (!session) {
     return NextResponse.json({ error: "Neautorizovaný prístup" }, { status: 401 });
   }
+  // Names, e-mails and phones of everyone: only the roles whose screens use
+  // this list (owners admin, paper votes, mandates). Pending registrants and
+  // plain owners must not read it.
+  const role = session.user.role as UserRole;
+  if (
+    session.user.status !== "active" ||
+    !(
+      hasPermission(role, "manageUsers") ||
+      hasPermission(role, "recordPaperVote") ||
+      hasPermission(role, "grantMandate")
+    )
+  ) {
+    return NextResponse.json({ error: "Nemáte oprávnenie" }, { status: 403 });
+  }
 
   const { searchParams } = new URL(request.url);
   const roleFilter = searchParams.get("role");

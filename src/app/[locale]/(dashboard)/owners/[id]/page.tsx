@@ -5,7 +5,7 @@ import OwnerDetail from "@/components/owners/OwnerDetail";
 import { auth } from "@/lib/auth";
 import { loadOwnerDetail } from "@/lib/owners-board.server";
 import { hasPermission } from "@/lib/permissions";
-import { getShellData } from "@/lib/shell.server";
+import { getRequestCommunityRoot, getShellData } from "@/lib/shell.server";
 import type { UserRole } from "@/types";
 
 // Owner detail — server-loaded (BYT-20261117-002 Phase 5). Interaction lives in
@@ -32,7 +32,10 @@ export default async function OwnerDetailPage({
   // while the layout shows PendingShell / ConsentGate instead of this page.
   const shell = session ? await getShellData(session) : null;
   if (!shell || shell.user.status !== "active" || shell.consent.needsConsent) return null;
-  const rootId = shell.entities.currentId;
+  // An admin without a unit has no membership root; fall back to the
+  // community root the rest of the shell (home, accounting) uses.
+  const rootId =
+    shell.entities.currentId ?? (await getRequestCommunityRoot())?.id ?? null;
   const data = UUID_RE.test(id) ? await loadOwnerDetail(id, rootId) : null;
   if (!data) {
     return (

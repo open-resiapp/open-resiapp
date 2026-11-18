@@ -27,6 +27,8 @@ interface PaperVoteModalProps {
   votingId: string;
   onClose: () => void;
   onRecorded: () => void;
+  /** Opened from the "not voted yet" list: owner and unit pre-selected. */
+  preset?: { ownerId: string; unitId: string } | null;
 }
 
 const choiceValues: VoteChoice[] = ["za", "proti", "zdrzal_sa"];
@@ -41,6 +43,7 @@ export default function PaperVoteModal({
   votingId,
   onClose,
   onRecorded,
+  preset = null,
 }: PaperVoteModalProps) {
   const t = useTranslations("PaperVote");
   const tCommon = useTranslations("Common");
@@ -63,13 +66,17 @@ export default function PaperVoteModal({
     if (!isOpen) return;
     fetch("/api/users?role=owner")
       .then((r) => r.json())
-      .then((data) => setOwners(data))
+      .then((data: Owner[]) => setOwners(Array.isArray(data) ? data.filter((o) => o.flatNumber) : []))
       .catch(() => setOwners([]));
     fetch(`/api/votings/${votingId}`)
       .then((r) => (r.ok ? r.json() : null))
       .then((d) => setItems(d?.items ?? []))
       .catch(() => setItems([]));
   }, [isOpen, votingId]);
+
+  useEffect(() => {
+    if (isOpen && preset) setSelectedOwner(preset.ownerId);
+  }, [isOpen, preset]);
 
   // Fetch the owner's flats when an owner is picked.
   useEffect(() => {
@@ -78,14 +85,20 @@ export default function PaperVoteModal({
         .then((r) => r.json())
         .then((data: OwnerFlat[]) => {
           setOwnerFlats(data);
-          setSelectedFlat(data.length === 1 ? data[0].flatId : "");
+          setSelectedFlat(
+            data.length === 1
+              ? data[0].flatId
+              : preset && data.some((f) => f.flatId === preset.unitId)
+                ? preset.unitId
+                : ""
+          );
         })
         .catch(() => setOwnerFlats([]));
     } else {
       setOwnerFlats([]);
       setSelectedFlat("");
     }
-  }, [selectedOwner]);
+  }, [selectedOwner, preset]);
 
   // Revoke any outstanding object URLs when the component truly unmounts.
   useEffect(
@@ -297,7 +310,7 @@ export default function PaperVoteModal({
               ))}
             </div>
 
-            {items.length > 0 && (
+            {items.length > 1 && (
               <div className="mt-3 pt-3 border-t border-gray-200 dark:border-gray-700">
                 <p className="text-sm text-gray-500 mb-2 dark:text-gray-400">
                   {t("setRemainingLabel")}

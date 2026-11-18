@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState, useTransition } from "react";
 
 import { useRouter } from "@/i18n/navigation";
+import { getDisplayTemplateSlug } from "@/lib/templates/display-slug";
 import { useTranslations } from "next-intl";
 
 import { PageHeader, useConfirm } from "@/components/ui";
@@ -148,7 +149,10 @@ export default function ImportWizardPage() {
           country: prev.country ?? data.country ?? "sk",
           voting_method: prev.voting_method ?? data.votingMethod ?? "per_share",
         }));
-        if (data.templateSlug) setTemplateSlug(data.templateSlug);
+        // Pre-Phase-5 installs carry a legacy kind slug (housing_community);
+        // map it to the catalog template so the detail fetch resolves.
+        if (data.templateSlug)
+          setTemplateSlug(getDisplayTemplateSlug(data.templateSlug) ?? data.templateSlug);
       })
       .catch(() => {});
   }, []);

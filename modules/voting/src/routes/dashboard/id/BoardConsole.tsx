@@ -6,7 +6,7 @@
 // minutes PDF, paper ballot photos.
 import { useState } from "react";
 import { useTranslations } from "next-intl";
-import { Button, Card, Field, Input, Textarea } from "@/components/ui";
+import { Button, Card, Field, Input, Textarea, useConfirm } from "@/components/ui";
 import MandateModal from "@/components/voting/MandateModal";
 import PaperVoteModal from "@/components/voting/PaperVoteModal";
 import DownloadMinutesButton from "@/components/voting/DownloadMinutesButton";
@@ -26,7 +26,18 @@ export function ManageActions({
 }) {
   const t = useTranslations("Voting");
   const tCommon = useTranslations("Common");
+  const confirm = useConfirm();
   if (voting.status !== "draft" && voting.status !== "active") return null;
+
+  async function endVoting() {
+    const ok = await confirm({
+      title: t("endVotingConfirmTitle"),
+      description: t("endVotingConfirmText"),
+      confirmLabel: t("endVotingConfirmButton"),
+      tone: "danger",
+    });
+    if (ok) onStatusChange("closed");
+  }
   return (
     <div className="mt-4 flex flex-wrap gap-2 border-t border-ui-border pt-4">
       {voting.status === "draft" && (
@@ -38,7 +49,7 @@ export function ManageActions({
         </>
       )}
       {voting.status === "active" && (
-        <Button variant="danger" onClick={() => onStatusChange("closed")}>
+        <Button variant="danger" onClick={endVoting}>
           {t("endVoting")}
         </Button>
       )}
@@ -157,6 +168,14 @@ export default function BoardConsole({
   const t = useTranslations("Voting");
   const [showMandateModal, setShowMandateModal] = useState(false);
   const [showPaperModal, setShowPaperModal] = useState(false);
+  const [paperPreset, setPaperPreset] = useState<{ ownerId: string; unitId: string } | null>(
+    null
+  );
+  const participation = data?.participation ?? null;
+  const turnoutPct =
+    participation && participation.eligibleWeight > 0
+      ? Math.round((participation.votedWeight / participation.eligibleWeight) * 1000) / 10
+      : 0;
 
   const isActive = voting.status === "active";
   const isClosed = voting.status === "closed";
@@ -166,7 +185,13 @@ export default function BoardConsole({
       {isActive && (canRecordPaper || canMandate) && (
         <div className="mb-6 flex flex-wrap gap-3">
           {canRecordPaper && (
-            <Button variant="secondary" onClick={() => setShowPaperModal(true)}>
+            <Button
+              variant="secondary"
+              onClick={() => {
+                setPaperPreset(null);
+                setShowPaperModal(true);
+              }}
+            >
               {t("recordPaperVote")}
             </Button>
           )}
@@ -176,6 +201,70 @@ export default function BoardConsole({
             </Button>
           )}
         </div>
+      )}
+
+      {/* Turnout + owners who have not voted yet (board / vote counter) */}
+      {isActive && participation && (
+        <Card as="section" className="mb-6 space-y-4">
+          <h3 className="text-lg font-bold text-ui-text">{t("turnoutHeading")}</h3>
+          <p className="text-base text-ui-text">
+            {t("turnoutSummary", {
+              voted: participation.votedCount,
+              eligible: participation.eligibleCount,
+              pct: turnoutPct,
+            })}
+          </p>
+          <div
+            className="h-3 w-full overflow-hidden rounded-full bg-ui-surface-muted"
+            role="progressbar"
+            aria-valuemin={0}
+            aria-valuemax={100}
+            aria-valuenow={turnoutPct}
+            aria-label={t("turnoutHeading")}
+          >
+            <div
+              className="h-full rounded-full bg-ui-primary"
+              style={{ width: `${Math.min(100, turnoutPct)}%` }}
+            />
+          </div>
+          {participation.notVoted.length === 0 ? (
+            <p className="text-base text-ui-text-muted">{t("allVoted")}</p>
+          ) : (
+            <div>
+              <h4 className="mb-2 text-base font-semibold text-ui-text">
+                {t("notVotedHeading", { count: participation.notVoted.length })}
+              </h4>
+              <ul className="divide-y divide-ui-border">
+                {participation.notVoted.map((r) => (
+                  <li
+                    key={`${r.unitId}-${r.ownerId}`}
+                    className="flex flex-col gap-2 py-3 sm:flex-row sm:items-center sm:justify-between"
+                  >
+                    <div className="min-w-0">
+                      <p className="text-base font-medium text-ui-text">
+                        {t("flatHeader", { number: r.unitLabel })}
+                      </p>
+                      <p className="break-words text-base text-ui-text-muted">
+                        {r.ownerName ?? t("noOwnerName")}
+                      </p>
+                    </div>
+                    {canRecordPaper && (
+                      <Button
+                        variant="secondary"
+                        onClick={() => {
+                          setPaperPreset({ ownerId: r.ownerId, unitId: r.unitId });
+                          setShowPaperModal(true);
+                        }}
+                      >
+                        {t("recordPaperFor")}
+                      </Button>
+                    )}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </Card>
       )}
 
       {children}
@@ -230,6 +319,7 @@ export default function BoardConsole({
       <PaperVoteModal
         isOpen={showPaperModal}
         votingId={votingId}
+        preset={paperPreset}
         onClose={() => setShowPaperModal(false)}
         onRecorded={() => {
           setShowPaperModal(false);

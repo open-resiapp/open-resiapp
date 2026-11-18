@@ -92,7 +92,7 @@ export async function getVotingResults(
       ownerName: users.name,
       shareNumerator: sql<number>`(${entities.data}->>'share_numerator')::int`,
       shareDenominator: sql<number>`(${entities.data}->>'share_denominator')::int`,
-      area: sql<number | null>`(${entities.data}->>'area_m2')::int`,
+      area: sql<number | null>`(${entities.data}->>'area_m2')::float8`,
       ownerUnitShareNumerator: memberships.ownerUnitShareNumerator,
       ownerUnitShareDenominator: memberships.ownerUnitShareDenominator,
       membershipWeight: memberships.weight,
@@ -138,7 +138,7 @@ export async function getVotingResults(
       .select({
         shareNumerator: sql<number>`(${entities.data}->>'share_numerator')::int`,
         shareDenominator: sql<number>`(${entities.data}->>'share_denominator')::int`,
-        area: sql<number | null>`(${entities.data}->>'area_m2')::int`,
+        area: sql<number | null>`(${entities.data}->>'area_m2')::float8`,
       })
       .from(entities)
       .where(

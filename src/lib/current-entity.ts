@@ -2,6 +2,7 @@ import "server-only";
 import { cookies } from "next/headers";
 
 import { listUserRoots } from "@/lib/entity-tree";
+import { getCommunityRoot } from "@/lib/legacy-compat";
 
 const COOKIE_NAME = "current-entity-id";
 // 30 days — entity context is sticky across sessions.
@@ -68,4 +69,16 @@ export async function resolveCurrentEntityContext(userId: string): Promise<{
 export async function listCurrentEntityOptions(userId: string) {
   const roots = await listUserRoots(userId);
   return roots.map((r) => ({ id: r.id, name: r.name, kind: r.kind }));
+}
+
+/**
+ * Board-side scope: the user's current root, or — for an admin who holds no
+ * unit and therefore no membership — the community root the rest of the
+ * shell uses (getCommunityRoot). Callers must already have checked the
+ * permission; this only picks the community.
+ */
+export async function resolveBoardRootId(userId: string): Promise<string | null> {
+  const fromMembership = await resolveCurrentEntityId(userId);
+  if (fromMembership) return fromMembership;
+  return (await getCommunityRoot())?.id ?? null;
 }

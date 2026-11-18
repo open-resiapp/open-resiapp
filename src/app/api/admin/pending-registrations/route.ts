@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 
 import { auth } from "@/lib/auth";
-import { resolveCurrentEntityId } from "@/lib/current-entity";
+import { resolveBoardRootId } from "@/lib/current-entity";
 import {
   listClaimableRealUsers,
   listPendingShellUsers,
@@ -19,7 +19,7 @@ export async function GET() {
     return NextResponse.json({ error: "forbidden" }, { status: 403 });
   }
 
-  const rootId = await resolveCurrentEntityId(session.user.id);
+  const rootId = await resolveBoardRootId(session.user.id);
   const shells = rootId ? await listPendingShellUsers(rootId) : [];
   const registrants = await listClaimableRealUsers();
 

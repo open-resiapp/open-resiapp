@@ -118,9 +118,14 @@ async function loadRaw(rootId: string) {
         or(
           inArray(users.id, inRoot),
           and(
-            eq(users.status, "pending"),
-            isNotNull(users.passwordHash),
-            notInArray(users.id, withActiveMembership)
+            notInArray(users.id, withActiveMembership),
+            or(
+              and(eq(users.status, "pending"), isNotNull(users.passwordHash)),
+              // Approved without a flat (flatless community member) or an
+              // admin without a unit: no membership anywhere, so the root
+              // scope above cannot see them — same rule as the pending ones.
+              eq(users.status, "active")
+            )
           )
         )
       );

@@ -61,7 +61,7 @@ export default function MandateModal({
       // Fetch all owners
       fetch("/api/users?role=owner")
         .then((r) => r.json())
-        .then((data: Owner[]) => setOwners(data))
+        .then((data: Owner[]) => setOwners(Array.isArray(data) ? data.filter((o) => o.flatNumber) : []))
         .catch(() => setOwners([]));
     }
   }, [isOpen]);

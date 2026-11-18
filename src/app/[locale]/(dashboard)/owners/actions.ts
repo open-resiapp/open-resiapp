@@ -1,7 +1,7 @@
 "use server";
 
 import { auth } from "@/lib/auth";
-import { resolveCurrentEntityId } from "@/lib/current-entity";
+import { resolveBoardRootId } from "@/lib/current-entity";
 import { createShellOwner, revokeShellInvitations } from "@/lib/owners-board.server";
 import { hasPermission } from "@/lib/permissions";
 import type { CreateOwnerErrorCode, RevokeInviteErrorCode } from "@/lib/owners-board";
@@ -32,7 +32,7 @@ export async function createOwnerAction(
   if (!session) return { ok: false, error: "forbidden" };
   // Role "admin" stays allowed: parity with the old POST /api/users, which
   // took any role from the body behind the same manageUsers gate.
-  const rootId = await resolveCurrentEntityId(session.user.id);
+  const rootId = await resolveBoardRootId(session.user.id);
   return createShellOwner({
     name: String(input.name ?? ""),
     email: input.email ? String(input.email) : null,
@@ -53,7 +53,7 @@ export async function revokeInvitationAction(
   if (typeof shellUserId !== "string" || !shellUserId) return { ok: false, error: "not_found" };
   try {
     // Only shells of the actor's current community (same scope as the list).
-    const rootId = await resolveCurrentEntityId(session.user.id);
+    const rootId = await resolveBoardRootId(session.user.id);
     const n = await revokeShellInvitations(shellUserId, rootId);
     return n > 0 ? { ok: true } : { ok: false, error: "not_found" };
   } catch (err) {

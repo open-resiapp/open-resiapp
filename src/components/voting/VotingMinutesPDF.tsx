@@ -557,7 +557,7 @@ export default function VotingMinutesPDF({
             <Text style={[styles.colOwner, styles.headerText]}>Vlastník</Text>
             <Text style={[styles.colType, styles.headerText]}>Typ</Text>
             <Text style={[styles.colDate, styles.headerText]}>Dátum</Text>
-            <Text style={[styles.colHash, styles.headerText]}>Ballot hash</Text>
+            <Text style={[styles.colHash, styles.headerText]}>Odtlačok volieb</Text>
           </View>
           {ballots.map((b, i) => (
             <View key={b.id} style={styles.ballotRowBlock} wrap={false}>
@@ -576,6 +576,11 @@ export default function VotingMinutesPDF({
               ) : null}
             </View>
           ))}
+          <Text style={styles.confirmationLine}>
+            Odtlačok volieb (SHA-256) zachytáva voľby na lístku, nie osobu — lístky s rovnakými
+            voľbami majú rovnaký odtlačok. Každý hlas jednoznačne identifikuje audit hash pri
+            príslušnom bode.
+          </Text>
         </View>
 
         {/* Mandates */}

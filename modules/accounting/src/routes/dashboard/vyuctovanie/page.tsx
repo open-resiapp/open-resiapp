@@ -8,7 +8,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
-import { Link } from "@/i18n/navigation";
+import { Link, useRouter } from "@/i18n/navigation";
 import { formatEur } from "@modules/accounting/src/lib/money";
 
 interface Gates {
@@ -58,6 +58,7 @@ interface Preview {
 export default function VyuctovaniePage() {
   const t = useTranslations("Accounting.vyuctovanie");
   const tCat = useTranslations("Accounting.serviceCategories");
+  const router = useRouter();
 
   const [year, setYear] = useState(() => new Date().getUTCFullYear() - 1);
   const [preview, setPreview] = useState<Preview | null>(null);
@@ -73,7 +74,9 @@ export default function VyuctovaniePage() {
     fetch(`/api/accounting/vyuctovanie?year=${year}`)
       .then((r) => {
         if (r.status === 403) {
+          // Plain owner: their own settlement lives on Moje platby.
           setForbidden(true);
+          router.replace("/moje-platby");
           return null;
         }
         if (!r.ok) throw new Error(String(r.status));
@@ -83,7 +86,7 @@ export default function VyuctovaniePage() {
         if (data) setPreview(data);
       })
       .catch(() => setError(true));
-  }, [year]);
+  }, [year, router]);
 
   useEffect(load, [load]);
 
@@ -107,24 +110,7 @@ export default function VyuctovaniePage() {
     }
   }
 
-  if (forbidden) {
-    return (
-      <div className="max-w-xl space-y-3">
-        <p className="text-base font-medium text-gray-900 dark:text-gray-100">
-          {t("ownerNotReady", { year })}
-        </p>
-        <p className="text-base text-gray-600 dark:text-gray-300">
-          {t("ownerNotReadyHint")}
-        </p>
-        <Link
-          href="/accounting/karta"
-          className="inline-block min-h-11 rounded bg-blue-600 px-4 py-2.5 text-base text-white hover:bg-blue-700"
-        >
-          {t("ownerOpenKarta")}
-        </Link>
-      </div>
-    );
-  }
+  if (forbidden) return null;
 
   if (error) {
     return <p className="text-red-600 dark:text-red-400">{t("loadError")}</p>;

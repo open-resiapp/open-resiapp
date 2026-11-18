@@ -52,7 +52,7 @@ export default function Sidebar({
         id="app-sidebar"
         className={
           isDrawer
-            ? `fixed top-0 left-0 z-50 h-full w-72 overflow-y-auto bg-white border-r border-gray-200 transform transition-transform lg:translate-x-0 lg:static lg:z-auto lg:w-64 dark:bg-gray-900 dark:border-gray-800 ${
+            ? `fixed top-0 left-0 z-50 h-full w-72 overflow-y-auto bg-white border-r border-gray-200 transform transition-transform lg:translate-x-0 lg:static lg:h-auto lg:z-auto lg:w-64 dark:bg-gray-900 dark:border-gray-800 ${
                 isOpen ? "translate-x-0" : "-translate-x-full"
               }`
             : "hidden lg:block lg:w-64 shrink-0 bg-white border-r border-gray-200 dark:bg-gray-900 dark:border-gray-800"
