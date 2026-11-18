@@ -14,7 +14,7 @@ import {
   type FeedFilter,
 } from "@/lib/feed";
 import { loadFeed } from "@/lib/feed.server";
-import { isBoard } from "@/lib/mcp/authz";
+import { isBoard, noticeManageScope } from "@/lib/mcp/authz";
 import { hasPermission } from "@/lib/permissions";
 import { getShellData } from "@/lib/shell.server";
 
@@ -37,14 +37,18 @@ export default async function BoardPage({ searchParams }: { searchParams: Search
   const page = parsePage(sp.strana);
   const focus = parseItemKey(sp.prispevok);
 
-  // Managing existing notices keeps the createPost permission (PATCH/DELETE
-  // /api/posts/[id]); creating follows POST /api/posts → createPost →
-  // assertBoard with caretaker: admin, active chairman or caretaker
-  // (BYT-20261117-001 Decided 1), so a chairman without flat admin can post.
-  const canManageNoticesPerm = hasPermission(role, "createPost");
+  // Creating (POST /api/posts → assertBoard with caretaker) and managing
+  // (PATCH/DELETE /api/posts/[id] → noticeManageScope) share one authority:
+  // admin, active chairman or caretaker (BYT-20261117-001 Decided 1), so a
+  // chairman without flat admin can post, edit, pin and delete notices.
   const canCreateNotice =
     shell.user.status === "active" &&
     isBoard({ role, boardRoles: shell.user.boardRoles }, { allowCaretaker: true });
+  const noticeScope = noticeManageScope({
+    role,
+    status: shell.user.status,
+    boardRoles: shell.user.boardRoles,
+  });
   const canSeeCommunity = hasPermission(role, "viewCommunity");
   const canCreateCommunity = hasPermission(role, "createCommunityPost");
   const canCreate = canCreateNotice || canCreateCommunity;
@@ -74,9 +78,8 @@ export default async function BoardPage({ searchParams }: { searchParams: Search
 
   const viewer: FeedViewerCaps = {
     userId: session.user.id,
-    canManageNotices: canManageNoticesPerm,
-    canManageAllNotices:
-      canManageNoticesPerm && (role === "admin" || shell.user.boardRoles.length > 0),
+    canManageNotices: noticeScope !== null,
+    canManageAllNotices: noticeScope === "all",
     canModerate: hasPermission(role, "moderateCommunityResponse"),
     canRespond: hasPermission(role, "respondToCommunityPost"),
   };
