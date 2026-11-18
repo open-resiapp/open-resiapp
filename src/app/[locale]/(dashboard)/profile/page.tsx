@@ -6,6 +6,7 @@ import { notificationPreferences, users } from "@/db/schema";
 import { redirect } from "@/i18n/navigation";
 import { listUserFlats } from "@/lib/legacy-compat";
 import { hasEDeliveryConsent } from "@modules/accounting/src/lib/e-delivery";
+import { getResourceUrl, requestUrlFromHeaders } from "@/lib/mcp/config";
 import ProfileView from "@/components/profile/ProfileView";
 
 // Account data comes from the shell (useShell) inside ProfileView; the flats
@@ -39,9 +40,19 @@ export default async function ProfilePage({
       .limit(1),
   ]);
 
+  // Public MCP endpoint shown in the "connect an AI" guide. getResourceUrl
+  // throws in production when no public URL is configured — hide the field then.
+  let mcpUrl: string | null = null;
+  try {
+    mcpUrl = getResourceUrl(await requestUrlFromHeaders());
+  } catch {
+    mcpUrl = null;
+  }
+
   return (
     <ProfileView
       lastLoginAt={self?.lastLoginAt ? self.lastLoginAt.toISOString() : null}
+      mcpUrl={mcpUrl}
       flats={flatRows.map((f) => ({
         id: f.flatId,
         flatNumber: f.flatNumber,

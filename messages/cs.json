@@ -3934,6 +3934,50 @@
       "confirmRevoke": "Ano, zrušit",
       "cancel": "Ponechat"
     },
+    "guide": {
+      "title": "Připojte si AI asistenta",
+      "toggle": "Jak připojit další AI",
+      "intro": "AI asistent vám umí odpovědět na otázky o vašem společenství (oznámení, hlasování, platby, zákony) a připravit akce. Nic se nezmění, dokud sami nekliknete na potvrzení. Přístup můžete kdykoli zrušit tady v profilu.",
+      "addressLabel": "Adresa vašeho společenství pro AI",
+      "copy": "Kopírovat",
+      "copied": "Zkopírováno",
+      "copyFailed": "Kopírování selhalo. Označte adresu a zkopírujte ji ručně.",
+      "tabsLabel": "Vyberte AI aplikaci",
+      "tabClaude": "Claude",
+      "tabChatgpt": "ChatGPT",
+      "tabOther": "Jiná AI",
+      "stepsHeading": "Postup",
+      "claude": [
+        "Otevřete Claude (web nebo aplikaci) a jděte do nastavení (např. Settings nebo Customize).",
+        "Najděte Connectors (může se jmenovat i Konektory) a zvolte přidání vlastního konektoru (např. „Add custom connector“).",
+        "Vložte adresu shora a potvrďte (např. „Add“).",
+        "Přihlaste se do této aplikace a schvalte přístup.",
+        "V nové konverzaci zapněte konektor přes „+“ a poté Connectors."
+      ],
+      "claudeNote": "V plánech Team a Enterprise konektory přidává administrátor v nastavení organizace. Bezplatný plán umožňuje jeden vlastní konektor.",
+      "claudeLink": "Nápověda Claude: vlastní konektory",
+      "chatgpt": [
+        "V ChatGPT otevřete nastavení a najděte Apps & Connectors (může se jmenovat i Plugins nebo Aplikace).",
+        "Přidejte vlastní MCP server nebo konektor. V některých plánech musíte nejprve v pokročilých nastaveních zapnout „Developer mode“.",
+        "Pojmenujte jej, vložte adresu shora a jako přihlášení zvolte OAuth.",
+        "Přihlaste se do této aplikace a schvalte přístup.",
+        "V nové konverzaci jej vyberte z nabídky „+“."
+      ],
+      "chatgptNote": "Názvy menu se liší podle verze a plánu. Pokud možnost nevidíte, váš plán ChatGPT nemusí vlastní konektory podporovat.",
+      "chatgptLink": "Centrum nápovědy OpenAI",
+      "other": [
+        "Použijte jakoukoli AI aplikaci, která podporuje vzdálené MCP servery s přihlášením přes OAuth.",
+        "V nastavení aplikace najděte přidání vlastního konektoru nebo MCP serveru a vložte adresu shora.",
+        "Přihlaste se do této aplikace a schvalte přístup."
+      ],
+      "safetyTitle": "Bezpečnost",
+      "safety": [
+        "AI vidí jen to, co vidíte vy v aplikaci.",
+        "Změny se provedou až po vašem kliknutí na potvrzení.",
+        "Hlasování potvrzujete e-mailem nebo v aplikaci.",
+        "Zrušením přístupu níže AI okamžitě ztratí přístup."
+      ]
+    },
     "actions": {
       "match_payment": {
         "title": "Přiřadit platbu z banky",

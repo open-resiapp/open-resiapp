@@ -3934,6 +3934,50 @@
       "confirmRevoke": "Yes, revoke",
       "cancel": "Keep"
     },
+    "guide": {
+      "title": "Connect an AI assistant",
+      "toggle": "How to connect another AI",
+      "intro": "An AI assistant can answer questions about your community (notices, votes, payments, laws) and prepare actions. Nothing changes until you click confirm yourself. You can disconnect any time here in your profile.",
+      "addressLabel": "Your community address for AI",
+      "copy": "Copy",
+      "copied": "Copied",
+      "copyFailed": "Copying failed. Select the address and copy it manually.",
+      "tabsLabel": "Choose an AI app",
+      "tabClaude": "Claude",
+      "tabChatgpt": "ChatGPT",
+      "tabOther": "Other AI",
+      "stepsHeading": "Steps",
+      "claude": [
+        "Open Claude (web or desktop) and go to settings (e.g. Settings or Customize).",
+        "Find Connectors and choose to add a custom connector (e.g. \"Add custom connector\").",
+        "Paste the address above and confirm (e.g. \"Add\").",
+        "Sign in to this app and approve access.",
+        "In a new chat, turn the connector on via \"+\" and then Connectors."
+      ],
+      "claudeNote": "On Team and Enterprise plans an admin adds connectors in organization settings. The free plan allows one custom connector.",
+      "claudeLink": "Claude help: custom connectors",
+      "chatgpt": [
+        "In ChatGPT open settings and find Apps & Connectors (may also be called Plugins).",
+        "Add a custom MCP server or connector. On some plans you first need to turn on \"Developer mode\" in advanced settings.",
+        "Name it, paste the address above and choose OAuth as the sign-in method.",
+        "Sign in to this app and approve access.",
+        "In a new chat, pick it from the \"+\" menu."
+      ],
+      "chatgptNote": "Menu names differ by version and plan. If you do not see the option, your ChatGPT plan may not support custom connectors.",
+      "chatgptLink": "OpenAI help center",
+      "other": [
+        "Use any AI app that supports remote MCP servers with OAuth sign-in.",
+        "In the app settings find the option to add a custom connector or MCP server and paste the address above.",
+        "Sign in to this app and approve access."
+      ],
+      "safetyTitle": "Safety",
+      "safety": [
+        "The AI sees only what you see in the app.",
+        "Changes are made only after you click confirm.",
+        "Votes are confirmed by e-mail or in the app.",
+        "Disconnecting below removes the AI's access immediately."
+      ]
+    },
     "actions": {
       "match_payment": {
         "title": "Match a bank payment",
