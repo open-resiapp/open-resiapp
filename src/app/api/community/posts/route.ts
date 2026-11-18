@@ -10,6 +10,8 @@ import {
   memberships,
 } from "@/db/schema";
 import { getCommunityRoot } from "@/lib/legacy-compat";
+import { createCommunityPost } from "@/lib/community.server";
+import { isMcpError, mcpErrorStatus } from "@/lib/mcp/errors";
 import {
   aliasedTable,
   and,
@@ -23,11 +25,7 @@ import {
   sql,
 } from "drizzle-orm";
 import { hasPermission } from "@/lib/permissions";
-import { dispatchHook } from "@/lib/modules/dispatch";
-import { linkDocumentToTarget } from "@/lib/documents.server";
 import type { UserRole } from "@/types";
-
-const POST_TTL_DAYS = 30;
 
 export async function GET(request: NextRequest) {
   const session = await auth();
@@ -200,78 +198,31 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Neautorizovaný prístup" }, { status: 401 });
   }
 
-  if (!hasPermission(session.user.role as UserRole, "createCommunityPost")) {
-    return NextResponse.json({ error: "Nemáte oprávnenie" }, { status: 403 });
-  }
-
-  const body = await request.json();
-  const { type, title, content, photoUrl, eventDate, eventLocation, entranceId, responsesAllowed } = body;
-
-  if (!type || !title || !content) {
-    return NextResponse.json(
-      { error: "Typ, nadpis a obsah sú povinné" },
-      { status: 400 }
+  // Permission, validation (type, title, content, event date + place,
+  // entrance scope), document links and the onPostCreate hook live in
+  // createCommunityPost — shared with the MCP create_community_post action
+  // (BYT-20261118-012). Errors are stable codes.
+  const body = (await request.json().catch(() => ({}))) as Record<string, unknown>;
+  try {
+    const post = await createCommunityPost(
+      { userId: session.user.id, role: session.user.role as UserRole },
+      {
+        type: String(body.type ?? ""),
+        title: String(body.title ?? ""),
+        content: String(body.content ?? ""),
+        photoUrl: typeof body.photoUrl === "string" ? body.photoUrl : null,
+        eventDate: typeof body.eventDate === "string" ? body.eventDate : null,
+        eventLocation: typeof body.eventLocation === "string" ? body.eventLocation : null,
+        entranceId: typeof body.entranceId === "string" ? body.entranceId : null,
+        responsesAllowed: body.responsesAllowed !== false,
+        documentIds: Array.isArray(body.documentIds) ? body.documentIds.map(String) : [],
+      }
     );
+    return NextResponse.json(post, { status: 201 });
+  } catch (err) {
+    if (isMcpError(err)) {
+      return NextResponse.json({ error: err.code }, { status: mcpErrorStatus(err.code) });
+    }
+    throw err;
   }
-
-  const isEvent = type === "event";
-  if (isEvent && (!eventDate || !eventLocation)) {
-    return NextResponse.json(
-      { error: "Udalosť musí mať dátum a miesto" },
-      { status: 400 }
-    );
-  }
-  if (!isEvent && (eventDate || eventLocation)) {
-    return NextResponse.json(
-      { error: "Dátum a miesto sú povolené len pre udalosti" },
-      { status: 400 }
-    );
-  }
-
-  const expiresAt = new Date(Date.now() + POST_TTL_DAYS * 24 * 60 * 60 * 1000);
-
-  // Phase 9.1d: NULL entranceId = community-wide → root entity.
-  let cpEntityId: string | null = entranceId || null;
-  if (cpEntityId === null) {
-    const root = await getCommunityRoot();
-    cpEntityId = root?.id ?? null;
-  }
-
-  if (!cpEntityId) {
-    return NextResponse.json({ error: "Žiadne community root nie je nastavené" }, { status: 500 });
-  }
-
-  const [post] = await db
-    .insert(communityPosts)
-    .values({
-      type,
-      title,
-      content,
-      photoUrl: photoUrl || null,
-      authorId: session.user.id,
-      eventDate: eventDate ? new Date(eventDate) : null,
-      eventLocation: eventLocation || null,
-      entityId: cpEntityId,
-      // Default true; only persist false when the author explicitly opts out.
-      responsesAllowed: responsesAllowed === false ? false : true,
-      expiresAt,
-    })
-    .returning();
-
-  const documentIds = Array.isArray(body.documentIds) ? body.documentIds : [];
-  for (const docId of documentIds) {
-    await linkDocumentToTarget(String(docId), "community_post", post.id);
-  }
-
-  dispatchHook("onPostCreate", {
-    id: post.id,
-    communityId: post.entityId ?? "",
-    authorId: post.authorId,
-    type: post.type,
-    title: post.title,
-    body: post.content,
-    createdAt: post.createdAt,
-  }).catch((err) => console.error("[modules] onPostCreate failed:", err));
-
-  return NextResponse.json(post, { status: 201 });
 }

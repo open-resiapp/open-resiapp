@@ -10,11 +10,7 @@ import {
   getServiceCategory,
   getZavierkaVoteRef,
 } from "@modules/accounting/src/lib/action-lookups";
-import {
-  assertApprover,
-  assertUnitLedger,
-  assertWriter,
-} from "@modules/accounting/src/lib/authz-assert";
+import { assertApprover, assertWriter } from "@modules/accounting/src/lib/authz-assert";
 import { confirmBankLineMatch } from "@modules/accounting/src/lib/bank-import";
 import { dismissInboxItem, postInboxItemAsExpense } from "@modules/accounting/src/lib/expense-inbox";
 import { isValidIban, normalizeIban } from "@modules/accounting/src/lib/iban";
@@ -25,7 +21,12 @@ import {
   validateMeterReadingInput,
 } from "@modules/accounting/src/lib/input-validators";
 import { listUnitBalances } from "@modules/accounting/src/lib/karta-bytu";
-import { createReading, listReadingsForUnit, METER_TYPES } from "@modules/accounting/src/lib/meters";
+import {
+  canWriteReadingForUnit,
+  createReading,
+  listReadingsForViewer,
+  METER_TYPES,
+} from "@modules/accounting/src/lib/meters";
 import { isReadingYearLocked } from "@modules/accounting/src/lib/reading-lock";
 import { isReadingError } from "@modules/accounting/src/lib/reading-rounds-format";
 import { createManualPayment } from "@modules/accounting/src/lib/payments";
@@ -408,9 +409,18 @@ const submitMeterReading = defineAction({
   module: "accounting",
   scopes: ["read", "finance:write"],
   schema: meterReadingSchema,
-  // Same access surface as the UI meters route: board readers/writers for
-  // any unit, owners for their own units.
-  authorize: (ctx, p) => assertUnitLedger(ctx.principal, p.unitId),
+  // Same WRITE check as POST /api/accounting/meters: board writers
+  // (treasurer / admin) for any unit, owners only for a unit they own today.
+  // (Was the read check — it let a chairman propose readings for any unit.)
+  async authorize(ctx, p) {
+    const ok = await canWriteReadingForUnit(
+      ctx.principal.userId,
+      ctx.principal.role,
+      ctx.root.id,
+      p.unitId
+    );
+    if (!ok) throw new McpError("forbidden");
+  },
   async validate(ctx, p) {
     const v = validateMeterReadingInput({
       unitEntityId: p.unitId,
@@ -433,9 +443,15 @@ const submitMeterReading = defineAction({
     const t = await translatorFor(locale);
     const [unit, readings] = await Promise.all([
       unitOrThrow(ctx, p.unitId),
-      listReadingsForUnit(ctx.root.id, p.unitId),
+      // Previous reading as the proposer may see it (owners: own period only).
+      listReadingsForViewer({
+        userId: ctx.principal.userId,
+        userRole: ctx.principal.role,
+        entityId: ctx.root.id,
+        unitEntityId: p.unitId,
+      }),
     ]);
-    const prev = readings.find((r) => r.meterType === p.meterType) ?? null;
+    const prev = (readings ?? []).find((r) => r.meterType === p.meterType) ?? null;
     const warnings: string[] = [];
     if (prev && p.valueMilli < prev.valueMilli) {
       warnings.push(t("Mcp.warnings.readingLower", { previous: fmtMilli(prev.valueMilli, locale) }));

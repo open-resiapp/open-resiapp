@@ -11,7 +11,7 @@ import { listVisibleNotices } from "@/lib/notice-board.server";
 import { hasPermission } from "@/lib/permissions";
 import {
   getUnitBalanceLines,
-  listOwnedUnits,
+  listOwnershipWindows,
   listUnitsWithSettlement,
   syncDuePostings,
   type UnitBalanceLine,
@@ -39,7 +39,9 @@ interface OwnerAccounting {
 async function loadOwnerAccounting(viewer: Viewer): Promise<OwnerAccounting | null> {
   const root = viewer.root;
   if (!root) return null;
-  const units = await listOwnedUnits(viewer.userId, root.id);
+  // Units owned TODAY, with the viewer's ownership windows: the balance and
+  // the settlement row cover only their own period (BYT-20261118-012).
+  const units = (await listOwnershipWindows(viewer.userId, root.id)).filter((u) => u.current);
   if (units.length === 0) return null;
   // Same lazy posting the karta API runs before showing a balance. On a
   // lock timeout show the balance without the fresh postings.
@@ -47,11 +49,7 @@ async function loadOwnerAccounting(viewer: Viewer): Promise<OwnerAccounting | nu
   const lastYear = new Date().getUTCFullYear() - 1;
   const [balances, withSettlement] = await Promise.all([
     getUnitBalanceLines(root.id, root.country, units),
-    listUnitsWithSettlement(
-      root.id,
-      units.map((u) => u.id),
-      lastYear
-    ),
+    listUnitsWithSettlement(root.id, units, lastYear),
   ]);
   return {
     balances,

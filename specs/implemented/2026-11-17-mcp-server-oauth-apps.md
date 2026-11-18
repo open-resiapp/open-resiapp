@@ -1,9 +1,9 @@
 ---
 spec_id: BYT-20261117-001
 title: "MCP server — OAuth, board tools (treasurer + chairman), MCP Apps confirmations, ballot confirmation"
-status: spec
+status: implemented
 created: 2026-11-17
-updated: 2026-11-17
+updated: 2026-11-18
 author: byt-app
 owner: filipvnencak
 last_verified: 2026-11-17

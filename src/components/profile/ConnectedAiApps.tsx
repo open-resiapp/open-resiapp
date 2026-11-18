@@ -26,6 +26,7 @@ const SCOPE_KEYS: Record<string, string> = {
   "finance:write": "finance_write",
   "governance:write": "governance_write",
   vote: "vote",
+  "community:write": "community_write",
 };
 
 export default function ConnectedAiApps({ mcpUrl }: { mcpUrl: string | null }) {

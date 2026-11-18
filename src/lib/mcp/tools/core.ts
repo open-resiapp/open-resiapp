@@ -9,12 +9,11 @@ import {
   listVisibleDocuments,
   logDocumentAccess,
 } from "@/lib/documents.server";
-import { extractPdfText } from "@/lib/pdf-text.server";
 import { getVisiblePost, listVisiblePosts } from "@/lib/posts";
-import { getStorage } from "@/lib/storage";
 import { listUserMemberships, getUserAuthRow } from "@/lib/user-context";
 import { getAccountingSettings } from "@modules/accounting/src/lib/settings";
 import { McpError } from "../errors";
+import { readDocumentText } from "./document-text";
 import {
   iso,
   link,
@@ -28,9 +27,6 @@ import { defineTool, type ToolDef } from "./types";
 
 // Core read tools (BYT-20261117-001 §4 #1, #2, #4, #5, #21, #22) — available
 // to every active member; per-item visibility comes from the shared libs.
-
-const DOC_TEXT_CAP = 40_000;
-const PDF_MAX_BYTES = 25 * 1024 * 1024;
 
 const whoami = defineTool({
   name: "whoami",
@@ -247,25 +243,9 @@ const getDocumentText = defineTool({
     // Missing and forbidden are indistinguishable (not_found) — no probing.
     const doc = await getViewableDocument(ctx.principal.userId, args.id);
     if (!doc) throw new McpError("not_found");
-    if (doc.mimeType !== "application/pdf") {
-      throw new McpError("validation.id", { reason: "not_pdf" });
-    }
-    const obj = await getStorage().get(doc.storageKey);
-    if (!obj) throw new McpError("not_found");
-    if (obj.body.length > PDF_MAX_BYTES) {
-      throw new McpError("validation.id", { reason: "too_large" });
-    }
-    let text: string;
-    try {
-      text = (await extractPdfText(new Uint8Array(obj.body))).trim();
-    } catch {
-      throw new McpError("validation.id", { reason: "unreadable_pdf" });
-    }
+    const { text: body, hasTextLayer: hasText, truncated, totalChars } = await readDocumentText(doc);
     await logDocumentAccess(doc.id, ctx.principal.userId, doc.entityId);
 
-    const hasText = text.replace(/\s+/g, "").length > 0;
-    const truncated = text.length > DOC_TEXT_CAP;
-    const body = truncated ? text.slice(0, DOC_TEXT_CAP) : text;
     return {
       summary: hasText
         ? untrustedBlock(body, `document:${doc.name}`)
@@ -276,7 +256,7 @@ const getDocumentText = defineTool({
         type: doc.type,
         hasTextLayer: hasText,
         truncated,
-        totalChars: text.length,
+        totalChars,
         text: untrusted(body, "document.text"),
       },
     };

@@ -395,6 +395,28 @@ export async function loadFeed(viewer: FeedViewer, opts: LoadFeedOptions): Promi
   return { focused, items, hasMore, nonEmpty };
 }
 
+/**
+ * One community post if the viewer may see it (same rule as the feed and
+ * its `?prispevok=` focus: shown even when resolved / expired), enriched
+ * with response count, RSVP counts + own answer and visible attachments.
+ * null = missing OR not visible (no probing). Used by the MCP community
+ * tools (BYT-20261118-012).
+ */
+export async function getVisibleCommunityPost(
+  viewer: FeedViewer,
+  id: string
+): Promise<FeedCommunityPost | null> {
+  const where = await communityVisibility(viewer);
+  if (where === null) return null;
+  const [row] = await selectCommunity()
+    .where(and(eq(communityPosts.id, id), where ?? undefined))
+    .limit(1);
+  if (!row) return null;
+  const item = toCommunity(row);
+  await enrich(viewer, [item]);
+  return item;
+}
+
 async function countNonEmpty(
   filters: Exclude<FeedFilter, "all">[],
   noticeWhere: SQL | undefined,

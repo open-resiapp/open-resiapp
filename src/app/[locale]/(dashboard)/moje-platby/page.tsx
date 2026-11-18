@@ -2,10 +2,9 @@ import { getTranslations } from "next-intl/server";
 
 import { ButtonLink, EmptyState, PageHeader, Tabs } from "@/components/ui";
 import { getViewer, isViewerGated, soft } from "@/lib/home.server";
-import { canReadUnitLedger } from "@modules/accounting/src/lib/karta-bytu";
 import {
   getOwnerPaymentSummary,
-  listOwnershipWindows,
+  resolveOwnerUnit,
   syncDuePostings,
 } from "@modules/accounting/src/lib/owner-payments";
 import { MyPaymentsView } from "@modules/accounting/src/components/owner/MyPaymentsView";
@@ -64,27 +63,25 @@ export default async function MyPaymentsPage({
   }
   // Current AND former ownerships, each limited to its validity window
   // (a buyer never sees the seller's history; a seller keeps their own).
-  const owned = await listOwnershipWindows(viewer.userId, root.id);
+  // Same resolution as the MCP owner tools (BYT-20261118-012).
+  const resolved = await resolveOwnerUnit({
+    userId: viewer.userId,
+    userRole: viewer.role,
+    entityId: root.id,
+    requested,
+  });
+  const owned = resolved.owned;
 
-  let unitId: string | null = null;
-  if (requested && owned.some((u) => u.id === requested)) {
-    unitId = requested;
-  } else if (requested) {
-    const allowed = await canReadUnitLedger(viewer.userId, viewer.role, root.id, requested);
-    if (!allowed) {
-      return (
-        <div className="mx-auto max-w-2xl">
-          {header}
-          <EmptyState icon="alert" title={t("forbidden")} />
-        </div>
-      );
-    }
-    unitId = requested;
-  } else {
-    unitId = owned[0]?.id ?? null;
+  if (resolved.kind === "forbidden") {
+    return (
+      <div className="mx-auto max-w-2xl">
+        {header}
+        <EmptyState icon="alert" title={t("forbidden")} />
+      </div>
+    );
   }
 
-  if (!unitId) {
+  if (resolved.kind === "none") {
     return (
       <div className="mx-auto max-w-2xl">
         {header}
@@ -92,6 +89,7 @@ export default async function MyPaymentsPage({
       </div>
     );
   }
+  const unitId = resolved.unitId;
 
   // Same lazy posting the karta API runs before showing a balance. On a
   // lock timeout (or any failure) show the balance without fresh postings
@@ -103,11 +101,11 @@ export default async function MyPaymentsPage({
       country: root.country,
       unitEntityId: unitId,
       beneficiaryName: root.name,
-      windows: owned.find((u) => u.id === unitId)?.windows,
+      windows: resolved.windows,
     }),
     // Odpočty a osoby (BYT-20261118-006): only for a unit the viewer OWNS —
     // a board member opening another unit's page must not submit as owner.
-    owned.some((u) => u.id === unitId && u.current)
+    resolved.canSubmitReadings
       ? soft(
           getOwnerReadingsView({ entityId: root.id, unitEntityId: unitId, userId: viewer.userId }),
           null

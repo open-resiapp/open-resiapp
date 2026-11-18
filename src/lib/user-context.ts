@@ -40,10 +40,20 @@ export async function getUserAuthRow(userId: string): Promise<UserAuthRow | null
 }
 
 /**
- * Active board roles the user holds on `entityId` (the community root).
- * Mirrors `hasBoardRole` (accounting authz): isActive only, termEndsAt is
- * not consulted (pre-existing behaviour, see spec Notes → found gaps).
+ * A board seat counts only while it is active AND its term is in force
+ * (term_ends_at unset or in the future). Shared by listActiveBoardRoles
+ * (MCP / UI principal) and hasBoardRole (accounting authz) so an expired
+ * treasurer / chairman loses whole-dom reads everywhere at once
+ * (BYT-20261118-012).
  */
+export function boardSeatInForce() {
+  return and(
+    eq(boardMembers.isActive, true),
+    sql`(${boardMembers.termEndsAt} IS NULL OR ${boardMembers.termEndsAt} > now())`
+  );
+}
+
+/** Board roles the user holds on `entityId` (the community root), term in force. */
 export async function listActiveBoardRoles(
   userId: string,
   entityId: string
@@ -55,7 +65,7 @@ export async function listActiveBoardRoles(
       and(
         eq(boardMembers.userId, userId),
         eq(boardMembers.entityId, entityId),
-        eq(boardMembers.isActive, true)
+        boardSeatInForce()
       )
     );
   return [...new Set(rows.map((r) => r.role))];

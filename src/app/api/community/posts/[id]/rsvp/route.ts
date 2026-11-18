@@ -2,9 +2,10 @@ import { NextRequest, NextResponse } from "next/server";
 import type { Session } from "next-auth";
 import { auth } from "@/lib/auth";
 import { db } from "@/db";
-import { communityPosts, eventRsvps } from "@/db/schema";
-import { and, eq } from "drizzle-orm";
-import { hasPermission } from "@/lib/permissions";
+import { communityPosts } from "@/db/schema";
+import { eq } from "drizzle-orm";
+import { setSocialEventRsvp } from "@/lib/community.server";
+import { isMcpError } from "@/lib/mcp/errors";
 import { isModuleEnabled } from "@/lib/modules/route-guard";
 import { principalFromSession } from "@/lib/mcp/principal";
 import {
@@ -73,6 +74,30 @@ async function meetingRsvp(
   }
 }
 
+// Social events: setSocialEventRsvp (src/lib/community.server.ts), shared
+// with the MCP rsvp_event / clear_event_rsvp actions (BYT-20261118-012).
+// It refuses a post the viewer cannot see (feed rule) as POST_NOT_FOUND.
+// Owners' meetings need no feed check: setMeetingRsvp only accepts
+// eligible owners of the meeting voting's scope, and board answers for an
+// owner are gated by canManageAttendance.
+async function socialRsvp(session: Session, postId: string, status: RsvpStatus | null) {
+  try {
+    const result = await setSocialEventRsvp(
+      { userId: session.user.id, role: session.user.role as UserRole },
+      postId,
+      status
+    );
+    return NextResponse.json(result);
+  } catch (e) {
+    if (isMcpError(e)) {
+      if (e.code === "forbidden") return err("FORBIDDEN", 403);
+      if (e.code === "not_found") return err("POST_NOT_FOUND", 404);
+      if (e.details?.reason === "events_only") return err("RSVP_EVENTS_ONLY", 400);
+    }
+    throw e;
+  }
+}
+
 export async function POST(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -93,36 +118,7 @@ export async function POST(
     return meetingRsvp(session, id, status, body.ownerId);
   }
 
-  if (!hasPermission(session.user.role as UserRole, "respondToCommunityPost")) {
-    return err("FORBIDDEN", 403);
-  }
-
-  const [existing] = await db
-    .select()
-    .from(eventRsvps)
-    .where(
-      and(eq(eventRsvps.postId, id), eq(eventRsvps.userId, session.user.id))
-    )
-    .limit(1);
-
-  if (existing) {
-    const [updated] = await db
-      .update(eventRsvps)
-      .set({ status, updatedAt: new Date() })
-      .where(eq(eventRsvps.id, existing.id))
-      .returning();
-    return NextResponse.json(updated);
-  }
-
-  const [created] = await db
-    .insert(eventRsvps)
-    .values({
-      postId: id,
-      userId: session.user.id,
-      status,
-    })
-    .returning();
-  return NextResponse.json(created, { status: 201 });
+  return socialRsvp(session, id, status);
 }
 
 export async function DELETE(
@@ -141,11 +137,7 @@ export async function DELETE(
     return meetingRsvp(session, id, null, ownerId);
   }
 
-  await db
-    .delete(eventRsvps)
-    .where(
-      and(eq(eventRsvps.postId, id), eq(eventRsvps.userId, session.user.id))
-    );
-
-  return NextResponse.json({ ok: true });
+  if (!post || post.type !== "event") return NextResponse.json({ ok: true });
+  const res = await socialRsvp(session, id, null);
+  return res.ok ? NextResponse.json({ ok: true }) : res;
 }

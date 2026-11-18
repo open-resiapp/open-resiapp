@@ -5,11 +5,13 @@ import { db } from "@/db";
 import { canWriteAccounting } from "@modules/accounting/src/lib/authz";
 import {
   applyUnitCredit,
-  canReadUnitLedger,
   getUnitLedger,
-  listAccessibleUnits,
-  listUnitBalances,
+  getUnitReadScope,
+  listAccessibleUnitScopes,
+  listScopedUnitBalances,
+  scopeLedger,
 } from "@modules/accounting/src/lib/karta-bytu";
+import { yearInScope } from "@modules/accounting/src/lib/ownership-windows";
 import { postAllDueMonths } from "@modules/accounting/src/lib/fee-schedule-publish";
 import { getPredpisPdfData } from "@modules/accounting/src/lib/predpis-pdf-data";
 import {
@@ -19,11 +21,14 @@ import {
 import {
   getOverdueForUnit,
   getUpomienkaPdfData,
+  scopeOverdue,
 } from "@modules/accounting/src/lib/overdue";
 
 // Karta bytu API. Unlike the treasurer-only routes, owners are allowed
-// here — scoped server-side to units they hold an active owner membership
-// on (403 otherwise, never just a hidden button).
+// here — scoped server-side by getUnitReadScope (403 otherwise, never just
+// a hidden button): board readers see the whole history, an owner only
+// the postings / overdue months / settlement years of their OWN ownership
+// windows (a buyer never sees the seller's history — BYT-20261118-012).
 
 /** GET /api/accounting/karta — accessible units with balances. */
 export async function handleListUnits(): Promise<NextResponse> {
@@ -36,7 +41,7 @@ export async function handleListUnits(): Promise<NextResponse> {
     principal.role,
     root.id
   );
-  const units = await listAccessibleUnits(
+  const units = await listAccessibleUnitScopes(
     principal.userId,
     principal.role,
     root.id
@@ -54,14 +59,12 @@ export async function handleListUnits(): Promise<NextResponse> {
     );
   }
 
-  const balances = await listUnitBalances(
-    root.id,
-    root.country,
-    units.map((u) => u.id)
-  );
+  const balances = await listScopedUnitBalances(root.id, root.country, units);
   return NextResponse.json({
     units: units.map((u) => ({
-      ...u,
+      id: u.id,
+      name: u.name,
+      flatNumber: u.flatNumber,
       balanceCents: balances.get(u.id) ?? 0,
     })),
     canWrite: isWriter,
@@ -77,13 +80,13 @@ export async function handleGetLedger(
   if (ctx.error) return ctx.error;
   const { principal, root } = ctx;
 
-  const allowed = await canReadUnitLedger(
+  const scope = await getUnitReadScope(
     principal.userId,
     principal.role,
     root.id,
     unitEntityId
   );
-  if (!allowed) {
+  if (!scope) {
     return NextResponse.json({ error: "forbidden" }, { status: 403 });
   }
 
@@ -99,14 +102,14 @@ export async function handleGetLedger(
     })
   );
 
-  const ledger = await getUnitLedger(root.id, unitEntityId, root.country);
-  if (!ledger) {
+  const full = await getUnitLedger(root.id, unitEntityId, root.country);
+  if (!full) {
     return NextResponse.json({ error: "not found" }, { status: 404 });
   }
-  const settlementYears = await listSettlementYearsForUnit(
-    root.id,
-    unitEntityId
-  );
+  const ledger = scopeLedger(full, scope.windows);
+  const settlementYears = (
+    await listSettlementYearsForUnit(root.id, unitEntityId)
+  ).filter((y) => yearInScope(y, scope.windows));
   return NextResponse.json({ ledger, canWrite: isWriter, settlementYears });
 }
 
@@ -119,13 +122,13 @@ export async function handleOverdue(
   if (ctx.error) return ctx.error;
   const { principal, root } = ctx;
 
-  const allowed = await canReadUnitLedger(
+  const scope = await getUnitReadScope(
     principal.userId,
     principal.role,
     root.id,
     unitEntityId
   );
-  if (!allowed) {
+  if (!scope) {
     return NextResponse.json({ error: "forbidden" }, { status: 403 });
   }
 
@@ -134,7 +137,7 @@ export async function handleOverdue(
     country: root.country,
     unitEntityId,
   });
-  return NextResponse.json(summary);
+  return NextResponse.json(scopeOverdue(summary, scope.windows));
 }
 
 /**
@@ -186,18 +189,23 @@ export async function handleVyuctovaniePdfData(
   if (ctx.error) return ctx.error;
   const { principal, root } = ctx;
 
-  const allowed = await canReadUnitLedger(
+  const scope = await getUnitReadScope(
     principal.userId,
     principal.role,
     root.id,
     unitEntityId
   );
-  if (!allowed) {
+  if (!scope) {
     return NextResponse.json({ error: "forbidden" }, { status: 403 });
   }
   const year = Number(req.nextUrl.searchParams.get("year"));
   if (!Number.isInteger(year) || year < 2000 || year > 2100) {
     return NextResponse.json({ error: "invalid year" }, { status: 400 });
+  }
+  // A settlement year outside the owner's own period is someone else's
+  // statement — same answer as a missing one.
+  if (!yearInScope(year, scope.windows)) {
+    return NextResponse.json({ error: "not found" }, { status: 404 });
   }
 
   try {
@@ -228,13 +236,15 @@ export async function handlePredpisPdfData(
   if (ctx.error) return ctx.error;
   const { principal, root } = ctx;
 
-  const allowed = await canReadUnitLedger(
+  const scope = await getUnitReadScope(
     principal.userId,
     principal.role,
     root.id,
     unitEntityId
   );
-  if (!allowed) {
+  // The monthly predpis is the CURRENT owner's payment instruction; a
+  // former owner keeps their history but not the new owner's predpis.
+  if (!scope || !scope.current) {
     return NextResponse.json({ error: "forbidden" }, { status: 403 });
   }
 

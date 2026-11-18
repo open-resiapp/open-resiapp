@@ -14,6 +14,7 @@ import { loadRateHistory, seriesForCountry } from "./rate-history";
 import { openReceivablesForUnit, type OpenReceivable } from "./payments";
 import { listDomUnits } from "./dom-units";
 import { payBySquareString } from "../qr/pay-by-square";
+import { periodInScope, type OwnershipWindow } from "./ownership-windows";
 
 // Overdue receivables + lawful interest (BYT-20260512-002 Phase 5
 // surface). READ-ONLY calculator per spec decision — nothing posts; the
@@ -61,6 +62,24 @@ export interface OverdueSummary {
   totalInterestCents: number;
   /** True when the seeded rate history may be stale — surface a caveat. */
   ratesUnverified: true;
+}
+
+/**
+ * The summary limited to the viewer's ownership windows (items of their
+ * own months / settlement years, totals recomputed). undefined = full.
+ */
+export function scopeOverdue(
+  summary: OverdueSummary,
+  windows: OwnershipWindow[] | undefined
+): OverdueSummary {
+  if (!windows) return summary;
+  const items = summary.items.filter((i) => periodInScope(i, windows));
+  return {
+    ...summary,
+    items,
+    totalOpenCents: items.reduce((s, i) => s + i.openCents, 0),
+    totalInterestCents: items.reduce((s, i) => s + i.interestCents, 0),
+  };
 }
 
 export interface UpomienkaPdfData extends OverdueSummary {

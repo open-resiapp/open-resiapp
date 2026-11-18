@@ -3,6 +3,7 @@ import "server-only";
 import { and, eq, inArray } from "drizzle-orm";
 import { db } from "@/db";
 import { boardMembers } from "@/db/schema";
+import { boardSeatInForce } from "@/lib/user-context";
 
 // Accounting authorization (docs/domain/accounting.md scope rule):
 // treasurer/chairman authority comes from the community's BOARD role
@@ -50,7 +51,8 @@ export async function hasBoardRole(
       and(
         eq(boardMembers.userId, userId),
         eq(boardMembers.entityId, entityId),
-        eq(boardMembers.isActive, true),
+        // isActive AND term in force — same predicate as the principal.
+        boardSeatInForce(),
         inArray(boardMembers.role, roles)
       )
     )

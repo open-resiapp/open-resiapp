@@ -5,6 +5,7 @@ import { db } from "@/db";
 import { getStorage, buildStorageKey } from "@/lib/storage";
 import { expenses, expenseAttachments, auditLog } from "../db/schema";
 import { hasBoardRole, canWriteAccounting } from "./authz";
+import { listOwnedUnits } from "./ownership-windows";
 
 // Expense attachments + right-to-inspect visibility (spec §Owner
 // self-service, §11 ods. 6 zák. 182/1993). Scans stored via the shared
@@ -255,6 +256,24 @@ export function canManageAttachments(
   entityId: string
 ): Promise<boolean> {
   return canWriteAccounting(userId, userRole, entityId);
+}
+
+/**
+ * Who may use the right to inspect (list + doklad download): the operator
+ * admin, an active board reader (treasurer / chairman, term in force — they
+ * see original scans), or a CURRENT owner of a unit in the dom (validity
+ * window contains today; doklady filtered by visibility). Shared by the
+ * inspect / download routes and the MCP `inspect_expenses` tool
+ * (BYT-20261118-012).
+ */
+export async function canInspectExpenses(
+  userId: string,
+  userRole: string,
+  entityId: string
+): Promise<boolean> {
+  if (userRole === "admin") return true;
+  if (await hasBoardRole(userId, entityId, ["treasurer", "chairman"])) return true;
+  return (await listOwnedUnits(userId, entityId)).length > 0;
 }
 
 export interface InspectRow {

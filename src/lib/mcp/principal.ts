@@ -28,6 +28,8 @@ export const MCP_SCOPES = [
   "finance:write",
   "governance:write",
   "vote",
+  // BYT-20261118-012: own community posts, event RSVPs, directory entry.
+  "community:write",
 ] as const;
 export type Scope = (typeof MCP_SCOPES)[number];
 

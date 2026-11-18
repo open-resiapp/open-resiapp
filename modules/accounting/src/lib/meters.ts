@@ -1,9 +1,10 @@
 import "server-only";
 
-import { and, desc, eq, isNull } from "drizzle-orm";
+import { and, desc, eq, isNull, sql } from "drizzle-orm";
 import { db } from "@/db";
 import { meterReadings, auditLog, readingRounds } from "../db/schema";
-import { canReadUnitLedger } from "./karta-bytu";
+import { canReadUnitLedger, getUnitReadScope } from "./karta-bytu";
+import { inScope, todayIso } from "./ownership-windows";
 import { canWriteAccounting } from "./authz";
 import { domUnitsWhere } from "./dom-units";
 import { entities, memberships } from "@/db/schema";
@@ -66,6 +67,29 @@ export async function listReadingsForUnit(
   }));
 }
 
+/**
+ * A unit's readings as the viewer may see them (BYT-20261118-012): board
+ * readers all, an owner only readings dated inside their own ownership
+ * windows (a buyer never sees the seller's readings). null = no access.
+ * Shared by GET /api/accounting/meters and the MCP list_meter_readings tool.
+ */
+export async function listReadingsForViewer(input: {
+  userId: string;
+  userRole: string;
+  entityId: string;
+  unitEntityId: string;
+}): Promise<MeterReadingRow[] | null> {
+  const scope = await getUnitReadScope(
+    input.userId,
+    input.userRole,
+    input.entityId,
+    input.unitEntityId
+  );
+  if (!scope) return null;
+  const rows = await listReadingsForUnit(input.entityId, input.unitEntityId);
+  return rows.filter((r) => inScope(r.readingDate, scope.windows));
+}
+
 /** Owner-of-unit OR board writer/reader may READ a unit's readings. */
 export async function canEnterReading(
   userId: string,
@@ -77,11 +101,17 @@ export async function canEnterReading(
   return canReadUnitLedger(userId, userRole, entityId, unitEntityId);
 }
 
-/** Active OWNER membership on the unit (no board shortcut). */
+/**
+ * Owner of the unit TODAY (no board shortcut): active owner membership
+ * whose validity [valid_from, valid_to) contains today — a future buyer
+ * may not write yet, a seller whose ownership ended may not any more
+ * (BYT-20261118-007 windows; same rule as listOwnedUnits).
+ */
 export async function isUnitOwner(
   userId: string,
   unitEntityId: string
 ): Promise<boolean> {
+  const today = todayIso();
   const [row] = await db
     .select({ id: memberships.id })
     .from(memberships)
@@ -90,7 +120,9 @@ export async function isUnitOwner(
         eq(memberships.userId, userId),
         eq(memberships.entityId, unitEntityId),
         eq(memberships.role, "owner"),
-        eq(memberships.status, "active")
+        eq(memberships.status, "active"),
+        sql`${memberships.validFrom} <= ${today}::date`,
+        sql`(${memberships.validTo} IS NULL OR ${memberships.validTo} > ${today}::date)`
       )
     )
     .limit(1);

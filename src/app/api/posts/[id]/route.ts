@@ -7,7 +7,8 @@ import type { Session } from "next-auth";
 import { deleteLinksForTarget } from "@/lib/documents.server";
 import { noticeManageScope } from "@/lib/mcp/authz";
 import { McpError } from "@/lib/mcp/errors";
-import { principalFromSession } from "@/lib/mcp/principal";
+import { principalFromSession, viewerFromSession } from "@/lib/mcp/principal";
+import { getVisiblePost } from "@/lib/posts";
 
 /**
  * Who may edit / pin / delete a board notice — the same authority as
@@ -53,6 +54,12 @@ export async function GET(
   }
 
   const { id } = await params;
+
+  // Same visibility as the notice board / MCP get_announcement: a notice
+  // scoped to another entrance answers like a missing one (BYT-20261118-012).
+  if (!(await getVisiblePost(viewerFromSession(session), id))) {
+    return NextResponse.json({ error: "Príspevok nenájdený" }, { status: 404 });
+  }
 
   const [post] = await db
     .select({

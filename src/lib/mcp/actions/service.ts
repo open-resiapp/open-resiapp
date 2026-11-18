@@ -12,6 +12,7 @@ import { randomToken, sha256Hex } from "../oauth/crypto";
 import { ACCOUNTING_ACTIONS } from "./accounting";
 import { appLink, translatorFor } from "./format";
 import { BALLOT_ACTIONS } from "./ballot";
+import { COMMUNITY_ACTIONS } from "./community";
 import { GOVERNANCE_ACTIONS } from "./governance";
 import { OWNER_ACTIONS } from "./owners";
 import { REGISTRATION_ACTIONS } from "./registrations";
@@ -73,6 +74,7 @@ const ACTIONS: ReadonlyMap<ActionKind, ActionDef> = new Map(
     ...BALLOT_ACTIONS,
     ...OWNER_ACTIONS,
     ...REGISTRATION_ACTIONS,
+    ...COMMUNITY_ACTIONS,
   ].map((a) => [a.kind, a])
 );
 
