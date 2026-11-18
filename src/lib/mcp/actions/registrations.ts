@@ -79,19 +79,20 @@ function linkableAccount(board: OwnersBoardData, id: string): OwnerRow {
   return p;
 }
 
-/** Merge, then approve when the account is still pending — the inbox's mergeAndApprove. */
+/**
+ * Merge, and approve when `approve` — one transaction, the inbox's
+ * mergeAndApprove. A lost approval (no longer pending) rolls the merge back.
+ */
 async function mergeAndApprove(ctx: ActionContext, shellId: string, accountId: string, approve: boolean) {
   try {
-    await mergeShellIntoUser(shellId, accountId, ctx.principal.userId);
+    await mergeShellIntoUser(shellId, accountId, ctx.principal.userId, {
+      approvePendingAsOwner: approve,
+    });
   } catch (err) {
     // validate() ran right before commit, so a refusal here is a race.
     if (err instanceof ShellMergeError) throw new McpError("conflict.state_changed");
     throw err;
   }
-  if (!approve) return;
-  const res = await approvePendingRegistration({ userId: accountId, flatId: null, role: "owner" });
-  // not_found = no longer pending (decided elsewhere meanwhile); the merge stands.
-  if (!res.ok && res.error !== "not_found") throw new McpError("internal");
 }
 
 function namesDiffer(a: string, b: string): boolean {

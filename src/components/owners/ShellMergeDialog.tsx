@@ -19,8 +19,8 @@ interface ShellMergeDialogProps {
 
 /**
  * Link an owner record (shell) to a self-registered account. Requests:
- * POST /api/admin/shell-users/[shellId]/merge {targetUserId}, then
- * POST /api/registrations/[targetUserId]/approve so the account is admitted.
+ * POST /api/admin/shell-users/[shellId]/merge {targetUserId, approve: true}
+ * merges and admits the account in one transaction.
  */
 export default function ShellMergeDialog(props: ShellMergeDialogProps) {
   const t = useTranslations("Owners.pending");
