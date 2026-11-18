@@ -14,7 +14,6 @@ interface BoardMemberRow {
   termEndsAt: string | null;
   isActive: boolean;
   userName: string | null;
-  userEmail: string | null;
 }
 
 interface UserOption {
@@ -160,7 +159,7 @@ export default function BoardMembersTab({ canEdit }: BoardMembersTabProps) {
       ) : (
         <ul className="space-y-3">
           {activeMembers.map((member) => {
-            const name = member.userName || member.userEmail || "—";
+            const name = member.userName || "—";
             return (
               <li
                 key={member.id}
@@ -241,7 +240,7 @@ export default function BoardMembersTab({ canEdit }: BoardMembersTabProps) {
       <ConfirmDialog
         open={toRemove !== null}
         tone="danger"
-        title={th("removeMemberTitle", { name: toRemove?.userName || toRemove?.userEmail || "" })}
+        title={th("removeMemberTitle", { name: toRemove?.userName || "" })}
         description={th("removeMemberBody")}
         confirmLabel={t("remove")}
         loading={removing}

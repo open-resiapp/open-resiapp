@@ -4,7 +4,7 @@ import { cache } from "react";
 import { aliasedTable, and, eq, inArray, sql } from "drizzle-orm";
 
 import { db } from "@/db";
-import { boardMembers, directoryEntries, entities, memberships, users } from "@/db/schema";
+import { boardMembers, directoryEntries, entities, users } from "@/db/schema";
 import { auth } from "@/lib/auth";
 import type { CommunityRootRow } from "@/lib/legacy-compat";
 import {
@@ -16,6 +16,7 @@ import {
 } from "@/lib/shell.server";
 import { getNavAudience, type NavAudience } from "@/lib/navigation";
 import { ballots, votings } from "@modules/voting/src/db/schema";
+import { votingVisibilityFilter, type VotingViewer } from "@modules/voting/src/votings";
 import type { BoardMemberRole, UserRole, UserStatus } from "@/types";
 
 // Server read models for Domov / Dom (BYT-20261117-002 Phase 4). All
@@ -165,24 +166,14 @@ export interface RunningVotingTurnout {
 }
 
 /**
- * Votings open now with unit turnout. Visibility rule of GET /api/votings
- * (path overlap with an active membership); admin sees all.
+ * Votings open now with unit turnout, filtered by the shared voting
+ * visibility rule (`votingVisibilityFilter` — same as GET /api/votings).
  */
 export async function listRunningVotingsWithTurnout(
-  userId: string,
-  isAdmin: boolean
+  viewer: VotingViewer
 ): Promise<RunningVotingTurnout[]> {
   const ve = aliasedTable(entities, "ve");
-  const visible = isAdmin
-    ? sql`true`
-    : sql`EXISTS (
-        SELECT 1
-        FROM ${memberships} m
-        JOIN ${entities} me ON me.id = m.entity_id
-        WHERE m.user_id = ${userId}
-          AND m.status = 'active'
-          AND (${ve.path} LIKE me.path || '%' OR me.path LIKE ${ve.path} || '%')
-      )`;
+  const visible = votingVisibilityFilter(viewer);
   const rows = await db
     .select({
       id: votings.id,
@@ -203,7 +194,7 @@ export async function listRunningVotingsWithTurnout(
     })
     .from(votings)
     .innerJoin(ve, eq(ve.id, votings.entityId))
-    .where(and(openNow(), visible))
+    .where(visible ? and(openNow(), visible) : openNow())
     .orderBy(votings.endsAt);
   return rows.map((r) => ({ ...r, endsAt: r.endsAt.toISOString() }));
 }
@@ -220,9 +211,9 @@ export interface BoardContact {
 }
 
 /**
- * Active board members of the community with contact details. E-mail is
- * already exposed to every signed-in user by GET /api/board-members; the
- * phone number only when the member opted in to share it in the directory.
+ * Active board members of the community with contact details. E-mail is the
+ * board's contact channel shown on the home card; the phone number only when
+ * the member opted in to share it in the directory.
  */
 export async function listBoardContacts(rootId: string): Promise<BoardContact[]> {
   const rows = await db

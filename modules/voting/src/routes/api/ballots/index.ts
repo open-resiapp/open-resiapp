@@ -20,6 +20,7 @@ import {
 } from "@modules/voting/src/db/schema";
 import { hasPermission } from "@/lib/permissions";
 import { getVotingResults } from "@modules/voting/src/results";
+import { sessionCanSeeVoting } from "@modules/voting/src/votings";
 import { getVotingParticipation } from "@modules/voting/src/participation";
 import { principalFromSession } from "@/lib/mcp/principal";
 import { canRecordForVotingId } from "@modules/voting/src/counter-authz.server";
@@ -59,6 +60,11 @@ export async function GET(request: NextRequest) {
   }
   if (!hasPermission(session.user.role as UserRole, "viewVotingResults")) {
     return NextResponse.json({ error: "Nemáte oprávnenie" }, { status: 403 });
+  }
+  // Same visibility as GET /api/votings/[id] (scope, board-only drafts):
+  // ballots carry owner names and choices. Invisible = 404.
+  if (!(await sessionCanSeeVoting(session, votingId))) {
+    return NextResponse.json({ error: "Hlasovanie nenájdené" }, { status: 404 });
   }
 
   // Per-item tallies — the single shared implementation (also used by the

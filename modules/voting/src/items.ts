@@ -61,14 +61,17 @@ function normalizeFinancialEffect(
  * legacy clients send a single top-level `quorumType`, for which we
  * synthesize ONE item mirroring the voting (idx 0, voting title/description,
  * the voting's quorumType) — identical to the 0046 backfill so every voting
- * always carries ≥1 item. Returns an error string if any item is invalid,
- * else the ordered normalized list.
+ * always carries ≥1 item. Returns an error if any item is invalid, else the
+ * ordered normalized list. A missing / unknown `quorumType` (or an unknown
+ * `repeatOfQuorumType`) is rejected with the stable code
+ * `QUORUM_TYPE_INVALID` + `itemIdx` — never silently defaulted, since the
+ * quorum decides whether the resolution passes.
  */
 export function normalizeItems(
   body: { items?: unknown; quorumType?: unknown },
   votingTitle: string,
   votingDescription: string | null
-): { items: NormalizedItem[] } | { error: string } {
+): { items: NormalizedItem[] } | { error: string; itemIdx?: number } {
   const raw: IncomingItem[] = Array.isArray(body.items)
     ? (body.items as IncomingItem[])
     : [
@@ -90,9 +93,10 @@ export function normalizeItems(
     if (!title) {
       return { error: `Položka č. ${idx + 1}: názov je povinný` };
     }
-    const quorumType = VALID_QUORUM.includes(it.quorumType as QuorumType)
-      ? (it.quorumType as QuorumType)
-      : "simple_all";
+    if (!VALID_QUORUM.includes(it.quorumType as QuorumType)) {
+      return { error: "QUORUM_TYPE_INVALID", itemIdx: idx };
+    }
+    const quorumType = it.quorumType as QuorumType;
     const description =
       typeof it.description === "string" && it.description.trim()
         ? it.description
@@ -104,11 +108,12 @@ export function normalizeItems(
     if (fx === "invalid") {
       return { error: `Položka č. ${idx + 1}: neplatný finančný dopad` };
     }
-    const repeatOfQuorumType = VALID_QUORUM.includes(
-      it.repeatOfQuorumType as QuorumType
-    )
-      ? (it.repeatOfQuorumType as QuorumType)
-      : null;
+    const repeatRaw = it.repeatOfQuorumType;
+    const repeatGiven = repeatRaw !== undefined && repeatRaw !== null && repeatRaw !== "";
+    if (repeatGiven && !VALID_QUORUM.includes(repeatRaw as QuorumType)) {
+      return { error: "QUORUM_TYPE_INVALID", itemIdx: idx };
+    }
+    const repeatOfQuorumType = repeatGiven ? (repeatRaw as QuorumType) : null;
     items.push({
       idx,
       title,

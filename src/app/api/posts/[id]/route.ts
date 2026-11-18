@@ -1,13 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { db } from "@/db";
-import { posts, users } from "@/db/schema";
+import { posts } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import type { Session } from "next-auth";
 import { deleteLinksForTarget } from "@/lib/documents.server";
 import { noticeManageScope } from "@/lib/mcp/authz";
 import { McpError } from "@/lib/mcp/errors";
-import { principalFromSession } from "@/lib/mcp/principal";
+import { principalFromSession, viewerFromSession } from "@/lib/mcp/principal";
+import { getVisiblePost } from "@/lib/posts";
 
 /**
  * Who may edit / pin / delete a board notice — the same authority as
@@ -54,26 +55,10 @@ export async function GET(
 
   const { id } = await params;
 
-  const [post] = await db
-    .select({
-      id: posts.id,
-      title: posts.title,
-      content: posts.content,
-      category: posts.category,
-      isPinned: posts.isPinned,
-      createdAt: posts.createdAt,
-      updatedAt: posts.updatedAt,
-      entityId: posts.entityId,
-      author: {
-        id: users.id,
-        name: users.name,
-      },
-    })
-    .from(posts)
-    .leftJoin(users, eq(posts.authorId, users.id))
-    .where(eq(posts.id, id))
-    .limit(1);
-
+  // Same visibility rule as the list (GET /api/posts) and the MCP
+  // get_announcement tool: entity scope via active membership, admin bypass.
+  // Invisible = 404, indistinguishable from missing.
+  const post = await getVisiblePost(viewerFromSession(session), id);
   if (!post) {
     return NextResponse.json({ error: "Príspevok nenájdený" }, { status: 404 });
   }

@@ -6,6 +6,7 @@ import { auth } from "@/lib/auth";
 import { db } from "@/db";
 import { users, entities } from "@/db/schema";
 import { mandates, votings } from "@modules/voting/src/db/schema";
+import { sessionCanSeeVoting } from "@modules/voting/src/votings";
 import { hasPermission } from "@/lib/permissions";
 import type { UserRole } from "@/types";
 
@@ -24,6 +25,9 @@ export async function GET(request: NextRequest) {
 
   if (!votingId) {
     return NextResponse.json({ error: "votingId je povinný" }, { status: 400 });
+  }
+  if (!(await sessionCanSeeVoting(session, votingId))) {
+    return NextResponse.json({ error: "Hlasovanie nenájdené" }, { status: 404 });
   }
 
   const fromOwner = alias(users, "fromOwner");

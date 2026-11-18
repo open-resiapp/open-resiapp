@@ -11,6 +11,7 @@ import { entities, memberships, users, webauthnCredentials } from "@/db/schema";
 import type { CommunityRootRow } from "@/lib/legacy-compat";
 import { normalizeVotingMethod } from "@/lib/voting-method";
 import { votings } from "./db/schema";
+import { votingVisibilityFilter, type VotingViewer } from "./votings";
 import { computeEVoteReadiness, type ReadinessRow } from "./workflow/readiness";
 import { publicationDeadline } from "./workflow/transitions";
 import type { Country } from "./rules";
@@ -72,12 +73,15 @@ export interface PublicationReminder {
  * Closed votings whose result is not yet published (§14a ods. 9: within
  * 7 days after the end). Computed at render — no cron, no stored reminder.
  */
-export async function listPublicationReminders(): Promise<PublicationReminder[]> {
+export async function listPublicationReminders(
+  viewer: VotingViewer
+): Promise<PublicationReminder[]> {
   const rows = await db
     .select({ id: votings.id, title: votings.title, endsAt: votings.endsAt })
     .from(votings)
     .where(
       and(
+        votingVisibilityFilter(viewer),
         eq(votings.status, "closed"),
         isNull(votings.resultPublishedAt),
         // Only votings run through the announcement flow; legacy closed

@@ -5,10 +5,10 @@ import { auth } from "@/lib/auth";
 import { db } from "@/db";
 import { entities, memberships } from "@/db/schema";
 import { votings, votingItems, ballots } from "@modules/voting/src/db/schema";
-import { getVotingDetail } from "@modules/voting/src/votings";
+import { getVisibleVotingDetail } from "@modules/voting/src/votings";
 import { assertBoard } from "@/lib/mcp/authz";
 import { isMcpError, mcpErrorStatus } from "@/lib/mcp/errors";
-import { principalFromSession } from "@/lib/mcp/principal";
+import { principalFromSession, type Principal } from "@/lib/mcp/principal";
 import { sendPushToAll } from "@/lib/push";
 import { dispatchHook } from "@/lib/modules/dispatch";
 import { isModuleEnabled } from "@/lib/modules/route-guard";
@@ -39,9 +39,19 @@ export async function GET(
   }
 
   const { id } = await params;
-  // No visibility check here — pre-existing (spec Notes → found gaps);
-  // MCP uses getVisibleVotingDetail.
-  const voting = await getVotingDetail(id);
+  let principal: Principal;
+  try {
+    principal = await principalFromSession(session);
+  } catch (err) {
+    if (!isMcpError(err)) throw err;
+    if (err.code === "unauthorized") {
+      return NextResponse.json({ error: "Neautorizovaný prístup" }, { status: 401 });
+    }
+    return NextResponse.json({ error: "Hlasovanie nenájdené" }, { status: 404 });
+  }
+  // Same visibility as the list + MCP get_voting: scope, board-only drafts.
+  // Invisible = 404 (indistinguishable from missing).
+  const voting = await getVisibleVotingDetail(principal, id);
   if (!voting) {
     return NextResponse.json({ error: "Hlasovanie nenájdené" }, { status: 404 });
   }
@@ -52,7 +62,7 @@ export async function GET(
   const officials = await listOfficials(id);
   let isBoard = false;
   try {
-    assertBoard(await principalFromSession(session));
+    assertBoard(principal);
     isBoard = true;
   } catch {
     isBoard = false;
@@ -310,7 +320,8 @@ export async function PATCH(
 
     const normalized = normalizeItems(body, "", null);
     if ("error" in normalized) {
-      return NextResponse.json({ error: normalized.error }, { status: 400 });
+      // { error, itemIdx? } — QUORUM_TYPE_INVALID is a stable code.
+      return NextResponse.json(normalized, { status: 400 });
     }
     // SK §14b ods. 6 repeated-vote escalation (needs the country).
     const root = await getCommunityRoot();

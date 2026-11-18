@@ -1175,6 +1175,7 @@
       "REPEAT_ESCALATION_UNSUPPORTED": "Repeated decisions have no special majority in this country.",
       "REPEAT_ESCALATION_NOT_APPLICABLE": "With consent of all owners the majority does not change on repetition.",
       "QUORUM_NOT_ALLOWED": "The selected majority type is not allowed for this kind of voting.",
+      "QUORUM_TYPE_INVALID": "Choose a valid majority type for every voting item.",
       "PAPER_PHOTO_REQUIRED": "A photo of the signed paper ballot is required.",
       "PER_ROLLAM_TOO_SHORT": "The written vote is too short. The earliest end is {minDate}.",
       "PUBLISH_BEFORE_END": "The result can only be published after the voting has ended.",

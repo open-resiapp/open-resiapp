@@ -68,7 +68,7 @@ export async function BoardHome({ viewer }: { viewer: Viewer }) {
       : Promise.resolve(0),
     soft(loadMoneyTiles(viewer), null),
     viewer.enabledModules.has("voting")
-      ? soft(listRunningVotingsWithTurnout(viewer.userId, viewer.isAdmin), [])
+      ? soft(listRunningVotingsWithTurnout(viewer), [])
       : Promise.resolve([]),
     canSeeNotices
       ? soft(listVisibleNotices({ userId: viewer.userId, isAdmin: viewer.isAdmin, limit: 3 }), [])
@@ -195,9 +195,9 @@ export async function BoardHome({ viewer }: { viewer: Viewer }) {
       </HomeSection>
 
       {/* BYT-20261118-002: result-publication reminders + e-vote readiness. */}
-      {viewer.enabledModules.has("voting") ? <VotingHomeCards root={viewer.root} /> : null}
+      {viewer.enabledModules.has("voting") ? <VotingHomeCards root={viewer.root} viewer={viewer} /> : null}
       {/* BYT-20261118-001: upcoming owners' meetings — answers so far. */}
-      {viewer.enabledModules.has("voting") ? <MeetingBoardRows /> : null}
+      {viewer.enabledModules.has("voting") ? <MeetingBoardRows viewer={viewer} /> : null}
 
       {canSeeNotices ? (
         <HomeSection title={t("notices.heading")} link={{ href: "/board", label: t("notices.all") }}>

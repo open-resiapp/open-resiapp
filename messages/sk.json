@@ -1175,6 +1175,7 @@
       "REPEAT_ESCALATION_UNSUPPORTED": "Opakované rozhodnutie sa v tejto krajine neposudzuje osobitne.",
       "REPEAT_ESCALATION_NOT_APPLICABLE": "Pri súhlase všetkých vlastníkov sa väčšina pri opakovaní nemení.",
       "QUORUM_NOT_ALLOWED": "Zvolený typ väčšiny nie je pre tento druh hlasovania povolený.",
+      "QUORUM_TYPE_INVALID": "Zvoľte platný typ väčšiny pre každý bod hlasovania.",
       "PAPER_PHOTO_REQUIRED": "Fotografia podpísaného listinného hlasu je povinná.",
       "PER_ROLLAM_TOO_SHORT": "Písomné hlasovanie je príliš krátke. Najskorší koniec je {minDate}.",
       "PUBLISH_BEFORE_END": "Výsledok možno zverejniť až po skončení hlasovania.",

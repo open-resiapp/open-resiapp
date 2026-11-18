@@ -8,6 +8,7 @@ import { isAccountingReader } from "@modules/accounting/src/lib/authz";
 import { getVotingParticipation } from "@modules/voting/src/participation";
 import { getVotingResults } from "@modules/voting/src/results";
 import {
+  canSeeDraftVotings,
   getVisibleVotingDetail,
   listVisibleVotings,
 } from "@modules/voting/src/votings";
@@ -22,15 +23,15 @@ import { defineTool, type ToolContext, type ToolDef } from "./types";
 
 const STATUSES = ["draft", "active", "closed"] as const;
 
+// Same rule as GET /api/votings(/[id]) — enforced inside the votings lib.
 function canSeeDrafts(ctx: ToolContext): boolean {
-  return isBoard(ctx.principal);
+  return canSeeDraftVotings(ctx.principal);
 }
 
-/** Voting detail with the visibility rule + board-only drafts; else not_found. */
+/** Voting detail with the visibility rule + board-only drafts (lib); else not_found. */
 async function loadVoting(ctx: ToolContext, votingId: string) {
   const voting = await getVisibleVotingDetail(ctx.principal, votingId);
   if (!voting) throw new McpError("not_found");
-  if (voting.status === "draft" && !canSeeDrafts(ctx)) throw new McpError("not_found");
   return voting;
 }
 
@@ -51,7 +52,7 @@ const listVotings = defineTool({
     const drafts = canSeeDrafts(ctx);
     if (args.status === "draft" && !drafts) throw new McpError("forbidden");
     const all = (await listVisibleVotings(ctx.principal)).filter(
-      (v) => (drafts || v.status !== "draft") && (!args.status || v.status === args.status)
+      (v) => !args.status || v.status === args.status
     );
     const page = paginate(all, args);
     return {

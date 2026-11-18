@@ -7,13 +7,19 @@ import {
   ballots,
   ballotItemVotes,
 } from "@modules/voting/src/db/schema";
-import { eq, desc } from "drizzle-orm";
+import { eq, desc, ne } from "drizzle-orm";
 import { withExternalAuth } from "@/lib/external-auth";
+import type { ValidatedApiKey } from "@/lib/api-keys";
+import { apiKeyCanSeeDraftVotings } from "@modules/voting/src/votings";
 
 type Counts = { za: number; proti: number; zdrzal_sa: number };
 const zero = (): Counts => ({ za: 0, proti: 0, zdrzal_sa: 0 });
 
-async function handler(_request: NextRequest) {
+async function handler(_request: NextRequest, apiKey: ValidatedApiKey) {
+  // Drafts only for a `full` (admin-tier) key — apiKeyCanSeeDraftVotings.
+  const draftFilter = apiKeyCanSeeDraftVotings(apiKey.permissions)
+    ? undefined
+    : ne(votings.status, "draft");
   const allVotings = await db
     .select({
       id: votings.id,
@@ -30,6 +36,7 @@ async function handler(_request: NextRequest) {
     })
     .from(votings)
     .leftJoin(users, eq(votings.createdById, users.id))
+    .where(draftFilter)
     .orderBy(desc(votings.createdAt));
 
   // BYT-20260609-008: items (resolutions) + per-item counts from ballots.

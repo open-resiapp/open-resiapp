@@ -15,6 +15,7 @@ import {
   removeAttendance,
   setAttendanceLeft,
 } from "@modules/voting/src/attendance";
+import { isVotingVisible } from "@modules/voting/src/votings";
 
 // BYT-20261118-001 §5, §6 — board overview (RSVP answers) and the door list.
 // Board only (admin / chairman / vote counter): names are visible here and
@@ -29,9 +30,12 @@ function err(code: string, status: number, details?: Record<string, unknown>) {
 async function gate(votingId: string): Promise<NextResponse | Session> {
   const session = await auth();
   if (!session) return err("UNAUTHORIZED", 401);
-  // Board, or the vote counter of THIS voting (votings.voteCounterId).
+  // Board, or the vote counter of THIS voting (votings.voteCounterId) —
+  // and the voting must be visible to them (shared rule; invisible = 404).
+  const principal = await principalFromSession(session);
+  if (!(await isVotingVisible(principal, votingId))) return err("NOT_FOUND", 404);
   const voting = await loadMeetingVoting(votingId);
-  if (!canManageAttendance(await principalFromSession(session), voting)) {
+  if (!canManageAttendance(principal, voting)) {
     return err("FORBIDDEN", 403);
   }
   return session;

@@ -54,7 +54,8 @@ export default function HlasovaniePage({
     load();
   }, [load]);
 
-  // Owners never see unfinished drafts (presentation only; API unchanged).
+  // The API already omits drafts for non-board viewers (canSeeDraftVotings);
+  // this keeps owner-audience views draft-free regardless.
   const visible = isBoard ? votings : votings.filter((v) => v.status !== "draft");
   const groups: { key: string; title: string; items: VotingData[] }[] = [
     { key: "active", title: tl("groupActive"), items: visible.filter((v) => v.status === "active") },

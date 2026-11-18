@@ -11,6 +11,7 @@ import { HomeSection } from "@/components/home/HomeSection";
 import { LinkRow } from "@/components/home/LinkRow";
 import type { CommunityRootRow } from "@/lib/legacy-compat";
 import { getEVoteReadiness, listPublicationReminders } from "../readiness.server";
+import type { VotingViewer } from "../votings";
 import type { ReadinessRow } from "../workflow/readiness";
 
 async function safe<T>(p: Promise<T>, fallback: T): Promise<T> {
@@ -22,14 +23,21 @@ async function safe<T>(p: Promise<T>, fallback: T): Promise<T> {
   }
 }
 
-export async function VotingHomeCards({ root }: { root: CommunityRootRow | null }) {
+export async function VotingHomeCards({
+  root,
+  viewer,
+}: {
+  root: CommunityRootRow | null;
+  /** Reminders list only votings this viewer may see (shared visibility rule). */
+  viewer: VotingViewer;
+}) {
   if (!root) return null;
   const t = await getTranslations("VotingWorkflow");
   const tWizard = await getTranslations("VotingWizard");
   const format = await getFormatter();
 
   const [reminders, readiness] = await Promise.all([
-    safe(listPublicationReminders(), []),
+    safe(listPublicationReminders(viewer), []),
     safe(getEVoteReadiness(root), [] as ReadinessRow[]),
   ]);
 

@@ -1,14 +1,20 @@
 import { NextRequest, NextResponse } from "next/server";
-import { and, count, eq, isNull } from "drizzle-orm";
+import { and, count, eq, isNull, ne } from "drizzle-orm";
 
 import { db } from "@/db";
 import { users, posts, entities } from "@/db/schema";
 import { votings } from "@modules/voting/src/db/schema";
 import { withExternalAuth } from "@/lib/external-auth";
+import type { ValidatedApiKey } from "@/lib/api-keys";
+import { apiKeyCanSeeDraftVotings } from "@modules/voting/src/votings";
 
 // Phase 9.1b: counts re-derived from entities so the v1 stats shape
 // survives the legacy table drop.
-async function handler(_request: NextRequest) {
+async function handler(_request: NextRequest, apiKey: ValidatedApiKey) {
+  // Same draft rule as /external/v1/votings: drafts count only for a `full` key.
+  const draftFilter = apiKeyCanSeeDraftVotings(apiKey.permissions)
+    ? undefined
+    : ne(votings.status, "draft");
   const [
     [userCount],
     [flatCount],
@@ -30,7 +36,7 @@ async function handler(_request: NextRequest) {
       .where(
         and(eq(entities.kind, "entrance"), isNull(entities.archivedAt))
       ),
-    db.select({ count: count() }).from(votings),
+    db.select({ count: count() }).from(votings).where(draftFilter),
     db.select({ count: count() }).from(posts),
     db.select({ count: count() }).from(votings).where(eq(votings.status, "active")),
   ]);

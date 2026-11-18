@@ -10,11 +10,12 @@ import {
   ballotItemVotes,
 } from "@modules/voting/src/db/schema";
 import { withExternalAuth } from "@/lib/external-auth";
+import { apiKeyCanSeeDraftVotings } from "@modules/voting/src/votings";
 import type { ValidatedApiKey } from "@/lib/api-keys";
 
 async function handler(
   _request: NextRequest,
-  _apiKey: ValidatedApiKey,
+  apiKey: ValidatedApiKey,
   context?: { params: Promise<Record<string, string>> }
 ) {
   const { id } = await context!.params;
@@ -38,7 +39,8 @@ async function handler(
     .where(eq(votings.id, id))
     .limit(1);
 
-  if (!voting) {
+  // A draft is invisible (404, same as missing) unless the key is `full`.
+  if (!voting || (voting.status === "draft" && !apiKeyCanSeeDraftVotings(apiKey.permissions))) {
     return NextResponse.json({ error: "Voting not found" }, { status: 404 });
   }
 

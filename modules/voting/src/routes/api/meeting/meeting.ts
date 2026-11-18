@@ -18,6 +18,7 @@ import {
   getOwnMeetingState,
   loadMeetingVoting,
 } from "@modules/voting/src/attendance";
+import { isVotingVisible } from "@modules/voting/src/votings";
 import {
   sendMeetingChanges,
   sendMeetingInvitations,
@@ -41,6 +42,9 @@ export async function GET(_request: NextRequest, { params }: Ctx) {
   const role = session.user.role as UserRole;
   const principal = await principalFromSession(session);
   const { id } = await params;
+  // Shared voting visibility first (scope, board-only drafts): the aggregate
+  // counts must not leak for another entrance's or a draft meeting.
+  if (!(await isVotingVisible(principal, id))) return err("NOT_FOUND", 404);
   // Caretaker / tenant see nothing of this (§9).
   if (!hasPermission(role, "vote") && !canManageAttendance(principal, await loadMeetingVoting(id))) {
     return err("FORBIDDEN", 403);
@@ -57,6 +61,7 @@ export async function POST(request: NextRequest, { params }: Ctx) {
   if (principal.status !== "active" || !isBoard(principal)) return err("FORBIDDEN", 403);
 
   const { id } = await params;
+  if (!(await isVotingVisible(principal, id))) return err("NOT_FOUND", 404);
   const body = (await request.json().catch(() => ({}))) as Record<string, unknown>;
   const locale =
     typeof body.locale === "string" && (routing.locales as readonly string[]).includes(body.locale)

@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { db } from "@/db";
 import { boardMembers, users } from "@/db/schema";
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 import { hasPermission } from "@/lib/permissions";
 import { getCommunityRoot } from "@/lib/legacy-compat";
 import type { UserRole } from "@/types";
@@ -18,6 +18,9 @@ export async function GET() {
     return NextResponse.json({ members: [], governanceModel: "chairman_council" });
   }
 
+  // Every signed-in user may read this, so: active rows only and no e-mail
+  // (the settings tab, its only consumer, needs just the name). Expired
+  // terms stay listed so the board sees the "term expired" badge.
   const members = await db
     .select({
       id: boardMembers.id,
@@ -27,11 +30,10 @@ export async function GET() {
       termEndsAt: boardMembers.termEndsAt,
       isActive: boardMembers.isActive,
       userName: users.name,
-      userEmail: users.email,
     })
     .from(boardMembers)
     .leftJoin(users, eq(boardMembers.userId, users.id))
-    .where(eq(boardMembers.entityId, bld.id));
+    .where(and(eq(boardMembers.entityId, bld.id), eq(boardMembers.isActive, true)));
 
   return NextResponse.json({
     members,

@@ -10,6 +10,7 @@ import { entities, eventRsvps } from "@/db/schema";
 import { LinkRow } from "@/components/home/LinkRow";
 import type { Viewer } from "@/lib/home.server";
 import { votings } from "../db/schema";
+import { votingVisibilityFilter } from "../votings";
 import { eligibleLines, getOwnMeetingState } from "../attendance";
 import { MeetingOwnerCard, type OwnState } from "../routes/dashboard/id/MeetingPanel";
 
@@ -32,7 +33,10 @@ function upcoming() {
   );
 }
 
-async function loadBoardRows() {
+async function loadBoardRows(viewer: Viewer) {
+  // Shared voting visibility (scope / board) — not every board-audience
+  // user (caretaker, council member) sees every entrance's meeting.
+  const visible = votingVisibilityFilter(viewer);
   const rows = await db
     .select({
       id: votings.id,
@@ -41,7 +45,7 @@ async function loadBoardRows() {
       postId: votings.meetingPostId,
     })
     .from(votings)
-    .where(upcoming())
+    .where(visible ? and(upcoming(), visible) : upcoming())
     .orderBy(votings.startsAt)
     .limit(3);
   return Promise.all(
@@ -62,8 +66,8 @@ async function loadBoardRows() {
   );
 }
 
-export async function MeetingBoardRows() {
-  const rows = await safe(loadBoardRows(), []);
+export async function MeetingBoardRows({ viewer }: { viewer: Viewer }) {
+  const rows = await safe(loadBoardRows(viewer), []);
   if (rows.length === 0) return null;
   const t = await getTranslations("MeetingAttendance.home");
   const format = await getFormatter();

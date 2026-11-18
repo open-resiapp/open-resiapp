@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 
 import { auth } from "@/lib/auth";
-import { principalFromSession, viewerFromSession } from "@/lib/mcp/principal";
-import { toMcpError } from "@/lib/mcp/errors";
+import { principalFromSession, type Principal } from "@/lib/mcp/principal";
+import { isMcpError, toMcpError } from "@/lib/mcp/errors";
 import { createVoting, listVisibleVotings } from "@modules/voting/src/votings";
 
 export async function GET() {
@@ -11,7 +11,18 @@ export async function GET() {
     return NextResponse.json({ error: "Neautorizovaný prístup" }, { status: 401 });
   }
 
-  const result = await listVisibleVotings(viewerFromSession(session));
+  // Live role + board roles (not the JWT copy): drafts are board-only
+  // (canSeeDraftVotings), the same rule the MCP list_votings tool applies.
+  let principal: Principal;
+  try {
+    principal = await principalFromSession(session);
+  } catch (err) {
+    // principalFromSession throws only unauthorized (user gone) / community_missing.
+    if (!isMcpError(err)) throw err;
+    if (err.code === "community_missing") return NextResponse.json([]);
+    return NextResponse.json({ error: "Neautorizovaný prístup" }, { status: 401 });
+  }
+  const result = await listVisibleVotings(principal);
   return NextResponse.json(result);
 }
 
@@ -55,7 +66,8 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(e.details.quorum, { status: 400 });
     }
     if (e.code === "validation.items" && typeof e.details?.raw === "string") {
-      return NextResponse.json({ error: e.details.raw }, { status: 400 });
+      // raw is a stable code (QUORUM_TYPE_INVALID) or a legacy SK message.
+      return NextResponse.json({ error: e.details.raw, itemIdx: e.details.itemIdx }, { status: 400 });
     }
     if (e.code.startsWith("validation.")) {
       return NextResponse.json(

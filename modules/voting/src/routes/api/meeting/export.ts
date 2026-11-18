@@ -14,6 +14,7 @@ import {
   getAttendanceExport,
   loadMeetingVoting,
 } from "@modules/voting/src/attendance";
+import { isVotingVisible } from "@modules/voting/src/votings";
 import { EXPORT_COLUMNS, type ExportDocument, type ExportRowMode } from "@modules/voting/src/workflow/attendance";
 
 // BYT-20261118-001 §7 — attendance export. Rows come from ONE server
@@ -29,7 +30,11 @@ export async function GET(request: NextRequest, { params }: Ctx) {
   const session = await auth();
   if (!session) return NextResponse.json({ error: "UNAUTHORIZED" }, { status: 401 });
   const { id } = await params;
-  if (!canManageAttendance(await principalFromSession(session), await loadMeetingVoting(id))) {
+  const principal = await principalFromSession(session);
+  if (!(await isVotingVisible(principal, id))) {
+    return NextResponse.json({ error: "NOT_FOUND" }, { status: 404 });
+  }
+  if (!canManageAttendance(principal, await loadMeetingVoting(id))) {
     return NextResponse.json({ error: "FORBIDDEN" }, { status: 403 });
   }
   const sp = new URL(request.url).searchParams;

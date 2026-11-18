@@ -1,6 +1,6 @@
 import "server-only";
 
-import { and, asc, eq, isNull, sql } from "drizzle-orm";
+import { and, asc, eq, gt, isNull, or, sql, type SQL } from "drizzle-orm";
 
 import { db } from "@/db";
 import { boardMembers, entities, memberships, users } from "@/db/schema";
@@ -40,10 +40,20 @@ export async function getUserAuthRow(userId: string): Promise<UserAuthRow | null
 }
 
 /**
- * Active board roles the user holds on `entityId` (the community root).
- * Mirrors `hasBoardRole` (accounting authz): isActive only, termEndsAt is
- * not consulted (pre-existing behaviour, see spec Notes → found gaps).
+ * A board_members row grants authority only while it is in force: flagged
+ * active AND its term has not ended (`termEndsAt` null = open-ended term).
+ * The one definition of an "active board role" — used by
+ * `listActiveBoardRoles` (Principal / shell / faults) and the accounting
+ * `hasBoardRole`, so web, MCP and accounting agree.
  */
+export function boardRoleInForce(now: Date = new Date()): SQL {
+  return and(
+    eq(boardMembers.isActive, true),
+    or(isNull(boardMembers.termEndsAt), gt(boardMembers.termEndsAt, now))
+  ) as SQL;
+}
+
+/** Board roles in force (`boardRoleInForce`) the user holds on `entityId` (the community root). */
 export async function listActiveBoardRoles(
   userId: string,
   entityId: string
@@ -55,7 +65,7 @@ export async function listActiveBoardRoles(
       and(
         eq(boardMembers.userId, userId),
         eq(boardMembers.entityId, entityId),
-        eq(boardMembers.isActive, true)
+        boardRoleInForce()
       )
     );
   return [...new Set(rows.map((r) => r.role))];
