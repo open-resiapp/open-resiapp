@@ -36,6 +36,7 @@ import {
   type RsvpSource,
   type RsvpStatus,
 } from "./workflow/attendance";
+import { getDisplayTemplateSlug } from "@/lib/templates/display-slug";
 
 // BYT-20261118-001 — owners' meeting: announcement post, RSVP, attendance
 // list (prezenčná listina). Query functions only; routes gate authz and map
@@ -621,7 +622,7 @@ export async function getAttendanceExport(
   if (!v) return null;
   const root = await getCommunityRoot();
   // Legal content rule: HOA template only until wording sign-off (spec L6).
-  if ((root?.templateSlug ?? "hoa") !== "hoa" || v.votingType !== "meeting") {
+  if ((getDisplayTemplateSlug(root?.templateSlug) ?? "hoa") !== "hoa" || v.votingType !== "meeting") {
     throw new MeetingError("MEETING_EXPORT_UNAVAILABLE", 400);
   }
   const [eligible, rows] = await Promise.all([eligibleLines(votingId), attendanceRows(votingId)]);

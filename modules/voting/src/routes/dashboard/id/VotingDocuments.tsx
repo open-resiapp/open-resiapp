@@ -10,12 +10,13 @@ import { useState } from "react";
 import { useFormatter, useTranslations } from "next-intl";
 import { Button, Card } from "@/components/ui";
 import type { BallotData, BuildingInfo, VotingDetail } from "./types";
+import { getDisplayTemplateSlug } from "@/lib/templates/display-slug";
 
 /** SK HOA only (country sk + template hoa / pre-template installs). */
 export function documentsAvailable(building: BuildingInfo | null, voting: VotingDetail): boolean {
   if (!building) return false;
   if (voting.votingType !== "written") return false;
-  return building.country === "sk" && (!building.templateSlug || building.templateSlug === "hoa");
+  return building.country === "sk" && (getDisplayTemplateSlug(building.templateSlug) ?? "hoa") === "hoa";
 }
 
 async function sha256Hex(text: string): Promise<string> {

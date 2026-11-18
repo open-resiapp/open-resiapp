@@ -179,9 +179,10 @@ async function main() {
       },
     })
     .returning({ id: entities.id });
+  // entity-tree invariant: path = "/<id>/…" (see src/lib/entity-tree.ts).
   await db
     .update(entities)
-    .set({ rootId: dom.id })
+    .set({ rootId: dom.id, path: `/${dom.id}/` })
     .where(eq(entities.id, dom.id));
 
   // 4 units with share (Σ share = 1) + area + flat number.
@@ -197,7 +198,7 @@ async function main() {
       .values({
         kind: "unit",
         name: `Byt ${u.flat}`,
-        path: `/svb-demo/${u.flat}`,
+        path: `/${dom.id}/__pending__/`, // fixed right after insert (needs own id)
         parentId: dom.id,
         rootId: dom.id,
         depth: 1,
@@ -210,6 +211,10 @@ async function main() {
         },
       })
       .returning({ id: entities.id });
+    await db
+      .update(entities)
+      .set({ path: `/${dom.id}/${unit.id}/` })
+      .where(eq(entities.id, unit.id));
 
     await db.insert(unitSettings).values({
       entityId: dom.id,

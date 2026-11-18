@@ -12,6 +12,7 @@ import {
 import type { ModuleManifest } from "./sdk";
 import { MODULES_DIR } from "./loader";
 import { listCommunityRoots } from "@/lib/legacy-compat";
+import { getDisplayTemplateSlug } from "@/lib/templates/display-slug";
 
 // Modules shipped in-tree. Each entry declares the entity kinds that
 // should auto-enable the module on first app start. For non-matching
@@ -128,7 +129,7 @@ async function resolveDefaultStatus(
   // modules — HOA is the default template.
   if (roots.length === 0) return base;
   const allowed = new Set(config.enabledForTemplates);
-  return roots.some((r) => allowed.has(r.templateSlug ?? "hoa")) ? "enabled" : "disabled";
+  return roots.some((r) => allowed.has(getDisplayTemplateSlug(r.templateSlug) ?? "hoa")) ? "enabled" : "disabled";
 }
 
 async function ensureInstallRow(

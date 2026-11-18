@@ -26,6 +26,7 @@ import {
 import type { AttendanceOwnerLine, MeetingAttendanceSummary, RsvpOverview } from "@modules/voting/src/workflow/attendance";
 import { Link } from "@/i18n/navigation";
 import type { BuildingInfo, VotingDetail } from "./types";
+import { getDisplayTemplateSlug } from "@/lib/templates/display-slug";
 
 interface BoardData {
   overview: RsvpOverview & {
@@ -132,7 +133,7 @@ export function MeetingBoardPanel({
   const ov = data.overview;
   const post = ov.voting.meetingPostId;
   const exportAllowed =
-    !building || !building.templateSlug || building.templateSlug === "hoa";
+    !building || (getDisplayTemplateSlug(building.templateSlug) ?? "hoa") === "hoa";
 
   return (
     <Card as="section" className="mb-6 space-y-4">
