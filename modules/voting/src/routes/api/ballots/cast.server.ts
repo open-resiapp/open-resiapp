@@ -382,7 +382,12 @@ export async function recordConfirmedBallot(input: {
   ballotHash: string;
   claims: VoteConfirmClaims & { iat: number };
   method: ConfirmationMethod;
-  signature: string | null;
+  /**
+   * Passkey: the WebAuthn proof. E-mail: a function of the final recordedAt
+   * (BYT-20261118-009 §5 — the HMAC binds the confirmation time, which is
+   * only chosen inside this transaction).
+   */
+  signature: string | null | ((recordedAt: Date) => string);
 }): Promise<
   | { ok: true; ballotId: string; recordedAt: Date; superseded: boolean }
   | CastFailure
@@ -421,7 +426,8 @@ export async function recordConfirmedBallot(input: {
         recordedById: null,
         mandateId: null,
         ballotHash,
-        signature: input.signature,
+        signature:
+          typeof input.signature === "function" ? input.signature(recordedAt) : input.signature,
         confirmationKind: method,
         confirmedAt: recordedAt,
         recordedAt,

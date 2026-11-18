@@ -42,7 +42,11 @@ smartphones and are afraid of breaking something.
 - An electronic vote is never accepted on the basis of an authenticated
   session alone. The voter must perform an active confirming action
   within a short, single-use window (clicked email-confirmation link or
-  passkey assertion). A merely-sent email is not capture.
+  passkey assertion). A merely-sent email is not capture. The email link
+  is confirmed only while signed in as the same owner (token binds the
+  ballot, session binds the person), and web and MCP ballots share one
+  pending-ballot confirmation path; an unconfirmed ballot is never
+  counted (BYT-20261118-009).
 - A paper vote always has an attached photograph of the signed ballot.
   Paper without photo must never be accepted.
 - Forgeable digital delegation does not exist: there is no in-app

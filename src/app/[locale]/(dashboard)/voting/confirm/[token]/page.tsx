@@ -13,7 +13,9 @@ import {
 } from "@modules/voting/src/pending-ballots";
 import { decidePendingBallot } from "./actions";
 
-// Ballot confirmation from the email link (BYT-20261117-001 §6 step 3).
+// Ballot confirmation from the email link (BYT-20261117-001 §6 step 3) —
+// shared by web and MCP ballots (BYT-20261118-009; gated by the voting
+// module, an MCP-originated request additionally by the MCP module).
 // Requires a session of the SAME owner the ballot was requested for
 // (Decided 3); shows the full ballot (every item + choice + short hash, the
 // same as the email) and casts it only on an explicit "I confirm my vote"
@@ -67,10 +69,11 @@ export default async function VotingConfirmPage({
   params: Promise<{ locale: string; token: string }>;
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
-  if (!(await isModuleEnabled("voting")) || !(await isMcpEnabled())) notFound();
+  if (!(await isModuleEnabled("voting"))) notFound();
   const { locale, token } = await params;
   const sp = await searchParams;
   const errorCode = typeof sp.e === "string" ? sp.e : null;
+  const passkeyActivated = sp.pk === "1";
 
   const t = await getTranslations("VotingConfirm");
   if (!isPendingBallotToken(token)) {
@@ -98,6 +101,9 @@ export default async function VotingConfirmPage({
   }
 
   const row = found.row;
+  if (row.source === "mcp" && !(await isMcpEnabled())) {
+    return <StateCard title={t("title")} message={t("invalid")} tone="err" />;
+  }
   const desc = await describeBallot(row.votingId, row.unitId, row.items);
   if (!desc) {
     return <StateCard title={t("title")} message={t("errors.voting_not_active")} tone="err" />;
@@ -119,6 +125,7 @@ export default async function VotingConfirmPage({
     statusBlock = (
       <p className="text-base font-semibold text-green-700 dark:text-green-400">
         {t("confirmed")}{" "}
+        {passkeyActivated && <>{t("passkeyActivated")} </>}
         <a href={`/${locale}/voting/${row.votingId}`} className="underline">
           {t("openVoting")}
         </a>
@@ -145,7 +152,9 @@ export default async function VotingConfirmPage({
         <h1 className="mt-1 text-2xl font-bold text-gray-900 dark:text-gray-100 break-words">{desc.votingTitle}</h1>
         {row.status === "pending" && (
           <>
-            <p className="mt-3 text-base text-gray-700 dark:text-gray-300">{t("intro")}</p>
+            <p className="mt-3 text-base text-gray-700 dark:text-gray-300">
+              {t(row.source === "web" ? "introWeb" : "intro")}
+            </p>
             <p className="mt-2 text-base font-semibold text-gray-900 dark:text-gray-100">{t("notCastYet")}</p>
           </>
         )}

@@ -842,7 +842,9 @@
       "withdrawIntro": "You asked to withdraw your vote in “{voting}” for unit {flat}.",
       "withdrawButton": "Open and withdraw the vote",
       "withdrawExpiry": "The link is valid until {time} and works only once. Until you confirm the withdrawal on the page that opens, your vote stays valid.",
-      "withdrawNotYou": "If you did not ask for this, ignore this e-mail — your vote stays valid."
+      "withdrawNotYou": "If you did not ask for this, ignore this e-mail — your vote stays valid.",
+      "linkHash": "Ballot check code:",
+      "linkLoginNote": "After opening the link, sign in with your account (the one this e-mail was sent to). The vote is recorded only when you press “I confirm my vote”."
     },
     "passkey": {
       "unnamedDevice": "device",
@@ -3702,7 +3704,7 @@
     "confirmEmail": "Send a confirmation e-mail",
     "emailSentTitle": "Check your e-mail",
     "emailSentTo": "We sent an e-mail to {email}.",
-    "emailSentHelp": "Open it on any device and press Confirm vote. The link is valid until {time}.",
+    "emailSentHelp": "Open it on any device, sign in and press I confirm my vote. The link is valid until {time}.",
     "emailNotYetRecorded": "Your vote is not recorded until you confirm it in the e-mail.",
     "emailDoneReload": "I confirmed it — show status",
     "backToReview": "Back to review",
@@ -3725,7 +3727,7 @@
     "withdrawPasskey": "Withdraw and confirm with passkey",
     "withdrawEmail": "Send a confirmation e-mail to withdraw",
     "withdrawCancel": "Do not withdraw, go back",
-    "withdrawEmailHelp": "Open it on any device and press Withdraw vote. The link is valid until {time}.",
+    "withdrawEmailHelp": "Open it on any device, sign in and press Withdraw vote. The link is valid until {time}.",
     "withdrawNotYetDone": "Until you confirm the withdrawal in the e-mail, your vote stays valid.",
     "backToReceipt": "Back to my vote",
     "paperLockedNote": "This vote was recorded by the board from your paper ballot. You cannot change or withdraw it in the app. If it contains a mistake, contact the board.",
@@ -3763,7 +3765,8 @@
       "PASSKEY_PENDING": "Your passkey is not confirmed yet. Open the e-mail with the passkey confirmation link, or confirm your vote by e-mail.",
       "PAPER_BALLOT_LOCKED": "The board has already recorded your paper ballot for this unit. It cannot be changed or withdrawn in the app.",
       "BALLOT_NOT_FOUND": "The vote was not found. It may already have been withdrawn.",
-      "WITHDRAW_NOT_CONFIRMED_YET": "The vote is not withdrawn yet. Open the e-mail and press Withdraw vote."
+      "WITHDRAW_NOT_CONFIRMED_YET": "The vote is not withdrawn yet. Open the e-mail and press Withdraw vote.",
+      "BALLOT_CONFLICT": "Another confirmation request for this vote is in progress. Try again in a moment."
     }
   },
   "VoteConfirmPage": {
@@ -3807,6 +3810,10 @@
       "paperLocked": {
         "title": "The vote was recorded on paper",
         "body": "The board has already recorded your paper ballot for this unit. It cannot be changed or withdrawn electronically."
+      },
+      "otherVoter": {
+        "title": "The link belongs to another account",
+        "body": "This link belongs to another owner. Sign out and sign in with the account the e-mail was sent to."
       }
     }
   },
@@ -4261,7 +4268,9 @@
       "internal": "An unexpected error occurred. No vote was cast.",
       "email_failed": "The confirmation email could not be sent.",
       "generic": "The vote could not be cast."
-    }
+    },
+    "introWeb": "You prepared this ballot in the app. Check every item.",
+    "passkeyActivated": "Your passkey is now switched on."
   },
   "Laws": {
     "title": "Laws",

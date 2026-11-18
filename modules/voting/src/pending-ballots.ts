@@ -4,11 +4,16 @@ import { and, asc, count, eq, gt, inArray, lt, lte, sql } from "drizzle-orm";
 
 import { db } from "@/db";
 import { entities } from "@/db/schema";
+import { getCommunityRoot } from "@/lib/legacy-compat";
 import { randomToken, sha256Hex } from "@/lib/mcp/oauth/crypto";
 import { McpError, toMcpError } from "@/lib/mcp/errors";
 import type { Viewer } from "@/lib/mcp/principal";
-import type { VoteChoice } from "@/types";
+import { activatePendingPasskey } from "@/lib/webauthn.server";
+import { sendPasskeyAddedNotice } from "@/lib/webauthn-email.server";
+import type { Country, VoteChoice } from "@/types";
+import { signEmailBallot } from "./ballot-signature.server";
 import { ballots, pendingBallots, votingItems, votings } from "./db/schema";
+import { sendBallotReceipt } from "./receipt.server";
 import {
   validateBallotCast,
   type PersistedBallot,
@@ -19,11 +24,14 @@ import {
   recordConfirmedBallot,
 } from "./routes/api/ballots/cast.server";
 
-// Pending ballot + email confirmation (BYT-20261117-001 §6).
+// Pending ballot + email confirmation (BYT-20261117-001 §6) — the ONE
+// e-mail confirmation path for every electronic ballot, web and MCP
+// (BYT-20261118-009).
 //
-//   create   the MCP `request_ballot_confirmation` action, after the owner
+//   create   the MCP `request_ballot_confirmation` action (after the owner
 //            clicked "send confirmation email" in the confirm view /
-//            fallback page: supersedes any live request for the same
+//            fallback page) or the web POST /api/ballots/email-confirmation
+//            (source 'web'): supersedes any live request for the same
 //            (voting, unit, owner), stores the ballot + SHA-256 of a
 //            single-use token, 30-minute expiry. Writes NOTHING to
 //            mod_voting_ballots.
@@ -31,9 +39,10 @@ import {
 //            claim (UPDATE … WHERE token AND owner AND pending AND not
 //            expired RETURNING), re-run validateBallotCast against current
 //            state, require the same ballot hash, persist with
-//            confirmationKind='email' via recordConfirmedBallot (the web
-//            confirmation gate's writer). The ONLY MCP-originated writer of
-//            mod_voting_ballots.
+//            confirmationKind='email' + HMAC signature via
+//            recordConfirmedBallot (the web confirmation gate's writer),
+//            send the receipt. The ONLY e-mail-confirmed writer of
+//            mod_voting_ballots (web and MCP).
 //   cancel   same claim, status → cancelled. Nothing is cast.
 //
 // No resend exists (voting.md "Counterparts"): an expired link is dead and
@@ -43,8 +52,10 @@ import {
 // Retention: `items` (the owner's choices) is emptied as soon as a row
 // leaves `pending` (confirmed — the ballot itself is in mod_voting_ballots
 // —, cancelled, superseded, expired, failed); hash, status and audit links
-// stay. Rows are deleted after the MCP audit-log retention (90 days) by a
-// bounded request-time sweep in createPendingBallot.
+// stay. Rows are deleted by a bounded request-time sweep in
+// createPendingBallot only when older than 90 days AND their voting ended
+// more than 90 days ago (BYT-20261118-009 §10 — the row is the audit record
+// of the confirmation, kept through the challenge window).
 
 export const PENDING_BALLOT_TTL_MS = 30 * 60 * 1000;
 /** §7: 3 ballot emails per voting per owner per hour. */
@@ -85,7 +96,14 @@ export interface CreatedPendingBallot {
 
 export async function createPendingBallot(
   v: Pick<ValidatedBallot, "votingId" | "unitId" | "ownerId" | "marked" | "ballotHash">,
-  opts: { clientId: string | null; pendingActionId: string | null; locale: string }
+  opts: {
+    source: "mcp" | "web";
+    clientId: string | null;
+    pendingActionId: string | null;
+    locale: string;
+    /** Web inline first-vote flow: activate this pending passkey on confirm. */
+    activatePasskey?: { id: string; credentialId: string } | null;
+  }
 ): Promise<CreatedPendingBallot> {
   const [{ n }] = await db
     .select({ n: count() })
@@ -134,10 +152,12 @@ export async function createPendingBallot(
           tokenHash: sha256Hex(token),
           status: "pending",
           expiresAt,
-          source: "mcp",
+          source: opts.source,
           clientId: opts.clientId,
           pendingActionId: opts.pendingActionId,
           locale: opts.locale.slice(0, 8),
+          activatePasskeyId: opts.activatePasskey?.id ?? null,
+          activatePasskeyCredentialId: opts.activatePasskey?.credentialId ?? null,
         })
         .returning({ id: pendingBallots.id });
       return row.id;
@@ -180,10 +200,20 @@ async function sweepPendingBallots(votingId: string, ownerId: string): Promise<v
       .where(and(inArray(pendingBallots.id, stale), eq(pendingBallots.status, "pending")));
 
     if (Math.random() < 0.01) {
+      const cutoff = new Date(Date.now() - PENDING_BALLOT_RETENTION_MS);
+      const endedVotings = db
+        .select({ id: votings.id })
+        .from(votings)
+        .where(lt(votings.endsAt, cutoff));
       const old = db
         .select({ id: pendingBallots.id })
         .from(pendingBallots)
-        .where(lt(pendingBallots.createdAt, new Date(Date.now() - PENDING_BALLOT_RETENTION_MS)))
+        .where(
+          and(
+            lt(pendingBallots.createdAt, cutoff),
+            inArray(pendingBallots.votingId, endedVotings)
+          )
+        )
         .limit(SWEEP_LIMIT);
       await db.delete(pendingBallots).where(inArray(pendingBallots.id, old));
     }
@@ -338,6 +368,9 @@ export interface ConfirmedPendingBallot extends PersistedBallot {
   pendingBallotId: string;
   votingId: string;
   pendingActionId: string | null;
+  source: "mcp" | "web";
+  /** The inline first-vote passkey was switched on by this click. */
+  passkeyActivated: boolean;
 }
 
 /**
@@ -357,6 +390,32 @@ export async function confirmPendingBallot(
     .where(claimWhere(token, owner.userId))
     .returning();
   if (!claimed) throw await explainMiss(token, owner.userId);
+
+  // Inline first-vote flow (web): clicking the link while signed in proves
+  // control of the mailbox, so it activates the passkey registered with
+  // it — whatever happens to the ballot below (same rule as Phase 6).
+  // Idempotent: only a still-pending credential of this owner flips.
+  let passkeyActivated = false;
+  if (claimed.activatePasskeyId && claimed.activatePasskeyCredentialId) {
+    try {
+      const a = await activatePendingPasskey(
+        owner.userId,
+        claimed.activatePasskeyId,
+        claimed.activatePasskeyCredentialId
+      );
+      if (a.ok) {
+        passkeyActivated = true;
+        void sendPasskeyAddedNotice({
+          userId: owner.userId,
+          deviceLabel: a.deviceLabel,
+          activatedAt: a.activatedAt,
+          locale: claimed.locale,
+        });
+      }
+    } catch (err) {
+      console.error(`[voting] pending ballot ${claimed.id} passkey activation failed:`, err);
+    }
+  }
 
   // Re-validate against CURRENT state (voting may have closed, ownership
   // may have changed, items may differ) — the token binds the ballot, the
@@ -404,7 +463,16 @@ export async function confirmPendingBallot(
         iat: claimed.createdAt.getTime(),
       },
       method: "email",
-      signature: null,
+      // BYT-20261118-009 §5: internal HMAC over the confirmed ballot.
+      signature: (recordedAt) =>
+        signEmailBallot({
+          votingId: validated.votingId,
+          unitId: validated.unitId,
+          ownerId: validated.ownerId,
+          ballotHash: validated.ballotHash,
+          confirmedAt: recordedAt,
+          pendingBallotId: claimed.id,
+        }),
     });
     if (!rec.ok) {
       const code =
@@ -432,11 +500,27 @@ export async function confirmPendingBallot(
     .set({ ballotId: persisted.ballotId, items: SCRUBBED_ITEMS })
     .where(eq(pendingBallots.id, claimed.id));
 
+  // Receipt (§14a ods. 5 for SK) — the same one the passkey path sends.
+  const root = await getCommunityRoot();
+  sendBallotReceipt({
+    votingId: validated.votingId,
+    flatId: validated.unitId,
+    voterId: validated.ownerId,
+    marked: validated.marked,
+    ballotHash: validated.ballotHash,
+    recordedAt: persisted.recordedAt,
+    method: "email",
+    country: (root?.country ?? "sk") as Country,
+    locale: claimed.locale,
+  });
+
   return {
     ...persisted,
     pendingBallotId: claimed.id,
     votingId: claimed.votingId,
     pendingActionId: claimed.pendingActionId,
+    source: claimed.source,
+    passkeyActivated,
   };
 }
 
