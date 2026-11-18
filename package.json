@@ -19,6 +19,7 @@
     "test:accounting-camt053": "tsx scripts/accounting-camt053-check.ts",
     "test:accounting-match": "tsx scripts/accounting-match-check.ts",
     "test:accounting-fio": "tsx scripts/accounting-fio-check.ts",
+    "test:accounting-enable-banking": "tsx scripts/accounting-enable-banking-check.ts",
     "test:accounting-interest": "tsx scripts/accounting-interest-check.ts",
     "test:accounting-settlement": "tsx scripts/accounting-settlement-check.ts",
     "test:accounting-opening-import": "tsx scripts/accounting-opening-import-check.ts",

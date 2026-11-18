@@ -2,7 +2,7 @@
 
 // "Z banky" tab of Platby od vlastníkov (BYT-20261117-002; flow from
 // BYT-20260512-002 Phase 2). Two parts: bring the bank payments in (CAMT.053
-// statement upload or the Fio connection), then assign each payment the
+// statement upload, the Fio connection or Enable Banking), then assign each payment the
 // engine could not match on its own to a flat. Every line shows the engine's
 // best suggestion with a confidence badge; fuzzy name hits are suggestion-
 // only by design (domain edge case 9 — VS is the primary key).
@@ -22,6 +22,7 @@ import {
   Select,
 } from "@/components/ui";
 import { formatEur } from "@modules/accounting/src/lib/money";
+import EnableBankingConnection from "./EnableBankingConnection";
 
 interface Suggestion {
   unitEntityId: string | null;
@@ -324,6 +325,16 @@ export default function ReconciliationPanel({ onChanged }: { onChanged?: () => v
             </div>
           </details>
         )}
+
+        {/* Any SK/CZ bank via PSD2 (Enable Banking) — BYT-20261118-001. */}
+        <EnableBankingConnection
+          variant="compact"
+          onBusy={() => setSummary(null)}
+          onSynced={(next) => {
+            setSummary(next);
+            refreshAll();
+          }}
+        />
       </Card>
 
       {/* 2. Assign the rest to flats */}

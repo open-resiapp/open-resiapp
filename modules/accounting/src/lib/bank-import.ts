@@ -184,7 +184,7 @@ async function importLines(
     entityId: string;
     country: Country;
     actorId: string;
-    source: "bank_import" | "fio_api";
+    source: "bank_import" | "fio_api" | "enable_banking_api";
     lines: NormalizedBankLine[];
     summary: ImportSummary;
   }
@@ -298,7 +298,7 @@ export async function importNormalizedLines(input: {
   entityId: string;
   country: Country;
   actorId: string;
-  source: "bank_import" | "fio_api";
+  source: "bank_import" | "fio_api" | "enable_banking_api";
   lines: NormalizedBankLine[];
 }): Promise<ImportSummary> {
   return db.transaction(async (tx) => {
@@ -325,7 +325,11 @@ export async function importNormalizedLines(input: {
       recordId: input.entityId,
       after: { bankImport: summary, source: input.source },
       justification:
-        input.source === "fio_api" ? "fio sync" : "bank line import",
+        input.source === "fio_api"
+          ? "fio sync"
+          : input.source === "enable_banking_api"
+            ? "enable banking sync"
+            : "bank line import",
     });
     return summary;
   });
@@ -517,7 +521,7 @@ export async function listUnmatchedBankLines(
       .where(
         and(
           eq(payments.entityId, entityId),
-          inArray(payments.source, ["bank_import", "fio_api"]),
+          inArray(payments.source, ["bank_import", "fio_api", "enable_banking_api"]),
           isNull(payments.journalEntryId),
           isNull(payments.voidedAt)
         )
@@ -666,7 +670,11 @@ export async function dismissBankLine(input: {
     if (!payment) throw new Error("accounting: payment not found");
     // Only unmatched imported lines are dismissable — a posted payment is
     // corrected through the void-with-reversal path, never silently hidden.
-    if (payment.source !== "bank_import" && payment.source !== "fio_api") {
+    if (
+      payment.source !== "bank_import" &&
+      payment.source !== "fio_api" &&
+      payment.source !== "enable_banking_api"
+    ) {
       throw new Error("accounting: only imported bank lines can be dismissed");
     }
     if (payment.voidedAt) throw new Error("accounting: line already dismissed");

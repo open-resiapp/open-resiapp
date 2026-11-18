@@ -5,13 +5,22 @@ import { Link, redirect } from "@/i18n/navigation";
 import { hasPermission } from "@/lib/permissions";
 import type { UserRole } from "@/types";
 import { Card, Icon, PageHeader, type IconName } from "@/components/ui";
+import { isModuleEnabled } from "@/lib/modules/route-guard";
 
 // Modules, external connections, import and the setup guide all require
 // `manageSettings` (their own pages / APIs enforce it too); the hub keeps
 // the same gate. Caretakers (viewSettings only) go back to /settings.
-const ITEMS: { key: string; href: string; icon: IconName }[] = [
+const ITEMS: {
+  key: string;
+  href: string;
+  icon: IconName;
+  /** Shown only while this module is enabled. */
+  module?: string;
+}[] = [
   { key: "modules", href: "/settings/modules", icon: "settings" },
   { key: "connections", href: "/settings/advanced/connections", icon: "link" },
+  // Enable Banking setup + bank connection (BYT-20261118-001).
+  { key: "bank", href: "/settings/advanced/bank", icon: "wallet", module: "accounting" },
   { key: "import", href: "/admin/import", icon: "upload" },
   { key: "setupGuide", href: "/onboarding", icon: "help" },
   // Same reader members use (/zakony) — no admin-only copy.
@@ -37,6 +46,11 @@ export default async function AdvancedSettingsPage({
     return null;
   }
 
+  const accountingOn = await isModuleEnabled("accounting");
+  const items = ITEMS.filter(
+    (item) => item.module !== "accounting" || accountingOn
+  );
+
   return (
     <div className="max-w-3xl">
       <PageHeader
@@ -46,7 +60,7 @@ export default async function AdvancedSettingsPage({
         backLabel={t("backToSettings")}
       />
       <ul className="space-y-3">
-        {ITEMS.map((item) => (
+        {items.map((item) => (
           <li key={item.key}>
             <Link
               href={item.href}

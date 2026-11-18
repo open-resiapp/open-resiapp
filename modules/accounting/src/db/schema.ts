@@ -77,6 +77,7 @@ export const paymentSourceEnum = pgEnum("mod_accounting_payment_source", [
   "manual",
   "bank_import",
   "fio_api",
+  "enable_banking_api",
 ]);
 
 export const allocatedByEnum = pgEnum("mod_accounting_allocated_by", [
@@ -767,6 +768,7 @@ export const expenseAttachments = pgTable(
 
 export const bankProviderEnum = pgEnum("mod_accounting_bank_provider", [
   "fio",
+  "enable_banking",
 ]);
 
 // Per-dom live bank connections (Phase 2: Fio REST). The token is an
@@ -783,6 +785,12 @@ export const bankConnections = pgTable(
       .notNull(),
     provider: bankProviderEnum("provider").notNull(),
     token: text("token").notNull(),
+    // Provider-specific state. Fio: null. Enable Banking (BYT-20261118-001):
+    // { aspspName, aspspCountry, accountUid, accounts[] } — token holds the
+    // Enable Banking session_id.
+    config: jsonb("config"),
+    // PSD2 consent end (Enable Banking); null for Fio (token never expires).
+    validUntil: timestamp("valid_until"),
     isActive: boolean("is_active").notNull().default(true),
     lastSyncAt: timestamp("last_sync_at"),
     createdById: uuid("created_by_id")

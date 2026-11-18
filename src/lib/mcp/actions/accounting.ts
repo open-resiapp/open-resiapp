@@ -87,7 +87,7 @@ const matchPayment = defineAction({
     if (!v.ok) throw fieldError(v.field, v.code);
     const line = await getBankLineState(ctx.root.id, p.paymentId);
     if (!line) throw new McpError("not_found");
-    if (line.source !== "bank_import" && line.source !== "fio_api") throw validationError("paymentId");
+    if (line.source !== "bank_import" && line.source !== "fio_api" && line.source !== "enable_banking_api") throw validationError("paymentId");
     if (line.voided || line.matched) throw new McpError("conflict.state_changed");
     await unitOrThrow(ctx, p.unitId);
     return p;

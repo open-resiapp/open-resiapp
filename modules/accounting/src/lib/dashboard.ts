@@ -151,7 +151,7 @@ export async function getDashboardTiles(
       countPayments(
         and(
           eq(payments.entityId, entityId),
-          inArray(payments.source, ["bank_import", "fio_api"]),
+          inArray(payments.source, ["bank_import", "fio_api", "enable_banking_api"]),
           isNull(payments.journalEntryId),
           isNull(payments.voidedAt)
         )

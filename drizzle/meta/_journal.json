@@ -589,6 +589,13 @@
       "when": 1794937207799,
       "tag": "0083_webauthn_ballot_confirmation",
       "breakpoints": true
+    },
+    {
+      "idx": 84,
+      "version": "7",
+      "when": 1794994245726,
+      "tag": "0084_enable_banking_connector",
+      "breakpoints": true
     }
   ]
 }

@@ -454,7 +454,7 @@ export interface PaymentListRow {
   unitName: string | null;
   unitFlatNumber: string | null;
   narrative: string | null;
-  source: "manual" | "bank_import" | "fio_api";
+  source: "manual" | "bank_import" | "fio_api" | "enable_banking_api";
   voidedAt: string | null;
   voidReason: string | null;
 }
