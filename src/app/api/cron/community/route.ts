@@ -12,6 +12,8 @@ import {
   sendPostExpiryReminder,
 } from "@/lib/email";
 import { setLastCronRun } from "@/lib/cron-state";
+import { isModuleEnabled } from "@/lib/modules/route-guard";
+import { runMeetingReminders } from "@modules/voting/src/meeting-notify.server";
 
 const EVENT_GRACE_DAYS = 7;
 const EXPIRY_REMINDER_DAYS = 3;
@@ -124,6 +126,8 @@ async function runCron() {
       and(
         eq(communityPosts.status, "active"),
         eq(communityPosts.type, "event"),
+        // BYT-20261118-001: owners' meetings get their own reminder below.
+        eq(communityPosts.eventKind, "social"),
         sql`${communityPosts.eventDate} IS NOT NULL`,
         gt(communityPosts.eventDate, now),
         lte(communityPosts.eventDate, eventWindowEnd)
@@ -181,12 +185,19 @@ async function runCron() {
     }
   }
 
+  // BYT-20261118-001: meeting reminders (yes + maybe + no answer), claimed
+  // per (post, owner) — safe under overlapping runs / several replicas.
+  const meetingRemindersSent = (await isModuleEnabled("voting"))
+    ? await runMeetingReminders(now)
+    : 0;
+
   return {
     ranAt: now.toISOString(),
     expiredByTtl: expiredByTtl.length,
     expiredEvents: expiredEvents.length,
     expiryRemindersSent,
     eventRemindersSent,
+    meetingRemindersSent,
   };
 }
 
@@ -219,6 +230,7 @@ export async function POST(request: NextRequest) {
       expiredEvents: 0,
       expiryRemindersSent: 0,
       eventRemindersSent: 0,
+      meetingRemindersSent: 0,
     });
     return NextResponse.json(
       { ok: false, error: message },

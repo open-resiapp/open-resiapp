@@ -78,7 +78,14 @@ export type VotingMethod =
   | "per_flat";
 export type VotingType = "written" | "meeting";
 export type VotingInitiatedBy = "board" | "owners_quarter";
-export type QuorumType = "simple_present" | "simple_all" | "two_thirds_all" | "all_unanimous";
+// four_fifths_all: SK §14b ods. 6 zák. 182/1993 — repeat (within 1 year) of a
+// §14b ods. 2 matter. Only reachable through the repeated-vote escalation.
+export type QuorumType =
+  | "simple_present"
+  | "simple_all"
+  | "two_thirds_all"
+  | "four_fifths_all"
+  | "all_unanimous";
 export type Country = "sk" | "cz";
 export type ConsentType = "data_processing" | "communication";
 export type ConsentAction = "granted" | "withdrawn";

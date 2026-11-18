@@ -12,6 +12,7 @@ import {
   uniqueIndex,
   unique,
   index,
+  check,
   type AnyPgColumn,
 } from "drizzle-orm/pg-core";
 import { relations, sql } from "drizzle-orm";
@@ -126,6 +127,12 @@ export const communityNotificationKindEnum = pgEnum(
     "expiry_reminder",
     "event_reminder",
     "pending_registration_admin",
+    // BYT-20261118-005: board sent a document to an owner by e-mail.
+    "document_sent",
+    // BYT-20261118-001: owners' meeting e-mails (claimed via change_seq).
+    "meeting_invitation",
+    "meeting_reminder",
+    "meeting_change",
   ]
 );
 
@@ -170,6 +177,18 @@ export const entityAuditActionEnum = pgEnum("entity_audit_action", [
   "membership.remove",
   "user.claim_shell",
   "user.merge_shell",
+  // BYT-20261118-005: internal unit note (before/after hold metadata only,
+  // never the note text).
+  "unit_note.update",
+  "unit_note.clear",
+  // BYT-20261118-007: ownership history + account lifecycle.
+  "membership.end",
+  "membership.transfer",
+  "membership.restore",
+  "user.remove_from_root",
+  "user.merge",
+  "user.anonymize",
+  "user.hard_delete",
 ]);
 
 // ── Document library (BYT-20260512-006) ────────────────
@@ -326,15 +345,105 @@ export const memberships = pgTable(
       .notNull()
       .default(1),
     status: membershipStatusEnum("status").notNull().default("active"),
+    // BYT-20261118-003: facts kept from the LV (list vlastníctva) import.
+    // lv_ordinal = poradové číslo of the owner row in part B; NULL for
+    // manually created memberships. ownership_form = "bsm" for spouses in
+    // bezpodielové spoluvlastníctvo (CZ: SJM), NULL for sole/podielové.
+    // Text, not enum: the engine (src/lib/owner-checks.ts) accepts only
+    // known values. Read only by the informative ownership checks.
+    lvOrdinal: integer("lv_ordinal"),
+    ownershipForm: text("ownership_form"),
+    // BYT-20261118-007: ownership validity period. An ownership ENDS, it is
+    // never deleted (history of who owned which unit when). valid_to NULL =
+    // current. Invariant (app layer): status='archived' ⇔ valid_to IS NOT NULL.
+    // "As of date D" = valid_from <= D AND (valid_to IS NULL OR valid_to > D)
+    // (src/lib/ownership.server.ts activeOn()).
+    validFrom: date("valid_from", { mode: "string" })
+      .notNull()
+      .default(sql`CURRENT_DATE`),
+    validTo: date("valid_to", { mode: "string" }),
+    // sale | inheritance | gift | removed | merged | correction (text, the
+    // app validates — src/lib/ownership.ts END_REASONS).
+    endReason: varchar("end_reason", { length: 32 }),
+    // set null: who recorded the end is soft attribution (the audit row keeps it).
+    endedById: uuid("ended_by_id").references((): AnyPgColumn => users.id, {
+      onDelete: "set null",
+    }),
+    transferId: uuid("transfer_id").references(
+      (): AnyPgColumn => ownershipTransfers.id,
+      { onDelete: "set null" }
+    ),
     createdAt: timestamp("created_at").defaultNow().notNull(),
   },
   (table) => ({
-    userEntityIdx: uniqueIndex("memberships_user_entity_idx").on(
-      table.userId,
-      table.entityId
-    ),
+    // Partial: one CURRENT membership per (user, unit); a person may sell
+    // and later re-buy the same unit (two rows, the older one ended).
+    userEntityIdx: uniqueIndex("memberships_user_entity_idx")
+      .on(table.userId, table.entityId)
+      .where(sql`${table.validTo} IS NULL`),
     entityIdx: index("memberships_entity_idx").on(table.entityId),
     userIdx: index("memberships_user_idx").on(table.userId),
+    validPeriodCheck: check(
+      "memberships_valid_period_check",
+      sql`${table.validTo} IS NULL OR ${table.validTo} >= ${table.validFrom}`
+    ),
+  })
+);
+
+// BYT-20261118-007: one row per ownership change event on a unit (sale,
+// inheritance, gift, correction). Sellers' memberships end and buyers'
+// start at effective_date, both pointing here via memberships.transfer_id.
+export const ownershipTransfers = pgTable(
+  "ownership_transfers",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    // restrict: a unit with ownership history cannot be deleted.
+    unitEntityId: uuid("unit_entity_id")
+      .references((): AnyPgColumn => entities.id, { onDelete: "restrict" })
+      .notNull(),
+    // Deň vkladu do katastra / date of death etc. Never in the future.
+    effectiveDate: date("effective_date", { mode: "string" }).notNull(),
+    kind: varchar("kind", { length: 32 }).notNull(),
+    note: text("note"),
+    documentId: uuid("document_id").references((): AnyPgColumn => documents.id, {
+      onDelete: "set null",
+    }),
+    // restrict: matches the accounting authorship convention; users are
+    // merged / anonymised, never hard-deleted under recorded history.
+    createdById: uuid("created_by_id")
+      .references((): AnyPgColumn => users.id, { onDelete: "restrict" })
+      .notNull(),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+  },
+  (table) => ({
+    unitIdx: index("ownership_transfers_unit_idx").on(table.unitEntityId),
+  })
+);
+
+// BYT-20261118-007: merge alias. The merged-away account stays as a
+// tombstone (users.merged_into_user_id), so ids frozen in jsonb snapshots
+// (allocationBasisSnapshot.ownerUserIds) and hashes resolve through here.
+// restrict on both sides: the tombstone is never deleted — that is the point.
+export const userMerges = pgTable(
+  "user_merges",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    fromUserId: uuid("from_user_id")
+      .references((): AnyPgColumn => users.id, { onDelete: "restrict" })
+      .notNull(),
+    intoUserId: uuid("into_user_id")
+      .references((): AnyPgColumn => users.id, { onDelete: "restrict" })
+      .notNull(),
+    // The plan shown on the impact screen, frozen (manual repair aid — no undo).
+    impactJson: jsonb("impact_json").notNull(),
+    actorUserId: uuid("actor_user_id").references((): AnyPgColumn => users.id, {
+      onDelete: "set null",
+    }),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+  },
+  (table) => ({
+    fromIdx: index("user_merges_from_idx").on(table.fromUserId),
+    intoIdx: index("user_merges_into_idx").on(table.intoUserId),
   })
 );
 
@@ -379,6 +488,19 @@ export const users = pgTable(
     isActive: boolean("is_active").notNull().default(true),
     status: userStatusEnum("status").notNull().default("active"),
     emailVerifiedAt: timestamp("email_verified_at", { withTimezone: true }),
+    // BYT-20261118-003: last successful sign-in (credentials, passkey, SSO).
+    // NULL = never signed in since tracking started (LAST_LOGIN_TRACKING_SINCE
+    // in src/lib/owner-queue.ts). Personal data — visible to the board only.
+    lastLoginAt: timestamp("last_login_at", { withTimezone: true }),
+    // BYT-20261118-007: tombstone markers. A merged-away or anonymised account
+    // is kept (statutory history points at it), never deleted. restrict: the
+    // survivor cannot be deleted while a tombstone aliases to it.
+    mergedIntoUserId: uuid("merged_into_user_id").references(
+      (): AnyPgColumn => users.id,
+      { onDelete: "restrict" }
+    ),
+    mergedAt: timestamp("merged_at"),
+    anonymizedAt: timestamp("anonymized_at"),
     createdAt: timestamp("created_at").defaultNow().notNull(),
   },
   (table) => ({
@@ -387,6 +509,41 @@ export const users = pgTable(
       .on(table.email)
       .where(sql`${table.email} IS NOT NULL`),
     statusIdx: index("users_status_idx").on(table.status),
+  })
+);
+
+// BYT-20261118-003: "Na riešenie" — the board marked an owner-queue item or
+// an ownership-check finding as handled. One row per (community, fingerprint).
+// The fingerprint encodes the facts of the condition, so a changed situation
+// (new invitation, different share sum) produces a new item that is NOT
+// hidden. Shared by the whole board of the community (not per board member).
+export const ownerQueueDismissals = pgTable(
+  "owner_queue_dismissals",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    rootId: uuid("root_id")
+      .references(() => entities.id, { onDelete: "cascade" })
+      .notNull(),
+    code: text("code").notNull(),
+    subjectUserId: uuid("subject_user_id").references(() => users.id, {
+      onDelete: "cascade",
+    }),
+    subjectUnitId: uuid("subject_unit_id").references(() => entities.id, {
+      onDelete: "cascade",
+    }),
+    fingerprint: varchar("fingerprint", { length: 128 }).notNull(),
+    handledById: uuid("handled_by_id").references(() => users.id, {
+      onDelete: "set null",
+    }),
+    handledAt: timestamp("handled_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+  },
+  (table) => ({
+    rootFingerprintIdx: uniqueIndex("owner_queue_dismissals_root_fp_idx").on(
+      table.rootId,
+      table.fingerprint
+    ),
   })
 );
 
@@ -470,6 +627,13 @@ export const documents = pgTable(
     uploadedById: uuid("uploaded_by_id").references(() => users.id, {
       onDelete: "set null",
     }),
+    // Owner folder (BYT-20261118-005): the person this document belongs to.
+    // When set, only that user (plus the board) may see it — never co-owners
+    // or the next owner of the unit. set null mirrors uploadedById; the user
+    // delete guard blocks deleting a subject user first.
+    subjectUserId: uuid("subject_user_id").references(() => users.id, {
+      onDelete: "set null",
+    }),
     entityId: uuid("entity_id")
       .references(() => entities.id, { onDelete: "restrict" })
       .notNull(),
@@ -477,6 +641,7 @@ export const documents = pgTable(
     createdAt: timestamp("created_at").defaultNow().notNull(),
   },
   (table) => ({
+    subjectIdx: index("documents_subject_idx").on(table.subjectUserId),
     entityIdx: index("documents_entity_idx").on(table.entityId),
     typeIdx: index("documents_type_idx").on(table.type),
     deletedIdx: index("documents_deleted_idx").on(table.deletedAt),
@@ -505,6 +670,62 @@ export const documentAccessLog = pgTable(
   (table) => ({
     documentIdx: index("document_access_document_idx").on(table.documentId),
     userIdx: index("document_access_user_idx").on(table.userId),
+  })
+);
+
+// Mutation trail for documents (BYT-20261118-005). Reads stay in
+// document_access_log. before/after hold only metadata ({ audience,
+// subjectUserId, recipientUserId, mode }) — never file content.
+export const documentAuditActionEnum = pgEnum("document_audit_action", [
+  "document.upload",
+  "document.set_audience",
+  "document.set_subject",
+  "document.delete",
+  "document.email_sent",
+]);
+
+export const documentAuditLog = pgTable(
+  "document_audit_log",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    documentId: uuid("document_id").references(() => documents.id, {
+      onDelete: "set null",
+    }),
+    actorUserId: uuid("actor_user_id").references(() => users.id, {
+      onDelete: "set null",
+    }),
+    action: documentAuditActionEnum("action").notNull(),
+    beforeJson: jsonb("before_json"),
+    afterJson: jsonb("after_json"),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+  },
+  (table) => ({
+    documentIdx: index("document_audit_document_idx").on(table.documentId),
+  })
+);
+
+// Internal board note per unit entity (BYT-20261118-005). Keyed on the unit,
+// not on a person, so it survives a change of owner. Never rendered to
+// non-board roles, MCP, exports or entities.data.
+export const unitNotes = pgTable(
+  "unit_notes",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    entityId: uuid("entity_id")
+      .references(() => entities.id, { onDelete: "cascade" })
+      .notNull(),
+    body: text("body").notNull(), // app-capped (UNIT_NOTE_MAX_LENGTH)
+    createdById: uuid("created_by_id").references(() => users.id, {
+      onDelete: "set null",
+    }),
+    updatedById: uuid("updated_by_id").references(() => users.id, {
+      onDelete: "set null",
+    }),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at").defaultNow().notNull(),
+  },
+  (table) => ({
+    entityUnique: uniqueIndex("unit_notes_entity_idx").on(table.entityId),
   })
 );
 
@@ -987,6 +1208,13 @@ export const communityPosts = pgTable("community_posts", {
     .notNull(),
   eventDate: timestamp("event_date"),
   eventLocation: varchar("event_location", { length: 255 }),
+  // BYT-20261118-001: 'owners_meeting' = announcement of a meeting voting
+  // (linked from mod_voting_votings.meeting_post_id). Only the voting module
+  // creates it; the community API never accepts this value.
+  eventKind: varchar("event_kind", { length: 24 })
+    .$type<"social" | "owners_meeting">()
+    .notNull()
+    .default("social"),
   entityId: uuid("entity_id")
     .references(() => entities.id, { onDelete: "restrict" })
     .notNull(),
@@ -1032,6 +1260,15 @@ export const eventRsvps = pgTable(
       .references(() => users.id, { onDelete: "cascade" })
       .notNull(),
     status: rsvpStatusEnum("status").notNull(),
+    // BYT-20261118-001: how the answer was given.
+    source: varchar("source", { length: 16 })
+      .$type<"app" | "email_link" | "board">()
+      .notNull()
+      .default("app"),
+    // Board member who entered the answer for the owner (soft link).
+    recordedById: uuid("recorded_by_id").references(() => users.id, {
+      onDelete: "set null",
+    }),
     createdAt: timestamp("created_at").defaultNow().notNull(),
     updatedAt: timestamp("updated_at").defaultNow().notNull(),
   },
@@ -1060,9 +1297,27 @@ export const communityNotificationsSent = pgTable(
     responderId: uuid("responder_id").references(() => users.id, {
       onDelete: "set null",
     }),
+    // kind = document_sent (BYT-20261118-005).
+    documentId: uuid("document_id").references(() => documents.id, {
+      onDelete: "cascade",
+    }),
     sentAt: timestamp("sent_at").defaultNow().notNull(),
+    // BYT-20261118-001: set ONLY for the meeting_* kinds (0 = invitation /
+    // reminder, n = n-th date/place change). NULL for every other kind, so
+    // the partial unique claim index below never touches legacy rows.
+    changeSeq: integer("change_seq"),
   },
   (table) => ({
+    // INSERT … ON CONFLICT DO NOTHING RETURNING claim — at most one meeting
+    // e-mail per (post, recipient, kind, change) across replicas / cron runs.
+    meetingClaimIdx: uniqueIndex("community_notifications_sent_meeting_claim_idx")
+      .on(table.postId, table.recipientId, table.kind, table.changeSeq)
+      .where(sql`${table.changeSeq} IS NOT NULL`),
+    documentIdx: index("community_notifications_sent_document_idx").on(
+      table.documentId,
+      table.recipientId,
+      table.kind
+    ),
     lookupIdx: index("community_notifications_sent_lookup_idx").on(
       table.postId,
       table.recipientId,

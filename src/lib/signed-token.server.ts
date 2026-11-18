@@ -26,7 +26,10 @@ export type SignedTokenPurpose =
   | "vote-withdraw-email"
   | "webauthn-register"
   | "webauthn-activate"
-  | "webauthn-login";
+  | "webauthn-login"
+  // BYT-20261118-001: one-click meeting RSVP from the invitation e-mail.
+  // Claims { postId, userId }; can only upsert / clear that user's RSVP.
+  | "meeting-rsvp";
 
 export interface SignedTokenClaims {
   /** purpose */

@@ -29,6 +29,11 @@ const permissions = {
   viewDocuments: ["admin", "owner", "tenant", "vote_counter", "caretaker"],
   uploadDocument: ["admin", "caretaker"],
   deleteDocument: ["admin"],
+  // Fault reports module (BYT-20261118-004). Board members without flat
+  // admin also manage faults via board_members (modules/faults authz).
+  // TODO(decision): tenants cannot report yet (spec Decisions 10).
+  reportFault: ["admin", "owner"],
+  manageFaults: ["admin", "caretaker"],
 } as const;
 
 export type Permission = keyof typeof permissions;

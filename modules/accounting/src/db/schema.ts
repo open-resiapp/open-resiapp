@@ -12,6 +12,7 @@ import {
   index,
   check,
   boolean,
+  bigint,
 } from "drizzle-orm/pg-core";
 import { sql } from "drizzle-orm";
 
@@ -870,7 +871,9 @@ export const settlementUnits = pgTable(
 // kinds only (upomienka, predpis_published, … arrive later).
 export const accountingNotificationKindEnum = pgEnum(
   "mod_accounting_notification_kind",
-  ["settlement_published"]
+  // reading_reminder: BYT-20261118-006 — pre-deadline reminder of a
+  // reading round, deduped per (round, recipient).
+  ["settlement_published", "reading_reminder"]
 );
 
 export const accountingNotificationsSent = pgTable(
@@ -887,12 +890,23 @@ export const accountingNotificationsSent = pgTable(
     settlementId: uuid("settlement_id").references(() => settlements.id, {
       onDelete: "restrict",
     }),
+    /** Reading round a `reading_reminder` row belongs to (BYT-20261118-006). */
+    roundId: uuid("round_id").references(() => readingRounds.id, {
+      onDelete: "cascade",
+    }),
     sentAt: timestamp("sent_at").defaultNow().notNull(),
   },
   (table) => ({
     dedupeIdx: uniqueIndex(
       "mod_accounting_notifications_sent_dedupe_idx"
     ).on(table.kind, table.settlementId, table.recipientId),
+    // settlement_id is NULL on reminder rows and Postgres treats NULLs as
+    // distinct, so the index above cannot dedupe them — this one does.
+    roundDedupeIdx: uniqueIndex(
+      "mod_accounting_notifications_sent_round_dedupe_idx"
+    )
+      .on(table.kind, table.roundId, table.recipientId)
+      .where(sql`${table.roundId} IS NOT NULL`),
   })
 );
 
@@ -922,6 +936,20 @@ export const meterReadings = pgTable(
     meterType: meterTypeEnum("meter_type").notNull(),
     readingDate: timestamp("reading_date").notNull(),
     valueMilli: integer("value_milli").notNull(),
+    // BYT-20261118-006 (reading rounds) — all additive. round_id NULL =
+    // legacy / entered outside a round. Photo bytes live in src/lib/storage
+    // under a proxy-only "accounting…" key, served by an auth-checked route.
+    roundId: uuid("round_id").references(() => readingRounds.id, {
+      onDelete: "set null",
+    }),
+    photoStorageKey: varchar("photo_storage_key", { length: 512 }),
+    note: varchar("note", { length: 500 }),
+    late: boolean("late").notNull().default(false),
+    /** Board-internal "vyriešené" flag — never exposed to owners. */
+    resolvedAt: timestamp("resolved_at"),
+    resolvedById: uuid("resolved_by_id").references(() => users.id, {
+      onDelete: "set null",
+    }),
     voidedAt: timestamp("voided_at"),
     voidedById: uuid("voided_by_id").references(() => users.id, {
       onDelete: "restrict",
@@ -932,6 +960,9 @@ export const meterReadings = pgTable(
     createdAt: timestamp("created_at").defaultNow().notNull(),
   },
   (table) => ({
+    roundIdx: index("mod_accounting_meter_readings_round_idx").on(
+      table.roundId
+    ),
     unitTypeIdx: index("mod_accounting_meter_readings_unit_idx").on(
       table.unitEntityId,
       table.meterType,
@@ -939,6 +970,156 @@ export const meterReadings = pgTable(
     ),
     valueCheck: check(
       "mod_accounting_meter_readings_value_check",
+      sql`${table.valueMilli} >= 0`
+    ),
+  })
+);
+
+// ── Reading rounds: meter self-readings + person-months ─
+// BYT-20261118-006. One collection round per (dom, year). Owners submit
+// from Moje platby while the round is open; the board reviews ("vyriešené"),
+// enters on behalf, records building meters and exports. Read-only hand-off
+// to vyúčtovanie — no engine reads these tables except the existing
+// meter_readings path. Everything is void-not-delete + audit-logged.
+
+export const readingRounds = pgTable(
+  "mod_accounting_reading_rounds",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    entityId: uuid("entity_id")
+      .references(() => entities.id, { onDelete: "restrict" })
+      .notNull(),
+    periodId: uuid("period_id")
+      .references(() => accountingPeriods.id, { onDelete: "restrict" })
+      .notNull(),
+    year: integer("year").notNull(),
+    opensAt: timestamp("opens_at").notNull(),
+    deadlineAt: timestamp("deadline_at").notNull(),
+    /** Board "uzavrieť zber" — owners can no longer submit or edit. */
+    closedForOwnersAt: timestamp("closed_for_owners_at"),
+    allowLate: boolean("allow_late").notNull().default(true),
+    collectPersons: boolean("collect_persons").notNull(),
+    meterTypes: meterTypeEnum("meter_types")
+      .array()
+      .notNull()
+      .default(sql`'{}'::mod_accounting_meter_type[]`),
+    reminderDaysBefore: integer("reminder_days_before").notNull().default(5),
+    createdById: uuid("created_by_id")
+      .references(() => users.id, { onDelete: "restrict" })
+      .notNull(),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+  },
+  (table) => ({
+    entityYearUnique: uniqueIndex(
+      "mod_accounting_reading_rounds_entity_year_idx"
+    ).on(table.entityId, table.year),
+    reminderCheck: check(
+      "mod_accounting_reading_rounds_reminder_check",
+      sql`${table.reminderDaysBefore} BETWEEN 0 AND 30`
+    ),
+    datesCheck: check(
+      "mod_accounting_reading_rounds_dates_check",
+      sql`${table.deadlineAt} >= ${table.opensAt}`
+    ),
+  })
+);
+
+// Owner-reported persons, one row per month. A "od–do: N osôb" range
+// expands server-side to one row per month sharing one submission_id.
+export const personMonths = pgTable(
+  "mod_accounting_person_months",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    entityId: uuid("entity_id")
+      .references(() => entities.id, { onDelete: "restrict" })
+      .notNull(),
+    unitEntityId: uuid("unit_entity_id")
+      .references(() => entities.id, { onDelete: "restrict" })
+      .notNull(),
+    roundId: uuid("round_id")
+      .references(() => readingRounds.id, { onDelete: "cascade" })
+      .notNull(),
+    year: integer("year").notNull(),
+    month: integer("month").notNull(),
+    personsCount: integer("persons_count").notNull(),
+    /** Groups the months of one submitted range set; no FK. */
+    submissionId: uuid("submission_id").notNull(),
+    late: boolean("late").notNull().default(false),
+    resolvedAt: timestamp("resolved_at"),
+    resolvedById: uuid("resolved_by_id").references(() => users.id, {
+      onDelete: "set null",
+    }),
+    /** Set by "Použiť pre mesačné platby" (next predpis publish only). */
+    appliedUnitPersonsId: uuid("applied_unit_persons_id").references(
+      () => unitPersons.id,
+      { onDelete: "set null" }
+    ),
+    voidedAt: timestamp("voided_at"),
+    voidedById: uuid("voided_by_id").references(() => users.id, {
+      onDelete: "set null",
+    }),
+    createdById: uuid("created_by_id")
+      .references(() => users.id, { onDelete: "restrict" })
+      .notNull(),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+  },
+  (table) => ({
+    unitMonthUnique: uniqueIndex("mod_accounting_person_months_unit_month_idx")
+      .on(table.unitEntityId, table.year, table.month)
+      .where(sql`${table.voidedAt} IS NULL`),
+    roundIdx: index("mod_accounting_person_months_round_idx").on(
+      table.roundId
+    ),
+    submissionIdx: index("mod_accounting_person_months_submission_idx").on(
+      table.submissionId
+    ),
+    monthCheck: check(
+      "mod_accounting_person_months_month_check",
+      sql`${table.month} BETWEEN 1 AND 12`
+    ),
+    personsCheck: check(
+      "mod_accounting_person_months_persons_check",
+      sql`${table.personsCount} BETWEEN 0 AND 50`
+    ),
+  })
+);
+
+// Building / common meters (hlavný vodomer, päta domu, …). Separate table
+// so meter_readings' unit_entity_id NOT NULL + domUnitsWhere invariant and
+// the vyúčtovanie queries stay untouched. Informational only — no engine
+// reads it. bigint: main counters can exceed int32 in milli units.
+export const buildingMeterReadings = pgTable(
+  "mod_accounting_building_meter_readings",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    entityId: uuid("entity_id")
+      .references(() => entities.id, { onDelete: "restrict" })
+      .notNull(),
+    roundId: uuid("round_id").references(() => readingRounds.id, {
+      onDelete: "set null",
+    }),
+    meterType: meterTypeEnum("meter_type").notNull(),
+    label: varchar("label", { length: 120 }).notNull(),
+    readingDate: timestamp("reading_date").notNull(),
+    valueMilli: bigint("value_milli", { mode: "number" }).notNull(),
+    photoStorageKey: varchar("photo_storage_key", { length: 512 }),
+    note: varchar("note", { length: 500 }),
+    voidedAt: timestamp("voided_at"),
+    voidedById: uuid("voided_by_id").references(() => users.id, {
+      onDelete: "set null",
+    }),
+    createdById: uuid("created_by_id")
+      .references(() => users.id, { onDelete: "restrict" })
+      .notNull(),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+  },
+  (table) => ({
+    entityDateIdx: index("mod_accounting_building_meter_readings_entity_idx").on(
+      table.entityId,
+      table.readingDate
+    ),
+    valueCheck: check(
+      "mod_accounting_building_meter_readings_value_check",
       sql`${table.valueMilli} >= 0`
     ),
   })

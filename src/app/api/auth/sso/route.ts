@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { encode } from "next-auth/jwt";
 import { routing } from "@/i18n/routing";
+import { recordLastLogin } from "@/lib/last-login.server";
 import {
   SsoError,
   verifySsoTokenAndUpsertUser,
@@ -78,6 +79,8 @@ async function fireLoginHook(user: {
   id: string;
   email: string;
 }): Promise<void> {
+  // BYT-20261118-003: last sign-in (never blocks the SSO login).
+  await recordLastLogin(user.id);
   try {
     const { dispatchHook } = await import("@/lib/modules/dispatch");
     await dispatchHook("onUserLogin", {

@@ -49,6 +49,7 @@ export async function GET(
       responsesAllowed: communityPosts.responsesAllowed,
       eventDate: communityPosts.eventDate,
       eventLocation: communityPosts.eventLocation,
+      eventKind: communityPosts.eventKind,
       entityId: communityPosts.entityId,
       entranceName: entrance.name,
       expiresAt: communityPosts.expiresAt,

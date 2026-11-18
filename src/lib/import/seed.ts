@@ -524,7 +524,9 @@ export async function seedImport(input: SeedInput): Promise<SeedResult> {
           .where(
             and(
               eq(memberships.userId, userId),
-              eq(memberships.entityId, ctx.id)
+              eq(memberships.entityId, ctx.id),
+              // Current only — a former owner re-buying gets a new period.
+              isNull(memberships.validTo)
             )
           )
           .limit(1);
@@ -544,6 +546,10 @@ export async function seedImport(input: SeedInput): Promise<SeedResult> {
         ownerUnitShareNumerator: r.owner_unit_share_numerator,
         ownerUnitShareDenominator: r.owner_unit_share_denominator,
         status: "active",
+        // BYT-20261118-003: LV facts for the ownership checks (NULL when
+        // the row did not come from an LV).
+        lvOrdinal: r.lv_ordinal ?? null,
+        ownershipForm: r.ownership_form === "bsm" ? "bsm" : null,
       });
       await tx.insert(entityAuditLog).values({
         actorUserId: input.actorUserId,

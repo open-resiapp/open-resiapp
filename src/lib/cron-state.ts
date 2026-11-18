@@ -8,6 +8,8 @@ export type CronRunSnapshot = {
   expiredEvents: number;
   expiryRemindersSent: number;
   eventRemindersSent: number;
+  /** BYT-20261118-001 owners' meeting reminders. */
+  meetingRemindersSent: number;
   error?: string;
 };
 

@@ -11,6 +11,7 @@ import DocumentUploadForm from "@/components/documents/DocumentUploadForm";
 import ProjectsPanel, {
   type ProjectItem,
 } from "@/components/documents/ProjectsPanel";
+import OwnerDocumentsSection from "@/components/documents/OwnerDocumentsSection";
 
 interface DocumentsResponse {
   entityId: string | null;
@@ -42,7 +43,11 @@ function SkeletonList() {
 
 export default function DocumentsPage() {
   const t = useTranslations("Documents");
+  const tv = useTranslations("DocumentVisibility");
   const confirm = useConfirm();
+  const [internalOnly, setInternalOnly] = useState(false);
+  // ?doc=<id> — deep link from the "send by e-mail" link (BYT-20261118-005).
+  const [focusDocId, setFocusDocId] = useState<string | null>(null);
   const [data, setData] = useState<DocumentsResponse | null>(null);
   const [projectsData, setProjectsData] = useState<ProjectsResponse | null>(null);
   const [loading, setLoading] = useState(true);
@@ -68,6 +73,16 @@ export default function DocumentsPage() {
     fetchAll();
   }, [fetchAll]);
 
+  useEffect(() => {
+    const id = new URLSearchParams(window.location.search).get("doc");
+    if (id) setFocusDocId(id);
+  }, []);
+
+  useEffect(() => {
+    if (!focusDocId || loading) return;
+    document.getElementById(`doc-${focusDocId}`)?.scrollIntoView({ block: "center" });
+  }, [focusDocId, loading]);
+
   async function handleDelete(id: string) {
     const ok = await confirm({
       title: t("delete"),
@@ -90,7 +105,11 @@ export default function DocumentsPage() {
   }
 
   const docs = data?.documents ?? [];
-  const visible = filter === "all" ? docs : docs.filter((d) => d.type === filter);
+  const visible = docs.filter(
+    (d) =>
+      (filter === "all" || d.type === filter) &&
+      (!internalOnly || d.audience === "admin")
+  );
   const projectOptions = (projectsData?.projects ?? []).map((p) => ({
     id: p.id,
     title: p.title,
@@ -123,6 +142,12 @@ export default function DocumentsPage() {
 
       {tab === "documents" ? (
         <>
+          {/* "Moje dokumenty" — owners only; renders nothing when empty. */}
+          {data && !data.isManager && (
+            <div className="mb-6">
+              <OwnerDocumentsSection />
+            </div>
+          )}
           <div className="flex items-center justify-between mb-4 gap-4 flex-wrap">
             <select
               value={filter}
@@ -136,6 +161,20 @@ export default function DocumentsPage() {
                 </option>
               ))}
             </select>
+            {data?.isManager && (
+              <button
+                type="button"
+                aria-pressed={internalOnly}
+                onClick={() => setInternalOnly((v) => !v)}
+                className={`min-h-11 px-4 py-2 text-base font-medium rounded-lg border ${
+                  internalOnly
+                    ? "bg-blue-600 text-white border-transparent"
+                    : "border-gray-300 text-gray-700 dark:border-gray-700 dark:text-gray-200"
+                }`}
+              >
+                {tv("filterInternal")}
+              </button>
+            )}
             {data?.canUpload && data.entityId && (
               <button
                 onClick={() => setShowForm((v) => !v)}
@@ -151,6 +190,7 @@ export default function DocumentsPage() {
               <DocumentUploadForm
                 entityId={data.entityId}
                 projects={projectOptions}
+                canFileInternal={data.isManager}
                 onUploaded={() => {
                   setShowForm(false);
                   fetchAll();
@@ -176,6 +216,8 @@ export default function DocumentsPage() {
                   onDelete={handleDelete}
                   projects={projectOptions}
                   onAssignProject={handleAssignProject}
+                  onChanged={fetchAll}
+                  highlighted={doc.id === focusDocId}
                 />
               ))}
             </div>

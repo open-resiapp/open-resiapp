@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useTranslations } from "next-intl";
+import { useFormatter, useTranslations } from "next-intl";
 
 import { useShell } from "@/components/layout/ShellContext";
 import { routing } from "@/i18n/routing";
@@ -32,10 +32,14 @@ export interface ProfileFlat {
 interface ProfileViewProps {
   flats: ProfileFlat[];
   prefs: NotificationPrefs;
+  /** BYT-20261118-003: own users.last_login_at (ISO) — the owner's own record only. */
+  lastLoginAt?: string | null;
 }
 
-export default function ProfileView({ flats, prefs }: ProfileViewProps) {
+export default function ProfileView({ flats, prefs, lastLoginAt = null }: ProfileViewProps) {
   const t = useTranslations("Profile");
+  const tHealth = useTranslations("OwnerHealth");
+  const format = useFormatter();
   const tp = useTranslations("ProfileHub");
   const { user, enabledModules } = useShell();
 
@@ -119,6 +123,14 @@ export default function ProfileView({ flats, prefs }: ProfileViewProps) {
             <>
               <dt className="text-ui-text-muted">{tp("flatsLabel")}</dt>
               <dd className="min-w-0 break-words text-ui-text">{flatsLabel}</dd>
+            </>
+          ) : null}
+          {lastLoginAt ? (
+            <>
+              <dt className="text-ui-text-muted">{tHealth("lastLogin")}</dt>
+              <dd className="text-ui-text">
+                {format.dateTime(new Date(lastLoginAt), { dateStyle: "medium", timeStyle: "short" })}
+              </dd>
             </>
           ) : null}
         </dl>

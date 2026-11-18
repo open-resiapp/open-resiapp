@@ -1,7 +1,12 @@
 "use client";
 
+import { useState } from "react";
 import { useTranslations, useFormatter } from "next-intl";
 import type { DocumentType, DocumentAudience } from "@/lib/documents";
+import { Badge, Button, Icon } from "@/components/ui";
+import DocumentVisibilityDialog from "./DocumentVisibilityDialog";
+import DocumentAuditDialog from "./DocumentAuditDialog";
+import DocumentSendDialog from "./DocumentSendDialog";
 
 // Bespoke card — justified per CLAUDE.md UI rule: a document item models file
 // download + audience tier + legal retention, semantics orthogonal to
@@ -20,6 +25,10 @@ export interface DocumentItem {
   uploaderName: string | null;
   isUploader: boolean;
   projectId: string | null;
+  // Owner folder (BYT-20261118-005). subject* only populated for the board.
+  isMine?: boolean;
+  subjectUserId?: string | null;
+  subjectName?: string | null;
 }
 
 function formatBytes(bytes: number | null): string {
@@ -44,6 +53,8 @@ export default function DocumentCard({
   projects,
   onAssignProject,
   readOnly,
+  onChanged,
+  highlighted,
 }: {
   doc: DocumentItem;
   canManage: boolean;
@@ -51,8 +62,16 @@ export default function DocumentCard({
   projects?: { id: string; title: string }[];
   onAssignProject?: (id: string, projectId: string | null) => void;
   readOnly?: boolean;
+  /** Board actions (visibility / history / e-mail) refresh the list via this. */
+  onChanged?: () => void;
+  highlighted?: boolean;
 }) {
   const t = useTranslations("Documents");
+  const tv = useTranslations("DocumentVisibility");
+  const [dialog, setDialog] = useState<"visibility" | "history" | "send" | null>(
+    null
+  );
+  const boardActions = !readOnly && canManage && !!onChanged;
   const format = useFormatter();
   const canDelete = !readOnly && (canManage || doc.isUploader);
 
@@ -65,7 +84,12 @@ export default function DocumentCard({
     .join(" · ");
 
   return (
-    <div className="bg-white rounded-2xl shadow-sm p-5 flex items-start gap-4 dark:bg-gray-800 dark:shadow-black/40">
+    <div
+      id={`doc-${doc.id}`}
+      className={`bg-white rounded-2xl shadow-sm p-5 flex flex-wrap items-start gap-4 dark:bg-gray-800 dark:shadow-black/40 ${
+        highlighted ? "ring-2 ring-ui-focus" : ""
+      }`}
+    >
       <div className="text-3xl shrink-0" aria-hidden>
         📄
       </div>
@@ -74,11 +98,33 @@ export default function DocumentCard({
           <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 dark:bg-blue-900/40 dark:text-blue-200">
             {t(`type.${doc.type}`)}
           </span>
-          <span
-            className={`text-xs font-medium px-2 py-0.5 rounded-full ${AUDIENCE_STYLES[doc.audience]}`}
-          >
-            {t(`audience.${doc.audience}`)}
-          </span>
+          {doc.audience === "admin" ? (
+            // "Len výbor" — icon WITH text (senior baseline).
+            <Badge tone="danger">
+              <Icon name="key" size={16} />
+              {tv("chip.boardOnly")}
+            </Badge>
+          ) : (
+            <span
+              className={`text-xs font-medium px-2 py-0.5 rounded-full ${AUDIENCE_STYLES[doc.audience]}`}
+            >
+              {t(`audience.${doc.audience}`)}
+            </span>
+          )}
+          {doc.subjectName && (
+            <Badge tone="info">
+              <Icon name="user" size={16} />
+              {doc.audience === "admin"
+                ? tv("chip.about", { name: doc.subjectName })
+                : tv("chip.ownerSees", { name: doc.subjectName })}
+            </Badge>
+          )}
+          {!doc.subjectName && doc.isMine && (
+            <Badge tone="info">
+              <Icon name="user" size={16} />
+              {tv("chip.mine")}
+            </Badge>
+          )}
         </div>
         <h3 className="text-base font-semibold text-gray-900 mt-2 truncate dark:text-gray-100">
           {doc.name}
@@ -122,6 +168,48 @@ export default function DocumentCard({
           </select>
         )}
       </div>
+      {boardActions && (
+        <div className="basis-full flex flex-wrap gap-2 border-t border-ui-border pt-3">
+          <Button variant="ghost" onClick={() => setDialog("visibility")}>
+            <Icon name="users" size={20} />
+            {tv("actions.visibility")}
+          </Button>
+          <Button variant="ghost" onClick={() => setDialog("history")}>
+            <Icon name="clock" size={20} />
+            {tv("actions.history")}
+          </Button>
+          <Button variant="ghost" onClick={() => setDialog("send")}>
+            <Icon name="mail" size={20} />
+            {tv("actions.send")}
+          </Button>
+        </div>
+      )}
+      {boardActions && dialog === "visibility" && (
+        <DocumentVisibilityDialog
+          open
+          onClose={() => setDialog(null)}
+          onSaved={() => {
+            setDialog(null);
+            onChanged?.();
+          }}
+          documentId={doc.id}
+          audience={doc.audience}
+          subjectUserId={doc.subjectUserId ?? null}
+          subjectName={doc.subjectName ?? null}
+        />
+      )}
+      {boardActions && dialog === "history" && (
+        <DocumentAuditDialog open onClose={() => setDialog(null)} documentId={doc.id} />
+      )}
+      {boardActions && dialog === "send" && (
+        <DocumentSendDialog
+          open
+          onClose={() => setDialog(null)}
+          onSent={() => onChanged?.()}
+          onMakeVisible={() => setDialog("visibility")}
+          documentId={doc.id}
+        />
+      )}
     </div>
   );
 }

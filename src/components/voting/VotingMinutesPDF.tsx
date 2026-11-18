@@ -8,6 +8,7 @@ import {
   Image,
 } from "@react-pdf/renderer";
 import type { VotingResults, QuorumType } from "@/types";
+import type { MinutesProtocol } from "@modules/voting/src/workflow/minutes";
 
 // Register Roboto for Slovak diacritics
 Font.register({
@@ -246,6 +247,8 @@ const quorumTypeLabels: Record<QuorumType, string> = {
   simple_present: "Nadpolovičná väčšina prítomných",
   simple_all: "Nadpolovičná väčšina všetkých",
   two_thirds_all: "Dvojtretinová väčšina všetkých",
+  // Display label only (needed for the new quorum type); legal sign-off TODO.
+  four_fifths_all: "Štvorpätinová väčšina všetkých",
   all_unanimous: "Súhlas všetkých (100%)",
 };
 
@@ -328,6 +331,13 @@ interface VotingMinutesPDFProps {
    * carry statutory citations that don't apply to other templates.
    */
   unitLabel?: string;
+  /**
+   * BYT-20261118-002 §7 Phase A: protocol data (place, officials, e-voter
+   * list, reopen statements, publication date) is accepted but NOT rendered.
+   * TODO(legal-signoff): Phase B sections + wording need a recorded legal
+   * sign-off before they are added. Output is identical without/with it.
+   */
+  protocol?: MinutesProtocol;
 }
 
 const choiceLabelsResolution: Record<string, string> = {

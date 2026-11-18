@@ -163,6 +163,12 @@ const rowSchemaForStructure = (structure: StructureVariant) =>
     owner_phone: stringField,
     owner_unit_share_numerator: shareNumeratorSchema,
     owner_unit_share_denominator: shareDenominatorSchema,
+    // BYT-20261118-003: optional LV facts (kept, not validated as errors).
+    lv_ordinal: optionalIntField,
+    ownership_form: z.preprocess((v) => {
+      const s = stripBlank(v);
+      return typeof s === "string" ? s.toLowerCase() : s;
+    }, z.enum(["bsm"]).optional()),
   });
 
 // ── Cross-row validation ──────────────────────────────────

@@ -24,16 +24,19 @@ import {
   type OwnerStatus,
   type OwnersBoardData,
 } from "@/lib/owners-board";
+import type { OwnerHealthData } from "@/lib/owner-health";
 import AddOwnerModal from "./AddOwnerModal";
 import InvitationModal from "./InvitationModal";
 import { OwnerStatusBadge } from "./OwnerStatusBadge";
+import OwnersHealth, { type CheckFilter } from "./OwnersHealth";
 import OwnersInbox from "./OwnersInbox";
 import PendingApprovalModal from "./PendingApprovalModal";
 import ShellClaimDialog from "./ShellClaimDialog";
 import ShellMergeDialog from "./ShellMergeDialog";
 import { rejectRegistration } from "./owner-requests";
 
-export type OwnersFilter = OwnerStatus | "all";
+// "former" (BYT-20261118-007): former owners, hidden from every other filter.
+export type OwnersFilter = OwnerStatus | "all" | "former";
 
 // Same ring as the kit's internal `focusRing` (not exported from the barrel).
 const focusRingClass =
@@ -60,15 +63,31 @@ interface OwnersBoardProps {
   data: OwnersBoardData;
   initialFilter: OwnersFilter;
   locale: string;
+  /** BYT-20261118-003: "Na riešenie" queue + ownership checks. */
+  health: OwnerHealthData;
+  initialCheck: CheckFilter;
+  /** `?unit=<id>` — show only the owners of one unit (link from a check). */
+  initialUnit: string | null;
 }
 
-export default function OwnersBoard({ data, initialFilter, locale }: OwnersBoardProps) {
+export default function OwnersBoard({
+  data,
+  initialFilter,
+  locale,
+  health,
+  initialCheck,
+  initialUnit,
+}: OwnersBoardProps) {
   const t = useTranslations("Owners.board");
+  const tHealth = useTranslations("OwnerHealth");
   const tCommon = useTranslations("Common");
   const format = useFormatter();
   const router = useRouter();
 
   const [filter, setFilter] = useState<OwnersFilter>(initialFilter);
+  const [unitFilter, setUnitFilter] = useState<string | null>(
+    initialUnit && data.units.some((u) => u.id === initialUnit) ? initialUnit : null
+  );
   const [query, setQuery] = useState("");
   const [dialog, setDialog] = useState<Dialog>({ kind: "none" });
   const [busy, setBusy] = useState(false);
@@ -79,9 +98,12 @@ export default function OwnersBoard({ data, initialFilter, locale }: OwnersBoard
   const refresh = () => router.refresh();
   const close = () => setDialog({ kind: "none" });
 
+  const tLife = useTranslations("OwnerLifecycle");
+  const formerCount = useMemo(() => data.people.filter((p) => p.formerUntil).length, [data.people]);
+
   const counts = useMemo(() => {
     const c: Record<OwnerStatus, number> = { no_account: 0, invited: 0, pending: 0, active: 0 };
-    for (const p of data.people) c[p.status] += 1;
+    for (const p of data.people) if (!p.formerUntil) c[p.status] += 1;
     return c;
   }, [data.people]);
 
@@ -101,10 +123,32 @@ export default function OwnersBoard({ data, initialFilter, locale }: OwnersBoard
     const q = fold(query.trim());
     return data.people.filter(
       (p) =>
-        (filter === "all" || p.status === filter) &&
+        (filter === "former" ? !!p.formerUntil : !p.formerUntil) &&
+        (filter === "all" || filter === "former" || p.status === filter) &&
+        (!unitFilter || p.flats.some((f) => f.unitId === unitFilter)) &&
         (!q || (searchIndex.get(p.id) ?? "").includes(q))
     );
-  }, [data.people, filter, query, searchIndex]);
+  }, [data.people, filter, unitFilter, query, searchIndex]);
+
+  const unitFilterLabel = unitFilter
+    ? data.units.find((u) => u.id === unitFilter)?.flatNumber ?? ""
+    : "";
+
+  function chooseUnit(next: string | null) {
+    setUnitFilter(next);
+    try {
+      const url = new URL(window.location.href);
+      if (next) url.searchParams.set("unit", next);
+      else url.searchParams.delete("unit");
+      window.history.replaceState(window.history.state, "", url);
+    } catch {
+      /* ignore */
+    }
+    if (next) {
+      setFilter("all");
+      document.getElementById("owners-list")?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  }
 
   function chooseFilter(next: OwnersFilter) {
     setFilter(next);
@@ -207,8 +251,11 @@ export default function OwnersBoard({ data, initialFilter, locale }: OwnersBoard
   }
 
   const chips: Array<{ value: OwnersFilter; label: string; count: number }> = [
-    { value: "all", label: t("filterAll"), count: data.people.length },
+    { value: "all", label: t("filterAll"), count: data.people.filter((p) => !p.formerUntil).length },
     ...OWNER_STATUSES.map((s) => ({ value: s, label: t(`status.${s}`), count: counts[s] })),
+    ...(formerCount > 0
+      ? [{ value: "former" as const, label: tLife("formerChip"), count: formerCount }]
+      : []),
   ];
 
   return (
@@ -230,14 +277,25 @@ export default function OwnersBoard({ data, initialFilter, locale }: OwnersBoard
         }
       />
 
-      {data.inbox.length > 0 ? (
-        <OwnersInbox
-          items={data.inbox}
-          mergeShells={data.mergeShells}
-          units={data.units}
-          onChanged={refresh}
-        />
-      ) : null}
+      <OwnersHealth
+        health={health}
+        inboxCount={data.inbox.length}
+        inbox={
+          data.inbox.length > 0 ? (
+            <OwnersInbox
+              items={data.inbox}
+              mergeShells={data.mergeShells}
+              units={data.units}
+              onChanged={refresh}
+            />
+          ) : null
+        }
+        initialCheck={initialCheck}
+        onClaim={claim}
+        onAddOwner={() => setDialog({ kind: "add" })}
+        onShowUnit={(unitId) => chooseUnit(unitId)}
+        onChanged={refresh}
+      />
 
       {error && (
         <p role="alert" className="mb-4 rounded-lg border border-ui-danger/30 bg-ui-danger/10 px-4 py-3 text-ui-danger">
@@ -245,7 +303,16 @@ export default function OwnersBoard({ data, initialFilter, locale }: OwnersBoard
         </p>
       )}
 
-      <div className="mb-4 flex flex-col gap-3">
+      <div id="owners-list" className="mb-4 flex scroll-mt-24 flex-col gap-3">
+        {unitFilter ? (
+          <div className="flex flex-wrap items-center gap-3 rounded-lg border border-ui-border bg-ui-surface-muted px-4 py-3">
+            <span className="text-base text-ui-text">{tHealth("unitFilter", { unit: unitFilterLabel })}</span>
+            <Button variant="secondary" onClick={() => chooseUnit(null)}>
+              <Icon name="x" size={20} />
+              {tHealth("clearUnitFilter")}
+            </Button>
+          </div>
+        ) : null}
         <div role="group" aria-label={t("filterLabel")} className="flex flex-wrap gap-2">
           {chips.map((c) => (
             <button
@@ -297,6 +364,7 @@ export default function OwnersBoard({ data, initialFilter, locale }: OwnersBoard
               onClick={() => {
                 setQuery("");
                 chooseFilter("all");
+                chooseUnit(null);
               }}
             >
               {t("clearFilters")}
@@ -342,7 +410,11 @@ export default function OwnersBoard({ data, initialFilter, locale }: OwnersBoard
                   </div>
 
                   <div className="min-w-0 text-ui-text">
-                    {row.flats.length === 0 ? (
+                    {row.flats.length === 0 && row.formerUntil ? (
+                      <span className="text-ui-text-muted">
+                        {tLife("formerUntil", { date: fmtDate(row.formerUntil) })}
+                      </span>
+                    ) : row.flats.length === 0 ? (
                       <span className="text-ui-text-muted">{t("noFlat")}</span>
                     ) : (
                       <ul className="space-y-0.5">

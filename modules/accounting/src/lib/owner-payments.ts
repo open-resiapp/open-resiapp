@@ -10,7 +10,6 @@ import { getUnitLedger, listUnitBalances } from "./karta-bytu";
 import { getOverdueForUnit } from "./overdue";
 import { getPredpisPdfData } from "./predpis-pdf-data";
 import { getVyuctovaniePdfData, listSettlementYearsForUnit } from "./vyuctovanie";
-import { listReadingsForUnit } from "./meters";
 
 // Owner self-service read model ("Moje platby", home balance card —
 // BYT-20261117-002 Phase 4). A thin composition of the SAME lib functions
@@ -160,8 +159,9 @@ export interface OwnerPaymentSummary {
    */
   latestSettlement: { year: number; differenceCents: number | null } | null;
   overdue: { totalOpenCents: number; months: number };
-  /** The unit has ever had a meter reading → the dom uses self-reading. */
-  usesMeters: boolean;
+  // Meter / persons self-reading lives in the reading-round view
+  // (reading-rounds.ts getOwnerReadingsView, BYT-20261118-006): visibility
+  // follows an OPEN round, not historic readings.
 }
 
 export async function getOwnerPaymentSummary(input: {
@@ -172,7 +172,7 @@ export async function getOwnerPaymentSummary(input: {
 }): Promise<OwnerPaymentSummary | null> {
   const { entityId, country, unitEntityId, beneficiaryName } = input;
 
-  const [ledger, predpis, settlementYears, overdue, readings] = await Promise.all([
+  const [ledger, predpis, settlementYears, overdue] = await Promise.all([
     getUnitLedger(entityId, unitEntityId, country),
     // Throws on "no published predpis / no VS / no IBAN" — expected
     // states for an owner, rendered as "not available".
@@ -181,7 +181,6 @@ export async function getOwnerPaymentSummary(input: {
     ),
     listSettlementYearsForUnit(entityId, unitEntityId),
     getOverdueForUnit({ entityId, country, unitEntityId }).catch(() => null),
-    listReadingsForUnit(entityId, unitEntityId).catch(() => []),
   ]);
   if (!ledger) return null;
 
@@ -235,7 +234,6 @@ export async function getOwnerPaymentSummary(input: {
       totalOpenCents: overdue?.totalOpenCents ?? 0,
       months: overdueMonths,
     },
-    usesMeters: readings.length > 0,
   };
 }
 

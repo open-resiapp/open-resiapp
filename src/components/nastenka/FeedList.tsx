@@ -22,6 +22,7 @@ import {
   type FeedNotice,
   type RsvpStatus,
 } from "@/lib/feed";
+import MeetingRsvpButtons from "@/components/community/MeetingRsvpButtons";
 import EditPostModal from "./EditPostModal";
 import PostCard from "./PostCard";
 
@@ -230,6 +231,9 @@ function FeedListInner({
                 onRsvp={(status) =>
                   void call(`/api/community/posts/${item.id}/rsvp`, json("POST", { status }))
                 }
+                onRsvpWithdraw={() =>
+                  void call(`/api/community/posts/${item.id}/rsvp`, { method: "DELETE" })
+                }
               />
             )}
           </li>
@@ -261,6 +265,7 @@ function CommunityCard({
   onToggleThread,
   onRespond,
   onRsvp,
+  onRsvpWithdraw,
 }: {
   post: FeedCommunityPost;
   viewer: FeedViewerCaps;
@@ -270,8 +275,10 @@ function CommunityCard({
   onToggleThread: () => void;
   onRespond: () => void;
   onRsvp: (s: RsvpStatus) => void;
+  onRsvpWithdraw: () => void;
 }) {
   const t = useTranslations("Feed");
+  const tMeeting = useTranslations("MeetingAttendance.rsvp");
   const format = useFormatter();
   const isAuthor = post.author?.id === viewer.userId;
   const isEvent = post.type === "event";
@@ -283,6 +290,7 @@ function CommunityCard({
   const badges = (
     <>
       <TypeBadge type={post.type} />
+      {post.eventKind === "owners_meeting" ? <Badge tone="warning">{tMeeting("badge")}</Badge> : null}
       {post.status !== "active" ? <Badge tone="neutral">{t(`badge.${post.status}`)}</Badge> : null}
       {post.status === "active" && isPast ? <Badge tone="neutral">{t("badge.past")}</Badge> : null}
     </>
@@ -349,7 +357,24 @@ function CommunityCard({
       actions={actions}
     >
       <div className="space-y-4">
-        {isEvent && post.rsvp ? (
+        {isEvent && post.rsvp && post.eventKind === "owners_meeting" ? (
+          // BYT-20261118-001: owners' meeting — three explicit answers +
+          // withdraw; counts only, never names (§9). Eligibility is checked
+          // server-side (MEETING_RSVP_NOT_ELIGIBLE).
+          <div className="space-y-3">
+            <p className="text-base text-ui-text-muted">
+              {tMeeting("counts", { yes: post.rsvp.yes, maybe: post.rsvp.maybe, no: post.rsvp.no })}
+            </p>
+            {viewer.canRespond ? (
+              <MeetingRsvpButtons
+                value={post.rsvp.myRsvp}
+                readOnly={isPast || post.status !== "active"}
+                onSelect={onRsvp}
+                onWithdraw={onRsvpWithdraw}
+              />
+            ) : null}
+          </div>
+        ) : isEvent && post.rsvp ? (
           <div className="space-y-3">
             <p className="text-base text-ui-text-muted">
               {t("rsvp.counts", { yes: post.rsvp.yes, maybe: post.rsvp.maybe, no: post.rsvp.no })}

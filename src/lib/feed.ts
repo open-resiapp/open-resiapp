@@ -90,6 +90,8 @@ export interface FeedCommunityPost {
   photoUrl: string | null;
   eventDate: string | null;
   eventLocation: string | null;
+  /** BYT-20261118-001: "owners_meeting" = announcement of a meeting voting. */
+  eventKind: "social" | "owners_meeting";
   entranceName: string | null;
   expiresAt: string | null;
   createdAt: string;

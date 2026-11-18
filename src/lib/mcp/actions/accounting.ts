@@ -26,6 +26,8 @@ import {
 } from "@modules/accounting/src/lib/input-validators";
 import { listUnitBalances } from "@modules/accounting/src/lib/karta-bytu";
 import { createReading, listReadingsForUnit, METER_TYPES } from "@modules/accounting/src/lib/meters";
+import { isReadingYearLocked } from "@modules/accounting/src/lib/reading-lock";
+import { isReadingError } from "@modules/accounting/src/lib/reading-rounds-format";
 import { createManualPayment } from "@modules/accounting/src/lib/payments";
 import { approveZavierka } from "@modules/accounting/src/lib/zavierka";
 import { McpError, validationError } from "../errors";
@@ -419,6 +421,12 @@ const submitMeterReading = defineAction({
     if (!v.ok) throw fieldError(v.field, v.code);
     const readingDate = notFutureIso(p.readingDate, "readingDate");
     await unitOrThrow(ctx, p.unitId);
+    // BYT-20261118-006: a locked year (period left `open` or a settlement
+    // exists) rejects every reading write — checked here so the preview
+    // never offers a commit that would fail; createReading re-checks.
+    if (await isReadingYearLocked(ctx.root.id, new Date(readingDate).getUTCFullYear())) {
+      throw new McpError("conflict.state_changed", { reason: "period_locked" });
+    }
     return { ...p, readingDate };
   },
   async preview(ctx, p, locale) {
@@ -461,8 +469,16 @@ const submitMeterReading = defineAction({
       valueMilli: p.valueMilli,
       actorId: ctx.principal.userId,
       justification: mcpJustification(ctx),
+    }).catch((err: unknown) => {
+      if (!isReadingError(err)) throw err;
+      if (err.code === "period_locked") {
+        throw new McpError("conflict.state_changed", { reason: err.code });
+      }
+      if (err.code === "unknown_unit") throw new McpError("not_found");
+      if (err.code === "date_in_future") throw new McpError("validation.readingDate");
+      throw new McpError("validation.valueMilli", { reason: err.code });
     });
-    return { data: { readingId: r.id }, path: "/accounting/meters" };
+    return { data: { readingId: r.id }, path: "/accounting/readings" };
   },
 });
 

@@ -1,7 +1,8 @@
 // BYT-20260609-008: shared ballot-item helpers used by the voting create
 // (POST /api/votings) and edit (PATCH /api/votings/[id]) route handlers.
 // Kept out of the route files so those export only HTTP handlers.
-import type { QuorumType } from "@/types";
+import type { Country, QuorumType } from "@/types";
+import { escalateRepeatedQuorum, type RepeatEscalationErrorCode } from "./rules";
 
 export const VALID_QUORUM: QuorumType[] = [
   "simple_present",
@@ -20,6 +21,8 @@ export interface IncomingItem {
   title?: unknown;
   description?: unknown;
   quorumType?: unknown;
+  /** SK §14b ods. 6: category of the original decision this item repeats. */
+  repeatOfQuorumType?: unknown;
   financialEffectKind?: unknown;
   financialEffectParams?: unknown;
 }
@@ -29,6 +32,8 @@ export interface NormalizedItem {
   title: string;
   description: string | null;
   quorumType: QuorumType;
+  /** Set for a §14b ods. 6 repeat; `quorumType` is then the escalated type. */
+  repeatOfQuorumType: QuorumType | null;
   financialEffectKind: FinancialEffectKind | null;
   financialEffectParams: Record<string, unknown> | null;
 }
@@ -99,14 +104,50 @@ export function normalizeItems(
     if (fx === "invalid") {
       return { error: `Položka č. ${idx + 1}: neplatný finančný dopad` };
     }
+    const repeatOfQuorumType = VALID_QUORUM.includes(
+      it.repeatOfQuorumType as QuorumType
+    )
+      ? (it.repeatOfQuorumType as QuorumType)
+      : null;
     items.push({
       idx,
       title,
       description,
-      quorumType,
+      // Escalated later by applyRepeatEscalation (needs the country).
+      quorumType: repeatOfQuorumType ?? quorumType,
+      repeatOfQuorumType,
       financialEffectKind: fx?.kind ?? null,
       financialEffectParams: fx?.params ?? null,
     });
   }
   return { items };
+}
+
+export interface RepeatEscalationError {
+  error: RepeatEscalationErrorCode;
+  /** 0-based index of the offending item */
+  itemIdx: number;
+}
+
+/**
+ * SK §14b ods. 6: for every item flagged as a repeat, replace `quorumType`
+ * with the escalated type derived from `repeatOfQuorumType`. Pure; returns a
+ * stable code (never prose) for a country without the rule (CZ) or a base
+ * category without escalation (unanimity).
+ */
+export function applyRepeatEscalation(
+  items: NormalizedItem[],
+  country: Country
+): { items: NormalizedItem[] } | RepeatEscalationError {
+  const out: NormalizedItem[] = [];
+  for (const it of items) {
+    if (!it.repeatOfQuorumType) {
+      out.push(it);
+      continue;
+    }
+    const r = escalateRepeatedQuorum(country, it.repeatOfQuorumType);
+    if (!r.ok) return { error: r.code, itemIdx: it.idx };
+    out.push({ ...it, quorumType: r.quorumType });
+  }
+  return { items: out };
 }

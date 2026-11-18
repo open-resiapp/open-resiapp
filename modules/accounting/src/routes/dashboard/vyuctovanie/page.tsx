@@ -16,6 +16,12 @@ interface Gates {
   unmatchedBankLines: number;
   uncategorizedExpenses: number;
   unitsWithoutReadings: number;
+  readingRound?: {
+    hasRound: boolean;
+    missingUnits: number;
+    unresolvedUnits: number;
+    singleReadingUnits: number;
+  };
   yearElapsed: boolean;
   draftSchedules: number;
   canPublish: boolean;
@@ -58,6 +64,7 @@ interface Preview {
 export default function VyuctovaniePage() {
   const t = useTranslations("Accounting.vyuctovanie");
   const tCat = useTranslations("Accounting.serviceCategories");
+  const tRounds = useTranslations("ReadingRounds.gate");
   const router = useRouter();
 
   const [year, setYear] = useState(() => new Date().getUTCFullYear() - 1);
@@ -201,13 +208,46 @@ export default function VyuctovaniePage() {
                 </span>
                 {preview.gates.unitsWithoutReadings > 0 && (
                   <Link
-                    href="/accounting/meters"
+                    href={`/accounting/readings?year=${preview.year}`}
                     className="text-blue-600 dark:text-blue-400 hover:underline"
                   >
                     {t("resolve")}
                   </Link>
                 )}
               </li>
+              {/* Reading round hand-off (BYT-20261118-006) — informational. */}
+              {preview.gates.readingRound?.hasRound && (
+                <li className="flex items-center gap-2 text-sm">
+                  <span>
+                    {preview.gates.readingRound.missingUnits === 0 &&
+                    preview.gates.readingRound.unresolvedUnits === 0
+                      ? "✅"
+                      : "⚠️"}
+                  </span>
+                  <span className="text-gray-900 dark:text-gray-100">
+                    {tRounds("round", {
+                      missing: preview.gates.readingRound.missingUnits,
+                      unresolved: preview.gates.readingRound.unresolvedUnits,
+                    })}
+                  </span>
+                  <Link
+                    href={`/accounting/readings?year=${preview.year}`}
+                    className="text-blue-600 dark:text-blue-400 hover:underline"
+                  >
+                    {t("resolve")}
+                  </Link>
+                </li>
+              )}
+              {(preview.gates.readingRound?.singleReadingUnits ?? 0) > 0 && (
+                <li className="flex items-center gap-2 text-sm">
+                  <span>⚠️</span>
+                  <span className="text-gray-900 dark:text-gray-100">
+                    {tRounds("singleReading", {
+                      count: preview.gates.readingRound!.singleReadingUnits,
+                    })}
+                  </span>
+                </li>
+              )}
             </ul>
             {preview.gates.periodStatus === "published" && (
               <p className="mt-3 text-sm text-green-700 dark:text-green-400">

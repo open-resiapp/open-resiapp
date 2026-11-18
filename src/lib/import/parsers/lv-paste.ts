@@ -142,6 +142,9 @@ function parseUnitBlock(block: string, header: LvHeader): DraftRow[] {
       owner_address: o.address,
       owner_unit_share_numerator: o.shareNum,
       owner_unit_share_denominator: o.shareDen,
+      // BYT-20261118-003: keep the LV facts the ownership checks need.
+      lv_ordinal: o.ordinal,
+      ownership_form: o.bsm ? "bsm" : undefined,
       // Inherit community-level fields from the wizard if not set here.
       // The header hint is provided to the wizard via parseLv() result envelope.
       community_address: header.communityAddress,
@@ -158,6 +161,10 @@ interface RawOwner {
   address?: string;
   shareNum: number;
   shareDen: number;
+  /** Poradové číslo of the part-B row (both BSM spouses share it). */
+  ordinal?: number;
+  /** True for both spouses split out of one BSM row. */
+  bsm?: boolean;
 }
 
 function parseOwnerLines(text: string): RawOwner[] {
@@ -248,12 +255,17 @@ function parseOwnerLines(text: string): RawOwner[] {
     if (shareDen > 1000) continue;
 
     let nameBlob = blockText.slice(0, blockText.length - shareMatch[0].length).trim();
-    // Strip leading poradové č. (with or without trailing dot).
-    const m = nameBlob.match(/^\d{1,3}\s+(.+)$/);
-    if (m) nameBlob = m[1];
+    // Strip leading poradové č. (with or without trailing dot) — and keep
+    // it (BYT-20261118-003: duplicate-ordinal / BSM-pair checks).
+    const m = nameBlob.match(/^(\d{1,3})\s+(.+)$/);
+    let ordinal: number | undefined;
+    if (m) {
+      ordinal = Number(m[1]);
+      nameBlob = m[2];
+    }
 
     const owner = extractOwner(nameBlob, shareNum, shareDen);
-    if (owner) owners.push(...owner);
+    if (owner) owners.push(...owner.map((o) => ({ ...o, ordinal })));
   }
 
   return owners;
@@ -297,8 +309,8 @@ function extractOwner(
     // address fragment after the joint name).
     const shared = rightParts.address ?? leftParts.address;
     return [
-      { name: leftParts.name, address: shared, shareNum, shareDen: shareDen * 2 },
-      { name: rightParts.name, address: shared, shareNum, shareDen: shareDen * 2 },
+      { name: leftParts.name, address: shared, shareNum, shareDen: shareDen * 2, bsm: true },
+      { name: rightParts.name, address: shared, shareNum, shareDen: shareDen * 2, bsm: true },
     ];
   }
 

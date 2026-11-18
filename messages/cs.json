@@ -1,4 +1,272 @@
 {
+  "OwnerLifecycle": {
+    "formerChip": "Bývalý vlastník",
+    "formerUntil": "Bývalý vlastník · do {date}",
+    "cancel": "Zrušit",
+    "next": "Pokračovat",
+    "back": "Zpět",
+    "loadingPlan": "Načítám…",
+    "typeNameLabel": "Pro potvrzení napište jméno: {name}",
+    "historyTitle": "Vlastnictví",
+    "historyEmpty": "Žádné vlastnictví v tomto domě.",
+    "historyUnit": "Jednotka {unit} · podíl {share}",
+    "periodEnded": "{from} – {to} · {reason}",
+    "periodCurrent": "od {from} · současný vlastník",
+    "periodRange": "{from} – {to}",
+    "actionsLabel": "Další akce",
+    "removeAction": "Odebrat z domu",
+    "restoreAction": "Obnovit",
+    "mergeAction": "Sloučit s…",
+    "anonymizeAction": "Anonymizovat",
+    "deleteAction": "Smazat",
+    "removeTitle": "Odebrat z domu",
+    "mergeTitle": "Sloučit účty",
+    "anonymizeTitle": "Anonymizovat osobní údaje",
+    "deleteTitle": "Smazat záznam",
+    "removeConfirm": "Odebrat z domu",
+    "mergeConfirm": "Sloučit účty",
+    "anonymizeConfirm": "Anonymizovat",
+    "deleteConfirm": "Smazat natrvalo",
+    "mergePickTitle": "Sloučit s jiným účtem",
+    "mergePickHint": "Vyberte druhý účet téže osoby jako {name}. Navrženy jsou účty s podobným jménem, e-mailem nebo telefonem.",
+    "mergeSearch": "Hledat podle jména nebo e-mailu",
+    "mergeNoCandidates": "Žádný jiný účet nevyhovuje.",
+    "mergeSuggested": "navrženo",
+    "survivorLabel": "Který účet zůstane",
+    "survivorKeep": "Ponechat: {name}",
+    "restoreTitle": "Obnovit vlastnictví",
+    "restoreBody": "Znovu otevřeme přesně ta vlastnictví, která skončila odebráním z domu {date}. Pokud mezitím na některou jednotku přibyl nový vlastník, obnovení se neprovede.",
+    "unitOwnersTitle": "Vlastníci jednotky {unit}",
+    "unitOwnersFilter": "Zobrazení vlastníků",
+    "currentOwners": "Současní vlastníci",
+    "showFormerOwners": "Zobrazit bývalé vlastníky",
+    "unitNoOwners": "Jednotka nemá zapsaného vlastníka.",
+    "transferAction": "Změna vlastníka",
+    "transferTitle": "Změna vlastníka jednotky {unit}",
+    "transferStep": "Krok {step} z {total}",
+    "transferWhoLeaves": "Kdo odchází",
+    "transferWhoComes": "Kdo přichází",
+    "transferRemaining": "Zůstávají: {names}",
+    "newOwnerChip": "nový vlastník",
+    "shareNum": "Podíl – čitatel",
+    "shareDen": "Podíl – jmenovatel",
+    "removeBuyer": "Odstranit",
+    "pickExisting": "Existující osoba",
+    "pickPlaceholder": "Vyberte osobu",
+    "addBuyer": "Přidat",
+    "newOwnerName": "Nový vlastník – jméno a příjmení",
+    "addNewOwner": "Přidat nového",
+    "shareSum": "Součet podílů: {sum} (musí být 1/1)",
+    "shareSumInvalid": "Zadejte platné podíly (např. 1/2).",
+    "transferDate": "Datum změny",
+    "transferDateHint": "Den vkladu do katastru nebo den úmrtí. Nesmí být v budoucnosti.",
+    "transferKind": "Důvod",
+    "transferNote": "Poznámka (nepovinné)",
+    "transferPreview": "Zkontrolovat změnu",
+    "transferConfirm": "Zapsat změnu vlastníka",
+    "kinds": {
+      "sale": "prodej",
+      "inheritance": "dědění",
+      "gift": "darování",
+      "correction": "oprava údajů"
+    },
+    "endReasons": {
+      "sale": "prodej",
+      "inheritance": "dědění",
+      "gift": "darování",
+      "removed": "odebrán z domu",
+      "merged": "sloučení účtů",
+      "correction": "oprava údajů"
+    },
+    "summary": {
+      "end": "Vlastnictví skončí.",
+      "transfer": "{sellers} přestane být vlastníkem jednotky {unit} k {date} ({kind}). Noví vlastníci: {buyers}.",
+      "remove": "{name} přestane být vlastníkem v tomto domě k {date}. Historie zůstane zachována.",
+      "restore": "Vlastnictví se obnoví.",
+      "merge": "Účet {from} se sloučí do účtu {into}. Veškerá historie přejde na {into}.",
+      "anonymize": "Z účtu {name} se odstraní kontaktní údaje. Záznamy uchovávané ze zákona zůstanou.",
+      "hard_delete": "Záznam {name} se natrvalo smaže."
+    },
+    "groups": {
+      "archive": "Skončí",
+      "move": "Přesune se",
+      "keep": "Zůstává",
+      "destroy": "Smaže se",
+      "blockers": "Je třeba vyřešit",
+      "warnings": "Upozornění"
+    },
+    "lines": {
+      "ownershipPeriods": "{count, plural, one {# vlastnictví} few {# vlastnictví} other {# vlastnictví}}",
+      "currentMemberships": "{count, plural, one {# současné vlastnictví} few {# současná vlastnictví} other {# současných vlastnictví}}",
+      "sellerBallots": "{count, plural, one {# hlasovací lístek prodávajícího} few {# hlasovací lístky prodávajícího} other {# hlasovacích lístků prodávajícího}}",
+      "unitAssessments": "{count, plural, one {# předpis plateb jednotky} few {# předpisy plateb jednotky} other {# předpisů plateb jednotky}}",
+      "duplicateBallotsOnTombstone": "{count, plural, one {# duplicitní lístek (označen jako sporný)} few {# duplicitní lístky (označeny jako sporné)} other {# duplicitních lístků (označeny jako sporné)}}",
+      "tombstone": "původní účet jako neaktivní záznam bez kontaktů",
+      "contactData": "e-mail, telefon a heslo",
+      "account": "účet osoby",
+      "pushSubscriptions": "{count, plural, one {# zařízení s upozorněními} few {# zařízení s upozorněními} other {# zařízení s upozorněními}}",
+      "oauthTokens": "{count, plural, one {# přihlášení aplikace} few {# přihlášení aplikací} other {# přihlášení aplikací}}",
+      "oauthCodes": "{count, plural, one {# autorizační kód} few {# autorizační kódy} other {# autorizačních kódů}}",
+      "mcpPending": "{count, plural, one {# čekající akce asistenta} few {# čekající akce asistenta} other {# čekajících akcí asistenta}}",
+      "passkeys": "{count, plural, one {# přístupový klíč} few {# přístupové klíče} other {# přístupových klíčů}}",
+      "emailVerifications": "{count, plural, one {# ověření e-mailu} few {# ověření e-mailu} other {# ověření e-mailu}}",
+      "directoryEntry": "záznam v adresáři kontaktů",
+      "notificationPreferences": "nastavení upozornění",
+      "openInvitations": "{count, plural, one {# otevřená pozvánka} few {# otevřené pozvánky} other {# otevřených pozvánek}}",
+      "ownership": "{count, plural, one {# záznam o vlastnictví} few {# záznamy o vlastnictví} other {# záznamů o vlastnictví}}",
+      "voting": "{count, plural, one {# záznam z hlasování} few {# záznamy z hlasování} other {# záznamů z hlasování}}",
+      "accounting": "{count, plural, one {# účetní záznam} few {# účetní záznamy} other {# účetních záznamů}}",
+      "content": "{count, plural, one {# příspěvek nebo dokument} few {# příspěvky nebo dokumenty} other {# příspěvků nebo dokumentů}}",
+      "consent": "{count, plural, one {# záznam o souhlasu} few {# záznamy o souhlasu} other {# záznamů o souhlasu}}",
+      "audit": "{count, plural, one {# záznam v historii změn} few {# záznamy v historii změn} other {# záznamů v historii změn}}",
+      "meetings": "{count, plural, one {# odpověď na shromáždění} few {# odpovědi na shromáždění} other {# odpovědí na shromáždění}}",
+      "credentials": "{count, plural, one {# přihlašovací údaj} few {# přihlašovací údaje} other {# přihlašovacích údajů}}",
+      "settings": "{count, plural, one {# nastavení} few {# nastavení} other {# nastavení}}",
+      "notifications": "{count, plural, one {# záznam o odeslaném upozornění} few {# záznamy o odeslaných upozorněních} other {# záznamů o odeslaných upozorněních}}"
+    },
+    "blockers": {
+      "merge_conflict_open_ballot": "Oba účty hlasovaly za jednotku {unit} v probíhajícím hlasování „{voting}“. Nejprve jeden lístek označte jako sporný.",
+      "anonymize_has_current_ownership": "Osoba je stále vlastníkem. Nejprve ji odeberte z domu nebo zapište změnu vlastníka.",
+      "user_has_history": "Osoba má historii, kterou je třeba uchovat. Místo smazání ji odeberte z domu nebo anonymizujte.",
+      "self_action": "Tuto akci nemůžete provést na vlastním účtu.",
+      "merge_tombstone": "Jeden z účtů je již sloučen nebo anonymizován."
+    },
+    "warnings": {
+      "backdated_seller_ballot": "Prodávající hlasoval v „{voting}“ po datu změny. Lístek zůstává platný.",
+      "backdated_buyer_missed_voting": "Hlasování „{voting}“ proběhlo po datu změny – nový vlastník v něm nehlasoval.",
+      "assessments_after_date": "Předpisy plateb po datu změny ({count}) jsou vystaveny prodávajícímu. Automaticky se nepřepíší – zkontrolujte je v účetnictví.",
+      "merge_closed_duplicate_ballot": "V uzavřeném hlasování „{voting}“ hlasovaly oba účty za jednotku {unit}. Oba lístky zůstanou, duplicitní se označí jako sporný. Výsledek se nepřepočítá.",
+      "merge_self_mandate": "Plná moc v „{voting}“ by po sloučení směřovala na tutéž osobu. V probíhajícím hlasování se zruší.",
+      "merge_membership_overlap": "Oba účty vlastní jednotku {unit}. Zůstane vlastnictví ponechaného účtu, druhé skončí.",
+      "share_sum_not_one": "Součet podílů jednotky není 1/1.",
+      "account_deactivated": "Osoba nemá vlastnictví v jiném domě – její účet se deaktivuje a přihlášení se zablokuje.",
+      "no_undo": "Sloučení nelze vrátit. Původní účet zůstane jako neaktivní záznam pro případnou ruční opravu."
+    },
+    "errors": {
+      "forbidden": "K této akci nemáte oprávnění.",
+      "not_found": "Záznam nebyl nalezen.",
+      "invalid_input": "Neplatné údaje.",
+      "plan_stale": "Údaje se mezitím změnily. Zkontrolujte aktualizovaný přehled a potvrďte znovu.",
+      "not_confirmed": "Akci nejprve potvrďte v přehledu.",
+      "failed": "Akce se nezdařila. Zkuste to znovu.",
+      "transfer_date_in_future": "Datum změny nesmí být v budoucnosti.",
+      "transfer_date_invalid": "Zadejte platné datum.",
+      "transfer_date_before_start": "Datum změny je dříve, než se prodávající stal vlastníkem.",
+      "transfer_no_sellers": "Vyberte alespoň jednoho odcházejícího vlastníka.",
+      "transfer_seller_not_owner": "Vybraná osoba již není vlastníkem jednotky.",
+      "transfer_buyer_already_owner": "Nový vlastník již jednotku vlastní. Zařaďte ho i mezi odcházející a zadejte nový celkový podíl.",
+      "transfer_buyer_invalid": "Nového vlastníka nelze použít.",
+      "share_sum_not_one": "Součet podílů po změně musí být 1/1.",
+      "invalid_share": "Neplatný podíl.",
+      "nothing_to_remove": "Osoba nemá v tomto domě žádné současné vlastnictví.",
+      "restore_conflict": "Obnovení není možné – na některé jednotce mezitím nastala změna.",
+      "merge_same_user": "Vyberte jiný účet.",
+      "merge_tombstone": "Jeden z účtů je již sloučen nebo anonymizován.",
+      "merge_conflict_open_ballot": "Oba účty hlasovaly za tutéž jednotku v probíhajícím hlasování.",
+      "anonymize_has_current_ownership": "Osoba je stále vlastníkem.",
+      "already_anonymized": "Účet je již anonymizován.",
+      "user_has_history": "Osoba má historii, kterou je třeba uchovat. Použijte odebrání z domu nebo anonymizaci.",
+      "self_action": "Tuto akci nemůžete provést na vlastním účtu."
+    },
+    "anonymizeNoticeSk": {
+      "title": "Co zůstane uchováno",
+      "body": "Podle § 9 odst. 5 písm. a) slovenského zákona č. 182/1993 Z. z. se uchovávají rozhodnutí vlastníků včetně zápisů, výsledků a hlasovacích listin, podle § 35 zákona č. 431/2002 Z. z. účetní záznamy 10 let. Tyto záznamy se jménem zůstávají (čl. 17 odst. 3 písm. b) a e) GDPR) a jméno uvidí jen výbor a zákonné výstupy. Kontaktní údaje se odstraní."
+    },
+    "anonymizeNoticeCz": {
+      "title": "Co zůstane uchováno",
+      "body": "Podle § 1206 a násl. zákona č. 89/2012 Sb. se uchovávají rozhodnutí a zápisy ze shromáždění, podle § 31 zákona č. 563/1991 Sb. účetní záznamy. Tyto záznamy se jménem zůstávají (čl. 17 odst. 3 písm. b) a e) GDPR) a jméno uvidí jen výbor a zákonné výstupy. Kontaktní údaje se odstraní."
+    }
+  },
+  "OwnerHealth": {
+    "queueTitle": "K řešení ({count})",
+    "queueHint": "Lidé, kteří potřebují vaši pozornost. Položka zmizí sama, jakmile se situace vyřeší.",
+    "queueEmpty": "Nic k řešení — přístupy vlastníků jsou v pořádku.",
+    "queue": {
+      "registration_pending": {
+        "reason": "Zaregistroval se {date}, čeká na schválení."
+      },
+      "missing_email": {
+        "reason": "Nemá e-mail — nedostane pozvánku ani oznámení.",
+        "action": "Doplnit e-mail"
+      },
+      "invite_unfinished": {
+        "reason": "Pozván {date}, registraci nedokončil.",
+        "reasonExpired": "Pozvánka vypršela {date}.",
+        "action": "Poslat znovu",
+        "actionQr": "Vytisknout QR znovu"
+      },
+      "never_logged_in": {
+        "reason": "Účet má od {date}, ještě se nepřihlásil.",
+        "hint": "Připomeňte mu přístup osobně nebo telefonicky — kontakt najdete na kartě."
+      },
+      "inactive_long": {
+        "reason": "Naposledy přihlášen {date}.",
+        "reasonUnknown": "Nepřihlásil se od doby, kdy sledujeme přihlášení ({date})."
+      }
+    },
+    "openCard": "Otevřít kartu",
+    "markHandled": "Označit jako vyřešené",
+    "handledToast": "Označeno jako vyřešené.",
+    "undo": "Zpět",
+    "closeNotice": "Zavřít oznámení",
+    "restore": "Vrátit zpět",
+    "showHandled": "Zobrazit vyřešené ({count})",
+    "hideHandled": "Skrýt vyřešené",
+    "handledOn": "Označeno jako vyřešené {date}",
+    "moreFor": "Další akce pro {name}",
+    "moreForCheck": "Další akce pro jednotku {unit}",
+    "flats": "Jednotka {flats}",
+    "inactiveTitle": "Dlouho neaktivní ({count})",
+    "inactiveHint": "Jen pro informaci — někteří vlastníci raději používají papír.",
+    "checksTitle": "Kontrola údajů ({count})",
+    "checksHint": "Ke kontrole, ne chyba — údaje mohou být právně v pořádku (např. neukončené dědictví). Nic z toho neblokuje hlasování, import ani úpravy.",
+    "checksNoLv": "Kontroly SJM a pořadových čísel z výpisu se provádějí jen pro bytové domy na Slovensku a v Česku.",
+    "checksEmpty": "Údaje o vlastnictví jsou v pořádku.",
+    "checkFilterAll": "Vše",
+    "checkFilterLabel": "Filtrovat kontroly",
+    "chip": "{label} ({count})",
+    "checks": {
+      "share_sum_mismatch": {
+        "label": "Součet podílů",
+        "reasonUnder": "Jednotka {unit}: součet podílů vlastníků je {sum} — chybí spoluvlastník nebo podíl.",
+        "reasonOver": "Jednotka {unit}: součet podílů vlastníků je {sum} — víc než celek."
+      },
+      "unit_without_owner": {
+        "label": "Jednotka bez vlastníka",
+        "reason": "Jednotka {unit} nemá žádného vlastníka."
+      },
+      "bsm_partner_missing": {
+        "label": "Chybí manžel/ka v SJM",
+        "reason": "Jednotka {unit}: {names} je ve společném jmění manželů, ale druhý z manželů chybí."
+      },
+      "bsm_share_mismatch": {
+        "label": "Různé podíly v SJM",
+        "reason": "Jednotka {unit}: manželé ve společném jmění mají různé podíly ({shares})."
+      },
+      "bsm_too_many": {
+        "label": "Víc než dva v SJM",
+        "reason": "Jednotka {unit}: {count} osoby mají stejné pořadové číslo ve společném jmění."
+      },
+      "duplicate_ordinal": {
+        "label": "Stejné pořadové číslo",
+        "reason": "Pořadové číslo {ordinal} z výpisu má více vlastníků (jednotky {units})."
+      }
+    },
+    "showOwners": "Zobrazit vlastníky",
+    "showOwnersOf": "Zobrazit vlastníky jednotky {unit}",
+    "addOwner": "Přidat vlastníka",
+    "unitFilter": "Zobrazeni jsou vlastníci jednotky {unit}.",
+    "clearUnitFilter": "Zrušit filtr",
+    "errors": {
+      "forbidden": "K této akci nemáte oprávnění.",
+      "not_found": "Položka už neexistuje — možná se mezitím vyřešila.",
+      "failed": "Nepodařilo se uložit. Zkuste to znovu."
+    },
+    "lastLogin": "Naposledy přihlášen",
+    "lastLoginNever": "Ještě se nepřihlásil",
+    "lastLoginUnknown": "Bez záznamu (sledujeme od {date})",
+    "homeRow": "K řešení u vlastníků: {count}"
+  },
   "Branding": {
     "title": "Logo a vzhled",
     "description": "Nahrajte vlastní logo společenství. Zobrazí se v aplikaci, na přihlašovací stránce, v e‑mailech a jako ikona aplikace na ploše telefonu.",
@@ -283,6 +551,15 @@
       "expiryNote": "Odkaz je platný {days} dní.",
       "fallback": "Pokud tlačítko nefunguje, zkopírujte tento odkaz do prohlížeče:"
     },
+    "documentSent": {
+      "subject": "Dokument: {document}",
+      "heading": "Posíláme vám dokument",
+      "intro": "Výbor společenství {building} vám posílá dokument „{document}“.",
+      "attachedHint": "Dokument najdete v příloze tohoto e-mailu.",
+      "button": "Otevřít dokument",
+      "linkHint": "Dokument je příliš velký na přílohu. Po kliknutí se přihlaste do aplikace a dokument si stáhněte.",
+      "footer": "Dokument zůstává dostupný i v aplikaci mezi vašimi dokumenty."
+    },
     "settlementPublished": {
       "subject": "Roční vyúčtování {year} je připraveno",
       "heading": "Vyúčtování za rok {year}",
@@ -395,7 +672,7 @@
     "recordPaperFor": "Zapsat listinný hlas",
     "noOwnerName": "Bez jména",
     "endVotingConfirmTitle": "Ukončit hlasování teď?",
-    "endVotingConfirmText": "Vlastníci už nebudou moci hlasovat ani měnit hlasy. Výsledky se uzavřou a připraví se zápis. Hlasování nelze znovu otevřít.",
+    "endVotingConfirmText": "Vlastníci už nebudou moci hlasovat ani měnit hlasy. Výsledky se uzavřou a připraví se zápis. Dokud výsledek nezveřejníte, můžete hlasování znovu otevřít kvůli opravě s písemným důvodem.",
     "endVotingConfirmButton": "Ano, ukončit",
     "recordPaperVote": "Zaznamenat listinný hlas",
     "delegateVote": "Vytvořit plnou moc",
@@ -450,6 +727,7 @@
     "quorumSimpleAll": "Nadpoloviční většina všech",
     "quorumTwoThirdsAll": "Dvoutřetinová většina všech",
     "quorumAllUnanimous": "Souhlas všech (100%)",
+    "quorumFourFifthsAll": "Čtyřpětinová většina všech",
     "meetingNote": "Při hlasování na shromáždění není možné elektronické hlasování.",
     "ownersQuarterNote": "Při hlasování iniciovaném čtvrtinou vlastníků není možné elektronické hlasování.",
     "entranceScopeLabel": "Rozsah hlasování",
@@ -469,6 +747,163 @@
     "moveUp": "Posunout výše",
     "moveDown": "Posunout níže",
     "itemTitleRequired": "Každý bod musí mít název"
+  },
+  "VotingWorkflow": {
+    "heading": "Postup hlasování",
+    "stepsLabel": "Kroky hlasování",
+    "steps": {
+      "prepare": "Příprava",
+      "announce": "Oznámení",
+      "progress": "Průběh",
+      "close": "Uzavření",
+      "minutes": "Zápis"
+    },
+    "placeLabel": "Místo hlasování",
+    "placeHint": "Kde vlastníci podepisují a odevzdávají hlasovací lístky.",
+    "announcedOn": "Vyhlášeno {date}",
+    "leadTimeHint": "Hlasování je třeba oznámit alespoň 7 dní předem. Pokud ho vyhlásíte dnes, může začít nejdříve {date}.",
+    "announce": "Vyhlásit hlasování",
+    "announceConfirmTitle": "Vyhlásit hlasování?",
+    "announceConfirmText": "Vlastníci dostanou oznámení a mohou hned hlasovat elektronicky. Otázky, místo a termín pak už nelze změnit.",
+    "publishDeadline": "Výsledek a zápis je třeba zveřejnit do {date}.",
+    "publishedOnLabel": "Datum zveřejnění výsledku",
+    "publishedOnHint": "Den, kdy jste výsledek zveřejnili vlastníkům.",
+    "publish": "Zaznamenat zveřejnění výsledku",
+    "reopen": "Znovu otevřít kvůli opravě",
+    "reopenExplain": "Znovuotevření slouží jen k opravě sčítání nebo doplnění listinných hlasů. Elektronicky mohou vlastníci hlasovat jen do konce původního termínu.",
+    "reopenNoteLabel": "Důvod znovuotevření",
+    "reopenNoteHint": "Povinné, alespoň {min} znaků. Uloží se do historie hlasování.",
+    "reopenConfirm": "Znovu otevřít",
+    "publishedOn": "Výsledek zveřejněn {date}.",
+    "noReopenAfterPublish": "Po zveřejnění výsledku nelze hlasování znovu otevřít. K opravě je třeba nové hlasování.",
+    "historyHeading": "Historie hlasování",
+    "events": {
+      "announced": "Vyhlášeno",
+      "closed": "Ukončeno",
+      "reopened": "Znovu otevřeno",
+      "result_published": "Výsledek zveřejněn",
+      "ballot_superseded": "Elektronický hlas nahrazen listinným",
+      "document_generated": "Vytvořen dokument",
+      "minutes_finalised": "Zápis dokončen"
+    },
+    "officialsHeading": "Osoby",
+    "officialsHint": "Předseda, zapisovatel a alespoň dva ověřovatelé se uvedou v dokumentech.",
+    "officialRoleLabel": "Role",
+    "officialNameLabel": "Jméno",
+    "removeOfficial": "Odebrat osobu",
+    "addOfficial": "Přidat osobu",
+    "savePreparation": "Uložit místo a osoby",
+    "saved": "Uloženo",
+    "roles": {
+      "chair": "Předseda",
+      "recorder": "Zapisovatel",
+      "verifier": "Ověřovatel"
+    },
+    "repeatLabel": "Jde o opakované rozhodnutí o téže věci do 12 měsíců",
+    "repeatEscalatesTo": "Podle § 14b odst. 6 bude potřeba: {quorum}",
+    "publishRemindersLabel": "Výsledky hlasování ke zveřejnění",
+    "publishBy": "Zveřejnit výsledek do {date}",
+    "publishOverdue": "Výsledek měl být zveřejněn do {date}",
+    "errors": {
+      "generic": "Akci se nepodařilo provést. Zkuste to znovu.",
+      "TRANSITION_NOT_ALLOWED": "Tento krok teď není možný. Obnovte stránku.",
+      "REOPEN_NOTE_REQUIRED": "Napište důvod znovuotevření (alespoň 10 znaků).",
+      "RESULT_ALREADY_PUBLISHED": "Výsledek je už zveřejněn, hlasování nelze znovu otevřít.",
+      "PUBLISH_DATE_INVALID": "Datum zveřejnění nemůže být v budoucnosti.",
+      "NOTICE_LEAD_TIME_TOO_SHORT": "Hlasování je třeba oznámit alespoň 7 dní předem. Nejdřívější začátek je {minDate}.",
+      "NOTICE_START_AFTER_END": "Konec hlasování musí být po jeho začátku.",
+      "NOTICE_VERIFIERS_REQUIRED": "Uveďte alespoň dva ověřovatele.",
+      "OFFICIALS_INVALID": "Každá osoba musí mít roli a jméno.",
+      "VOTING_LOCKED": "Po vyhlášení už nelze obsah hlasování měnit.",
+      "ENDS_AT_ONLY_LATER": "Konec hlasování lze jen prodloužit, a to jen během hlasování.",
+      "REPEAT_ESCALATION_UNSUPPORTED": "Opakované rozhodnutí se v této zemi neposuzuje zvlášť.",
+      "REPEAT_ESCALATION_NOT_APPLICABLE": "U souhlasu všech vlastníků se většina při opakování nemění."
+    },
+    "readiness": {
+      "heading": "Co by dnes prošlo elektronicky",
+      "intro": "Odhad, zda by rozhodnutí prošlo, kdyby pro hlasovali jen vlastníci s ověřeným přístupem.",
+      "whoMissing": "Kdo ještě nemá přístup",
+      "codes": {
+        "REACHABLE": "Elektronicky dosažitelné ({readyOwners} z {totalOwners} vlastníků, {pct} % hlasů)",
+        "NOT_REACHABLE": "Elektronicky zatím ne ({readyOwners} z {totalOwners} vlastníků, {pct} % hlasů) — jsou potřeba i listinné hlasy",
+        "ELECTRONIC_BLOCKED": "Elektronické hlasování zde není povoleno",
+        "NO_OWNERS": "V evidenci zatím nejsou vlastníci"
+      }
+    },
+    "overview": {
+      "heading": "Průběh hlasování",
+      "asOf": "Stav k {time}",
+      "refresh": "Obnovit",
+      "filterLabel": "Zobrazit",
+      "filters": {
+        "all": "Vše",
+        "notVoted": "Nehlasovali",
+        "incomplete": "Neúplné",
+        "paper": "Listinné",
+        "electronic": "Elektronické"
+      },
+      "outlook": {
+        "passed": "Dosaženo",
+        "reachable": "Zatím ne — ještě může projít",
+        "unreachable": "Už nemůže projít"
+      },
+      "channelSplit": "Elektronicky {electronic} %, listinně {paper} % všech hlasů",
+      "noneForFilter": "Žádné jednotky pro tento filtr.",
+      "status": {
+        "resolved_for": "Pro",
+        "resolved_against": "Proti",
+        "resolved_abstain": "Zdržel se",
+        "incomplete": "Neúplné",
+        "no_valid_vote": "Bez platného hlasu"
+      },
+      "channel": {
+        "electronic": "Elektronicky",
+        "paper": "Listinně",
+        "mixed": "Kombinovaně",
+        "none": "Nehlasoval"
+      },
+      "choice": {
+        "za": "Pro",
+        "proti": "Proti",
+        "zdrzal_sa": "Zdržel se",
+        "none": "Bez hlasu"
+      }
+    },
+    "docs": {
+      "heading": "Oznámení a hlasovací lístky",
+      "notAvailable": "Dokumenty pro tento typ společenství zatím nejsou k dispozici.",
+      "signoffNote": "Znění dokumentů čeká na právní kontrolu. Před použitím ho zkontrolujte.",
+      "notice": "Oznámení (PDF)",
+      "ballotsAll": "Všechny hlasovací lístky ({count})",
+      "ballotBlank": "Prázdný hlasovací lístek",
+      "noticeLink": "Oznámení o hlasování (PDF)"
+    },
+    "notice": {
+      "title": "Oznámení o písemném hlasování",
+      "announcedBy": "Hlasování vyhlašuje",
+      "term": "Termín hlasování",
+      "place": "Místo hlasování",
+      "questions": "Otázky",
+      "electronic": "Elektronické hlasování",
+      "electronicText": "Elektronicky můžete hlasovat v aplikaci ode dne tohoto oznámení do konce termínu hlasování.",
+      "verifiers": "Ověřovatelé",
+      "announcedOn": "Datum oznámení",
+      "ico": "IČO",
+      "legalBasis": "Podle § 14a zákona č. 182/1993 Z. z. (Slovensko)"
+    },
+    "ballotSheet": {
+      "title": "Hlasovací lístek",
+      "term": "Termín hlasování",
+      "owner": "Vlastník",
+      "units": "Byt / nebytový prostor",
+      "unitLine": "{unit} (podíl {share})",
+      "for": "PRO",
+      "against": "PROTI",
+      "abstain": "ZDRŽEL SE",
+      "dateAndSignature": "Datum a podpis vlastníka",
+      "verifier": "Ověřovatel",
+      "unmarkedNote": "Otázka bez vyznačené odpovědi se považuje za neplatný hlas."
+    }
   },
   "VotingWizard": {
     "stepsLabel": "Kroky",
@@ -551,6 +986,10 @@
         "label": "Důležité rozhodnutí — dvoutřetinová většina",
         "hint": "Právní pojem: dvoutřetinová většina hlasů všech vlastníků."
       },
+      "four_fifths_all": {
+        "label": "Opakované důležité rozhodnutí — čtyřpětinová většina",
+        "hint": "Právní pojem: čtyřpětinová většina hlasů všech vlastníků (§ 14b odst. 6 slovenského zákona)."
+      },
       "all_unanimous": {
         "label": "Souhlas všech vlastníků",
         "hint": "Právní pojem: jednomyslný souhlas všech vlastníků."
@@ -615,6 +1054,7 @@
     "quorumSimpleAll": "Nadpoloviční většina všech",
     "quorumTwoThirdsAll": "Dvoutřetinová většina všech",
     "quorumAllUnanimous": "Souhlas všech (100%)",
+    "quorumFourFifthsAll": "Čtyřpětinová většina všech",
     "multiOwnerTitle": "Jednotky s více spoluvlastníky",
     "multiOwnerHelp": "Spoluvlastníci jednotky mají dohromady jeden hlas podle {law}. Rozhoduje většina spoluvlastnických podílů; při rovnosti se jednotka zdržela.",
     "flatLabel": "Jednotka {number}",
@@ -1574,6 +2014,117 @@
     "iosShareHint": "Klepněte na Sdílet, poté „Přidat na plochu“.",
     "dismiss": "Zavřít"
   },
+  "DocumentVisibility": {
+    "chip": {
+      "boardOnly": "Jen výbor",
+      "ownerSees": "Vidí vlastník: {name}",
+      "about": "Týká se: {name}",
+      "mine": "Můj dokument"
+    },
+    "filterInternal": "Jen interní",
+    "actions": {
+      "visibility": "Kdo vidí",
+      "history": "Historie",
+      "send": "Poslat e-mailem"
+    },
+    "dialog": {
+      "title": "Kdo vidí dokument",
+      "audience": "Viditelné pro",
+      "keepSubject": "Ponechat ve složce vlastníka {name} (vidí ho jen on a výbor)",
+      "hint": "Změna se zapíše do historie dokumentu. Nikomu nepřijde žádné upozornění.",
+      "save": "Uložit",
+      "cancel": "Zrušit",
+      "close": "Zavřít"
+    },
+    "widen": {
+      "title": "Zpřístupnit dokument?",
+      "subject": "Dokument uvidí: {name}.",
+      "owner": "Dokument uvidí všichni vlastníci, kterých se týká.",
+      "resident": "Dokument uvidí všichni obyvatelé včetně nájemníků.",
+      "noNotify": "Nikomu se nepošle upozornění.",
+      "confirm": "Zpřístupnit"
+    },
+    "upload": {
+      "belongsTo": "Komu patří",
+      "wholeBuilding": "Celý dům",
+      "search": "Hledat vlastníka nebo jednotku",
+      "ownerOption": "{name} — jednotka {unit}",
+      "lockedSubject": "Dokument se uloží do složky vlastníka {name}."
+    },
+    "history": {
+      "title": "Historie dokumentu",
+      "empty": "Zatím žádné záznamy.",
+      "upload": "{name} nahrál dokument (viditelnost: {audience})",
+      "setAudience": "{name} změnil viditelnost: {from} → {to}",
+      "setSubject": "{name} změnil vlastníka: {from} → {to}",
+      "delete": "{name} smazal dokument",
+      "emailSent": "{name} poslal dokument e-mailem: {recipient} ({mode})",
+      "modeAttachment": "příloha",
+      "modeLink": "odkaz",
+      "unknown": "neznámý",
+      "nobody": "nikdo"
+    },
+    "send": {
+      "title": "Poslat e-mailem",
+      "recipient": "Komu",
+      "noRecipients": "Dokument nepatří žádnému vlastníkovi a není u jednotky s vlastníkem. Poslat ho nelze.",
+      "noEmail": "nemá e-mail",
+      "cannotSee": "dokument nevidí",
+      "message": "Krátká zpráva (nepovinné)",
+      "modeAttachment": "Dokument půjde jako příloha e-mailu.",
+      "modeLink": "Dokument je větší než {size} MB — e-mail bude obsahovat odkaz, který funguje po přihlášení.",
+      "irreversible": "Odeslaný e-mail nelze vzít zpět. Dokument zůstane v aplikaci tam, kde je.",
+      "submit": "Odeslat",
+      "sent": "E-mail byl odeslán.",
+      "boardOnly": "Dokument je „Jen výbor“, vlastník ho nevidí. Nejdříve mu ho zpřístupněte.",
+      "makeVisible": "Nejdříve zpřístupnit vlastníkovi"
+    },
+    "folder": {
+      "title": "Dokumenty vlastníka",
+      "empty": "Zatím žádné dokumenty."
+    },
+    "my": {
+      "title": "Moje dokumenty",
+      "hint": "Dokumenty, které patří vám nebo vaší jednotce."
+    },
+    "errors": {
+      "document_forbidden": "K této změně nemáte oprávnění. Viditelnost mění jen výbor.",
+      "document_not_found": "Dokument nebyl nalezen.",
+      "document_audience_invalid": "Neplatná viditelnost.",
+      "document_subject_not_owner": "Vybraná osoba není vlastníkem v tomto domě.",
+      "document_send_board_only": "Dokument je „Jen výbor“. Nejdříve ho zpřístupněte vlastníkovi.",
+      "document_send_too_large_no_account": "Dokument je příliš velký na přílohu a vlastník nemá přihlášení do aplikace, takže by odkaz neotevřel.",
+      "document_send_no_email": "Vlastník nemá zadaný e-mail.",
+      "document_send_no_recipient": "Této osobě nelze dokument poslat.",
+      "document_send_throttled": "Tento dokument jste tomuto vlastníkovi právě poslali. Zkuste to znovu za 10 minut.",
+      "document_send_failed": "E-mail se nepodařilo odeslat. Zkuste to znovu později.",
+      "generic": "Něco se nepovedlo. Zkuste to znovu."
+    }
+  },
+  "UnitNotes": {
+    "title": "Interní poznámka k jednotce",
+    "badge": "Jen výbor",
+    "hint": "Pište jen fakta — vlastník může požádat o přístup k údajům o sobě.",
+    "empty": "Zatím bez poznámky.",
+    "placeholder": "např. v bytě teče stoupačka, klíč má soused z č. 11",
+    "lastEdited": "Naposledy upravil {name}, {date}",
+    "lastEditedUnknown": "Naposledy upraveno {date}",
+    "edit": "Upravit",
+    "add": "Přidat poznámku",
+    "save": "Uložit",
+    "cancel": "Zrušit",
+    "clear": "Smazat poznámku",
+    "clearConfirmTitle": "Smazat poznámku?",
+    "clearConfirmBody": "Poznámka se smaže pro celý výbor. Tuto akci nelze vrátit.",
+    "show": "Zobrazit poznámku",
+    "hide": "Skrýt poznámku",
+    "counter": "{count} / {max} znaků",
+    "errors": {
+      "tooLong": "Poznámka je příliš dlouhá (nejvýše {max} znaků).",
+      "conflict": "Mezitím poznámku upravil někdo jiný. Zobrazujeme novější znění — zkontrolujte ho a uložte znovu.",
+      "failed": "Uložení se nezdařilo. Zkuste to znovu."
+    }
+  },
   "Documents": {
     "title": "Dokumenty",
     "description": "Centrální úložiště dokumentů bytového domu — smlouvy, rozpočty, zápisy a další.",
@@ -1857,6 +2408,7 @@
     "desc_voting": "Elektronické hlasování vlastníků včetně výsledků a zápisu.",
     "desc_accounting": "Finance společenství: měsíční platby, úhrady, fond oprav a vyúčtování.",
     "desc_intercom_2n": "Propojení s domovním telefonem 2N (ukázková verze).",
+    "desc_faults": "Hlášení poruch od vlastníků a jejich řešení výborem.",
     "desc_default": "Doplňkový modul aplikace.",
     "perm_db_read": "číst údaje",
     "perm_db_write": "ukládat údaje",
@@ -2016,8 +2568,8 @@
       "subtitle": "Co je třeba během roku udělat, v pořadí",
       "predpisTitle": "Měsíční platby",
       "predpisHint": "Kolik platí každá jednotka měsíčně do fondu oprav a na služby (předpis).",
-      "metersTitle": "Odečty měřidel",
-      "metersHint": "Stavy měřidel tepla a vody — podklad pro vyúčtování.",
+      "metersTitle": "Odečty a osoby",
+      "metersHint": "Stavy měřidel a počet osob v jednotkách — sběr od vlastníků, podklad pro vyúčtování.",
       "settlementTitle": "Roční vyúčtování",
       "settlementHint": "Zálohy porovnané se skutečnými náklady — každá jednotka dostane nedoplatek nebo přeplatek.",
       "zavierkaTitle": "Schválení účetní závěrky",
@@ -3028,8 +3580,27 @@
     "neighboursHint": "Kontakty na sousedy, kteří je chtějí sdílet",
     "finances": "Jak dům hospodaří",
     "financesHint": "Příjmy, výdaje a fond oprav",
+    "outages": "Odstávky a poruchy",
+    "outagesHint": "Voda, elektřina, plyn – odkazy na dodavatele",
     "laws": "Zákony",
     "lawsHint": "Platné znění zákonů o bytových domech"
+  },
+  "Outages": {
+    "title": "Odstávky a poruchy",
+    "intro": "Neteče voda, nejde elektřina nebo plyn? Najděte oficiální stránku dodavatele a linku poruch.",
+    "utility_water": "Voda",
+    "utility_electricity": "Elektřina",
+    "utility_gas": "Plyn",
+    "utility_heat": "Teplo",
+    "noneFor_water": "Zatím bez seznamu.",
+    "noneFor_electricity": "Zatím bez seznamu.",
+    "noneFor_gas": "Zatím bez seznamu.",
+    "noneFor_heat": "Dodavatelů tepla je mnoho a liší se podle města. Požádejte výbor, aby uvedl dodavatele vašeho domu.",
+    "outagesLink": "Odstávky na stránce dodavatele",
+    "callHotline": "Zavolat {number}",
+    "verifiedOn": "Ověřeno {date}",
+    "empty": "Pro vaši zemi zatím nemáme seznam dodavatelů.",
+    "disclaimer": "Jde o odkazy na oficiální stránky dodavatelů. Údaje nemusí být aktuální. Nesprávný údaj nahlaste výboru nebo podpoře."
   },
   "VoteCast": {
     "pickUnitTitle": "Za kterou jednotku hlasujete?",
@@ -3618,5 +4189,676 @@
     "copyLink": "Kopírovat odkaz na {label}",
     "linkCopied": "Odkaz na {label} byl zkopírován.",
     "copyFailed": "Odkaz se nepodařilo zkopírovat."
+  },
+  "Faults": {
+    "status": {
+      "new": "Nové",
+      "in_progress": "Řeší se",
+      "resolved": "Vyřešené",
+      "rejected": "Zamítnuté",
+      "withdrawn": "Stažené"
+    },
+    "priority": {
+      "low": "Nízká",
+      "normal": "Běžná",
+      "high": "Vysoká",
+      "urgent": "Naléhavá"
+    },
+    "visibility": {
+      "community": "Celý dům",
+      "entrance": "Vchod / budova",
+      "private": "Jen výbor a oznamovatel"
+    },
+    "visibilityHint": {
+      "community": "Uvidí to všichni v domě.",
+      "entrance": "Uvidí to sousedé z vchodu a výbor.",
+      "private": "Uvidí to výbor a vy."
+    },
+    "category": {
+      "elevator": "Výtah",
+      "water_plumbing": "Voda a potrubí",
+      "heating": "Topení",
+      "electrical": "Elektřina",
+      "lighting": "Osvětlení",
+      "doors_locks_intercom": "Dveře, zámky, zvonek",
+      "roof_facade": "Střecha a fasáda",
+      "cleaning": "Úklid",
+      "common_areas": "Společné prostory",
+      "other": "Jiné"
+    },
+    "errors": {
+      "FAULT_INVALID_TRANSITION": "Tento stav nelze nastavit. Obnovte stránku a zkuste to znovu.",
+      "FAULT_REASON_REQUIRED": "Napište důvod — uvidí ho oznamovatel.",
+      "FAULT_NOT_EDITABLE": "Hlášení se už řeší, proto ho nemůžete upravit.",
+      "FAULT_WITHDRAW_NOT_ALLOWED": "Hlášení se už řeší, proto ho nemůžete stáhnout.",
+      "FAULT_LOCATION_NOT_ALLOWED": "Toto místo nemůžete zvolit.",
+      "FAULT_VISIBILITY_WIDEN_FORBIDDEN": "Okruh lidí, kteří hlášení uvidí, můžete jen zúžit.",
+      "FAULT_TOO_MANY_PHOTOS": "Můžete přidat nejvýše 5 fotek.",
+      "FAULT_PHOTO_INVALID": "Fotka musí být JPEG, PNG nebo WebP a mít nejvýše 10 MB.",
+      "FAULT_ASSIGNEE_CONFLICT": "Vyberte buď člena výboru, nebo dodavatele — ne oba.",
+      "FAULT_EXPENSE_NOT_FOUND": "Tento výdaj se nenašel.",
+      "FAULT_TITLE_REQUIRED": "Napište, co se pokazilo.",
+      "FAULT_NOT_FOUND": "Hlášení se nenašlo.",
+      "FAULT_FORBIDDEN": "K této akci nemáte oprávnění.",
+      "FAULT_INVALID_INPUT": "Některý údaj není v pořádku. Zkontrolujte formulář.",
+      "generic": "Něco se nepodařilo. Zkuste to znovu."
+    },
+    "email": {
+      "greeting": "Dobrý den, {name},",
+      "statusChanged": {
+        "subject": "Hlášení „{title}“: {status}",
+        "heading": "Změna stavu vašeho hlášení",
+        "intro": "Vaše hlášení „{title}“ má nový stav: {status}.",
+        "button": "Otevřít hlášení",
+        "hint": "Tento e-mail dostáváte, protože jste poruchu nahlásili."
+      },
+      "staleDigest": {
+        "subject": "{count, plural, one {# porucha je otevřená} few {# poruchy jsou otevřené} other {# poruch je otevřených}} déle než 30 dní",
+        "heading": "Poruchy otevřené déle než 30 dní",
+        "intro": "{count, plural, one {Tato porucha čeká} few {Tyto # poruchy čekají} other {Těchto # poruch čeká}} na vyřešení déle než 30 dní:",
+        "openDays": "otevřeno {days} dní",
+        "button": "Otevřít seznam poruch"
+      }
+    },
+    "push": {
+      "statusTitle": "Vaše hlášení: {status}"
+    },
+    "tabs": {
+      "label": "Oznámení a poruchy",
+      "notices": "Oznámení",
+      "faults": "Poruchy",
+      "newBadge": "{count} nové"
+    },
+    "filters": {
+      "label": "Filtry poruch",
+      "status": "Stav",
+      "priority": "Priorita",
+      "category": "Kategorie",
+      "assignee": "Řeší",
+      "any": "Všechny",
+      "unassigned": "Nepřiřazené",
+      "stale": "Otevřené déle než 30 dní",
+      "clear": "Zrušit filtry"
+    },
+    "list": {
+      "latestMessage": "Výbor: {message}",
+      "unassigned": "nepřiřazeno",
+      "openDays": "otevřeno {days} dní",
+      "assigneeLine": "Řeší: {name}",
+      "colTitle": "Porucha",
+      "colStatus": "Stav",
+      "colPriority": "Priorita",
+      "colCategory": "Kategorie",
+      "colAssignee": "Řeší",
+      "colAge": "Otevřeno",
+      "count": "{count, plural, =0 {Žádná porucha} one {# porucha} few {# poruchy} other {# poruch}}",
+      "emptyBoard": "Žádné poruchy podle těchto filtrů."
+    },
+    "board": {
+      "title": "Poruchy",
+      "intro": "Hlášení od vlastníků. Seřazeno podle priority, nejstarší nahoře.",
+      "statusHeading": "Stav",
+      "noTransitions": "Stav už nelze měnit.",
+      "moveTo": {
+        "new": "Vrátit mezi nové",
+        "in_progress": "Začít řešit",
+        "resolved": "Označit jako vyřešené",
+        "rejected": "Zamítnout",
+        "withdrawn": "Stáhnout"
+      },
+      "cancel": "Zrušit",
+      "confirmStatus": "Potvrdit",
+      "reasonRequired": "Důvod (povinné, uvidí ho oznamovatel)",
+      "reasonOptional": "Zpráva pro oznamovatele (nepovinné)",
+      "reasonHint": "Tato zpráva je veřejná pro každého, kdo hlášení vidí.",
+      "fieldsHeading": "Úkol",
+      "priority": "Priorita",
+      "visibility": "Kdo hlášení vidí",
+      "category": "Kategorie",
+      "none": "— žádné —",
+      "assignee": "Řeší",
+      "assigneeHint": "Člen výboru nebo externí dodavatel.",
+      "boardUsers": "Výbor a správa",
+      "contractors": "Dodavatelé",
+      "addCategory": "Přidat kategorii",
+      "addContractor": "Přidat dodavatele",
+      "locationNote": "Upřesnění místa",
+      "invoiced": "Vyfakturováno",
+      "expense": "Propojený výdaj",
+      "expenseHint": "Propojením se porucha označí jako vyfakturovaná.",
+      "internalNote": "Interní poznámka",
+      "internalNoteHint": "Vidí jen výbor, ne vlastníci ani správce.",
+      "saved": "Změny jsou uložené.",
+      "save": "Uložit změny",
+      "add": "Přidat",
+      "name": "Název",
+      "phone": "Telefon"
+    },
+    "report": {
+      "cta": "Nahlásit poruchu",
+      "title": "Nahlásit poruchu",
+      "backToList": "Zpět na poruchy",
+      "stepOf": "Krok {step} z {total}",
+      "step1Title": "Co se pokazilo?",
+      "titleLabel": "Co se pokazilo",
+      "titleHint": "Například: Výtah stojí, Teče ve sklepě.",
+      "descriptionLabel": "Popis",
+      "descriptionHint": "Nepovinné. Od kdy, co přesně se děje.",
+      "addPhoto": "Přidat fotku",
+      "photoHint": "Nejvýše {max} fotek (JPEG, PNG, WebP, do 10 MB).",
+      "removePhoto": "Odstranit",
+      "removePhotoNamed": "Odstranit fotku {name}",
+      "next": "Dál",
+      "back": "Zpět",
+      "step2Title": "Kde?",
+      "locationNoteLabel": "Upřesnění místa",
+      "locationNoteHint": "Nepovinné, například: sklep, u výtahu.",
+      "privateOnly": "Uvidí to jen výbor a já",
+      "step3Title": "Zkontrolovat a odeslat",
+      "whereLabel": "Kde",
+      "photosLabel": "Fotky",
+      "photoCount": "{count, plural, =0 {bez fotky} one {# fotka} few {# fotky} other {# fotek}}",
+      "whoSeesLabel": "Kdo to uvidí",
+      "submit": "Odeslat hlášení",
+      "noLocations": "Nemáte přiřazenou jednotku",
+      "noLocationsHint": "Poruchu můžete nahlásit, jakmile vám výbor přiřadí jednotku."
+    },
+    "location": {
+      "wholeHouse": "Celý dům / společné prostory",
+      "myUnitNumber": "Moje jednotka (č. {number})",
+      "myUnitNamed": "Moje jednotka ({name})",
+      "myGroup": "{name}"
+    },
+    "resident": {
+      "title": "Poruchy",
+      "intro": "Vaše hlášení a poruchy, o kterých výbor už ví.",
+      "backToHouse": "Zpět na Dům",
+      "mine": "Moje hlášení",
+      "mineEmpty": "Zatím jste nic nenahlásili.",
+      "others": "Hlášení v domě",
+      "othersHint": "Než nahlásíte poruchu, podívejte se, jestli ji už někdo nenahlásil.",
+      "othersEmpty": "Žádná další hlášení."
+    },
+    "detail": {
+      "backToList": "Zpět na poruchy",
+      "yourActions": "Úpravy hlášení",
+      "removePhotoN": "Odstranit fotku {n}",
+      "edit": "Upravit hlášení",
+      "withdraw": "Stáhnout hlášení",
+      "withdrawTitle": "Stáhnout hlášení?",
+      "withdrawWarn": "Výbor ho už nebude řešit. Hlášení zůstane v historii.",
+      "photoAlt": "Fotka {n}",
+      "reportHeading": "Hlášení",
+      "reporter": "Nahlásil(a)",
+      "reporterUnknown": "Neznámý uživatel",
+      "where": "Kde",
+      "reportedAt": "Nahlášeno",
+      "visibility": "Viditelnost",
+      "whoSees": "Kdo to vidí",
+      "history": "Historie změn",
+      "createdNotice": "Děkujeme, hlášení je odeslané. O každé změně stavu vám pošleme e-mail.",
+      "progress": "Průběh",
+      "reported": "Nahlášeno"
+    },
+    "history": {
+      "empty": "—",
+      "yes": "ano",
+      "no": "ne",
+      "changed": "změněno",
+      "publicMessage": "Zpráva: {message}",
+      "unknownActor": "Neznámý uživatel",
+      "public": "veřejné",
+      "type": {
+        "created": "Vytvořeno",
+        "edited": "Upraveno oznamovatelem",
+        "status_changed": "Změna stavu",
+        "field_changed": "Změna",
+        "photo_added": "Přidána fotka",
+        "photo_removed": "Odstraněna fotka"
+      },
+      "field": {
+        "status": "Stav",
+        "title": "Název",
+        "description": "Popis",
+        "locationNote": "Upřesnění místa",
+        "locationEntityId": "Místo",
+        "visibility": "Viditelnost",
+        "priority": "Priorita",
+        "categoryId": "Kategorie",
+        "assigneeUserId": "Řeší (výbor)",
+        "contractorId": "Řeší (dodavatel)",
+        "invoiced": "Vyfakturováno",
+        "expenseId": "Výdaj",
+        "internalNote": "Interní poznámka",
+        "photo": "Fotka"
+      }
+    },
+    "home": {
+      "boardNew": "{count, plural, one {# nová porucha} few {# nové poruchy} other {# nových poruch}}",
+      "boardStale": "{count, plural, one {# porucha otevřená} few {# poruchy otevřené} other {# poruch otevřených}} déle než 30 dní",
+      "ownerHeading": "Něco se pokazilo?",
+      "ownerText": "Výtah, světlo na chodbě, voda ve sklepě — dejte vědět výboru.",
+      "ownerOpen": "Vaše hlášení: {inProgress} se řeší, {waiting} čeká"
+    },
+    "dom": {
+      "label": "Poruchy",
+      "hint": "Nahlásit poruchu a sledovat, jak se řeší"
+    }
+  },
+  "ReadingRounds": {
+    "errors": {
+      "generic": "Akce se nezdařila. Zkuste to znovu.",
+      "period_locked": "Rok je už uzavřen (vyúčtování). Údaje nelze měnit.",
+      "round_not_open": "Sběr ještě nezačal.",
+      "round_closed_for_owner": "Sběr je uzavřen. Pro změnu kontaktujte výbor.",
+      "round_exists": "Sběr pro tento rok už existuje.",
+      "round_invalid": "Zkontrolujte nastavení sběru (data, alespoň jeden údaj, připomínka 0–30 dní).",
+      "submission_locked": "Údaje už zpracovává výbor. Pro změnu ho kontaktujte.",
+      "already_submitted": "Tento údaj jste už odeslali. Použijte „Upravit“.",
+      "month_range_invalid": "Zkontrolujte měsíce: „od“ musí být před „do“, v rámci jednoho roku.",
+      "month_range_overlap": "Období se překrývají nebo jsou tyto měsíce už vyplněné.",
+      "persons_invalid": "Počet osob musí být celé číslo od 0 do 50.",
+      "value_negative": "Stav měřidla nemůže být záporný.",
+      "value_invalid": "Zadejte stav měřidla jako číslo (nejvýše 3 desetinná místa).",
+      "date_in_future": "Datum odečtu nemůže být v budoucnosti.",
+      "date_outside_round": "Datum odečtu musí být v roce, za který se sbírá.",
+      "meter_type_not_collected": "Toto měřidlo se v tomto sběru nesbírá.",
+      "label_required": "Zadejte název měřidla (nejvýše 120 znaků).",
+      "unknown_unit": "Jednotka nebyla nalezena.",
+      "forbidden": "K této akci nemáte oprávnění.",
+      "photo_too_large": "Fotka je příliš velká (nejvýše 10 MB).",
+      "photo_type_invalid": "Fotka musí být JPG, PNG, WebP nebo HEIC.",
+      "not_found": "Záznam nebyl nalezen.",
+      "already_voided": "Záznam už byl zrušen."
+    },
+    "meterTypes": {
+      "heat": "Teplo (indikátory)",
+      "water_cold": "Studená voda",
+      "water_hot": "Teplá voda",
+      "electricity": "Elektřina"
+    },
+    "gate": {
+      "round": "Sběr odečtů a osob: {missing, plural, one {chybí # jednotka} few {chybí # jednotky} other {chybí # jednotek}}, {unresolved} nevyřešených",
+      "singleReading": "{count, plural, one {# jednotka má} few {# jednotky mají} other {# jednotek má}} v roce jen jeden odečet tepla nebo teplé vody — použije se jako spotřeba, ne jako rozdíl stavů. Zkontrolujte."
+    },
+    "email": {
+      "subject": "Odečty a osoby za rok {year} — termín {deadline}",
+      "heading": "Připomínka: odečty a osoby za rok {year}",
+      "intro": "výbor domu {building} sbírá stavy měřidel a počet osob v jednotce za rok {year}. Prosíme, zadejte je do {deadline}.",
+      "button": "Zadat odečty",
+      "hint": "Údaje zadáte v aplikaci v části Moje platby › Odečty a osoby. Pokud jste je už odeslali, tento e-mail neberte v úvahu."
+    },
+    "owner": {
+      "heading": "Odečty a osoby",
+      "headingYear": "Odečty a osoby za rok {year}",
+      "closedSummary": "Naposledy jste odesílali údaje {date}. Sběr je uzavřen.",
+      "deadline": "Termín: {date}",
+      "lateNotice": "Termín už uplynul. Údaje ještě můžete odeslat, budou označeny jako opožděné.",
+      "lockedText": "Údaje už zpracovává výbor. Pro změnu ho kontaktujte.",
+      "personsHeading": "Osoby v jednotce",
+      "personsHelp": "Uveďte, kolik osob v jednotce bydlelo v jednotlivých měsících.",
+      "range": "{from} – {to}: {persons, plural, one {# osoba} few {# osoby} other {# osob}}",
+      "rangeSingle": "{month}: {persons, plural, one {# osoba} few {# osoby} other {# osob}}",
+      "lateBadge": "Opožděně",
+      "edit": "Upravit",
+      "withdraw": "Zrušit",
+      "withdrawTitle": "Zrušit odeslané údaje?",
+      "withdrawBody": "Údaje se zruší a výbor k nim nebude přihlížet. Poté je můžete odeslat znovu.",
+      "cancel": "Zpět",
+      "periodLegend": "Období {n} ({year})",
+      "fromMonth": "Od měsíce",
+      "toMonth": "Do měsíce",
+      "personsCount": "Počet osob",
+      "removePeriod": "Odstranit období",
+      "addPeriod": "Přidat období",
+      "saveChanges": "Uložit změnu",
+      "submitPersons": "Odeslat počet osob",
+      "lastValue": "Minule: {value} ({date})",
+      "readOn": "Odečteno {date}",
+      "viewPhoto": "Zobrazit fotku",
+      "notSubmitted": "Neodesláno.",
+      "value": "Stav měřidla",
+      "valuePlaceholder": "např. 123,456",
+      "lowerWarning": "Hodnota je nižší než minule — zkontrolujte.",
+      "readingDate": "Datum odečtu",
+      "photo": "Vyfotit měřidlo",
+      "photoHint": "Nepovinné. Fotku uvidí jen výbor a vy.",
+      "submitReading": "Odeslat stav"
+    },
+    "board": {
+      "forbidden": "Tuto stránku vidí jen výbor.",
+      "title": "Odečty a osoby",
+      "subtitle": "Sběr stavů měřidel a počtu osob v jednotkách za rok — podklad pro vyúčtování.",
+      "back": "Roční úkoly",
+      "year": "Rok",
+      "loadError": "Údaje se nepodařilo načíst.",
+      "lockedYear": "Rok je uzavřen vyúčtováním. Údaje si můžete prohlédnout a stáhnout, ale nelze je měnit.",
+      "noRound": "Za rok {year} nebyl sběr založen.",
+      "filterLabel": "Filtr jednotek",
+      "filterMissing": "Chybějící",
+      "filterUnresolved": "Nevyřešené",
+      "filterAll": "Všechny",
+      "selectedCount": "Vybráno: {count}",
+      "bulkResolve": "Označit jako vyřešené",
+      "emptyFilter": "V tomto filtru není žádná jednotka.",
+      "exportHeading": "Stáhnout",
+      "exportXlsx": "Stáhnout Excel",
+      "exportCsv_persons": "CSV – osoby",
+      "exportCsv_meters": "CSV – odečty jednotek",
+      "exportCsv_building": "CSV – měřidla domu",
+      "applyHeading": "Použít pro měsíční platby",
+      "applyHint": "Vyřešené počty osob se přenesou do jednotek jako podklad pro další předpis.",
+      "applyButton": "Použít pro měsíční platby",
+      "applyConfirm": "Počty osob z vyřešených záznamů se zapíší do jednotek. Projeví se až v dalším zveřejněném předpisu — už zveřejněné měsíční platby se nemění.",
+      "applyDone": "Hotovo: {units} jednotek, {rows} nových záznamů o osobách.",
+      "cancel": "Zrušit",
+      "entryTitle": "Zadat za jednotku {unit}",
+      "entryHint": "Zadává výbor jménem vlastníka. Změna se zapíše do záznamu změn.",
+      "submissionPick": "Které období opravit",
+      "roundHeading": "Sběr za rok {year}",
+      "closedBadge": "Uzavřen pro vlastníky",
+      "openBadge": "Otevřen",
+      "roundDates": "Od {opens} do {deadline}",
+      "roundInputs": "Sbírá se: {inputs}",
+      "lateAllowed": "Opožděné zadání povoleno",
+      "lateNotAllowed": "Po termínu nelze zadat",
+      "reminderDays": "připomínka {days} dní před termínem",
+      "reminderOff": "bez připomínky",
+      "editRound": "Upravit sběr",
+      "reopenForOwners": "Znovu otevřít pro vlastníky",
+      "closeForOwners": "Uzavřít sběr",
+      "editRoundHeading": "Upravit sběr za rok {year}",
+      "newRoundHeading": "Založit sběr za rok {year}",
+      "opensAt": "Začátek sběru",
+      "deadlineAt": "Termín",
+      "collects": "Co se sbírá",
+      "inputPersons": "Osoby v jednotce",
+      "reminderDaysLabel": "Připomínka (dní před termínem)",
+      "reminderHint": "0 = bez připomínky. E-mail dostanou jen vlastníci, kterým něco chybí.",
+      "allowLateLabel": "Povolit zadání po termínu (označí se jako opožděné)",
+      "saveRound": "Uložit",
+      "createRound": "Založit sběr",
+      "status_missing": "Chybí",
+      "status_submitted": "Odesláno",
+      "status_late": "Pozdě",
+      "status_resolved": "Vyřešeno",
+      "selectUnit": "Vybrat jednotku {unit}",
+      "unresolve": "Zrušit vyřešení",
+      "resolve": "Vyřešeno",
+      "personMonths": "{total} osoboměsíců",
+      "enter": "Zadat",
+      "correct": "Opravit",
+      "byBoard": "Zadal výbor",
+      "photo": "Fotka",
+      "singleReadingWarning": "V roce je jen jeden odečet — vyúčtování ho použije jako spotřebu, ne jako rozdíl stavů.",
+      "buildingHeading": "Měřidla domu",
+      "buildingHint": "Hlavní vodoměr, patní měřidlo apod. Jen pro informaci — vyúčtování je nepoužívá.",
+      "buildingEmpty": "Zatím žádný odečet měřidla domu.",
+      "buildingDiff": "Součet jednotek: {units} · rozdíl oproti hlavnímu měřidlu: {diff} (ztráty / společná spotřeba)",
+      "void": "Zrušit záznam",
+      "voidConfirm": "Záznam se zruší (zůstane v historii změn).",
+      "buildingAdd": "Přidat odečet měřidla domu",
+      "buildingLabel": "Název měřidla",
+      "buildingLabelHint": "Např. Hlavní vodoměr",
+      "meterType": "Druh měřidla",
+      "readingDate": "Datum odečtu",
+      "value": "Stav měřidla",
+      "note": "Poznámka",
+      "save": "Uložit"
+    }
+  },
+  "MeetingAttendance": {
+    "heading": "Shromáždění a účast",
+    "tabsLabel": "Účast na shromáždění",
+    "tabs": {
+      "answers": "Odpovědi",
+      "list": "Prezenční listina"
+    },
+    "share": "{pct} % hlasů",
+    "rsvp": {
+      "question": "Přijdete na shromáždění?",
+      "yes": "Přijdu",
+      "no": "Nepřijdu",
+      "maybe": "Ještě nevím",
+      "withdraw": "Zrušit odpověď",
+      "yourAnswer": "Vaše odpověď: {answer}",
+      "noAnswerClosed": "Neodpověděli jste.",
+      "counts": "Přijdou: {yes} · Ještě nevědí: {maybe} · Nepřijdou: {no}",
+      "badge": "Shromáždění vlastníků"
+    },
+    "create": {
+      "placeLabel": "Kde se shromáždění koná",
+      "placeHint": "Např. společenská místnost, vchod A",
+      "announceLabel": "Oznámit shromáždění vlastníkům",
+      "announceHint": "Vlastníci uvidí shromáždění na nástěnce a mohou odpovědět, zda přijdou."
+    },
+    "announce": {
+      "notYet": "Shromáždění ještě není oznámeno vlastníkům.",
+      "notAnnounced": "Shromáždění nebylo v aplikaci oznámeno.",
+      "button": "Oznámit shromáždění vlastníkům",
+      "done": "Shromáždění je oznámeno na nástěnce."
+    },
+    "invite": {
+      "button": "Odeslat pozvánku e-mailem",
+      "result": "Odeslané pozvánky: {sent}. Pozváni už dříve: {already}.",
+      "lateNotice": "Pozor: ode dneška do shromáždění neuplyne 7 celých dní. Nejdřívější termín při oznámení dnes je {date}.",
+      "failed": "Nepodařilo se doručit: {names}",
+      "withoutEmail": "Bez e-mailu — doručte pozvánku v papírové podobě:",
+      "disclaimer": "E-mailová pozvánka je pomůcka. Pozvánku na shromáždění doručte způsobem, který určují stanovy."
+    },
+    "change": {
+      "button": "Změnit datum nebo místo",
+      "notify": "Poslat změnu vlastníkům",
+      "sent": "Změna odeslána {count} vlastníkům.",
+      "saved": "Změna je uložena. Pošlete ji vlastníkům.",
+      "title": "Změna shromáždění",
+      "when": "Kdy",
+      "where": "Kde",
+      "hint": "Odpovědi vlastníků zůstanou uloženy.",
+      "save": "Uložit změnu"
+    },
+    "cancel": {
+      "button": "Zrušit shromáždění",
+      "title": "Zrušit shromáždění?",
+      "description": "Příspěvek na nástěnce se skryje a vlastníci s e-mailem dostanou zprávu o zrušení. Samotné hlasování uzavřete zvlášť.",
+      "confirm": "Zrušit shromáždění",
+      "done": "Shromáždění je zrušeno. Zpráva odeslána {count} vlastníkům."
+    },
+    "overview": {
+      "summary": "Přijdou {yes} · Nepřijdou {no} · Nevědí {maybe} · Bez odpovědi {none}",
+      "expectedShare": "Přijdou vlastníci s {pct} % hlasů.",
+      "itemsHeading": "Co potřebují body programu",
+      "estimate": {
+        "REACHABLE": "Pokud všichni, kdo přijdou, budou pro, stačí to ({pct} % hlasů).",
+        "NOT_REACHABLE": "Přijdou vlastníci s {pct} % hlasů — nestačí to.",
+        "MEASURED_AGAINST_PRESENT": "Rozhoduje většina přítomných."
+      },
+      "estimateNote": "Je to jen odhad z odpovědí. Odpověď „Ještě nevím“ se nepočítá.",
+      "filterLabel": "Zobrazit odpovědi",
+      "filter": {
+        "all": "Všichni",
+        "yes": "Přijdou",
+        "no": "Nepřijdou",
+        "maybe": "Nevědí",
+        "none": "Bez odpovědi"
+      },
+      "noAnswer": "Bez odpovědi",
+      "source": {
+        "app": "V aplikaci",
+        "email_link": "Z e-mailu",
+        "board": "Zapsal výbor"
+      },
+      "noEmail": "Bez e-mailu",
+      "invited": "Pozván",
+      "setFor": "Odpověď za vlastníka: {name}",
+      "setAnswer": "Zapsat odpověď za vlastníka"
+    },
+    "states": {
+      "present": "Přítomen",
+      "represented": "Zastoupen",
+      "absent": "Nepřítomen",
+      "not_recorded": "Zatím nezapsán"
+    },
+    "list": {
+      "header": "Přítomní: {owners} vlastníků · {pct} % hlasů",
+      "absentClosed": "Nepřítomní: {count}",
+      "notRecorded": "Zatím nezapsaní: {count}",
+      "castShare": "Odevzdané hlasy: {pct} % hlasů (z toho vychází výsledek hlasování)",
+      "search": "Hledat jméno nebo číslo jednotky",
+      "rsvpHint": "Odpověděl: {answer}",
+      "rsvpNone": "Neodpověděl",
+      "representedBy": "Zastupuje: {name}",
+      "arrived": "Příchod {time}",
+      "left": "odešel {time}",
+      "markPresent": "Přítomen",
+      "markRepresented": "Zastoupen",
+      "markLeft": "Odešel",
+      "markBack": "Vrátil se",
+      "undo": "Zrušit zápis"
+    },
+    "represent": {
+      "title": "Zastoupení: {name}",
+      "save": "Zapsat zastoupení",
+      "noMandate": "Tento vlastník nemá ověřenou plnou moc pro toto hlasování. Plnou moc nejdříve ověřte v části Plné moci.",
+      "mandate": "Ověřená plná moc",
+      "representativeName": "Jméno zástupce",
+      "representativeHint": "Vytiskne se na prezenční listině."
+    },
+    "export": {
+      "heading": "Tisk a export",
+      "modeLabel": "Řádky",
+      "modeOwner": "Jeden řádek na vlastníka",
+      "modeUnit": "Jeden řádek na jednotku",
+      "blankPdf": "Arch k podpisu (PDF)",
+      "filledPdf": "Prezenční listina (PDF)",
+      "filledXlsx": "Prezenční listina (Excel)",
+      "note": "Podepsaný originál prezenční listiny je přílohou zápisu.",
+      "sheetBlank": "Arch k podpisu",
+      "sheetFilled": "Prezenční listina",
+      "totals": "Přítomní: {present} · zastoupení: {represented} · z {eligible} vlastníků · {share} % hlasů",
+      "totalsBlank": "Počet vlastníků: {eligible}",
+      "columns": {
+        "unit": "Jednotka",
+        "owner": "Vlastník",
+        "share": "Podíl (%)",
+        "signature": "Podpis",
+        "representedBy": "Zastoupen kým",
+        "state": "Stav",
+        "arrivedAt": "Příchod",
+        "leftAt": "Odchod"
+      },
+      "states": {
+        "present": "přítomen",
+        "represented": "zastoupen",
+        "absent": "nepřítomen",
+        "not_recorded": "nezapsán"
+      }
+    },
+    "owner": {
+      "heading": "Shromáždění vlastníků",
+      "inPerson": "Hlasuje se osobně na shromáždění.",
+      "recordedPresent": "Byli jste zapsáni jako přítomni.",
+      "recordedRepresented": "Byli jste zapsáni jako zastoupeni ({name}).",
+      "notRecorded": "Na shromáždění jste nebyli zapsáni.",
+      "disagree": "Nesouhlasí to? Ozvěte se výboru.",
+      "agendaLink": "Program shromáždění"
+    },
+    "home": {
+      "boardLabel": "Nadcházející shromáždění",
+      "boardRow": "Shromáždění {date} — odpovědělo {answered} z {total}"
+    },
+    "tokenPage": {
+      "title": "Odpověď na pozvánku",
+      "confirm": "Potvrdit: {answer}",
+      "saved": "Zapsali jsme: {answer}",
+      "noAnswer": "Zatím bez odpovědi.",
+      "change": "Změnit odpověď",
+      "login": "Přihlásit se",
+      "state": {
+        "invalid": {
+          "title": "Odkaz neplatí",
+          "body": "Tento odkaz není platný. Odpovědět můžete po přihlášení v aplikaci."
+        },
+        "expired": {
+          "title": "Platnost odkazu vypršela",
+          "body": "Shromáždění už začalo nebo platnost odkazu vypršela."
+        },
+        "closed": {
+          "title": "Odpovědi jsou uzavřeny",
+          "body": "Shromáždění už začalo nebo bylo zrušeno."
+        },
+        "unavailable": {
+          "title": "Odpověď teď nefunguje",
+          "body": "Aplikace není úplně nastavena. Odpovězte po přihlášení."
+        }
+      }
+    },
+    "email": {
+      "whenLabel": "Kdy",
+      "whereLabel": "Kde",
+      "answerQuestion": "Přijdete?",
+      "answerYes": "Přijdu",
+      "answerNo": "Nepřijdu",
+      "answerMaybe": "Ještě nevím",
+      "answerNote": "Odkaz otevře stránku, kde odpověď potvrdíte jedním klepnutím. Odpověď můžete později změnit.",
+      "detailLink": "Program shromáždění v aplikaci",
+      "footer": "Tato zpráva je pomůcka aplikace. Nenahrazuje pozvánku na shromáždění podle stanov.",
+      "invitation": {
+        "subject": "Pozvánka na shromáždění vlastníků: {title}",
+        "heading": "Pozvánka na shromáždění vlastníků",
+        "intro": "Výbor svolává shromáždění vlastníků. Dejte nám vědět, zda přijdete."
+      },
+      "reminderYes": {
+        "subject": "Zítra: {title}",
+        "heading": "Shromáždění je už zítra",
+        "intro": "Počítáme s vámi."
+      },
+      "reminderOpen": {
+        "subject": "Zítra: {title}",
+        "heading": "Shromáždění je už zítra",
+        "intro": "Ještě jste neodpověděli, zda přijdete."
+      },
+      "change": {
+        "subject": "Změna shromáždění: {title}",
+        "heading": "Shromáždění se mění",
+        "intro": "Změnilo se datum nebo místo shromáždění. Platí nové údaje níže."
+      },
+      "cancel": {
+        "subject": "Shromáždění je zrušeno: {title}",
+        "heading": "Shromáždění je zrušeno",
+        "intro": "Výbor shromáždění zrušil. O novém termínu vás budeme informovat."
+      }
+    },
+    "errors": {
+      "generic": "Něco se nepodařilo. Zkuste to znovu.",
+      "UNAUTHORIZED": "Přihlaste se, prosím.",
+      "FORBIDDEN": "K tomu nemáte oprávnění.",
+      "NOT_FOUND": "Hlasování nebylo nalezeno.",
+      "INVALID_REQUEST": "Neplatný požadavek.",
+      "POST_NOT_FOUND": "Příspěvek nebyl nalezen.",
+      "RSVP_EVENTS_ONLY": "Odpovědět lze jen na událost.",
+      "RSVP_INVALID_STATUS": "Neplatná odpověď.",
+      "CONFIRMATION_UNAVAILABLE": "Odkazy v e-mailech nejsou nastaveny (chybí tajný klíč nebo adresa aplikace).",
+      "ATTENDANCE_NOT_MEETING": "Prezenční listina je jen u hlasování na shromáždění.",
+      "ATTENDANCE_NOT_OPEN": "Prezenční listina se otevře 2 hodiny před začátkem shromáždění.",
+      "ATTENDANCE_LOCKED": "Hlasování je uzavřeno — prezenční listinu už nelze měnit.",
+      "ATTENDANCE_NOT_ELIGIBLE": "Tato osoba není vlastníkem v rozsahu hlasování.",
+      "ATTENDANCE_MANDATE_REQUIRED": "Zastoupení vyžaduje ověřenou plnou moc pro toto hlasování.",
+      "ATTENDANCE_ALREADY_RECORDED": "Vlastník už je zapsán (možná z jiného zařízení). Seznam jsme obnovili.",
+      "ATTENDANCE_NOT_FOUND": "Zápis nebyl nalezen.",
+      "ATTENDANCE_HAS_BALLOT": "Vlastník už má zapsaný hlas — zápis účasti nelze zrušit.",
+      "MEETING_RSVP_NOT_ELIGIBLE": "Odpovědět mohou jen vlastníci, kterých se shromáždění týká.",
+      "MEETING_RSVP_CLOSED": "Shromáždění už začalo — odpověď nelze změnit.",
+      "MEETING_RSVP_TOKEN_INVALID": "Odkaz není platný.",
+      "MEETING_RSVP_TOKEN_EXPIRED": "Platnost odkazu vypršela.",
+      "MEETING_NOT_MEETING_VOTING": "Toto není hlasování na shromáždění.",
+      "MEETING_NOT_ANNOUNCED": "Shromáždění nejdříve oznamte vlastníkům.",
+      "MEETING_ALREADY_ANNOUNCED": "Shromáždění už je oznámeno.",
+      "MEETING_VOTING_NOT_ACTIVE": "Hlasování musí být vyhlášeno.",
+      "MEETING_IN_PAST": "Shromáždění už začalo.",
+      "MEETING_PLACE_REQUIRED": "Zadejte, kde se shromáždění koná.",
+      "MEETING_NOTICE_TOO_SHORT": "Nový termín nesplňuje lhůtu pro oznámení.",
+      "MEETING_EXPORT_UNAVAILABLE": "Export prezenční listiny je dostupný jen pro společenství vlastníků jednotek."
+    }
   }
 }

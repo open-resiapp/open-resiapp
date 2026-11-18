@@ -2,6 +2,7 @@ import "server-only";
 import path from "path";
 import { mkdir, readFile, writeFile, stat, unlink } from "fs/promises";
 import { getUploadsDir } from "@/lib/uploads";
+import { assertSignableKey } from "@/lib/storage-keys";
 
 /**
  * Object storage abstraction.
@@ -165,7 +166,8 @@ function createLocalDriver(): StorageDriver {
       }
     },
 
-    async signedUrl() {
+    async signedUrl(key) {
+      assertSignableKey(key);
       // Local disk can't sign — caller must proxy through an auth-gated route.
       return null;
     },
@@ -280,6 +282,7 @@ function createS3Driver(): StorageDriver {
 
     async signedUrl(key, expiresInSeconds = 300) {
       assertSafeKey(key);
+      assertSignableKey(key);
       const { GetObjectCommand } = await import("@aws-sdk/client-s3");
       const { getSignedUrl } = await import("@aws-sdk/s3-request-presigner");
       const c = await client();

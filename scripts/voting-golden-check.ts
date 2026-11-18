@@ -20,6 +20,12 @@ import {
   computeBallotHash,
   computeItemAuditHash,
 } from "@modules/voting/src/engine";
+import {
+  escalateRepeatedQuorum,
+  getAvailableQuorumTypes,
+} from "@modules/voting/src/rules";
+import { validateNotice } from "@modules/voting/src/workflow/notice";
+import { checkTransition } from "@modules/voting/src/workflow/transitions";
 import type {
   Country,
   QuorumType,
@@ -240,6 +246,100 @@ console.log("hash parity with migration SQL");
     "recordedAt uses millisecond ISO (matches to_char MS)",
     recordedAt.toISOString() === "2026-06-09T10:20:30.123Z"
   );
+}
+
+// ── (4) legal fixes 2026-11-18: quorum types, escalation, notice, transitions ──
+console.log("legal fixes 2026-11-18");
+{
+  // four_fifths_all (SK §14b ods. 6): 8/10 passes, 7/10 fails.
+  const at = (n: number) =>
+    calculateResults(
+      [vote("A", "za", { unitShareNumerator: n, unitShareDenominator: 10 })],
+      "weighted_by_share",
+      "four_fifths_all",
+      1,
+      { country: "sk" }
+    ).passed;
+  check("four_fifths_all passes at 80%", at(8) === true);
+  check("four_fifths_all fails at 70%", at(7) === false);
+
+  // Unanimity is robust to float summation order (0.1 + 0.2 + 0.7 vs total 1).
+  const unanimous = calculateResults(
+    [
+      vote("A", "za", { unitShareNumerator: 1, unitShareDenominator: 10 }),
+      vote("B", "za", { unitShareNumerator: 2, unitShareDenominator: 10 }),
+      vote("C", "za", { unitShareNumerator: 7, unitShareDenominator: 10 }),
+    ],
+    "weighted_by_share",
+    "all_unanimous",
+    0.7 + 0.2 + 0.1,
+    { country: "sk" }
+  );
+  check("all_unanimous passes when every share votes za", unanimous.passed === true);
+
+  const skWritten = getAvailableQuorumTypes("sk", "written");
+  check(
+    "SK written offers exactly simple_present, simple_all, two_thirds_all, all_unanimous",
+    JSON.stringify(skWritten) ===
+      JSON.stringify(["simple_present", "simple_all", "two_thirds_all", "all_unanimous"])
+  );
+  const czWritten = getAvailableQuorumTypes("cz", "written");
+  check(
+    "CZ written unchanged (no simple_present)",
+    JSON.stringify(czWritten) === JSON.stringify(["simple_all", "two_thirds_all", "all_unanimous"])
+  );
+
+  const esc = (q: QuorumType) => {
+    const r = escalateRepeatedQuorum("sk", q);
+    return r.ok ? r.quorumType : r.code;
+  };
+  check("§14b(6): simple_all → two_thirds_all", esc("simple_all") === "two_thirds_all");
+  check("§14b(6): two_thirds_all → four_fifths_all", esc("two_thirds_all") === "four_fifths_all");
+  check("§14b(6): simple_present → simple_all", esc("simple_present") === "simple_all");
+  check("§14b(6): unanimity not applicable", esc("all_unanimous") === "REPEAT_ESCALATION_NOT_APPLICABLE");
+  const cz = escalateRepeatedQuorum("cz", "simple_all");
+  check("CZ has no escalation", !cz.ok && cz.code === "REPEAT_ESCALATION_UNSUPPORTED");
+
+  // Notice D ⇒ start ≥ D+8 (civil days, Europe/Bratislava).
+  const tz = "Europe/Bratislava";
+  const d = new Date("2026-11-18T10:00:00Z");
+  const ok = validateNotice({
+    country: "sk", announcedAt: d, timeZone: tz,
+    startsAt: new Date("2026-11-26T08:00:00Z"), endsAt: new Date("2026-12-10T08:00:00Z"),
+  });
+  const short = validateNotice({
+    country: "sk", announcedAt: d, timeZone: tz,
+    startsAt: new Date("2026-11-25T20:00:00Z"), endsAt: new Date("2026-12-10T08:00:00Z"),
+  });
+  check("notice: D+8 accepted", ok === null);
+  check(
+    "notice: D+7 rejected with minDate",
+    short?.code === "NOTICE_LEAD_TIME_TOO_SHORT" && short.minDate === "2026-11-26"
+  );
+  const czNotice = validateNotice({
+    country: "cz", announcedAt: d, timeZone: "Europe/Prague",
+    startsAt: d, endsAt: new Date("2026-12-10T08:00:00Z"),
+  });
+  check("notice: CZ asserts no lead time", czNotice === null);
+
+  // State machine.
+  const st = (status: "draft" | "active" | "closed", published = false) => ({
+    status, resultPublishedAt: published ? new Date() : null,
+  });
+  const code = (r: ReturnType<typeof checkTransition>) => (r.ok ? `ok:${r.to}` : r.code);
+  check("draft → close not allowed", code(checkTransition(st("draft"), "close")) === "TRANSITION_NOT_ALLOWED");
+  check("active → announce not allowed", code(checkTransition(st("active"), "announce")) === "TRANSITION_NOT_ALLOWED");
+  check("reopen without note", code(checkTransition(st("closed"), "reopen", { note: "short" })) === "REOPEN_NOTE_REQUIRED");
+  check(
+    "reopen with note",
+    code(checkTransition(st("closed"), "reopen", { note: "Doplnenie listinných hlasov" })) === "ok:active"
+  );
+  check(
+    "reopen after publication refused",
+    code(checkTransition(st("closed", true), "reopen", { note: "Doplnenie listinných hlasov" })) ===
+      "RESULT_ALREADY_PUBLISHED"
+  );
+  check("publish only once", code(checkTransition(st("closed", true), "publish")) === "RESULT_ALREADY_PUBLISHED");
 }
 
 if (failures > 0) {

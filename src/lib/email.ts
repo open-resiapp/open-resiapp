@@ -600,6 +600,148 @@ export async function sendSettlementPublishedNotification(params: {
   }
 }
 
+/**
+ * BYT-20261118-006: reminder before a reading round's deadline (odpočty
+ * meračov / osoby v byte). Strings from `ReadingRounds.email` in
+ * messages/{locale}.json. Returns false when nothing was sent.
+ */
+export async function sendReadingReminder(params: {
+  recipientEmail: string;
+  recipientName: string;
+  buildingName: string;
+  year: number;
+  deadline: Date;
+  url: string;
+  locale?: string;
+}): Promise<boolean> {
+  const transporter = getTransporter();
+  if (!transporter) {
+    console.warn("[email] SMTP not configured — skipping reading reminder");
+    return false;
+  }
+
+  const locale = resolveLocale(params.locale);
+  const tCommon = await getTranslations({ locale, namespace: "Email.common" });
+  const t = await getTranslations({ locale, namespace: "ReadingRounds.email" });
+  const deadline = params.deadline.toLocaleDateString(bcp47(locale), {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+    timeZone: "UTC",
+  });
+  const building = escapeHtml(params.buildingName);
+
+  const html = `
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+      <h2 style="color: #1d4ed8;">${t("heading", { year: params.year })}</h2>
+      <p>${tCommon("greeting", { name: escapeHtml(params.recipientName) })}</p>
+      <p>${t("intro", { building, year: params.year, deadline })}</p>
+      <div style="margin: 24px 0; text-align: center;">
+        <a href="${params.url}"
+           style="display: inline-block; padding: 12px 32px; background-color: #2563eb; color: #ffffff; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 16px;">
+          ${t("button")}
+        </a>
+      </div>
+      <p style="color: #6b7280; font-size: 14px;">${t("hint")}</p>
+    </div>
+  `;
+
+  try {
+    await transporter.sendMail({
+      from: emailFrom,
+      to: params.recipientEmail,
+      subject: t("subject", { year: params.year, deadline }),
+      html,
+    });
+    return true;
+  } catch (error) {
+    console.error("[email] Failed to send reading reminder:", error);
+    return false;
+  }
+}
+
+/**
+ * BYT-20261118-005 Phase D: the board sends one document to an owner. The
+ * document is attached when it fits the size cap, otherwise the e-mail
+ * carries a login-gated link (`linkUrl`, proxied + access-logged download).
+ * Caller has already checked the recipient may see the document — this
+ * function only renders and sends. Returns false when nothing was sent.
+ */
+export async function sendDocumentToOwner(params: {
+  recipientEmail: string;
+  recipientName: string;
+  documentName: string;
+  buildingName?: string | null;
+  senderName?: string | null;
+  message?: string | null;
+  attachment?: { filename: string; content: Buffer; contentType: string } | null;
+  linkUrl?: string | null;
+  locale?: string;
+}): Promise<boolean> {
+  const transporter = getTransporter();
+  if (!transporter) {
+    console.warn("[email] SMTP not configured — skipping document send");
+    return false;
+  }
+
+  const locale = resolveLocale(params.locale);
+  const tCommon = await getTranslations({ locale, namespace: "Email.common" });
+  const t = await getTranslations({ locale, namespace: "Email.documentSent" });
+  const header = await brandingEmailHeader();
+
+  const doc = escapeHtml(params.documentName);
+  const building = escapeHtml(params.buildingName || "");
+  const sender = escapeHtml(params.senderName || "");
+  const message = params.message?.trim()
+    ? `<blockquote style="margin: 16px 0; padding: 12px 16px; border-left: 4px solid #2563eb; background: #f3f4f6; white-space: pre-wrap;">${escapeHtml(params.message.trim())}</blockquote>`
+    : "";
+  const body = params.attachment
+    ? `<p>${t("attachedHint", { document: doc })}</p>`
+    : params.linkUrl
+      ? `<div style="margin: 24px 0; text-align: center;">
+           <a href="${escapeHtml(params.linkUrl)}"
+              style="display: inline-block; padding: 12px 32px; background-color: #2563eb; color: #ffffff; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 16px;">
+             ${t("button")}
+           </a>
+         </div>
+         <p style="color: #6b7280; font-size: 14px;">${t("linkHint")}</p>`
+      : "";
+
+  const html = `
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+      ${header}
+      <h2 style="color: #1d4ed8;">${t("heading", { document: doc })}</h2>
+      <p>${tCommon("greeting", { name: escapeHtml(params.recipientName) })}</p>
+      <p>${t("intro", { document: doc, building, sender })}</p>
+      ${message}
+      ${body}
+      <p style="color: #6b7280; font-size: 14px;">${t("footer")}</p>
+    </div>
+  `;
+
+  try {
+    await transporter.sendMail({
+      from: emailFrom,
+      to: params.recipientEmail,
+      subject: t("subject", { document: params.documentName }),
+      html,
+      attachments: params.attachment
+        ? [
+            {
+              filename: params.attachment.filename,
+              content: params.attachment.content,
+              contentType: params.attachment.contentType,
+            },
+          ]
+        : undefined,
+    });
+    return true;
+  } catch (error) {
+    console.error("[email] Failed to send document:", error);
+    return false;
+  }
+}
+
 function escapeHtml(s: string): string {
   return s
     .replace(/&/g, "&amp;")
@@ -721,4 +863,107 @@ export async function sendBallotConfirmation(params: {
     console.error("[email] Failed to send ballot confirmation:", error);
     return false;
   }
+}
+
+// ── Owners' meeting (BYT-20261118-001) ──────────────────
+// Invitation, day-before reminder and change / cancellation. Copy lives in
+// MeetingAttendance.email.*. The answer links open a page with a single
+// "Potvrdiť" tap — opening a link never writes (mail scanners prefetch).
+// The app makes no claim that this e-mail is the statutory §14a ods. 2
+// notice (spec L1).
+
+export interface MeetingEmailParams {
+  recipientEmail: string;
+  recipientName: string;
+  meetingTitle: string;
+  meetingDate: Date;
+  meetingPlace: string | null;
+  timeZone: string;
+  detailUrl: string;
+  /** Answer links (yes / no / maybe); omitted for a cancellation. */
+  answerUrls?: { yes: string; no: string; maybe: string };
+  locale?: string;
+}
+
+async function sendMeetingEmail(
+  variant: "invitation" | "reminderYes" | "reminderOpen" | "change" | "cancel",
+  params: MeetingEmailParams
+): Promise<boolean> {
+  const transporter = getTransporter();
+  if (!transporter) {
+    console.warn(`[email] SMTP not configured — skipping meeting ${variant}`);
+    return false;
+  }
+  const locale = resolveLocale(params.locale);
+  const tCommon = await getTranslations({ locale, namespace: "Email.common" });
+  const t = await getTranslations({ locale, namespace: "MeetingAttendance.email" });
+
+  const dateLabel = params.meetingDate.toLocaleString(bcp47(locale), {
+    dateStyle: "full",
+    timeStyle: "short",
+    timeZone: params.timeZone,
+  });
+  const placeBlock = params.meetingPlace
+    ? `<p style="margin: 4px 0;"><strong>${escapeHtml(t("whereLabel"))}:</strong> ${escapeHtml(params.meetingPlace)}</p>`
+    : "";
+  const button = (href: string, label: string, primary: boolean) =>
+    `<a href="${escapeHtml(href)}" style="display: inline-block; margin: 4px; padding: 12px 24px; background-color: ${
+      primary ? "#2563eb" : "#ffffff"
+    }; color: ${primary ? "#ffffff" : "#1d4ed8"}; border: 2px solid #2563eb; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 16px;">${escapeHtml(label)}</a>`;
+  const answers = params.answerUrls
+    ? `<p style="margin-top: 24px; font-weight: bold;">${escapeHtml(t("answerQuestion"))}</p>
+       <div style="margin: 8px 0 24px; text-align: center;">
+         ${button(params.answerUrls.yes, t("answerYes"), true)}
+         ${button(params.answerUrls.no, t("answerNo"), false)}
+         ${button(params.answerUrls.maybe, t("answerMaybe"), false)}
+       </div>
+       <p style="color: #6b7280; font-size: 14px;">${escapeHtml(t("answerNote"))}</p>`
+    : "";
+
+  const html = `
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+      ${await brandingEmailHeader()}
+      <h2 style="color: #1d4ed8;">${escapeHtml(t(`${variant}.heading`))}</h2>
+      <p>${escapeHtml(tCommon("greeting", { name: params.recipientName }))}</p>
+      <p>${escapeHtml(t(`${variant}.intro`))}</p>
+      <div style="margin: 16px 0; padding: 16px; background-color: #f3f4f6; border-radius: 8px;">
+        <p style="margin: 4px 0; font-weight: bold; font-size: 18px; color: #111827;">${escapeHtml(params.meetingTitle)}</p>
+        <p style="margin: 4px 0;"><strong>${escapeHtml(t("whenLabel"))}:</strong> ${escapeHtml(dateLabel)}</p>
+        ${placeBlock}
+      </div>
+      ${answers}
+      <p style="margin-top: 16px;"><a href="${escapeHtml(params.detailUrl)}">${escapeHtml(t("detailLink"))}</a></p>
+      <p style="color: #6b7280; font-size: 12px; margin-top: 32px; border-top: 1px solid #e5e7eb; padding-top: 16px;">${escapeHtml(t("footer"))}</p>
+    </div>
+  `;
+
+  try {
+    await transporter.sendMail({
+      from: emailFrom,
+      to: params.recipientEmail,
+      subject: t(`${variant}.subject`, { title: params.meetingTitle }),
+      html,
+    });
+    return true;
+  } catch (error) {
+    console.error(`[email] Failed to send meeting ${variant}:`, error);
+    return false;
+  }
+}
+
+export function sendMeetingInvitation(params: MeetingEmailParams): Promise<boolean> {
+  return sendMeetingEmail("invitation", params);
+}
+
+/** `answered` = the owner said yes / maybe; otherwise they have not answered yet. */
+export function sendMeetingReminder(
+  params: MeetingEmailParams & { answered: boolean }
+): Promise<boolean> {
+  return sendMeetingEmail(params.answered ? "reminderYes" : "reminderOpen", params);
+}
+
+export function sendMeetingChange(
+  params: MeetingEmailParams & { cancelled: boolean }
+): Promise<boolean> {
+  return sendMeetingEmail(params.cancelled ? "cancel" : "change", params);
 }

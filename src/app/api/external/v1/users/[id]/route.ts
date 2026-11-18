@@ -4,6 +4,9 @@ import { and, eq, isNull, sql } from "drizzle-orm";
 import { db } from "@/db";
 import { users, memberships, entities } from "@/db/schema";
 import { withExternalAuth } from "@/lib/external-auth";
+import { recordEntityAudit } from "@/lib/entity-audit";
+import { endMembershipsTx } from "@/lib/ownership.server";
+import { todayIso } from "@/lib/ownership";
 import type { ValidatedApiKey } from "@/lib/api-keys";
 
 async function handleGet(
@@ -83,9 +86,15 @@ async function handlePatch(
     await db.update(users).set(updateData).where(eq(users.id, id));
   }
 
-  // Phase 9.1d: memberships are authoritative. Replace the user's
-  // membership set with the new flat list.
+  // BYT-20261118-007: diff-based. The old delete-all + re-insert wiped
+  // ownership history and reset every co-owner share to 1/1. Now: units
+  // kept keep their row (share, weight, LV facts untouched); units dropped
+  // are ENDED (valid_to = today, end_reason 'correction', audited); new units
+  // get a 1/1 membership (the API carries no share — set it in the app).
   if (flatIds !== undefined) {
+    if (!Array.isArray(flatIds) || flatIds.some((f: unknown) => typeof f !== "string")) {
+      return NextResponse.json({ error: "flatIds must be an array of ids" }, { status: 400 });
+    }
     const [userRow] = await db
       .select({ role: users.role })
       .from(users)
@@ -95,10 +104,33 @@ async function handlePatch(
       | typeof memberships.$inferInsert.role
       | undefined;
 
-    await db.delete(memberships).where(eq(memberships.userId, id));
-    if (flatIds.length > 0 && userRole) {
+    const current = await db
+      .select({ id: memberships.id, entityId: memberships.entityId })
+      .from(memberships)
+      .where(and(eq(memberships.userId, id), isNull(memberships.validTo)));
+    const want = new Set<string>(flatIds as string[]);
+    const have = new Set(current.map((m) => m.entityId));
+    const toEnd = current.filter((m) => !want.has(m.entityId));
+    const toAdd = [...want].filter((eid) => !have.has(eid));
+
+    const today = todayIso();
+    const ended = await endMembershipsTx(db, toEnd.map((m) => m.id), {
+      date: today,
+      reason: "correction",
+      actorUserId: null,
+    });
+    for (const m of toEnd.filter((x) => ended.includes(x.id))) {
+      recordEntityAudit({
+        action: "membership.end",
+        actorUserId: null,
+        entityId: m.entityId,
+        before: { membershipId: m.id, userId: id },
+        after: { validTo: today, endReason: "correction", source: "external_api" },
+      });
+    }
+    if (toAdd.length > 0 && userRole) {
       await db.insert(memberships).values(
-        flatIds.map((fid: string) => ({
+        toAdd.map((fid) => ({
           userId: id,
           entityId: fid,
           role: userRole,

@@ -23,7 +23,7 @@ export default function AnnualTasksHub({ predpisStatus }: { predpisStatus?: Annu
     status?: AnnualTaskStatus;
   }[] = [
     { key: "predpis", href: "/accounting/predpis#mesacne-platby", icon: "calendar", status: predpisStatus },
-    { key: "meters", href: "/accounting/meters", icon: "edit" },
+    { key: "meters", href: "/accounting/readings", icon: "edit" },
     { key: "settlement", href: "/accounting/vyuctovanie", icon: "file" },
     { key: "zavierka", href: "/accounting/journal#zavierka", icon: "check" },
   ];

@@ -129,8 +129,15 @@ export function calculateResults(
         totalPossibleWeight > 0 && zaWeight >= (totalPossibleWeight * 2) / 3;
       passed = quorumReached;
       break;
+    case "four_fifths_all":
+      // SK §14b ods. 6: repeat of a §14b ods. 2 matter within one year.
+      quorumReached =
+        totalPossibleWeight > 0 && zaWeight >= (totalPossibleWeight * 4) / 5;
+      passed = quorumReached;
+      break;
     case "all_unanimous":
-      quorumReached = totalPossibleWeight > 0 && zaWeight === totalPossibleWeight;
+      quorumReached =
+        totalPossibleWeight > 0 && isWholeWeight(zaWeight, totalPossibleWeight);
       passed = quorumReached;
       break;
   }
@@ -149,6 +156,15 @@ export function calculateResults(
     totalPossibleWeight,
     unitBreakdowns,
   };
+}
+
+/**
+ * Unanimity check tolerant to float summation order: the za weight and the
+ * total possible weight are summed over different row orders, so exact `===`
+ * can miss by one ulp (e.g. 0.1 + 0.2 vs 0.2 + 0.1 shares).
+ */
+function isWholeWeight(zaWeight: number, totalPossibleWeight: number): boolean {
+  return zaWeight >= totalPossibleWeight - 1e-9 * Math.max(1, totalPossibleWeight);
 }
 
 // ── Member-scoped resolution (Phase 3b) ──────────────────
@@ -231,9 +247,15 @@ function calculateMemberScopedResults(
         totalPossibleWeight > 0 && zaWeight >= (totalPossibleWeight * 2) / 3;
       passed = quorumReached;
       break;
+    case "four_fifths_all":
+      // SK §14b ods. 6: repeat of a §14b ods. 2 matter within one year.
+      quorumReached =
+        totalPossibleWeight > 0 && zaWeight >= (totalPossibleWeight * 4) / 5;
+      passed = quorumReached;
+      break;
     case "all_unanimous":
       quorumReached =
-        totalPossibleWeight > 0 && zaWeight === totalPossibleWeight;
+        totalPossibleWeight > 0 && isWholeWeight(zaWeight, totalPossibleWeight);
       passed = quorumReached;
       break;
   }

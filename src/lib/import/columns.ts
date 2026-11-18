@@ -185,6 +185,25 @@ const UNIT_AND_OWNER: ColumnDef[] = [
     excelFormat: "text",
     comment: "Menovateľ podielu vlastníka na BYTE. Sole owner = 1.",
   },
+  // BYT-20261118-003: LV facts for the owner-registry checks. Filled by the
+  // LV paste/PDF parser; optional for manual and CSV rows.
+  {
+    key: "lv_ordinal",
+    label: "lv_ordinal",
+    required: false,
+    scope: "row",
+    excelFormat: "int",
+    comment: "Poradové číslo vlastníka z LV (časť B). Manželia v BSM majú rovnaké. Voliteľné.",
+  },
+  {
+    key: "ownership_form",
+    label: "ownership_form",
+    required: false,
+    scope: "row",
+    excelFormat: "enum",
+    enumOptions: ["bsm"],
+    comment: "bsm = bezpodielové spoluvlastníctvo manželov (z LV). Inak prázdne.",
+  },
 ];
 
 export function columnsForStructure(s: StructureVariant): ColumnDef[] {

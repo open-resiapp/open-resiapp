@@ -85,7 +85,7 @@ smartphones and are afraid of breaking something.
 | Silence / non-voter (Slovakia) | Not counted as against. |
 | Silence / non-voter (Czech Republic) | Counted as against after the statutory per-rollam window. |
 | Unit-level resolution | Majority of shares wins. No majority, including ties, resolves to `abstain`. |
-| Voting status `draft` → `active` → `closed` | Terminal at closed unless explicitly reopened with a justification note. |
+| Voting status `draft` → `active` → `closed` | Terminal at closed unless reopened (before result publication) with a justification note. |
 | Status `cancelled` / `archived` | Terminal disposition of a voting that will not produce a result. |
 
 ## Scope rule
@@ -108,9 +108,14 @@ smartphones and are afraid of breaking something.
   window expires, no resend exists: the voter starts over.
 - Create voting — cancellable while in `draft`. Once `active`, only
   archival or cancellation (with retained record), never deletion.
-- Close voting — reopenable, but only with a written justification note
-  that becomes part of the audit record. Re-tallying without reopening
-  is not permitted.
+- Close voting — reopenable ONLY while the result is not yet published
+  (§14a ods. 9), only to correct the count or add paper ballots, and only
+  with a written justification note (≥ 10 characters) that becomes part of
+  the append-only voting event log. Reopening never moves `endsAt` and
+  never re-sends the "new voting" notification. Once the result is
+  published, reopen is refused — a correction needs a new voting (with the
+  §14b ods. 6 repeated-vote majority). Re-tallying without reopening is
+  not permitted. (DECIDED, Filip 2026-11-18; BYT-20261118-002.)
 - Paper vote with photo — photo is correctable when a dispute is logged.
   The choice itself is not.
 - Vote dispute — flagged on the vote row with a note. Resolved by photo

@@ -4,6 +4,7 @@ import bcrypt from "bcrypt";
 import { and, eq, isNotNull } from "drizzle-orm";
 import { db } from "@/db";
 import { users } from "@/db/schema";
+import { recordLastLogin } from "@/lib/last-login.server";
 import type { UserRole, UserStatus } from "@/types";
 
 declare module "next-auth" {
@@ -159,7 +160,11 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   },
   events: {
     async signIn({ user }) {
-      if (!user?.id || !user.email) return;
+      if (!user?.id) return;
+      // BYT-20261118-003: last sign-in for the board's owner queue. One-row
+      // UPDATE, never blocks the login (failure is only logged).
+      await recordLastLogin(user.id);
+      if (!user.email) return;
       const { dispatchHook } = await import("@/lib/modules/dispatch");
       await dispatchHook("onUserLogin", {
         id: user.id,

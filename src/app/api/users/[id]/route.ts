@@ -3,13 +3,14 @@ import { auth } from "@/lib/auth";
 import { db } from "@/db";
 import {
   users,
-  posts,
-  documents,
   memberships,
   entities,
 } from "@/db/schema";
-import { ballots, mandates, votings } from "@modules/voting/src/db/schema";
-import { and, eq, inArray, or, sql } from "drizzle-orm";
+import { and, eq, inArray, isNull, sql } from "drizzle-orm";
+import { endMembershipsTx } from "@/lib/ownership.server";
+import { todayIso } from "@/lib/ownership";
+import { recordEntityAudit } from "@/lib/entity-audit";
+import { hardDeleteUser, planHardDelete } from "@/lib/user-merge.server";
 import { listUserFlats } from "@/lib/legacy-compat";
 import { hasPermission } from "@/lib/permissions";
 import {
@@ -216,14 +217,17 @@ export async function PATCH(
 
     // Drop existing housing-unit memberships for this user that are
     // not in the new set; insert any missing.
+    // BYT-20261118-007: only CURRENT memberships take part; ended periods
+    // are history and never touched here.
     const existingMemberships = await db
       .select({
+        id: memberships.id,
         entityId: memberships.entityId,
         num: memberships.ownerUnitShareNumerator,
         den: memberships.ownerUnitShareDenominator,
       })
       .from(memberships)
-      .where(eq(memberships.userId, id));
+      .where(and(eq(memberships.userId, id), isNull(memberships.validTo)));
 
     const existingByEntity = new Map(
       existingMemberships.map((m) => [m.entityId, m])
@@ -255,14 +259,27 @@ export async function PATCH(
     }
 
     if (toRemove.length > 0) {
-      await db
-        .delete(memberships)
-        .where(
-          and(
-            eq(memberships.userId, id),
-            inArray(memberships.entityId, toRemove)
-          )
-        );
+      // BYT-20261118-007: a unit dropped from the list ENDS the ownership
+      // (valid_to = today, end_reason 'correction'); the row and its history
+      // stay. A sale goes through the transfer flow instead.
+      const removeIds = existingMemberships
+        .filter((m) => toRemove.includes(m.entityId))
+        .map((m) => m.id);
+      const today = todayIso();
+      const ended = await endMembershipsTx(db, removeIds, {
+        date: today,
+        reason: "correction",
+        actorUserId: session.user.id,
+      });
+      for (const m of existingMemberships.filter((x) => ended.includes(x.id))) {
+        recordEntityAudit({
+          action: "membership.end",
+          actorUserId: session.user.id,
+          entityId: m.entityId,
+          before: { membershipId: m.id, userId: id, share: `${m.num}/${m.den}` },
+          after: { validTo: today, endReason: "correction", source: "users.patch" },
+        });
+      }
     }
 
     if (toAdd.length > 0 && resolvedRole) {
@@ -305,7 +322,11 @@ export async function PATCH(
           weight,
         })
         .where(
-          and(eq(memberships.userId, id), eq(memberships.entityId, eid))
+          and(
+            eq(memberships.userId, id),
+            eq(memberships.entityId, eid),
+            isNull(memberships.validTo)
+          )
         );
     }
 
@@ -395,58 +416,26 @@ export async function DELETE(
     );
   }
 
-  // Check user exists
-  const [user] = await db
-    .select({ id: users.id })
-    .from(users)
-    .where(eq(users.id, id))
-    .limit(1);
-
-  if (!user) {
-    return NextResponse.json({ error: "Používateľ nenájdený" }, { status: 404 });
-  }
-
-  // Check for related records
-  const [hasVotes] = await db
-    .select({ id: ballots.id })
-    .from(ballots)
-    .where(eq(ballots.ownerId, id))
-    .limit(1);
-
-  const [hasPosts] = await db
-    .select({ id: posts.id })
-    .from(posts)
-    .where(eq(posts.authorId, id))
-    .limit(1);
-
-  const [hasDocuments] = await db
-    .select({ id: documents.id })
-    .from(documents)
-    .where(eq(documents.uploadedById, id))
-    .limit(1);
-
-  const [hasMandates] = await db
-    .select({ id: mandates.id })
-    .from(mandates)
-    .where(or(eq(mandates.fromOwnerId, id), eq(mandates.toOwnerId, id)))
-    .limit(1);
-
-  const [hasVotings] = await db
-    .select({ id: votings.id })
-    .from(votings)
-    .where(or(eq(votings.createdById, id), eq(votings.voteCounterId, id)))
-    .limit(1);
-
-  if (hasVotes || hasPosts || hasDocuments || hasMandates || hasVotings) {
+  // BYT-20261118-007: driven by the user-FK registry (planHardDelete). Any
+  // retained history → 409 user_has_history with the plan (counts), never a
+  // 500 and never a cascade over history. The caller confirms the plan hash
+  // it showed (`?planHash=`); without it (or stale) → 409 plan_stale + plan.
+  const planHash = _request.nextUrl.searchParams.get("planHash") ?? "";
+  if (!planHash) {
+    const planned = await planHardDelete(id, session.user.id);
+    if (!planned.ok) {
+      return NextResponse.json({ error: planned.error }, { status: planned.error === "not_found" ? 404 : 409 });
+    }
+    const blocked = planned.plan.blockers.length > 0;
     return NextResponse.json(
-      { error: "Používateľ má súvisiace záznamy. Použite deaktiváciu namiesto zmazania." },
+      { error: blocked ? "user_has_history" : "plan_stale", plan: planned.plan },
       { status: 409 }
     );
   }
-
-  // Phase 9.1d: memberships have ON DELETE CASCADE on user_id, so
-  // deleting the user removes all of them automatically.
-  await db.delete(users).where(eq(users.id, id));
-
+  const res = await hardDeleteUser(id, session.user.id, planHash);
+  if (!res.ok) {
+    const status = res.error === "not_found" ? 404 : res.error === "failed" ? 500 : 409;
+    return NextResponse.json({ error: res.error, plan: res.plan }, { status });
+  }
   return NextResponse.json({ success: true });
 }

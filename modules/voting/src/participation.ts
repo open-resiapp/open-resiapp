@@ -36,6 +36,8 @@ export interface ParticipationRow {
   unitShareDenominator: number | null;
   ownerUnitShareNumerator: number;
   ownerUnitShareDenominator: number;
+  area?: number | null;
+  membershipWeight?: number;
 }
 
 export interface VotingParticipation {
@@ -46,6 +48,8 @@ export interface VotingParticipation {
   eligibleWeight: number;
   votedWeight: number;
   notVoted: ParticipationRow[];
+  /** Every eligible (unit, owner), voted or not — board management view (BYT-20261118-002 §5). */
+  eligible: ParticipationRow[];
 }
 
 export async function getVotingParticipation(
@@ -104,6 +108,7 @@ export async function getVotingParticipation(
   let votedWeight = 0;
   let votedCount = 0;
   const notVoted: ParticipationRow[] = [];
+  const all: ParticipationRow[] = [];
 
   for (const r of eligible) {
     const weight = unitScoped
@@ -119,12 +124,7 @@ export async function getVotingParticipation(
       : computeMemberWeight({ membershipWeight: r.membershipWeight }, votingMethod);
     eligibleWeight += weight;
 
-    if (votedKeys.has(`${r.unitId}:${r.ownerId}`)) {
-      votedCount += 1;
-      votedWeight += weight;
-      continue;
-    }
-    notVoted.push({
+    const row: ParticipationRow = {
       unitId: r.unitId,
       unitLabel: r.flatNumber ?? r.unitName,
       ownerId: r.ownerId,
@@ -134,12 +134,22 @@ export async function getVotingParticipation(
       unitShareDenominator: r.shareDenominator,
       ownerUnitShareNumerator: r.ownerUnitShareNumerator,
       ownerUnitShareDenominator: r.ownerUnitShareDenominator,
-    });
+      area: r.area,
+      membershipWeight: r.membershipWeight,
+    };
+    all.push(row);
+    if (votedKeys.has(`${r.unitId}:${r.ownerId}`)) {
+      votedCount += 1;
+      votedWeight += weight;
+      continue;
+    }
+    notVoted.push(row);
   }
 
-  notVoted.sort((a, b) =>
-    a.unitLabel.localeCompare(b.unitLabel, undefined, { numeric: true })
-  );
+  const byLabel = (a: ParticipationRow, b: ParticipationRow) =>
+    a.unitLabel.localeCompare(b.unitLabel, undefined, { numeric: true });
+  notVoted.sort(byLabel);
+  all.sort(byLabel);
 
   return {
     votingId,
@@ -149,5 +159,15 @@ export async function getVotingParticipation(
     eligibleWeight,
     votedWeight,
     notVoted,
+    eligible: all,
   };
+}
+
+/**
+ * Eligible voters of a voting — one row per (unit, owner), same scope rules
+ * as getVotingParticipation (spec §4 "all ballot lists" source). Board only.
+ */
+export async function listEligibleVoters(votingId: string): Promise<ParticipationRow[]> {
+  const p = await getVotingParticipation(votingId);
+  return p?.eligible ?? [];
 }

@@ -7,10 +7,22 @@ import { useEffect, useRef, useState } from "react";
 import { hasPermission } from "@/lib/permissions";
 import type { UserRole, QuorumType } from "@/types";
 import {
+  escalateRepeatedQuorum,
   getAvailableQuorumTypes,
+  getRepeatableQuorumTypes,
   getVotingRules,
   type Country,
 } from "@modules/voting/src/rules";
+import { civilDate, minStartDate } from "@modules/voting/src/workflow/notice";
+import { timeZoneForCountry } from "@/lib/time-zone";
+
+// Server codes the wizard renders from VotingWorkflow.errors.* (BYT-20261118-002).
+const WORKFLOW_ERRORS = new Set([
+  "NOTICE_LEAD_TIME_TOO_SHORT",
+  "NOTICE_START_AFTER_END",
+  "REPEAT_ESCALATION_UNSUPPORTED",
+  "REPEAT_ESCALATION_NOT_APPLICABLE",
+]);
 import {
   Button,
   Card,
@@ -38,6 +50,8 @@ interface ItemDraft {
   description: string;
   quorumType: string;
   confirmQuorum: boolean;
+  /** SK §14b ods. 6: repeats a decision on the same matter made within 12 months. */
+  isRepeat?: boolean;
 }
 
 const DEFAULT_DAYS = 14;
@@ -67,6 +81,8 @@ export default function NovaHlasovaniePage({
   const router = useRouter();
   const t = useTranslations("VotingNew");
   const w = useTranslations("VotingWizard");
+  const wf = useTranslations("VotingWorkflow");
+  const tMeeting = useTranslations("MeetingAttendance");
   const tCommon = useTranslations("Common");
   const format = useFormatter();
 
@@ -86,6 +102,10 @@ export default function NovaHlasovaniePage({
   const [showStart, setShowStart] = useState(false);
   const [showMore, setShowMore] = useState(false);
   const [startsAt, setStartsAt] = useState(() => toLocalInput(new Date()));
+  const [place, setPlace] = useState("");
+  // BYT-20261118-001: announce a meeting voting to owners (event post + RSVP).
+  const [announceMeeting, setAnnounceMeeting] = useState(true);
+  const startTouched = useRef(false);
   const [endsAt, setEndsAt] = useState(() => toLocalInput(defaultEnd("sk")));
   const endTouched = useRef(false);
   const nextKey = useRef(1);
@@ -105,6 +125,10 @@ export default function NovaHlasovaniePage({
 
   const role = (session?.user?.role || "owner") as UserRole;
   const allowedQuorumTypes = getAvailableQuorumTypes(country, votingType);
+  const repeatableQuorumTypes = getRepeatableQuorumTypes(country, votingType);
+  // SK §14a ods. 2: announcing today ⇒ earliest start day (null = no rule, CZ).
+  const tz = timeZoneForCountry(country);
+  const leadMin = minStartDate(country, new Date(), tz);
 
   // Country: single existing fetch (ShellCommunity does not carry it).
   useEffect(() => {
@@ -119,6 +143,19 @@ export default function NovaHlasovaniePage({
   // Country changes the statutory minimum — move the default end date unless
   // the chairman already picked one.
   useEffect(() => {
+    const lead = minStartDate(country, new Date(), timeZoneForCountry(country));
+    if (lead && !startTouched.current) {
+      // SK: the vote cannot start "now" — default to the earliest legal day.
+      const start = new Date(`${lead}T08:00`);
+      setStartsAt(toLocalInput(start));
+      setShowStart(true);
+      if (!endTouched.current) {
+        const end = new Date(start);
+        end.setDate(end.getDate() + DEFAULT_DAYS);
+        setEndsAt(toLocalInput(end));
+      }
+      return;
+    }
     if (!endTouched.current) setEndsAt(toLocalInput(defaultEnd(country)));
   }, [country]);
 
@@ -216,6 +253,9 @@ export default function NovaHlasovaniePage({
   function updateItem(i: number, field: "title" | "description" | "quorumType", value: string) {
     setItems((prev) => prev.map((it, idx) => (idx === i ? { ...it, [field]: value } : it)));
   }
+  function setRepeat(i: number, value: boolean) {
+    setItems((prev) => prev.map((it, idx) => (idx === i ? { ...it, isRepeat: value } : it)));
+  }
 
   function changeVotingType(v: string) {
     setVotingType(v);
@@ -241,11 +281,17 @@ export default function NovaHlasovaniePage({
     setLoading(status);
     setError("");
 
-    const cleanItems = items.map((it) => ({
-      title: it.title.trim(),
-      description: it.description.trim() || null,
-      quorumType: it.quorumType,
-    }));
+    const cleanItems = items.map((it) => {
+      const repeat =
+        it.isRepeat && repeatableQuorumTypes.includes(it.quorumType as QuorumType);
+      return {
+        title: it.title.trim(),
+        description: it.description.trim() || null,
+        quorumType: it.quorumType,
+        // The server derives the escalated quorum (§14b ods. 6).
+        ...(repeat ? { repeatOfQuorumType: it.quorumType } : {}),
+      };
+    });
 
     // "Start = now" unless the chairman picked another start.
     const start = showStart && startsAt ? new Date(startsAt) : new Date();
@@ -257,6 +303,20 @@ export default function NovaHlasovaniePage({
     }
     if (end <= start) {
       setError(w("endBeforeStart"));
+      setLoading(null);
+      return;
+    }
+    if (status === "active" && leadMin && civilDate(start, tz) < leadMin) {
+      setError(
+        wf("errors.NOTICE_LEAD_TIME_TOO_SHORT", {
+          minDate: dateFmt(`${leadMin}T12:00:00`),
+        })
+      );
+      setLoading(null);
+      return;
+    }
+    if (votingType === "meeting" && announceMeeting && !place.trim()) {
+      setError(tMeeting("errors.MEETING_PLACE_REQUIRED"));
       setLoading(null);
       return;
     }
@@ -282,6 +342,8 @@ export default function NovaHlasovaniePage({
           description: "",
           startsAt: start.toISOString(),
           endsAt: end.toISOString(),
+          place: place.trim() || null,
+          announceMeeting: votingType === "meeting" && announceMeeting,
           status,
           votingType,
           initiatedBy,
@@ -293,7 +355,13 @@ export default function NovaHlasovaniePage({
 
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
-        setError(data.error || t("createFailed"));
+        setError(
+          WORKFLOW_ERRORS.has(data.error)
+            ? wf(`errors.${data.error}`, {
+                minDate: data.minDate ? dateFmt(`${data.minDate}T12:00:00`) : "",
+              })
+            : data.error || t("createFailed")
+        );
         setLoading(null);
         return;
       }
@@ -493,6 +561,16 @@ export default function NovaHlasovaniePage({
                       ))}
                     </Select>
                   </Field>
+                  {repeatableQuorumTypes.includes(item.quorumType as QuorumType) && (
+                    <RepeatToggle
+                      checked={Boolean(item.isRepeat)}
+                      onChange={(v) => setRepeat(i, v)}
+                      escalatedLabel={(() => {
+                        const r = escalateRepeatedQuorum(country, item.quorumType as QuorumType);
+                        return r.ok ? w(`quorum.${r.quorumType}.label`) : "";
+                      })()}
+                    />
+                  )}
                 </Card>
               </li>
             ))}
@@ -568,11 +646,23 @@ export default function NovaHlasovaniePage({
               />
             </Field>
             {showStart ? (
-              <Field label={t("startsAtLabel")} required>
+              <Field
+                label={t("startsAtLabel")}
+                hint={
+                  leadMin
+                    ? wf("leadTimeHint", { date: dateFmt(`${leadMin}T12:00:00`) })
+                    : undefined
+                }
+                required
+              >
                 <Input
                   type="datetime-local"
                   value={startsAt}
-                  onChange={(e) => setStartsAt(e.target.value)}
+                  min={leadMin ? `${leadMin}T00:00` : undefined}
+                  onChange={(e) => {
+                    startTouched.current = true;
+                    setStartsAt(e.target.value);
+                  }}
                 />
               </Field>
             ) : (
@@ -591,6 +681,32 @@ export default function NovaHlasovaniePage({
               </p>
             )}
           </div>
+
+          {votingType === "written" && (
+            <Field label={wf("placeLabel")} hint={wf("placeHint")}>
+              <Input value={place} onChange={(e) => setPlace(e.target.value)} maxLength={500} />
+            </Field>
+          )}
+
+          {votingType === "meeting" && (
+            <div className="space-y-3">
+              <Field label={tMeeting("create.placeLabel")} hint={tMeeting("create.placeHint")} required={announceMeeting}>
+                <Input value={place} onChange={(e) => setPlace(e.target.value)} maxLength={255} />
+              </Field>
+              <label className="flex min-h-11 items-start gap-3 text-base text-ui-text">
+                <input
+                  type="checkbox"
+                  checked={announceMeeting}
+                  onChange={(e) => setAnnounceMeeting(e.target.checked)}
+                  className="mt-1 h-5 w-5 shrink-0"
+                />
+                <span>
+                  <span className="block font-medium">{tMeeting("create.announceLabel")}</span>
+                  <span className="block text-ui-text-muted">{tMeeting("create.announceHint")}</span>
+                </span>
+              </label>
+            </div>
+          )}
 
           <div>
             <button
@@ -718,4 +834,35 @@ export default function NovaHlasovaniePage({
 function defaultDaysHint(country: Country): number {
   const min = getVotingRules(country).perRollamMinDays;
   return min ? Math.max(DEFAULT_DAYS, min + 1) : DEFAULT_DAYS;
+}
+
+/** SK §14b ods. 6 — "repeat of a decision made within the last 12 months". */
+function RepeatToggle({
+  checked,
+  onChange,
+  escalatedLabel,
+}: {
+  checked: boolean;
+  onChange: (v: boolean) => void;
+  escalatedLabel: string;
+}) {
+  const wf = useTranslations("VotingWorkflow");
+  return (
+    <div className="space-y-1">
+      <label className="flex min-h-11 cursor-pointer items-start gap-3 text-base text-ui-text">
+        <input
+          type="checkbox"
+          checked={checked}
+          onChange={(e) => onChange(e.target.checked)}
+          className="mt-1 h-5 w-5 shrink-0"
+        />
+        <span>{wf("repeatLabel")}</span>
+      </label>
+      {checked && (
+        <p className="text-base font-medium text-ui-text">
+          {wf("repeatEscalatesTo", { quorum: escalatedLabel })}
+        </p>
+      )}
+    </div>
+  );
 }

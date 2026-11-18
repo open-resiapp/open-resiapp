@@ -6,6 +6,7 @@ import { LinkRow } from "@/components/home/LinkRow";
 import { PageHeader } from "@/components/ui";
 import { getViewer, isViewerGated, listBoardContacts, soft } from "@/lib/home.server";
 import { hasPermission } from "@/lib/permissions";
+import { DomFaultsRow } from "@modules/faults/src/components/DomFaultsRow";
 
 // Dom (BYT-20261117-002 Phase 4) — the owner's "about the building" hub:
 // notices (the unified /board feed), documents, board contacts inline,
@@ -38,8 +39,17 @@ export default async function HousePage() {
             <LinkRow href="/documents" icon="file" label={t("documents")} hint={t("documentsHint")} />
           </li>
         ) : null}
+        <DomFaultsRow viewer={viewer} />
         <li>
           <LinkRow href="/zakony" icon="file" label={t("laws")} hint={t("lawsHint")} />
+        </li>
+        <li>
+          <LinkRow
+            href="/dom/odstavky"
+            icon="alert"
+            label={t("outages")}
+            hint={t("outagesHint")}
+          />
         </li>
       </ul>
 

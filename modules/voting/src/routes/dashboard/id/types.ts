@@ -22,6 +22,39 @@ export interface VotingDetail {
   entranceName: string | null;
   createdBy: { id: string; name: string } | null;
   documentProjectId: string | null;
+  // BYT-20261118-002
+  place?: string | null;
+  announcedAt?: string | null;
+  resultPublishedAt?: string | null;
+  officials?: VotingOfficial[];
+  items?: VotingItemRow[];
+  /** Board only. */
+  events?: VotingEvent[];
+}
+
+export interface VotingOfficial {
+  id?: string;
+  role: "chair" | "recorder" | "verifier";
+  name: string;
+  userId: string | null;
+  refusedToSign: boolean;
+  refusalStatement: string | null;
+}
+
+export interface VotingEvent {
+  id: string;
+  kind:
+    | "announced"
+    | "closed"
+    | "reopened"
+    | "result_published"
+    | "ballot_superseded"
+    | "document_generated"
+    | "minutes_finalised";
+  actorName: string | null;
+  note: string | null;
+  payload: unknown;
+  createdAt: string;
 }
 
 // ── BYT-20260609-008 multi-item ballot shapes (from /api/ballots) ──
@@ -31,6 +64,8 @@ export interface VotingItemRow {
   title: string;
   description: string | null;
   quorumType: QuorumType;
+  /** SK §14b ods. 6 repeat: category of the original decision. */
+  repeatOfQuorumType?: QuorumType | null;
 }
 export interface BallotChoice {
   itemId: string;
@@ -90,6 +125,32 @@ export interface BallotData {
     votedWeight: number;
     notVoted: { unitId: string; unitLabel: string; ownerId: string; ownerName: string | null }[];
   } | null;
+  /** Board / vote counter only (BYT-20261118-002 §5). */
+  overview?: VotingOverviewData | null;
+}
+
+// BYT-20261118-002 §5 — board management view (from /api/ballots).
+export interface OverviewOwnerLine {
+  ownerId: string;
+  ownerName: string | null;
+  shareNumerator: number;
+  shareDenominator: number;
+  choice: "za" | "proti" | "zdrzal_sa" | null;
+  channel: "electronic" | "paper" | null;
+  recordedAt: string | null;
+}
+export interface OverviewUnitLine {
+  unitId: string;
+  unitLabel: string;
+  status: "resolved_for" | "resolved_against" | "resolved_abstain" | "incomplete" | "no_valid_vote";
+  channel: "electronic" | "paper" | "mixed" | "none";
+  owners: OverviewOwnerLine[];
+}
+export interface VotingOverviewData {
+  items: { itemId: string; units: OverviewUnitLine[] }[];
+  channels: { itemId: string; electronic: number; paper: number; cast: number }[];
+  outlook: Record<string, "passed" | "reachable" | "unreachable">;
+  generatedAt: string;
 }
 
 export interface BuildingInfo {
@@ -97,4 +158,6 @@ export interface BuildingInfo {
   address: string;
   ico: string | null;
   country?: "sk" | "cz";
+  /** Root template slug (null on pre-template installs = hoa). */
+  templateSlug?: string | null;
 }

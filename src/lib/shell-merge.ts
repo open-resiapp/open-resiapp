@@ -1,28 +1,9 @@
 import "server-only";
-import { and, eq } from "drizzle-orm";
+import { eq } from "drizzle-orm";
 
 import { db } from "@/db";
-import {
-  boardMembers,
-  communityNotificationsSent,
-  communityPosts,
-  communityResponses,
-  consentRecords,
-  coreModuleGrants,
-  directoryEntries,
-  documents,
-  entityAuditLog,
-  eventRsvps,
-  invitations,
-  memberships,
-  notificationPreferences,
-  pairingRequests,
-  posts,
-  pushSubscriptions,
-  registrationTokens,
-  users,
-} from "@/db/schema";
-import { mandates, ballots, votings } from "@modules/voting/src/db/schema";
+import { users } from "@/db/schema";
+import { mergeShellTx } from "@/lib/user-merge.server";
 import { recordEntityAudit } from "@/lib/entity-audit";
 import { approvePendingRegistration } from "@/lib/registration-review.server";
 
@@ -42,24 +23,22 @@ interface MergeResult {
  * Transactionally merge a shell user into a real (target) user.
  *
  * - Memberships move; on (target, entity) conflict, target's row wins
- *   and shell's is dropped (the share already belongs to target).
+ *   and shell's is ended with end_reason 'merged' (history kept).
  * - Every FK to users.id originating from a content/audit/membership
  *   table is re-pointed shell → target. Without this, `users.id`
  *   delete would fail (most FKs are restrict-style) or silently set
  *   to null (for votes/posts, that'd orphan the data).
- * - Shell row is deleted last.
+ * - Shell row is deleted last (or kept as a tombstone when a retained
+ *   record — a closed-voting duplicate ballot — is left on it).
  * - Audit entry `user.merge_shell` records (shellId, targetId).
  *
  * With `approvePendingAsOwner`, the target (a pending self-registration) is
  * approved as owner in the SAME transaction; when it is no longer pending
  * the whole merge rolls back with ShellMergeError("state_changed").
  *
- * Vote `auditHash` includes the original shell UUID — after merge the
- * hash no longer verifies. Spec §Notes acknowledges this; the trade-off
- * is documented as an open question. For now, the hash is preserved
- * as-is (no recompute) so the original chain stays inspectable, at
- * the cost of failing the verify step until a follow-up adds a
- * `merged_from_user_id` column.
+ * Vote `itemAuditHash` includes the original shell UUID — the merge keeps
+ * it in `mod_voting_ballots.hash_owner_id` (BYT-20261118-007), so the hash
+ * still verifies with COALESCE(hash_owner_id, owner_id).
  */
 export async function mergeShellIntoUser(
   shellUserId: string,
@@ -120,211 +99,18 @@ export async function mergeShellIntoUser(
       );
     }
 
-    const shellMemberships = await tx
-      .select({ id: memberships.id, entityId: memberships.entityId })
-      .from(memberships)
-      .where(eq(memberships.userId, shellUserId));
-
-    let moved = 0;
-    let skipped = 0;
-    for (const m of shellMemberships) {
-      const [conflict] = await tx
-        .select({ id: memberships.id })
-        .from(memberships)
-        .where(
-          and(
-            eq(memberships.userId, targetUserId),
-            eq(memberships.entityId, m.entityId)
-          )
-        );
-      if (conflict) {
-        // Target already has membership at this entity. Drop shell's row,
-        // record in audit.
-        await tx.delete(memberships).where(eq(memberships.id, m.id));
-        skipped += 1;
-      } else {
-        await tx
-          .update(memberships)
-          .set({ userId: targetUserId })
-          .where(eq(memberships.id, m.id));
-        moved += 1;
-      }
+    // BYT-20261118-007: every FK to users.id is moved by the user-FK
+    // registry (src/lib/user-fk-registry.ts) — accounting authorship,
+    // passkeys, MCP, faults … were silently missed by the old hand list.
+    // A membership the target already holds is ENDED ('merged'), not
+    // deleted, so ownership history survives. The shell row is deleted when
+    // nothing retained is left on it, otherwise kept as a tombstone.
+    const merged = await mergeShellTx(tx, shellUserId, targetUserId, actorUserId);
+    if (merged.blocked) {
+      throw new ShellMergeError(merged.blocked, "Both accounts voted for the same unit in an open voting");
     }
-
-    // Voting module (ballots, mandates)
-    await tx
-      .update(ballots)
-      .set({ ownerId: targetUserId })
-      .where(eq(ballots.ownerId, shellUserId));
-    await tx
-      .update(ballots)
-      .set({ recordedById: targetUserId })
-      .where(eq(ballots.recordedById, shellUserId));
-    await tx
-      .update(mandates)
-      .set({ fromOwnerId: targetUserId })
-      .where(eq(mandates.fromOwnerId, shellUserId));
-    await tx
-      .update(mandates)
-      .set({ toOwnerId: targetUserId })
-      .where(eq(mandates.toOwnerId, shellUserId));
-    await tx
-      .update(mandates)
-      .set({ verifiedByAdminId: targetUserId })
-      .where(eq(mandates.verifiedByAdminId, shellUserId));
-    await tx
-      .update(votings)
-      .set({ createdById: targetUserId })
-      .where(eq(votings.createdById, shellUserId));
-    await tx
-      .update(votings)
-      .set({ voteCounterId: targetUserId })
-      .where(eq(votings.voteCounterId, shellUserId));
-
-    // Content
-    await tx
-      .update(posts)
-      .set({ authorId: targetUserId })
-      .where(eq(posts.authorId, shellUserId));
-    await tx
-      .update(documents)
-      .set({ uploadedById: targetUserId })
-      .where(eq(documents.uploadedById, shellUserId));
-    await tx
-      .update(communityPosts)
-      .set({ authorId: targetUserId })
-      .where(eq(communityPosts.authorId, shellUserId));
-    await tx
-      .update(communityResponses)
-      .set({ authorId: targetUserId })
-      .where(eq(communityResponses.authorId, shellUserId));
-
-    // RSVPs (unique constraint on (post, user) — handle conflict by
-    // dropping shell row if both exist).
-    const shellRsvps = await tx
-      .select({ id: eventRsvps.id, postId: eventRsvps.postId })
-      .from(eventRsvps)
-      .where(eq(eventRsvps.userId, shellUserId));
-    for (const r of shellRsvps) {
-      const [conflict] = await tx
-        .select({ id: eventRsvps.id })
-        .from(eventRsvps)
-        .where(
-          and(
-            eq(eventRsvps.userId, targetUserId),
-            eq(eventRsvps.postId, r.postId)
-          )
-        );
-      if (conflict) {
-        await tx.delete(eventRsvps).where(eq(eventRsvps.id, r.id));
-      } else {
-        await tx
-          .update(eventRsvps)
-          .set({ userId: targetUserId })
-          .where(eq(eventRsvps.id, r.id));
-      }
-    }
-
-    // Notifications + preferences (notificationPreferences has UNIQUE on
-    // userId — drop shell's if target already has one).
-    const [shellPrefs] = await tx
-      .select({ id: notificationPreferences.id })
-      .from(notificationPreferences)
-      .where(eq(notificationPreferences.userId, shellUserId));
-    if (shellPrefs) {
-      const [targetPrefs] = await tx
-        .select({ id: notificationPreferences.id })
-        .from(notificationPreferences)
-        .where(eq(notificationPreferences.userId, targetUserId));
-      if (targetPrefs) {
-        await tx
-          .delete(notificationPreferences)
-          .where(eq(notificationPreferences.id, shellPrefs.id));
-      } else {
-        await tx
-          .update(notificationPreferences)
-          .set({ userId: targetUserId })
-          .where(eq(notificationPreferences.id, shellPrefs.id));
-      }
-    }
-
-    // Directory entries (UNIQUE on userId — same pattern).
-    const [shellDir] = await tx
-      .select({ id: directoryEntries.id })
-      .from(directoryEntries)
-      .where(eq(directoryEntries.userId, shellUserId));
-    if (shellDir) {
-      const [targetDir] = await tx
-        .select({ id: directoryEntries.id })
-        .from(directoryEntries)
-        .where(eq(directoryEntries.userId, targetUserId));
-      if (targetDir) {
-        await tx
-          .delete(directoryEntries)
-          .where(eq(directoryEntries.id, shellDir.id));
-      } else {
-        await tx
-          .update(directoryEntries)
-          .set({ userId: targetUserId })
-          .where(eq(directoryEntries.id, shellDir.id));
-      }
-    }
-
-    // Plain FK re-points (no unique-conflict surface).
-    await tx
-      .update(pushSubscriptions)
-      .set({ userId: targetUserId })
-      .where(eq(pushSubscriptions.userId, shellUserId));
-    await tx
-      .update(consentRecords)
-      .set({ userId: targetUserId })
-      .where(eq(consentRecords.userId, shellUserId));
-    await tx
-      .update(communityNotificationsSent)
-      .set({ recipientId: targetUserId })
-      .where(eq(communityNotificationsSent.recipientId, shellUserId));
-    await tx
-      .update(communityNotificationsSent)
-      .set({ subjectUserId: targetUserId })
-      .where(eq(communityNotificationsSent.subjectUserId, shellUserId));
-    await tx
-      .update(communityNotificationsSent)
-      .set({ responderId: targetUserId })
-      .where(eq(communityNotificationsSent.responderId, shellUserId));
-    await tx
-      .update(boardMembers)
-      .set({ userId: targetUserId })
-      .where(eq(boardMembers.userId, shellUserId));
-    await tx
-      .update(coreModuleGrants)
-      .set({ grantedById: targetUserId })
-      .where(eq(coreModuleGrants.grantedById, shellUserId));
-    await tx
-      .update(entityAuditLog)
-      .set({ actorUserId: targetUserId })
-      .where(eq(entityAuditLog.actorUserId, shellUserId));
-    await tx
-      .update(invitations)
-      .set({ usedByUserId: targetUserId })
-      .where(eq(invitations.usedByUserId, shellUserId));
-    await tx
-      .update(invitations)
-      .set({ createdById: targetUserId })
-      .where(eq(invitations.createdById, shellUserId));
-    // invitations.targetShellUserId for THIS shell: leave them — they
-    // cascade-delete with the shell row below.
-    await tx
-      .update(registrationTokens)
-      .set({ createdById: targetUserId })
-      .where(eq(registrationTokens.createdById, shellUserId));
-    await tx
-      .update(pairingRequests)
-      .set({ createdById: targetUserId })
-      .where(eq(pairingRequests.createdById, shellUserId));
-
-    // Delete shell. invitations.targetShellUserId rows for this shell
-    // cascade-delete (FK cascade). Everything else has been moved.
-    await tx.delete(users).where(eq(users.id, shellUserId));
+    const moved = merged.moved;
+    const skipped = merged.ended;
 
     if (opts.approvePendingAsOwner) {
       const approved = await approvePendingRegistration(

@@ -43,6 +43,14 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       );
     }
+    // BYT-20261118-002: statutory lead time / repeat escalation → stable codes.
+    if (e.code === "validation.startsAt" && e.details?.notice) {
+      const n = e.details.notice as { code: string; minDate?: string };
+      return NextResponse.json({ error: n.code, minDate: n.minDate }, { status: 400 });
+    }
+    if (e.code === "validation.items" && e.details?.repeat) {
+      return NextResponse.json(e.details.repeat, { status: 400 });
+    }
     if (e.code === "validation.items" && e.details?.quorum) {
       return NextResponse.json(e.details.quorum, { status: 400 });
     }

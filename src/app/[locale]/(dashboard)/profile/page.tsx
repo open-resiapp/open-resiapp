@@ -2,7 +2,7 @@ import { eq } from "drizzle-orm";
 
 import { auth } from "@/lib/auth";
 import { db } from "@/db";
-import { notificationPreferences } from "@/db/schema";
+import { notificationPreferences, users } from "@/db/schema";
 import { redirect } from "@/i18n/navigation";
 import { listUserFlats } from "@/lib/legacy-compat";
 import { hasEDeliveryConsent } from "@modules/accounting/src/lib/e-delivery";
@@ -24,17 +24,24 @@ export default async function ProfilePage({
   }
   const userId = session.user.id;
 
-  const [flatRows, [pref]] = await Promise.all([
+  const [flatRows, [pref], [self]] = await Promise.all([
     listUserFlats(userId),
     db
       .select()
       .from(notificationPreferences)
       .where(eq(notificationPreferences.userId, userId))
       .limit(1),
+    // BYT-20261118-003: the owner sees their own last sign-in (only their own).
+    db
+      .select({ lastLoginAt: users.lastLoginAt })
+      .from(users)
+      .where(eq(users.id, userId))
+      .limit(1),
   ]);
 
   return (
     <ProfileView
+      lastLoginAt={self?.lastLoginAt ? self.lastLoginAt.toISOString() : null}
       flats={flatRows.map((f) => ({
         id: f.flatId,
         flatNumber: f.flatNumber,

@@ -6,7 +6,16 @@ import { hasPermission } from "@/lib/permissions";
 import type { UserRole } from "@/types";
 import { resolveCurrentEntityId } from "@/lib/current-entity";
 import { getStorage } from "@/lib/storage";
-import { createDocument, listVisibleDocuments } from "@/lib/documents.server";
+import { db } from "@/db";
+import { entities } from "@/db/schema";
+import { eq } from "drizzle-orm";
+import {
+  createDocument,
+  getUserNames,
+  isBoardForPath,
+  isOwnerOnPath,
+  listVisibleDocuments,
+} from "@/lib/documents.server";
 import {
   ALLOWED_DOCUMENT_MIME,
   MAX_DOCUMENT_SIZE,
@@ -40,6 +49,13 @@ export async function GET() {
   const canUpload = hasPermission(role, "uploadDocument");
   const isManager = hasPermission(role, "deleteDocument");
   const docs = await listVisibleDocuments(userId, entityId);
+  // Subject names are board-only metadata (BYT-20261118-005); owners only
+  // learn whether a doc sits in THEIR folder.
+  const subjectNames = isManager
+    ? await getUserNames(
+        docs.map((d) => d.subjectUserId).filter((x): x is string => !!x)
+      )
+    : new Map<string, string>();
 
   return NextResponse.json({
     entityId,
@@ -58,6 +74,12 @@ export async function GET() {
       projectId: d.projectId,
       uploaderName: d.uploaderName,
       isUploader: d.uploadedById === userId,
+      isMine: d.subjectUserId === userId,
+      subjectUserId: isManager ? d.subjectUserId : null,
+      subjectName:
+        isManager && d.subjectUserId
+          ? subjectNames.get(d.subjectUserId) ?? null
+          : null,
     })),
   });
 }
@@ -82,6 +104,8 @@ export async function POST(request: NextRequest) {
   const retainRaw = ((formData.get("retainUntil") as string) || "").trim();
   const retainUntil = /^\d{4}-\d{2}-\d{2}$/.test(retainRaw) ? retainRaw : null;
   const projectId = ((formData.get("projectId") as string) || "").trim() || null;
+  const subjectUserId =
+    ((formData.get("subjectUserId") as string) || "").trim() || null;
 
   if (!entityId) {
     return NextResponse.json({ error: "Chýba entita" }, { status: 400 });
@@ -95,6 +119,29 @@ export async function POST(request: NextRequest) {
 
   if (!hasPermission(session.user.role as UserRole, "uploadDocument")) {
     return NextResponse.json({ error: "Nemáte oprávnenie" }, { status: 403 });
+  }
+
+  // BYT-20261118-005: "Len výbor" uploads and owner-folder filing are board
+  // decisions (admin membership on the target line). G3 / Notes #3: a
+  // caretaker may not file a doc they would immediately lose sight of.
+  if (audience === "admin" || subjectUserId) {
+    const [target] = await db
+      .select({ path: entities.path })
+      .from(entities)
+      .where(eq(entities.id, entityId))
+      .limit(1);
+    if (!target || !(await isBoardForPath(userId, target.path))) {
+      return NextResponse.json(
+        { error: "document.forbidden", code: "document.forbidden" },
+        { status: 403 }
+      );
+    }
+    if (subjectUserId && !(await isOwnerOnPath(subjectUserId, target.path))) {
+      return NextResponse.json(
+        { error: "document.subject.not_owner", code: "document.subject.not_owner" },
+        { status: 400 }
+      );
+    }
   }
 
   if (!file) {
@@ -133,6 +180,7 @@ export async function POST(request: NextRequest) {
     audience: audience as DocumentAudience,
     retainUntil,
     projectId,
+    subjectUserId,
   });
 
   return NextResponse.json({ document: doc }, { status: 201 });

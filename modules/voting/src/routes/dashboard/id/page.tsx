@@ -12,9 +12,12 @@ import VotingResults from "@/components/voting/VotingResults";
 import { hasPermission } from "@/lib/permissions";
 import ProjectDocsInline from "@/components/documents/ProjectDocsInline";
 import { Badge, Button, Card, Icon, LoadingBlock } from "@/components/ui";
-import type { UserRole, VotingStatus } from "@/types";
+import type { UserRole } from "@/types";
 import OwnerBallot from "./OwnerBallot";
-import BoardConsole, { EditVotingForm, ManageActions } from "./BoardConsole";
+import BoardConsole, { EditVotingForm } from "./BoardConsole";
+import WorkflowPanel from "./WorkflowPanel";
+import { MeetingBoardPanel, MeetingOwnerCard } from "./MeetingPanel";
+import { NoticeDownloadLink, documentsAvailable } from "./VotingDocuments";
 import type { BallotData, BuildingInfo, VotingDetail } from "./types";
 
 export default function VotingDetailPage({
@@ -70,6 +73,7 @@ export default function VotingDetailPage({
             address: bldData.address,
             ico: bldData.ico,
             country: bldData.country,
+            templateSlug: bldData.templateSlug ?? null,
           });
           if (bldData.legalNotice) setLegalNotice(bldData.legalNotice);
         }
@@ -80,14 +84,11 @@ export default function VotingDetailPage({
     load();
   }, [id, fetchVoteData]);
 
-  async function handleStatusChange(status: VotingStatus) {
-    await fetch(`/api/votings/${id}`, {
-      method: "PATCH",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ status }),
-    });
+  // BYT-20261118-002: one refetch after the board's own action (no polling).
+  async function refetchVoting() {
     const res = await fetch(`/api/votings/${id}`);
     if (res.ok) setVoting(await res.json());
+    await fetchVoteData();
   }
 
   if (loading) {
@@ -196,16 +197,43 @@ export default function VotingDetailPage({
               </span>
             </div>
 
-            {canManage && (
-              <ManageActions
-                voting={voting}
-                onEdit={() => setEditMode(true)}
-                onStatusChange={handleStatusChange}
-              />
-            )}
           </>
         )}
       </Card>
+
+      {canManage && !editMode && (
+        <WorkflowPanel
+          voting={voting}
+          country={buildingData?.country ?? "sk"}
+          onEdit={() => setEditMode(true)}
+          onChanged={refetchVoting}
+        />
+      )}
+
+      {/* BYT-20261118-002: owners get exactly one new element — the announcement PDF. */}
+      {!canManage && voting.status !== "draft" && buildingData && documentsAvailable(buildingData, voting) && (
+        <div className="mb-6">
+          <NoticeDownloadLink voting={voting} building={buildingData} />
+        </div>
+      )}
+
+      {/* BYT-20261118-001: owners' meeting — announcement, RSVP, attendance list. */}
+      {voting.votingType === "meeting" && !editMode && voting.status !== "draft" ? (
+        canManage || canRecordPaper ? (
+          <MeetingBoardPanel
+            voting={voting}
+            building={buildingData}
+            canAnnounce={canManage}
+            castShare={
+              data?.participation && data.participation.eligibleWeight > 0
+                ? Math.round((data.participation.votedWeight / data.participation.eligibleWeight) * 1000) / 10
+                : null
+            }
+          />
+        ) : canVote ? (
+          <MeetingOwnerCard votingId={id} />
+        ) : null
+      ) : null}
 
       {/* Meeting / owners_quarter info message */}
       {isActive && isMeetingOrOwnersQuarter && canVote && (

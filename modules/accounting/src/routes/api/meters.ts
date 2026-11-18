@@ -3,16 +3,35 @@ import { NextRequest, NextResponse } from "next/server";
 import { sessionAccountingCtx } from "@modules/accounting/src/lib/accounting-ctx";
 import {
   canEnterReading,
+  canWriteReadingForUnit,
   createReading,
   listReadingsForUnit,
   voidReading,
 } from "@modules/accounting/src/lib/meters";
+import {
+  isReadingError,
+  readingErrorStatus,
+} from "@modules/accounting/src/lib/reading-rounds-format";
 import { validateMeterReadingInput } from "@modules/accounting/src/lib/input-validators";
 import { inputErrorResponse } from "@modules/accounting/src/lib/input-errors.server";
 import { listAccessibleUnits } from "@modules/accounting/src/lib/karta-bytu";
 
 // Meter readings API — owners for their own units, board roles for all
-// (same scoping as karta bytu; unauthorized unit = 403).
+// (same scoping as karta bytu; unauthorized unit = 403). Writes need an
+// owner membership or a board WRITER role. Errors are stable codes
+// (`{ error: code }`), mapped to ReadingRounds.errors.<code> by the UI —
+// never the raw lib message (BYT-20261118-006).
+
+function libErrorResponse(err: unknown): NextResponse {
+  if (isReadingError(err)) {
+    return NextResponse.json(
+      { error: err.code },
+      { status: readingErrorStatus(err.code) }
+    );
+  }
+  console.error("[accounting/meters] failed:", err);
+  return NextResponse.json({ error: "internal" }, { status: 500 });
+}
 
 /** GET /api/accounting/meters — accessible units; ?unitId= adds readings. */
 export async function handleGet(req: NextRequest): Promise<NextResponse> {
@@ -61,7 +80,7 @@ export async function handlePost(req: NextRequest): Promise<NextResponse> {
   }
   const input = parsed.value;
 
-  const allowed = await canEnterReading(
+  const allowed = await canWriteReadingForUnit(
     principal.userId,
     principal.role,
     root.id,
@@ -82,8 +101,7 @@ export async function handlePost(req: NextRequest): Promise<NextResponse> {
     });
     return NextResponse.json(result, { status: 201 });
   } catch (err) {
-    const message = err instanceof Error ? err.message : "create failed";
-    return NextResponse.json({ error: message }, { status: 400 });
+    return libErrorResponse(err);
   }
 }
 
@@ -105,12 +123,6 @@ export async function handleVoid(
     });
     return NextResponse.json({ ok: true });
   } catch (err) {
-    const message = err instanceof Error ? err.message : "void failed";
-    const status = message.includes("not found")
-      ? 404
-      : message.includes("forbidden")
-        ? 403
-        : 400;
-    return NextResponse.json({ error: message }, { status });
+    return libErrorResponse(err);
   }
 }

@@ -7,11 +7,26 @@ import { Button, Card, ConfirmDialog, Icon, PageHeader } from "@/components/ui";
 import { useRouter } from "@/i18n/navigation";
 import { revokeInvitationAction } from "@/app/[locale]/(dashboard)/owners/actions";
 import type { OwnerDetailData } from "@/lib/owners-board";
+import { LAST_LOGIN_TRACKING_SINCE, lastLoginUnknown } from "@/lib/owner-queue";
 import type { UserRole } from "@/types";
 import OwnerEditForm, { type ShareWarning } from "./OwnerEditForm";
 import { OwnerStatusBadge } from "./OwnerStatusBadge";
 import ShellClaimDialog from "./ShellClaimDialog";
 import ShellMergeDialog from "./ShellMergeDialog";
+import OwnerDocumentsSection from "@/components/documents/OwnerDocumentsSection";
+import UnitNoteCard from "@/components/unit-notes/UnitNoteCard";
+import OwnerLifecyclePanel, { type MergeOption } from "./OwnerLifecyclePanel";
+import UnitOwnershipCard from "./UnitOwnershipCard";
+import type { OwnershipPeriod } from "@/lib/ownership";
+
+/** BYT-20261118-007: ownership history + lifecycle actions (server-loaded). */
+export interface OwnerLifecycleData {
+  history: OwnershipPeriod[];
+  restorable: { auditId: string; date: string } | null;
+  mergeOptions: MergeOption[];
+  people: { id: string; name: string }[];
+  country: "sk" | "cz";
+}
 
 const roleKeys: Record<UserRole, string> = {
   admin: "roleAdmin",
@@ -26,8 +41,7 @@ type Dialog =
   | { kind: "claim"; mode: "email" | "qr" }
   | { kind: "merge" }
   | { kind: "revoke" }
-  | { kind: "deactivate" }
-  | { kind: "delete" };
+  | { kind: "deactivate" };
 
 /**
  * Owner detail (BYT-20261117-002 Phase 5): same actions as before — edit,
@@ -35,17 +49,27 @@ type Dialog =
  * the UI kit, with confirmations stating the consequence. Data comes from the
  * server page; mutations use the existing endpoints, then router.refresh().
  */
-export default function OwnerDetail({ data }: { data: OwnerDetailData }) {
+export default function OwnerDetail({
+  data,
+  initialEditing = false,
+  lifecycle,
+}: {
+  data: OwnerDetailData;
+  initialEditing?: boolean;
+  lifecycle?: OwnerLifecycleData;
+}) {
   const t = useTranslations("Owners");
   const tBoard = useTranslations("Owners.board");
   const tShell = useTranslations("Owners.pending");
   const tCommon = useTranslations("Common");
+  const tHealth = useTranslations("OwnerHealth");
   const format = useFormatter();
   const locale = useLocale();
   const router = useRouter();
   const { owner, units, mergeCandidates } = data;
+  const ownedUnits = units.filter((u) => u.owners.some((o) => o.userId === owner.id));
 
-  const [editing, setEditing] = useState(false);
+  const [editing, setEditing] = useState(initialEditing);
   const [dialog, setDialog] = useState<Dialog>({ kind: "none" });
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
@@ -71,21 +95,6 @@ export default function OwnerDetail({ data }: { data: OwnerDetailData }) {
       return;
     }
     refresh();
-  }
-
-  async function handleDelete() {
-    setBusy(true);
-    setError("");
-    const res = await fetch(`/api/users/${owner.id}`, { method: "DELETE" });
-    if (!res.ok) {
-      const body = await res.json().catch(() => ({}));
-      setError(res.status === 409 ? t("hasRelatedRecords") : body.error || t("deleteFailed"));
-      setBusy(false);
-      close();
-      return;
-    }
-    router.push("/owners");
-    router.refresh();
   }
 
   async function revoke() {
@@ -240,6 +249,19 @@ export default function OwnerDetail({ data }: { data: OwnerDetailData }) {
                   })}
                 </dd>
               </div>
+              {/* BYT-20261118-003: board-only (this page is gated by manageUsers). */}
+              {owner.status === "active" || owner.status === "pending" ? (
+                <div>
+                  <dt className="text-base font-medium text-ui-text-muted">{tHealth("lastLogin")}</dt>
+                  <dd className="text-base text-ui-text">
+                    {data.lastLoginAt
+                      ? format.dateTime(new Date(data.lastLoginAt), { dateStyle: "medium", timeStyle: "short" })
+                      : lastLoginUnknown(owner.createdAt, null)
+                        ? tHealth("lastLoginUnknown", { date: fmtDate(LAST_LOGIN_TRACKING_SINCE) })
+                        : tHealth("lastLoginNever")}
+                  </dd>
+                </div>
+              ) : null}
             </dl>
 
             <div className="mt-6 flex flex-wrap gap-2 border-t border-ui-border pt-6">
@@ -256,14 +278,39 @@ export default function OwnerDetail({ data }: { data: OwnerDetailData }) {
                   {t("deactivate")}
                 </Button>
               )}
-              <Button variant="ghost" className="text-ui-danger" onClick={() => setDialog({ kind: "delete" })}>
-                <Icon name="trash" size={20} />
-                {tCommon("delete")}
-              </Button>
+              {/* Delete moved to the lifecycle menu (impact summary first, BYT-20261118-007). */}
             </div>
           </>
         )}
       </Card>
+
+      {lifecycle && (
+        <OwnerLifecyclePanel
+          owner={{ id: owner.id, name: owner.name }}
+          history={lifecycle.history}
+          restorable={lifecycle.restorable}
+          mergeOptions={lifecycle.mergeOptions}
+          country={lifecycle.country}
+        />
+      )}
+      {lifecycle &&
+        ownedUnits.map((u) => (
+          <UnitOwnershipCard key={`own-${u.id}`} unitId={u.id} unitLabel={u.flatNumber} people={lifecycle.people} />
+        ))}
+
+      {/* BYT-20261118-005: owner folder + per-unit internal notes (board only). */}
+      <div className="mb-6">
+        <OwnerDocumentsSection
+          ownerId={owner.id}
+          ownerName={owner.name}
+          unitEntityIds={ownedUnits.map((u) => u.id)}
+        />
+      </div>
+      {ownedUnits.map((u) => (
+        <div key={u.id} className="mb-4">
+          <UnitNoteCard entityId={u.id} defaultCollapsed />
+        </div>
+      ))}
 
       {dialog.kind === "claim" && (
         <ShellClaimDialog
@@ -317,16 +364,6 @@ export default function OwnerDetail({ data }: { data: OwnerDetailData }) {
         onCancel={close}
       />
 
-      <ConfirmDialog
-        open={dialog.kind === "delete"}
-        tone="danger"
-        title={tBoard("confirmDeleteTitle")}
-        description={tBoard("confirmDeleteBody", { name: owner.name })}
-        confirmLabel={t("deleteUser")}
-        loading={busy}
-        onConfirm={handleDelete}
-        onCancel={close}
-      />
     </div>
   );
 }

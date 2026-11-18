@@ -23,6 +23,8 @@ import { HomeSection } from "./HomeSection";
 import { LinkRow } from "./LinkRow";
 import { NoticeList } from "./NoticeList";
 import { VoteCards } from "./VoteCards";
+import { OwnerFaultCardSlot } from "@modules/faults/src/components/OwnerFaultCard";
+import { OwnerMeetingCards } from "@modules/voting/src/ui/MeetingHomeCards";
 
 // Domov for owners (BYT-20261117-002 Phase 4), in this order: running
 // vote → balance → deadlines → latest notices → board contacts. All data
@@ -87,6 +89,9 @@ export async function OwnerHome({ viewer }: { viewer: Viewer }) {
         <VoteCards votings={votings} primaryVotingId={firstOpen?.id ?? null} />
       ) : null}
 
+      {/* BYT-20261118-001: upcoming owners' meeting — own answer (module-gated). */}
+      <OwnerMeetingCards viewer={viewer} />
+
       {accounting ? <BalanceCard lines={accounting.balances} primary={balancePrimary} /> : null}
 
       {accounting?.settlementReadyYear ? (
@@ -111,6 +116,9 @@ export async function OwnerHome({ viewer }: { viewer: Viewer }) {
           <NoticeList notices={notices} />
         </HomeSection>
       ) : null}
+
+      {/* BYT-20261118-004: "Niečo sa pokazilo?" (module-gated, self-loading). */}
+      <OwnerFaultCardSlot viewer={viewer} />
 
       {contacts.length > 0 ? (
         <HomeSection title={t("contacts.heading")}>

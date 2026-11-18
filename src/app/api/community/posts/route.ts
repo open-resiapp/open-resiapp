@@ -103,6 +103,7 @@ export async function GET(request: NextRequest) {
       responsesAllowed: communityPosts.responsesAllowed,
       eventDate: communityPosts.eventDate,
       eventLocation: communityPosts.eventLocation,
+      eventKind: communityPosts.eventKind,
       entityId: communityPosts.entityId,
       entranceName: entrance.name,
       expiresAt: communityPosts.expiresAt,

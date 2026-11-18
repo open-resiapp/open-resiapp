@@ -1,0 +1,22 @@
+{
+  "name": "faults",
+  "version": "0.1.0",
+  "description": "Fault reports (poruchy) as tracked board tasks — BYT-20261118-004.",
+  "author": "open-housing",
+  "entry": "dist/index.js",
+  "permissions": [
+    "db:read",
+    "db:write",
+    "ui:inject"
+  ],
+  "uiSlots": ["sidebar.items", "dashboard.widgets"],
+  "cronJobs": [
+    {
+      "name": "stale-digest",
+      "endpoint": "/api/cron/faults",
+      "schedule": "0 7 * * 1",
+      "description": "Monday digest of faults open > 30 days to the assignee or the whole board. Registered in docker-compose.*.yml; self-gates on the faults module being enabled."
+    }
+  ],
+  "minCoreVersion": "0.1.0"
+}

@@ -6,56 +6,16 @@
 // minutes PDF, paper ballot photos.
 import { useState } from "react";
 import { useTranslations } from "next-intl";
-import { Button, Card, Field, Input, Textarea, useConfirm } from "@/components/ui";
+import { Button, Card, Field, Input, Textarea } from "@/components/ui";
 import MandateModal from "@/components/voting/MandateModal";
 import PaperVoteModal from "@/components/voting/PaperVoteModal";
 import DownloadMinutesButton from "@/components/voting/DownloadMinutesButton";
 import VotingFinancialImpacts from "@modules/voting/src/ui/VotingFinancialImpacts";
-import type { VotingStatus } from "@/types";
+import ManagementOverview from "./ManagementOverview";
+import VotingDocuments from "./VotingDocuments";
 import type { BallotData, BuildingInfo, VotingDetail } from "./types";
 
-// ── Start / end / edit actions under the header ─────────
-export function ManageActions({
-  voting,
-  onEdit,
-  onStatusChange,
-}: {
-  voting: VotingDetail;
-  onEdit: () => void;
-  onStatusChange: (status: VotingStatus) => void;
-}) {
-  const t = useTranslations("Voting");
-  const tCommon = useTranslations("Common");
-  const confirm = useConfirm();
-  if (voting.status !== "draft" && voting.status !== "active") return null;
-
-  async function endVoting() {
-    const ok = await confirm({
-      title: t("endVotingConfirmTitle"),
-      description: t("endVotingConfirmText"),
-      confirmLabel: t("endVotingConfirmButton"),
-      tone: "danger",
-    });
-    if (ok) onStatusChange("closed");
-  }
-  return (
-    <div className="mt-4 flex flex-wrap gap-2 border-t border-ui-border pt-4">
-      {voting.status === "draft" && (
-        <>
-          <Button variant="secondary" onClick={onEdit}>
-            {tCommon("edit")}
-          </Button>
-          <Button onClick={() => onStatusChange("active")}>{t("startVoting")}</Button>
-        </>
-      )}
-      {voting.status === "active" && (
-        <Button variant="danger" onClick={endVoting}>
-          {t("endVoting")}
-        </Button>
-      )}
-    </div>
-  );
-}
+// Start / end / reopen / publish moved to ./WorkflowPanel (BYT-20261118-002).
 
 // ── Draft edit form (replaces the header while editing) ──
 export function EditVotingForm({
@@ -267,6 +227,25 @@ export default function BoardConsole({
         </Card>
       )}
 
+      {/* BYT-20261118-002 §5: per question → unit → owner drill-down. */}
+      {(isActive || isClosed) && data?.overview && (
+        <ManagementOverview
+          data={data}
+          canRecordPaper={canRecordPaper}
+          isActive={isActive}
+          onRecordPaper={(preset) => {
+            setPaperPreset(preset);
+            setShowPaperModal(true);
+          }}
+          onRefresh={onRefresh}
+        />
+      )}
+
+      {/* BYT-20261118-002 §4: announcement + ballot lists (SK HOA only). */}
+      {canManage && voting.status !== "draft" && building && (
+        <VotingDocuments voting={voting} data={data} building={building} />
+      )}
+
       {children}
 
       {/* Voting→accounting financial impacts (drafts + posted entries) */}
@@ -282,6 +261,17 @@ export default function BoardConsole({
             building={building}
             legalNotice={legalNotice}
             entranceName={voting.entranceName}
+            protocol={{
+              place: voting.place ?? null,
+              officials: (voting.officials ?? []).map((o) => ({
+                role: o.role,
+                name: o.name,
+                refusedToSign: o.refusedToSign,
+                refusalStatement: o.refusalStatement,
+              })),
+              events: voting.events ?? [],
+              resultPublishedAt: voting.resultPublishedAt ?? null,
+            }}
           />
         </div>
       )}

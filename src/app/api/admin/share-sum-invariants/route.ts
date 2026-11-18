@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 
 import { auth } from "@/lib/auth";
+import { resolveBoardRootId } from "@/lib/current-entity";
 import { hasPermission } from "@/lib/permissions";
 import { listShareSumViolations } from "@/lib/share-sum-invariants.server";
 import type { UserRole } from "@/types";
@@ -20,5 +21,7 @@ export async function GET() {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 
-  return NextResponse.json({ invalid: await listShareSumViolations() });
+  // BYT-20261118-003: only units of the caller's current community.
+  const rootId = await resolveBoardRootId(session.user.id);
+  return NextResponse.json({ invalid: await listShareSumViolations(rootId) });
 }

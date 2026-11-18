@@ -11,7 +11,7 @@ import type { BoardMemberRole, UserRole, UserStatus } from "@/types";
 export type NavAudience = "owner" | "board";
 
 /** Keys into ShellData.badges — counts the server resolved for nav badges. */
-export type NavBadgeKey = "pendingRegistrations";
+export type NavBadgeKey = "pendingRegistrations" | "ownerQueue";
 
 /** Keys in the `Nav` i18n namespace. */
 export type NavLabelKey =
@@ -114,7 +114,8 @@ export const NAV_ITEMS: readonly NavItem[] = [
     icon: "users",
     audience: ["board"],
     permission: "manageUsers",
-    badgeKey: "pendingRegistrations",
+    // BYT-20261118-003: open "Na riešenie" items (registrations included).
+    badgeKey: "ownerQueue",
   },
   {
     id: "documents",

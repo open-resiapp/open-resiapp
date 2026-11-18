@@ -35,6 +35,8 @@ export interface VotingResultsItem {
   title: string;
   description: string | null;
   quorumType: string;
+  /** SK §14b ods. 6 repeat: category of the original decision (null = not a repeat). */
+  repeatOfQuorumType: string | null;
   financialEffectKind: string | null;
   financialEffectParams: unknown;
 }
@@ -60,11 +62,20 @@ export async function getVotingResults(
   const country = (root?.country ?? "sk") as Country;
 
   const [voting] = await db
-    .select({ entityId: votings.entityId })
+    .select({ entityId: votings.entityId, status: votings.status, endsAt: votings.endsAt })
     .from(votings)
     .where(eq(votings.id, votingId))
     .limit(1);
   if (!voting) return null;
+
+  // BYT-20261118-007: ownership AS OF the voting — a closed voting reads the
+  // memberships valid on its end date, so a later sale / removal / new
+  // member never moves its result. Open votings read today.
+  const asOf =
+    voting.status === "closed"
+      ? sql`(${voting.endsAt.toISOString()}::timestamptz)::date`
+      : sql`CURRENT_DATE`;
+  const membershipAsOf = sql`(${memberships.validFrom} <= ${asOf} AND (${memberships.validTo} IS NULL OR ${memberships.validTo} > ${asOf}))`;
 
   // Ordered ballot items (each with its own quorumType).
   const items = await db
@@ -74,6 +85,7 @@ export async function getVotingResults(
       title: votingItems.title,
       description: votingItems.description,
       quorumType: votingItems.quorumType,
+      repeatOfQuorumType: votingItems.repeatOfQuorumType,
       financialEffectKind: votingItems.financialEffectKind,
       financialEffectParams: votingItems.financialEffectParams,
     })
@@ -93,6 +105,11 @@ export async function getVotingResults(
       shareNumerator: sql<number>`(${entities.data}->>'share_numerator')::int`,
       shareDenominator: sql<number>`(${entities.data}->>'share_denominator')::int`,
       area: sql<number | null>`(${entities.data}->>'area_m2')::float8`,
+      // Frozen at cast time (legal fix 2026-11-18) — authoritative when set.
+      frozenShareNumerator: ballots.ownerUnitShareNumerator,
+      frozenShareDenominator: ballots.ownerUnitShareDenominator,
+      frozenWeight: ballots.membershipWeight,
+      // Current membership: fallback for legacy ballots without a snapshot.
       ownerUnitShareNumerator: memberships.ownerUnitShareNumerator,
       ownerUnitShareDenominator: memberships.ownerUnitShareDenominator,
       membershipWeight: memberships.weight,
@@ -106,13 +123,20 @@ export async function getVotingResults(
       and(
         eq(memberships.entityId, ballots.entityId),
         eq(memberships.userId, ballots.ownerId),
-        eq(memberships.status, "active")
+        membershipAsOf,
+        // A merge leaves the duplicate's ended row on the survivor; it must
+        // not double a legacy (unsnapshotted) ballot.
+        sql`${memberships.endReason} IS DISTINCT FROM 'merged'`
       )
     )
     .where(eq(ballots.votingId, votingId));
 
   const votesByItem = new Map<string, VoteWithOwnership[]>();
   for (const r of itemVoteRows) {
+    // The snapshot pair is used only when complete; a legacy row (NULL
+    // snapshot) falls back to the current active membership, then 1/1.
+    const frozenShare =
+      r.frozenShareNumerator != null && r.frozenShareDenominator != null;
     const vow: VoteWithOwnership = {
       unitEntityId: r.unitEntityId,
       userId: r.ownerId,
@@ -121,9 +145,13 @@ export async function getVotingResults(
       unitShareNumerator: r.shareNumerator,
       unitShareDenominator: r.shareDenominator,
       area: r.area,
-      ownerUnitShareNumerator: r.ownerUnitShareNumerator ?? 1,
-      ownerUnitShareDenominator: r.ownerUnitShareDenominator ?? 1,
-      membershipWeight: r.membershipWeight ?? 1,
+      ownerUnitShareNumerator: frozenShare
+        ? r.frozenShareNumerator!
+        : (r.ownerUnitShareNumerator ?? 1),
+      ownerUnitShareDenominator: frozenShare
+        ? r.frozenShareDenominator!
+        : (r.ownerUnitShareDenominator ?? 1),
+      membershipWeight: r.frozenWeight ?? r.membershipWeight ?? 1,
     };
     const slot = votesByItem.get(r.itemId) ?? [];
     slot.push(vow);
@@ -167,7 +195,10 @@ export async function getVotingResults(
       .innerJoin(entities, eq(entities.id, memberships.entityId))
       .where(
         and(
-          eq(memberships.status, "active"),
+          // Not status='active': an ended membership counts for a voting
+          // that closed while it was valid (BYT-20261118-007).
+          sql`${memberships.status} <> 'pending'`,
+          membershipAsOf,
           isNull(entities.archivedAt),
           voting.entityId
             ? sql`${entities.path} LIKE (SELECT path || '%' FROM ${entities} WHERE id = ${voting.entityId})`

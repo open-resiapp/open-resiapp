@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
+import { useSession } from "next-auth/react";
 import {
   DOCUMENT_TYPES,
   DOCUMENT_AUDIENCES,
@@ -12,6 +13,8 @@ import {
   type DocumentAudience,
 } from "@/lib/documents";
 
+import { documentErrorKey } from "./document-errors";
+
 const ACCEPT = Object.keys(ALLOWED_DOCUMENT_MIME).join(",");
 
 const inputCls =
@@ -19,26 +22,76 @@ const inputCls =
 const labelCls =
   "block text-sm font-medium text-gray-700 mb-1 dark:text-gray-300";
 
+interface SubjectCandidate {
+  userId: string;
+  name: string;
+  unitEntityId: string;
+  unitLabel: string;
+}
+
 export default function DocumentUploadForm({
   entityId,
   projects = [],
   lockedProjectId,
   onUploaded,
   onCancel,
+  canFileInternal: canFileInternalProp,
+  lockedSubject,
 }: {
   entityId: string;
   projects?: { id: string; title: string }[];
   lockedProjectId?: string;
   onUploaded: () => void;
   onCancel: () => void;
+  /** Board: may pick "Len výbor" and file under an owner (BYT-20261118-005).
+   *  Non-board uploaders never see the admin tier (server refuses it). */
+  canFileInternal?: boolean;
+  /** Owner folder: subject + anchor fixed (owner detail). Defaults to "Len výbor". */
+  lockedSubject?: { userId: string; name: string; entityId: string };
 }) {
   const t = useTranslations("Documents");
+  const tv = useTranslations("DocumentVisibility");
+  const { data: session } = useSession();
+  // Default: board role. The server re-checks admin membership on the line.
+  const canFileInternal =
+    canFileInternalProp ?? session?.user?.role === "admin";
+  const audiences = canFileInternal
+    ? DOCUMENT_AUDIENCES
+    : DOCUMENT_AUDIENCES.filter((a) => a !== "admin");
+  const defaultAudienceFor = (ty: DocumentType): DocumentAudience => {
+    if (lockedSubject) return "admin"; // safe default for owner-folder docs
+    const d = DEFAULT_AUDIENCE_BY_TYPE[ty];
+    return d === "admin" && !canFileInternal ? "owner" : d;
+  };
   const [file, setFile] = useState<File | null>(null);
   const [name, setName] = useState("");
   const [type, setType] = useState<DocumentType>("other");
   const [audience, setAudience] = useState<DocumentAudience>(
-    DEFAULT_AUDIENCE_BY_TYPE.other
+    defaultAudienceFor("other")
   );
+  // "Komu patrí": "" = celý dom; else `${userId}|${unitEntityId}`.
+  const [belongsTo, setBelongsTo] = useState("");
+  const [candidates, setCandidates] = useState<SubjectCandidate[]>([]);
+  const [subjectQuery, setSubjectQuery] = useState("");
+
+  // Session may resolve after mount — re-apply the type default once the
+  // board role is known so "Len výbor" defaults are not silently widened.
+  useEffect(() => {
+    if (!belongsTo) setAudience(defaultAudienceFor(type));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [canFileInternal]);
+
+  useEffect(() => {
+    if (!canFileInternal || lockedSubject) return;
+    let cancelled = false;
+    fetch("/api/documents/subjects")
+      .then((r) => (r.ok ? r.json() : { candidates: [] }))
+      .then((j) => !cancelled && setCandidates(j.candidates ?? []))
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
+  }, [canFileInternal, lockedSubject]);
   const [retainUntil, setRetainUntil] = useState("");
   const [projectId, setProjectId] = useState("");
   const [submitting, setSubmitting] = useState(false);
@@ -47,7 +100,7 @@ export default function DocumentUploadForm({
   // Type drives the default audience (the §11 mapping); admin may still narrow.
   function handleType(next: DocumentType) {
     setType(next);
-    setAudience(DEFAULT_AUDIENCE_BY_TYPE[next]);
+    if (!belongsTo) setAudience(defaultAudienceFor(next));
   }
 
   function handleFile(e: React.ChangeEvent<HTMLInputElement>) {
@@ -79,7 +132,13 @@ export default function DocumentUploadForm({
     try {
       const fd = new FormData();
       fd.append("file", file);
-      fd.append("entityId", entityId);
+      const [subjectId, unitId] = lockedSubject
+        ? [lockedSubject.userId, lockedSubject.entityId]
+        : belongsTo
+          ? belongsTo.split("|")
+          : [null, null];
+      fd.append("entityId", unitId || entityId);
+      if (subjectId) fd.append("subjectUserId", subjectId);
       fd.append("type", type);
       fd.append("audience", audience);
       if (name.trim()) fd.append("name", name.trim());
@@ -87,7 +146,14 @@ export default function DocumentUploadForm({
       const pid = lockedProjectId ?? projectId;
       if (pid) fd.append("projectId", pid);
       const res = await fetch("/api/documents", { method: "POST", body: fd });
-      if (!res.ok) throw new Error();
+      if (!res.ok) {
+        const j = await res.json().catch(() => ({}));
+        if (typeof j.code === "string") {
+          setError(tv(`errors.${documentErrorKey(j.code)}`));
+          return;
+        }
+        throw new Error();
+      }
       onUploaded();
     } catch {
       setError(t("errors.uploadFailed"));
@@ -145,7 +211,7 @@ export default function DocumentUploadForm({
             onChange={(e) => setAudience(e.target.value as DocumentAudience)}
             className={inputCls}
           >
-            {DOCUMENT_AUDIENCES.map((a) => (
+            {audiences.map((a) => (
               <option key={a} value={a}>
                 {t(`audience.${a}`)}
               </option>
@@ -153,6 +219,58 @@ export default function DocumentUploadForm({
           </select>
         </div>
       </div>
+
+      {lockedSubject ? (
+        <p className="text-base text-gray-700 dark:text-gray-300">
+          {tv("upload.lockedSubject", { name: lockedSubject.name })}
+        </p>
+      ) : (
+        canFileInternal &&
+        candidates.length > 0 && (
+          <div>
+            <label className={labelCls} htmlFor="doc-belongs-to">
+              {tv("upload.belongsTo")}
+            </label>
+            <input
+              type="search"
+              value={subjectQuery}
+              onChange={(e) => setSubjectQuery(e.target.value)}
+              placeholder={tv("upload.search")}
+              aria-label={tv("upload.search")}
+              className={`${inputCls} mb-2`}
+            />
+            <select
+              id="doc-belongs-to"
+              value={belongsTo}
+              onChange={(e) => {
+                setBelongsTo(e.target.value);
+                // Filing under a person defaults to the safe "Len výbor".
+                if (e.target.value) setAudience("admin");
+              }}
+              className={inputCls}
+            >
+              <option value="">{tv("upload.wholeBuilding")}</option>
+              {candidates
+                .filter(
+                  (c) =>
+                    !subjectQuery.trim() ||
+                    `${c.name} ${c.unitLabel}`
+                      .toLocaleLowerCase()
+                      .includes(subjectQuery.trim().toLocaleLowerCase()) ||
+                    `${c.userId}|${c.unitEntityId}` === belongsTo
+                )
+                .map((c) => (
+                  <option
+                    key={`${c.userId}|${c.unitEntityId}`}
+                    value={`${c.userId}|${c.unitEntityId}`}
+                  >
+                    {tv("upload.ownerOption", { name: c.name, unit: c.unitLabel })}
+                  </option>
+                ))}
+            </select>
+          </div>
+        )
+      )}
 
       <div>
         <label className={labelCls}>{t("form.retainUntil")}</label>

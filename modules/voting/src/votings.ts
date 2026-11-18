@@ -11,8 +11,12 @@ import type { Principal, Viewer } from "@/lib/mcp/principal";
 import type { Country } from "@/types";
 import { votings, votingItems } from "./db/schema";
 import { validatePerRollamDuration } from "./rules";
-import { normalizeItems } from "./items";
+import { applyRepeatEscalation, normalizeItems } from "./items";
 import { findDisallowedQuorum } from "./quorum-guard.server";
+import { validateNotice } from "./workflow/notice";
+import { recordVotingEvent } from "./events";
+import { timeZoneForCountry } from "@/lib/time-zone";
+import { createMeetingPost } from "./attendance";
 
 // Votings list / detail / create — shared by /api/votings(/[id]) and the
 // MCP voting tools (BYT-20261117-001 §3).
@@ -81,6 +85,9 @@ async function loadVotingDetail(where: SQL | undefined) {
       voteCounterId: votings.voteCounterId,
       entityId: votings.entityId,
       documentProjectId: votings.documentProjectId,
+      place: votings.place,
+      announcedAt: votings.announcedAt,
+      resultPublishedAt: votings.resultPublishedAt,
       entranceName: entrance.name,
       createdBy: {
         id: users.id,
@@ -135,8 +142,15 @@ export interface CreateVotingInput {
   entityId?: string | null;
   entranceId?: string | null;
   documentProjectId?: string | null;
+  /** Where ballot lists are signed / handed in (§14a ods. 2). */
+  place?: string | null;
   /** Raw ballot items as sent by clients — normalised by `normalizeItems`. */
   items?: unknown;
+  /**
+   * BYT-20261118-001: meeting voting created active → also create the
+   * linked owners' meeting event post in the same transaction.
+   */
+  announceMeeting?: boolean;
   // normalizeItems also reads legacy single-item fields off the body.
   [legacy: string]: unknown;
 }
@@ -205,8 +219,28 @@ export async function createVoting(
   // and the voting type (QUORUM_NOT_ALLOWED) — web and MCP alike.
   const quorumError = findDisallowedQuorum(normalized.items, country, resolvedVotingType);
   if (quorumError) throw validationError("items", { quorum: quorumError });
+  // SK §14b ods. 6 repeated-vote escalation (code, never prose).
+  const escalated = applyRepeatEscalation(normalized.items, country);
+  if ("error" in escalated) throw validationError("items", { repeat: escalated });
 
-  const status = opts.forceDraft ? "draft" : input.status || "draft";
+  // BYT-20261118-002 §6: a voting is created as a draft or announced right
+  // away; never created closed (that would skip the state machine).
+  const status: "draft" | "active" =
+    !opts.forceDraft && input.status === "active" ? "active" : "draft";
+  const now = new Date();
+  if (status === "active") {
+    // Creating active = announcing now: same lead-time rule as activation.
+    const noticeError = validateNotice({
+      country,
+      announcedAt: now,
+      startsAt: start,
+      endsAt: end,
+      timeZone: timeZoneForCountry(country),
+    });
+    if (noticeError) throw validationError("startsAt", { notice: noticeError });
+  }
+  const place =
+    typeof input.place === "string" && input.place.trim() ? input.place.trim().slice(0, 500) : null;
 
   const voting = await db.transaction(async (tx) => {
     const [created] = await tx
@@ -222,16 +256,39 @@ export async function createVoting(
         createdById: principal.userId,
         entityId: scopeEntityId,
         documentProjectId: input.documentProjectId || null,
+        place,
+        announcedAt: status === "active" ? now : null,
       })
       .returning();
 
+    if (status === "active") {
+      await recordVotingEvent(tx, {
+        votingId: created.id,
+        kind: "announced",
+        actorId: principal.userId,
+      });
+    }
+
+    // BYT-20261118-001 §1: one meeting ↔ one voting ↔ one post. Only for an
+    // announced (active) meeting voting with a place; a draft is announced
+    // later from the voting detail ("Oznámiť schôdzu vlastníkom").
+    if (
+      input.announceMeeting === true &&
+      status === "active" &&
+      resolvedVotingType === "meeting" &&
+      place
+    ) {
+      await createMeetingPost(tx, created, principal.userId);
+    }
+
     await tx.insert(votingItems).values(
-      normalized.items.map((it) => ({
+      escalated.items.map((it) => ({
         votingId: created.id,
         idx: it.idx,
         title: it.title,
         description: it.description,
         quorumType: it.quorumType,
+        repeatOfQuorumType: it.repeatOfQuorumType,
         financialEffectKind: it.financialEffectKind,
         financialEffectParams: it.financialEffectParams,
       }))

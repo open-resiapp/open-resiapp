@@ -9,6 +9,7 @@ import {
   syncDuePostings,
 } from "@modules/accounting/src/lib/owner-payments";
 import { MyPaymentsView } from "@modules/accounting/src/components/owner/MyPaymentsView";
+import { getOwnerReadingsView } from "@modules/accounting/src/lib/reading-rounds";
 
 // Moje platby (BYT-20261117-002 Phase 4) — one screen for the owner's unit.
 // Server component; authorisation mirrors the karta bytu API: own units
@@ -94,12 +95,22 @@ export default async function MyPaymentsPage({
   // lock timeout (or any failure) show the balance without fresh postings
   // instead of a 500 — same as the owner home.
   await soft(syncDuePostings(root.id, root.country), undefined);
-  const summary = await getOwnerPaymentSummary({
-    entityId: root.id,
-    country: root.country,
-    unitEntityId: unitId,
-    beneficiaryName: root.name,
-  });
+  const [summary, readings] = await Promise.all([
+    getOwnerPaymentSummary({
+      entityId: root.id,
+      country: root.country,
+      unitEntityId: unitId,
+      beneficiaryName: root.name,
+    }),
+    // Odpočty a osoby (BYT-20261118-006): only for a unit the viewer OWNS —
+    // a board member opening another unit's page must not submit as owner.
+    owned.some((u) => u.id === unitId)
+      ? soft(
+          getOwnerReadingsView({ entityId: root.id, unitEntityId: unitId, userId: viewer.userId }),
+          null
+        )
+      : Promise.resolve(null),
+  ]);
 
   const showTabs = owned.length > 1 && owned.some((u) => u.id === unitId);
 
@@ -124,7 +135,7 @@ export default async function MyPaymentsPage({
         />
       ) : null}
       {summary ? (
-        <MyPaymentsView summary={summary} country={root.country} />
+        <MyPaymentsView summary={summary} country={root.country} readings={readings} />
       ) : (
         <EmptyState icon="alert" title={t("forbidden")} />
       )}

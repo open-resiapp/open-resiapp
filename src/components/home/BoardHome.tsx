@@ -10,14 +10,19 @@ import {
   type Viewer,
 } from "@/lib/home.server";
 import { listVisibleNotices } from "@/lib/notice-board.server";
+import { resolveBoardRootId } from "@/lib/current-entity";
+import { countOwnerQueueWithoutRegistrations } from "@/lib/owner-health.server";
 import { hasPermission } from "@/lib/permissions";
 import { canReadAccounting } from "@modules/accounting/src/lib/authz";
 import { getDashboardTiles, type DashboardTiles } from "@modules/accounting/src/lib/dashboard";
 import { syncDuePostings } from "@modules/accounting/src/lib/owner-payments";
+import { loadFaultTodoRows } from "@modules/faults/src/lib/home.server";
 
 import { HomeSection } from "./HomeSection";
 import { LinkRow, type LinkRowTone } from "./LinkRow";
 import { NoticeList } from "./NoticeList";
+import { VotingHomeCards } from "@modules/voting/src/ui/VotingHomeCards";
+import { MeetingBoardRows } from "@modules/voting/src/ui/MeetingHomeCards";
 
 // Domov for the board (BYT-20261117-002 Phase 4): "Čo treba teraz" — an
 // ordered list of actionable rows, each shown only when its count > 0 —
@@ -45,12 +50,21 @@ async function loadMoneyTiles(viewer: Viewer): Promise<DashboardTiles | null> {
 
 export async function BoardHome({ viewer }: { viewer: Viewer }) {
   const t = await getTranslations("Home");
+  const tHealth = await getTranslations("OwnerHealth");
   const canSeeNotices = hasPermission(viewer.role, "viewPosts");
   const canWriteAccounting = viewer.role === "admin" || viewer.boardRoles.includes("treasurer");
 
-  const [pending, tiles, votings, notices] = await Promise.all([
-    hasPermission(viewer.role, "manageUsers")
-      ? soft(countPendingRegistrations(), 0)
+  const canManageUsers = hasPermission(viewer.role, "manageUsers");
+  const [pending, ownerQueue, tiles, votings, notices] = await Promise.all([
+    canManageUsers ? soft(countPendingRegistrations(), 0) : Promise.resolve(0),
+    // BYT-20261118-003: same request-cached owners snapshot as the nav badge.
+    canManageUsers
+      ? soft(
+          resolveBoardRootId(viewer.userId).then((rootId) =>
+            countOwnerQueueWithoutRegistrations(rootId)
+          ),
+          0
+        )
       : Promise.resolve(0),
     soft(loadMoneyTiles(viewer), null),
     viewer.enabledModules.has("voting")
@@ -70,6 +84,16 @@ export async function BoardHome({ viewer }: { viewer: Viewer }) {
       label: t("todo.registrations", { count: pending }),
     });
   }
+  if (ownerQueue > 0) {
+    rows.push({
+      key: "ownerQueue",
+      href: "/owners#queue",
+      icon: "users",
+      label: tHealth("homeRow", { count: ownerQueue }),
+    });
+  }
+  // BYT-20261118-004: new faults + faults open > 30 days (module-gated).
+  rows.push(...(await soft(loadFaultTodoRows(viewer), [])));
   if (tiles) {
     const a = tiles.attention;
     if (a.vyuctovanieDeadline) {
@@ -169,6 +193,11 @@ export async function BoardHome({ viewer }: { viewer: Viewer }) {
           </ul>
         )}
       </HomeSection>
+
+      {/* BYT-20261118-002: result-publication reminders + e-vote readiness. */}
+      {viewer.enabledModules.has("voting") ? <VotingHomeCards root={viewer.root} /> : null}
+      {/* BYT-20261118-001: upcoming owners' meetings — answers so far. */}
+      {viewer.enabledModules.has("voting") ? <MeetingBoardRows /> : null}
 
       {canSeeNotices ? (
         <HomeSection title={t("notices.heading")} link={{ href: "/board", label: t("notices.all") }}>

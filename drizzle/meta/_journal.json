@@ -596,6 +596,20 @@
       "when": 1794994245726,
       "tag": "0084_enable_banking_connector",
       "breakpoints": true
+    },
+    {
+      "idx": 85,
+      "version": "7",
+      "when": 1794996600299,
+      "tag": "0085_curly_jimmy_woo",
+      "breakpoints": true
+    },
+    {
+      "idx": 86,
+      "version": "7",
+      "when": 1794997882462,
+      "tag": "0086_flat_kronos",
+      "breakpoints": true
     }
   ]
 }

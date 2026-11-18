@@ -3,6 +3,8 @@
 import { auth } from "@/lib/auth";
 import { resolveBoardRootId } from "@/lib/current-entity";
 import { createShellOwner, revokeShellInvitations } from "@/lib/owners-board.server";
+import { dismissOwnerHealthItem, undoOwnerHealthDismissal } from "@/lib/owner-health.server";
+import type { DismissErrorCode } from "@/lib/owner-health";
 import { hasPermission } from "@/lib/permissions";
 import type { CreateOwnerErrorCode, RevokeInviteErrorCode } from "@/lib/owners-board";
 import type { UserRole } from "@/types";
@@ -60,4 +62,33 @@ export async function revokeInvitationAction(
     console.error("[owners] revokeInvitation failed", err);
     return { ok: false, error: "failed" };
   }
+}
+
+// ── BYT-20261118-003: "Na riešenie" — mark as handled / undo ──────────
+// Shared by the whole board of the community (one row per fingerprint).
+
+export async function dismissOwnerHealthAction(
+  fingerprint: string
+): Promise<{ ok: true; id: string } | { ok: false; error: DismissErrorCode }> {
+  const session = await requireManageUsers();
+  if (!session) return { ok: false, error: "forbidden" };
+  if (typeof fingerprint !== "string" || !fingerprint || fingerprint.length > 128) {
+    return { ok: false, error: "not_found" };
+  }
+  const rootId = await resolveBoardRootId(session.user.id);
+  if (!rootId) return { ok: false, error: "not_found" };
+  return dismissOwnerHealthItem(rootId, session.user.id, fingerprint);
+}
+
+export async function undoOwnerHealthDismissalAction(
+  dismissalId: string
+): Promise<{ ok: true } | { ok: false; error: DismissErrorCode }> {
+  const session = await requireManageUsers();
+  if (!session) return { ok: false, error: "forbidden" };
+  if (typeof dismissalId !== "string" || !/^[0-9a-f-]{36}$/i.test(dismissalId)) {
+    return { ok: false, error: "not_found" };
+  }
+  const rootId = await resolveBoardRootId(session.user.id);
+  if (!rootId) return { ok: false, error: "not_found" };
+  return undoOwnerHealthDismissal(rootId, dismissalId);
 }

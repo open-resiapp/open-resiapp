@@ -234,6 +234,14 @@ PIN and records the vote; the panel issues/tracks PINs.
 
 ### Schema additions (`mod_voting_*`)
 
+> **Note (2026-11-18, BYT-20261118-001):** the `voting_attendance` sketch below is
+> superseded by the shipped table **`mod_voting_attendance`**
+> (`modules/voting/src/db/schema.ts`, spec
+> `specs/in_progress/2026-11-18-owners-meeting-attendance.md` §6). The kiosk adds
+> NO attendance table: it writes rows with `source = 'kiosk'` (+ `signatureStorageKey`,
+> `signatureSha256`), `votingId` is `on delete restrict`, and `ballots.attendanceId`
+> points to `mod_voting_attendance.id`. Same unique `(votingId, ownerId)`.
+
 ```ts
 kiosk_sessions {                                  // an account placed in kiosk mode for a window
   id             uuid pk defaultRandom

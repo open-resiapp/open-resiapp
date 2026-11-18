@@ -33,6 +33,7 @@ import {
   computeItemAuditHash,
 } from "@modules/voting/src/engine";
 import { isElectronicVotingBlocked } from "@modules/voting/src/rules";
+import { ownershipSnapshot } from "@modules/voting/src/ballot-snapshot.server";
 import { getCommunityRoot } from "@/lib/legacy-compat";
 import {
   revokeTokensIssuedBefore,
@@ -396,7 +397,9 @@ export async function recordConfirmedBallot(input: {
       if (claims.iat <= revokedAt) throw new TxAbort("CONFIRMATION_SUPERSEDED", 409);
 
       const recordedAt = new Date(Math.max(Date.now(), claims.iat + 1));
+      const snapshot = await ownershipSnapshot(tx, flatId, voterId);
       const values = {
+        ...snapshot,
         voteType: "electronic" as const,
         recordedById: null,
         mandateId: null,

@@ -21,6 +21,7 @@ import {
   users,
   documentProjects,
   mcpPendingActions,
+  communityPosts,
 } from "@/db/schema";
 
 // ── Enums ──────────────────────────────────────────────
@@ -58,7 +59,27 @@ export const quorumTypeEnum = pgEnum("mod_voting_quorum_type", [
   "simple_present",
   "simple_all",
   "two_thirds_all",
+  // SK §14b ods. 6: repeat of a §14b ods. 2 matter within one year.
+  "four_fifths_all",
   "all_unanimous",
+]);
+
+// Append-only voting audit log (BYT-20261118-002 §6). Status transitions and
+// statutory steps; never updated or deleted in code.
+export const votingEventKindEnum = pgEnum("mod_voting_event_kind", [
+  "announced",
+  "closed",
+  "reopened",
+  "result_published",
+  "ballot_superseded",
+  "document_generated",
+  "minutes_finalised",
+]);
+
+export const votingOfficialRoleEnum = pgEnum("mod_voting_official_role", [
+  "chair",
+  "recorder",
+  "verifier",
 ]);
 
 // A voting item may declare a financial effect that, once the item PASSES,
@@ -80,12 +101,17 @@ export const votings = pgTable("mod_voting_votings", {
   status: votingStatusEnum("status").notNull().default("draft"),
   startsAt: timestamp("starts_at").notNull(),
   endsAt: timestamp("ends_at").notNull(),
+  // restrict: a voting is a statutory record (§9 ods. 5 písm. a); removing
+  // its author must go through the owner merge / anonymise path, not a cascade.
   createdById: uuid("created_by_id")
-    .references(() => users.id)
+    .references(() => users.id, { onDelete: "restrict" })
     .notNull(),
   votingType: votingTypeEnum("voting_type").notNull().default("written"),
   initiatedBy: votingInitiatedByEnum("initiated_by").notNull().default("board"),
-  voteCounterId: uuid("vote_counter_id").references(() => users.id),
+  // set null: the counter is a permission, the voting stays valid without it.
+  voteCounterId: uuid("vote_counter_id").references(() => users.id, {
+    onDelete: "set null",
+  }),
   entityId: uuid("entity_id")
     .references(() => entities.id, { onDelete: "restrict" })
     .notNull(),
@@ -96,29 +122,55 @@ export const votings = pgTable("mod_voting_votings", {
     () => documentProjects.id,
     { onDelete: "set null" }
   ),
+  // BYT-20261118-002: where ballot lists are signed / handed in (§14a ods. 2).
+  place: varchar("place", { length: 500 }),
+  // Set once on the first draft → active transition (= announcement,
+  // §14a ods. 2 / ods. 5 — e-votes are accepted from this moment).
+  announcedAt: timestamp("announced_at"),
+  // §14a ods. 9: publication of the result. After it, reopen is refused.
+  resultPublishedAt: timestamp("result_published_at"),
+  // BYT-20261118-001: the event post announcing a meeting voting (module →
+  // core link). set null: deleting the post never touches the voting.
+  meetingPostId: uuid("meeting_post_id").references(() => communityPosts.id, {
+    onDelete: "set null",
+  }),
+  // Bumped on every date / place change of the meeting; keys the
+  // meeting_change e-mail claim (community_notifications_sent.change_seq).
+  meetingChangeSeq: integer("meeting_change_seq").notNull().default(0),
   createdAt: timestamp("created_at").defaultNow().notNull(),
-});
+}, (table) => ({
+  meetingPostIdx: uniqueIndex("mod_voting_votings_meeting_post_idx")
+    .on(table.meetingPostId)
+    .where(sql`${table.meetingPostId} IS NOT NULL`),
+}));
 
 export const mandates = pgTable(
   "mod_voting_mandates",
   {
     id: uuid("id").primaryKey().defaultRandom(),
+    // cascade: a mandate belongs to its voting (only drafts can be deleted —
+    // ballots restrict deleting a voting that has votes).
     votingId: uuid("voting_id")
-      .references(() => votings.id)
+      .references(() => votings.id, { onDelete: "cascade" })
       .notNull(),
+    // restrict: a power of attorney is a §14a ods. 8 minutes attachment;
+    // users are merged / anonymised, never hard-deleted under it.
     fromOwnerId: uuid("from_owner_id")
-      .references(() => users.id)
+      .references(() => users.id, { onDelete: "restrict" })
       .notNull(),
     fromEntityId: uuid("from_entity_id")
       .references(() => entities.id, { onDelete: "restrict" })
       .notNull(),
     toOwnerId: uuid("to_owner_id")
-      .references(() => users.id)
+      .references(() => users.id, { onDelete: "restrict" })
       .notNull(),
     paperDocumentConfirmed: boolean("paper_document_confirmed")
       .notNull()
       .default(false),
-    verifiedByAdminId: uuid("verified_by_admin_id").references(() => users.id),
+    // set null: the verification fact (date + note) stays, the actor link is soft.
+    verifiedByAdminId: uuid("verified_by_admin_id").references(() => users.id, {
+      onDelete: "set null",
+    }),
     verificationDate: timestamp("verification_date"),
     verificationNote: text("verification_note"),
     isActive: boolean("is_active").notNull().default(true),
@@ -151,6 +203,10 @@ export const votingItems = pgTable(
     title: varchar("title", { length: 500 }).notNull(),
     description: text("description"),
     quorumType: quorumTypeEnum("quorum_type").notNull(), // MOVED from votings
+    // SK §14b ods. 6 repeated vote: the quorum category of the ORIGINAL
+    // decision (made within the last 12 months). When set, `quorumType`
+    // holds the escalated type (rules/escalateRepeatedQuorum). NULL = not a repeat.
+    repeatOfQuorumType: quorumTypeEnum("repeat_of_quorum_type"),
     // Optional accounting effect — consumed by the accounting pipeline when
     // this item passes. Params shape depends on the kind:
     //   fpuo_rate_change → { newRateCents, effectiveFrom? (ISO date) }
@@ -206,6 +262,16 @@ export const ballots = pgTable(
       "email" | "passkey"
     >(),
     confirmedAt: timestamp("confirmed_at"),
+    // Ownership snapshot frozen at cast time, so a closed result never moves
+    // when ownership changes later. NULL = legacy row (results fall back to
+    // the current membership).
+    ownerUnitShareNumerator: integer("owner_unit_share_numerator"),
+    ownerUnitShareDenominator: integer("owner_unit_share_denominator"),
+    membershipWeight: integer("membership_weight"),
+    // BYT-20261118-007: the owner id the item audit hashes were built with.
+    // Set ONLY when an account merge re-points owner_id (src/lib/user-merge.server.ts);
+    // no FK, immutable. Verifiers hash with COALESCE(hash_owner_id, owner_id).
+    hashOwnerId: uuid("hash_owner_id"),
     recordedAt: timestamp("recorded_at").defaultNow().notNull(),
     disputed: boolean("disputed").notNull().default(false),
     disputeNote: text("dispute_note"),
@@ -252,6 +318,110 @@ export const ballotPhotos = pgTable("mod_voting_ballot_photos", {
   idx: integer("idx").notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
+
+// ── Voting events (BYT-20261118-002 §6) ────────────────
+// Append-only: no UPDATE / DELETE path in code (modules/voting/src/events.ts
+// only inserts). restrict: a voting with history cannot be deleted.
+export const votingEvents = pgTable(
+  "mod_voting_voting_events",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    votingId: uuid("voting_id")
+      .references(() => votings.id, { onDelete: "restrict" })
+      .notNull(),
+    kind: votingEventKindEnum("kind").notNull(),
+    actorId: uuid("actor_id").references(() => users.id, {
+      onDelete: "set null",
+    }),
+    note: text("note"), // mandatory for `reopened`
+    payload: jsonb("payload"),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+  },
+  (table) => ({
+    votingCreatedIdx: index("mod_voting_voting_events_voting_created_idx").on(
+      table.votingId,
+      table.createdAt
+    ),
+  })
+);
+
+// Officials printed on the announcement / ballot lists / minutes
+// (§14a ods. 4, ods. 8). Document content, not a permission —
+// `votings.voteCounterId` stays the paper-recording permission.
+export const votingOfficials = pgTable(
+  "mod_voting_voting_officials",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    votingId: uuid("voting_id")
+      .references(() => votings.id, { onDelete: "cascade" })
+      .notNull(),
+    role: votingOfficialRoleEnum("role").notNull(),
+    userId: uuid("user_id").references(() => users.id, {
+      onDelete: "set null",
+    }),
+    name: varchar("name", { length: 255 }).notNull(), // snapshot printed on documents
+    refusedToSign: boolean("refused_to_sign").notNull().default(false),
+    refusalStatement: text("refusal_statement"),
+    idx: integer("idx").notNull().default(0),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+  },
+  (table) => ({
+    votingIdx: index("mod_voting_voting_officials_voting_idx").on(
+      table.votingId
+    ),
+  })
+);
+
+// ── Meeting attendance (BYT-20261118-001 §6) ───────────
+// The prezenčná listina of a meeting voting. A row ⇔ the owner was present
+// or represented; absent is DERIVED (eligible owner without a row once the
+// voting is closed). The kiosk spec (BYT-20260609-009) reuses this table
+// with source = 'kiosk' — there is no second attendance table.
+export const attendance = pgTable(
+  "mod_voting_attendance",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    // restrict: attendance is legal evidence (§14a ods. 8 attachment).
+    votingId: uuid("voting_id")
+      .references(() => votings.id, { onDelete: "restrict" })
+      .notNull(),
+    // restrict: owners are merged / anonymised, never hard-deleted under it.
+    ownerId: uuid("owner_id")
+      .references(() => users.id, { onDelete: "restrict" })
+      .notNull(),
+    status: varchar("status", { length: 16 })
+      .$type<"present" | "represented">()
+      .notNull(),
+    // §14 ods. 4: verified paper PoA; required when status = represented.
+    mandateId: uuid("mandate_id").references(() => mandates.id, {
+      onDelete: "restrict",
+    }),
+    representativeName: varchar("representative_name", { length: 255 }),
+    // Board member / counter at the door (soft link).
+    identifiedById: uuid("identified_by_id").references(() => users.id, {
+      onDelete: "set null",
+    }),
+    idCheckMethod: varchar("id_check_method", { length: 32 })
+      .$type<"photo_id" | "known_in_person">()
+      .notNull()
+      .default("known_in_person"),
+    source: varchar("source", { length: 16 })
+      .$type<"board" | "kiosk">()
+      .notNull()
+      .default("board"),
+    signatureStorageKey: varchar("signature_storage_key", { length: 1024 }),
+    signatureSha256: varchar("signature_sha256", { length: 64 }),
+    checkedInAt: timestamp("checked_in_at").defaultNow().notNull(),
+    leftAt: timestamp("left_at"),
+    note: varchar("note", { length: 500 }),
+  },
+  (table) => ({
+    votingOwnerIdx: uniqueIndex("mod_voting_attendance_voting_owner_idx").on(
+      table.votingId,
+      table.ownerId
+    ),
+  })
+);
 
 // ── Pending ballots (BYT-20261117-001 §6) ──────────────
 // A ballot proposed through MCP waits here until the owner clicks the

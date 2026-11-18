@@ -23,12 +23,14 @@ export interface QuorumNotAllowed {
 
 /** First item whose quorum type is not allowed, or null. Pure. */
 export function findDisallowedQuorum(
-  items: { idx: number; quorumType: QuorumType }[],
+  items: { idx: number; quorumType: QuorumType; repeatOfQuorumType?: QuorumType | null }[],
   country: Country,
   votingType: string
 ): QuorumNotAllowed | null {
   const allowed = getAvailableQuorumTypes(country, votingType);
-  const bad = items.find((i) => !allowed.includes(i.quorumType));
+  // A §14b ods. 6 repeat is checked on its BASE category; the escalated type
+  // (e.g. four_fifths_all) is derived, never chosen directly.
+  const bad = items.find((i) => !allowed.includes(i.repeatOfQuorumType ?? i.quorumType));
   return bad
     ? { error: "QUORUM_NOT_ALLOWED", itemIdx: bad.idx, quorumType: bad.quorumType, allowed }
     : null;
@@ -56,7 +58,7 @@ export async function checkQuorumForVotingPatch(
   const votingType =
     typeof body.votingType === "string" && body.votingType ? body.votingType : voting.votingType;
 
-  let items: { idx: number; quorumType: QuorumType }[];
+  let items: { idx: number; quorumType: QuorumType; repeatOfQuorumType?: QuorumType | null }[];
   if (itemsChange) {
     const normalized = normalizeItems(body, "", null);
     if ("error" in normalized) return null; // the route reports the item error itself
@@ -64,10 +66,18 @@ export async function checkQuorumForVotingPatch(
   } else {
     items = (
       await db
-        .select({ idx: votingItems.idx, quorumType: votingItems.quorumType })
+        .select({
+          idx: votingItems.idx,
+          quorumType: votingItems.quorumType,
+          repeatOfQuorumType: votingItems.repeatOfQuorumType,
+        })
         .from(votingItems)
         .where(eq(votingItems.votingId, votingId))
-    ).map((i) => ({ idx: i.idx, quorumType: i.quorumType as QuorumType }));
+    ).map((i) => ({
+      idx: i.idx,
+      quorumType: i.quorumType as QuorumType,
+      repeatOfQuorumType: (i.repeatOfQuorumType as QuorumType | null) ?? null,
+    }));
   }
 
   const root = await getCommunityRoot();

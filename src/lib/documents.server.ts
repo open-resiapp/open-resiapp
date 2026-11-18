@@ -1,10 +1,12 @@
 import "server-only";
-import { and, asc, desc, eq, inArray, isNull, sql } from "drizzle-orm";
+import { and, asc, desc, eq, inArray, isNull, or, sql } from "drizzle-orm";
+import { alias } from "drizzle-orm/pg-core";
 
 import { db } from "@/db";
 import {
   documents,
   documentAccessLog,
+  documentAuditLog,
   documentProjects,
   documentLinks,
   projectComments,
@@ -18,6 +20,7 @@ import {
 } from "@/db/schema";
 import {
   canSeeDocPath,
+  isBoardOnDocPath,
   type DocumentAudience,
   type DocumentLinkTarget,
   type DocumentProjectStatus,
@@ -46,6 +49,11 @@ export async function loadUserMemberships(
 }
 
 export type DocumentListItem = DocumentRow & { uploaderName: string | null };
+
+/** Resolver input for a document row (owner-folder aware, BYT-20261118-005). */
+function subjectOf(viewerId: string, doc: { subjectUserId: string | null }) {
+  return { viewerId, subjectUserId: doc.subjectUserId };
+}
 
 /**
  * Documents visible to the user within the subtree of `scopeEntityId`
@@ -81,7 +89,9 @@ export async function listVisibleDocuments(
 
   const mems = await loadUserMemberships(userId);
   return rows
-    .filter((r) => canSeeDocPath(mems, r.path, r.doc.audience))
+    .filter((r) =>
+      canSeeDocPath(mems, r.path, r.doc.audience, subjectOf(userId, r.doc))
+    )
     .map((r) => ({ ...r.doc, uploaderName: r.uploaderName }));
 }
 
@@ -98,7 +108,9 @@ export async function getViewableDocument(
     .limit(1);
   if (!row) return null;
   const mems = await loadUserMemberships(userId);
-  return canSeeDocPath(mems, row.path, row.doc.audience) ? row.doc : null;
+  return canSeeDocPath(mems, row.path, row.doc.audience, subjectOf(userId, row.doc))
+    ? row.doc
+    : null;
 }
 
 /** Raw fetch for management (delete) — no visibility filter; caller authorizes. */
@@ -125,36 +137,61 @@ export interface CreateDocumentInput {
   audience: DocumentAudience;
   retainUntil?: string | null; // ISO date (YYYY-MM-DD)
   projectId?: string | null;
+  subjectUserId?: string | null;
 }
 
+/** Inserts the document and its `document.upload` audit row atomically. */
 export async function createDocument(
   input: CreateDocumentInput
 ): Promise<DocumentRow> {
-  const [row] = await db
-    .insert(documents)
-    .values({
-      entityId: input.entityId,
-      uploadedById: input.uploadedById,
-      name: input.name,
-      storageKey: input.storageKey,
-      originalName: input.originalName ?? null,
-      mimeType: input.mimeType ?? null,
-      sizeBytes: input.sizeBytes ?? null,
-      type: input.type,
-      audience: input.audience,
-      retainUntil: input.retainUntil ?? null,
-      projectId: input.projectId ?? null,
-    })
-    .returning();
-  return row;
+  return db.transaction(async (tx) => {
+    const [row] = await tx
+      .insert(documents)
+      .values({
+        entityId: input.entityId,
+        uploadedById: input.uploadedById,
+        name: input.name,
+        storageKey: input.storageKey,
+        originalName: input.originalName ?? null,
+        mimeType: input.mimeType ?? null,
+        sizeBytes: input.sizeBytes ?? null,
+        type: input.type,
+        audience: input.audience,
+        retainUntil: input.retainUntil ?? null,
+        projectId: input.projectId ?? null,
+        subjectUserId: input.subjectUserId ?? null,
+      })
+      .returning();
+    await tx.insert(documentAuditLog).values({
+      documentId: row.id,
+      actorUserId: input.uploadedById,
+      action: "document.upload",
+      afterJson: { audience: row.audience, subjectUserId: row.subjectUserId },
+    });
+    return row;
+  });
 }
 
-/** Soft delete — preserves the row + stored bytes for legal retention. */
-export async function softDeleteDocument(documentId: string): Promise<void> {
-  await db
-    .update(documents)
-    .set({ deletedAt: new Date() })
-    .where(and(eq(documents.id, documentId), isNull(documents.deletedAt)));
+/** Soft delete — preserves the row + stored bytes for legal retention.
+ *  Writes a `document.delete` audit row. */
+export async function softDeleteDocument(
+  documentId: string,
+  actorUserId: string
+): Promise<void> {
+  await db.transaction(async (tx) => {
+    const updated = await tx
+      .update(documents)
+      .set({ deletedAt: new Date() })
+      .where(and(eq(documents.id, documentId), isNull(documents.deletedAt)))
+      .returning({ audience: documents.audience, subjectUserId: documents.subjectUserId });
+    if (updated.length === 0) return;
+    await tx.insert(documentAuditLog).values({
+      documentId,
+      actorUserId,
+      action: "document.delete",
+      beforeJson: updated[0],
+    });
+  });
 }
 
 /** Append a download/view event to the access trail (§11 + GDPR accountability). */
@@ -164,6 +201,255 @@ export async function logDocumentAccess(
   entityId: string
 ): Promise<void> {
   await db.insert(documentAccessLog).values({ documentId, userId, entityId });
+}
+
+// ── Visibility management + audit — BYT-20261118-005 ───────
+
+export interface DocumentWithPath {
+  doc: DocumentRow;
+  path: string;
+}
+
+/** Non-deleted doc + its anchor path, no visibility filter (caller authorizes). */
+export async function getDocumentWithPath(
+  documentId: string
+): Promise<DocumentWithPath | null> {
+  const [row] = await db
+    .select({ doc: documents, path: entities.path })
+    .from(documents)
+    .innerJoin(entities, eq(documents.entityId, entities.id))
+    .where(and(eq(documents.id, documentId), isNull(documents.deletedAt)))
+    .limit(1);
+  return row ?? null;
+}
+
+/** Board = active admin membership on the doc's root-to-leaf line. */
+export async function isBoardForPath(
+  userId: string,
+  path: string
+): Promise<boolean> {
+  return isBoardOnDocPath(await loadUserMemberships(userId), path);
+}
+
+/** True iff `userId` holds an ACTIVE owner membership on the doc's line —
+ *  the only people a document may be filed under (owner folder). */
+export async function isOwnerOnPath(
+  userId: string,
+  path: string
+): Promise<boolean> {
+  const mems = await loadUserMemberships(userId);
+  return mems.some(
+    (m) =>
+      m.role === "owner" &&
+      (m.entityPath === path ||
+        m.entityPath.startsWith(path) ||
+        path.startsWith(m.entityPath))
+  );
+}
+
+/**
+ * Change audience and/or subject. One audit row per changed field, written in
+ * the same transaction as the update. Caller has already authorized (board)
+ * and validated the subject. No notification is sent — widening is silent.
+ */
+export async function updateDocumentVisibility(
+  doc: DocumentRow,
+  actorUserId: string,
+  patch: { audience?: DocumentAudience; subjectUserId?: string | null }
+): Promise<void> {
+  const set: { audience?: DocumentAudience; subjectUserId?: string | null } = {};
+  if (patch.audience !== undefined && patch.audience !== doc.audience) {
+    set.audience = patch.audience;
+  }
+  if (
+    patch.subjectUserId !== undefined &&
+    patch.subjectUserId !== doc.subjectUserId
+  ) {
+    set.subjectUserId = patch.subjectUserId;
+  }
+  if (Object.keys(set).length === 0) return;
+
+  await db.transaction(async (tx) => {
+    await tx.update(documents).set(set).where(eq(documents.id, doc.id));
+    if (set.audience !== undefined) {
+      await tx.insert(documentAuditLog).values({
+        documentId: doc.id,
+        actorUserId,
+        action: "document.set_audience",
+        beforeJson: { audience: doc.audience },
+        afterJson: { audience: set.audience },
+      });
+    }
+    if (set.subjectUserId !== undefined) {
+      await tx.insert(documentAuditLog).values({
+        documentId: doc.id,
+        actorUserId,
+        action: "document.set_subject",
+        beforeJson: { subjectUserId: doc.subjectUserId },
+        afterJson: { subjectUserId: set.subjectUserId },
+      });
+    }
+  });
+}
+
+export async function logDocumentEmailSent(
+  documentId: string,
+  actorUserId: string,
+  recipientUserId: string,
+  mode: "attachment" | "link"
+): Promise<void> {
+  await db.insert(documentAuditLog).values({
+    documentId,
+    actorUserId,
+    action: "document.email_sent",
+    afterJson: { recipientUserId, mode },
+  });
+}
+
+export interface DocumentAuditItem {
+  id: string;
+  action: (typeof documentAuditLog.$inferSelect)["action"];
+  actorName: string | null;
+  before: Record<string, unknown> | null;
+  after: Record<string, unknown> | null;
+  createdAt: Date;
+}
+
+/** Board-only audit trail of one document, oldest first. Caller authorizes. */
+export async function listDocumentAudit(
+  documentId: string
+): Promise<DocumentAuditItem[]> {
+  const rows = await db
+    .select({ a: documentAuditLog, actorName: users.name })
+    .from(documentAuditLog)
+    .leftJoin(users, eq(documentAuditLog.actorUserId, users.id))
+    .where(eq(documentAuditLog.documentId, documentId))
+    .orderBy(asc(documentAuditLog.createdAt));
+  return rows.map((r) => ({
+    id: r.a.id,
+    action: r.a.action,
+    actorName: r.actorName,
+    before: (r.a.beforeJson as Record<string, unknown> | null) ?? null,
+    after: (r.a.afterJson as Record<string, unknown> | null) ?? null,
+    createdAt: r.a.createdAt,
+  }));
+}
+
+export type FolderDocumentItem = DocumentListItem & {
+  subjectName: string | null;
+};
+
+/**
+ * Owner folder: docs filed under `ownerUserId` (subject) plus docs anchored on
+ * the units that person currently owns — filtered through the resolver for
+ * `viewerId`. Board viewer ⇒ everything incl. "Len výbor"; owner viewing
+ * their own folder ⇒ only what the resolver lets them see.
+ */
+export async function listOwnerFolderDocuments(
+  viewerId: string,
+  ownerUserId: string
+): Promise<FolderDocumentItem[]> {
+  const unitRows = await db
+    .select({ entityId: memberships.entityId })
+    .from(memberships)
+    .where(
+      and(
+        eq(memberships.userId, ownerUserId),
+        eq(memberships.status, "active"),
+        eq(memberships.role, "owner")
+      )
+    );
+  const unitIds = unitRows.map((u) => u.entityId);
+
+  const subjectUsers = alias(users, "subject_user");
+  const where = unitIds.length
+    ? or(eq(documents.subjectUserId, ownerUserId), inArray(documents.entityId, unitIds))
+    : eq(documents.subjectUserId, ownerUserId);
+
+  const rows = await db
+    .select({
+      doc: documents,
+      path: entities.path,
+      uploaderName: users.name,
+      subjectName: subjectUsers.name,
+    })
+    .from(documents)
+    .innerJoin(entities, eq(documents.entityId, entities.id))
+    .leftJoin(users, eq(documents.uploadedById, users.id))
+    .leftJoin(subjectUsers, eq(documents.subjectUserId, subjectUsers.id))
+    .where(and(isNull(documents.deletedAt), where))
+    .orderBy(desc(documents.createdAt));
+
+  const mems = await loadUserMemberships(viewerId);
+  return rows
+    .filter((r) =>
+      canSeeDocPath(mems, r.path, r.doc.audience, subjectOf(viewerId, r.doc))
+    )
+    // Other people's folder docs on a shared unit never belong in this view.
+    .filter((r) => !r.doc.subjectUserId || r.doc.subjectUserId === ownerUserId)
+    .map((r) => ({
+      ...r.doc,
+      uploaderName: r.uploaderName,
+      subjectName: r.subjectName,
+    }));
+}
+
+export interface SubjectCandidate {
+  userId: string;
+  name: string;
+  unitEntityId: string;
+  unitLabel: string;
+}
+
+/** Active owners (one row per owned unit) within the scope subtree — the
+ *  "Komu patrí → Vlastník" picker on upload. Caller authorizes (board). */
+export async function listSubjectCandidates(
+  scopeEntityId: string
+): Promise<SubjectCandidate[]> {
+  const [scope] = await db
+    .select({ path: entities.path })
+    .from(entities)
+    .where(eq(entities.id, scopeEntityId))
+    .limit(1);
+  if (!scope) return [];
+  const rows = await db
+    .select({
+      userId: users.id,
+      name: users.name,
+      unitEntityId: entities.id,
+      unitName: entities.name,
+      flatNumber: sql<string | null>`${entities.data}->>'flat_number'`,
+    })
+    .from(memberships)
+    .innerJoin(entities, eq(memberships.entityId, entities.id))
+    .innerJoin(users, eq(memberships.userId, users.id))
+    .where(
+      and(
+        eq(memberships.role, "owner"),
+        eq(memberships.status, "active"),
+        sql`${entities.path} LIKE ${scope.path + "%"}`
+      )
+    )
+    .orderBy(asc(users.name));
+  return rows.map((r) => ({
+    userId: r.userId,
+    name: r.name,
+    unitEntityId: r.unitEntityId,
+    unitLabel: r.flatNumber || r.unitName,
+  }));
+}
+
+/** Names for a set of user ids (subject chips in the library). */
+export async function getUserNames(
+  ids: string[]
+): Promise<Map<string, string>> {
+  const unique = [...new Set(ids)];
+  if (!unique.length) return new Map();
+  const rows = await db
+    .select({ id: users.id, name: users.name })
+    .from(users)
+    .where(inArray(users.id, unique));
+  return new Map(rows.map((r) => [r.id, r.name]));
 }
 
 // ── Document projects (dossiers) — BYT-20260608-001 ────────
@@ -221,7 +507,9 @@ export async function getViewableProject(
     .limit(1);
   if (!row) return null;
   const mems = await loadUserMemberships(userId);
-  return canSeeDocPath(mems, row.path, row.project.audience) ? row.project : null;
+  return canSeeDocPath(mems, row.path, row.project.audience, null)
+    ? row.project
+    : null;
 }
 
 /** Projects in the subtree of `scopeEntityId` the user may see, with doc counts. */
@@ -244,17 +532,30 @@ export async function listVisibleProjects(
     .orderBy(desc(documentProjects.createdAt));
 
   const mems = await loadUserMemberships(userId);
-  const visible = rows.filter((r) => canSeeDocPath(mems, r.path, r.project.audience));
+  const visible = rows.filter((r) =>
+    canSeeDocPath(mems, r.path, r.project.audience, null)
+  );
 
   const ids = visible.map((r) => r.project.id);
   const counts = new Map<string, number>();
   if (ids.length) {
-    const grouped = await db
-      .select({ projectId: documents.projectId, c: sql<number>`count(*)::int` })
+    // G2 (BYT-20261118-005): count only docs THIS user may see — a raw
+    // count(*) leaked the number of board-only / other-owner docs.
+    const docRows = await db
+      .select({
+        projectId: documents.projectId,
+        audience: documents.audience,
+        subjectUserId: documents.subjectUserId,
+        path: entities.path,
+      })
       .from(documents)
-      .where(and(inArray(documents.projectId, ids), isNull(documents.deletedAt)))
-      .groupBy(documents.projectId);
-    for (const g of grouped) if (g.projectId) counts.set(g.projectId, Number(g.c));
+      .innerJoin(entities, eq(documents.entityId, entities.id))
+      .where(and(inArray(documents.projectId, ids), isNull(documents.deletedAt)));
+    for (const d of docRows) {
+      if (!d.projectId) continue;
+      if (!canSeeDocPath(mems, d.path, d.audience, subjectOf(userId, d))) continue;
+      counts.set(d.projectId, (counts.get(d.projectId) ?? 0) + 1);
+    }
   }
 
   return visible.map((r) => ({
@@ -277,7 +578,9 @@ export async function listProjectDocuments(
     .orderBy(desc(documents.createdAt));
   const mems = await loadUserMemberships(userId);
   return rows
-    .filter((r) => canSeeDocPath(mems, r.path, r.doc.audience))
+    .filter((r) =>
+      canSeeDocPath(mems, r.path, r.doc.audience, subjectOf(userId, r.doc))
+    )
     .map((r) => ({ ...r.doc, uploaderName: r.uploaderName }));
 }
 
@@ -396,7 +699,9 @@ export async function listTargetDocuments(
     .orderBy(desc(documentLinks.createdAt));
   const mems = await loadUserMemberships(userId);
   return rows
-    .filter((r) => canSeeDocPath(mems, r.path, r.doc.audience))
+    .filter((r) =>
+      canSeeDocPath(mems, r.path, r.doc.audience, subjectOf(userId, r.doc))
+    )
     .map((r) => ({ ...r.doc, uploaderName: r.uploaderName }));
 }
 

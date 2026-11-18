@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { sql } from "drizzle-orm";
 
 import { db } from "@/db";
 import { memberships, membershipRoleEnum } from "@/db/schema";
@@ -25,6 +26,12 @@ async function handler(request: NextRequest, _apiKey: unknown) {
     );
   }
 
+  // An ended ownership is recorded by ending a current one (DELETE /
+  // PATCH status 'archived'), never inserted directly (BYT-20261118-007).
+  if (status === "archived") {
+    return NextResponse.json({ error: "status 'archived' cannot be created" }, { status: 400 });
+  }
+
   const [created] = await db
     .insert(memberships)
     .values({
@@ -38,7 +45,10 @@ async function handler(request: NextRequest, _apiKey: unknown) {
           : "active",
     })
     .onConflictDoUpdate({
+      // Partial unique index (BYT-20261118-007): one CURRENT row per
+      // (user, unit); ended periods never conflict.
       target: [memberships.userId, memberships.entityId],
+      targetWhere: sql`${memberships.validTo} IS NULL`,
       set: {
         role: role as MembershipRole,
         status:

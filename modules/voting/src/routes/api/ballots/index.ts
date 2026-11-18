@@ -28,6 +28,17 @@ import {
 import { userPasskeyState } from "@/lib/webauthn.server";
 import type { UserRole } from "@/types";
 import { deleteBallotAsBoard, validateCast } from "./cast.server";
+import { ownershipSnapshot } from "@modules/voting/src/ballot-snapshot.server";
+import {
+  buildOverview,
+  canStillPass,
+  splitByChannel,
+  type OverviewInput,
+} from "@modules/voting/src/workflow/overview";
+import { getCommunityRoot } from "@/lib/legacy-compat";
+import { normalizeVotingMethod } from "@/lib/voting-method";
+import type { Country, QuorumType } from "@/types";
+import { recordVotingEvent } from "@modules/voting/src/events";
 import { castConfirmed, withdrawConfirmed } from "./confirm.server";
 
 // ── GET: items + per-item results + caller's ballots ──────
@@ -58,6 +69,7 @@ export async function GET(request: NextRequest) {
     title: i.title,
     description: i.description,
     quorumType: i.quorumType,
+    repeatOfQuorumType: i.repeatOfQuorumType,
   }));
   const { results, totalPossibleWeight } = bundle;
 
@@ -175,6 +187,37 @@ export async function GET(request: NextRequest) {
     ? await getVotingParticipation(votingId)
     : null;
 
+  // BYT-20261118-002 §5: management drill-down, computed here so the page
+  // makes ONE request (no second fetch, no polling). Board / counter only.
+  let overview: unknown = null;
+  if (participation) {
+    const root = await getCommunityRoot();
+    const ovInput: OverviewInput = {
+      country: (root?.country ?? "sk") as Country,
+      votingMethod: normalizeVotingMethod(root?.votingMethod),
+      totalPossibleWeight,
+      items: bundle.items.map((i) => ({ id: i.id, quorumType: i.quorumType as QuorumType })),
+      eligible: participation.eligible,
+      ballots: ballotsList.map((b) => ({
+        entityId: b.entityId,
+        ownerId: b.ownerId,
+        ownerName: b.ownerName,
+        voteType: b.voteType,
+        recordedAt: b.recordedAt.toISOString(),
+        choices: b.choices,
+      })),
+    };
+    const outlook = canStillPass(ovInput);
+    // "passed" is the binding engine result (frozen shares), not a re-run.
+    for (const r of results) if (r.passed) outlook[r.itemId] = "passed";
+    overview = {
+      items: buildOverview(ovInput),
+      channels: splitByChannel(ovInput),
+      outlook,
+      generatedAt: new Date().toISOString(),
+    };
+  }
+
   return NextResponse.json({
     items,
     results,
@@ -192,6 +235,7 @@ export async function GET(request: NextRequest) {
           })),
         }
       : null,
+    overview,
     ballots: ballotsList,
     userBallots,
     userFlats,
@@ -273,7 +317,7 @@ export async function POST(request: NextRequest) {
 
   // Upsert: a re-submitted ballot supersedes (not appends) the prior one.
   const [existing] = await db
-    .select({ id: ballots.id })
+    .select({ id: ballots.id, voteType: ballots.voteType, ballotHash: ballots.ballotHash })
     .from(ballots)
     .where(
       and(
@@ -297,16 +341,28 @@ export async function POST(request: NextRequest) {
   };
 
   const ballotId = await db.transaction(async (tx) => {
+    // Ownership frozen at cast time (results never move on a later ownership change).
+    const snapshot = await ownershipSnapshot(tx, flatId, voterId);
     let bId: string;
     if (existing) {
       bId = existing.id;
-      await tx.update(ballots).set(paperValues).where(eq(ballots.id, bId));
+      // §14a ods. 7: paper beats electronic — leave an audit trace of the
+      // replaced e-ballot (its commitment only, no choices) before the overwrite.
+      if (existing.voteType === "electronic") {
+        await recordVotingEvent(tx, {
+          votingId,
+          kind: "ballot_superseded",
+          actorId: session.user.id,
+          payload: { ballotHash: existing.ballotHash, unitId: flatId, ownerId: voterId },
+        });
+      }
+      await tx.update(ballots).set({ ...paperValues, ...snapshot }).where(eq(ballots.id, bId));
       await tx.delete(ballotItemVotes).where(eq(ballotItemVotes.ballotId, bId));
       await tx.delete(ballotPhotos).where(eq(ballotPhotos.ballotId, bId));
     } else {
       const [created] = await tx
         .insert(ballots)
-        .values({ votingId, entityId: flatId, ownerId: voterId, ...paperValues })
+        .values({ votingId, entityId: flatId, ownerId: voterId, ...paperValues, ...snapshot })
         .returning({ id: ballots.id });
       bId = created.id;
     }

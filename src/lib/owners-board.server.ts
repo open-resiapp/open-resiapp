@@ -1,5 +1,6 @@
 import "server-only";
 
+import { cache } from "react";
 import {
   aliasedTable,
   and,
@@ -58,6 +59,10 @@ interface MembershipRow {
   floor: number | null;
   shareNum: number;
   shareDen: number;
+  // BYT-20261118-003: inputs of the ownership checks (owner-health.server.ts).
+  role: string;
+  lvOrdinal: number | null;
+  ownershipForm: string | null;
 }
 interface UnitRow {
   id: string;
@@ -112,13 +117,21 @@ async function loadRaw(rootId: string) {
         hasPassword: sql<boolean>`${users.passwordHash} is not null`,
         emailVerifiedAt: users.emailVerifiedAt,
         createdAt: users.createdAt,
+        // BYT-20261118-003: board-only (queue + owner detail); never copied
+        // into OwnerRow, so it cannot leak through the people list.
+        lastLoginAt: users.lastLoginAt,
       })
       .from(users)
       .where(
+        and(
+        // BYT-20261118-007: merged-away accounts are tombstones, never listed.
+        isNull(users.mergedIntoUserId),
         or(
           inArray(users.id, inRoot),
           and(
             notInArray(users.id, withActiveMembership),
+            // Anonymised accounts are not "flatless members" of every root.
+            isNull(users.anonymizedAt),
             or(
               and(eq(users.status, "pending"), isNotNull(users.passwordHash)),
               // Approved without a flat (flatless community member) or an
@@ -127,6 +140,7 @@ async function loadRaw(rootId: string) {
               eq(users.status, "active")
             )
           )
+        )
         )
       );
   const membershipsQ = async (): Promise<MembershipRow[]> =>
@@ -139,6 +153,9 @@ async function loadRaw(rootId: string) {
         floor: sql<number | null>`(${entities.data}->>'floor')::int`,
         shareNum: memberships.ownerUnitShareNumerator,
         shareDen: memberships.ownerUnitShareDenominator,
+        role: memberships.role,
+        lvOrdinal: memberships.lvOrdinal,
+        ownershipForm: memberships.ownershipForm,
       })
       .from(memberships)
       .innerJoin(entities, eq(memberships.entityId, entities.id))
@@ -167,6 +184,7 @@ async function loadRaw(rootId: string) {
   const invitesQ = () =>
     db
       .select({
+        id: invitations.id,
         shellId: invitations.targetShellUserId,
         createdAt: invitations.createdAt,
         expiresAt: invitations.expiresAt,
@@ -181,20 +199,37 @@ async function loadRaw(rootId: string) {
       )
       .orderBy(desc(invitations.createdAt));
 
-  const [userRows, membershipRows, unitRows, inviteRows] = await Promise.all([
+  // BYT-20261118-007: former owners of this root (ended here, nothing current here).
+  const formerQ = async (): Promise<{ userId: string; lastTo: string }[]> =>
+    db
+      .select({ userId: memberships.userId, lastTo: sql<string>`max(${memberships.validTo})::text` })
+      .from(memberships)
+      .innerJoin(entities, eq(entities.id, memberships.entityId))
+      .where(
+        and(
+          eq(entities.rootId, rootId),
+          isNotNull(memberships.validTo),
+          sql`NOT EXISTS (SELECT 1 FROM memberships m2 JOIN entities e2 ON e2.id = m2.entity_id WHERE m2.user_id = ${memberships.userId} AND m2.valid_to IS NULL AND e2.root_id = ${rootId})`
+        )
+      )
+      .groupBy(memberships.userId);
+
+  const [userRows, membershipRows, unitRows, inviteRows, formerRows] = await Promise.all([
     usersQ(),
     membershipsQ(),
     unitsQ(),
     invitesQ(),
+    formerQ(),
   ]);
-  return { userRows, membershipRows, unitRows, inviteRows };
+  return { userRows, membershipRows, unitRows, inviteRows, formerRows };
 }
 
 function buildBoard(
   raw: Awaited<ReturnType<typeof loadRaw>>,
   opts: { includeUserId?: string } = {}
 ): OwnersBoardData {
-  const { userRows: allUserRows, membershipRows, unitRows, inviteRows } = raw;
+  const { userRows: allUserRows, membershipRows, unitRows, inviteRows, formerRows } = raw;
+  const formerByUser = new Map(formerRows.map((f) => [f.userId, f.lastTo]));
   // Rejected registrations were dismissed on purpose — not people of the
   // house. The detail page may still open one (it could before).
   const userRows = allUserRows.filter(
@@ -218,7 +253,7 @@ function buildBoard(
   for (const list of flatsByUser.values()) list.sort((a, b) => compareFlat(a.flatNumber, b.flatNumber));
 
   // Latest open invitation per shell (rows are ordered newest first).
-  const inviteByShell = new Map<string, { createdAt: Date; expiresAt: Date }>();
+  const inviteByShell = new Map<string, { id: string; createdAt: Date; expiresAt: Date }>();
   for (const i of inviteRows) {
     if (i.shellId && !inviteByShell.has(i.shellId)) inviteByShell.set(i.shellId, i);
   }
@@ -244,6 +279,7 @@ function buildBoard(
       flats,
       invite: invite
         ? {
+            id: invite.id,
             sentAt: invite.createdAt.toISOString(),
             expiresAt: invite.expiresAt.toISOString(),
             expired: invite.expiresAt.getTime() < now,
@@ -252,6 +288,7 @@ function buildBoard(
       createdAt: u.createdAt.toISOString(),
       // mergeShellIntoUser only accepts a pending shell without an e-mail.
       mergeable: !u.hasPassword && u.email === null && u.status === "pending",
+      formerUntil: flats.length === 0 ? (formerByUser.get(u.id) ?? null) : null,
     };
   });
 
@@ -335,10 +372,25 @@ const EMPTY_BOARD: OwnersBoardData = {
   mergeCandidates: [],
 };
 
+export type OwnersRaw = Awaited<ReturnType<typeof loadRaw>>;
+
+/**
+ * The raw rows + the built board, once per server request (React `cache()`
+ * lives for ONE request only — no cross-request / cross-replica state).
+ * The shell (nav badge, share-sum banner), Domov and /owners share it, so
+ * the owners queries run once per request (BYT-20261118-003).
+ */
+export const loadOwnersSnapshot = cache(async function loadOwnersSnapshot(
+  rootId: string
+): Promise<{ raw: OwnersRaw; board: OwnersBoardData }> {
+  const raw = await loadRaw(rootId);
+  return { raw, board: buildBoard(raw) };
+});
+
 /** `rootId` = the viewer's current community (resolveCurrentEntityId). */
 export async function loadOwnersBoard(rootId: string | null): Promise<OwnersBoardData> {
   if (!rootId) return EMPTY_BOARD;
-  return buildBoard(await loadRaw(rootId));
+  return (await loadOwnersSnapshot(rootId)).board;
 }
 
 export async function loadOwnerDetail(
@@ -346,10 +398,19 @@ export async function loadOwnerDetail(
   rootId: string | null
 ): Promise<OwnerDetailData | null> {
   if (!rootId) return null;
-  const board = buildBoard(await loadRaw(rootId), { includeUserId: id });
+  const { raw } = await loadOwnersSnapshot(rootId);
+  const board = buildBoard(raw, { includeUserId: id });
   const owner = board.people.find((p) => p.id === id);
   if (!owner) return null;
-  return { owner, units: board.units, mergeCandidates: board.mergeCandidates };
+  // Callers gate on manageUsers (owners/[id]/page.tsx) — the only payload
+  // that carries last login (BYT-20261118-003).
+  const lastLoginAt = raw.userRows.find((u) => u.id === id)?.lastLoginAt ?? null;
+  return {
+    owner,
+    units: board.units,
+    mergeCandidates: board.mergeCandidates,
+    lastLoginAt: lastLoginAt ? lastLoginAt.toISOString() : null,
+  };
 }
 
 // ── Writes ──────────────────────────────────────────────────────────────
@@ -364,7 +425,7 @@ const WEIGHT_SCALE = 1_000_000n;
  * (unit share × owner share × WEIGHT_SCALE). A unit without a recorded
  * share counts as 1/1. Null when the unit is not an active unit of `rootId`.
  */
-async function unitOwnerWeight(
+export async function unitOwnerWeight(
   rootId: string,
   unitId: string,
   shareNum: number,
@@ -754,7 +815,9 @@ export async function loadUnitOwnership(
     })
     .from(memberships)
     .innerJoin(users, eq(users.id, memberships.userId))
-    .where(eq(memberships.entityId, unitId));
+    // BYT-20261118-007: exactly the CURRENT members; ended periods are
+    // history (loadUnitOwnerPeriods in ownership.server.ts lists them).
+    .where(and(eq(memberships.entityId, unitId), isNull(memberships.validTo)));
   return {
     unit: {
       id: unit.id,

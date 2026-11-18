@@ -133,6 +133,7 @@ function selectCommunity() {
       responsesAllowed: communityPosts.responsesAllowed,
       eventDate: communityPosts.eventDate,
       eventLocation: communityPosts.eventLocation,
+      eventKind: communityPosts.eventKind,
       expiresAt: communityPosts.expiresAt,
       createdAt: communityPosts.createdAt,
       entranceName: communityEntrance.name,
@@ -175,6 +176,7 @@ function toCommunity(r: CommunityRow): FeedCommunityPost {
     photoUrl: r.photoUrl,
     eventDate: iso(r.eventDate),
     eventLocation: r.eventLocation,
+    eventKind: r.eventKind,
     entranceName: r.entranceName,
     expiresAt: iso(r.expiresAt),
     createdAt: r.createdAt.toISOString(),
@@ -226,6 +228,7 @@ async function enrich(viewer: FeedViewer, items: FeedItem[]): Promise<void> {
             id: documents.id,
             name: documents.name,
             audience: documents.audience,
+            subjectUserId: documents.subjectUserId,
             path: entities.path,
           })
           .from(documentLinks)
@@ -270,7 +273,14 @@ async function enrich(viewer: FeedViewer, items: FeedItem[]): Promise<void> {
   // Same per-document filter as listTargetDocuments (GET /api/document-links).
   const attachments = new Map<string, FeedAttachment[]>();
   for (const r of attachmentRows) {
-    if (!canSeeDocPath(mems, r.path, r.audience)) continue;
+    if (
+      !canSeeDocPath(mems, r.path, r.audience, {
+        viewerId: viewer.id,
+        subjectUserId: r.subjectUserId,
+      })
+    ) {
+      continue;
+    }
     const key = r.targetType === "board_post" ? noticeKey(r.targetId) : communityKey(r.targetId);
     const list = attachments.get(key) ?? [];
     list.push({ id: r.id, name: r.name });

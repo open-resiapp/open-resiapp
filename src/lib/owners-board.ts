@@ -27,6 +27,8 @@ export interface OwnerFlat {
 }
 
 export interface OwnerInvite {
+  /** invitations.id — the queue fingerprint of an unfinished invitation. */
+  id: string;
   sentAt: string;
   expiresAt: string;
   expired: boolean;
@@ -47,6 +49,11 @@ export interface OwnerRow {
   createdAt: string;
   /** Shell that the merge endpoint accepts as a source (no e-mail, pending). */
   mergeable: boolean;
+  /**
+   * BYT-20261118-007: former owner of this community — ended memberships
+   * here and no current one. ISO date of the last valid_to; null otherwise.
+   */
+  formerUntil?: string | null;
 }
 
 export interface InboxSuggestion {
@@ -108,6 +115,11 @@ export interface OwnerDetailData {
   owner: OwnerRow;
   units: UnitOption[];
   mergeCandidates: MergeCandidate[];
+  /**
+   * BYT-20261118-003: users.last_login_at (ISO) — only in this board-only
+   * payload (owner detail is gated by manageUsers). Null = no sign-in recorded.
+   */
+  lastLoginAt: string | null;
 }
 
 export type CreateOwnerErrorCode =

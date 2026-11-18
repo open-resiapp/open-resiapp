@@ -17,6 +17,12 @@
       "schedule": "30 6 * * *",
       "description": "Sync ECB/ČNB base rates for úroky z omeškania. Registered in docker-compose.*.yml; self-gates on the accounting module being enabled.",
       "env": ["CNB_REPO_CSV_URL"]
+    },
+    {
+      "name": "reading-reminders",
+      "endpoint": "/api/cron/accounting-readings",
+      "schedule": "0 8 * * *",
+      "description": "Reminder e-mail before a reading round's deadline (odpočty a osoby, BYT-20261118-006). Deduped per round × recipient in mod_accounting_notifications_sent; self-gates on the accounting module being enabled."
     }
   ],
   "minCoreVersion": "0.1.0"

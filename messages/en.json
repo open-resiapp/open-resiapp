@@ -1,4 +1,272 @@
 {
+  "OwnerLifecycle": {
+    "formerChip": "Former owner",
+    "formerUntil": "Former owner · until {date}",
+    "cancel": "Cancel",
+    "next": "Continue",
+    "back": "Back",
+    "loadingPlan": "Loading…",
+    "typeNameLabel": "To confirm, type the name: {name}",
+    "historyTitle": "Ownership",
+    "historyEmpty": "No ownership in this building.",
+    "historyUnit": "Unit {unit} · share {share}",
+    "periodEnded": "{from} – {to} · {reason}",
+    "periodCurrent": "since {from} · current owner",
+    "periodRange": "{from} – {to}",
+    "actionsLabel": "More actions",
+    "removeAction": "Remove from building",
+    "restoreAction": "Restore",
+    "mergeAction": "Merge with…",
+    "anonymizeAction": "Anonymise",
+    "deleteAction": "Delete",
+    "removeTitle": "Remove from building",
+    "mergeTitle": "Merge accounts",
+    "anonymizeTitle": "Anonymise personal data",
+    "deleteTitle": "Delete record",
+    "removeConfirm": "Remove from building",
+    "mergeConfirm": "Merge accounts",
+    "anonymizeConfirm": "Anonymise",
+    "deleteConfirm": "Delete permanently",
+    "mergePickTitle": "Merge with another account",
+    "mergePickHint": "Choose the other account of the same person as {name}. Accounts with a similar name, e-mail or phone are suggested.",
+    "mergeSearch": "Search by name or e-mail",
+    "mergeNoCandidates": "No other account matches.",
+    "mergeSuggested": "suggested",
+    "survivorLabel": "Which account stays",
+    "survivorKeep": "Keep: {name}",
+    "restoreTitle": "Restore ownership",
+    "restoreBody": "We will re-open exactly the ownerships ended by the removal on {date}. If a new owner was recorded on any of those units since, nothing is restored.",
+    "unitOwnersTitle": "Owners of unit {unit}",
+    "unitOwnersFilter": "Owners shown",
+    "currentOwners": "Current owners",
+    "showFormerOwners": "Show former owners",
+    "unitNoOwners": "No owner recorded for this unit.",
+    "transferAction": "Change of owner",
+    "transferTitle": "Change of owner of unit {unit}",
+    "transferStep": "Step {step} of {total}",
+    "transferWhoLeaves": "Who leaves",
+    "transferWhoComes": "Who comes",
+    "transferRemaining": "Staying: {names}",
+    "newOwnerChip": "new owner",
+    "shareNum": "Share – numerator",
+    "shareDen": "Share – denominator",
+    "removeBuyer": "Remove",
+    "pickExisting": "Existing person",
+    "pickPlaceholder": "Choose a person",
+    "addBuyer": "Add",
+    "newOwnerName": "New owner – full name",
+    "addNewOwner": "Add new",
+    "shareSum": "Sum of shares: {sum} (must be 1/1)",
+    "shareSumInvalid": "Enter valid shares (e.g. 1/2).",
+    "transferDate": "Date of change",
+    "transferDateHint": "Day of registration in the land registry or day of death. Must not be in the future.",
+    "transferKind": "Reason",
+    "transferNote": "Note (optional)",
+    "transferPreview": "Review the change",
+    "transferConfirm": "Record change of owner",
+    "kinds": {
+      "sale": "sale",
+      "inheritance": "inheritance",
+      "gift": "gift",
+      "correction": "data correction"
+    },
+    "endReasons": {
+      "sale": "sale",
+      "inheritance": "inheritance",
+      "gift": "gift",
+      "removed": "removed from building",
+      "merged": "accounts merged",
+      "correction": "data correction"
+    },
+    "summary": {
+      "end": "The ownership will end.",
+      "transfer": "{sellers} stops owning unit {unit} on {date} ({kind}). New owners: {buyers}.",
+      "remove": "{name} stops being an owner in this building on {date}. The history is kept.",
+      "restore": "The ownership will be restored.",
+      "merge": "Account {from} will be merged into {into}. All history moves to {into}.",
+      "anonymize": "Contact data of {name} will be removed. Records the law requires us to keep stay.",
+      "hard_delete": "The record {name} will be deleted permanently."
+    },
+    "groups": {
+      "archive": "Will end",
+      "move": "Will move",
+      "keep": "Stays",
+      "destroy": "Will be deleted",
+      "blockers": "Must be resolved",
+      "warnings": "Warnings"
+    },
+    "lines": {
+      "ownershipPeriods": "{count, plural, one {# ownership} other {# ownerships}}",
+      "currentMemberships": "{count, plural, one {# current ownership} other {# current ownerships}}",
+      "sellerBallots": "{count, plural, one {# ballot of the seller} other {# ballots of the seller}}",
+      "unitAssessments": "{count, plural, one {# payment assessment of the unit} other {# payment assessments of the unit}}",
+      "duplicateBallotsOnTombstone": "{count, plural, one {# duplicate ballot (flagged as disputed)} other {# duplicate ballots (flagged as disputed)}}",
+      "tombstone": "the original account as an inactive record without contacts",
+      "contactData": "e-mail, phone and password",
+      "account": "the person's account",
+      "pushSubscriptions": "{count, plural, one {# device with notifications} other {# devices with notifications}}",
+      "oauthTokens": "{count, plural, one {# app sign-in} other {# app sign-ins}}",
+      "oauthCodes": "{count, plural, one {# authorisation code} other {# authorisation codes}}",
+      "mcpPending": "{count, plural, one {# pending assistant action} other {# pending assistant actions}}",
+      "passkeys": "{count, plural, one {# passkey} other {# passkeys}}",
+      "emailVerifications": "{count, plural, one {# e-mail verification} other {# e-mail verifications}}",
+      "directoryEntry": "contact directory entry",
+      "notificationPreferences": "notification settings",
+      "openInvitations": "{count, plural, one {# open invitation} other {# open invitations}}",
+      "ownership": "{count, plural, one {# ownership record} other {# ownership records}}",
+      "voting": "{count, plural, one {# voting record} other {# voting records}}",
+      "accounting": "{count, plural, one {# accounting record} other {# accounting records}}",
+      "content": "{count, plural, one {# post or document} other {# posts or documents}}",
+      "consent": "{count, plural, one {# consent record} other {# consent records}}",
+      "audit": "{count, plural, one {# change-history entry} other {# change-history entries}}",
+      "meetings": "{count, plural, one {# meeting response} other {# meeting responses}}",
+      "credentials": "{count, plural, one {# sign-in credential} other {# sign-in credentials}}",
+      "settings": "{count, plural, one {# setting} other {# settings}}",
+      "notifications": "{count, plural, one {# sent-notification record} other {# sent-notification records}}"
+    },
+    "blockers": {
+      "merge_conflict_open_ballot": "Both accounts voted for unit {unit} in the open voting “{voting}”. Mark one ballot as disputed first.",
+      "anonymize_has_current_ownership": "The person is still an owner. Remove them from the building or record a change of owner first.",
+      "user_has_history": "The person has history that must be kept. Remove them from the building or anonymise instead of deleting.",
+      "self_action": "You cannot do this to your own account.",
+      "merge_tombstone": "One of the accounts is already merged or anonymised."
+    },
+    "warnings": {
+      "backdated_seller_ballot": "The seller voted in “{voting}” after the date of change. The ballot stays valid.",
+      "backdated_buyer_missed_voting": "The voting “{voting}” ran after the date of change – the new owner did not vote in it.",
+      "assessments_after_date": "Payment assessments after the date of change ({count}) are issued to the seller. They are not rewritten automatically – check them in accounting.",
+      "merge_closed_duplicate_ballot": "In the closed voting “{voting}” both accounts voted for unit {unit}. Both ballots stay, the duplicate is flagged as disputed. The result is not recomputed.",
+      "merge_self_mandate": "After the merge, the power of attorney in “{voting}” would point to the same person. In an open voting it is cancelled.",
+      "merge_membership_overlap": "Both accounts own unit {unit}. The kept account's ownership stays, the other one ends.",
+      "share_sum_not_one": "The unit's shares do not sum to 1/1.",
+      "account_deactivated": "The person owns nothing in another building – the account is deactivated and sign-in is blocked.",
+      "no_undo": "A merge cannot be undone. The original account stays as an inactive record for manual repair."
+    },
+    "errors": {
+      "forbidden": "You are not allowed to do this.",
+      "not_found": "Record not found.",
+      "invalid_input": "Invalid data.",
+      "plan_stale": "The data changed in the meantime. Review the updated summary and confirm again.",
+      "not_confirmed": "Confirm the action in the summary first.",
+      "failed": "The action failed. Please try again.",
+      "transfer_date_in_future": "The date of change must not be in the future.",
+      "transfer_date_invalid": "Enter a valid date.",
+      "transfer_date_before_start": "The date of change is before the seller became the owner.",
+      "transfer_no_sellers": "Choose at least one leaving owner.",
+      "transfer_seller_not_owner": "The selected person no longer owns the unit.",
+      "transfer_buyer_already_owner": "The new owner already owns the unit. Add them as leaving too and enter the new total share.",
+      "transfer_buyer_invalid": "This new owner cannot be used.",
+      "share_sum_not_one": "Shares after the change must sum to 1/1.",
+      "invalid_share": "Invalid share.",
+      "nothing_to_remove": "The person has no current ownership in this building.",
+      "restore_conflict": "Restore is not possible – one of the units changed in the meantime.",
+      "merge_same_user": "Choose a different account.",
+      "merge_tombstone": "One of the accounts is already merged or anonymised.",
+      "merge_conflict_open_ballot": "Both accounts voted for the same unit in an open voting.",
+      "anonymize_has_current_ownership": "The person is still an owner.",
+      "already_anonymized": "The account is already anonymised.",
+      "user_has_history": "The person has history that must be kept. Use remove from building or anonymise.",
+      "self_action": "You cannot do this to your own account."
+    },
+    "anonymizeNoticeSk": {
+      "title": "What is kept",
+      "body": "Under § 9(5)(a) of Act No. 182/1993 Coll. the owners' decisions incl. minutes, results and ballot sheets are kept, and under § 35 of Act No. 431/2002 Coll. accounting records for 10 years. These records keep the name (GDPR Art. 17(3)(b) and (e)); only the board and the statutory outputs show it. Contact data is removed."
+    },
+    "anonymizeNoticeCz": {
+      "title": "What is kept",
+      "body": "Under § 1206 et seq. of Act No. 89/2012 Coll. the assembly's decisions and minutes are kept, and under § 31 of Act No. 563/1991 Coll. the accounting records. These records keep the name (GDPR Art. 17(3)(b) and (e)); only the board and the statutory outputs show it. Contact data is removed."
+    }
+  },
+  "OwnerHealth": {
+    "queueTitle": "To handle ({count})",
+    "queueHint": "People who need your attention. An item disappears on its own once the situation is resolved.",
+    "queueEmpty": "Nothing to handle — owners' access is in order.",
+    "queue": {
+      "registration_pending": {
+        "reason": "Registered on {date}, waiting for approval."
+      },
+      "missing_email": {
+        "reason": "No e-mail — won't receive an invitation or notices.",
+        "action": "Add e-mail"
+      },
+      "invite_unfinished": {
+        "reason": "Invited on {date}, has not finished registering.",
+        "reasonExpired": "Invitation expired on {date}.",
+        "action": "Send again",
+        "actionQr": "Print QR again"
+      },
+      "never_logged_in": {
+        "reason": "Has had an account since {date}, has not signed in yet.",
+        "hint": "Remind them in person or by phone — the contact is on their card."
+      },
+      "inactive_long": {
+        "reason": "Last signed in on {date}.",
+        "reasonUnknown": "Has not signed in since we started tracking sign-ins ({date})."
+      }
+    },
+    "openCard": "Open card",
+    "markHandled": "Mark as handled",
+    "handledToast": "Marked as handled.",
+    "undo": "Undo",
+    "closeNotice": "Close notice",
+    "restore": "Restore",
+    "showHandled": "Show handled ({count})",
+    "hideHandled": "Hide handled",
+    "handledOn": "Marked as handled on {date}",
+    "moreFor": "More actions for {name}",
+    "moreForCheck": "More actions for unit {unit}",
+    "flats": "Unit {flats}",
+    "inactiveTitle": "Inactive for a long time ({count})",
+    "inactiveHint": "For information only — some owners prefer paper.",
+    "checksTitle": "Data check ({count})",
+    "checksHint": "To review, not errors — the data may be legally correct (e.g. an unfinished inheritance). None of this blocks voting, import or editing.",
+    "checksNoLv": "BSM and LV ordinal checks run only for apartment buildings in Slovakia and Czechia.",
+    "checksEmpty": "Ownership data is in order.",
+    "checkFilterAll": "All",
+    "checkFilterLabel": "Filter checks",
+    "chip": "{label} ({count})",
+    "checks": {
+      "share_sum_mismatch": {
+        "label": "Share total",
+        "reasonUnder": "Unit {unit}: owners' shares add up to {sum} — a co-owner or a share is missing.",
+        "reasonOver": "Unit {unit}: owners' shares add up to {sum} — more than the whole."
+      },
+      "unit_without_owner": {
+        "label": "Unit without owner",
+        "reason": "Unit {unit} has no owner."
+      },
+      "bsm_partner_missing": {
+        "label": "Spouse missing in BSM",
+        "reason": "Unit {unit}: {names} is in BSM (joint marital ownership), but the other spouse is missing."
+      },
+      "bsm_share_mismatch": {
+        "label": "Different shares in BSM",
+        "reason": "Unit {unit}: the spouses in BSM have different shares ({shares})."
+      },
+      "bsm_too_many": {
+        "label": "More than two in BSM",
+        "reason": "Unit {unit}: {count} people share the same BSM ordinal."
+      },
+      "duplicate_ordinal": {
+        "label": "Same ordinal number",
+        "reason": "LV ordinal {ordinal} is held by several owners (units {units})."
+      }
+    },
+    "showOwners": "Show owners",
+    "showOwnersOf": "Show owners of unit {unit}",
+    "addOwner": "Add owner",
+    "unitFilter": "Showing the owners of unit {unit}.",
+    "clearUnitFilter": "Clear filter",
+    "errors": {
+      "forbidden": "You are not allowed to do this.",
+      "not_found": "The item no longer exists — it may have been resolved meanwhile.",
+      "failed": "Could not save. Please try again."
+    },
+    "lastLogin": "Last signed in",
+    "lastLoginNever": "Has not signed in yet",
+    "lastLoginUnknown": "No record (tracked since {date})",
+    "homeRow": "Owners to handle: {count}"
+  },
   "Branding": {
     "title": "Logo & branding",
     "description": "Upload your community's own logo. It appears in the app, on the login page, in e‑mails, and as the app icon on phone home screens.",
@@ -112,6 +380,117 @@
     "settings": "Settings",
     "documents": "Documents",
     "accounting": "Accounting"
+  },
+  "DocumentVisibility": {
+    "chip": {
+      "boardOnly": "Board only",
+      "ownerSees": "Owner can see: {name}",
+      "about": "Concerns: {name}",
+      "mine": "My document"
+    },
+    "filterInternal": "Internal only",
+    "actions": {
+      "visibility": "Who can see",
+      "history": "History",
+      "send": "Send by e-mail"
+    },
+    "dialog": {
+      "title": "Who can see the document",
+      "audience": "Visible to",
+      "keepSubject": "Keep in the folder of owner {name} (only they and the board can see it)",
+      "hint": "The change is recorded in the document history. Nobody is notified.",
+      "save": "Save",
+      "cancel": "Cancel",
+      "close": "Close"
+    },
+    "widen": {
+      "title": "Share the document?",
+      "subject": "{name} will be able to see it.",
+      "owner": "All owners it concerns will be able to see it.",
+      "resident": "All residents including tenants will be able to see it.",
+      "noNotify": "Nobody will be notified.",
+      "confirm": "Share"
+    },
+    "upload": {
+      "belongsTo": "Belongs to",
+      "wholeBuilding": "Whole building",
+      "search": "Search owner or unit",
+      "ownerOption": "{name} — unit {unit}",
+      "lockedSubject": "The document will be filed in the folder of owner {name}."
+    },
+    "history": {
+      "title": "Document history",
+      "empty": "No entries yet.",
+      "upload": "{name} uploaded the document (visibility: {audience})",
+      "setAudience": "{name} changed visibility: {from} → {to}",
+      "setSubject": "{name} changed the owner: {from} → {to}",
+      "delete": "{name} deleted the document",
+      "emailSent": "{name} sent the document by e-mail: {recipient} ({mode})",
+      "modeAttachment": "attachment",
+      "modeLink": "link",
+      "unknown": "unknown",
+      "nobody": "nobody"
+    },
+    "send": {
+      "title": "Send by e-mail",
+      "recipient": "To",
+      "noRecipients": "The document belongs to no owner and is not attached to a unit with an owner. It cannot be sent.",
+      "noEmail": "no e-mail",
+      "cannotSee": "cannot see the document",
+      "message": "Short message (optional)",
+      "modeAttachment": "The document will be attached to the e-mail.",
+      "modeLink": "The document is larger than {size} MB — the e-mail will contain a link that works after signing in.",
+      "irreversible": "A sent e-mail cannot be taken back. The document stays where it is in the app.",
+      "submit": "Send",
+      "sent": "The e-mail has been sent.",
+      "boardOnly": "The document is \"Board only\" and the owner cannot see it. Share it with them first.",
+      "makeVisible": "Share with the owner first"
+    },
+    "folder": {
+      "title": "Owner's documents",
+      "empty": "No documents yet."
+    },
+    "my": {
+      "title": "My documents",
+      "hint": "Documents that belong to you or your unit."
+    },
+    "errors": {
+      "document_forbidden": "You are not allowed to make this change. Only the board changes visibility.",
+      "document_not_found": "Document not found.",
+      "document_audience_invalid": "Invalid visibility.",
+      "document_subject_not_owner": "The selected person is not an owner in this building.",
+      "document_send_board_only": "The document is \"Board only\". Share it with the owner first.",
+      "document_send_too_large_no_account": "The document is too large to attach and the owner has no app login, so a link would not open.",
+      "document_send_no_email": "The owner has no e-mail address.",
+      "document_send_no_recipient": "The document cannot be sent to this person.",
+      "document_send_throttled": "You have just sent this document to this owner. Try again in 10 minutes.",
+      "document_send_failed": "The e-mail could not be sent. Please try again later.",
+      "generic": "Something went wrong. Please try again."
+    }
+  },
+  "UnitNotes": {
+    "title": "Internal unit note",
+    "badge": "Board only",
+    "hint": "Write facts only — the owner may request access to data about them.",
+    "empty": "No note yet.",
+    "placeholder": "e.g. leaking riser in this flat, neighbour at no. 11 has the key",
+    "lastEdited": "Last edited by {name}, {date}",
+    "lastEditedUnknown": "Last edited {date}",
+    "edit": "Edit",
+    "add": "Add note",
+    "save": "Save",
+    "cancel": "Cancel",
+    "clear": "Delete note",
+    "clearConfirmTitle": "Delete the note?",
+    "clearConfirmBody": "The note will be deleted for the whole board. This cannot be undone.",
+    "show": "Show note",
+    "hide": "Hide note",
+    "counter": "{count} / {max} characters",
+    "errors": {
+      "tooLong": "The note is too long (at most {max} characters).",
+      "conflict": "Someone else edited the note in the meantime. The newer text is shown — check it and save again.",
+      "failed": "Saving failed. Please try again."
+    }
   },
   "Documents": {
     "title": "Documents",
@@ -498,6 +877,15 @@
       "expiryNote": "Link valid for {days} days.",
       "fallback": "If the button doesn't work, copy this link into your browser:"
     },
+    "documentSent": {
+      "subject": "Document: {document}",
+      "heading": "A document for you",
+      "intro": "The board of {building} is sending you the document \"{document}\".",
+      "attachedHint": "The document is attached to this e-mail.",
+      "button": "Open the document",
+      "linkHint": "The document is too large to attach. After clicking, sign in to the app and download it.",
+      "footer": "The document also stays available among your documents in the app."
+    },
     "settlementPublished": {
       "subject": "Annual settlement {year} is ready",
       "heading": "Settlement for {year}",
@@ -611,7 +999,7 @@
     "recordPaperFor": "Record paper vote",
     "noOwnerName": "No name",
     "endVotingConfirmTitle": "End the voting now?",
-    "endVotingConfirmText": "Owners will no longer be able to vote or change their votes. Results become final and the minutes are prepared. The voting cannot be reopened.",
+    "endVotingConfirmText": "Owners will no longer be able to vote or change their votes. The results are counted and the minutes are prepared. Until you publish the result, you can reopen the vote for a correction with a written reason.",
     "endVotingConfirmButton": "Yes, end it",
     "recordPaperVote": "Record paper vote",
     "delegateVote": "Create mandate",
@@ -667,6 +1055,7 @@
     "quorumSimpleAll": "Simple majority of all",
     "quorumTwoThirdsAll": "Two-thirds majority of all",
     "quorumAllUnanimous": "Unanimous consent (100%)",
+    "quorumFourFifthsAll": "Four-fifths majority of all",
     "meetingNote": "Meeting voting does not allow electronic votes.",
     "ownersQuarterNote": "Voting initiated by quarter of owners does not allow electronic votes.",
     "entranceScopeLabel": "Voting scope",
@@ -684,6 +1073,163 @@
     "moveUp": "Move up",
     "moveDown": "Move down",
     "itemTitleRequired": "Every item must have a title"
+  },
+  "VotingWorkflow": {
+    "heading": "Voting process",
+    "stepsLabel": "Voting steps",
+    "steps": {
+      "prepare": "Preparation",
+      "announce": "Announcement",
+      "progress": "In progress",
+      "close": "Closing",
+      "minutes": "Minutes"
+    },
+    "placeLabel": "Place of voting",
+    "placeHint": "Where owners sign and hand in the ballot sheets.",
+    "announcedOn": "Announced on {date}",
+    "leadTimeHint": "The vote must be announced at least 7 days ahead. If you announce it today, it can start on {date} at the earliest.",
+    "announce": "Announce the vote",
+    "announceConfirmTitle": "Announce the vote?",
+    "announceConfirmText": "Owners are notified and can vote electronically right away. Questions, place and dates can no longer be changed afterwards.",
+    "publishDeadline": "The result and the minutes must be published by {date}.",
+    "publishedOnLabel": "Date the result was published",
+    "publishedOnHint": "The day you published the result to the owners.",
+    "publish": "Record publication of the result",
+    "reopen": "Reopen for a correction",
+    "reopenExplain": "Reopening is only for correcting the count or adding paper ballots. Owners can vote electronically only until the original end date.",
+    "reopenNoteLabel": "Reason for reopening",
+    "reopenNoteHint": "Required, at least {min} characters. It is saved in the voting history.",
+    "reopenConfirm": "Reopen",
+    "publishedOn": "Result published on {date}.",
+    "noReopenAfterPublish": "Once the result is published the vote cannot be reopened. A correction needs a new vote.",
+    "historyHeading": "Voting history",
+    "events": {
+      "announced": "Announced",
+      "closed": "Closed",
+      "reopened": "Reopened",
+      "result_published": "Result published",
+      "ballot_superseded": "Electronic vote replaced by a paper ballot",
+      "document_generated": "Document created",
+      "minutes_finalised": "Minutes finalised"
+    },
+    "officialsHeading": "People",
+    "officialsHint": "The chair, the recorder and at least two verifiers appear on the documents.",
+    "officialRoleLabel": "Role",
+    "officialNameLabel": "Name",
+    "removeOfficial": "Remove person",
+    "addOfficial": "Add person",
+    "savePreparation": "Save place and people",
+    "saved": "Saved",
+    "roles": {
+      "chair": "Chair",
+      "recorder": "Recorder",
+      "verifier": "Verifier"
+    },
+    "repeatLabel": "This repeats a decision on the same matter made within the last 12 months",
+    "repeatEscalatesTo": "Under § 14b(6) it will need: {quorum}",
+    "publishRemindersLabel": "Voting results to publish",
+    "publishBy": "Publish the result by {date}",
+    "publishOverdue": "The result should have been published by {date}",
+    "errors": {
+      "generic": "The action could not be completed. Please try again.",
+      "TRANSITION_NOT_ALLOWED": "This step is not possible right now. Please reload the page.",
+      "REOPEN_NOTE_REQUIRED": "Write the reason for reopening (at least 10 characters).",
+      "RESULT_ALREADY_PUBLISHED": "The result is already published, the vote cannot be reopened.",
+      "PUBLISH_DATE_INVALID": "The publication date cannot be in the future.",
+      "NOTICE_LEAD_TIME_TOO_SHORT": "The vote must be announced at least 7 days ahead. The earliest start is {minDate}.",
+      "NOTICE_START_AFTER_END": "The end of the vote must be after its start.",
+      "NOTICE_VERIFIERS_REQUIRED": "Enter at least two verifiers.",
+      "OFFICIALS_INVALID": "Every person needs a role and a name.",
+      "VOTING_LOCKED": "After the announcement the content of the vote can no longer be changed.",
+      "ENDS_AT_ONLY_LATER": "The end of the vote can only be extended, and only while the vote is running.",
+      "REPEAT_ESCALATION_UNSUPPORTED": "Repeated decisions have no special majority in this country.",
+      "REPEAT_ESCALATION_NOT_APPLICABLE": "With consent of all owners the majority does not change on repetition."
+    },
+    "readiness": {
+      "heading": "What would pass electronically today",
+      "intro": "Estimate of whether a decision would pass if only owners with verified access voted for it.",
+      "whoMissing": "Who still has no access",
+      "codes": {
+        "REACHABLE": "Reachable electronically ({readyOwners} of {totalOwners} owners, {pct} % of votes)",
+        "NOT_REACHABLE": "Not yet electronically ({readyOwners} of {totalOwners} owners, {pct} % of votes) — paper ballots needed too",
+        "ELECTRONIC_BLOCKED": "Electronic voting is not allowed here",
+        "NO_OWNERS": "No owners are registered yet"
+      }
+    },
+    "overview": {
+      "heading": "Voting progress",
+      "asOf": "As of {time}",
+      "refresh": "Refresh",
+      "filterLabel": "Show",
+      "filters": {
+        "all": "All",
+        "notVoted": "Not voted",
+        "incomplete": "Incomplete",
+        "paper": "Paper",
+        "electronic": "Electronic"
+      },
+      "outlook": {
+        "passed": "Reached",
+        "reachable": "Not yet — can still pass",
+        "unreachable": "Can no longer pass"
+      },
+      "channelSplit": "Electronic {electronic} %, paper {paper} % of all votes",
+      "noneForFilter": "No units for this filter.",
+      "status": {
+        "resolved_for": "For",
+        "resolved_against": "Against",
+        "resolved_abstain": "Abstained",
+        "incomplete": "Incomplete",
+        "no_valid_vote": "No valid vote"
+      },
+      "channel": {
+        "electronic": "Electronic",
+        "paper": "Paper",
+        "mixed": "Mixed",
+        "none": "Not voted"
+      },
+      "choice": {
+        "za": "For",
+        "proti": "Against",
+        "zdrzal_sa": "Abstain",
+        "none": "No vote"
+      }
+    },
+    "docs": {
+      "heading": "Announcement and ballot sheets",
+      "notAvailable": "Documents for this type of community are not available yet.",
+      "signoffNote": "The wording of these documents awaits legal review. Check it before use.",
+      "notice": "Announcement (PDF)",
+      "ballotsAll": "All ballot sheets ({count})",
+      "ballotBlank": "Blank ballot sheet",
+      "noticeLink": "Voting announcement (PDF)"
+    },
+    "notice": {
+      "title": "Announcement of a written vote",
+      "announcedBy": "Announced by",
+      "term": "Voting period",
+      "place": "Place of voting",
+      "questions": "Questions",
+      "electronic": "Electronic voting",
+      "electronicText": "You can vote electronically in the app from the day of this announcement until the end of the voting period.",
+      "verifiers": "Verifiers",
+      "announcedOn": "Date of announcement",
+      "ico": "Company ID",
+      "legalBasis": "Under § 14a of Act No. 182/1993 Coll."
+    },
+    "ballotSheet": {
+      "title": "Ballot sheet",
+      "term": "Voting period",
+      "owner": "Owner",
+      "units": "Flat / non-residential unit",
+      "unitLine": "{unit} (share {share})",
+      "for": "FOR",
+      "against": "AGAINST",
+      "abstain": "ABSTAIN",
+      "dateAndSignature": "Date and owner signature",
+      "verifier": "Verifier",
+      "unmarkedNote": "A question without a marked answer counts as an invalid vote."
+    }
   },
   "VotingWizard": {
     "stepsLabel": "Steps",
@@ -766,6 +1312,10 @@
         "label": "Important decision — two-thirds majority",
         "hint": "Legal term: two-thirds majority of all owners' votes."
       },
+      "four_fifths_all": {
+        "label": "Repeated important decision — four-fifths majority",
+        "hint": "Legal term: four-fifths majority of all owners (§ 14b(6))."
+      },
       "all_unanimous": {
         "label": "Consent of all owners",
         "hint": "Legal term: unanimous consent of all owners."
@@ -830,6 +1380,7 @@
     "quorumSimpleAll": "Simple majority of all",
     "quorumTwoThirdsAll": "Two-thirds majority of all",
     "quorumAllUnanimous": "Unanimous consent (100%)",
+    "quorumFourFifthsAll": "Four-fifths majority of all",
     "multiOwnerTitle": "Units with multiple co-owners",
     "multiOwnerHelp": "Co-owners of a unit cast a single combined vote under {law}. The majority of co-ownership shares decides; ties result in the unit abstaining.",
     "flatLabel": "Unit {number}",
@@ -1848,6 +2399,7 @@
     "desc_voting": "Electronic voting for owners, including results and minutes.",
     "desc_accounting": "Community finances: monthly payments, settlements, repair fund and annual statements.",
     "desc_intercom_2n": "Connection to a 2N door intercom (sample version).",
+    "desc_faults": "Fault reports from owners, tracked by the board to completion.",
     "desc_default": "An add-on module for the app.",
     "perm_db_read": "read data",
     "perm_db_write": "save data",
@@ -2016,8 +2568,8 @@
       "subtitle": "What needs doing during the year, in order",
       "predpisTitle": "Monthly payments",
       "predpisHint": "How much each unit pays per month into the repair fund and for services (fee schedule).",
-      "metersTitle": "Meter readings",
-      "metersHint": "Heat and water meter readings — the basis for the settlement.",
+      "metersTitle": "Readings and occupants",
+      "metersHint": "Meter readings and occupants per flat — collected from owners, input for the settlement.",
       "settlementTitle": "Annual settlement",
       "settlementHint": "Advances compared with actual costs — each unit gets an amount due or a refund.",
       "zavierkaTitle": "Approval of the annual accounts",
@@ -3028,8 +3580,27 @@
     "neighboursHint": "Contacts of neighbours who choose to share them",
     "finances": "How the building manages its money",
     "financesHint": "Income, expenses and the repair fund",
+    "outages": "Outages and faults",
+    "outagesHint": "Water, electricity, gas – links to suppliers",
     "laws": "Laws",
     "lawsHint": "Current text of housing laws"
+  },
+  "Outages": {
+    "title": "Outages and faults",
+    "intro": "No water, power or gas? Find the supplier's official page and fault line.",
+    "utility_water": "Water",
+    "utility_electricity": "Electricity",
+    "utility_gas": "Gas",
+    "utility_heat": "Heat",
+    "noneFor_water": "No list yet.",
+    "noneFor_electricity": "No list yet.",
+    "noneFor_gas": "No list yet.",
+    "noneFor_heat": "Heat suppliers are many and differ by city. Ask the board to name your building's supplier.",
+    "outagesLink": "Outages on supplier's site",
+    "callHotline": "Call {number}",
+    "verifiedOn": "Verified {date}",
+    "empty": "We have no supplier list for your country yet.",
+    "disclaimer": "These are links to the suppliers' official pages. Data may not be current. Report wrong data to the board or support."
   },
   "VoteCast": {
     "pickUnitTitle": "Which unit are you voting for?",
@@ -3618,5 +4189,676 @@
     "copyLink": "Copy link to {label}",
     "linkCopied": "Link to {label} copied.",
     "copyFailed": "The link could not be copied."
+  },
+  "Faults": {
+    "status": {
+      "new": "New",
+      "in_progress": "In progress",
+      "resolved": "Resolved",
+      "rejected": "Rejected",
+      "withdrawn": "Withdrawn"
+    },
+    "priority": {
+      "low": "Low",
+      "normal": "Normal",
+      "high": "High",
+      "urgent": "Urgent"
+    },
+    "visibility": {
+      "community": "Whole building",
+      "entrance": "Entrance / building",
+      "private": "Board and reporter only"
+    },
+    "visibilityHint": {
+      "community": "Everyone in the building will see it.",
+      "entrance": "Neighbours from your entrance and the board will see it.",
+      "private": "Only the board and you will see it."
+    },
+    "category": {
+      "elevator": "Lift",
+      "water_plumbing": "Water and pipes",
+      "heating": "Heating",
+      "electrical": "Electricity",
+      "lighting": "Lighting",
+      "doors_locks_intercom": "Doors, locks, intercom",
+      "roof_facade": "Roof and facade",
+      "cleaning": "Cleaning",
+      "common_areas": "Common areas",
+      "other": "Other"
+    },
+    "errors": {
+      "FAULT_INVALID_TRANSITION": "This status cannot be set. Reload the page and try again.",
+      "FAULT_REASON_REQUIRED": "Write a reason — the reporter will see it.",
+      "FAULT_NOT_EDITABLE": "The report is already being handled, so you can no longer edit it.",
+      "FAULT_WITHDRAW_NOT_ALLOWED": "The report is already being handled, so you can no longer withdraw it.",
+      "FAULT_LOCATION_NOT_ALLOWED": "You cannot choose this place.",
+      "FAULT_VISIBILITY_WIDEN_FORBIDDEN": "You can only narrow who sees the report.",
+      "FAULT_TOO_MANY_PHOTOS": "You can add at most 5 photos.",
+      "FAULT_PHOTO_INVALID": "A photo must be JPEG, PNG or WebP and at most 10 MB.",
+      "FAULT_ASSIGNEE_CONFLICT": "Choose either a board member or a contractor — not both.",
+      "FAULT_EXPENSE_NOT_FOUND": "This expense was not found.",
+      "FAULT_TITLE_REQUIRED": "Write what is broken.",
+      "FAULT_NOT_FOUND": "The report was not found.",
+      "FAULT_FORBIDDEN": "You are not allowed to do this.",
+      "FAULT_INVALID_INPUT": "Some information is not valid. Check the form.",
+      "generic": "Something went wrong. Please try again."
+    },
+    "email": {
+      "greeting": "Hello {name},",
+      "statusChanged": {
+        "subject": "Report “{title}”: {status}",
+        "heading": "Your report has a new status",
+        "intro": "Your report “{title}” is now: {status}.",
+        "button": "Open the report",
+        "hint": "You receive this e-mail because you reported the fault."
+      },
+      "staleDigest": {
+        "subject": "{count, plural, one {# fault has} other {# faults have}} been open for more than 30 days",
+        "heading": "Faults open for more than 30 days",
+        "intro": "{count, plural, one {This fault has} other {These # faults have}} been waiting for more than 30 days:",
+        "openDays": "open {days} days",
+        "button": "Open the fault list"
+      }
+    },
+    "push": {
+      "statusTitle": "Your report: {status}"
+    },
+    "tabs": {
+      "label": "Notices and faults",
+      "notices": "Notices",
+      "faults": "Faults",
+      "newBadge": "{count} new"
+    },
+    "filters": {
+      "label": "Fault filters",
+      "status": "Status",
+      "priority": "Priority",
+      "category": "Category",
+      "assignee": "Assignee",
+      "any": "All",
+      "unassigned": "Unassigned",
+      "stale": "Open for more than 30 days",
+      "clear": "Clear filters"
+    },
+    "list": {
+      "latestMessage": "Board: {message}",
+      "unassigned": "unassigned",
+      "openDays": "open {days} days",
+      "assigneeLine": "Assignee: {name}",
+      "colTitle": "Fault",
+      "colStatus": "Status",
+      "colPriority": "Priority",
+      "colCategory": "Category",
+      "colAssignee": "Assignee",
+      "colAge": "Open",
+      "count": "{count, plural, =0 {No faults} one {# fault} other {# faults}}",
+      "emptyBoard": "No faults match these filters."
+    },
+    "board": {
+      "title": "Faults",
+      "intro": "Reports from owners. Sorted by priority, oldest first.",
+      "statusHeading": "Status",
+      "noTransitions": "The status can no longer be changed.",
+      "moveTo": {
+        "new": "Move back to new",
+        "in_progress": "Start working on it",
+        "resolved": "Mark as resolved",
+        "rejected": "Reject",
+        "withdrawn": "Withdraw"
+      },
+      "cancel": "Cancel",
+      "confirmStatus": "Confirm",
+      "reasonRequired": "Reason (required, the reporter will see it)",
+      "reasonOptional": "Message for the reporter (optional)",
+      "reasonHint": "This message is public to everyone who can see the report.",
+      "fieldsHeading": "Task",
+      "priority": "Priority",
+      "visibility": "Who sees the report",
+      "category": "Category",
+      "none": "— none —",
+      "assignee": "Assignee",
+      "assigneeHint": "A board member or an external contractor.",
+      "boardUsers": "Board and management",
+      "contractors": "Contractors",
+      "addCategory": "Add category",
+      "addContractor": "Add contractor",
+      "locationNote": "Location detail",
+      "invoiced": "Invoiced",
+      "expense": "Linked expense",
+      "expenseHint": "Linking an expense marks the fault as invoiced.",
+      "internalNote": "Internal note",
+      "internalNoteHint": "Only the board sees this — not owners or the caretaker.",
+      "saved": "Changes saved.",
+      "save": "Save changes",
+      "add": "Add",
+      "name": "Name",
+      "phone": "Phone"
+    },
+    "report": {
+      "cta": "Report a fault",
+      "title": "Report a fault",
+      "backToList": "Back to faults",
+      "stepOf": "Step {step} of {total}",
+      "step1Title": "What is broken?",
+      "titleLabel": "What is broken",
+      "titleHint": "For example: The lift is stuck, Water leaking in the basement.",
+      "descriptionLabel": "Description",
+      "descriptionHint": "Optional. Since when, what exactly happens.",
+      "addPhoto": "Add a photo",
+      "photoHint": "At most {max} photos (JPEG, PNG, WebP, up to 10 MB).",
+      "removePhoto": "Remove",
+      "removePhotoNamed": "Remove photo {name}",
+      "next": "Next",
+      "back": "Back",
+      "step2Title": "Where?",
+      "locationNoteLabel": "Location detail",
+      "locationNoteHint": "Optional, for example: basement, next to the lift.",
+      "privateOnly": "Only the board and I will see it",
+      "step3Title": "Check and send",
+      "whereLabel": "Where",
+      "photosLabel": "Photos",
+      "photoCount": "{count, plural, =0 {no photo} one {# photo} other {# photos}}",
+      "whoSeesLabel": "Who will see it",
+      "submit": "Send report",
+      "noLocations": "You have no flat assigned",
+      "noLocationsHint": "You can report a fault once the board assigns you a flat."
+    },
+    "location": {
+      "wholeHouse": "Whole building / common areas",
+      "myUnitNumber": "My flat (no. {number})",
+      "myUnitNamed": "My flat ({name})",
+      "myGroup": "{name}"
+    },
+    "resident": {
+      "title": "Faults",
+      "intro": "Your reports and faults the board already knows about.",
+      "backToHouse": "Back to Building",
+      "mine": "My reports",
+      "mineEmpty": "You have not reported anything yet.",
+      "others": "Reports in the building",
+      "othersHint": "Before reporting a fault, check whether someone has already reported it.",
+      "othersEmpty": "No other reports."
+    },
+    "detail": {
+      "backToList": "Back to faults",
+      "yourActions": "Edit the report",
+      "removePhotoN": "Remove photo {n}",
+      "edit": "Edit report",
+      "withdraw": "Withdraw report",
+      "withdrawTitle": "Withdraw the report?",
+      "withdrawWarn": "The board will no longer handle it. The report stays in the history.",
+      "photoAlt": "Photo {n}",
+      "reportHeading": "Report",
+      "reporter": "Reported by",
+      "reporterUnknown": "Unknown user",
+      "where": "Where",
+      "reportedAt": "Reported",
+      "visibility": "Visibility",
+      "whoSees": "Who sees it",
+      "history": "Change history",
+      "createdNotice": "Thank you, the report has been sent. We will e-mail you about every status change.",
+      "progress": "Progress",
+      "reported": "Reported"
+    },
+    "history": {
+      "empty": "—",
+      "yes": "yes",
+      "no": "no",
+      "changed": "changed",
+      "publicMessage": "Message: {message}",
+      "unknownActor": "Unknown user",
+      "public": "public",
+      "type": {
+        "created": "Created",
+        "edited": "Edited by reporter",
+        "status_changed": "Status change",
+        "field_changed": "Change",
+        "photo_added": "Photo added",
+        "photo_removed": "Photo removed"
+      },
+      "field": {
+        "status": "Status",
+        "title": "Title",
+        "description": "Description",
+        "locationNote": "Location detail",
+        "locationEntityId": "Location",
+        "visibility": "Visibility",
+        "priority": "Priority",
+        "categoryId": "Category",
+        "assigneeUserId": "Assignee (board)",
+        "contractorId": "Assignee (contractor)",
+        "invoiced": "Invoiced",
+        "expenseId": "Expense",
+        "internalNote": "Internal note",
+        "photo": "Photo"
+      }
+    },
+    "home": {
+      "boardNew": "{count, plural, one {# new fault} other {# new faults}}",
+      "boardStale": "{count, plural, one {# fault} other {# faults}} open for more than 30 days",
+      "ownerHeading": "Something broken?",
+      "ownerText": "Lift, corridor light, water in the basement — let the board know.",
+      "ownerOpen": "Your reports: {inProgress} in progress, {waiting} waiting"
+    },
+    "dom": {
+      "label": "Faults",
+      "hint": "Report a fault and follow how it is handled"
+    }
+  },
+  "ReadingRounds": {
+    "errors": {
+      "generic": "Something went wrong. Please try again.",
+      "period_locked": "This year is already closed (settlement). The data can no longer be changed.",
+      "round_not_open": "The collection has not started yet.",
+      "round_closed_for_owner": "The collection is closed. Contact the board to make a change.",
+      "round_exists": "A collection for this year already exists.",
+      "round_invalid": "Check the collection settings (dates, at least one input, reminder 0–30 days).",
+      "submission_locked": "The board is already processing this data. Contact them to make a change.",
+      "already_submitted": "You have already sent this. Use “Edit”.",
+      "month_range_invalid": "Check the months: “from” must come before “to”, within one year.",
+      "month_range_overlap": "The periods overlap or these months are already filled in.",
+      "persons_invalid": "The number of people must be a whole number from 0 to 50.",
+      "value_negative": "A meter reading cannot be negative.",
+      "value_invalid": "Enter the meter reading as a number (up to 3 decimal places).",
+      "date_in_future": "The reading date cannot be in the future.",
+      "date_outside_round": "The reading date must fall within the year being collected.",
+      "meter_type_not_collected": "This meter is not collected in this round.",
+      "label_required": "Enter the meter name (up to 120 characters).",
+      "unknown_unit": "Flat not found.",
+      "forbidden": "You are not allowed to do this.",
+      "photo_too_large": "The photo is too large (max 10 MB).",
+      "photo_type_invalid": "The photo must be JPG, PNG, WebP or HEIC.",
+      "not_found": "Record not found.",
+      "already_voided": "The record has already been cancelled."
+    },
+    "meterTypes": {
+      "heat": "Heat (cost allocators)",
+      "water_cold": "Cold water",
+      "water_hot": "Hot water",
+      "electricity": "Electricity"
+    },
+    "gate": {
+      "round": "Readings and occupants collection: {missing, plural, one {# flat missing} other {# flats missing}}, {unresolved} unresolved",
+      "singleReading": "{count, plural, one {# flat has} other {# flats have}} only one heat or hot-water reading in the year — it is used as consumption, not as a difference of readings. Please check."
+    },
+    "email": {
+      "subject": "Meter readings and occupants for {year} — due {deadline}",
+      "heading": "Reminder: meter readings and occupants for {year}",
+      "intro": "the board of {building} is collecting meter readings and the number of occupants for {year}. Please enter them by {deadline}.",
+      "button": "Enter readings",
+      "hint": "Enter the data in the app under My payments › Readings and occupants. If you have already sent it, please ignore this e-mail."
+    },
+    "owner": {
+      "heading": "Readings and occupants",
+      "headingYear": "Readings and occupants for {year}",
+      "closedSummary": "You last sent data on {date}. The collection is closed.",
+      "deadline": "Due: {date}",
+      "lateNotice": "The deadline has passed. You can still send the data; it will be marked as late.",
+      "lockedText": "The board is already processing this data. Contact them to make a change.",
+      "personsHeading": "Occupants",
+      "personsHelp": "State how many people lived in the flat in each month.",
+      "range": "{from} – {to}: {persons, plural, one {# person} other {# people}}",
+      "rangeSingle": "{month}: {persons, plural, one {# person} other {# people}}",
+      "lateBadge": "Late",
+      "edit": "Edit",
+      "withdraw": "Cancel submission",
+      "withdrawTitle": "Cancel the data you sent?",
+      "withdrawBody": "The data will be cancelled and the board will not use it. You can send it again afterwards.",
+      "cancel": "Back",
+      "periodLegend": "Period {n} ({year})",
+      "fromMonth": "From month",
+      "toMonth": "To month",
+      "personsCount": "Number of people",
+      "removePeriod": "Remove period",
+      "addPeriod": "Add period",
+      "saveChanges": "Save change",
+      "submitPersons": "Send number of occupants",
+      "lastValue": "Last time: {value} ({date})",
+      "readOn": "Read on {date}",
+      "viewPhoto": "Show photo",
+      "notSubmitted": "Not sent.",
+      "value": "Meter reading",
+      "valuePlaceholder": "e.g. 123.456",
+      "lowerWarning": "The value is lower than last time — please check.",
+      "readingDate": "Reading date",
+      "photo": "Photograph the meter",
+      "photoHint": "Optional. Only the board and you can see the photo.",
+      "submitReading": "Send reading"
+    },
+    "board": {
+      "forbidden": "Only the board can see this page.",
+      "title": "Readings and occupants",
+      "subtitle": "Yearly collection of meter readings and occupants per flat — input for the settlement.",
+      "back": "Yearly tasks",
+      "year": "Year",
+      "loadError": "Could not load the data.",
+      "lockedYear": "This year is closed by the settlement. You can view and download the data but not change it.",
+      "noRound": "No collection was set up for {year}.",
+      "filterLabel": "Flat filter",
+      "filterMissing": "Missing",
+      "filterUnresolved": "Unresolved",
+      "filterAll": "All",
+      "selectedCount": "Selected: {count}",
+      "bulkResolve": "Mark as resolved",
+      "emptyFilter": "No flat in this filter.",
+      "exportHeading": "Download",
+      "exportXlsx": "Download Excel",
+      "exportCsv_persons": "CSV – occupants",
+      "exportCsv_meters": "CSV – flat readings",
+      "exportCsv_building": "CSV – building meters",
+      "applyHeading": "Use for monthly payments",
+      "applyHint": "Resolved occupant counts are copied to the flats as input for the next fee schedule.",
+      "applyButton": "Use for monthly payments",
+      "applyConfirm": "Occupant counts from resolved records will be written to the flats. They take effect only in the next published fee schedule — already published monthly payments do not change.",
+      "applyDone": "Done: {units} flats, {rows} new occupant records.",
+      "cancel": "Cancel",
+      "entryTitle": "Enter for flat {unit}",
+      "entryHint": "Entered by the board on behalf of the owner. The change is recorded in the change log.",
+      "submissionPick": "Which period to correct",
+      "roundHeading": "Collection for {year}",
+      "closedBadge": "Closed for owners",
+      "openBadge": "Open",
+      "roundDates": "From {opens} to {deadline}",
+      "roundInputs": "Collecting: {inputs}",
+      "lateAllowed": "Late entries allowed",
+      "lateNotAllowed": "No entries after the deadline",
+      "reminderDays": "reminder {days} days before the deadline",
+      "reminderOff": "no reminder",
+      "editRound": "Edit collection",
+      "reopenForOwners": "Reopen for owners",
+      "closeForOwners": "Close collection",
+      "editRoundHeading": "Edit collection for {year}",
+      "newRoundHeading": "Set up collection for {year}",
+      "opensAt": "Collection starts",
+      "deadlineAt": "Deadline",
+      "collects": "What is collected",
+      "inputPersons": "Occupants",
+      "reminderDaysLabel": "Reminder (days before the deadline)",
+      "reminderHint": "0 = no reminder. Only owners with missing data get the e-mail.",
+      "allowLateLabel": "Allow entries after the deadline (marked as late)",
+      "saveRound": "Save",
+      "createRound": "Set up collection",
+      "status_missing": "Missing",
+      "status_submitted": "Sent",
+      "status_late": "Late",
+      "status_resolved": "Resolved",
+      "selectUnit": "Select flat {unit}",
+      "unresolve": "Undo resolved",
+      "resolve": "Resolved",
+      "personMonths": "{total} person-months",
+      "enter": "Enter",
+      "correct": "Correct",
+      "byBoard": "Entered by board",
+      "photo": "Photo",
+      "singleReadingWarning": "Only one reading in the year — the settlement uses it as consumption, not as a difference of readings.",
+      "buildingHeading": "Building meters",
+      "buildingHint": "Main water meter, building inlet and similar. For information only — the settlement does not use them.",
+      "buildingEmpty": "No building meter reading yet.",
+      "buildingDiff": "Sum of flats: {units} · difference to the main meter: {diff} (losses / common use)",
+      "void": "Cancel record",
+      "voidConfirm": "The record will be cancelled (it stays in the change history).",
+      "buildingAdd": "Add building meter reading",
+      "buildingLabel": "Meter name",
+      "buildingLabelHint": "E.g. Main water meter",
+      "meterType": "Meter type",
+      "readingDate": "Reading date",
+      "value": "Meter reading",
+      "note": "Note",
+      "save": "Save"
+    }
+  },
+  "MeetingAttendance": {
+    "heading": "Meeting and attendance",
+    "tabsLabel": "Meeting attendance",
+    "tabs": {
+      "answers": "Answers",
+      "list": "Attendance list"
+    },
+    "share": "{pct} % of votes",
+    "rsvp": {
+      "question": "Will you come to the meeting?",
+      "yes": "I will come",
+      "no": "I won't come",
+      "maybe": "Not sure yet",
+      "withdraw": "Clear my answer",
+      "yourAnswer": "Your answer: {answer}",
+      "noAnswerClosed": "You did not answer.",
+      "counts": "Coming: {yes} · Not sure: {maybe} · Not coming: {no}",
+      "badge": "Owners' meeting"
+    },
+    "create": {
+      "placeLabel": "Where the meeting takes place",
+      "placeHint": "E.g. Community room, entrance A",
+      "announceLabel": "Announce the meeting to owners",
+      "announceHint": "Owners see the meeting on the notice board and can say whether they will come."
+    },
+    "announce": {
+      "notYet": "The meeting has not been announced to owners yet.",
+      "notAnnounced": "The meeting was not announced in the app.",
+      "button": "Announce the meeting to owners",
+      "done": "The meeting is announced on the notice board."
+    },
+    "invite": {
+      "button": "Send invitation by e-mail",
+      "result": "Invitations sent: {sent}. Invited earlier: {already}.",
+      "lateNotice": "Careful: 7 full days will not pass between today and the meeting. The earliest date when announced today is {date}.",
+      "failed": "Could not be delivered: {names}",
+      "withoutEmail": "No e-mail — deliver the invitation on paper:",
+      "disclaimer": "The e-mail invitation is a convenience. Deliver the statutory meeting notice the way your agreement sets out."
+    },
+    "change": {
+      "button": "Change date or place",
+      "notify": "Send the change to owners",
+      "sent": "Change sent to {count} owners.",
+      "saved": "The change is saved. Send it to owners.",
+      "title": "Change the meeting",
+      "when": "When",
+      "where": "Where",
+      "hint": "Owners' answers are kept. The new date must be at least 7 full days from today.",
+      "save": "Save change"
+    },
+    "cancel": {
+      "button": "Cancel the meeting",
+      "title": "Cancel the meeting?",
+      "description": "The notice-board post is hidden and owners with an e-mail get a cancellation message. Close the voting itself separately.",
+      "confirm": "Cancel the meeting",
+      "done": "The meeting is cancelled. Message sent to {count} owners."
+    },
+    "overview": {
+      "summary": "Coming {yes} · Not coming {no} · Not sure {maybe} · No answer {none}",
+      "expectedShare": "Owners with {pct} % of votes are coming.",
+      "itemsHeading": "What the agenda items need",
+      "estimate": {
+        "REACHABLE": "If everyone who comes votes for, it is enough ({pct} % of votes).",
+        "NOT_REACHABLE": "Owners with {pct} % of votes are coming — not enough.",
+        "MEASURED_AGAINST_PRESENT": "Decided by a majority of those present."
+      },
+      "estimateNote": "This is only an estimate from the answers. \"Not sure yet\" is not counted.",
+      "filterLabel": "Show answers",
+      "filter": {
+        "all": "Everyone",
+        "yes": "Coming",
+        "no": "Not coming",
+        "maybe": "Not sure",
+        "none": "No answer"
+      },
+      "noAnswer": "No answer",
+      "source": {
+        "app": "In the app",
+        "email_link": "From e-mail",
+        "board": "Entered by the board"
+      },
+      "noEmail": "No e-mail",
+      "invited": "Invited",
+      "setFor": "Answer for the owner: {name}",
+      "setAnswer": "Enter an answer for the owner"
+    },
+    "states": {
+      "present": "Present",
+      "represented": "Represented",
+      "absent": "Absent",
+      "not_recorded": "Not recorded yet"
+    },
+    "list": {
+      "header": "Present: {owners} owners · {pct} % of votes",
+      "absentClosed": "Absent: {count}",
+      "notRecorded": "Not recorded yet: {count}",
+      "castShare": "Ballots cast: {pct} % of votes (the voting result is based on this)",
+      "search": "Search name or flat number",
+      "rsvpHint": "Answered: {answer}",
+      "rsvpNone": "No answer",
+      "representedBy": "Represented by: {name}",
+      "arrived": "Arrived {time}",
+      "left": "left {time}",
+      "markPresent": "Present",
+      "markRepresented": "Represented",
+      "markLeft": "Left",
+      "markBack": "Came back",
+      "undo": "Undo entry"
+    },
+    "represent": {
+      "title": "Representation: {name}",
+      "save": "Record representation",
+      "noMandate": "This owner has no verified power of attorney for this voting. Verify the power of attorney with a certified signature under Mandates first.",
+      "mandate": "Verified power of attorney",
+      "representativeName": "Representative's name",
+      "representativeHint": "Printed on the attendance list."
+    },
+    "export": {
+      "heading": "Print and export",
+      "modeLabel": "Rows",
+      "modeOwner": "One row per owner",
+      "modeUnit": "One row per flat",
+      "blankPdf": "Sign-in sheet (PDF)",
+      "filledPdf": "Attendance list (PDF)",
+      "filledXlsx": "Attendance list (Excel)",
+      "note": "The signed original of the attendance list is an attachment of the minutes.",
+      "sheetBlank": "Sign-in sheet",
+      "sheetFilled": "Attendance list",
+      "totals": "Present: {present} · represented: {represented} · of {eligible} owners · {share} % of votes",
+      "totalsBlank": "Number of owners: {eligible}",
+      "columns": {
+        "unit": "Flat",
+        "owner": "Owner",
+        "share": "Share (%)",
+        "signature": "Signature",
+        "representedBy": "Represented by",
+        "state": "State",
+        "arrivedAt": "Arrived",
+        "leftAt": "Left"
+      },
+      "states": {
+        "present": "present",
+        "represented": "represented",
+        "absent": "absent",
+        "not_recorded": "not recorded"
+      }
+    },
+    "owner": {
+      "heading": "Owners' meeting",
+      "inPerson": "Voting takes place in person at the meeting.",
+      "recordedPresent": "You were recorded as present.",
+      "recordedRepresented": "You were recorded as represented ({name}).",
+      "notRecorded": "You were not recorded at the meeting.",
+      "disagree": "Is this wrong? Contact the board.",
+      "agendaLink": "Meeting agenda"
+    },
+    "home": {
+      "boardLabel": "Upcoming meetings",
+      "boardRow": "Meeting {date} — {answered} of {total} answered"
+    },
+    "tokenPage": {
+      "title": "Reply to the invitation",
+      "confirm": "Confirm: {answer}",
+      "saved": "Recorded: {answer}",
+      "noAnswer": "No answer yet.",
+      "change": "Change answer",
+      "login": "Sign in",
+      "state": {
+        "invalid": {
+          "title": "Link not valid",
+          "body": "This link is not valid. You can answer after signing in to the app."
+        },
+        "expired": {
+          "title": "Link expired",
+          "body": "The meeting has started or the link has expired."
+        },
+        "closed": {
+          "title": "Answers are closed",
+          "body": "The meeting has started or was cancelled."
+        },
+        "unavailable": {
+          "title": "Answering does not work right now",
+          "body": "The app is not fully configured. Answer after signing in."
+        }
+      }
+    },
+    "email": {
+      "whenLabel": "When",
+      "whereLabel": "Where",
+      "answerQuestion": "Will you come?",
+      "answerYes": "I will come",
+      "answerNo": "I won't come",
+      "answerMaybe": "Not sure yet",
+      "answerNote": "The link opens a page where you confirm your answer with one tap. You can change it later.",
+      "detailLink": "Meeting agenda in the app",
+      "footer": "This message is a convenience of the app. It does not replace the statutory meeting notice.",
+      "invitation": {
+        "subject": "Invitation to the owners' meeting: {title}",
+        "heading": "Invitation to the owners' meeting",
+        "intro": "The board is calling an owners' meeting. Let us know whether you will come."
+      },
+      "reminderYes": {
+        "subject": "Tomorrow: {title}",
+        "heading": "The meeting is tomorrow",
+        "intro": "We are counting on you."
+      },
+      "reminderOpen": {
+        "subject": "Tomorrow: {title}",
+        "heading": "The meeting is tomorrow",
+        "intro": "You have not told us yet whether you will come."
+      },
+      "change": {
+        "subject": "Meeting changed: {title}",
+        "heading": "The meeting has changed",
+        "intro": "The date or place of the meeting has changed. The new details are below."
+      },
+      "cancel": {
+        "subject": "Meeting cancelled: {title}",
+        "heading": "The meeting is cancelled",
+        "intro": "The board has cancelled the meeting. We will let you know about a new date."
+      }
+    },
+    "errors": {
+      "generic": "Something went wrong. Please try again.",
+      "UNAUTHORIZED": "Please sign in.",
+      "FORBIDDEN": "You are not allowed to do this.",
+      "NOT_FOUND": "Voting not found.",
+      "INVALID_REQUEST": "Invalid request.",
+      "POST_NOT_FOUND": "Post not found.",
+      "RSVP_EVENTS_ONLY": "You can only answer an event.",
+      "RSVP_INVALID_STATUS": "Invalid answer.",
+      "CONFIRMATION_UNAVAILABLE": "E-mail links are not configured (secret key or app address missing).",
+      "ATTENDANCE_NOT_MEETING": "An attendance list exists only for a voting at a meeting.",
+      "ATTENDANCE_NOT_OPEN": "The attendance list opens 2 hours before the meeting starts.",
+      "ATTENDANCE_LOCKED": "The voting is closed — the attendance list can no longer be changed.",
+      "ATTENDANCE_NOT_ELIGIBLE": "This person is not an owner within the voting's scope.",
+      "ATTENDANCE_MANDATE_REQUIRED": "Representation requires a verified power of attorney for this voting.",
+      "ATTENDANCE_ALREADY_RECORDED": "The owner is already recorded (maybe from another device). The list was refreshed.",
+      "ATTENDANCE_NOT_FOUND": "Entry not found.",
+      "ATTENDANCE_HAS_BALLOT": "The owner already has a recorded ballot — the attendance entry cannot be undone.",
+      "MEETING_RSVP_NOT_ELIGIBLE": "Only owners the meeting concerns can answer.",
+      "MEETING_RSVP_CLOSED": "The meeting has started — the answer cannot be changed.",
+      "MEETING_RSVP_TOKEN_INVALID": "The link is not valid.",
+      "MEETING_RSVP_TOKEN_EXPIRED": "The link has expired.",
+      "MEETING_NOT_MEETING_VOTING": "This is not a voting at a meeting.",
+      "MEETING_NOT_ANNOUNCED": "Announce the meeting to owners first.",
+      "MEETING_ALREADY_ANNOUNCED": "The meeting is already announced.",
+      "MEETING_VOTING_NOT_ACTIVE": "The voting must be announced.",
+      "MEETING_IN_PAST": "The meeting has already started.",
+      "MEETING_PLACE_REQUIRED": "Enter where the meeting takes place.",
+      "MEETING_NOTICE_TOO_SHORT": "The new date must be at least 7 full days from today.",
+      "MEETING_EXPORT_UNAVAILABLE": "The attendance list export is available only for a flat owners' association."
+    }
   }
 }

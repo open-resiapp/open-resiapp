@@ -41,6 +41,14 @@ export interface ImportRow {
   owner_phone?: string;
   owner_unit_share_numerator: number;
   owner_unit_share_denominator: number;
+
+  // BYT-20261118-003: LV part-B facts, persisted on the membership for the
+  // informative ownership checks. Only the LV parser fills them; manual /
+  // CSV rows may leave them empty.
+  /** Poradové číslo of the owner row on the LV (BSM spouses share one). */
+  lv_ordinal?: number;
+  /** "bsm" for bezpodielové spoluvlastníctvo manželov; empty otherwise. */
+  ownership_form?: "bsm";
 }
 
 export interface ImportError {

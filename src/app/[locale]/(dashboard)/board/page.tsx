@@ -17,6 +17,7 @@ import { loadFeed } from "@/lib/feed.server";
 import { isBoard, noticeManageScope } from "@/lib/mcp/authz";
 import { hasPermission } from "@/lib/permissions";
 import { getShellData } from "@/lib/shell.server";
+import { NoticesFaultsTabsSlot } from "@modules/faults/src/components/NoticesFaultsTabs";
 
 // "Oznamy" — one feed for board notices + community posts (events, help,
 // sale/gift). BYT-20261117-002 Phase 5. Server-rendered; filters and paging
@@ -102,6 +103,8 @@ export default async function BoardPage({ searchParams }: { searchParams: Search
 
   return (
     <div className="mx-auto max-w-3xl">
+      {/* BYT-20261118-004: "Oznamy · Poruchy" tabs (faults module, board only). */}
+      <NoticesFaultsTabsSlot role={role} boardRoles={shell.user.boardRoles} />
       <FeedHeader
         actions={
           canCreate ? (

@@ -34,6 +34,7 @@ import { sendSettlementPublishedNotification } from "@/lib/email";
 import { listDomUnits, domUnitsWhere } from "./dom-units";
 import { lockOpenPeriods } from "./periods";
 import { postAllDueMonths } from "./fee-schedule-publish";
+import { getReadingRoundGate } from "./reading-rounds";
 
 // Ročné vyúčtovanie assembly (BYT-20260512-002 Phase 4). Gates before
 // the wizard may proceed (spec §Annual vyúčtovanie wizard):
@@ -172,6 +173,17 @@ export interface VyuctovanieGates {
   unmatchedBankLines: number;
   uncategorizedExpenses: number;
   unitsWithoutReadings: number;
+  /** Reading round of the year (BYT-20261118-006) — informational, never
+   * blocking, same as unitsWithoutReadings. singleReadingUnits: units with
+   * exactly one heat / TÚV reading in the year, which consFor treats as the
+   * consumption itself (absolute counter state) — display-only warning
+   * until the year-boundary delta engine slice lands. */
+  readingRound: {
+    hasRound: boolean;
+    missingUnits: number;
+    unresolvedUnits: number;
+    singleReadingUnits: number;
+  };
   /** The year must be OVER — a mid-year publish would settle 12 months
    * of prescriptions against a partial year of postings and costs. */
   yearElapsed: boolean;
@@ -275,6 +287,7 @@ async function computeGates(
     unmatchedBankLines: unmatched.n,
     uncategorizedExpenses: uncategorized.n,
     unitsWithoutReadings,
+    readingRound: await getReadingRoundGate(entityId, year),
     yearElapsed,
     draftSchedules: drafts.n,
     canPublish:

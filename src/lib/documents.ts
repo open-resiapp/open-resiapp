@@ -102,6 +102,16 @@ function pathRelated(a: string, b: string): boolean {
 }
 
 /**
+ * Owner-folder input (BYT-20261118-005). `subjectUserId` is the person a
+ * document belongs to (null = no owner folder, plain entity-anchored doc);
+ * `viewerId` is the user being resolved. Projects have no subject → pass null.
+ */
+export interface DocSubjectInput {
+  viewerId: string;
+  subjectUserId: string | null;
+}
+
+/**
  * Single source of truth for document visibility. A user may see a document
  * iff they hold an active membership with a qualifying role somewhere on the
  * SAME root-to-leaf line as the document's anchor entity:
@@ -111,14 +121,62 @@ function pathRelated(a: string, b: string): boolean {
  * BOTH directions are required (spec BYT-20260512-006): a building-root doc
  * with audience=owner must reach every owner below it (broadcast), and a
  * unit-level doc must still reach the board above it (authority).
+ *
+ * Owner folder (BYT-20261118-005):
+ *   visible = board (admin on the line) — always
+ *          OR ( audience != admin
+ *               AND (subject IS NULL OR viewer == subject)
+ *               AND audience role on the line )
+ * So `audience=admin` ⇒ board only (the subject owner never sees it), and an
+ * owner-folder doc never reaches co-owners or the next owner of the unit.
+ * A board member who is also the subject sees it (admin role wins).
+ * TODO(decision): spec Notes #2 — hide subject-self from board members?
  */
 export function canSeeDocPath(
   userMemberships: UserMembershipLite[],
   docEntityPath: string,
-  audience: DocumentAudience
+  audience: DocumentAudience,
+  // Required (no default) so every caller decides — null only for projects.
+  subject: DocSubjectInput | null
 ): boolean {
+  const onLine = (m: UserMembershipLite) => pathRelated(m.entityPath, docEntityPath);
+  if (userMemberships.some((m) => m.role === "admin" && onLine(m))) return true;
+  if (audience === "admin") return false;
+  if (subject?.subjectUserId && subject.subjectUserId !== subject.viewerId) {
+    return false;
+  }
   const qualifying = AUDIENCE_ROLES[audience];
+  return userMemberships.some((m) => qualifying.includes(m.role) && onLine(m));
+}
+
+/** True iff the user holds an active admin (board) membership on the doc's
+ *  root-to-leaf line — the gate for visibility changes, audit trail and
+ *  e-mail send (BYT-20261118-005). */
+export function isBoardOnDocPath(
+  userMemberships: UserMembershipLite[],
+  docEntityPath: string
+): boolean {
   return userMemberships.some(
-    (m) => qualifying.includes(m.role) && pathRelated(m.entityPath, docEntityPath)
+    (m) => m.role === "admin" && pathRelated(m.entityPath, docEntityPath)
   );
 }
+
+// ── Error codes (BYT-20261118-005) — mapped to i18n `DocumentVisibility.errors`
+export const DOCUMENT_ERROR_CODES = [
+  "document.forbidden",
+  "document.not_found",
+  "document.audience.invalid",
+  "document.subject.not_owner",
+  "document.send.board_only",
+  "document.send.too_large_no_account",
+  "document.send.no_email",
+  "document.send.no_recipient",
+  "document.send.throttled",
+  "document.send.failed",
+] as const;
+export type DocumentErrorCode = (typeof DOCUMENT_ERROR_CODES)[number];
+
+/** Attachment cap for "send by e-mail"; above it the e-mail carries a link.
+ *  Spec Notes #6: 10 MB default (base64 ≈ +33 %, SMTP relays cap 10–25 MB). */
+export const DOCUMENT_EMAIL_ATTACHMENT_MAX_DEFAULT = 10 * 1024 * 1024;
+export const DOCUMENT_EMAIL_MESSAGE_MAX = 500;

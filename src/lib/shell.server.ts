@@ -14,6 +14,7 @@ import { getCommunityRoot } from "@/lib/legacy-compat";
 import { listEnabledModules } from "@/lib/modules/route-guard";
 import { getNavAudience } from "@/lib/navigation";
 import { getOnboardingStatus } from "@/lib/onboarding.server";
+import { countOwnerQueue } from "@/lib/owner-health.server";
 import { hasPermission } from "@/lib/permissions";
 import { listShareSumViolations } from "@/lib/share-sum-invariants.server";
 import { getDisplayTemplateSlug } from "@/lib/templates/display-slug";
@@ -162,24 +163,34 @@ const resolveShellData = cache(async function resolveShellData(
     getRequestConsent(userId, isActive),
   ]);
 
-  // Group 2 — 3 connections (the kind chain reads bundled template JSON).
-  const [boardRoles, unitIds, pendingRegistrations, kinds] = await Promise.all([
+  // Group 2 — 2 connections (the kind chain reads bundled template JSON).
+  const [boardRoles, unitIds, kinds] = await Promise.all([
     root ? soft(listActiveBoardRoles(userId, root.id), [] as BoardMemberRole[]) : [],
     soft(listOwnUnitIds(userId), [] as string[]),
-    isActive && isUsersAdmin ? soft(countPendingRegistrations(), 0) : Promise.resolve(0),
     soft(resolveKindChain(root?.templateSlug ?? null), EMPTY_KIND_CHAIN),
   ]);
 
   // Group 3 — admins only; onboarding runs 3 counts + 1 share-sum scan.
-  const [onboarding, shareSumViolations] = await Promise.all([
+  const onboarding =
     isActive && isSettingsAdmin
-      ? soft(
+      ? await soft(
           getOnboardingStatus(root).then((s) => ({ complete: s.complete })),
           null
         )
-      : Promise.resolve(null),
-    isActive && isUsersAdmin ? soft(listShareSumViolations(), []) : Promise.resolve([]),
-  ]);
+      : null;
+
+  // Group 4 — manageUsers only (BYT-20261118-003). The owners snapshot of
+  // the board's current community (same root rule as /owners) runs once
+  // (4 queries + root meta + dismissals) and feeds both the "Na riešenie"
+  // nav badge and the scoped share-sum banner; /owners and Domov reuse it.
+  const ownersRootId = entityCtx.currentId ?? root?.id ?? null;
+  const [ownerQueue, shareSumViolations] =
+    isActive && isUsersAdmin
+      ? await Promise.all([
+          soft(countOwnerQueue(ownersRootId), 0),
+          soft(listShareSumViolations(ownersRootId), []),
+        ])
+      : ([0, []] as [number, Awaited<ReturnType<typeof listShareSumViolations>>]);
 
   return {
     user: {
@@ -211,6 +222,6 @@ const resolveShellData = cache(async function resolveShellData(
     consent,
     onboarding,
     shareSumViolations,
-    badges: pendingRegistrations > 0 ? { pendingRegistrations } : {},
+    badges: ownerQueue > 0 ? { ownerQueue } : {},
   };
 });

@@ -35,6 +35,12 @@ type BundledModuleConfig = {
    * (the existing row's status is never touched again by bootstrap).
    */
   defaultStatus?: "enabled" | "disabled";
+  /**
+   * Template slugs (entities.data.template_slug, null → "hoa") the module
+   * ships ENABLED for. When set and no community root matches, the install
+   * row is created "disabled" instead (admin opts in via Settings → Modules).
+   */
+  enabledForTemplates?: ReadonlyArray<string>;
 };
 
 const BUNDLED_MODULES: ReadonlyArray<BundledModuleConfig> = [
@@ -53,6 +59,13 @@ const BUNDLED_MODULES: ReadonlyArray<BundledModuleConfig> = [
     name: "mcp",
     autoEnableKinds: [],
     defaultStatus: "disabled",
+  },
+  {
+    // BYT-20261118-004: fault reports. On for the HOA template, off (opt-in)
+    // for every other template.
+    name: "faults",
+    autoEnableKinds: ["community", "building"],
+    enabledForTemplates: ["hoa"],
   },
 ];
 
@@ -100,9 +113,22 @@ export async function bootstrapBundledModules(
       );
       continue;
     }
-    await ensureInstallRow(manifest, config.defaultStatus ?? "enabled");
+    await ensureInstallRow(manifest, await resolveDefaultStatus(config));
     await ensureGrantsForHousingRoots(manifest, config);
   }
+}
+
+async function resolveDefaultStatus(
+  config: BundledModuleConfig
+): Promise<"enabled" | "disabled"> {
+  const base = config.defaultStatus ?? "enabled";
+  if (base === "disabled" || !config.enabledForTemplates) return base;
+  const roots = await listCommunityRoots();
+  // Fresh install (setup not run yet): ship enabled like the other bundled
+  // modules — HOA is the default template.
+  if (roots.length === 0) return base;
+  const allowed = new Set(config.enabledForTemplates);
+  return roots.some((r) => allowed.has(r.templateSlug ?? "hoa")) ? "enabled" : "disabled";
 }
 
 async function ensureInstallRow(

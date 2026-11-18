@@ -1,14 +1,16 @@
 import { getFormatter, getTranslations } from "next-intl/server";
 
-import { ButtonLink, Card, Icon, cn } from "@/components/ui";
+import { Card, Icon, cn } from "@/components/ui";
 import { focusRing } from "@/components/ui/cn";
 import { Link } from "@/i18n/navigation";
 import { formatDate, formatMoney } from "@/components/home/format";
 import DownloadPredpisButton from "@modules/accounting/src/components/DownloadPredpisButton";
 import DownloadVyuctovanieButton from "@modules/accounting/src/components/DownloadVyuctovanieButton";
 import type { OwnerPaymentSummary } from "@modules/accounting/src/lib/owner-payments";
+import type { OwnerReadingsView } from "@modules/accounting/src/lib/reading-rounds-format";
 
 import { PaymentQr } from "./PaymentQr";
+import { ReadingsSection } from "./ReadingsSection";
 
 // "Moje platby" body for one unit (BYT-20261117-002 Phase 4). Pure
 // rendering of OwnerPaymentSummary — every number comes from the karta
@@ -28,9 +30,12 @@ function groupIban(iban: string): string {
 export async function MyPaymentsView({
   summary,
   country,
+  readings,
 }: {
   summary: OwnerPaymentSummary;
   country: "sk" | "cz";
+  /** Reading round view (BYT-20261118-006); null when not loaded. */
+  readings?: OwnerReadingsView | null;
 }) {
   const t = await getTranslations("MyPayments");
   const format = await getFormatter();
@@ -175,14 +180,9 @@ export async function MyPaymentsView({
         )}
       </Card>
 
-      {/* Meter self-reading — only for doms that use it (see report: no
-          reading-window concept exists in the data model yet). */}
-      {s.usesMeters ? (
-        <ButtonLink href="/accounting/meters" variant="secondary" fullWidth>
-          <Icon name="edit" size={20} />
-          {t("meters")}
-        </ButtonLink>
-      ) : null}
+      {/* Odpočty a osoby (BYT-20261118-006) — inputs only while a reading
+          round is open; otherwise a one-line last-submission summary. */}
+      {readings ? <ReadingsSection view={readings} unitEntityId={s.unitEntityId} /> : null}
 
       <p>
         <Link href="/accounting/inspect" className={textLink}>
