@@ -168,7 +168,7 @@ export async function handleUpomienkaPdfData(
     });
     return NextResponse.json({
       ...data,
-      building: { name: root.name, address: root.address, ico: root.ico },
+      building: { name: root.name, address: root.address, ico: root.ico, dic: root.dic },
     });
   } catch (err) {
     const message = err instanceof Error ? err.message : "pdf data failed";
@@ -210,7 +210,7 @@ export async function handleVyuctovaniePdfData(
     });
     return NextResponse.json({
       ...data,
-      building: { name: root.name, address: root.address, ico: root.ico },
+      building: { name: root.name, address: root.address, ico: root.ico, dic: root.dic },
     });
   } catch (err) {
     const message = err instanceof Error ? err.message : "pdf data failed";
@@ -247,7 +247,7 @@ export async function handlePredpisPdfData(
     });
     return NextResponse.json({
       ...data,
-      building: { name: root.name, address: root.address, ico: root.ico },
+      building: { name: root.name, address: root.address, ico: root.ico, dic: root.dic },
     });
   } catch (err) {
     const message = err instanceof Error ? err.message : "pdf data failed";

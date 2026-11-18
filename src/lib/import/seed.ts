@@ -213,6 +213,7 @@ export async function seedImport(input: SeedInput): Promise<SeedResult> {
         data: {
           address: first.community_address,
           ico: first.community_ico ?? null,
+          dic: first.community_dic?.trim().slice(0, 20) || null,
           voting_method: first.voting_method,
           country: first.country,
           template_slug: input.templateSlug ?? null,

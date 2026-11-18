@@ -1848,6 +1848,7 @@
     "name": "Name",
     "address": "Address",
     "ico": "ICO",
+    "dic": "Tax ID (DIČ)",
     "votingMethod": "Voting method",
     "noInfo": "Building information is not available.",
     "buildingSaved": "Building information has been saved.",

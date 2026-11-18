@@ -21,6 +21,7 @@ export interface ImportRow {
   community_name: string;
   community_address: string;
   community_ico?: string;
+  community_dic?: string;
   country: CountryCode;
   voting_method: VotingMethod;
   supisne_cislo?: string;

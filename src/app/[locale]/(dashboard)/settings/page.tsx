@@ -66,6 +66,7 @@ export default async function SettingsPage({
           name: root.name,
           address: root.address,
           ico: root.ico,
+          dic: root.dic,
           votingMethod: root.votingMethod as string,
           country: root.country as string,
           governanceModel: root.governanceModel as string,

@@ -148,6 +148,7 @@ export default function ImportWizardPage() {
           community_name: prev.community_name ?? data.name ?? "",
           community_address: prev.community_address ?? data.address ?? "",
           community_ico: prev.community_ico ?? data.ico ?? "",
+          community_dic: prev.community_dic ?? data.dic ?? "",
           country: prev.country ?? data.country ?? "sk",
           voting_method: prev.voting_method ?? data.votingMethod ?? "per_share",
         }));
@@ -902,7 +903,7 @@ function defaultWidth(key: string): number {
   if (key.includes("address") || key.includes("name")) return 220;
   if (key.includes("email")) return 200;
   if (key === "owner_phone") return 140;
-  if (key === "community_ico" || key === "supisne_cislo") return 120;
+  if (key === "community_ico" || key === "community_dic" || key === "supisne_cislo") return 120;
   return 110;
 }
 

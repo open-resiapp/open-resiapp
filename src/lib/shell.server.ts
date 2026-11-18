@@ -211,6 +211,7 @@ const resolveShellData = cache(async function resolveShellData(
           country: root.country ?? null,
           address: root.address ?? null,
           ico: root.ico ?? null,
+          dic: root.dic ?? null,
           legalNotice: root.legalNotice ?? null,
         }
       : null,

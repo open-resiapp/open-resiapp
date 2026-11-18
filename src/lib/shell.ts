@@ -45,6 +45,7 @@ export interface ShellCommunity {
   country: Country | null;
   address: string | null;
   ico: string | null;
+  dic: string | null;
   legalNotice: string | null;
 }
 

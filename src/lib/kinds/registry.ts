@@ -541,6 +541,7 @@ export const HOA_CATALOG_SEED: KindCatalogRow[] = [
       properties: {
         address: { type: "string" },
         ico: { type: "string" },
+        dic: { type: "string" },
         voting_method: { enum: ["per_share", "per_flat", "per_area"] },
         country: { enum: ["sk", "cz"] },
         governance_model: {

@@ -1848,6 +1848,7 @@
     "name": "Názov",
     "address": "Adresa",
     "ico": "IČO",
+    "dic": "DIČ",
     "votingMethod": "Spôsob hlasovania",
     "noInfo": "Informácie o bytovom dome nie sú k dispozícii.",
     "buildingSaved": "Informácie o budove boli uložené.",

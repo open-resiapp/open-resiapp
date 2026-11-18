@@ -44,6 +44,7 @@ const orgSchema = z.object({
   name: z.string().min(1),
   address: z.string().min(1),
   ico: z.string().optional(),
+  dic: z.string().optional(),
   country: z.enum(["sk", "cz"]).default("sk"),
   votingMethod: z.enum(["per_share", "per_flat", "per_area"]).default("per_share"),
 });
@@ -107,6 +108,7 @@ export async function POST(req: Request) {
     const rootData = {
       address: org_settings.address,
       ico: org_settings.ico ?? null,
+      dic: org_settings.dic?.trim().slice(0, 20) || null,
       voting_method: org_settings.votingMethod,
       country: org_settings.country,
     };

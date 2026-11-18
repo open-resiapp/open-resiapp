@@ -109,6 +109,7 @@ const getCommunityInfo = defineTool({
         name: root.name,
         address: root.address,
         ico: root.ico,
+        dic: root.dic,
         country: root.country,
         governanceModel: root.governanceModel,
         iban,

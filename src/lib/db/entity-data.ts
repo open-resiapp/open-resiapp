@@ -15,6 +15,7 @@ import { isUnitType } from "@/lib/unit-type";
 export function rootDataPatch(input: {
   address?: unknown;
   ico?: unknown;
+  dic?: unknown;
   votingMethod?: unknown;
   country?: unknown;
   governanceModel?: unknown;
@@ -24,6 +25,7 @@ export function rootDataPatch(input: {
   const out: Record<string, unknown> = {};
   if (input.address !== undefined) out.address = input.address;
   if (input.ico !== undefined) out.ico = input.ico;
+  if (input.dic !== undefined) out.dic = input.dic;
   if (input.votingMethod !== undefined) out.voting_method = input.votingMethod;
   if (input.country !== undefined) out.country = input.country;
   if (input.governanceModel !== undefined) out.governance_model = input.governanceModel;

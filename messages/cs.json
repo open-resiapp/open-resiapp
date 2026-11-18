@@ -1517,6 +1517,7 @@
     "name": "Název",
     "address": "Adresa",
     "ico": "IČO",
+    "dic": "DIČ",
     "votingMethod": "Způsob hlasování",
     "noInfo": "Informace o bytovém domě nejsou k dispozici.",
     "buildingSaved": "Informace o budově byly uloženy.",
