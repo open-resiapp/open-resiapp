@@ -31,7 +31,15 @@ export async function PATCH(request: NextRequest) {
   }
 
   const body = await request.json();
-  const { name, address, ico, votingMethod, legalNotice, country, governanceModel } = body;
+  const { name, address, ico, dic: rawDic, votingMethod, legalNotice, country, governanceModel } = body;
+
+  // Optional, trimmed, max 20 chars; empty -> null. Undefined = leave untouched.
+  const dic =
+    rawDic === undefined
+      ? undefined
+      : typeof rawDic === "string" && rawDic.trim()
+        ? rawDic.trim().slice(0, 20)
+        : null;
 
   // Phase 9.1d: building lives as root entity + housing_root_data.
   const existing = await getCommunityRoot();
@@ -52,6 +60,7 @@ export async function PATCH(request: NextRequest) {
     const bootstrapValues = {
       address,
       ico: ico || null,
+      dic: dic ?? null,
       votingMethod: votingMethod || "per_share",
       country: country || "sk",
       governanceModel: governanceModel || "chairman_council",
@@ -78,6 +87,7 @@ export async function PATCH(request: NextRequest) {
   const dataPatch = rootDataPatch({
     address,
     ico,
+    dic,
     votingMethod,
     country,
     governanceModel,

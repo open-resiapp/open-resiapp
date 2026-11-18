@@ -97,7 +97,7 @@ const styles = StyleSheet.create({
 });
 
 export interface VyuctovaniePDFSkProps {
-  building: { name: string; address: string; ico: string | null };
+  building: { name: string; address: string; ico: string | null; dic?: string | null };
   labels: {
     unit: string;
     vs: string;
@@ -141,6 +141,9 @@ export default function VyuctovaniePDFSk(props: VyuctovaniePDFSkProps) {
           <Text style={styles.buildingAddress}>{props.building.address}</Text>
           {props.building.ico && (
             <Text style={styles.buildingIco}>IČO: {props.building.ico}</Text>
+          )}
+          {props.building.dic && (
+            <Text style={styles.buildingIco}>DIČ: {props.building.dic}</Text>
           )}
         </View>
 

@@ -1,14 +1,16 @@
 import "server-only";
 
-import { and, asc, eq, inArray, isNull, sql } from "drizzle-orm";
+import { and, eq, isNull, sql } from "drizzle-orm";
 import { db } from "@/db";
-import { entities, memberships } from "@/db/schema";
-import { ACCOUNT_CODES } from "../seeds/coa-sk";
 import { accountingPeriods, feeAssessments, feeSchedules } from "../db/schema";
-import { domUnitsWhere } from "./dom-units";
 import { postAllDueMonths } from "./fee-schedule-publish";
-import { getUnitLedger, listUnitBalances } from "./karta-bytu";
-import { getOverdueForUnit } from "./overdue";
+import {
+  canReadUnitLedger,
+  getUnitLedger,
+  listScopedUnitBalances,
+  scopeLedger,
+} from "./karta-bytu";
+import { getOverdueForUnit, scopeOverdue } from "./overdue";
 import { getPredpisPdfData } from "./predpis-pdf-data";
 import { getVyuctovaniePdfData, listSettlementYearsForUnit } from "./vyuctovanie";
 
@@ -21,123 +23,28 @@ import { getVyuctovaniePdfData, listSettlementYearsForUnit } from "./vyuctovanie
 
 type Country = "sk" | "cz";
 
-export interface OwnedUnit {
-  id: string;
-  name: string;
-  flatNumber: string | null;
-}
+// Window helpers live in ./ownership-windows (shared with karta-bytu);
+// re-exported for existing importers.
+export {
+  inWindows,
+  ledgerRowsInWindows,
+  listOwnedUnits,
+  listOwnershipWindows,
+  yearInWindows,
+  type OwnedUnit,
+  type OwnedUnitWithWindows,
+  type OwnershipWindow,
+} from "./ownership-windows";
+import {
+  inWindows,
+  listOwnershipWindows,
+  todayIso,
+  yearInScope,
+  type OwnedUnit,
+  type OwnedUnitWithWindows,
+  type OwnershipWindow,
+} from "./ownership-windows";
 
-/** Today as YYYY-MM-DD (UTC) — membership validity dates are plain dates. */
-function todayIso(): string {
-  return new Date().toISOString().slice(0, 10);
-}
-
-/**
- * Units the user OWNS TODAY: active owner membership whose validity window
- * [valid_from, valid_to) contains today (BYT-20261118-007). A buyer with a
- * future valid_from is not an owner yet; a seller whose valid_to passed is
- * not one any more. Used by the home balance card and self-readings — both
- * are about the current owner only.
- */
-export async function listOwnedUnits(
-  userId: string,
-  entityId: string
-): Promise<OwnedUnit[]> {
-  const today = todayIso();
-  return db
-    .selectDistinct({
-      id: entities.id,
-      name: entities.name,
-      flatNumber: sql<string | null>`${entities.data}->>'flat_number'`,
-    })
-    .from(entities)
-    .innerJoin(memberships, eq(memberships.entityId, entities.id))
-    .where(
-      and(
-        domUnitsWhere(entityId),
-        eq(memberships.userId, userId),
-        eq(memberships.role, "owner"),
-        eq(memberships.status, "active"),
-        sql`${memberships.validFrom} <= ${today}::date`,
-        sql`(${memberships.validTo} IS NULL OR ${memberships.validTo} > ${today}::date)`
-      )
-    )
-    .orderBy(asc(entities.name));
-}
-
-/** [from, to) in YYYY-MM-DD; to = null → still the owner. */
-export interface OwnershipWindow {
-  from: string;
-  to: string | null;
-}
-
-export interface OwnedUnitWithWindows extends OwnedUnit {
-  windows: OwnershipWindow[];
-  /** Owner today (a window contains today). */
-  current: boolean;
-}
-
-/**
- * Every unit the user owns or OWNED (current + ended owner memberships),
- * with the ownership windows. "Moje platby" shows each person only the
- * money of their own ownership period: the buyer does not see the seller's
- * history, the seller keeps access to their own after the sale.
- * Current units first, then former ones; by name within each group.
- */
-export async function listOwnershipWindows(
-  userId: string,
-  entityId: string
-): Promise<OwnedUnitWithWindows[]> {
-  const today = todayIso();
-  const rows = await db
-    .select({
-      id: entities.id,
-      name: entities.name,
-      flatNumber: sql<string | null>`${entities.data}->>'flat_number'`,
-      validFrom: memberships.validFrom,
-      validTo: memberships.validTo,
-    })
-    .from(entities)
-    .innerJoin(memberships, eq(memberships.entityId, entities.id))
-    .where(
-      and(
-        domUnitsWhere(entityId),
-        eq(memberships.userId, userId),
-        eq(memberships.role, "owner"),
-        inArray(memberships.status, ["active", "archived"]),
-        // A future ownership is not visible yet.
-        sql`${memberships.validFrom} <= ${today}::date`
-      )
-    )
-    .orderBy(asc(entities.name), asc(memberships.validFrom));
-
-  const byUnit = new Map<string, OwnedUnitWithWindows>();
-  for (const r of rows) {
-    // Zero-length windows (corrections ending on the start day) own nothing.
-    if (r.validTo !== null && r.validTo <= r.validFrom) continue;
-    let unit = byUnit.get(r.id);
-    if (!unit) {
-      unit = { id: r.id, name: r.name, flatNumber: r.flatNumber, windows: [], current: false };
-      byUnit.set(r.id, unit);
-    }
-    unit.windows.push({ from: r.validFrom, to: r.validTo });
-    if (inWindows(today, [{ from: r.validFrom, to: r.validTo }])) unit.current = true;
-  }
-  const units = [...byUnit.values()];
-  return [...units.filter((u) => u.current), ...units.filter((u) => !u.current)];
-}
-
-/** Is the day (YYYY-MM-DD) inside any [from, to) window? */
-function inWindows(day: string, windows: OwnershipWindow[]): boolean {
-  return windows.some((w) => w.from <= day && (w.to === null || day < w.to));
-}
-
-/** Does calendar year `year` overlap any window? */
-function yearInWindows(year: number, windows: OwnershipWindow[]): boolean {
-  const first = `${year}-01-01`;
-  const last = `${year}-12-31`;
-  return windows.some((w) => w.from <= last && (w.to === null || w.to > first));
-}
 
 /**
  * Posts every due month before a balance is shown — same lazy posting the
@@ -192,6 +99,59 @@ async function hasDueUnpostedAssessments(entityId: string, now: Date): Promise<b
   return Boolean(row);
 }
 
+/**
+ * Which unit a "Moje platby" view shows, and with which ownership windows —
+ * shared by the Moje platby page and the MCP owner tools
+ * (BYT-20261118-012), so web and AI resolve access identically:
+ *   - a requested unit the viewer owns / owned → that unit, limited to the
+ *     viewer's own ownership windows;
+ *   - any other requested unit → only for whole-dom readers (admin /
+ *     treasurer / chairman via canReadUnitLedger), full history (no windows);
+ *   - nothing requested → the viewer's first owned unit (current first).
+ * `canSubmitReadings` = the viewer owns the unit TODAY (a board member
+ * opening another unit must not submit as its owner).
+ */
+export type OwnerUnitResolution =
+  | {
+      kind: "ok";
+      unitId: string;
+      windows: OwnershipWindow[] | undefined;
+      canSubmitReadings: boolean;
+      owned: OwnedUnitWithWindows[];
+    }
+  | { kind: "forbidden"; owned: OwnedUnitWithWindows[] }
+  | { kind: "none"; owned: OwnedUnitWithWindows[] };
+
+export async function resolveOwnerUnit(input: {
+  userId: string;
+  userRole: string;
+  entityId: string;
+  requested: string | null;
+}): Promise<OwnerUnitResolution> {
+  const { userId, userRole, entityId, requested } = input;
+  const owned = await listOwnershipWindows(userId, entityId);
+  let unitId: string | null = null;
+  if (requested && owned.some((u) => u.id === requested)) {
+    unitId = requested;
+  } else if (requested) {
+    if (!(await canReadUnitLedger(userId, userRole, entityId, requested))) {
+      return { kind: "forbidden", owned };
+    }
+    unitId = requested;
+  } else {
+    unitId = owned[0]?.id ?? null;
+  }
+  if (!unitId) return { kind: "none", owned };
+  const mine = owned.find((u) => u.id === unitId);
+  return {
+    kind: "ok",
+    unitId,
+    windows: mine?.windows,
+    canSubmitReadings: Boolean(mine?.current),
+    owned,
+  };
+}
+
 export interface UnitBalanceLine {
   unitEntityId: string;
   label: string;
@@ -199,16 +159,20 @@ export interface UnitBalanceLine {
   balanceCents: number;
 }
 
-/** One balance per unit via the karta list aggregate (listUnitBalances). */
+/**
+ * One balance per unit as the viewer may see it: with `windows` only the
+ * viewer's own ownership period (a buyer's home card never shows the
+ * seller's debt), else the karta list aggregate.
+ */
 export async function getUnitBalanceLines(
   entityId: string,
   country: Country,
-  units: OwnedUnit[]
+  units: (OwnedUnit & { windows?: OwnershipWindow[] })[]
 ): Promise<UnitBalanceLine[]> {
-  const balances = await listUnitBalances(
+  const balances = await listScopedUnitBalances(
     entityId,
     country,
-    units.map((u) => u.id)
+    units.map((u) => ({ id: u.id, windows: u.windows }))
   );
   return units.map((u) => ({
     unitEntityId: u.id,
@@ -278,36 +242,15 @@ export async function getOwnerPaymentSummary(input: {
   if (!ledger) return null;
 
   const isCurrent = windows ? inWindows(todayIso(), windows) : true;
-  const ledgerRows = windows
-    ? ledger.rows.filter((r) => inWindows(r.postedAt.slice(0, 10), windows))
-    : ledger.rows;
-  // Balance + parked preplatok of the viewer's own period, derived from the
-  // same ledger rows (debit − credit; 379 credit = preplatok).
-  const balanceCents = windows
-    ? ledgerRows.reduce((sum, r) => sum + r.deltaCents, 0)
-    : ledger.balanceCents;
-  const preplatokCents = windows
-    ? ledgerRows.reduce(
-        (sum, r) =>
-          sum +
-          r.lines
-            .filter((l) => l.accountCode === ACCOUNT_CODES.INE_ZAVAZKY)
-            .reduce((s, l) => s - l.deltaCents, 0),
-        0
-      )
-    : ledger.preplatokCents;
-  const visibleSettlementYears = windows
-    ? settlementYears.filter((y) => yearInWindows(y, windows))
-    : settlementYears;
-  const overdueItems = overdue
-    ? windows
-      ? overdue.items.filter((i) =>
-          i.kind === "settlement"
-            ? yearInWindows(i.periodYear, windows)
-            : inWindows(`${i.periodYear}-${String(i.month).padStart(2, "0")}-01`, windows)
-        )
-      : overdue.items
-    : [];
+  // Balance, parked preplatok, rows and overdue items of the viewer's own
+  // period — the same scoping the karta API applies (scopeLedger /
+  // scopeOverdue), derived from the same postings.
+  const scoped = scopeLedger(ledger, windows);
+  const ledgerRows = scoped.rows;
+  const balanceCents = scoped.balanceCents;
+  const preplatokCents = scoped.preplatokCents;
+  const visibleSettlementYears = settlementYears.filter((y) => yearInScope(y, windows));
+  const overdueItems = overdue ? scopeOverdue(overdue, windows).items : [];
 
   let latestSettlement: OwnerPaymentSummary["latestSettlement"] = null;
   if (visibleSettlementYears.length > 0) {
@@ -363,16 +306,19 @@ export async function getOwnerPaymentSummary(input: {
 }
 
 /**
- * Units (of `unitIds`) that have a published settlement for `year` — the
- * home "vyúčtovanie je pripravené" deadline row.
+ * Units that have a published settlement for `year` — the home
+ * "vyúčtovanie je pripravené" deadline row. With `windows` the year must
+ * fall in the viewer's own ownership period.
  */
 export async function listUnitsWithSettlement(
   entityId: string,
-  unitIds: string[],
+  units: { id: string; windows?: OwnershipWindow[] }[],
   year: number
 ): Promise<string[]> {
   const years = await Promise.all(
-    unitIds.map((id) => listSettlementYearsForUnit(entityId, id))
+    units.map((u) => listSettlementYearsForUnit(entityId, u.id))
   );
-  return unitIds.filter((_, i) => years[i].includes(year));
+  return units
+    .filter((u, i) => years[i].includes(year) && yearInScope(year, u.windows))
+    .map((u) => u.id);
 }

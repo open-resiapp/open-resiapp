@@ -14,6 +14,7 @@ export interface ExportResult {
     community_name: string;
     community_address: string;
     community_ico: string;
+    community_dic: string;
     country: string;
     voting_method: string;
     supisne_cislo: string;
@@ -36,6 +37,7 @@ export async function exportCommunityAsImportRows(): Promise<ExportResult | null
       name: entities.name,
       address: sql<string>`${entities.data}->>'address'`,
       ico: sql<string | null>`${entities.data}->>'ico'`,
+      dic: sql<string | null>`${entities.data}->>'dic'`,
       country: sql<string>`${entities.data}->>'country'`,
       votingMethod: sql<string>`${entities.data}->>'voting_method'`,
     })
@@ -164,6 +166,7 @@ export async function exportCommunityAsImportRows(): Promise<ExportResult | null
       community_name: community.name,
       community_address: community.address,
       community_ico: community.ico ?? "",
+      community_dic: community.dic ?? "",
       country: community.country,
       voting_method: community.votingMethod,
       supisne_cislo: "",

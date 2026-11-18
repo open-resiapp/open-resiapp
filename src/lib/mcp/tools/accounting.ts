@@ -3,11 +3,7 @@ import "server-only";
 import { z } from "zod";
 
 import { db } from "@/db";
-import {
-  assertReader,
-  assertUnitLedger,
-  assertWriter,
-} from "@modules/accounting/src/lib/authz-assert";
+import { assertReader, assertWriter } from "@modules/accounting/src/lib/authz-assert";
 import {
   isAccountingReader,
   isAccountingWriter,
@@ -23,8 +19,10 @@ import { listExpenses } from "@modules/accounting/src/lib/expenses";
 import { postAllDueMonths } from "@modules/accounting/src/lib/fee-schedule-publish";
 import {
   getUnitLedger,
-  listAccessibleUnits,
-  listUnitBalances,
+  getUnitReadScope,
+  listAccessibleUnitScopes,
+  listScopedUnitBalances,
+  scopeLedger,
 } from "@modules/accounting/src/lib/karta-bytu";
 import { getOverdueForUnit } from "@modules/accounting/src/lib/overdue";
 import { getCashflowProjection } from "@modules/accounting/src/lib/projection";
@@ -224,7 +222,7 @@ const getUnitLedgerTool = defineTool({
   title: "Unit ledger (karta bytu)",
   description:
     "Returns a unit's ledger (karta bytu): balance, parked overpayment and postings, newest first, paginated.\n" +
-    "Without unitId it lists the units the user may open with their balances. Board sees every unit, owners their own.",
+    "Without unitId it lists the units the user may open with their balances. Board sees every unit, owners only their own ownership period.",
   scopes: ["read", "finance:read"],
   module: "accounting",
   visible: (ctx) => isReader(ctx) || ctx.isDomOwner,
@@ -235,14 +233,12 @@ const getUnitLedgerTool = defineTool({
   async run(args, ctx) {
     const p = ctx.principal;
     if (!args.unitId) {
-      const units = await listAccessibleUnits(p.userId, p.role, ctx.root.id);
+      const units = await listAccessibleUnitScopes(p.userId, p.role, ctx.root.id);
       if (units.length === 0) throw new McpError("forbidden");
       await postDueMonths(ctx);
-      const balances = await listUnitBalances(
-        ctx.root.id,
-        ctx.root.country,
-        units.map((u) => u.id)
-      );
+      // Owners: balance of their own ownership period only (same as the
+      // karta API — BYT-20261118-012).
+      const balances = await listScopedUnitBalances(ctx.root.id, ctx.root.country, units);
       const page = paginate(units, args);
       return {
         summary: `${units.length} accessible unit(s); showing ${page.items.length}.`,
@@ -259,10 +255,14 @@ const getUnitLedgerTool = defineTool({
       };
     }
 
-    await assertUnitLedger(p, args.unitId);
+    // Same scope as GET /api/accounting/karta/[unitId]: board = full
+    // history, owner = only their own ownership windows.
+    const scope = await getUnitReadScope(p.userId, p.role, ctx.root.id, args.unitId);
+    if (!scope) throw new McpError("forbidden");
     await postDueMonths(ctx);
-    const ledger = await getUnitLedger(ctx.root.id, args.unitId, ctx.root.country);
-    if (!ledger) throw new McpError("not_found");
+    const full = await getUnitLedger(ctx.root.id, args.unitId, ctx.root.country);
+    if (!full) throw new McpError("not_found");
+    const ledger = scopeLedger(full, scope.windows);
     const newestFirst = [...ledger.rows].reverse();
     const page = paginate(newestFirst, args);
     return {

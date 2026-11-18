@@ -13,6 +13,7 @@ export interface BuildingInfo {
   name: string;
   address: string;
   ico: string | null;
+  dic: string | null;
   votingMethod: string;
   country: string;
   governanceModel: string;
@@ -43,6 +44,7 @@ export default function BuildingInfoTab({ canEdit, initial }: BuildingInfoTabPro
   const [name, setName] = useState(initial?.name ?? "");
   const [address, setAddress] = useState(initial?.address ?? "");
   const [ico, setIco] = useState(initial?.ico ?? "");
+  const [dic, setDic] = useState(initial?.dic ?? "");
   const [country, setCountry] = useState(initial?.country || "sk");
   const [governanceModel, setGovernanceModel] = useState(initial?.governanceModel || "chairman_council");
 
@@ -51,6 +53,7 @@ export default function BuildingInfoTab({ canEdit, initial }: BuildingInfoTabPro
     name !== saved.name ||
     address !== saved.address ||
     ico !== (saved.ico ?? "") ||
+    dic.trim() !== (saved.dic ?? "") ||
     country !== (saved.country || "sk") ||
     governanceModel !== (saved.governanceModel || "chairman_council");
 
@@ -61,7 +64,7 @@ export default function BuildingInfoTab({ canEdit, initial }: BuildingInfoTabPro
       const res = await fetch("/api/building", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, address, ico: ico || null, country, governanceModel }),
+        body: JSON.stringify({ name, address, ico: ico || null, dic: dic.trim() || null, country, governanceModel }),
       });
       if (!res.ok) {
         const data = await res.json().catch(() => null);
@@ -115,6 +118,9 @@ export default function BuildingInfoTab({ canEdit, initial }: BuildingInfoTabPro
           <Field label={t("ico")}>
             <Input value={ico} onChange={(e) => setIco(e.target.value)} inputMode="numeric" />
           </Field>
+          <Field label={t("dic")}>
+            <Input value={dic} onChange={(e) => setDic(e.target.value)} inputMode="text" maxLength={20} />
+          </Field>
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <Field label={t("country")}>
               <Select value={country} onChange={(e) => setCountry(e.target.value)}>
@@ -141,6 +147,7 @@ export default function BuildingInfoTab({ canEdit, initial }: BuildingInfoTabPro
           <Row label={t("name")} value={saved.name} />
           <Row label={t("address")} value={saved.address} />
           {saved.ico ? <Row label={t("ico")} value={saved.ico} /> : null}
+          {saved.dic ? <Row label={t("dic")} value={saved.dic} /> : null}
           <Row label={t("country")} value={saved.country === "cz" ? t("countryCz") : t("countrySk")} />
           <Row label={t("governanceModel")} value={governanceLabel} />
         </dl>

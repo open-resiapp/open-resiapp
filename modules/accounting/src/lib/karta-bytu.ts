@@ -2,7 +2,7 @@ import "server-only";
 
 import { and, asc, eq, inArray, sql } from "drizzle-orm";
 import { db } from "@/db";
-import { entities, memberships } from "@/db/schema";
+import { entities } from "@/db/schema";
 import {
   accounts,
   accountingPeriods,
@@ -22,6 +22,11 @@ import { getCurrentOpenPeriod } from "./periods";
 import { domUnitsWhere, listDomUnits } from "./dom-units";
 import { hasBoardRole } from "./authz";
 import { postAllDueMonths } from "./fee-schedule-publish";
+import {
+  inScope,
+  listOwnershipWindows,
+  type OwnershipWindow,
+} from "./ownership-windows";
 
 // Karta bytu (spec §Per-unit ledger) — the unit's running-balance ledger.
 // Domain invariant 11: every displayed balance derives from postings —
@@ -43,65 +48,116 @@ const UNIT_DEBT_ACCOUNTS = [
 ];
 
 // ── Access ─────────────────────────────────────────────
+//
+// One rule for every per-unit read (karta, overdue, predpis, vyúčtovanie,
+// meter history, Moje platby, MCP — BYT-20261118-012):
+//   - whole-dom readers (admin / treasurer / chairman with a board term in
+//     force) read any unit with its full history;
+//   - everyone else reads a unit only through their OWN ownership windows
+//     (current or former owner membership, validity [valid_from, valid_to)
+//     started) and only the part of the history inside those windows — a
+//     buyer never sees the seller's postings, readings or settlements; a
+//     seller keeps their own period after the sale; a future buyer sees
+//     nothing yet.
 
-/**
- * Whole-dom readers: admin / treasurer / chairman. Everyone else reads a
- * unit only through an ACTIVE OWNER membership on it — enforced here,
- * server-side, for every karta query (unauthorized = 403 at the route).
- */
+export type UnitReadScope =
+  | { wholeDom: true; windows: undefined; current: true }
+  | { wholeDom: false; windows: OwnershipWindow[]; current: boolean };
+
+/** admin / treasurer / chairman — whole-dom history (canReadAccounting rule). */
+export async function isWholeDomReader(
+  userId: string,
+  userRole: string,
+  entityId: string
+): Promise<boolean> {
+  if (userRole === "admin") return true;
+  return hasBoardRole(userId, entityId, ["treasurer", "chairman"]);
+}
+
+/** null = no access to the unit at all (route answers 403). */
+export async function getUnitReadScope(
+  userId: string,
+  userRole: string,
+  entityId: string,
+  unitEntityId: string
+): Promise<UnitReadScope | null> {
+  if (await isWholeDomReader(userId, userRole, entityId)) {
+    return { wholeDom: true, windows: undefined, current: true };
+  }
+  const owned = await listOwnershipWindows(userId, entityId);
+  const unit = owned.find((u) => u.id === unitEntityId);
+  return unit ? { wholeDom: false, windows: unit.windows, current: unit.current } : null;
+}
+
+/** Any read access to the unit (scope decides WHICH part of its history). */
 export async function canReadUnitLedger(
   userId: string,
   userRole: string,
   entityId: string,
   unitEntityId: string
 ): Promise<boolean> {
-  if (userRole === "admin") return true;
-  if (await hasBoardRole(userId, entityId, ["treasurer", "chairman"])) {
-    return true;
-  }
-  const [row] = await db
-    .select({ id: memberships.id })
-    .from(memberships)
-    .where(
-      and(
-        eq(memberships.userId, userId),
-        eq(memberships.entityId, unitEntityId),
-        eq(memberships.role, "owner"),
-        eq(memberships.status, "active")
-      )
-    )
-    .limit(1);
-  return !!row;
+  return (await getUnitReadScope(userId, userRole, entityId, unitEntityId)) !== null;
 }
 
-/** Units the user may open: whole dom for board/admin, own units otherwise. */
+export interface AccessibleUnit {
+  id: string;
+  name: string;
+  flatNumber: string | null;
+  /** undefined = whole history (board); else the viewer's ownership windows. */
+  windows: OwnershipWindow[] | undefined;
+}
+
+/** Units the user may open: whole dom for board/admin, own (current + former) units otherwise. */
+export async function listAccessibleUnitScopes(
+  userId: string,
+  userRole: string,
+  entityId: string
+): Promise<AccessibleUnit[]> {
+  if (await isWholeDomReader(userId, userRole, entityId)) {
+    return (await listDomUnits(entityId)).map((u) => ({
+      id: u.id,
+      name: u.name,
+      flatNumber: u.flatNumber,
+      windows: undefined,
+    }));
+  }
+  return (await listOwnershipWindows(userId, entityId)).map((u) => ({
+    id: u.id,
+    name: u.name,
+    flatNumber: u.flatNumber,
+    windows: u.windows,
+  }));
+}
+
+/** Units the user may open (without the windows). */
 export async function listAccessibleUnits(
   userId: string,
   userRole: string,
   entityId: string
 ): Promise<{ id: string; name: string; flatNumber: string | null }[]> {
-  const wholeDom =
-    userRole === "admin" ||
-    (await hasBoardRole(userId, entityId, ["treasurer", "chairman"]));
-  if (wholeDom) return listDomUnits(entityId);
+  return (await listAccessibleUnitScopes(userId, userRole, entityId)).map(
+    ({ id, name, flatNumber }) => ({ id, name, flatNumber })
+  );
+}
 
-  return db
-    .select({
-      id: entities.id,
-      name: entities.name,
-      flatNumber: sql<string | null>`${entities.data}->>'flat_number'`,
-    })
-    .from(entities)
-    .innerJoin(memberships, eq(memberships.entityId, entities.id))
-    .where(
-      and(
-        domUnitsWhere(entityId),
-        eq(memberships.userId, userId),
-        eq(memberships.role, "owner"),
-        eq(memberships.status, "active")
-      )
-    )
-    .orderBy(asc(entities.name));
+/**
+ * Balance per unit as the viewer may see it: the dom aggregate for
+ * whole-history units, the sum of the viewer's own windowed postings
+ * otherwise (same math as scopeLedger).
+ */
+export async function listScopedUnitBalances(
+  entityId: string,
+  country: Country,
+  units: { id: string; windows: OwnershipWindow[] | undefined }[]
+): Promise<Map<string, number>> {
+  const full = units.filter((u) => !u.windows).map((u) => u.id);
+  const out = await listUnitBalances(entityId, country, full);
+  for (const u of units) {
+    if (!u.windows) continue;
+    const ledger = await getUnitLedger(entityId, u.id, country);
+    out.set(u.id, ledger ? scopeLedger(ledger, u.windows).balanceCents : 0);
+  }
+  return out;
 }
 
 /**
@@ -283,6 +339,30 @@ export async function getUnitLedger(
     preplatokCents,
     rows,
   };
+}
+
+/**
+ * The ledger limited to the viewer's ownership windows: rows posted inside
+ * a window, running balance / balance / parked preplatok recomputed from
+ * those rows only. undefined windows = the full ledger (board).
+ */
+export function scopeLedger(
+  ledger: UnitLedger,
+  windows: OwnershipWindow[] | undefined
+): UnitLedger {
+  if (!windows) return ledger;
+  let balance = 0;
+  let preplatok = 0;
+  const rows = ledger.rows
+    .filter((r) => inScope(r.postedAt, windows))
+    .map((r) => {
+      balance += r.deltaCents;
+      for (const l of r.lines) {
+        if (l.accountCode === ACCOUNT_CODES.INE_ZAVAZKY) preplatok -= l.deltaCents;
+      }
+      return { ...r, balanceCents: balance };
+    });
+  return { ...ledger, rows, balanceCents: balance, preplatokCents: preplatok };
 }
 
 // ── Apply parked preplatok ─────────────────────────────

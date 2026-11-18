@@ -28,6 +28,14 @@ export const ACTION_KINDS = [
   "approve_registration",
   "reject_registration",
   "link_owner_account",
+  // BYT-20261118-012 community (own records; each create has its undo kind)
+  "rsvp_event",
+  "clear_event_rsvp",
+  "create_community_post",
+  "resolve_community_post",
+  "delete_community_post",
+  "set_directory_entry",
+  "remove_directory_entry",
 ] as const;
 export type ActionKind = (typeof ACTION_KINDS)[number];
 

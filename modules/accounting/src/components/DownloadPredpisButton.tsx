@@ -18,7 +18,7 @@ interface PdfData {
   totalCents: number;
   iban: string;
   payBySquare: string | null;
-  building: { name: string; address: string; ico: string | null };
+  building: { name: string; address: string; ico: string | null; dic?: string | null };
 }
 
 export default function DownloadPredpisButton({ unitId }: { unitId: string }) {

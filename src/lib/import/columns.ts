@@ -52,6 +52,14 @@ const COMMON_HEAD: ColumnDef[] = [
     comment: "IČO SVB, ak je pridelené (voliteľné).",
   },
   {
+    key: "community_dic",
+    label: "community_dic",
+    required: false,
+    scope: "community",
+    excelFormat: "string",
+    comment: "DIČ SVB, ak je pridelené (voliteľné).",
+  },
+  {
     key: "country",
     label: "country",
     required: true,
@@ -245,6 +253,7 @@ export function sampleRow(s: StructureVariant): Record<string, string> {
     community_name: "Bytový dom Príklad",
     community_address: "Hlavná 1, 058 01 Poprad",
     community_ico: "",
+    community_dic: "",
     country: "sk",
     voting_method: "per_share",
     supisne_cislo: "2514",

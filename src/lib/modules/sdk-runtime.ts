@@ -25,7 +25,7 @@ import { registerModule, type LoadedModule } from "./registry";
 // modules built against the older spec until they migrate.
 const CORE_READ_WHITELIST: Record<string, ReadonlySet<string>> = {
   entities: new Set(["id", "parent_id", "kind", "name", "path", "depth", "root_id", "archived_at"]),
-  housing_root_data: new Set(["entity_id", "address", "ico", "voting_method", "country", "governance_model"]),
+  housing_root_data: new Set(["entity_id", "address", "ico", "dic", "voting_method", "country", "governance_model"]),
   housing_unit_data: new Set(["entity_id", "flat_number", "floor", "share_numerator", "share_denominator", "area"]),
   memberships: new Set(["id", "user_id", "entity_id", "role", "weight", "status"]),
   users: new Set(["id", "email", "name", "platform_role", "is_active"]),

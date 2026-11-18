@@ -2,10 +2,9 @@ import { NextRequest, NextResponse } from "next/server";
 
 import { sessionAccountingCtx } from "@modules/accounting/src/lib/accounting-ctx";
 import {
-  canEnterReading,
   canWriteReadingForUnit,
   createReading,
-  listReadingsForUnit,
+  listReadingsForViewer,
   voidReading,
 } from "@modules/accounting/src/lib/meters";
 import {
@@ -49,16 +48,17 @@ export async function handleGet(req: NextRequest): Promise<NextResponse> {
   if (!unitId) {
     return NextResponse.json({ units, readings: null });
   }
-  const allowed = await canEnterReading(
-    principal.userId,
-    principal.role,
-    root.id,
-    unitId
-  );
-  if (!allowed) {
+  // Board readers: every reading; owners: only readings of their own
+  // ownership period (BYT-20261118-012). null = no access to the unit.
+  const readings = await listReadingsForViewer({
+    userId: principal.userId,
+    userRole: principal.role,
+    entityId: root.id,
+    unitEntityId: unitId,
+  });
+  if (!readings) {
     return NextResponse.json({ error: "forbidden" }, { status: 403 });
   }
-  const readings = await listReadingsForUnit(root.id, unitId);
   return NextResponse.json({ units, readings });
 }
 

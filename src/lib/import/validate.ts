@@ -167,6 +167,7 @@ const rowSchemaForStructure = (structure: StructureVariant) =>
     community_name: requiredString,
     community_address: requiredString,
     community_ico: stringField,
+    community_dic: stringField,
     country: CountrySchema,
     voting_method: VotingMethodSchema,
     supisne_cislo: stringField,

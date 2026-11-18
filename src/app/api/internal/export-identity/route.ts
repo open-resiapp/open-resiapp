@@ -50,6 +50,7 @@ export async function GET(req: Request) {
       name: entities.name,
       address: sql<string>`${entities.data}->>'address'`,
       ico: sql<string | null>`${entities.data}->>'ico'`,
+      dic: sql<string | null>`${entities.data}->>'dic'`,
       country: sql<string>`${entities.data}->>'country'`,
       votingMethod: sql<string>`${entities.data}->>'voting_method'`,
     })
@@ -89,6 +90,7 @@ export async function GET(req: Request) {
       name: community.name,
       address: community.address,
       ico: community.ico ?? undefined,
+      dic: community.dic ?? undefined,
       country: community.country,
       votingMethod: community.votingMethod,
     },

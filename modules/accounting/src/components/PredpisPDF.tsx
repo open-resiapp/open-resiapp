@@ -80,7 +80,7 @@ const styles = StyleSheet.create({
 });
 
 export interface PredpisPDFProps {
-  building: { name: string; address: string; ico: string | null };
+  building: { name: string; address: string; ico: string | null; dic?: string | null };
   labels: {
     title: string;
     subtitle: string;
@@ -111,6 +111,9 @@ export default function PredpisPDF(props: PredpisPDFProps) {
           <Text style={styles.buildingAddress}>{props.building.address}</Text>
           {props.building.ico && (
             <Text style={styles.buildingIco}>IČO: {props.building.ico}</Text>
+          )}
+          {props.building.dic && (
+            <Text style={styles.buildingIco}>DIČ: {props.building.dic}</Text>
           )}
         </View>
 

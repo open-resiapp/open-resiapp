@@ -41,6 +41,7 @@ async function handler(_request: NextRequest) {
     name: buildingInfo.name,
     address: buildingInfo.address,
     ico: buildingInfo.ico,
+    dic: buildingInfo.dic,
     votingMethod: buildingInfo.votingMethod,
     entranceCount: entranceCountRow.c,
     flatCount: flatCountRow.c,

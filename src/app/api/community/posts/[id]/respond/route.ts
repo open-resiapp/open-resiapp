@@ -9,6 +9,7 @@ import {
 } from "@/db/schema";
 import { and, desc, eq, gt } from "drizzle-orm";
 import { hasPermission } from "@/lib/permissions";
+import { canSeeCommunityPost } from "@/lib/community.server";
 import { sendCommunityResponseNotification } from "@/lib/email";
 import type { UserRole } from "@/types";
 
@@ -34,7 +35,15 @@ export async function POST(
     .where(eq(communityPosts.id, id))
     .limit(1);
 
-  if (!post) {
+  // Feed visibility (BYT-20261118-012): a post from another entrance is
+  // answered like a missing one — no responding to posts you cannot see.
+  if (
+    !post ||
+    !(await canSeeCommunityPost(
+      { userId: session.user.id, role: session.user.role as UserRole },
+      id
+    ))
+  ) {
     return NextResponse.json({ error: "Príspevok neexistuje" }, { status: 404 });
   }
 

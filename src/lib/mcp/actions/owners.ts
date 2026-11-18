@@ -121,6 +121,7 @@ function communityColumns(root: CommunityRootRow): Record<string, unknown> {
     community_name: root.name,
     community_address: root.address || root.name,
     community_ico: root.ico ?? "",
+    community_dic: root.dic ?? "",
     country: root.country ?? "sk",
     voting_method: root.votingMethod ?? "per_share",
   };

@@ -26,7 +26,7 @@ interface PdfData {
   totalInterestCents: number;
   iban: string | null;
   payBySquare: string | null;
-  building: { name: string; address: string; ico: string | null };
+  building: { name: string; address: string; ico: string | null; dic?: string | null };
 }
 
 export default function DownloadUpomienkaButton({

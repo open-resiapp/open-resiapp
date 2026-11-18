@@ -4,12 +4,9 @@ import type { Session } from "next-auth";
 import { auth } from "@/lib/auth";
 import { getCommunityRoot, type CommunityRootRow } from "@/lib/legacy-compat";
 import { getStorage } from "@/lib/storage";
-import { db } from "@/db";
-import { and, eq } from "drizzle-orm";
-import { entities, memberships } from "@/db/schema";
 import { canWriteAccounting } from "@modules/accounting/src/lib/authz";
-import { domUnitsWhere } from "@modules/accounting/src/lib/dom-units";
 import {
+  canInspectExpenses,
   listAttachments,
   listInspectExpenses,
   resolveAttachmentDownload,
@@ -19,8 +16,9 @@ import {
 } from "@modules/accounting/src/lib/attachments";
 
 // Attachments + right-to-inspect API. Uploads/visibility/void are
-// writer-only; downloads and the inspect list are open to any OWNER of
-// the dom (whole-dom transparency) but filtered by doklad visibility.
+// writer-only; downloads and the inspect list are open to admin, board
+// readers and any current OWNER of the dom (whole-dom transparency),
+// filtered by doklad visibility for non-board owners.
 
 type Ctx =
   | { error: NextResponse; session?: never; root?: never }
@@ -36,28 +34,8 @@ async function baseCtx(): Promise<Ctx> {
   return { session, root };
 }
 
-/** True for admin/board or any active owner of a unit in the dom. */
-async function isDomMember(
-  userId: string,
-  userRole: string,
-  entityId: string
-): Promise<boolean> {
-  if (userRole === "admin") return true;
-  const [row] = await db
-    .select({ id: memberships.id })
-    .from(memberships)
-    .innerJoin(entities, eq(memberships.entityId, entities.id))
-    .where(
-      and(
-        eq(memberships.userId, userId),
-        eq(memberships.role, "owner"),
-        eq(memberships.status, "active"),
-        domUnitsWhere(entityId)
-      )
-    )
-    .limit(1);
-  return !!row;
-}
+/** Right to inspect: admin, board reader or current owner (lib, shared with MCP). */
+const isDomMember = canInspectExpenses;
 
 async function requireWriter(ctx: {
   session: Session;

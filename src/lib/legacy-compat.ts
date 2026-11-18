@@ -33,6 +33,7 @@ export interface CommunityRootRow {
   kind: string;
   address: string;
   ico: string | null;
+  dic: string | null;
   votingMethod: VotingMethod;
   country: Country;
   governanceModel: GovernanceModel;
@@ -60,6 +61,7 @@ export async function getCommunityRoot(): Promise<CommunityRootRow | null> {
       kind: entities.kind,
       address: sql<string>`${entities.data}->>'address'`,
       ico: sql<string | null>`${entities.data}->>'ico'`,
+      dic: sql<string | null>`${entities.data}->>'dic'`,
       votingMethod: sql<VotingMethod>`${entities.data}->>'voting_method'`,
       country: sql<Country>`${entities.data}->>'country'`,
       governanceModel: sql<GovernanceModel>`${entities.data}->>'governance_model'`,
@@ -89,6 +91,7 @@ export async function listCommunityRoots(): Promise<CommunityRootRow[]> {
       kind: entities.kind,
       address: sql<string>`${entities.data}->>'address'`,
       ico: sql<string | null>`${entities.data}->>'ico'`,
+      dic: sql<string | null>`${entities.data}->>'dic'`,
       votingMethod: sql<VotingMethod>`${entities.data}->>'voting_method'`,
       country: sql<Country>`${entities.data}->>'country'`,
       governanceModel: sql<GovernanceModel>`${entities.data}->>'governance_model'`,
