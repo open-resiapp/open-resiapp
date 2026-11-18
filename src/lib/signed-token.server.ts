@@ -25,7 +25,8 @@ export type SignedTokenPurpose =
   | "vote-withdraw-passkey"
   | "vote-withdraw-email"
   | "webauthn-register"
-  | "webauthn-activate";
+  | "webauthn-activate"
+  | "webauthn-login";
 
 export interface SignedTokenClaims {
   /** purpose */

@@ -83,6 +83,50 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         };
       },
     }),
+    // Sign-in with an activated passkey (BYT-20261117-002 follow-up). The
+    // browser sends the WebAuthn assertion as JSON; verifyPasskeyLogin checks
+    // the signed challenge, signature, counter and single use.
+    Credentials({
+      id: "passkey",
+      name: "Passkey",
+      credentials: { response: { label: "Passkey", type: "text" } },
+      async authorize(credentials, request) {
+        const raw = credentials?.response;
+        if (typeof raw !== "string" || raw.length > 20_000) return null;
+        let response: unknown;
+        try {
+          response = JSON.parse(raw);
+        } catch {
+          return null;
+        }
+        const { verifyPasskeyLogin } = await import("@/lib/webauthn.server");
+        let result;
+        try {
+          result = await verifyPasskeyLogin(
+            request,
+            response as Parameters<typeof verifyPasskeyLogin>[1]
+          );
+        } catch (err) {
+          console.error("[auth] passkey sign-in failed", err);
+          return null;
+        }
+        if (!result.ok) return null;
+
+        const [user] = await db
+          .select()
+          .from(users)
+          .where(eq(users.id, result.userId))
+          .limit(1);
+        if (!user || !user.isActive || user.status === "rejected") return null;
+        return {
+          id: user.id,
+          email: user.email ?? "",
+          name: user.name,
+          role: user.role,
+          status: user.status,
+        };
+      },
+    }),
   ],
   callbacks: {
     async jwt({ token, user, trigger }) {

@@ -1,6 +1,6 @@
 import "server-only";
-import type { NextRequest } from "next/server";
-import { and, desc, eq, isNotNull, isNull } from "drizzle-orm";
+import { randomUUID } from "node:crypto";
+import { and, desc, eq, isNotNull, isNull, lt, or } from "drizzle-orm";
 import {
   generateAuthenticationOptions,
   generateRegistrationOptions,
@@ -78,14 +78,15 @@ function toOrigin(url: string | undefined | null): string | null {
   }
 }
 
-function requestOrigin(request: NextRequest): string {
+function requestOrigin(request: Request): string {
+  const url = new URL(request.url);
   const proto =
     request.headers.get("x-forwarded-proto")?.split(",")[0].trim() ||
-    request.nextUrl.protocol.replace(":", "");
+    url.protocol.replace(":", "");
   const host =
     request.headers.get("x-forwarded-host")?.split(",")[0].trim() ||
     request.headers.get("host") ||
-    request.nextUrl.host;
+    url.host;
   return `${proto}://${host}`;
 }
 
@@ -108,7 +109,7 @@ function configuredOrigins(): string[] {
   ];
 }
 
-export function getWebAuthnConfig(request: NextRequest): {
+export function getWebAuthnConfig(request: Request): {
   rpID: string;
   rpName: string;
   origins: string[];
@@ -129,7 +130,7 @@ export function getWebAuthnConfig(request: NextRequest): {
  * derives it from request headers (a forged Host would put an attacker's
  * domain into the confirmation link); it throws ConfirmationUnavailableError.
  */
-export function getPublicAppUrl(request: NextRequest): string {
+export function getPublicAppUrl(request: Request): string {
   const configured =
     toOrigin(process.env.NEXTAUTH_URL) ??
     toOrigin(process.env.APP_URL) ??
@@ -266,7 +267,7 @@ interface RegisterClaims {
 }
 
 export async function createRegistrationOptions(
-  request: NextRequest,
+  request: Request,
   user: { id: string; email: string | null; name: string }
 ) {
   const { rpID, rpName } = getWebAuthnConfig(request);
@@ -287,7 +288,8 @@ export async function createRegistrationOptions(
     // Pending passkeys too — re-registering the same authenticator is never useful.
     excludeCredentials: await credentialDescriptors(user.id, false),
     authenticatorSelection: {
-      residentKey: "preferred",
+      // Discoverable: the same passkey also signs in without typing an e-mail.
+      residentKey: "required",
       userVerification: "required",
     },
   });
@@ -312,7 +314,7 @@ function challengeTokenFrom(clientDataJSON: unknown): {
 }
 
 export async function verifyRegistration(
-  request: NextRequest,
+  request: Request,
   userId: string,
   response: RegistrationResponseJSON,
   deviceLabel: string | null
@@ -491,9 +493,47 @@ export async function activatePasskey(
 
 // ── Assertion (used to confirm a ballot) ────────────────
 
+type CredentialRow = typeof webauthnCredentials.$inferSelect;
+
+/**
+ * Origin, RP ID, user verification, signature and signature counter of one
+ * assertion against one stored credential. Returns the new counter, or null
+ * when anything fails (counter regression = cloned authenticator, bad
+ * signature, wrong origin / RP ID, missing user verification).
+ */
+async function checkAssertionSignature(
+  request: Request,
+  cred: CredentialRow,
+  response: AuthenticationResponseJSON,
+  expectedChallenge: string
+): Promise<number | null> {
+  const { rpID, origins } = getWebAuthnConfig(request);
+  try {
+    const verification = await verifyAuthenticationResponse({
+      response,
+      expectedChallenge,
+      expectedOrigin: origins,
+      expectedRPID: rpID,
+      requireUserVerification: true,
+      authenticator: {
+        credentialID: Buffer.from(cred.credentialId, "base64url"),
+        credentialPublicKey: Buffer.from(cred.publicKey, "base64url"),
+        counter: cred.counter,
+        transports: sanitizeTransports(cred.transports),
+      },
+    });
+    if (!verification.verified || !verification.authenticationInfo.userVerified) {
+      return null;
+    }
+    return verification.authenticationInfo.newCounter;
+  } catch {
+    return null;
+  }
+}
+
 /** Assertion options whose challenge is the given signed token. */
 export async function createAssertionOptions(
-  request: NextRequest,
+  request: Request,
   userId: string,
   challengeToken: string
 ) {
@@ -536,7 +576,7 @@ export type AssertionResult =
  * concurrent uses of the same assertion cannot both pass.
  */
 export async function verifyAssertion(
-  request: NextRequest,
+  request: Request,
   userId: string,
   response: AuthenticationResponseJSON,
   expectedChallenge: string
@@ -558,35 +598,15 @@ export async function verifyAssertion(
   // A pending passkey (e-mail activation not clicked yet) never confirms.
   if (!cred.activatedAt) return { ok: false, code: "PASSKEY_PENDING" };
 
-  const { rpID, origins } = getWebAuthnConfig(request);
-  let verification;
-  try {
-    verification = await verifyAuthenticationResponse({
-      response,
-      expectedChallenge,
-      expectedOrigin: origins,
-      expectedRPID: rpID,
-      requireUserVerification: true,
-      authenticator: {
-        credentialID: Buffer.from(cred.credentialId, "base64url"),
-        credentialPublicKey: Buffer.from(cred.publicKey, "base64url"),
-        counter: cred.counter,
-        transports: sanitizeTransports(cred.transports),
-      },
-    });
-  } catch {
-    // Includes counter regression (cloned authenticator), bad signature,
-    // wrong origin / RP ID, missing user verification.
-    return { ok: false, code: "PASSKEY_VERIFICATION_FAILED" };
-  }
-  if (!verification.verified || !verification.authenticationInfo.userVerified) {
+  const newCounter = await checkAssertionSignature(request, cred, response, expectedChallenge);
+  if (newCounter === null) {
     return { ok: false, code: "PASSKEY_VERIFICATION_FAILED" };
   }
 
   const updated = await db
     .update(webauthnCredentials)
     .set({
-      counter: verification.authenticationInfo.newCounter,
+      counter: newCounter,
       lastUsedAt: new Date(),
     })
     .where(
@@ -616,4 +636,105 @@ export async function verifyAssertion(
     credentialId: cred.credentialId,
     proof,
   };
+}
+
+// ── Sign-in with a passkey ──────────────────────────────
+//
+// Discoverable credentials: the login challenge names no user, the browser
+// offers the passkeys it holds for this site and the assertion's credential
+// id tells us whose it is. Only ACTIVATED passkeys sign in — the same rule as
+// for ballots, so a stolen session cannot add a passkey that later opens the
+// account.
+//
+// Replay: the challenge is a signed token (5 min). Synced passkeys always
+// report counter 0, so the counter alone cannot stop a captured assertion
+// from being sent twice. The compare-and-set below therefore also requires
+// that the passkey was not used after this challenge was issued
+// (last_used_at < iat): once a login succeeds, the same assertion — and any
+// other challenge issued before it — is rejected. Stateless, multi-replica
+// safe (one conditional UPDATE).
+
+interface LoginClaims {
+  /** random nonce — makes every challenge unique */
+  n: string;
+}
+
+export async function createLoginOptions(request: Request) {
+  const { rpID } = getWebAuthnConfig(request);
+  const { token } = signToken<LoginClaims>(
+    "webauthn-login",
+    { n: randomUUID() },
+    PASSKEY_CHALLENGE_TTL_MS
+  );
+  return generateAuthenticationOptions({
+    rpID,
+    challenge: token,
+    timeout: PASSKEY_CHALLENGE_TTL_MS,
+    userVerification: "required",
+  });
+}
+
+export type PasskeyLoginResult =
+  | { ok: true; userId: string }
+  | {
+      ok: false;
+      code:
+        | "CHALLENGE_INVALID"
+        | "CHALLENGE_EXPIRED"
+        | "PASSKEY_NOT_FOUND"
+        | "PASSKEY_PENDING"
+        | "PASSKEY_VERIFICATION_FAILED";
+    };
+
+export async function verifyPasskeyLogin(
+  request: Request,
+  response: AuthenticationResponseJSON
+): Promise<PasskeyLoginResult> {
+  if (!response || typeof response.id !== "string") {
+    return { ok: false, code: "PASSKEY_NOT_FOUND" };
+  }
+  const recovered = challengeTokenFrom(response?.response?.clientDataJSON);
+  if (!recovered) return { ok: false, code: "CHALLENGE_INVALID" };
+  const v = verifyToken<LoginClaims>("webauthn-login", recovered.token);
+  if (!v.ok) {
+    return {
+      ok: false,
+      code: v.error === "TOKEN_EXPIRED" ? "CHALLENGE_EXPIRED" : "CHALLENGE_INVALID",
+    };
+  }
+
+  const [cred] = await db
+    .select()
+    .from(webauthnCredentials)
+    .where(eq(webauthnCredentials.credentialId, response.id))
+    .limit(1);
+  if (!cred) return { ok: false, code: "PASSKEY_NOT_FOUND" };
+  if (!cred.activatedAt) return { ok: false, code: "PASSKEY_PENDING" };
+
+  const newCounter = await checkAssertionSignature(
+    request,
+    cred,
+    response,
+    recovered.challenge
+  );
+  if (newCounter === null) return { ok: false, code: "PASSKEY_VERIFICATION_FAILED" };
+
+  const issuedAt = new Date(v.claims.iat);
+  const updated = await db
+    .update(webauthnCredentials)
+    .set({ counter: newCounter, lastUsedAt: new Date() })
+    .where(
+      and(
+        eq(webauthnCredentials.id, cred.id),
+        eq(webauthnCredentials.counter, cred.counter),
+        isNotNull(webauthnCredentials.activatedAt),
+        or(
+          isNull(webauthnCredentials.lastUsedAt),
+          lt(webauthnCredentials.lastUsedAt, issuedAt)
+        )
+      )
+    )
+    .returning({ userId: webauthnCredentials.userId });
+  if (updated.length === 0) return { ok: false, code: "PASSKEY_VERIFICATION_FAILED" };
+  return { ok: true, userId: updated[0].userId };
 }
