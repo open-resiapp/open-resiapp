@@ -28,6 +28,12 @@ export const userRoleEnum = pgEnum("user_role", [
   "tenant",
   "vote_counter",
   "caretaker",
+  // BYT-20261118-020 (bytové družstvo): člen družstva (votes like an
+  // owner, §240 Obch. zák. / §755 ZOK), účtovník (accounting only) and
+  // správca (management company — board-like, no settings/admin).
+  "member",
+  "accountant",
+  "spravca",
 ]);
 
 export const userStatusEnum = pgEnum("user_status", [
@@ -61,6 +67,9 @@ export const governanceModelEnum = pgEnum("governance_model", [
   "chairman_council",
   "committee",
   "chairman_only",
+  // BYT-20261118-020: predstavenstvo + kontrolná komisia (§243–§244 Obch.
+  // zák.; CZ představenstvo + kontrolní komise §706+/§716+ ZOK).
+  "board_supervisory",
 ]);
 
 export const boardMemberRoleEnum = pgEnum("board_member_role", [
@@ -69,6 +78,11 @@ export const boardMemberRoleEnum = pgEnum("board_member_role", [
   "committee_member",
   "committee_chairman",
   "treasurer",
+  // BYT-20261118-020 (board_supervisory model). `chairman` = predseda
+  // predstavenstva; members of predstavenstvo / kontrolná komisia below.
+  "board_member",
+  "supervisory_chairman",
+  "supervisory_member",
 ]);
 
 export const apiKeyPermissionEnum = pgEnum("api_key_permission", [
@@ -133,6 +147,12 @@ export const communityNotificationKindEnum = pgEnum(
     "meeting_invitation",
     "meeting_reminder",
     "meeting_change",
+    // Board post e-mail fallback for owners without a push subscription
+    // (post_notice). Dedupe via board_post_id + recipient.
+    "post_notice",
+    // Voting announcement e-mail fallback for voters without push
+    // (voting_started). Dedupe via voting_id + recipient.
+    "voting_started",
   ]
 );
 
@@ -158,6 +178,10 @@ export const membershipRoleEnum = pgEnum("membership_role", [
   "tenant",
   "vote_counter",
   "caretaker",
+  // BYT-20261118-020: see userRoleEnum.
+  "member",
+  "accountant",
+  "spravca",
 ]);
 
 export const membershipStatusEnum = pgEnum("membership_status", [
@@ -189,6 +213,8 @@ export const entityAuditActionEnum = pgEnum("entity_audit_action", [
   "user.merge",
   "user.anonymize",
   "user.hard_delete",
+  // Import "update e-mails / phones only" mode (src/lib/import/contacts.server.ts).
+  "user.update_contact",
 ]);
 
 // ── Document library (BYT-20260512-006) ────────────────
@@ -488,6 +514,9 @@ export const users = pgTable(
     isActive: boolean("is_active").notNull().default(true),
     status: userStatusEnum("status").notNull().default("active"),
     emailVerifiedAt: timestamp("email_verified_at", { withTimezone: true }),
+    // Owner receives only paper communication (no e-mail / smartphone). The
+    // board sees who needs printed letters; set explicitly by the board.
+    paperOnly: boolean("paper_only").notNull().default(false),
     // BYT-20261118-003: last successful sign-in (credentials, passkey, SSO).
     // NULL = never signed in since tracking started (LAST_LOGIN_TRACKING_SINCE
     // in src/lib/owner-queue.ts). Personal data — visible to the board only.
@@ -902,11 +931,17 @@ export const invitations = pgTable(
       () => users.id,
       { onDelete: "cascade" }
     ),
+    // Short typeable code printed on paper claim letters (next to the QR).
+    // NULL for e-mail / single-QR invitations.
+    shortCode: varchar("short_code", { length: 12 }),
     createdAt: timestamp("created_at", { withTimezone: true })
       .defaultNow()
       .notNull(),
   },
   (table) => ({
+    shortCodeIdx: uniqueIndex("invitations_short_code_idx")
+      .on(table.shortCode)
+      .where(sql`${table.shortCode} IS NOT NULL`),
     targetShellIdx: index("invitations_target_shell_idx")
       .on(table.targetShellUserId)
       .where(sql`${table.targetShellUserId} IS NOT NULL`),
@@ -1053,6 +1088,17 @@ export const oauthClients = pgTable(
     redirectUris: jsonb("redirect_uris").$type<string[]>().notNull(),
     /** When the CIMD document was last fetched (cache TTL); null for DCR. */
     fetchedAt: timestamp("fetched_at"),
+    /**
+     * MCP Apps UI capability (`io.modelcontextprotocol/ui` with the MCP App
+     * MIME type) the client declared at its last `initialize`. Stateless
+     * serving forgets initialize capabilities between HTTP requests, so
+     * 2025-protocol hosts are judged by this on tools/call. Null = never seen.
+     */
+    appsUiDeclared: boolean("apps_ui_declared"),
+    /** MCP protocol version negotiated at that `initialize`. */
+    mcpProtocolVersion: varchar("mcp_protocol_version", { length: 32 }),
+    /** When those capabilities were last recorded. */
+    capabilitiesSeenAt: timestamp("capabilities_seen_at"),
     createdAt: timestamp("created_at").defaultNow().notNull(),
   },
   (table) => ({
@@ -1301,6 +1347,14 @@ export const communityNotificationsSent = pgTable(
     documentId: uuid("document_id").references(() => documents.id, {
       onDelete: "cascade",
     }),
+    // kind = post_notice: board post (public.posts) e-mailed as push fallback.
+    boardPostId: uuid("board_post_id").references(() => posts.id, {
+      onDelete: "cascade",
+    }),
+    // kind = voting_started: mod_voting_votings.id. No Drizzle reference —
+    // core schema cannot import the voting module schema (circular); the FK
+    // (ON DELETE CASCADE) is added by hand in the migration.
+    votingId: uuid("voting_id"),
     sentAt: timestamp("sent_at").defaultNow().notNull(),
     // BYT-20261118-001: set ONLY for the meeting_* kinds (0 = invitation /
     // reminder, n = n-th date/place change). NULL for every other kind, so
@@ -1313,7 +1367,15 @@ export const communityNotificationsSent = pgTable(
     meetingClaimIdx: uniqueIndex("community_notifications_sent_meeting_claim_idx")
       .on(table.postId, table.recipientId, table.kind, table.changeSeq)
       .where(sql`${table.changeSeq} IS NOT NULL`),
-    documentIdx: index("community_notifications_sent_document_idx").on(
+    // One post_notice e-mail per (board post, recipient) across replicas.
+    boardPostClaimIdx: uniqueIndex("community_notifications_sent_board_post_idx")
+      .on(table.boardPostId, table.recipientId)
+      .where(sql`${table.boardPostId} IS NOT NULL`),
+    // One voting_started e-mail per (voting, recipient) across replicas.
+    votingClaimIdx: uniqueIndex("community_notifications_sent_voting_idx")
+      .on(table.votingId, table.recipientId)
+      .where(sql`${table.votingId} IS NOT NULL`),
+        documentIdx: index("community_notifications_sent_document_idx").on(
       table.documentId,
       table.recipientId,
       table.kind

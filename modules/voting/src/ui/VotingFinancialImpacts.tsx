@@ -51,7 +51,7 @@ export default function VotingFinancialImpacts({
       <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-1">
         {t("title")}
       </h2>
-      <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">
+      <p className="text-base text-gray-600 dark:text-gray-400 mb-4">
         {t("subtitle")}
       </p>
       <ul className="space-y-3">
@@ -60,18 +60,18 @@ export default function VotingFinancialImpacts({
             key={i.votingItemId}
             className="border-b border-gray-100 dark:border-gray-800 pb-3 last:border-0 last:pb-0"
           >
-            <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
+            <p className="text-base font-medium text-gray-900 dark:text-gray-100">
               {i.title}
             </p>
             {i.notPassedAnymore && (
               <p
                 role="alert"
-                className="mt-1 inline-block px-2 py-0.5 rounded text-xs bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200"
+                className="mt-1 inline-block px-2 py-0.5 rounded text-base bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200"
               >
                 {t("notPassedAnymore")}
               </p>
             )}
-            <div className="flex flex-wrap gap-2 mt-1 text-xs">
+            <div className="flex flex-wrap gap-2 mt-1 text-base">
               {i.feeScheduleDraft && (
                 <Link
                   href={`/accounting/predpis/${i.feeScheduleDraft.id}`}

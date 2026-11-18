@@ -28,6 +28,7 @@ import type { AttendanceOwnerLine, MeetingAttendanceSummary, RsvpOverview } from
 import { Link } from "@/i18n/navigation";
 import type { BuildingInfo, VotingDetail } from "./types";
 import { getDisplayTemplateSlug } from "@/lib/templates/display-slug";
+import { getLegalCopy } from "@/lib/legal-copy";
 
 interface BoardData {
   overview: RsvpOverview & {
@@ -77,6 +78,7 @@ export function MeetingBoardPanel({
   castShare: number | null;
 }) {
   const t = useTranslations("MeetingAttendance");
+  const tWorkflow = useTranslations("VotingWorkflow");
   const errorText = useErrorText();
   const locale = useLocale();
   const format = useFormatter();
@@ -134,8 +136,10 @@ export function MeetingBoardPanel({
 
   const ov = data.overview;
   const post = ov.voting.meetingPostId;
+  // Attendance documents only where their wording is signed off
+  // (src/lib/legal-copy); otherwise a "waiting for legal sign-off" note.
   const exportAllowed =
-    !building || (getDisplayTemplateSlug(building.templateSlug) ?? "hoa") === "hoa";
+    !building || getLegalCopy(building.templateSlug, building.country).signedOff.attendance;
 
   return (
     <Card as="section" className="mb-6 space-y-4">
@@ -274,6 +278,12 @@ export function MeetingBoardPanel({
         </div>
       ) : null}
 
+      {/* Printable invitation (generic / per owner, page each) — paper
+          delivery for owners without e-mail (§14a ods. 2 SK). */}
+      {canAnnounce && post ? (
+        <InvitationBox voting={voting} building={building} overview={ov} />
+      ) : null}
+
       <Tabs
         aria-label={t("tabsLabel")}
         value={tab}
@@ -296,7 +306,15 @@ export function MeetingBoardPanel({
         />
       )}
 
-      {tab === "list" && exportAllowed ? <ExportBox voting={voting} building={building} /> : null}
+      {tab === "list" ? (
+        exportAllowed ? (
+          <ExportBox voting={voting} building={building} />
+        ) : (
+          <p className="border-t border-ui-border pt-4 text-base text-ui-text-muted">
+            {tWorkflow("docs.pendingLegalSignoff")}
+          </p>
+        )
+      ) : null}
 
       {editing ? (
         <ChangeMeetingModal
@@ -778,12 +796,146 @@ function ChangeMeetingModal({
   );
 }
 
+// ── Printable invitation ───────────────────────────────
+
+function InvitationBox({
+  voting,
+  building,
+  overview,
+}: {
+  voting: VotingDetail;
+  building: BuildingInfo | null;
+  overview: BoardData["overview"];
+}) {
+  const t = useTranslations("MeetingAttendance.invitationPdf");
+  const errorText = useErrorText();
+  const format = useFormatter();
+  const [busy, setBusy] = useState<"generic" | "noEmail" | "all" | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  // Statutory paragraphs: SK HOA template only (legal content rule).
+  const statutory =
+    building?.country === "sk" && (getDisplayTemplateSlug(building.templateSlug) ?? "hoa") === "hoa";
+  const noEmail = overview.owners.filter((o) => !o.hasEmail);
+  const total = overview.eligibleWeight;
+
+  async function download(kind: "generic" | "noEmail" | "all") {
+    setBusy(kind);
+    setError(null);
+    try {
+      const [{ pdf }, { default: InvitationPDF }] = await Promise.all([
+        import("@react-pdf/renderer"),
+        import("./InvitationPDF"),
+      ]);
+      const chair = (voting.officials ?? []).find((o) => o.role === "chair")?.name;
+      const owners = kind === "generic" ? [] : kind === "noEmail" ? noEmail : overview.owners;
+      const doc = (
+        <InvitationPDF
+          statutory={statutory}
+          data={{
+            community: {
+              name: building?.name ?? "",
+              address: building?.address ?? "",
+              ico: building?.ico ?? null,
+            },
+            when: format.dateTime(new Date(overview.voting.startsAt), {
+              weekday: "long",
+              day: "numeric",
+              month: "long",
+              year: "numeric",
+              hour: "2-digit",
+              minute: "2-digit",
+            }),
+            place: overview.voting.place ?? voting.place ?? "",
+            convenedBy: chair ?? voting.createdBy?.name ?? "",
+            issuedOn: format.dateTime(new Date(), { day: "numeric", month: "long", year: "numeric" }),
+            agenda: [...(voting.items ?? [])]
+              .sort((a, b) => a.idx - b.idx)
+              .map((i) => ({ idx: i.idx, title: i.title, description: i.description })),
+          }}
+          labels={{
+            title: t("title"),
+            addressee: t("addressee"),
+            units: t("units"),
+            share: t("share"),
+            when: t("when"),
+            place: t("place"),
+            agenda: t("agenda"),
+            rsvpHint: t("rsvpHint"),
+            convenedBy: t("convenedBy"),
+            issuedOn: t("issuedOn"),
+            icoLabel: t("ico"),
+          }}
+          addressees={owners.map((o) => ({
+            name: o.ownerName ?? "—",
+            units: o.unitLabels.join(", "),
+            share: `${format.number(total > 0 ? (o.weight / total) * 100 : 0, {
+              maximumFractionDigits: 2,
+            })} %`,
+          }))}
+        />
+      );
+      const blob = await pdf(doc).toBlob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = kind === "generic" ? "pozvanka.pdf" : "pozvanky.pdf";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    } catch {
+      setError(errorText(undefined));
+    } finally {
+      setBusy(null);
+    }
+  }
+
+  return (
+    <div className="space-y-3 border-t border-ui-border pt-4">
+      <h3 className="text-lg font-bold text-ui-text">{t("heading")}</h3>
+      <p className="text-base text-ui-text-muted">{t("hint")}</p>
+      {error ? (
+        <p role="alert" className="text-base text-ui-danger">
+          {error}
+        </p>
+      ) : null}
+      <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
+        <Button variant="secondary" loading={busy === "generic"} disabled={busy !== null} onClick={() => void download("generic")}>
+          <Icon name="download" size={20} />
+          {t("generic")}
+        </Button>
+        <Button
+          variant="secondary"
+          loading={busy === "noEmail"}
+          disabled={busy !== null || noEmail.length === 0}
+          onClick={() => void download("noEmail")}
+        >
+          <Icon name="download" size={20} />
+          {t("noEmail", { count: noEmail.length })}
+        </Button>
+        <Button
+          variant="secondary"
+          loading={busy === "all"}
+          disabled={busy !== null || overview.owners.length === 0}
+          onClick={() => void download("all")}
+        >
+          <Icon name="download" size={20} />
+          {t("all", { count: overview.owners.length })}
+        </Button>
+      </div>
+    </div>
+  );
+}
+
 // ── Export (§7) ────────────────────────────────────────
 
 const MODE_KEY = "meeting-attendance-export-mode";
 
 function ExportBox({ voting, building }: { voting: VotingDetail; building: BuildingInfo | null }) {
   const t = useTranslations("MeetingAttendance.export");
+  const tRoot = useTranslations();
+  // Document heading per regime (src/lib/legal-copy; HOA = sheetFilled / sheetBlank).
+  const lc = getLegalCopy(building?.templateSlug, building?.country);
   const tUnitType = useTranslations("UnitType");
   const locale = useLocale();
   const format = useFormatter();
@@ -878,7 +1030,7 @@ function ExportBox({ voting, building }: { voting: VotingDetail; building: Build
       const doc_ = (
         <AttendancePDF
           community={data.community.name || building?.name || ""}
-          title={t(doc === "blank" ? "sheetBlank" : "sheetFilled")}
+          title={tRoot(doc === "blank" ? lc.keys.attendanceBlankHeading : lc.keys.attendanceHeading)}
           subtitle={`${data.voting.title} · ${when}${data.voting.place ? ` · ${data.voting.place}` : ""}`}
           columns={columns}
           rows={rows}

@@ -459,16 +459,80 @@ export interface PaymentListRow {
   voidReason: string | null;
 }
 
+export interface PaymentListFilter {
+  /** Inclusive ISO date (YYYY-MM-DD) on receivedAt. */
+  from?: string | null;
+  /** Inclusive ISO date (YYYY-MM-DD) on receivedAt. */
+  to?: string | null;
+  /** 0-based page; ignored when pageSize is null (export: all rows). */
+  page?: number;
+  /** Rows per page; null = no paging (exports). */
+  pageSize?: number | null;
+}
+
+export interface PaymentListPage {
+  rows: PaymentListRow[];
+  /** Rows matching the filter (all pages). */
+  total: number;
+  page: number;
+  pageSize: number | null;
+  /**
+   * Sums over ALL matching rows (not just the page). Voided payments are
+   * excluded from the sums — a storno nets the money out of the books.
+   */
+  totals: {
+    amountCents: number;
+    allocatedCents: number;
+    unallocatedCents: number;
+    voidedCount: number;
+  };
+}
+
+export const PAYMENTS_PAGE_SIZE = 50;
+
 export async function listPayments(
   entityId: string,
-  limit = 100
-): Promise<PaymentListRow[]> {
+  filter: PaymentListFilter = {}
+): Promise<PaymentListPage> {
   const allocated = sql<number>`coalesce((
     select sum(${paymentAllocations.amountCents})::int
     from ${paymentAllocations}
     where ${paymentAllocations.paymentId} = ${payments.id}
   ), 0)`;
-  const rows = await db
+
+  // Date range on the receipt day (Bratislava/Praha share a TZ; dates
+  // come from the bank as plain days, stored at UTC midnight).
+  const where = and(
+    eq(payments.entityId, entityId),
+    filter.from
+      ? sql`${payments.receivedAt} >= ${filter.from}::date`
+      : undefined,
+    filter.to
+      ? sql`${payments.receivedAt} < (${filter.to}::date + interval '1 day')`
+      : undefined
+  );
+
+  const [agg] = await db
+    .select({
+      total: sql<number>`count(*)::int`,
+      amountCents: sql<number>`coalesce(sum(${payments.amountCents}) filter (where ${payments.voidedAt} is null), 0)::bigint`,
+      voidedCount: sql<number>`count(*) filter (where ${payments.voidedAt} is not null)::int`,
+    })
+    .from(payments)
+    .where(where);
+  const [allocAgg] = await db
+    .select({
+      allocatedCents: sql<number>`coalesce(sum(${paymentAllocations.amountCents}), 0)::bigint`,
+    })
+    .from(paymentAllocations)
+    .innerJoin(payments, eq(payments.id, paymentAllocations.paymentId))
+    .where(and(where, sql`${payments.voidedAt} is null`));
+
+  const pageSize =
+    filter.pageSize === null ? null : filter.pageSize ?? PAYMENTS_PAGE_SIZE;
+  const page = Math.max(0, filter.page ?? 0);
+
+  const base = db
     .select({
       id: payments.id,
       receivedAt: payments.receivedAt,
@@ -482,9 +546,12 @@ export async function listPayments(
       unitEntityId: payments.unitEntityId,
     })
     .from(payments)
-    .where(eq(payments.entityId, entityId))
-    .orderBy(desc(payments.receivedAt), desc(payments.createdAt))
-    .limit(limit);
+    .where(where)
+    .orderBy(desc(payments.receivedAt), desc(payments.createdAt));
+  const rows =
+    pageSize === null
+      ? await base
+      : await base.limit(pageSize).offset(page * pageSize);
 
   const unitIds = [
     ...new Set(rows.map((r) => r.unitEntityId).filter(Boolean)),
@@ -502,21 +569,36 @@ export async function listPayments(
       : [];
   const unitById = new Map(units.map((u) => [u.id, u]));
 
-  return rows.map((r) => ({
-    id: r.id,
-    receivedAt: r.receivedAt.toISOString(),
-    amountCents: r.amountCents,
-    allocatedCents: r.allocatedCents,
-    vs: r.vs,
-    unitName: r.unitEntityId ? unitById.get(r.unitEntityId)?.name ?? null : null,
-    unitFlatNumber: r.unitEntityId
-      ? unitById.get(r.unitEntityId)?.flatNumber ?? null
-      : null,
-    narrative: r.narrative,
-    source: r.source,
-    voidedAt: r.voidedAt?.toISOString() ?? null,
-    voidReason: r.voidReason,
-  }));
+  const amountCents = Number(agg?.amountCents ?? 0);
+  const allocatedCents = Number(allocAgg?.allocatedCents ?? 0);
+  return {
+    rows: rows.map((r) => ({
+      id: r.id,
+      receivedAt: r.receivedAt.toISOString(),
+      amountCents: r.amountCents,
+      allocatedCents: r.allocatedCents,
+      vs: r.vs,
+      unitName: r.unitEntityId
+        ? unitById.get(r.unitEntityId)?.name ?? null
+        : null,
+      unitFlatNumber: r.unitEntityId
+        ? unitById.get(r.unitEntityId)?.flatNumber ?? null
+        : null,
+      narrative: r.narrative,
+      source: r.source,
+      voidedAt: r.voidedAt?.toISOString() ?? null,
+      voidReason: r.voidReason,
+    })),
+    total: agg?.total ?? 0,
+    page,
+    pageSize,
+    totals: {
+      amountCents,
+      allocatedCents,
+      unallocatedCents: amountCents - allocatedCents,
+      voidedCount: agg?.voidedCount ?? 0,
+    },
+  };
 }
 
 /** Units of the dom for the payment form (id, label, vs). */

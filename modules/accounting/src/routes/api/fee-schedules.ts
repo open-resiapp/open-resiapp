@@ -12,7 +12,11 @@ import {
   type ServiceRowInput,
 } from "@modules/accounting/src/lib/fee-schedules";
 
-import { ALLOCATION_KEYS } from "@modules/accounting/src/lib/constants";
+import {
+  ALLOCATION_KEYS,
+  RATE_MODES,
+  type RateMode,
+} from "@modules/accounting/src/lib/constants";
 
 // Predpis (fee schedule) API — draft CRUD. Reads are treasurer/chairman/
 // admin; writes treasurer/admin only.
@@ -34,10 +38,13 @@ function parseServiceRows(raw: unknown): ServiceRowInput[] | null {
     // int4 columns — an out-of-range value would 500 on insert.
     if (rateCents !== null && !isInt4(rateCents)) return null;
     if (fixedAmountCents !== null && !isInt4(fixedAmountCents)) return null;
+    const rateMode = (r.rateMode ?? "total") as RateMode;
+    if (!RATE_MODES.includes(rateMode)) return null;
     rows.push({
       serviceCategoryId: r.serviceCategoryId,
       allocationKey,
       rateCents,
+      rateMode,
       fixedAmountCents,
     });
   }

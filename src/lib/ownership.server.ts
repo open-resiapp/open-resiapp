@@ -2,6 +2,7 @@ import "server-only";
 
 import { createHash } from "node:crypto";
 import { and, asc, desc, eq, gte, inArray, isNull, ne, sql, type SQL } from "drizzle-orm";
+import { UNIT_HOLDER_ROLES, type UnitHolderRole } from "@/lib/role-options";
 
 import { db } from "@/db";
 import {
@@ -77,7 +78,7 @@ export async function unitOwnersAt(entityId: string, date: string): Promise<stri
   const rows = await db
     .select({ userId: memberships.userId })
     .from(memberships)
-    .where(and(eq(memberships.entityId, entityId), eq(memberships.role, "owner"), activeOn(date)));
+    .where(and(eq(memberships.entityId, entityId), inArray(memberships.role, UNIT_HOLDER_ROLES), activeOn(date)));
   return [...new Set(rows.map((r) => r.userId))];
 }
 
@@ -247,7 +248,9 @@ export interface TransferInput {
 type TransferCtx = {
   unitLabel: string;
   unitPath: string;
-  sellerRows: { id: string; userId: string; name: string; validFrom: string }[];
+  sellerRows: { id: string; userId: string; name: string; validFrom: string; role: string }[];
+  /** Role the buyers inherit: družstvo units are held by `member`, SVB units by `owner`. */
+  holderRole: UnitHolderRole;
   buyerNames: string[];
 };
 
@@ -302,13 +305,14 @@ async function validateTransfer(
       num: memberships.ownerUnitShareNumerator,
       den: memberships.ownerUnitShareDenominator,
       validFrom: memberships.validFrom,
+      role: memberships.role,
     })
     .from(memberships)
     .innerJoin(users, eq(users.id, memberships.userId))
     .where(
       and(
         eq(memberships.entityId, input.unitId),
-        eq(memberships.role, "owner"),
+        inArray(memberships.role, UNIT_HOLDER_ROLES),
         isNull(memberships.validTo)
       )
     );
@@ -348,7 +352,8 @@ async function validateTransfer(
     ctx: {
       unitLabel: unit.label,
       unitPath: unit.path,
-      sellerRows: sellerRows.map((s) => ({ id: s.id, userId: s.userId, name: s.name, validFrom: s.validFrom })),
+      sellerRows: sellerRows.map((s) => ({ id: s.id, userId: s.userId, name: s.name, validFrom: s.validFrom, role: s.role })),
+      holderRole: sellerRows.some((s) => s.role === "member") ? "member" : "owner",
       buyerNames,
     },
   };
@@ -493,7 +498,7 @@ export async function transferOwnership(
         await tx.insert(memberships).values({
           userId: b.userId,
           entityId: input.unitId,
-          role: "owner",
+          role: v.ctx.holderRole,
           weight: weights.get(b.userId)!,
           ownerUnitShareNumerator: b.shareNum,
           ownerUnitShareDenominator: b.shareDen,
@@ -508,12 +513,12 @@ export async function transferOwnership(
       for (const [i, b] of (input.newBuyers ?? []).entries()) {
         const [u] = await tx
           .insert(users)
-          .values({ name: b.name.trim(), role: "owner", status: "pending", isActive: true })
+          .values({ name: b.name.trim(), role: v.ctx.holderRole, status: "pending", isActive: true })
           .returning({ id: users.id });
         await tx.insert(memberships).values({
           userId: u.id,
           entityId: input.unitId,
-          role: "owner",
+          role: v.ctx.holderRole,
           weight: newWeights[i],
           ownerUnitShareNumerator: b.shareNum,
           ownerUnitShareDenominator: b.shareDen,

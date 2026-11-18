@@ -1,6 +1,7 @@
 import "server-only";
 
 import { and, asc, eq, inArray, isNull, sql } from "drizzle-orm";
+import { UNIT_HOLDER_ROLES } from "@/lib/role-options";
 
 import { db } from "@/db";
 import { entities, memberships, users } from "@/db/schema";
@@ -81,7 +82,8 @@ export async function exportCommunityAsImportRows(): Promise<ExportResult | null
       name: entities.name,
       parentId: entities.parentId,
       flatNumber: sql<string>`${entities.data}->>'flat_number'`,
-      floor: sql<number>`coalesce((${entities.data}->>'floor')::int, 0)`,
+      // NULL for garages / nebytové priestory imported without a floor.
+      floor: sql<number | null>`(${entities.data}->>'floor')::int`,
       area: sql<number | null>`(${entities.data}->>'area_m2')::numeric`,
       shareNumerator: sql<number>`(${entities.data}->>'share_numerator')::int`,
       shareDenominator: sql<number>`(${entities.data}->>'share_denominator')::int`,
@@ -113,7 +115,7 @@ export async function exportCommunityAsImportRows(): Promise<ExportResult | null
         .where(
           and(
             inArray(memberships.entityId, unitIds),
-            eq(memberships.role, "owner"),
+            inArray(memberships.role, UNIT_HOLDER_ROLES),
             eq(memberships.status, "active")
           )
         )
@@ -178,7 +180,7 @@ export async function exportCommunityAsImportRows(): Promise<ExportResult | null
 type UnitRow = {
   id: string;
   flatNumber: string;
-  floor: number;
+  floor: number | null;
   area: number | null;
   shareNumerator: number;
   shareDenominator: number;
@@ -201,7 +203,8 @@ function buildRow(
 ): Record<string, string | number> {
   const row: Record<string, string | number> = {
     unit_number: unit.flatNumber,
-    unit_floor: unit.floor === 0 ? "prízemie" : String(unit.floor),
+    // Numeric floor (0 = prízemie, -1 = suterén) — the validator reads both.
+    unit_floor: unit.floor === null ? "" : String(unit.floor),
     unit_area_m2: unit.area ?? "",
     unit_share_numerator: String(unit.shareNumerator),
     unit_share_denominator: String(unit.shareDenominator),

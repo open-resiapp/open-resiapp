@@ -7,6 +7,7 @@ import { getVotingImpacts } from "@modules/accounting/src/lib/voting-pipeline";
 import { isAccountingReader } from "@modules/accounting/src/lib/authz";
 import { getVotingParticipation } from "@modules/voting/src/participation";
 import { getVotingResults } from "@modules/voting/src/results";
+import { resultBasis } from "@modules/voting/src/workflow/result-basis";
 import {
   canSeeDraftVotings,
   getVisibleVotingDetail,
@@ -134,6 +135,9 @@ const getVotingResultsTool = defineTool({
   title: "Get voting results",
   description:
     "Returns per-item tallies of a voting (for / against / abstain weights and percentages, quorum, passed).\n" +
+    "zaPercent / protiPercent are shares of the CAST weight only. `passed` is decided on `decisionBasis`: for *_all quorums the za " +
+    "weight is compared with ALL owners' weight (e.g. SK §14b zák. 182/1993 Z.z.), for simple_present with the weight present. When reporting " +
+    "an outcome quote decisionBasis.zaOfBasisPercent against decisionBasis.thresholdPercent, never zaPercent alone. " +
     "Never includes voter names, per-unit breakdowns or ballot hashes.",
   scopes: ["read"],
   module: "voting",
@@ -163,6 +167,25 @@ const getVotingResultsTool = defineTool({
         zaPercent: r.zaPercent,
         protiPercent: r.protiPercent,
         zdrzalSaPercent: r.zdrzalSaPercent,
+        // What the verdict was decided on (re-statement only — the engine's
+        // `passed` stays the authority): basis "all" / "present" / "cast".
+        decisionBasis: (() => {
+          const b = resultBasis(r);
+          const pct = (n: number) => Number(n.toFixed(2));
+          return {
+            basis: b.kind,
+            threshold: b.threshold,
+            basisWeight: b.basisWeight,
+            thresholdWeight: b.thresholdWeight,
+            thresholdPercent: pct(b.thresholdPct),
+            totalPossibleWeight: b.totalPossibleWeight,
+            zaOfBasisPercent: pct(b.zaOfBasisPct),
+            protiOfBasisPercent: pct(b.protiOfBasisPct),
+            zdrzalSaOfBasisPercent: pct(b.zdrzalSaOfBasisPct),
+            zaOfAllPercent: pct(b.totalPossibleWeight > 0 ? (r.za / b.totalPossibleWeight) * 100 : 0),
+            ...(r.presence ? { presentWeight: r.presence.weight } : {}),
+          };
+        })(),
         quorumReached: r.quorumReached,
         passed: r.passed,
       };

@@ -83,7 +83,7 @@ export async function isDomOwnerOf(userId: string, rootId: string): Promise<bool
           SELECT 1 FROM memberships m
           WHERE m.entity_id = ${entities.id}
             AND m.user_id = ${userId}
-            AND m.role = 'owner'
+            AND m.role IN ('owner', 'member')
             AND m.status = 'active'
         )`
       )

@@ -51,6 +51,76 @@ export function getTransporter() {
 
 export const EMAIL_FROM = emailFrom;
 
+/** True when SMTP_HOST is set. Callers surface "not sent" instead of silently skipping. */
+export function isSmtpConfigured(): boolean {
+  return Boolean(smtpHost);
+}
+
+/** Outcome of one send attempt: "not_configured" = no SMTP, nothing was tried. */
+export type EmailSendStatus = "sent" | "not_configured" | "failed";
+
+/**
+ * Board post (oznam) e-mail for owners who get no push. Returns a status so
+ * the caller can release its dedupe slot on a failure.
+ */
+export async function sendBoardPostNotice(params: {
+  recipientEmail: string;
+  recipientName: string;
+  postTitle: string;
+  postContent: string;
+  postUrl: string;
+  buildingName?: string | null;
+  locale?: string;
+}): Promise<EmailSendStatus> {
+  const transporter = getTransporter();
+  if (!transporter) {
+    console.warn("[email] SMTP not configured — skipping board post notice");
+    return "not_configured";
+  }
+
+  const locale = resolveLocale(params.locale);
+  const tCommon = await getTranslations({ locale, namespace: "Email.common" });
+  const t = await getTranslations({ locale, namespace: "Email.postNotice" });
+  const header = await brandingEmailHeader();
+
+  const title = escapeHtml(params.postTitle);
+  const excerpt = escapeHtml(
+    params.postContent.length > 600
+      ? `${params.postContent.slice(0, 600)}…`
+      : params.postContent
+  );
+
+  const html = `
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; font-size: 16px;">
+      ${header}
+      <h2 style="color: #1d4ed8;">${title}</h2>
+      <p>${tCommon("greeting", { name: escapeHtml(params.recipientName) })}</p>
+      <p>${t("intro", { building: escapeHtml(params.buildingName || "") })}</p>
+      <blockquote style="margin: 16px 0; padding: 12px 16px; border-left: 4px solid #2563eb; background: #f3f4f6; white-space: pre-wrap;">${excerpt}</blockquote>
+      <div style="margin: 24px 0; text-align: center;">
+        <a href="${escapeHtml(params.postUrl)}"
+           style="display: inline-block; padding: 12px 32px; background-color: #2563eb; color: #ffffff; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 16px;">
+          ${tCommon("viewPostButton")}
+        </a>
+      </div>
+      <p style="color: #6b7280; font-size: 14px;">${t("footer")}</p>
+    </div>
+  `;
+
+  try {
+    await transporter.sendMail({
+      from: emailFrom,
+      to: params.recipientEmail,
+      subject: t("subject", { title: params.postTitle }),
+      html,
+    });
+    return "sent";
+  } catch (error) {
+    console.error("[email] Failed to send board post notice:", error);
+    return "failed";
+  }
+}
+
 /**
  * BYT-20260512-008: optional white-label logo header for transactional emails.
  * Returns an <img> block (absolute URL — mail clients fetch off-session) when
@@ -966,4 +1036,168 @@ export function sendMeetingChange(
   params: MeetingEmailParams & { cancelled: boolean }
 ): Promise<boolean> {
   return sendMeetingEmail(params.cancelled ? "cancel" : "change", params);
+}
+
+/**
+ * Voting announcement e-mailed to an eligible voter who gets no push (no
+ * subscription / push not configured) — the voting counterpart of
+ * sendBoardPostNotice. Strings: Email.votingStarted.
+ */
+export async function sendVotingStartedNotice(params: {
+  recipientEmail: string;
+  recipientName: string;
+  votingTitle: string;
+  /** Pre-formatted end of the voting (caller formats in the community zone). */
+  endsAtLabel: string;
+  votingUrl: string;
+  buildingName?: string | null;
+  locale?: string;
+}): Promise<EmailSendStatus> {
+  const transporter = getTransporter();
+  if (!transporter) {
+    console.warn("[email] SMTP not configured — skipping voting announcement");
+    return "not_configured";
+  }
+
+  const locale = resolveLocale(params.locale);
+  const tCommon = await getTranslations({ locale, namespace: "Email.common" });
+  const t = await getTranslations({ locale, namespace: "Email.votingStarted" });
+  const header = await brandingEmailHeader();
+
+  const html = `
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; font-size: 16px;">
+      ${header}
+      <h2 style="color: #1d4ed8;">${escapeHtml(params.votingTitle)}</h2>
+      <p>${tCommon("greeting", { name: escapeHtml(params.recipientName) })}</p>
+      <p>${t("intro", { building: escapeHtml(params.buildingName || "") })}</p>
+      <p>${t("endsAt", { date: escapeHtml(params.endsAtLabel) })}</p>
+      <div style="margin: 24px 0; text-align: center;">
+        <a href="${escapeHtml(params.votingUrl)}"
+           style="display: inline-block; padding: 12px 32px; background-color: #2563eb; color: #ffffff; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 16px;">
+          ${t("button")}
+        </a>
+      </div>
+      <p style="color: #6b7280; font-size: 14px;">${t("footer")}</p>
+    </div>
+  `;
+
+  try {
+    await transporter.sendMail({
+      from: emailFrom,
+      to: params.recipientEmail,
+      subject: t("subject", { title: params.votingTitle }),
+      html,
+    });
+    return "sent";
+  } catch (error) {
+    console.error("[email] Failed to send voting announcement:", error);
+    return "failed";
+  }
+}
+
+/**
+ * Claim by e-mail link: the owner typed this address on the claim page;
+ * the button signs them in and activates the prepared account with it
+ * (src/lib/claim-link.server.ts). The link is a sign-in credential, so it
+ * is only logged without SMTP outside production.
+ */
+export async function sendClaimLoginLink(params: {
+  recipientEmail: string;
+  recipientName: string;
+  linkUrl: string;
+  expiryMinutes: number;
+  locale?: string;
+}): Promise<EmailSendStatus> {
+  const transporter = getTransporter();
+  if (!transporter) {
+    if (process.env.NODE_ENV !== "production") {
+      console.log("[email] SMTP not configured — claim login link:", params.linkUrl);
+    }
+    return "not_configured";
+  }
+
+  const locale = resolveLocale(params.locale);
+  const tCommon = await getTranslations({ locale, namespace: "Email.common" });
+  const t = await getTranslations({ locale, namespace: "Email.claimLoginLink" });
+  const header = await brandingEmailHeader();
+
+  const html = `
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; font-size: 16px;">
+      ${header}
+      <h2 style="color: #1d4ed8;">${t("heading")}</h2>
+      <p>${tCommon("greeting", { name: escapeHtml(params.recipientName) })}</p>
+      <p>${t("intro")}</p>
+      <div style="margin: 24px 0; text-align: center;">
+        <a href="${escapeHtml(params.linkUrl)}"
+           style="display: inline-block; padding: 12px 32px; background-color: #2563eb; color: #ffffff; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 16px;">
+          ${t("button")}
+        </a>
+      </div>
+      <p style="color: #6b7280; font-size: 16px;">${t("expiryNote", { minutes: params.expiryMinutes })}</p>
+      <p style="color: #6b7280; font-size: 16px;">${t("notYou")}</p>
+      <p style="color: #6b7280; font-size: 16px; margin-top: 32px; border-top: 1px solid #e5e7eb; padding-top: 16px;">
+        ${t("fallback")}<br/>
+        <span style="word-break: break-all;">${escapeHtml(params.linkUrl)}</span>
+      </p>
+    </div>
+  `;
+
+  try {
+    await transporter.sendMail({
+      from: emailFrom,
+      to: params.recipientEmail,
+      subject: t("subject"),
+      html,
+    });
+    return "sent";
+  } catch (error) {
+    console.error("[email] Failed to send claim login link:", error);
+    return "failed";
+  }
+}
+
+/**
+ * Claim by e-mail link, but the typed address already belongs to another
+ * account. Sent to that address instead of the link, so the claim page can
+ * answer the same way either way (no account enumeration).
+ */
+export async function sendClaimLinkAddressInUse(params: {
+  recipientEmail: string;
+  loginUrl: string;
+  locale?: string;
+}): Promise<EmailSendStatus> {
+  const transporter = getTransporter();
+  if (!transporter) return "not_configured";
+
+  const locale = resolveLocale(params.locale);
+  const t = await getTranslations({ locale, namespace: "Email.claimLinkAddressInUse" });
+  const header = await brandingEmailHeader();
+
+  const html = `
+    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; font-size: 16px;">
+      ${header}
+      <h2 style="color: #1d4ed8;">${t("heading")}</h2>
+      <p>${t("intro")}</p>
+      <div style="margin: 24px 0; text-align: center;">
+        <a href="${escapeHtml(params.loginUrl)}"
+           style="display: inline-block; padding: 12px 32px; background-color: #2563eb; color: #ffffff; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 16px;">
+          ${t("button")}
+        </a>
+      </div>
+      <p style="color: #6b7280; font-size: 16px;">${t("notYou")}</p>
+    </div>
+  `;
+
+  try {
+    await transporter.sendMail({
+      from: emailFrom,
+      to: params.recipientEmail,
+      subject: t("subject"),
+      html,
+    });
+    return "sent";
+  } catch (error) {
+    console.error("[email] Failed to send claim address-in-use notice:", error);
+    return "failed";
+  }
 }

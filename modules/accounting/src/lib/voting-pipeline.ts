@@ -76,6 +76,7 @@ async function currentPublishedServices(entityId: string, asOf: Date) {
       serviceCategoryId: feeScheduleServices.serviceCategoryId,
       allocationKey: feeScheduleServices.allocationKey,
       rateCents: feeScheduleServices.rateCents,
+      rateMode: feeScheduleServices.rateMode,
       fixedAmountCents: feeScheduleServices.fixedAmountCents,
     })
     .from(feeScheduleServices)
@@ -147,6 +148,9 @@ async function applyRateChange(
         serviceCategoryId: s.serviceCategoryId,
         allocationKey: s.allocationKey,
         rateCents: s.rateCents,
+        // Carry the mode — a €/m² rate copied as "total" would silently
+        // become a dom-wide total of a few cents.
+        rateMode: s.rateMode === "per_unit" ? "per_unit" : "total",
         fixedAmountCents: s.fixedAmountCents,
       });
     }

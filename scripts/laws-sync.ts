@@ -68,6 +68,14 @@ const CATALOG: CatalogEntry[] = [
   { jurisdiction: "sk", year: 2025, number: 25 }, // stavebný zákon
   { jurisdiction: "sk", year: 2001, number: 314 }, // o ochrane pred požiarmi
   { jurisdiction: "sk", year: 2009, number: 508 }, // vyhláška — technické zariadenia
+  {
+    // Obchodný zákonník — only the cooperative part (bytové družstvo,
+    // členská schôdza §239). The whole code is ~800 provisions.
+    jurisdiction: "sk",
+    year: 1991,
+    number: 513,
+    range: { from: 221, to: 260, scope: "§ 221 – § 260 (družstvo)" },
+  },
   // Czechia
   {
     jurisdiction: "cz",
@@ -79,6 +87,14 @@ const CATALOG: CatalogEntry[] = [
   { jurisdiction: "cz", year: 2013, number: 67 }, // služby spojené s užíváním bytů
   { jurisdiction: "cz", year: 1991, number: 563 }, // o účetnictví
   { jurisdiction: "cz", year: 2015, number: 269 }, // vyhláška o rozúčtování tepla a TV
+  {
+    // Zákon o obchodních korporacích — only the cooperative part
+    // (družstvo §552–§726, bytové družstvo §727–§757).
+    jurisdiction: "cz",
+    year: 2012,
+    number: 90,
+    range: { from: 552, to: 757, scope: "§ 552 – § 757 (družstvo, bytové družstvo)" },
+  },
 ];
 
 const USER_AGENT = "open-housing-laws-sync/1.0";
@@ -691,7 +707,8 @@ async function syncSk(entry: CatalogEntry, today: string) {
   }
 
   const anchors = new AnchorAllocator();
-  const parts = buildNodes(root.children, anchors, "");
+  let parts = buildNodes(root.children, anchors, "");
+  if (entry.range) parts = restrictRange(parts, entry.range.from, entry.range.to);
 
   const footnotes: LawFootnote[] = [];
   const poznamky = findById(doc, "poznamky");

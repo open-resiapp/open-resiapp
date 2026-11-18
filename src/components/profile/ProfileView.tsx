@@ -21,6 +21,9 @@ const roleKeys: Record<UserRole, string> = {
   tenant: "roleTenant",
   vote_counter: "roleVoteCounter",
   caretaker: "roleCaretaker",
+  member: "roleMember",
+  accountant: "roleAccountant",
+  spravca: "roleSpravca",
 };
 
 export interface ProfileFlat {

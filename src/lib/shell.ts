@@ -46,6 +46,8 @@ export interface ShellCommunity {
   address: string | null;
   ico: string | null;
   dic: string | null;
+  /** Stanovy notice period in days (entities.data.notice_lead_days); null = statute only. */
+  noticeLeadDays: number | null;
   legalNotice: string | null;
 }
 

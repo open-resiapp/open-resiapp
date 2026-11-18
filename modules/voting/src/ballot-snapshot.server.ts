@@ -4,10 +4,11 @@ import "server-only";
 // owner's unit share and membership weight are copied onto the ballot row.
 // results.ts uses these values and falls back to the CURRENT membership only
 // for legacy rows (NULL snapshot).
-import { and, eq } from "drizzle-orm";
+import { and, eq, inArray } from "drizzle-orm";
 
 import { db } from "@/db";
 import { memberships } from "@/db/schema";
+import { VOTING_ROLES } from "./voting-roles";
 
 type Tx = Parameters<Parameters<typeof db.transaction>[0]>[0];
 
@@ -34,9 +35,10 @@ export async function ownershipSnapshot(
         eq(memberships.entityId, unitId),
         eq(memberships.userId, ownerId),
         eq(memberships.status, "active"),
-        // 2026-11-18 review: only an OWNER membership votes (validateCast
-        // enforces the same) — a tenant row must never feed the snapshot.
-        eq(memberships.role, "owner")
+        // 2026-11-18 review: only a VOTING membership (owner / družstvo
+        // member, voting-roles.ts) votes — validateCast enforces the same; a
+        // tenant row must never feed the snapshot.
+        inArray(memberships.role, [...VOTING_ROLES])
       )
     )
     .limit(1);

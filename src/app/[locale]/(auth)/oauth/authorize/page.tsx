@@ -20,16 +20,51 @@ import { decideAuthorization } from "./actions";
 
 export const dynamic = "force-dynamic";
 
-function clientHost(clientId: string, redirectUri: string): string {
+function hostOf(raw: string | null | undefined): string {
+  if (!raw) return "";
   try {
-    return new URL(clientId).hostname;
+    return new URL(raw).hostname.toLowerCase();
   } catch {
-    try {
-      return new URL(redirectUri).hostname;
-    } catch {
-      return "";
-    }
+    return "";
   }
+}
+
+const LOOPBACK = new Set(["localhost", "127.0.0.1", "[::1]", "::1"]);
+
+/** Registrable-ish suffix ("claude.ai" for "api.claude.ai") — enough to compare app vs redirect. */
+function siteOf(host: string): string {
+  return host.split(".").slice(-2).join(".");
+}
+
+type ClientTrust =
+  /** CIMD: metadata document fetched from the client's own HTTPS domain. */
+  | { kind: "verified"; host: string }
+  /** DCR / CIMD, nothing suspicious: neutral explanation, not an alarm. */
+  | { kind: "registered"; host: string; local: boolean }
+  /** A real red flag: the code would go to a site other than the app's own. */
+  | { kind: "mismatch"; appHost: string; redirectHost: string };
+
+/**
+ * How much the consent screen can say about the client. Dynamic client
+ * registration (RFC 7591) is how Claude Desktop, ChatGPT and most MCP hosts
+ * connect, so "unverified" in red for every one of them taught users to
+ * ignore the colour. Red stays for a concrete problem: the redirect goes to
+ * a different site than the app's declared home (client_id URL for CIMD,
+ * client_uri for DCR). Loopback redirects are how desktop apps receive the
+ * code and are not a mismatch.
+ */
+function clientTrust(
+  client: { clientId: string; source: "cimd" | "dcr"; clientUri: string | null },
+  redirectUri: string
+): ClientTrust {
+  const redirectHost = hostOf(redirectUri);
+  const local = LOOPBACK.has(redirectHost);
+  const appHost = client.source === "cimd" ? hostOf(client.clientId) : hostOf(client.clientUri);
+  if (appHost && redirectHost && !local && siteOf(appHost) !== siteOf(redirectHost)) {
+    return { kind: "mismatch", appHost, redirectHost };
+  }
+  if (client.source === "cimd" && appHost) return { kind: "verified", host: appHost };
+  return { kind: "registered", host: redirectHost || appHost, local };
 }
 
 export default async function OAuthAuthorizePage({
@@ -74,7 +109,7 @@ export default async function OAuthAuthorizePage({
   }
   const user = await getUserAuthRow(session.user.id);
   const active = user?.status === "active";
-  const host = clientHost(v.client.clientId, v.redirectUri);
+  const trust = clientTrust(v.client, v.redirectUri);
 
   const hidden = AUTHORIZE_PARAMS.map((key) =>
     authParams[key] !== undefined ? (
@@ -98,19 +133,36 @@ export default async function OAuthAuthorizePage({
           <h1 className="text-xl sm:text-2xl font-bold leading-tight text-gray-900 break-words dark:text-gray-100">
             {t("title", { client: v.client.name })}
           </h1>
-          {host && (
-            <p
-              className={`mt-1 text-sm break-words ${
-                v.client.source === "cimd"
-                  ? "text-green-700 dark:text-green-400"
-                  : "text-red-700 dark:text-red-400"
-              }`}
-            >
-              {v.client.source === "cimd" ? t("verifiedHost", { host }) : t("unverifiedHost", { host })}
+          {trust.kind === "verified" && (
+            <p className="mt-1 text-base break-words text-green-700 dark:text-green-400">
+              {t("verifiedHost", { host: trust.host })}
             </p>
           )}
         </div>
       </div>
+
+      {trust.kind === "registered" && (
+        <div className="mt-4 rounded-xl border border-gray-200 bg-gray-50 p-4 text-base text-gray-800 dark:border-gray-700 dark:bg-gray-800/60 dark:text-gray-200">
+          <p className="font-medium break-words">
+            {trust.local
+              ? t("registeredLocal")
+              : t("registeredHost", { host: trust.host })}
+          </p>
+          <p className="mt-1 text-gray-700 dark:text-gray-300">{t("registeredExplain")}</p>
+        </div>
+      )}
+
+      {trust.kind === "mismatch" && (
+        <div
+          role="alert"
+          className="mt-4 rounded-xl border border-red-300 bg-red-50 p-4 text-base text-red-800 dark:border-red-800 dark:bg-red-900/30 dark:text-red-200"
+        >
+          <p className="font-semibold break-words">
+            {t("redirectMismatch", { app: trust.appHost, host: trust.redirectHost })}
+          </p>
+          <p className="mt-1">{t("redirectMismatchExplain")}</p>
+        </div>
+      )}
 
       <p className="mt-5 text-base text-gray-700 dark:text-gray-300">
         {t("intro", { user: user?.name ?? session.user.email ?? "" })}

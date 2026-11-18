@@ -1,4 +1,5 @@
 import "server-only";
+import { isUnitHolderRole } from "@/lib/role-options";
 
 import { runOwnershipChecks } from "@/lib/owner-checks";
 import { loadOwnersSnapshot } from "@/lib/owners-board.server";
@@ -29,7 +30,7 @@ export async function listShareSumViolations(
   const findings = runOwnershipChecks(
     raw.unitRows.map((u) => ({ id: u.id })),
     raw.membershipRows
-      .filter((m) => m.role === "owner")
+      .filter((m) => isUnitHolderRole(m.role))
       .map((m) => ({
         userId: m.userId,
         unitId: m.unitId,

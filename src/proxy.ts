@@ -38,7 +38,14 @@ export default function middleware(req: NextRequest) {
     return NextResponse.next();
   }
 
-  return intlMiddleware(req);
+  // Original path + query for the dashboard layout's post-login redirect
+  // (callbackUrl). `set` overwrites any client-supplied value — the header is
+  // ours only; the layout additionally validates it (same locale, no `//`,
+  // no backslash, no auth pages). next-intl 4.x copies request headers into
+  // its NextResponse.next/rewrite, so the header reaches server components.
+  const h = new Headers(req.headers);
+  h.set("x-resiapp-path", pathname + req.nextUrl.search);
+  return intlMiddleware(new NextRequest(req, { headers: h }));
 }
 
 export const config = {

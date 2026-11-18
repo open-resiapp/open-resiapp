@@ -9,7 +9,11 @@ import {
   memberships,
   users,
 } from "@/db/schema";
+import { CLAIM_LINK_TTL_MS, mintClaimLinkToken } from "@/lib/claim-link.server";
+import { sendClaimLinkAddressInUse, sendClaimLoginLink } from "@/lib/email";
 import { recordEntityAudit } from "@/lib/entity-audit";
+import { routing } from "@/i18n/routing";
+import { checkRateLimit, checkRateLimitKey } from "@/lib/rate-limiter";
 
 interface RouteContext {
   params: Promise<{ token: string }>;
@@ -28,7 +32,10 @@ async function loadInvitation(token: string) {
   return row;
 }
 
-export async function GET(_req: NextRequest, ctx: RouteContext) {
+export async function GET(req: NextRequest, ctx: RouteContext) {
+  // Token lookups are enumeration targets — per-IP limit (in-process, per replica).
+  const limited = checkRateLimit(req, { maxRequests: 30, windowMs: 15 * 60 * 1000 }, "claim-get");
+  if (limited) return limited;
   const { token } = await ctx.params;
   const invite = await loadInvitation(token);
   if (!invite || !invite.targetShellUserId) {
@@ -46,6 +53,7 @@ export async function GET(_req: NextRequest, ctx: RouteContext) {
       id: users.id,
       name: users.name,
       email: users.email,
+      paperOnly: users.paperOnly,
     })
     .from(users)
     .where(eq(users.id, invite.targetShellUserId));
@@ -85,6 +93,7 @@ export async function GET(_req: NextRequest, ctx: RouteContext) {
   return NextResponse.json({
     shellName: shell.name,
     shellEmail: shell.email,
+    paperOnly: shell.paperOnly,
     flatNumber: unitRow?.flatNumber ?? null,
     communityName,
     expiresAt: invite.expiresAt.toISOString(),
@@ -92,11 +101,17 @@ export async function GET(_req: NextRequest, ctx: RouteContext) {
 }
 
 export async function POST(req: NextRequest, ctx: RouteContext) {
+  const limited = checkRateLimit(req, { maxRequests: 10, windowMs: 15 * 60 * 1000 }, "claim-post");
+  if (limited) return limited;
   const { token } = await ctx.params;
   const body = (await req.json().catch(() => ({}))) as {
     email?: unknown;
     password?: unknown;
+    mode?: unknown;
+    locale?: unknown;
   };
+
+  if (body.mode === "link") return requestClaimLink(token, body);
 
   const emailRaw = typeof body.email === "string" ? body.email.trim() : "";
   const password = typeof body.password === "string" ? body.password : "";
@@ -185,4 +200,108 @@ export async function POST(req: NextRequest, ctx: RouteContext) {
   }
 
   return NextResponse.json(result.body, { status: result.status });
+}
+
+
+// ── mode "link": claim by an e-mailed sign-in link, no password ──────────
+//
+// The owner types an e-mail; we mail a signed, single-use, 30-minute link
+// (src/lib/claim-link.server.ts) — clicking it activates the shell with that
+// e-mail and signs in. The response is the same whether or not the address
+// already belongs to another account (that address gets a "you already have
+// an account" notice instead), so the endpoint cannot be used to probe which
+// e-mails are registered. Invitation state (not_found / used / expired) is
+// already visible to the token holder via GET, so it is reported as usual.
+
+/** Per invitation / per address: caps how many mails one claim can trigger. */
+const LINK_SEND_LIMIT = { maxRequests: 3, windowMs: 60 * 60 * 1000 };
+
+function publicBaseUrl(): string | null {
+  // Never from the request Host header (a spoofed Host would put an
+  // attacker's domain into the sign-in mail).
+  const base = process.env.NEXTAUTH_URL || process.env.APP_URL;
+  if (base) return base.replace(/\/$/, "");
+  return process.env.NODE_ENV === "production" ? null : "http://localhost:3000";
+}
+
+async function requestClaimLink(
+  token: string,
+  body: { email?: unknown; locale?: unknown }
+): Promise<NextResponse> {
+  const emailRaw = typeof body.email === "string" ? body.email.trim() : "";
+  if (!emailRaw) return NextResponse.json({ error: "missing_fields" }, { status: 400 });
+  if (!emailRaw.includes("@") || emailRaw.length > 254 || /\s/.test(emailRaw)) {
+    return NextResponse.json({ error: "invalid_email" }, { status: 400 });
+  }
+  const email = emailRaw.toLowerCase();
+  const locale =
+    typeof body.locale === "string" && (routing.locales as readonly string[]).includes(body.locale)
+      ? body.locale
+      : routing.defaultLocale;
+
+  const invite = await loadInvitation(token);
+  if (!invite || !invite.targetShellUserId) {
+    return NextResponse.json({ error: "not_found" }, { status: 404 });
+  }
+  if (invite.status !== "pending") return NextResponse.json({ error: "used" }, { status: 410 });
+  if (invite.expiresAt.getTime() < Date.now()) {
+    return NextResponse.json({ error: "expired" }, { status: 410 });
+  }
+
+  // Anti mail-bombing: per invitation and per target address (in-process,
+  // per replica — like the per-IP limit above).
+  if (
+    checkRateLimitKey(invite.id, LINK_SEND_LIMIT, "claim-link-invite") !== null ||
+    checkRateLimitKey(email, LINK_SEND_LIMIT, "claim-link-email") !== null
+  ) {
+    return NextResponse.json({ error: "rateLimited" }, { status: 429 });
+  }
+
+  const base = publicBaseUrl();
+  if (!base) return NextResponse.json({ error: "email_unavailable" }, { status: 503 });
+
+  const shellId = invite.targetShellUserId;
+  const [[shell], [conflict]] = await Promise.all([
+    db.select({ name: users.name }).from(users).where(eq(users.id, shellId)).limit(1),
+    db
+      .select({ id: users.id })
+      .from(users)
+      .where(and(eq(users.email, email), ne(users.id, shellId)))
+      .limit(1),
+  ]);
+  if (!shell) return NextResponse.json({ error: "not_found" }, { status: 404 });
+
+  let status: Awaited<ReturnType<typeof sendClaimLoginLink>>;
+  if (conflict) {
+    status = await sendClaimLinkAddressInUse({
+      recipientEmail: email,
+      loginUrl: `${base}/${locale}/login`,
+      locale,
+    });
+  } else {
+    let link: string;
+    try {
+      const t = mintClaimLinkToken({ invitationId: invite.id, shellUserId: shellId, email });
+      link = `${base}/${locale}/claim/${encodeURIComponent(token)}/link?t=${encodeURIComponent(t)}`;
+    } catch {
+      // ConfirmationUnavailableError: auth secret missing / too short.
+      return NextResponse.json({ error: "email_unavailable" }, { status: 503 });
+    }
+    status = await sendClaimLoginLink({
+      recipientEmail: email,
+      recipientName: shell.name,
+      linkUrl: link,
+      expiryMinutes: Math.round(CLAIM_LINK_TTL_MS / 60_000),
+      locale,
+    });
+  }
+
+  // Delivery problems are the same for every address — not an oracle.
+  if (status === "not_configured" && process.env.NODE_ENV === "production") {
+    return NextResponse.json({ error: "email_unavailable" }, { status: 503 });
+  }
+  if (status === "failed") {
+    return NextResponse.json({ error: "email_failed" }, { status: 502 });
+  }
+  return NextResponse.json({ ok: true, mode: "link" });
 }

@@ -5,16 +5,24 @@ import { auth } from "@/lib/auth";
 import { Link, redirect } from "@/i18n/navigation";
 import { hasPermission } from "@/lib/permissions";
 import { getOnboardingStatus } from "@/lib/onboarding.server";
+import { getCommunityRoot } from "@/lib/legacy-compat";
+import { getDisplayTemplateSlug } from "@/lib/templates/display-slug";
+import { listTemplateSummaries } from "@/lib/templates/loader";
 import type { UserRole } from "@/types";
 import { Badge, ButtonLink, Card, Icon, PageHeader, buttonClasses } from "@/components/ui";
+
+import { TemplateStep } from "./TemplateStep";
 
 // RES-20260609-001. Guided setup checklist. Every step's "done" state is
 // derived from data (getOnboardingStatus) — no stored progress, so the page
 // is resumable for free. Resolved on the server: no client fetch, no second
 // request for what the shell already loads.
-type StepKey = "community" | "units" | "owners" | "posts";
+// "template" is answered inline (TemplateStep) — the template decides the
+// tree the import seeds, so it comes before everything else.
+type StepKey = "template" | "community" | "units" | "owners" | "posts";
 
 const STEPS: { key: StepKey; href: ComponentProps<typeof Link>["href"] }[] = [
+  { key: "template", href: { pathname: "/onboarding", hash: "template" } },
   { key: "community", href: { pathname: "/settings", query: { tab: "community" } } },
   { key: "units", href: "/admin/import" },
   { key: "owners", href: "/settings/registration-qr" },
@@ -39,9 +47,17 @@ export default async function OnboardingPage({
     return <div className="py-12 text-center text-lg text-ui-text-muted">{t("noPermission")}</div>;
   }
 
-  const status = await getOnboardingStatus();
-  const doneCount = STEPS.filter((s) => status.steps[s.key]).length;
-  const next = STEPS.find((s) => !status.steps[s.key]);
+  const [root, templates] = await Promise.all([getCommunityRoot(), listTemplateSummaries()]);
+  const status = await getOnboardingStatus(root);
+  const templateSlug = root ? (getDisplayTemplateSlug(root.templateSlug) ?? root.templateSlug) : null;
+  // Pre-template installs that already have units are HOA (resolved as such
+  // everywhere else) — not an open step.
+  const done: Record<StepKey, boolean> = {
+    ...status.steps,
+    template: !!templateSlug || status.steps.units,
+  };
+  const doneCount = STEPS.filter((s) => done[s.key]).length;
+  const next = STEPS.find((s) => !done[s.key]);
   const allDone = !next;
 
   return (
@@ -66,22 +82,51 @@ export default async function OnboardingPage({
 
       <ol className="space-y-3">
         {STEPS.map((step, i) => {
-          const done = status.steps[step.key];
+          const isDone = done[step.key];
+          if (step.key === "template") {
+            return (
+              <Card as="li" key={step.key} id="template" className="flex flex-col gap-3">
+                <div className="flex min-w-0 items-start gap-3">
+                  <span
+                    className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-base font-semibold ${
+                      isDone ? "bg-ui-success/15 text-ui-success" : "bg-ui-surface-muted text-ui-text-muted"
+                    }`}
+                    aria-hidden="true"
+                  >
+                    {isDone ? <Icon name="check" size={20} /> : i + 1}
+                  </span>
+                  <div className="min-w-0">
+                    <p className="flex flex-wrap items-center gap-2 text-base font-semibold text-ui-text">
+                      {t("steps.template.title")}
+                      <Badge tone={isDone ? "success" : "neutral"}>{isDone ? t("stateDone") : t("stateOpen")}</Badge>
+                    </p>
+                    <p className="mt-0.5 text-base text-ui-text-muted">{t("steps.template.body")}</p>
+                  </div>
+                </div>
+                <TemplateStep
+                  templates={templates}
+                  currentSlug={templateSlug}
+                  communityExists={!!root}
+                  locked={status.steps.units}
+                />
+              </Card>
+            );
+          }
           return (
             <Card as="li" key={step.key} className="flex flex-col gap-3 sm:flex-row sm:items-center">
               <div className="flex min-w-0 flex-1 items-start gap-3">
                 <span
                   className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-base font-semibold ${
-                    done ? "bg-ui-success/15 text-ui-success" : "bg-ui-surface-muted text-ui-text-muted"
+                    isDone ? "bg-ui-success/15 text-ui-success" : "bg-ui-surface-muted text-ui-text-muted"
                   }`}
                   aria-hidden="true"
                 >
-                  {done ? <Icon name="check" size={20} /> : i + 1}
+                  {isDone ? <Icon name="check" size={20} /> : i + 1}
                 </span>
                 <div className="min-w-0">
                   <p className="flex flex-wrap items-center gap-2 text-base font-semibold text-ui-text">
                     {t(`steps.${step.key}.title`)}
-                    <Badge tone={done ? "success" : "neutral"}>{done ? t("stateDone") : t("stateOpen")}</Badge>
+                    <Badge tone={isDone ? "success" : "neutral"}>{isDone ? t("stateDone") : t("stateOpen")}</Badge>
                   </p>
                   <p className="mt-0.5 text-base text-ui-text-muted">{t(`steps.${step.key}.body`)}</p>
                 </div>
@@ -90,7 +135,7 @@ export default async function OnboardingPage({
                 href={step.href}
                 className={buttonClasses({ variant: "secondary", className: "shrink-0" })}
               >
-                {done ? t("review") : t("start")}
+                {isDone ? t("review") : t("start")}
               </Link>
             </Card>
           );

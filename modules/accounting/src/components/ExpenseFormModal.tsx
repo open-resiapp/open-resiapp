@@ -25,6 +25,13 @@ export interface ExpenseCategory {
   okruh: "fpuo" | "svc" | "mgmt";
 }
 
+/** Where a dated invoice books (lib/periods.ts getPeriodBookingInfo). */
+export interface PeriodBooking {
+  openYears: number[];
+  lockedYears: number[];
+  fallbackYear: number | null;
+}
+
 /** OCR suggestions from an inbox item (all optional). */
 export interface ExpensePrefill {
   inboxItemId: string;
@@ -97,12 +104,15 @@ export default function ExpenseFormModal({
   open,
   onClose,
   categories,
+  periodBooking = null,
   prefill,
   onSaved,
 }: {
   open: boolean;
   onClose: () => void;
   categories: ExpenseCategory[];
+  /** Enables the "invoice year is locked" warning (fix 2026-11-18). */
+  periodBooking?: PeriodBooking | null;
   /** Set when posting an uploaded invoice from the inbox. */
   prefill: ExpensePrefill | null;
   onSaved: () => void;
@@ -136,6 +146,23 @@ export default function ExpenseFormModal({
   }, [open, prefillId]);
 
   const fromInbox = prefill !== null;
+
+  // An invoice dated in a year that is not open (vyúčtovanie published /
+  // závierka closed, or no period at all) books into the fallback open
+  // year and is settled in THAT year's vyúčtovanie — say so up front.
+  const invoiceYear = DATE_RE.test(form.invoiceDate)
+    ? Number(form.invoiceDate.slice(0, 4))
+    : null;
+  const bookingYear =
+    periodBooking && invoiceYear !== null && !periodBooking.openYears.includes(invoiceYear)
+      ? periodBooking.fallbackYear
+      : null;
+  const yearWarning =
+    bookingYear !== null && bookingYear !== invoiceYear
+      ? periodBooking!.lockedYears.includes(invoiceYear!)
+        ? tf("invoiceYearLocked", { year: invoiceYear!, target: bookingYear })
+        : tf("invoiceYearNoPeriod", { year: invoiceYear!, target: bookingYear })
+      : null;
   const selectedCategory = categories.find((c) => c.id === form.categoryId);
   const isRevizia = !!selectedCategory?.slug?.startsWith("REVIZIA_");
 
@@ -308,6 +335,11 @@ export default function ExpenseFormModal({
             onChange={(e) => set("invoiceDate", e.target.value)}
           />
         </Field>
+        {yearWarning && (
+          <p role="status" className="text-base text-ui-warning">
+            {yearWarning}
+          </p>
+        )}
         {!fromInbox && (
           <Field label={t("attachmentLabel")} required hint={t("attachmentHint")} error={err("file")}>
             <Input

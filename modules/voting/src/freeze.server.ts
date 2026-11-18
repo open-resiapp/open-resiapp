@@ -14,7 +14,7 @@ import "server-only";
 // to ONE voting (a few hundred rows at most). No DDL, no background work.
 // Reopen clears the voting / ballot / eligibility part; the next close
 // rewrites it.
-import { and, eq, isNull, sql, type SQL } from "drizzle-orm";
+import { and, eq, inArray, isNull, sql, type SQL } from "drizzle-orm";
 
 import { db } from "@/db";
 import { entities, memberships } from "@/db/schema";
@@ -28,6 +28,7 @@ import {
 } from "@/lib/voting-method";
 import { attendance, ballots, eligibilitySnapshots, votings } from "./db/schema";
 import { loadLiveEligible } from "./participation";
+import { VOTING_ROLES } from "./voting-roles";
 
 type Tx = Parameters<Parameters<typeof db.transaction>[0]>[0];
 type Exec = Tx | typeof db;
@@ -68,7 +69,15 @@ export async function computeTotalPossibleWeight(
       .select({ weight: memberships.weight })
       .from(memberships)
       .innerJoin(entities, eq(entities.id, memberships.entityId))
-      .where(and(membershipFilter, isNull(entities.archivedAt), scope));
+      .where(
+        and(
+          membershipFilter,
+          // Same eligible set as loadLiveEligible / validateCast.
+          inArray(memberships.role, [...VOTING_ROLES]),
+          isNull(entities.archivedAt),
+          scope
+        )
+      );
     for (const m of members) {
       total += computeMemberWeight({ membershipWeight: m.weight }, votingMethod);
     }
@@ -144,7 +153,7 @@ export async function freezeVotingAtClose(
       FROM ${memberships} mm
       JOIN ${ballots} bb ON bb.entity_id = mm.entity_id AND bb.owner_id = mm.user_id
       WHERE bb.voting_id = ${voting.id} AND mm.status = 'active'
-      ORDER BY mm.entity_id, mm.user_id, (mm.role = 'owner') DESC
+      ORDER BY mm.entity_id, mm.user_id, (mm.role IN ('owner', 'member')) DESC
     ) m
     WHERE b.voting_id = ${voting.id} AND b.owner_unit_share_numerator IS NULL
       AND m.entity_id = b.entity_id AND m.user_id = b.owner_id`);

@@ -21,6 +21,14 @@ interface SendInfo {
   mode: "attachment" | "link";
   attachmentMaxBytes: number;
   recipients: Recipient[];
+  smtpConfigured: boolean;
+}
+interface BulkSummary {
+  eligible: number;
+  sent: number;
+  failed: Record<string, number>;
+  noEmail: number;
+  cannotSee: number;
 }
 
 export default function DocumentSendDialog({
@@ -43,6 +51,9 @@ export default function DocumentSendDialog({
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [done, setDone] = useState(false);
+  // Bulk send: confirm step shows the exact count before anything goes out.
+  const [confirmAll, setConfirmAll] = useState(false);
+  const [bulk, setBulk] = useState<BulkSummary | null>(null);
 
   useEffect(() => {
     if (!open) return;
@@ -50,6 +61,8 @@ export default function DocumentSendDialog({
     setInfo(null);
     setError(null);
     setDone(false);
+    setConfirmAll(false);
+    setBulk(null);
     setMessage("");
     fetch(`/api/documents/${documentId}/send`)
       .then((r) => (r.ok ? r.json() : Promise.reject()))
@@ -87,8 +100,41 @@ export default function DocumentSendDialog({
     }
   }
 
+  const eligibleCount = info
+    ? info.recipients.filter((r) => r.hasEmail && r.canSee).length
+    : 0;
+
+  async function sendAll() {
+    setBusy(true);
+    setError(null);
+    try {
+      const res = await fetch(`/api/documents/${documentId}/send`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ all: true, expectedCount: eligibleCount, message }),
+      });
+      const j = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        setError(t(`errors.${documentErrorKey(j.code)}`));
+        setConfirmAll(false);
+        // Eligible set changed — reload the list so the new count is confirmed.
+        if (j.code === "document.send.count_changed") {
+          const fresh = await fetch(`/api/documents/${documentId}/send`);
+          if (fresh.ok) setInfo((await fresh.json()) as SendInfo);
+        }
+        return;
+      }
+      setBulk(j.summary as BulkSummary);
+      setDone(true);
+      onSent();
+    } finally {
+      setBusy(false);
+    }
+  }
+
   const sizeMb = info ? Math.round(info.attachmentMaxBytes / (1024 * 1024)) : 0;
-  const canSend = !!info && !info.boardOnly && !!recipientId && !done;
+  const smtpMissing = !!info && !info.smtpConfigured;
+  const canSend = !!info && !info.boardOnly && !!recipientId && !done && !smtpMissing;
 
   return (
     <Modal
@@ -105,11 +151,29 @@ export default function DocumentSendDialog({
             </Button>
             <Button onClick={onMakeVisible}>{t("send.makeVisible")}</Button>
           </>
+        ) : confirmAll ? (
+          <>
+            <Button variant="secondary" disabled={busy} onClick={() => setConfirmAll(false)}>
+              {t("dialog.cancel")}
+            </Button>
+            <Button loading={busy} onClick={sendAll}>
+              {t("send.allConfirm", { count: eligibleCount })}
+            </Button>
+          </>
         ) : (
           <>
             <Button variant="secondary" onClick={onClose}>
               {t("dialog.cancel")}
             </Button>
+            {eligibleCount > 1 && (
+              <Button
+                variant="secondary"
+                disabled={smtpMissing || !info || info.boardOnly}
+                onClick={() => setConfirmAll(true)}
+              >
+                {t("send.allButton", { count: eligibleCount })}
+              </Button>
+            )}
             <Button loading={busy} disabled={!canSend} onClick={send}>
               {t("send.submit")}
             </Button>
@@ -120,11 +184,38 @@ export default function DocumentSendDialog({
       {!info && !error ? (
         <LoadingBlock />
       ) : done ? (
-        <p role="status" className="text-base text-ui-text">
-          {t("send.sent")}
-        </p>
+        <div role="status" className="space-y-2 text-base text-ui-text">
+          {bulk ? (
+            <>
+              <p>{t("send.allDone", { sent: bulk.sent, total: bulk.eligible })}</p>
+              {bulk.eligible - bulk.sent > 0 && (
+                <p className="text-ui-danger">
+                  {t("send.allNotSent", { count: bulk.eligible - bulk.sent })}
+                </p>
+              )}
+              {bulk.noEmail > 0 && <p>{t("send.allNoEmail", { count: bulk.noEmail })}</p>}
+            </>
+          ) : (
+            <p>{t("send.sent")}</p>
+          )}
+        </div>
+      ) : confirmAll ? (
+        <div className="space-y-3 text-base text-ui-text">
+          <p className="font-medium">{t("send.allConfirmText", { count: eligibleCount })}</p>
+          <p className="text-ui-text-muted">{t("send.irreversible")}</p>
+          {error && (
+            <p role="alert" className="text-ui-danger">
+              {error}
+            </p>
+          )}
+        </div>
       ) : (
         <div className="space-y-4">
+          {smtpMissing && (
+            <p role="alert" className="rounded-lg border border-ui-danger/30 bg-ui-danger/10 px-4 py-3 text-base text-ui-danger">
+              {t("errors.document_send_smtp_missing")}
+            </p>
+          )}
           {info?.boardOnly ? (
             <p className="text-base text-ui-text">{t("send.boardOnly")}</p>
           ) : info && info.recipients.length === 0 ? (

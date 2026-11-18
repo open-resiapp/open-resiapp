@@ -9,18 +9,38 @@ import {
 } from "@modules/accounting/src/lib/payments";
 import { validateManualPaymentInput } from "@modules/accounting/src/lib/input-validators";
 import { inputErrorResponse } from "@modules/accounting/src/lib/input-errors.server";
+import { parseIsoDate } from "@modules/accounting/src/lib/report-format";
 
 // Manual payment API — list (treasurer/chairman/admin), create + void
 // (treasurer/admin). Void requires a reason (audit-logged reversal).
 
-export async function handleList(): Promise<NextResponse> {
+/**
+ * GET /api/accounting/payments?from=&to=&page=&units=0 — one page of
+ * payments (date range on the receipt day) with totals over the whole
+ * filtered range. `units=0` skips the flat picker list on refetches.
+ */
+export async function handleList(req?: NextRequest): Promise<NextResponse> {
   const ctx = await requireReader();
   if (!ctx.ok) return ctx.error;
-  const [rows, units] = await Promise.all([
-    listPayments(ctx.root.id),
-    listPayableUnits(ctx.root.id),
+  const sp = req?.nextUrl.searchParams;
+  const from = parseIsoDate(sp?.get("from") ?? null);
+  const to = parseIsoDate(sp?.get("to") ?? null);
+  const page = Math.max(0, Math.floor(Number(sp?.get("page")) || 0));
+  const withUnits = sp?.get("units") !== "0";
+  const [list, units] = await Promise.all([
+    listPayments(ctx.root.id, { from, to, page }),
+    withUnits ? listPayableUnits(ctx.root.id) : Promise.resolve(null),
   ]);
-  return NextResponse.json({ payments: rows, units });
+  return NextResponse.json({
+    payments: list.rows,
+    total: list.total,
+    page: list.page,
+    pageSize: list.pageSize,
+    totals: list.totals,
+    from,
+    to,
+    ...(units ? { units } : {}),
+  });
 }
 
 export async function handleCreate(req: NextRequest): Promise<NextResponse> {

@@ -29,7 +29,12 @@ export type SignedTokenPurpose =
   | "webauthn-login"
   // BYT-20261118-001: one-click meeting RSVP from the invitation e-mail.
   // Claims { postId, userId }; can only upsert / clear that user's RSVP.
-  | "meeting-rsvp";
+  | "meeting-rsvp"
+  // Owner claims a prepared (shell) account by a link e-mailed to an address
+  // they typed on the claim page; clicking it activates the account with that
+  // e-mail and signs in (src/lib/claim-link.server.ts). Claims
+  // { inv, sub, em }; ≤ 30 min; single use via sso_consumed_tokens.
+  | "claim-login";
 
 export interface SignedTokenClaims {
   /** purpose */

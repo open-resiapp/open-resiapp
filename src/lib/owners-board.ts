@@ -47,6 +47,8 @@ export interface OwnerRow {
   /** users.is_active = false — account exists but login is blocked. */
   deactivated: boolean;
   emailVerified: boolean;
+  /** users.paper_only — the person gets notices on paper only. */
+  paperOnly?: boolean;
   flats: OwnerFlat[];
   invite: OwnerInvite | null;
   createdAt: string;

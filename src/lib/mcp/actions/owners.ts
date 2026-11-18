@@ -2,14 +2,13 @@ import "server-only";
 
 import { z } from "zod";
 
-import {
-  findExistingOwnerEmails,
-  importUnitKey,
-  matchExistingUnits,
-  seedImport,
-} from "@/lib/import/seed";
-import type { ImportRow, StructureVariant } from "@/lib/import/types";
+import { analyseImport, type ImportAnalysis } from "@/lib/import/analyse.server";
+import { parseLvTextWithReport } from "@/lib/import/parsers/lv-paste";
+import { findExistingOwnerEmails, importUnitKey, seedImport } from "@/lib/import/seed";
+import type { ImportError, ImportPreview, ImportRow, StructureVariant } from "@/lib/import/types";
 import { validateImport } from "@/lib/import/validate";
+import { getDisplayTemplateSlug } from "@/lib/templates/display-slug";
+import { getTemplate } from "@/lib/templates/loader";
 import {
   addUnitOwner,
   createShellOwner,
@@ -22,7 +21,7 @@ import { getUserAuthRow } from "@/lib/user-context";
 import type { CommunityRootRow } from "@/lib/legacy-compat";
 import { McpError, validationError } from "../errors";
 import { uuidSchema } from "../tools/helpers";
-import { translatorFor } from "./format";
+import { hasMessage, translatorFor } from "./format";
 import { defineAction, type ActionContext, type PreviewRow } from "./types";
 
 // Owner / unit pending actions: bulk import of units + owners from a table
@@ -55,21 +54,48 @@ const STRUCTURES = [
 const cell = (max: number) => z.union([z.string().max(max), z.number()]);
 const optCell = (max: number) => cell(max).nullish();
 
+// Every column the validator outputs must be listed here: at confirm the
+// stored (normalised) rows are parsed with this schema again, and a column
+// stripped here would change the re-validated rows → payload-hash conflict.
 const importRowSchema = z.object({
   block_name: optCell(200),
   entrance_label: optCell(200),
+  supisne_cislo: optCell(20).describe("Súpisné číslo of the building (from the LV), optional."),
   unit_number: cell(50),
-  unit_floor: cell(30),
+  unit_floor: optCell(30).describe("Floor; '1. PP' / suterén = -1, prízemie = 0. Optional for garages / non-residential."),
   unit_area_m2: optCell(30),
+  unit_type: optCell(40).describe("flat | non_residential | garage | other (or byt / nebytový priestor / garáž); empty = flat."),
   unit_share_numerator: cell(30),
   unit_share_denominator: cell(30),
   owner_name: z.string().max(255),
+  owner_birth_name: z.string().max(255).nullish().describe("Rodné priezvisko from the LV ('r. Novák'), never part of owner_name."),
+  owner_ico: optCell(20).describe("IČO of a legal-entity owner (družstvo, obec, s.r.o.)."),
   owner_address: z.string().max(500).nullish(),
   owner_email: z.string().max(254).nullish(),
   owner_phone: optCell(50),
-  owner_unit_share_numerator: cell(30),
-  owner_unit_share_denominator: cell(30),
+  owner_unit_share_numerator: optCell(30),
+  owner_unit_share_denominator: optCell(30),
+  ownership_form: z.string().max(10).nullish().describe("'bsm' for bezpodielové spoluvlastníctvo manželov (spouses share one LV row)."),
+  lv_ordinal: optCell(10).describe("Poradové číslo of the owner row on the LV (BSM spouses share one)."),
 });
+
+const LV_REPORT_MAX = 200;
+
+/** What the LV parser recognised and every LV row it could NOT turn into a row. */
+const lvReportSchema = z.object({
+  recognisedOwners: z.number().int().min(0),
+  recognisedUnits: z.number().int().min(0),
+  skipped: z
+    .array(
+      z.object({
+        lvRow: z.number().int().nullable(),
+        text: z.string().max(300),
+        reason: z.string().max(40),
+      })
+    )
+    .max(LV_REPORT_MAX),
+});
+type LvReport = z.infer<typeof lvReportSchema>;
 
 export const importOwnersSchema = z.object({
   structure: z
@@ -82,7 +108,20 @@ export const importOwnersSchema = z.object({
     .array(importRowSchema)
     .min(1)
     .max(IMPORT_MAX_ROWS)
-    .describe("One row per (unit, owner) pair; co-owners repeat the unit columns on their own row."),
+    .optional()
+    .describe("One row per (unit, owner) pair; co-owners repeat the unit columns on their own row. Give rows OR lv_text."),
+  lv_text: z
+    .string()
+    .min(50)
+    .max(500_000)
+    .optional()
+    .describe(
+      "Plain text of a Slovak list vlastníctva (LV) as copied from the cadastre PDF / katasterportal. The server parses it " +
+        "(units, shares, owners, BSM, LV row numbers) and reports the LV rows it could not read. Give rows OR lv_text."
+    ),
+  // Internal: set by the server from lv_text, kept so the confirm-time
+  // re-validation reproduces the preview. Not advertised to the model.
+  lv_report: lvReportSchema.optional(),
 });
 
 type ImportPayload = z.infer<typeof importOwnersSchema> & {
@@ -94,18 +133,33 @@ type ImportPayload = z.infer<typeof importOwnersSchema> & {
 const TEXT_COLUMNS = new Set([
   "block_name",
   "entrance_label",
+  "supisne_cislo",
   "unit_number",
+  "unit_type",
   "owner_name",
+  "owner_birth_name",
+  "owner_ico",
   "owner_address",
   "owner_email",
   "owner_phone",
+  "ownership_form",
 ]);
 
-/** Drops null / undefined cells, stringifies numeric text cells. */
+/** Community-level keys an LV row may carry; on append they come from the community. */
+const COMMUNITY_KEYS = new Set([
+  "community_name",
+  "community_address",
+  "community_ico",
+  "community_dic",
+  "country",
+  "voting_method",
+]);
+
+/** Drops null / undefined cells and community keys, stringifies numeric text cells. */
 function cleanRow(row: Record<string, unknown>): Record<string, unknown> {
   const out: Record<string, unknown> = {};
   for (const [k, v] of Object.entries(row)) {
-    if (v === null || v === undefined) continue;
+    if (v === null || v === undefined || COMMUNITY_KEYS.has(k)) continue;
     out[k] = TEXT_COLUMNS.has(k) && typeof v === "number" ? String(v) : v;
   }
   return out;
@@ -129,88 +183,78 @@ function communityColumns(root: CommunityRootRow): Record<string, unknown> {
 
 /** Template the web wizard passes for this community (/api/building → "hoa"). */
 function templateSlugOf(root: CommunityRootRow): string {
-  return root.templateSlug ?? "hoa";
+  // Pre-Phase-5 installs carry legacy kind slugs ("housing_community", …);
+  // map them to the catalog template so the share-sum rule + kind chain match
+  // what the web wizard uses.
+  return getDisplayTemplateSlug(root.templateSlug) ?? "hoa";
 }
 
 function unitLabel(r: Pick<ImportRow, "block_name" | "entrance_label" | "unit_number">): string {
   return [r.block_name, r.entrance_label, r.unit_number].filter(Boolean).join(" / ");
 }
 
-interface ImportAnalysis {
-  rowsToSeed: ImportRow[];
-  skippedUnitKeys: string[];
-  skippedLabels: string[];
-  unitsInFile: number;
-  unitsToCreate: number;
-  unitsToFill: number;
-  ownerLinks: number;
-  newAccounts: number;
-  matchedAccounts: number;
+/** Validator share-sum warning codes (community 1/1 check, now non-blocking). */
+const SHARE_SUM_CODES = new Set([
+  "community_share_sum_not_one",
+  "community_share_sum_with_existing_not_one",
+]);
+
+/** Error / warning details for the model: positions + codes + numbers, never cell values. */
+function issueDetail(e: ImportError) {
+  const params = e.params ? Object.fromEntries(Object.entries(e.params).filter(([k]) => k !== "value")) : undefined;
+  return { row: e.row, column: e.column, code: e.code, ...(params ? { params } : {}) };
 }
 
 /**
- * Read-only dry run against the current community. seedImport (append mode)
- * reuses an existing unit but still creates its owner rows — a row without
- * an e-mail always becomes a NEW owner record — so re-importing a unit that
- * already has owners would duplicate them. Such units are dropped here
- * together with all their rows; existing units WITHOUT an owner keep their
- * rows (owners are attached, the unit's own data stays as it is).
+ * Community 1/1 share check only when votes are weighted by share — same rule
+ * as the web wizard (admin/import/actions.ts shareSumCheckFor): the
+ * community's voting method decides, else the template default.
  */
-async function analyseImport(ctx: ActionContext, rows: ImportRow[]): Promise<ImportAnalysis> {
-  const matches = await matchExistingUnits({
-    rows,
+async function shareSumCheckFor(root: CommunityRootRow): Promise<"warn" | "off"> {
+  const raw = String(root.votingMethod ?? "");
+  if (raw === "per_share" || raw === "weighted_by_share") return "warn";
+  if (raw) return "off";
+  const tpl = await getTemplate(templateSlugOf(root));
+  return !tpl || tpl.default_voting_method === "weighted_by_share" ? "warn" : "off";
+}
+
+interface CheckedImport {
+  preview: ImportPreview;
+  analysis: ImportAnalysis;
+  /** "off" = the community 1/1 sum was not checked (non-share voting). */
+  shareSumCheck: "warn" | "off";
+}
+
+/** Validator + DB dry run: first pass for the rows, second with the existing share. */
+async function checkImport(ctx: ActionContext, structure: StructureVariant, rows: Record<string, unknown>[]): Promise<CheckedImport> {
+  const base = {
+    rows: rows.map(cleanRow),
+    structure,
+    community: communityColumns(ctx.root),
+    shareSumCheck: await shareSumCheckFor(ctx.root),
+  };
+  const first = validateImport(base);
+  if (!first.ok) {
+    // Codes + positions only — never the validator's prose, which quotes
+    // cell values.
+    throw validationError("rows", {
+      errors: first.errors.slice(0, MAX_ERROR_DETAILS).map(issueDetail),
+    });
+  }
+  const analysis = await analyseImport({
+    rows: first.rows,
     communityId: ctx.root.id,
     templateSlug: templateSlugOf(ctx.root),
   });
-  const skipped = new Set<string>();
-  const fill = new Set<string>();
-  for (const [k, m] of matches) (m.activeOwners > 0 ? skipped : fill).add(k);
-
-  const rowsToSeed = rows.filter((r) => !skipped.has(importUnitKey(r)));
-  const keptUnits = new Set(rowsToSeed.map(importUnitKey));
-  const allUnits = new Set(rows.map(importUnitKey));
-
-  // Mirror the seeder: an e-mail of an existing user reuses that account;
-  // every other row creates an owner record (rows sharing a NEW e-mail → one).
-  const matched = await findExistingOwnerEmails(
-    rowsToSeed.map((r) => r.owner_email ?? "").filter(Boolean)
-  );
-  const matchedUsed = new Set<string>();
-  const newEmails = new Set<string>();
-  let newAccounts = 0;
-  for (const r of rowsToSeed) {
-    const e = r.owner_email?.trim().toLowerCase();
-    if (e && matched.has(e)) {
-      matchedUsed.add(e);
-      continue;
-    }
-    if (e) {
-      if (newEmails.has(e)) continue;
-      newEmails.add(e);
-    }
-    newAccounts += 1;
+  // Append mode: existing units' share + this import's share against 1/1,
+  // so a building can be imported in batches (a partial sum is a warning).
+  const preview = validateImport({ ...base, existingShareSum: analysis.existingShareSum });
+  if (!preview.ok) {
+    throw validationError("rows", {
+      errors: preview.errors.slice(0, MAX_ERROR_DETAILS).map(issueDetail),
+    });
   }
-
-  const skippedLabels: string[] = [];
-  const seen = new Set<string>();
-  for (const r of rows) {
-    const k = importUnitKey(r);
-    if (!skipped.has(k) || seen.has(k)) continue;
-    seen.add(k);
-    skippedLabels.push(unitLabel(r));
-  }
-
-  return {
-    rowsToSeed,
-    skippedUnitKeys: [...skipped].sort(),
-    skippedLabels,
-    unitsInFile: allUnits.size,
-    unitsToCreate: [...keptUnits].filter((k) => !fill.has(k)).length,
-    unitsToFill: [...keptUnits].filter((k) => fill.has(k)).length,
-    ownerLinks: rowsToSeed.length,
-    newAccounts,
-    matchedAccounts: matchedUsed.size,
-  };
+  return { preview, analysis, shareSumCheck: base.shareSumCheck };
 }
 
 const importOwners = defineAction<ImportPayload>({
@@ -220,44 +264,137 @@ const importOwners = defineAction<ImportPayload>({
   authorize: (ctx) => assertPermission(ctx, "manageSettings"),
   async validate(ctx, p) {
     const structure = p.structure ?? "community_unit";
-    const preview = validateImport({
-      rows: p.rows.map((r) => cleanRow(r as Record<string, unknown>)),
-      structure,
-      community: communityColumns(ctx.root),
-    });
-    if (!preview.ok) {
-      // Codes + positions only — never the validator's prose, which quotes
-      // cell values.
-      throw validationError("rows", {
-        errors: preview.errors
-          .slice(0, MAX_ERROR_DETAILS)
-          .map((e) => ({ row: e.row, column: e.column, code: e.code })),
-      });
+    if (!!p.rows === !!p.lv_text) {
+      throw validationError("rows", { reason: "give_rows_or_lv_text" });
     }
-    const analysis = await analyseImport(ctx, preview.rows);
+    let rawRows: Record<string, unknown>[];
+    let lvReport: LvReport | undefined = p.lv_report;
+    if (p.lv_text) {
+      const parsed = parseLvTextWithReport(p.lv_text);
+      lvReport = {
+        recognisedOwners: parsed.report.recognisedOwners,
+        recognisedUnits: parsed.report.recognisedUnits,
+        skipped: parsed.report.skipped.slice(0, LV_REPORT_MAX).map((x) => ({
+          lvRow: x.lvRow,
+          text: x.text.slice(0, 300),
+          reason: x.reason,
+        })),
+      };
+      rawRows = parsed.rows as Record<string, unknown>[];
+      if (rawRows.length === 0) {
+        throw validationError("lv_text", {
+          reason: "nothing_recognised",
+          errors: lvReport.skipped.slice(0, MAX_ERROR_DETAILS).map((x) => ({ lvRow: x.lvRow, code: x.reason })),
+        });
+      }
+      if (rawRows.length > IMPORT_MAX_ROWS) throw validationError("lv_text", { reason: "too_many_rows" });
+    } else {
+      rawRows = (p.rows ?? []) as Record<string, unknown>[];
+    }
+    const { preview, analysis } = await checkImport(ctx, structure, rawRows);
     if (analysis.rowsToSeed.length === 0) {
       throw validationError("rows", { reason: "all_units_exist_with_owners" });
     }
     // Normalised rows are the validator's own output: validating them again
     // (at confirm) returns the identical rows, so the payload hash matches.
-    return { structure, rows: preview.rows, skippedUnitKeys: analysis.skippedUnitKeys };
+    return {
+      structure,
+      rows: preview.rows as unknown as ImportPayload["rows"],
+      ...(lvReport ? { lv_report: lvReport } : {}),
+      skippedUnitKeys: analysis.skippedUnitKeys,
+    };
   },
   async preview(ctx, p, locale) {
     const t = await translatorFor(locale);
-    const rows = p.rows as unknown as ImportRow[];
-    const a = await analyseImport(ctx, rows);
+    const { preview: v, analysis: a, shareSumCheck } = await checkImport(
+      ctx,
+      p.structure ?? "community_unit",
+      (p.rows ?? []) as Record<string, unknown>[]
+    );
     const sample: PreviewRow[] = a.rowsToSeed.slice(0, PREVIEW_SAMPLE_ROWS).map((r, i) => ({
       label: t("Mcp.preview.importRowN", { n: i + 1 }),
       value: [
         unitLabel(r),
         r.owner_name,
         shareText(r.owner_unit_share_numerator, r.owner_unit_share_denominator),
-      ].join(" · "),
+        r.ownership_form === "bsm" ? "BSM" : null,
+      ]
+        .filter(Boolean)
+        .join(" · "),
       untrusted: true,
     }));
     const more = a.rowsToSeed.length - sample.length;
+
+    const warnings: string[] = [];
+    // "1/1 ✓" only when the sum was actually checked and no share-sum warning
+    // came back; a non-share-voting community shows no sum row at all.
+    let shareSumRow: PreviewRow | null =
+      shareSumCheck === "warn"
+        ? {
+            label: t(a.existingShareSum.num !== "0" ? "Mcp.preview.unitShareSumWithExisting" : "Mcp.preview.unitShareSum"),
+            value: t("Mcp.preview.unitShareSumOk"),
+          }
+        : null;
+    for (const w of v.warnings ?? []) {
+      const params = (w.params ?? {}) as Record<string, string | number>;
+      if (SHARE_SUM_CODES.has(w.code)) {
+        shareSumRow = {
+          label: t(
+            w.code === "community_share_sum_with_existing_not_one"
+              ? "Mcp.preview.unitShareSumWithExisting"
+              : "Mcp.preview.unitShareSum"
+          ),
+          value: t("Mcp.preview.unitShareSumGap", { sum: String(params.sum ?? ""), diff: String(params.diff ?? "") }),
+        };
+        warnings.push(
+          t(
+            w.code === "community_share_sum_with_existing_not_one"
+              ? "Mcp.warnings.importShareSumWithExisting"
+              : "Mcp.warnings.importShareSum",
+            {
+              sum: String(params.sum ?? ""),
+              diff: String(params.diff ?? ""),
+              existing: String(params.existing ?? ""),
+              imported: String(params.imported ?? ""),
+            }
+          )
+        );
+        continue;
+      }
+      const key = `Import.errors.${w.code}`;
+      warnings.push(
+        (await hasMessage(locale, key))
+          ? `${w.row > 0 ? t("Mcp.preview.importRowN", { n: w.row }) + ": " : ""}${t(key, params)}`
+          : t("Mcp.warnings.importWarning", { code: w.code, row: w.row })
+      );
+    }
+
+    const lvRows: PreviewRow[] = [];
+    const lv = p.lv_report;
+    if (lv) {
+      lvRows.push({
+        label: t("Mcp.preview.lvRecognised"),
+        value: t("Mcp.preview.lvRecognisedValue", { owners: lv.recognisedOwners, units: lv.recognisedUnits }),
+      });
+      lvRows.push({ label: t("Mcp.preview.lvSkippedCount"), value: String(lv.skipped.length) });
+      for (const x of lv.skipped.slice(0, PREVIEW_SAMPLE_ROWS)) {
+        const reasonKey = `Mcp.preview.lvSkip_${x.reason}`;
+        const reason = (await hasMessage(locale, reasonKey)) ? t(reasonKey) : x.reason;
+        lvRows.push({
+          label: x.lvRow !== null ? t("Mcp.preview.lvRowN", { n: x.lvRow }) : t("Mcp.preview.lvRow"),
+          value: x.text ? `${reason}: ${x.text}` : reason,
+          untrusted: true,
+        });
+      }
+      if (lv.skipped.length > PREVIEW_SAMPLE_ROWS) {
+        lvRows.push({ label: "…", value: t("Mcp.preview.moreRows", { count: lv.skipped.length - PREVIEW_SAMPLE_ROWS }) });
+      }
+      if (lv.skipped.length > 0) warnings.push(t("Mcp.warnings.lvRowsSkipped", { count: lv.skipped.length }));
+    }
+
     const out: PreviewRow[] = [
       { label: t("Mcp.preview.community"), value: ctx.root.name },
+      ...lvRows,
       { label: t("Mcp.preview.unitsInFile"), value: String(a.unitsInFile) },
       { label: t("Mcp.preview.unitsToCreate"), value: String(a.unitsToCreate) },
       { label: t("Mcp.preview.unitsToFill"), value: String(a.unitsToFill) },
@@ -273,10 +410,13 @@ const importOwners = defineAction<ImportPayload>({
             },
           ]
         : []),
+      ...(a.existingUnits > 0
+        ? [{ label: t("Mcp.preview.unitsExisting"), value: String(a.existingUnits) }]
+        : []),
       { label: t("Mcp.preview.ownerLinks"), value: String(a.ownerLinks) },
       { label: t("Mcp.preview.newAccounts"), value: String(a.newAccounts) },
       { label: t("Mcp.preview.matchedAccounts"), value: String(a.matchedAccounts) },
-      { label: t("Mcp.preview.unitShareSum"), value: t("Mcp.preview.unitShareSumOk") },
+      ...(shareSumRow ? [shareSumRow] : []),
       ...sample,
       ...(more > 0 ? [{ label: "…", value: t("Mcp.preview.moreRows", { count: more }) }] : []),
     ];
@@ -292,6 +432,8 @@ const importOwners = defineAction<ImportPayload>({
     if (a.matchedAccounts > 0) {
       consequences.push(t("Mcp.consequences.importMatchedByEmail", { count: a.matchedAccounts }));
     }
+    const groups = (v.ownerGroups ?? []).length;
+    if (groups > 0) consequences.push(t("Mcp.consequences.importOwnerGroups", { count: groups }));
     return {
       title: t("Mcp.actions.import_owners.title"),
       summary: t("Mcp.actions.import_owners.summary", {
@@ -300,10 +442,10 @@ const importOwners = defineAction<ImportPayload>({
       }),
       rows: out,
       consequences,
-      warnings: [],
+      warnings,
     };
   },
-  async commit(ctx, p) {
+  async commit(ctx, p, meta) {
     const skip = new Set(p.skippedUnitKeys ?? []);
     const rows = (p.rows as unknown as ImportRow[]).filter((r) => !skip.has(importUnitKey(r)));
     const result = await seedImport({
@@ -311,13 +453,16 @@ const importOwners = defineAction<ImportPayload>({
       actorUserId: ctx.principal.userId,
       existingCommunityId: ctx.root.id,
       templateSlug: templateSlugOf(ctx.root),
+      locale: meta.locale,
     });
     return {
       data: {
         unitsCreated: result.unitsCreated,
+        unitsReused: result.unitsReused,
         ownersCreated: result.ownersCreated,
         ownersReused: result.ownersReused,
         membershipsCreated: result.membershipsCreated,
+        membershipsSkipped: result.membershipsSkipped,
         unitsSkipped: skip.size,
       },
       path: "/owners",
@@ -346,10 +491,13 @@ export const assignUnitOwnerSchema = z.object({
 
 type AssignPayload = z.infer<typeof assignUnitOwnerSchema>;
 
+/** Unit-holder roles: owner (SVB / HOA) and member (bytové družstvo, template member_role). */
+const isHolderRole = (role: string): boolean => role === "owner" || role === "member";
+
 function activeOwnerSum(members: { role: string; status: string; shareNum: number; shareDen: number }[]): Rational {
   let sum: Rational = ZERO;
   for (const m of members) {
-    if (m.role === "owner" && m.status === "active") sum = add(sum, rational(m.shareNum, m.shareDen));
+    if (isHolderRole(m.role) && m.status === "active") sum = add(sum, rational(m.shareNum, m.shareDen));
   }
   return sum;
 }
@@ -379,7 +527,7 @@ const assignUnitOwner = defineAction<AssignPayload>({
       const member = own.members.find((m) => m.userId === p.userId);
       if (member) {
         throw validationError("userId", {
-          reason: member.role === "owner" && member.status === "active" ? "already_owner" : "already_member",
+          reason: isHolderRole(member.role) && member.status === "active" ? "already_owner" : "already_member",
         });
       }
     } else if (p.newOwner) {

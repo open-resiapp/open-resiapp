@@ -29,6 +29,7 @@ export async function buildToolContext(
     enabledModules: new Set(modules),
     isDomOwner,
     clientName: token.clientName,
+    clientAppsUi: token.clientAppsUi,
     origin: getPublicOrigin(requestUrl),
     numberLocale: root.country === "cz" ? "cs-CZ" : "sk-SK",
   };

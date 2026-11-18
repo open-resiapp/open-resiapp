@@ -17,7 +17,7 @@ import { timeZoneForCountry } from "@/lib/time-zone";
 import type { Country } from "@/types";
 import { votings } from "./db/schema";
 import { MeetingError, eligibleLines, loadMeetingVoting, type MeetingVoting } from "./attendance";
-import { validateNotice } from "./workflow/notice";
+import { noticeRulesFor, validateNotice, type NoticeRules } from "./workflow/notice";
 
 // BYT-20261118-001 §4 — meeting e-mails. Every send is preceded by a CLAIM:
 // INSERT … ON CONFLICT DO NOTHING RETURNING on the partial unique index
@@ -121,10 +121,10 @@ function answerUrls(v: MeetingVoting, userId: string, locale: string) {
   return { yes: `${base}&s=yes`, no: `${base}&s=no`, maybe: `${base}&s=maybe` };
 }
 
-async function countryAndZone(): Promise<{ country: Country; timeZone: string }> {
+async function countryAndZone(): Promise<{ country: Country; timeZone: string; noticeRules: NoticeRules }> {
   const root = await getCommunityRoot();
   const country = (root?.country ?? "sk") as Country;
-  return { country, timeZone: timeZoneForCountry(country) };
+  return { country, timeZone: timeZoneForCountry(country), noticeRules: noticeRulesFor(root) };
 }
 
 /**
@@ -141,13 +141,14 @@ export async function sendMeetingInvitations(votingId: string, locale: string = 
   if (v.status !== "active") throw new MeetingError("MEETING_VOTING_NOT_ACTIVE");
   if (v.startsAt.getTime() <= Date.now()) throw new MeetingError("MEETING_IN_PAST");
 
-  const { country, timeZone } = await countryAndZone();
+  const { country, timeZone, noticeRules } = await countryAndZone();
   const notice = validateNotice({
     country,
     announcedAt: new Date(),
     startsAt: v.startsAt,
     endsAt: v.endsAt,
     timeZone,
+    rules: noticeRules,
   });
 
   const list = await recipients(votingId);

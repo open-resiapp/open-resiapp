@@ -10,7 +10,10 @@ import { useFormatter, useTranslations } from "next-intl";
 import { Link, useRouter } from "@/i18n/navigation";
 import {
   ALLOCATION_KEYS,
+  ERR_RATE_MODE_KEY,
+  PER_UNIT_RATE_KEYS,
   type AllocationKey,
+  type RateMode,
 } from "@modules/accounting/src/lib/constants";
 import {
   parseCents,
@@ -27,6 +30,8 @@ interface Category {
 interface ServiceRow {
   serviceCategoryId: string;
   allocationKey: AllocationKey;
+  /** Non-fixed keys: dom total ("total") or €/m², €/person ("per_unit"). */
+  rateMode: RateMode;
   /** EUR string as typed; parsed to cents on save. */
   amount: string;
 }
@@ -40,7 +45,10 @@ interface ScheduleDetail {
     serviceCategoryId: string;
     allocationKey: AllocationKey;
     rateCents: number | null;
+    rateMode: RateMode;
     fixedAmountCents: number | null;
+    /** Published only: stored dom-wide total of the first month. */
+    monthlyTotalCents: number | null;
   }[];
 }
 
@@ -107,6 +115,7 @@ export default function PredpisEditorPage({
             data.schedule.services.map((s) => ({
               serviceCategoryId: s.serviceCategoryId,
               allocationKey: s.allocationKey,
+              rateMode: s.rateMode,
               amount: centsToInput(
                 s.allocationKey === "fixed" ? s.fixedAmountCents : s.rateCents
               ),
@@ -136,6 +145,28 @@ export default function PredpisEditorPage({
     [categories]
   );
 
+  // per_unit only makes sense for keys with a unit measure (m², persons);
+  // switching the key away falls back to the dom-total reading.
+  function rowRateMode(r: ServiceRow): RateMode {
+    return r.rateMode === "per_unit" &&
+      PER_UNIT_RATE_KEYS.includes(r.allocationKey)
+      ? "per_unit"
+      : "total";
+  }
+
+  function unitSuffix(r: ServiceRow): string {
+    if (r.allocationKey === "fixed") return t("perUnit");
+    if (rowRateMode(r) === "per_unit") {
+      return r.allocationKey === "area_m2" ? t("perM2") : t("perPerson");
+    }
+    return t("perDom");
+  }
+
+  /** Stable error codes from the server → catalog; raw text otherwise. */
+  function errorText(code: string): string {
+    return code === ERR_RATE_MODE_KEY ? t("rateModeKeyUnsupported") : code;
+  }
+
   const rowsValid =
     rows.length > 0 &&
     rows.every((r) => {
@@ -157,7 +188,12 @@ export default function PredpisEditorPage({
     if (!next) return;
     setRows((prev) => [
       ...prev,
-      { serviceCategoryId: next.id, allocationKey: "share", amount: "" },
+      {
+        serviceCategoryId: next.id,
+        allocationKey: "share",
+        rateMode: "total",
+        amount: "",
+      },
     ]);
     markDirty();
   }
@@ -192,6 +228,7 @@ export default function PredpisEditorPage({
               serviceCategoryId: r.serviceCategoryId,
               allocationKey: r.allocationKey,
               rateCents: r.allocationKey === "fixed" ? null : cents,
+              rateMode: rowRateMode(r),
               fixedAmountCents: r.allocationKey === "fixed" ? cents : null,
             };
           }),
@@ -285,7 +322,7 @@ export default function PredpisEditorPage({
     <div className="max-w-4xl">
       <Link
         href="/accounting/predpis"
-        className="text-sm text-blue-600 dark:text-blue-400 hover:underline"
+        className="text-base text-blue-600 dark:text-blue-400 hover:underline"
       >
         ← {t("backToList")}
       </Link>
@@ -294,7 +331,7 @@ export default function PredpisEditorPage({
           {t("editorTitle", { year: schedule.year })}
         </h1>
         <span
-          className={`text-xs px-2 py-1 rounded-full ${
+          className={`text-base px-3 py-1 rounded-full ${
             readOnly
               ? "bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200"
               : "bg-amber-100 dark:bg-amber-900 text-amber-800 dark:text-amber-200"
@@ -307,8 +344,8 @@ export default function PredpisEditorPage({
         {readOnly ? t("publishedReadOnly") : t("editorSubtitle")}
       </p>
 
-      <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg p-6">
-        <label className="flex items-center gap-3 mb-4 text-sm">
+      <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg p-4 sm:p-6">
+        <label className="flex flex-wrap items-center gap-3 mb-4 text-base">
           <span className="text-gray-700 dark:text-gray-300">
             {t("effectiveFromLabel")}
           </span>
@@ -338,64 +375,75 @@ export default function PredpisEditorPage({
           </p>
         )}
         {rows.length > 0 && (
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="text-left text-gray-600 dark:text-gray-400 border-b border-gray-200 dark:border-gray-700">
-                  <th className="py-2 pr-4">{t("service")}</th>
-                  <th className="py-2 pr-4">{t("allocationKey")}</th>
-                  <th className="py-2 pr-4 text-right">{t("monthlyAmount")}</th>
-                  {!readOnly && <th className="py-2 w-10" />}
-                </tr>
-              </thead>
-              <tbody>
-                {rows.map((row, i) => {
-                  const cat = categoryById.get(row.serviceCategoryId);
-                  return (
-                    <tr
-                      key={row.serviceCategoryId}
-                      className="border-b border-gray-100 dark:border-gray-800"
-                    >
-                      <td className="py-2 pr-4">
-                        <select
-                          value={row.serviceCategoryId}
-                          disabled={readOnly}
-                          onChange={(e) =>
-                            updateRow(i, { serviceCategoryId: e.target.value })
-                          }
-                          className={selectClass}
-                        >
-                          {cat && (
-                            <option value={cat.id}>
-                              {tCat(cat.slug as Parameters<typeof tCat>[0])}
-                            </option>
-                          )}
-                          {availableCategories.map((c) => (
-                            <option key={c.id} value={c.id}>
-                              {tCat(c.slug as Parameters<typeof tCat>[0])}
-                            </option>
-                          ))}
-                        </select>
-                      </td>
-                      <td className="py-2 pr-4">
-                        <select
-                          value={row.allocationKey}
-                          disabled={readOnly}
-                          onChange={(e) =>
-                            updateRow(i, {
-                              allocationKey: e.target.value as AllocationKey,
-                            })
-                          }
-                          className={selectClass}
-                        >
-                          {ALLOCATION_KEYS.map((k) => (
-                            <option key={k} value={k}>
-                              {tKey(k)}
-                            </option>
-                          ))}
-                        </select>
-                      </td>
-                      <td className="py-2 pr-4 text-right">
+          // Stacked rows (no table): three controls per service wrap
+          // cleanly at 390 px instead of forcing a horizontal scroll.
+          <ul className="divide-y divide-gray-100 dark:divide-gray-800 border-y border-gray-200 dark:border-gray-700">
+            {rows.map((row, i) => {
+              const cat = categoryById.get(row.serviceCategoryId);
+              const mode = rowRateMode(row);
+              const perUnitAllowed = PER_UNIT_RATE_KEYS.includes(
+                row.allocationKey
+              );
+              // Dom-wide monthly total: stored (published) or computed by
+              // the on-demand preview (draft, saved state only).
+              const domTotal = readOnly
+                ? schedule.services.find(
+                    (s) => s.serviceCategoryId === row.serviceCategoryId
+                  )?.monthlyTotalCents ?? null
+                : preview?.serviceTotals[row.serviceCategoryId] ?? null;
+              return (
+                <li key={row.serviceCategoryId} className="py-4 space-y-3">
+                  <div className="flex flex-wrap items-end gap-3">
+                    <label className="flex flex-col gap-1 min-w-0 flex-1 basis-56">
+                      <span className="text-base text-gray-600 dark:text-gray-400">
+                        {t("service")}
+                      </span>
+                      <select
+                        value={row.serviceCategoryId}
+                        disabled={readOnly}
+                        onChange={(e) =>
+                          updateRow(i, { serviceCategoryId: e.target.value })
+                        }
+                        className={selectClass}
+                      >
+                        {cat && (
+                          <option value={cat.id}>
+                            {tCat(cat.slug as Parameters<typeof tCat>[0])}
+                          </option>
+                        )}
+                        {availableCategories.map((c) => (
+                          <option key={c.id} value={c.id}>
+                            {tCat(c.slug as Parameters<typeof tCat>[0])}
+                          </option>
+                        ))}
+                      </select>
+                    </label>
+                    <label className="flex flex-col gap-1 min-w-0 flex-1 basis-56">
+                      <span className="text-base text-gray-600 dark:text-gray-400">
+                        {t("allocationKey")}
+                      </span>
+                      <select
+                        value={row.allocationKey}
+                        disabled={readOnly}
+                        onChange={(e) =>
+                          updateRow(i, {
+                            allocationKey: e.target.value as AllocationKey,
+                          })
+                        }
+                        className={selectClass}
+                      >
+                        {ALLOCATION_KEYS.map((k) => (
+                          <option key={k} value={k}>
+                            {tKey(k)}
+                          </option>
+                        ))}
+                      </select>
+                    </label>
+                    <label className="flex flex-col gap-1">
+                      <span className="text-base text-gray-600 dark:text-gray-400">
+                        {mode === "per_unit" ? t("rateLabel") : t("monthlyAmount")}
+                      </span>
+                      <span className="flex items-center gap-2">
                         <input
                           value={row.amount}
                           disabled={readOnly}
@@ -406,42 +454,82 @@ export default function PredpisEditorPage({
                           inputMode="decimal"
                           className={inputClass}
                         />
-                        <span className="ml-2 text-xs text-gray-500 dark:text-gray-400">
-                          {row.allocationKey === "fixed"
-                            ? t("perUnit")
-                            : t("perDom")}
+                        <span className="text-base text-gray-600 dark:text-gray-400 whitespace-nowrap">
+                          {unitSuffix(row)}
                         </span>
-                      </td>
-                      {!readOnly && (
-                        <td className="py-2 text-right">
-                          <button
-                            onClick={() => removeRow(i)}
-                            className="text-red-600 dark:text-red-400 hover:underline text-xs"
-                          >
-                            {t("removeRow")}
-                          </button>
-                        </td>
-                      )}
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
+                      </span>
+                    </label>
+                  </div>
+
+                  {perUnitAllowed && (
+                    // Explicit per-state buttons (project rule: no toggle
+                    // cycling values) — what the typed amount means.
+                    <div
+                      role="radiogroup"
+                      aria-label={t("rateModeLabel")}
+                      className="flex flex-wrap gap-2"
+                    >
+                      {(["total", "per_unit"] as const).map((m) => (
+                        <button
+                          key={m}
+                          type="button"
+                          role="radio"
+                          aria-checked={mode === m}
+                          disabled={readOnly}
+                          onClick={() => updateRow(i, { rateMode: m })}
+                          className={`min-h-11 px-4 py-2 rounded-lg border text-base disabled:opacity-60 ${
+                            mode === m
+                              ? "bg-blue-600 border-blue-600 text-white"
+                              : "border-gray-300 dark:border-gray-600 text-gray-800 dark:text-gray-200"
+                          }`}
+                        >
+                          {m === "total"
+                            ? t("rateModeTotal")
+                            : row.allocationKey === "area_m2"
+                              ? t("rateModePerM2")
+                              : t("rateModePerPerson")}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+
+                  {row.allocationKey !== "fixed" && (
+                    <p className="text-base text-gray-700 dark:text-gray-300">
+                      {domTotal !== null
+                        ? t("domTotalLine", { amount: formatEur(domTotal) })
+                        : mode === "per_unit"
+                          ? t("domTotalInPreview")
+                          : null}
+                    </p>
+                  )}
+
+                  {!readOnly && (
+                    <button
+                      type="button"
+                      onClick={() => removeRow(i)}
+                      className="min-h-11 text-base text-red-600 dark:text-red-400 hover:underline"
+                    >
+                      {t("removeRow")}
+                    </button>
+                  )}
+                </li>
+              );
+            })}
+          </ul>
         )}
 
         {!readOnly && (
-          <div className="mt-4 flex items-center justify-between">
+          <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
             <button
               onClick={addRow}
               disabled={availableCategories.length === 0}
-              className="text-sm text-blue-600 dark:text-blue-400 hover:underline disabled:opacity-50"
+              className="text-base text-blue-600 dark:text-blue-400 hover:underline disabled:opacity-50"
             >
               + {t("addService")}
             </button>
             <div className="flex items-center gap-3">
               {saved && (
-                <span className="text-sm text-green-700 dark:text-green-400">
+                <span className="text-base text-green-700 dark:text-green-400">
                   {t("savedOk")}
                 </span>
               )}
@@ -457,15 +545,15 @@ export default function PredpisEditorPage({
         )}
 
         {error && (
-          <p className="text-red-600 dark:text-red-400 text-sm mt-3">
-            {t("submitError")} ({error})
+          <p className="text-red-600 dark:text-red-400 text-base mt-3">
+            {t("submitError")} ({errorText(error)})
           </p>
         )}
       </div>
 
       {!readOnly && (
-        <div className="mt-6 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg p-6">
-          <div className="flex items-center justify-between">
+        <div className="mt-6 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg p-4 sm:p-6">
+          <div className="flex flex-wrap items-center justify-between gap-3">
             <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
               {t("previewTitle")}
             </h2>
@@ -476,25 +564,25 @@ export default function PredpisEditorPage({
                 dirty ||
                 (schedule.services.length === 0 && !saved)
               }
-              className="px-4 py-2 border border-blue-600 text-blue-600 dark:text-blue-400 dark:border-blue-400 rounded-lg disabled:opacity-50 text-sm"
+              className="px-4 py-2 border border-blue-600 text-blue-600 dark:text-blue-400 dark:border-blue-400 rounded-lg disabled:opacity-50 text-base"
             >
               {previewLoading ? t("previewLoading") : t("loadPreview")}
             </button>
           </div>
-          <p className="text-xs text-gray-500 dark:text-gray-400 mt-2">
+          <p className="text-base text-gray-600 dark:text-gray-400 mt-2">
             {t("previewHint")}
           </p>
 
           {previewError && (
-            <p className="text-red-600 dark:text-red-400 text-sm mt-3">
-              {t("submitError")} ({previewError})
+            <p className="text-red-600 dark:text-red-400 text-base mt-3">
+              {t("submitError")} ({errorText(previewError)})
             </p>
           )}
 
           {preview && (
             <>
               <div className="overflow-x-auto mt-4">
-                <table className="w-full text-sm">
+                <table className="w-full text-base">
                   <thead>
                     <tr className="text-left text-gray-600 dark:text-gray-400 border-b border-gray-200 dark:border-gray-700">
                       <th className="py-2 pr-4">{t("unitCol")}</th>
@@ -556,7 +644,7 @@ export default function PredpisEditorPage({
               {preview.monthTotals.some(
                 (m) => m.totalCents !== preview.monthlyTotalCents
               ) && (
-                <div className="mt-4 bg-amber-50 dark:bg-amber-950 border border-amber-200 dark:border-amber-800 rounded-lg p-4 text-sm text-amber-900 dark:text-amber-200">
+                <div className="mt-4 bg-amber-50 dark:bg-amber-950 border border-amber-200 dark:border-amber-800 rounded-lg p-4 text-base text-amber-900 dark:text-amber-200">
                   <p className="mb-2">{t("amountsVaryNote")}</p>
                   <div className="flex flex-wrap gap-x-4 gap-y-1">
                     {preview.monthTotals.map((m) => (
@@ -572,7 +660,7 @@ export default function PredpisEditorPage({
                 </div>
               )}
 
-              <div className="mt-4 bg-blue-50 dark:bg-blue-950 border border-blue-200 dark:border-blue-800 rounded-lg p-4 text-sm">
+              <div className="mt-4 bg-blue-50 dark:bg-blue-950 border border-blue-200 dark:border-blue-800 rounded-lg p-4 text-base">
                 <label className="flex items-start gap-2 text-blue-900 dark:text-blue-200">
                   <input
                     type="checkbox"
@@ -607,12 +695,12 @@ export default function PredpisEditorPage({
           {!confirmDiscard ? (
             <button
               onClick={() => setConfirmDiscard(true)}
-              className="text-sm text-red-600 dark:text-red-400 hover:underline"
+              className="text-base text-red-600 dark:text-red-400 hover:underline"
             >
               {t("discardDraft")}
             </button>
           ) : (
-            <div className="flex items-center gap-3 text-sm">
+            <div className="flex flex-wrap items-center gap-3 text-base">
               <span className="text-gray-700 dark:text-gray-300">
                 {t("discardConfirm")}
               </span>

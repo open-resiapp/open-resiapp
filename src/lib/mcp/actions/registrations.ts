@@ -6,6 +6,7 @@ import type { InboxItem, OwnerFlat, OwnerRow, OwnersBoardData } from "@/lib/owne
 import { loadOwnersBoard } from "@/lib/owners-board.server";
 import { nameSimilarity } from "@/lib/name-match";
 import { hasPermission } from "@/lib/permissions";
+import { unitHolderRoleFor } from "@/lib/role-options";
 import {
   approvePendingRegistration,
   rejectPendingRegistration,
@@ -182,7 +183,8 @@ const approveRegistration = defineAction<ApprovePayload>({
       const res = await approvePendingRegistration({
         userId: p.registrationId,
         flatId: null,
-        role: "owner",
+        // Unit holder role follows the community: člen in a bytové družstvo.
+        role: unitHolderRoleFor(ctx.root.templateSlug),
       });
       if (!res.ok) {
         if (res.error === "not_found") throw new McpError("conflict.state_changed");
@@ -320,4 +322,148 @@ const linkOwnerAccount = defineAction<LinkPayload>({
   },
 });
 
-export const REGISTRATION_ACTIONS = [approveRegistration, rejectRegistration, linkOwnerAccount];
+
+// ── link_owner_accounts (batch) ──────────────────────────────────────────
+//
+// After an import, many owner records need linking to the accounts people
+// registered with. One proposal / one confirm; all-or-nothing at propose
+// (per-item codes), each item commits through the same merge at confirm.
+
+const LINK_BATCH_MAX = 50;
+
+export const linkOwnerAccountsSchema = z.object({
+  items: z
+    .array(linkOwnerAccountSchema)
+    .min(1)
+    .max(LINK_BATCH_MAX)
+    .describe(`Up to ${LINK_BATCH_MAX} {ownerId, accountUserId} pairs; each ownerId at most once.`),
+});
+
+type LinkBatchPayload = z.infer<typeof linkOwnerAccountsSchema>;
+
+function linkItemCode(err: unknown): string {
+  if (!(err instanceof McpError)) throw err;
+  const reason = err.details?.reason;
+  return typeof reason === "string" ? reason : err.code;
+}
+
+const linkOwnerAccounts = defineAction<LinkBatchPayload>({
+  kind: "link_owner_accounts",
+  scopes: ["read", "governance:write"],
+  schema: linkOwnerAccountsSchema,
+  authorize: assertManageUsers,
+  async validate(ctx, p) {
+    const board = await loadOwnersBoard(ctx.root.id);
+    const owners = new Set(p.items.map((it) => it.ownerId));
+    const errors: { item: number; ownerId: string; code: string }[] = [];
+    const seen = new Set<string>();
+    for (const [i, it] of p.items.entries()) {
+      if (seen.has(it.ownerId)) {
+        errors.push({ item: i, ownerId: it.ownerId, code: "duplicate_owner" });
+        continue;
+      }
+      seen.add(it.ownerId);
+      // A record merged away in this batch cannot also be a target.
+      if (owners.has(it.accountUserId)) {
+        errors.push({ item: i, ownerId: it.ownerId, code: "account_is_merged_in_batch" });
+        continue;
+      }
+      try {
+        if (it.ownerId === it.accountUserId) {
+          throw validationError("accountUserId", { reason: "same_person" });
+        }
+        mergeableOwnerRecord(board, it.ownerId, "ownerId");
+        linkableAccount(board, it.accountUserId);
+      } catch (err) {
+        errors.push({ item: i, ownerId: it.ownerId, code: linkItemCode(err) });
+      }
+    }
+    if (errors.length > 0) throw validationError("items", { reason: "invalid_items", errors });
+    return { items: p.items.map((it) => ({ ownerId: it.ownerId, accountUserId: it.accountUserId })) };
+  },
+  async preview(ctx, p, locale) {
+    const t = await translatorFor(locale);
+    const board = await loadOwnersBoard(ctx.root.id);
+    const rows: PreviewRow[] = [{ label: t("Mcp.preview.linkCount"), value: String(p.items.length) }];
+    const warnings: string[] = [];
+    let approvals = 0;
+    const approved = new Set<string>();
+    p.items.forEach((it, i) => {
+      const shell = mergeableOwnerRecord(board, it.ownerId, "ownerId");
+      const account = linkableAccount(board, it.accountUserId);
+      const approve = account.status === "pending" && !approved.has(account.id);
+      if (approve) {
+        approved.add(account.id);
+        approvals += 1;
+      }
+      rows.push({
+        label: t("Mcp.preview.linkN", { n: i + 1 }),
+        value: t(approve ? "Mcp.preview.linkLineApprove" : "Mcp.preview.linkLine", {
+          owner: shell.name,
+          units: flatsText(shell.flats, t),
+          name: account.name,
+        }),
+        untrusted: true,
+      });
+      if (namesDiffer(account.name, shell.name)) {
+        warnings.push(t("Mcp.warnings.namesDifferItem", { n: i + 1, owner: shell.name, name: account.name }));
+      }
+      if (approve && !account.emailVerified) {
+        warnings.push(t("Mcp.warnings.emailNotVerifiedItem", { n: i + 1, name: account.name }));
+      }
+    });
+    const consequences = [t("Mcp.consequences.mergeOwnerRecords", { count: p.items.length })];
+    if (approvals > 0) consequences.push(t("Mcp.consequences.accessGrantedCount", { count: approvals }));
+    consequences.push(t("Mcp.consequences.noEmailSent"), t("Mcp.consequences.batchPerItem"));
+    return {
+      title: t("Mcp.actions.link_owner_accounts.title"),
+      summary: t("Mcp.actions.link_owner_accounts.summary", { count: p.items.length }),
+      rows,
+      consequences,
+      warnings,
+    };
+  },
+  async commit(ctx, p) {
+    // Pending status as of the confirm (validate just ran); an account the
+    // batch already approved is active for its later items.
+    const board = await loadOwnersBoard(ctx.root.id);
+    const pendingAtStart = new Set(board.people.filter((x) => x.status === "pending").map((x) => x.id));
+    const approved = new Set<string>();
+    const failed: { item: number; ownerId: string; code: string }[] = [];
+    let linked = 0;
+    for (const [i, it] of p.items.entries()) {
+      const approve = pendingAtStart.has(it.accountUserId) && !approved.has(it.accountUserId);
+      try {
+        await mergeAndApprove(ctx, it.ownerId, it.accountUserId, approve);
+        if (approve) approved.add(it.accountUserId);
+        linked += 1;
+      } catch (err) {
+        if (err instanceof McpError) {
+          failed.push({ item: i, ownerId: it.ownerId, code: err.code });
+          continue;
+        }
+        if (linked === 0) throw err;
+        console.error(`[mcp] link_owner_accounts item ${i} failed:`, err);
+        failed.push({ item: i, ownerId: it.ownerId, code: "internal" });
+      }
+    }
+    if (linked === 0) throw new McpError("conflict.state_changed");
+    return {
+      data: { linked, approved: approved.size, failed },
+      path: "/owners",
+      ...(failed.length > 0
+        ? {
+            doneKey: "Mcp.actions.link_owner_accounts.donePartial",
+            doneValues: { linked, total: p.items.length },
+          }
+        : {}),
+    };
+  },
+});
+
+export const REGISTRATION_ACTIONS = [
+  approveRegistration,
+  rejectRegistration,
+  linkOwnerAccount,
+  linkOwnerAccounts,
+];

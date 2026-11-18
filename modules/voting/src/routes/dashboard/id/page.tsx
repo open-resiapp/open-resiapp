@@ -21,6 +21,7 @@ import BoardConsole, { EditVotingForm } from "./BoardConsole";
 import WorkflowPanel from "./WorkflowPanel";
 import { MeetingBoardPanel, MeetingOwnerCard } from "./MeetingPanel";
 import { NoticeDownloadLink, documentsAvailable } from "./VotingDocuments";
+import { noticeRulesFor } from "@modules/voting/src/workflow/notice";
 import type { BallotData, BuildingInfo, VotingDetail } from "./types";
 
 export default function VotingDetailPage({
@@ -55,6 +56,18 @@ export default function VotingDetailPage({
     [community]
   );
   const legalNotice = community?.legalNotice ?? null;
+  // BYT-20261118-020: advisory lead-time hint only (server enforces). The
+  // shell does not carry notice_lead_days yet — read defensively; until it
+  // does, the hint shows the statutory floor for the regime.
+  const noticeRules = useMemo(
+    () =>
+      noticeRulesFor({
+        templateSlug: community?.templateSlug ?? null,
+        noticeLeadDays:
+          community?.noticeLeadDays ?? null,
+      }),
+    [community]
+  );
   const [loading, setLoading] = useState(true);
   const [voting404, setVoting404] = useState(false);
   const [editMode, setEditMode] = useState(false);
@@ -216,6 +229,7 @@ export default function VotingDetailPage({
         <WorkflowPanel
           voting={voting}
           country={buildingData?.country ?? "sk"}
+          noticeRules={noticeRules}
           onEdit={() => setEditMode(true)}
           onChanged={refetchVoting}
         />

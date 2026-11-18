@@ -473,7 +473,13 @@
       "submit": "Send",
       "sent": "The e-mail has been sent.",
       "boardOnly": "The document is \"Board only\" and the owner cannot see it. Share it with them first.",
-      "makeVisible": "Share with the owner first"
+      "makeVisible": "Share with the owner first",
+      "allButton": "Send to everyone with e-mail ({count})",
+      "allConfirmText": "The document will be e-mailed to {count} owners who have an e-mail address and may see it. Continue?",
+      "allConfirm": "Yes, send ({count})",
+      "allDone": "Sent: {sent} of {total}.",
+      "allNotSent": "Not sent: {count}. Already sent owners will not get a duplicate for 10 minutes.",
+      "allNoEmail": "Without e-mail (skipped): {count}. Deliver the document to them in print."
     },
     "folder": {
       "title": "Owner's documents",
@@ -494,7 +500,9 @@
       "document_send_no_recipient": "The document cannot be sent to this person.",
       "document_send_throttled": "You have just sent this document to this owner. Try again in 10 minutes.",
       "document_send_failed": "The e-mail could not be sent. Please try again later.",
-      "generic": "Something went wrong. Please try again."
+      "generic": "Something went wrong. Please try again.",
+      "document_send_smtp_missing": "E-mails are not being sent because SMTP is not configured.",
+      "document_send_count_changed": "The number of recipients changed. Check the new count and confirm again."
     }
   },
   "UnitNotes": {
@@ -733,7 +741,24 @@
       "posts": {
         "title": "First announcement",
         "body": "Publish your first announcement to the community board."
+      },
+      "template": {
+        "title": "Community type",
+        "body": "Choose a template (e.g. apartment building / HOA, housing cooperative, garages). It sets the structure used by the import and the default voting method."
       }
+    },
+    "template": {
+      "pickLabel": "Template",
+      "nameLabel": "Community name",
+      "addressLabel": "Address",
+      "create": "Create the community",
+      "save": "Save template",
+      "saved": "Saved.",
+      "saveFailed": "Saving failed. Please try again.",
+      "lockedError": "The template can no longer be changed — the community has units.",
+      "lockedInfo": "Template: {template}. It no longer changes once units are imported.",
+      "nameAddressRequired": "Fill in the community name and address.",
+      "legalReview": "This template's default rules follow the law; check them before going live."
     }
   },
   "ShareSumInvariant": {
@@ -749,7 +774,7 @@
     "templateTitle": "Community template",
     "templateSubtitle": "Pick the template that best matches your community. Templates determine the node hierarchy and the default voting method.",
     "templateNonHoaTitle": "Tip:",
-    "templateNonHoaBody": "For {levels} templates the seeder writes the correct node kinds. The CSV still requires share_numerator / share_denominator columns — use 1/1 for templates that don't track shares.",
+    "templateNonHoaBody": "This template creates the tree {levels}. If it does not vote by share, enter a unit share of 1/1 — the share total is then not checked.",
     "step1Title": "1. Building structure",
     "structureCommunityUnit": "Community → unit",
     "structureCommunityUnitDesc": "Small building, no entrances or blocks.",
@@ -760,7 +785,7 @@
     "communityTitle": "Community details",
     "communitySubtitle": "Enter once — these are applied to every unit. You don't need to repeat them in the grid.",
     "appendModeTitle": "Appending to an existing community.",
-    "appendModeBody": "Community details were loaded from settings and are locked. The import will add new units under the existing building (existing units are left untouched).",
+    "appendModeBody": "Community details are loaded from settings and locked. The import adds new units and their owners; units that already have owners are skipped.",
     "step2Title": "2. Data source",
     "downloadXlsx": "Download XLSX template",
     "downloadCsv": "Download CSV template",
@@ -784,20 +809,204 @@
     "resizeHelp": "Drag to resize column. Double-click to reset.",
     "validate": "Validate",
     "validating": "Validating...",
-    "gridEmpty": "Grid is empty. Download a template, upload an LV PDF, or add a row manually.",
+    "gridEmpty": "The grid is empty. Download a template, upload an LV PDF, paste the LV text or add a row manually.",
     "step4Title": "4. Summary and import",
     "summaryCommunity": "Community",
     "summaryBlocks": "Blocks",
     "summaryEntrances": "Entrances",
     "summaryUnits": "Units",
-    "summaryOwners": "Owners",
-    "summaryTotalShare": "Total share",
+    "summaryOwners": "New owners (accounts)",
+    "summaryTotalShare": "Imported share total",
     "commit": "Run import",
     "committing": "Importing...",
     "fixErrorsFirst": "Please fix grid errors first.",
     "errorsCount": "errors",
-    "pasteUnrecognised": "No owners could be recognised from the file.",
-    "pdfScannedHint": "This PDF appears to be scanned — no text could be extracted. Fill rows manually or upload a digital LV."
+    "pasteUnrecognised": "No owner could be recognised. Check that this is the full text of the title deed (part B).",
+    "pdfScannedHint": "This PDF appears to be scanned — no text could be extracted. Fill rows manually or upload a digital LV.",
+    "templateLocked": "The community template is already set and does not change when adding data.",
+    "editInSettings": "Edit in Settings",
+    "addressMissingHint": "The community address is missing in settings. You can still run the import; add the address in Settings.",
+    "pasteLabel": "Paste the title deed (LV) text",
+    "pasteHelp": "Copy the LV text from the cadastre portal or a PDF (Ctrl+A, Ctrl+C) and paste it here.",
+    "pasteParse": "Recognise owners from the text",
+    "replaceRowsTitle": "Replace the rows in the grid?",
+    "replaceRowsConfirm": "The grid already holds {count, plural, one {# row} other {# rows}}. The new title deed replaces them (it is not appended, so owners are not doubled).",
+    "replaceRows": "Replace",
+    "modeTitle": "What should the import do",
+    "modeAppend": "Add new units and owners",
+    "modeUpdateContacts": "Only fill in e-mails and phones",
+    "modeAppendHelp": "Units that already have owners in the community are skipped — nothing is doubled.",
+    "modeUpdateContactsHelp": "Nothing is created. Each row is matched to an existing owner by unit and name; the e-mail (if the owner has none yet) and the phone are filled in.",
+    "summaryOwnersMatched": "Existing accounts (by e-mail)",
+    "summaryUnitsSkipped": "Skipped units (already have owners)",
+    "summaryShareWithExisting": "Share total including existing units",
+    "skippedUnitsList": "Skipped (already have owners): {units}",
+    "errorAt": "Row {row}:",
+    "errorAtColumn": "Row {row}, {column}:",
+    "commitContacts": "Save contacts",
+    "errorsCountN": "{count, plural, one {# error} other {# errors}}",
+    "warningsTitle": "Check before importing",
+    "warningAcknowledge": "I acknowledge this, continue",
+    "lvReport": {
+      "summary": "Owners recognised: {owners} in {units, plural, one {# unit} other {# units}}. LV rows skipped: {skipped}.",
+      "noUnitSections": "The title deed has no sections for flats and non-residential units (entrance, flat number) — the building is registered as a whole. Enter the units and their users (e.g. cooperative members) manually or from an XLSX file.",
+      "lvRow": "Row no. {n}",
+      "reasons": {
+        "no_share": "the co-ownership share is missing at the end of the row",
+        "share_invalid": "the share is zero or greater than 1",
+        "unreadable": "the owner could not be separated from an LV note",
+        "no_unit_sections": "the LV lists no units",
+        "building_owner": "owner of the whole building — no unit to attach to"
+      }
+    },
+    "ownerGroups": {
+      "title": "One person owns several units",
+      "body": "Same name and address (or e-mail, IČO) — one account with several units is created. If these are different people, choose “Different people”.",
+      "units": "— units: {units} (rows {rows})",
+      "samePerson": "Same person",
+      "differentPeople": "Different people"
+    },
+    "contacts": {
+      "planSummary": "Owners to update: {changes}. Rows to check: {issues}.",
+      "setEmail": "e-mail {email}",
+      "setPhone": "phone {phone}",
+      "issueLine": "Row {row} ({unit}, {name}):",
+      "issues": {
+        "unit_not_found": "the unit does not exist in the community.",
+        "owner_not_found": "there is no owner with this name in the unit.",
+        "email_taken": "the e-mail already belongs to another account — not changed.",
+        "email_differs": "the owner already has a different (login) e-mail — not overwritten; change it on the owner card.",
+        "nothing_to_update": "the row has neither an e-mail nor a phone."
+      }
+    },
+    "done": {
+      "title": "Import finished",
+      "contactsUpdated": "Owners updated: {count}",
+      "unitsCreated": "Units created: {count}",
+      "unitsReused": "Existing units filled in: {count}",
+      "unitsSkipped": "Units skipped (already had owners): {count}",
+      "ownersCreated": "Owners created: {count}",
+      "ownersLinked": "Existing accounts linked: {count}",
+      "membershipsCreated": "Ownership links created: {count}",
+      "membershipsSkipped": "Links skipped (already existed): {count}",
+      "skippedList": "Skipped units: {units}",
+      "goOwners": "Go to owners",
+      "goOnboarding": "Back to the setup guide",
+      "startOver": "Import another file"
+    },
+    "claim": {
+      "question": "Is this you — {name}?",
+      "body": "The import created an owner with your name (units: {units}). If this is you, the units are attached to your account and the duplicate owner is removed.",
+      "yes": "Yes, that is me",
+      "no": "No, a different person",
+      "done": "The units are attached to your account.",
+      "errors": {
+        "shell_missing": "The owner was not found.",
+        "name_mismatch": "The owner's name does not match yours.",
+        "not_shell": "This owner already has an account.",
+        "not_pending": "This owner is no longer pending.",
+        "target_missing": "Your account was not found.",
+        "target_shell": "Your account has no password — set one in your profile and try again.",
+        "merge_conflict_open_ballot": "Both accounts voted for the same unit in an open vote — merge them after it closes.",
+        "same_user": "This is the same account.",
+        "state_changed": "The data changed in the meantime. Reload the page.",
+        "failed": "Attaching failed."
+      }
+    },
+    "columns": {
+      "community_name": "Community name",
+      "community_address": "Building address",
+      "community_ico": "Company ID (IČO)",
+      "community_dic": "Tax ID (DIČ)",
+      "country": "Country",
+      "voting_method": "Voting method",
+      "supisne_cislo": "Registry number",
+      "block_name": "Block",
+      "entrance_label": "Entrance",
+      "unit_number": "Unit number",
+      "unit_floor": "Floor",
+      "unit_area_m2": "Area (m²)",
+      "unit_share_numerator": "Unit share – numerator",
+      "unit_share_denominator": "Unit share – denominator",
+      "unit_type": "Unit type",
+      "owner_name": "Owner name",
+      "owner_birth_name": "Birth surname",
+      "owner_ico": "Owner company ID",
+      "owner_address": "Owner address",
+      "owner_email": "E-mail",
+      "owner_phone": "Phone",
+      "owner_unit_share_numerator": "Owner share – numerator",
+      "owner_unit_share_denominator": "Owner share – denominator",
+      "lv_ordinal": "LV row number",
+      "ownership_form": "Ownership form"
+    },
+    "columnHelp": {
+      "community_name": "E.g. Hlavná 1 apartment building",
+      "community_address": "Street and town, e.g. Hlavná 1, 058 01 Poprad",
+      "community_ico": "The community's company ID, if assigned",
+      "community_dic": "The community's tax ID, if assigned",
+      "country": "Slovakia or Czechia",
+      "voting_method": "By share, by unit, by area or one member one vote",
+      "supisne_cislo": "The building's registry number from the LV",
+      "block_name": "E.g. Block A",
+      "entrance_label": "E.g. 1 or Štúrova 12",
+      "unit_number": "Flat or non-residential unit number from the LV",
+      "unit_floor": "ground floor = 0, basement = -1; optional for garages and non-residential units",
+      "unit_area_m2": "Not on the LV — optional",
+      "unit_share_numerator": "Share in the common parts from the LV; you may also enter the whole fraction, e.g. 6543/123456",
+      "unit_share_denominator": "Denominator of the share, e.g. 123456",
+      "unit_type": "Flat, non-residential unit, garage or other",
+      "owner_name": "Full name or name of the legal entity",
+      "owner_birth_name": "From the LV (r. …) — optional",
+      "owner_ico": "For a legal entity (cooperative, municipality, company)",
+      "owner_address": "Permanent address or registered seat from the LV — optional",
+      "owner_email": "If missing, the owner is created without a login",
+      "owner_phone": "Optional",
+      "owner_unit_share_numerator": "Co-ownership share from the LV, e.g. 1/2; sole owner = 1/1 (may be left empty)",
+      "owner_unit_share_denominator": "Denominator of the co-ownership share",
+      "lv_ordinal": "From part B of the title deed — optional",
+      "ownership_form": "BSM for spouses, otherwise empty"
+    },
+    "votingMethodOptions": {
+      "per_share": "By co-ownership share",
+      "per_flat": "One unit – one vote",
+      "per_area": "By floor area",
+      "one_per_member": "One member – one vote",
+      "custom_weight": "Custom weight"
+    },
+    "countryOptions": {
+      "sk": "Slovakia",
+      "cz": "Czechia"
+    },
+    "ownershipFormOptions": {
+      "bsm": "BSM (spouses)"
+    },
+    "errors": {
+      "community_field_missing": "Fill in “{column}” in Community details.",
+      "no_rows": "The grid is empty — add at least one unit.",
+      "required": "“{column}” is required.",
+      "invalid_email": "“{value}” is not a valid e-mail.",
+      "floor_invalid": "Unknown floor “{value}” — enter a number from {min} to {max} (ground floor = 0, basement = -1).",
+      "floor_required": "Enter the floor for a flat (ground floor = 0, basement = -1).",
+      "share_invalid": "Share “{value}” must be a positive whole number or a fraction, e.g. 1/2.",
+      "share_above_one": "The share is greater than 1 (numerator above denominator).",
+      "country_invalid": "Country “{value}” — enter Slovakia or Czechia.",
+      "voting_method_invalid": "Unknown voting method “{value}”.",
+      "unit_type_invalid": "Unit type “{value}” — enter flat, non-residential, garage or other.",
+      "ownership_form_invalid": "Ownership form “{value}” — enter BSM or leave it empty.",
+      "number_invalid": "“{value}” is not a number.",
+      "invalid_value": "Invalid value in “{column}”.",
+      "community_field_mismatch": "“{column}” must be the same on every row (most have “{expected}”, this row “{actual}”).",
+      "unit_field_mismatch": "Unit {unit}: “{column}” differs between rows {firstRow} and {row}.",
+      "owner_share_sum_not_one": "Unit {unit}: the owners' shares add up to {sum}; they must add up to 1/1.",
+      "community_share_sum_not_one": "The unit shares add up to {sum}, not 1/1 (difference {diff}). With an incomplete LV or rounded shares this may be fine — please check.",
+      "community_share_sum_with_existing_not_one": "Existing units ({existing}) and this import ({imported}) add up to {sum}, not 1/1 (difference {diff}).",
+      "duplicate_community": "The community “{name}” ({address}) already exists. Change the name or address, or archive the existing community first.",
+      "warnings_not_acknowledged": "Acknowledge the warnings in the summary first.",
+      "unauthorized": "You are not signed in.",
+      "forbidden": "You do not have permission to import.",
+      "unexpected": "An unexpected error occurred. Please try again."
+    }
   },
   "CommunityInfo": {
     "pendingHeading": "Your registration is awaiting approval",
@@ -943,6 +1152,34 @@
       "expiryNote": "The link is valid for {minutes} minutes and can be used only once. It cannot be resent after it expires — start over.",
       "ignoreNote": "If you did not ask for this, ignore this email. No vote is cast without your confirmation.",
       "fallback": "If the button does not work, copy this link into your browser:"
+    },
+    "postNotice": {
+      "subject": "New notice: {title}",
+      "intro": "A new notice was posted on the notice board of {building}:",
+      "footer": "You receive this e-mail because app notifications are not enabled for you. You can also read notices directly in the app."
+    },
+    "claimLoginLink": {
+      "subject": "Link to activate your account",
+      "heading": "Activate your owner account",
+      "intro": "You entered this e-mail address on the account takeover page. Use the button below to activate your account and sign in — no password needed.",
+      "button": "Activate the account and sign in",
+      "expiryNote": "The link is valid for {minutes} minutes and works only once.",
+      "notYou": "If you did not ask for this link, ignore this e-mail — nothing changes unless you click it.",
+      "fallback": "If the button does not work, copy this link into your browser:"
+    },
+    "claimLinkAddressInUse": {
+      "subject": "This e-mail address already has an account",
+      "heading": "An account with this address already exists",
+      "intro": "Someone entered this e-mail address while taking over a prepared owner account. You already have an account with this address, so no takeover link was sent. Sign in to your account; if you need another unit added, contact the board or the manager.",
+      "button": "Sign in",
+      "notYou": "If this was not you, ignore this e-mail."
+    },
+    "votingStarted": {
+      "subject": "New vote: {title}",
+      "intro": "A new vote has been announced in {building}. You can vote in the app or on a paper ballot.",
+      "endsAt": "The vote ends on {date}.",
+      "button": "View the vote",
+      "footer": "You are receiving this e-mail because app notifications are not turned on. You can turn off voting notices in your notification settings."
     }
   },
   "Header": {
@@ -1060,7 +1297,8 @@
     "withdrawBallot": "Withdraw vote",
     "withdrawConfirm": "Really withdraw your ballot?",
     "ballotHashLabel": "Ballot checksum",
-    "signSubmitFailed": "Failed to submit the ballot"
+    "signSubmitFailed": "Failed to submit the ballot",
+    "pushNewVotingTitle": "New voting"
   },
   "VotingNew": {
     "projectLabel": "Document project",
@@ -1142,7 +1380,8 @@
       "result_published": "Result published",
       "ballot_superseded": "Electronic vote replaced by a paper ballot",
       "document_generated": "Document created",
-      "minutes_finalised": "Minutes finalised"
+      "minutes_finalised": "Minutes finalised",
+      "mandate_revoked": "Power of attorney revoked"
     },
     "officialsHeading": "People",
     "officialsHint": "The chair, the recorder and at least two verifiers appear on the documents.",
@@ -1242,7 +1481,8 @@
       "notice": "Announcement (PDF)",
       "ballotsAll": "All ballot sheets ({count})",
       "ballotBlank": "Blank ballot sheet",
-      "noticeLink": "Voting announcement (PDF)"
+      "noticeLink": "Voting announcement (PDF)",
+      "pendingLegalSignoff": "The document for this type of community is waiting for legal approval of its wording. It cannot be generated yet."
     },
     "notice": {
       "title": "Announcement of a written vote",
@@ -1270,7 +1510,13 @@
       "verifier": "Verifier",
       "unmarkedNote": "A question without a marked answer counts as an invalid vote."
     },
-    "minutesSuperseded": "Minutes v{version} — superseded"
+    "minutesSuperseded": "Minutes v{version} — superseded",
+    "saveOfficials": "Save people",
+    "officialRefused": "Refused to sign the minutes",
+    "officialRefusedLabel": "The verifier refused to sign the minutes",
+    "officialRefusalStatementLabel": "Verifier's statement",
+    "officialRefusalStatementHint": "The verifier's name and statement are attached to the minutes (§ 14a(8)).",
+    "officialsLockedAfterPublish": "The result is published – the people in the minutes can no longer be changed."
   },
   "VotingWizard": {
     "stepsLabel": "Steps",
@@ -1444,6 +1690,41 @@
     "codes": {
       "ATTENDANCE_MISSING": "The attendance list is empty – the result is counted from the cast ballots.",
       "MEETING_QUORUM_NOT_REACHED": "No quorum – the decision is not adopted."
+    },
+    "basis": {
+      "forOf": {
+        "all": "FOR: {pct} % of all votes",
+        "present": "FOR: {pct} % of the votes present",
+        "cast": "FOR: {pct} % of the votes of owners who voted"
+      },
+      "threshold": {
+        "more_than_half": {
+          "all": "Required to pass: more than {pct} % of all votes (more than {weight}).",
+          "present": "Required to pass: more than {pct} % of the votes present (more than {weight}).",
+          "cast": "Required to pass: more than {pct} % of the votes of owners who voted (more than {weight})."
+        },
+        "at_least_two_thirds": {
+          "all": "Required to pass: at least two thirds ({pct} %) of all votes (at least {weight})."
+        },
+        "at_least_four_fifths": {
+          "all": "Required to pass: at least four fifths ({pct} %) of all votes (at least {weight})."
+        },
+        "all": {
+          "all": "The consent of all owners is required ({pct} %, {weight})."
+        }
+      },
+      "tableCaption": "Vote weight by choice",
+      "colChoice": "Choice",
+      "colWeight": "Vote weight",
+      "colOfCounted": "Of votes counted",
+      "colOf": {
+        "all": "Of all votes",
+        "present": "Of votes present"
+      },
+      "counted": "Votes counted (weight)",
+      "present": "Present (weight)",
+      "totalPossible": "All votes in the voting's scope (weight)",
+      "distributionHeading": "Breakdown of the votes counted"
     }
   },
   "VoteButton": {
@@ -1482,12 +1763,43 @@
     "fromFlatLabel": "Flat (delegating)",
     "fromFlatPlaceholder": "Select flat",
     "fromOwnerLabel": "Flat owner",
-    "delegateToLabel": "Delegate to",
+    "delegateToLabel": "Proxy",
     "ownerPlaceholder": "Select owner",
     "paperDocumentLabel": "Confirmation of paper mandate with officially certified signature",
     "verificationNoteLabel": "Verification note (optional)",
     "submitFailed": "Failed to create mandate",
-    "flat": "flat {number}"
+    "flat": "flat {number}",
+    "proxyKindOwner": "An owner in the building",
+    "proxyKindExternal": "Another person (no account)",
+    "proxyOwnerLabel": "Owner who will act as proxy",
+    "proxyExternalHint": "Copy the details from the paper power of attorney. The person does not need an account in the app; the attendance sheet and the minutes list them as “represented by”.",
+    "proxyNameLabel": "Proxy's full name",
+    "proxyBirthDateLabel": "Date of birth (optional)",
+    "proxyAddressLabel": "Address (optional)",
+    "proxyNoteLabel": "Note on the proxy (optional)",
+    "errors": {
+      "UNAUTHORIZED": "You are not signed in.",
+      "FORBIDDEN": "Only an administrator can record powers of attorney.",
+      "MANDATE_FIELDS_REQUIRED": "Fill in the unit, the owner and the proxy.",
+      "MANDATE_PROXY_INVALID": "The proxy's date of birth is not valid.",
+      "MANDATE_SELF": "An owner cannot appoint themselves as proxy.",
+      "MANDATE_PAPER_REQUIRED": "The power of attorney requires confirming the paper document with an officially verified signature.",
+      "MANDATE_VOTING_NOT_ACTIVE": "The voting is not active.",
+      "MANDATE_EXISTS": "This unit already has an active power of attorney in this voting.",
+      "MANDATE_CHAIN": "The chosen owner has already delegated their own vote – chaining powers of attorney is not allowed.",
+      "MANDATE_NOT_FOUND": "The power of attorney does not exist or has already been revoked.",
+      "MANDATE_VOTING_CLOSED": "The vote is closed – the power of attorney can no longer be revoked.",
+      "MANDATE_IN_USE": "The proxy has already voted or been recorded as present under this power of attorney. Remove that ballot or attendance record first."
+    },
+    "list": {
+      "heading": "Powers of attorney in this vote",
+      "row": "{from} (flat {flat}) → {to}",
+      "externalProxy": "Proxy without an app account",
+      "revoke": "Revoke power of attorney",
+      "revokeConfirmTitle": "Revoke the power of attorney?",
+      "revokeConfirmText": "The power of attorney from {from} to {to} will be removed. The revocation is recorded in the voting history.",
+      "revokeFailed": "The power of attorney could not be revoked."
+    }
   },
   "PendingRegistrations": {
     "title": "Pending registrations",
@@ -1639,7 +1951,8 @@
       "confirmDeleteTitle": "Delete permanently?",
       "confirmDeleteBody": "{name} is removed from the system together with their unit assignments. This cannot be undone.",
       "accountStatus": "Account status",
-      "detailActions": "More actions for {name}"
+      "detailActions": "More actions for {name}",
+      "paperOnly": "Paper communication only"
     },
     "title": "Owners and users",
     "pendingRegistrationsLink": "Pending requests",
@@ -1677,7 +1990,9 @@
       "mergeNoCandidates": "No suitable candidates (registered users without an assignment).",
       "merge": "Merge",
       "merging": "Merging...",
-      "confirmMerge": "Merge owner card {shellName} with the selected account? This is irreversible."
+      "confirmMerge": "Merge owner card {shellName} with the selected account? This is irreversible.",
+      "emailNotConfigured": "The e-mail was not sent because SMTP is not configured on this server. Give the link to the owner another way.",
+      "emailFailed": "The e-mail could not be sent. Give the link to the owner another way."
     },
     "pendingRegistrations": {
       "title": "Registration requests",
@@ -1752,7 +2067,10 @@
       "cannot_delete_self": "You cannot delete your own account.",
       "user_has_history": "The person has history that must be kept. Remove them from the building or anonymise instead.",
       "plan_stale": "The data changed in the meantime. Review the summary and confirm again."
-    }
+    },
+    "roleMember": "Cooperative member",
+    "roleAccountant": "Accountant",
+    "roleSpravca": "Property manager"
   },
   "Claim": {
     "loading": "Loading...",
@@ -1781,8 +2099,35 @@
       "not_found": "Link does not exist.",
       "used": "Link has already been used.",
       "expired": "Link has expired.",
-      "unknown": "Something went wrong. Try again."
-    }
+      "unknown": "Something went wrong. Try again.",
+      "rateLimited": "Too many attempts. Try again in a few minutes.",
+      "email_unavailable": "Sending e-mails is not available right now. Set a password or try again later.",
+      "email_failed": "The e-mail could not be sent. Please try again shortly."
+    },
+    "codeTitle": "Enter the code from your letter",
+    "codeHint": "The short code is printed under the QR code on the letter from the board.",
+    "codeLabel": "Short code",
+    "codeSubmit": "Continue",
+    "codeInvalid": "The code is invalid or has expired. Check it or contact the board.",
+    "codeRateLimited": "Too many attempts. Try again in a few minutes.",
+    "noEmailButton": "I have no e-mail or smartphone",
+    "noEmailBody": "Ask the board for paper communication. Notices and documents will be delivered to you in print.",
+    "requestPaper": "Ask the board for paper communication",
+    "paperRequested": "Thank you. The board will see your request for paper communication.",
+    "methodLabel": "How do you want to take over the account",
+    "methodPassword": "Set a password",
+    "methodLink": "Sign in with a link in an e-mail, no password",
+    "linkHint": "Enter your e-mail. We will send you a link that activates your account and signs you in — no password. The link is valid for 30 minutes and works only once.",
+    "linkSubmit": "Send the link",
+    "linkSentTitle": "Check your inbox",
+    "linkSentBody": "If possible, we have sent an e-mail with the next step to {email}. The link is valid for 30 minutes. If you cannot see it, check your spam folder too.",
+    "linkSendAgain": "Send again or to another address",
+    "linkActivateTitle": "Activate your account",
+    "linkActivateBody": "Press the button to activate your prepared account with the e-mail this link was sent to and sign in.",
+    "linkActivateButton": "Activate the account and sign in",
+    "linkInvalidTitle": "This link is no longer valid",
+    "linkInvalidBody": "The link has expired, has already been used, or the account has been taken over in the meantime. Request a new link, or sign in if you already have an account.",
+    "linkRequestNew": "Request a new link"
   },
   "Register": {
     "loading": "Loading...",
@@ -1812,7 +2157,10 @@
     "dataProcessingConsent": "I agree to the processing of personal data according to the privacy policy",
     "communicationConsent": "I agree to receive operational notifications (optional)",
     "privacyPolicyLink": "Privacy policy",
-    "consentRequired": "Consent to personal data processing is required for registration."
+    "consentRequired": "Consent to personal data processing is required for registration.",
+    "roleMember": "Cooperative member",
+    "roleAccountant": "Accountant",
+    "roleSpravca": "Property manager"
   },
   "Invitations": {
     "title": "Invitation",
@@ -1834,7 +2182,11 @@
     "copied": "Copied!",
     "qrCode": "QR Code",
     "close": "Close",
-    "error": "Failed to generate invitation"
+    "error": "Failed to generate invitation",
+    "roleAdmin": "Administrator",
+    "roleMember": "Cooperative member",
+    "roleAccountant": "Accountant",
+    "roleSpravca": "Property manager"
   },
   "Settings": {
     "title": "Settings",
@@ -1958,7 +2310,22 @@
     "governanceModel": "Governance model",
     "governanceChairmanCouncil": "Chairman + council",
     "governanceCommittee": "Committee",
-    "governanceChairmanOnly": "Chairman only"
+    "governanceChairmanOnly": "Chairman only",
+    "governanceBoardSupervisory": "Board of directors + supervisory committee",
+    "votingMethodPerMember": "One member = one vote",
+    "votingMethodPerMemberDesc": "Every cooperative member has one vote regardless of how many units they hold (the statutory rule unless the articles say otherwise).",
+    "votingMethodCustomWeight": "Votes as set by the articles",
+    "votingMethodCustomWeightDesc": "Members hold different numbers of votes as set by the articles. Weights are set per member; until set, every member has one vote. For decisions where the law requires one vote per member, use “One member = one vote”.",
+    "votingMethodNotAllowed": "Not permitted for this community type",
+    "votingMethodNotAllowedHint": "The stored voting method does not match the law for this community type. Choose one of the offered methods and save it.",
+    "noticeLeadLabel": "Meeting notice period (days)",
+    "noticeLeadHintStanovy": "The law sets no period — enter the period from your articles. Leave empty and the app will not check the period.",
+    "noticeLeadHintStatutory": "The statutory minimum is {days} days. Your articles may lengthen it, not shorten it. Empty = statutory minimum.",
+    "noticeLeadErrorInvalid": "Enter a whole number from 0 to 90.",
+    "noticeLeadErrorBelowStatutory": "The period cannot be shorter than the statutory {days} days.",
+    "noticeLeadSaved": "Notice period saved.",
+    "noticeLeadSaveFailed": "Could not save the notice period.",
+    "votingMethodNotAllowedError": "This voting method is not permitted by law for this type of community."
   },
   "VotingMinutes": {
     "downloadButton": "Download minutes",
@@ -1968,7 +2335,8 @@
       "passkey": "Confirmed with a passkey {date}",
       "email": "Confirmed via e-mail link {date}",
       "legacy": "Without confirmation (before it was introduced)"
-    }
+    },
+    "pendingLegalSignoff": "The minutes for this type of community are waiting for legal approval of their wording. They cannot be generated yet."
   },
   "Profile": {
     "title": "Profile",
@@ -1995,7 +2363,10 @@
     "notifications": "Notifications",
     "appearance": "Appearance",
     "theme": "Theme",
-    "language": "Language"
+    "language": "Language",
+    "roleMember": "Cooperative member",
+    "roleAccountant": "Accountant",
+    "roleSpravca": "Property manager"
   },
   "Notifications": {
     "pushNotifications": "Push notifications",
@@ -2063,7 +2434,11 @@
     "role_council_member": "Council member",
     "role_committee_member": "Committee member",
     "role_committee_chairman": "Committee chairman",
-    "role_treasurer": "Treasurer"
+    "role_treasurer": "Treasurer",
+    "model_board_supervisory": "Cooperative board of directors and supervisory committee (§ 243 and § 244 of the Slovak Commercial Code)",
+    "role_board_member": "Board member",
+    "role_supervisory_chairman": "Supervisory committee chair",
+    "role_supervisory_member": "Supervisory committee member"
   },
   "PrivacyPolicy": {
     "title": "Privacy Policy",
@@ -2391,7 +2766,8 @@
       "removeConsequence": "{name} will disappear from the directory. Only they can share their contact again.",
       "removeOwnConsequence": "Your contact will disappear from the directory. You can share it again at any time.",
       "failed": "The change could not be saved. Please try again."
-    }
+    },
+    "printLink": "Print version (notice board)"
   },
   "Readonly": {
     "bannerTitle": "Trial expired.",
@@ -2592,6 +2968,11 @@
       "name": "Custom structure",
       "description": "Empty tree — the admin configures node kinds and hierarchy via the UI after install.",
       "sampleCommunityName": "Our community"
+    },
+    "bytove_druzstvo": {
+      "name": "Housing cooperative",
+      "description": "A housing cooperative and its members. At the members' meeting every member has one vote unless the articles say otherwise (§ 240 Slovak Commercial Code; CZ § 755 Business Corporations Act).",
+      "sampleCommunityName": "Housing cooperative"
     }
   },
   "InstallPrompt": {
@@ -2632,7 +3013,9 @@
       "more": "More invoice details",
       "moreErrors": "{count, plural, one {# detail missing} other {# details missing}}",
       "moreHint": "Company ID, VAT ID, IBAN, invoice number, net amount and VAT are required on every accounting record.",
-      "fundHint": "Which fund pays this invoice. Set automatically when you pick a service."
+      "fundHint": "Which fund pays this invoice. Set automatically when you pick a service.",
+      "invoiceYearLocked": "The invoice year {year} is closed — the cost will go into the {target} settlement.",
+      "invoiceYearNoPeriod": "There is no open accounting period for the invoice year {year} — the cost will go into the {target} settlement."
     },
     "annual": {
       "title": "Yearly tasks",
@@ -2694,16 +3077,16 @@
       "step3": "Review",
       "banka": "Bank account balance (€)",
       "pokladnica": "Cash box balance (€)",
-      "unitsHint": "Enter each unit’s repair-fund and service-advance balance as of 1 Jan. An empty field means zero.",
+      "unitsHint": "Enter four separate values for each unit as of 1 Jan. An empty field means zero.",
       "unit": "Unit",
       "fpuoBalance": "Repair fund (€)",
       "zalohyBalance": "Service advances (€)",
-      "negativeHint": "A negative value means the unit owed money (arrears) as of 1 Jan.",
+      "negativeHint": "Enter an owner's debt in the Arrears column, not as a negative advance — so fund savings and debt don't cancel each other out.",
       "assetsTotal": "Bank + cash box",
       "fpuoTotal": "Repair fund total",
       "zalohyTotal": "Service advances total",
       "rozdiel": "Difference",
-      "korekciaExplain": "The difference between assets and unit balances will be booked as prior-years result. Double-check all balances — the opening balance cannot be changed after confirmation.",
+      "korekciaExplain": "The difference between assets (bank + cash + arrears) and liabilities to owners (fund, advances, credits) is booked as prior-years result. Check the balances — a later correction is only possible by reversal and a new entry.",
       "korekciaConfirm": "I confirm booking the difference of {amount} as prior-years result.",
       "next": "Next",
       "back": "Back",
@@ -2711,11 +3094,11 @@
       "submitting": "Posting…",
       "submitError": "Posting failed",
       "loadError": "Failed to load data.",
-      "alreadyPosted": "The opening balances have already been posted and cannot be entered again. Corrections are booked as correcting entries in the current period.",
+      "alreadyPosted": "The opening balances are posted. They cannot be overwritten, but they can be corrected by a reversal and a new entry.",
       "amountPlaceholder": "0.00",
       "import": {
         "panelTitle": "Bulk import balances (CSV)",
-        "panelHint": "Download a template listing your units, fill in the balances in Excel and upload it back. You can still edit the table below afterwards.",
+        "panelHint": "Download a template listing your units, fill in the balances in Excel (the arrears and credit columns are optional) and upload it back. You can still edit the table below afterwards.",
         "downloadTemplate": "Download template",
         "uploadCsv": "Upload filled CSV",
         "resultMatched": "Units matched: {count}.",
@@ -2743,7 +3126,40 @@
         "pdfErrMismatch": "the settlement totals do not add up (corrupted or hand-edited file)",
         "pdfErrUnknownVs": "the variable symbol matches no unit of this building",
         "pdfErrAmbiguousVs": "the variable symbol matches more than one unit",
-        "pdfErrDuplicate": "another PDF was already uploaded for this unit"
+        "pdfErrDuplicate": "another PDF was already uploaded for this unit",
+        "errBadNedoplatok": "invalid arrears amount (must be positive)",
+        "errBadPreplatok": "invalid credit amount (must be positive)"
+      },
+      "nedoplatokBalance": "Owner's arrears (€)",
+      "preplatokBalance": "Owner's credit (€)",
+      "nedoplatokTotal": "Total owners' arrears",
+      "preplatokTotal": "Total owners' credit",
+      "unitsSum": "Total",
+      "fieldHelp": {
+        "fpuo": "how much of the repair and maintenance fund belongs to the unit as of 1 Jan. A negative number = unpaid fund contributions.",
+        "zalohy": "service advances (heating, water…) the association holds for the unit and has not yet settled.",
+        "nedoplatok": "how much the owner owed as of 1 Jan (unpaid payments). Enter a positive number.",
+        "preplatok": "how much the owner had overpaid as of 1 Jan. It is recorded as the owner's credit, usable for later payments. Enter a positive number."
+      },
+      "correct": {
+        "title": "Correct opening balances",
+        "intro": "If you made a mistake, you can correct the opening balances. The original entry is not deleted — a reversal and a new, corrected entry are posted. Both remain in the journal and the audit log.",
+        "button": "Correct opening balances",
+        "locked": "The period holding the opening balances is already closed, so they cannot be corrected by reversal. Book the difference as a correcting entry in the current period.",
+        "postedSummary": "Posted as of 1 Jan {year}: bank + cash {assets}, balances for {units} units.",
+        "modeBanner": "You are correcting posted opening balances. Values are prefilled from the original entry — change what is needed. On confirmation the original entry is reversed and a new one is posted.",
+        "reasonLabel": "Reason for the correction (required, recorded in the audit log)",
+        "reasonPlaceholder": "e.g. typo in the balance of unit 12",
+        "submit": "Reverse and post the correction"
+      },
+      "errors": {
+        "already_posted": "opening balances are already posted (someone may have entered them meanwhile). Reload the page.",
+        "not_posted": "there are no posted opening balances to correct.",
+        "opening_period_locked": "the opening period is closed — correction by reversal is not possible.",
+        "invalid_amounts": "an amount is invalid (bank, cash, arrears and credit must not be negative).",
+        "unknown_unit": "a unit no longer belongs to the association. Reload the page.",
+        "reason_required": "enter the reason for the correction.",
+        "invalid_year": "invalid year."
       }
     },
     "predpis": {
@@ -2795,7 +3211,17 @@
       "publish": "Publish schedule",
       "publishing": "Publishing…",
       "effectiveFromLabel": "Effective from",
-      "amountsVaryNote": "Amounts change during the year (person-count change). The preview shows the first month; monthly totals:"
+      "amountsVaryNote": "Amounts change during the year (person-count change). The preview shows the first month; monthly totals:",
+      "perM2": "€/m² per month",
+      "perPerson": "€/person per month",
+      "rateLabel": "Rate",
+      "rateModeLabel": "What the entered amount means",
+      "rateModeTotal": "Total for the building / month",
+      "rateModePerM2": "€ per m² / month",
+      "rateModePerPerson": "€ per person / month",
+      "domTotalLine": "Building total per month: {amount}",
+      "domTotalInPreview": "Save and open the preview below to see the total for the whole building.",
+      "rateModeKeyUnsupported": "A rate per m² or per person can only be used with the floor-area or number-of-persons key."
     },
     "allocationKeys": {
       "share": "Ownership share",
@@ -2866,7 +3292,19 @@
       "method": "Method",
       "methodBank": "Bank transfer",
       "methodCash": "Cash (cash box)",
-      "vsLabel": "VS {vs}"
+      "vsLabel": "VS {vs}",
+      "filterFrom": "From date",
+      "filterTo": "To date",
+      "filterApply": "Show",
+      "filterClear": "Clear filter",
+      "totalReceived": "Received in total ({count} payments)",
+      "totalAllocated": "Allocated to charges",
+      "totalCredit": "Left as overpayment",
+      "totalVoidedNote": "Voided payments ({count}) are not included in the totals.",
+      "pagingLabel": "Payments pages",
+      "pagePrev": "Previous",
+      "pageNext": "Next",
+      "pageOf": "Page {page} of {pages}"
     },
     "karta": {
       "title": "Unit ledger",
@@ -2903,8 +3341,11 @@
       "overdueColRate": "Rate p.a.",
       "overdueColInterest": "Interest",
       "overdueTotal": "Total",
-      "overdueDisclaimer": "Rates: ECB + 5 pp (gov. reg. 87/1995 Coll.). Verify current rates before claiming.",
-      "recordPayment": "Record payment"
+      "overdueDisclaimer": "Rate: statutory default interest valid on the first day of delay (SK: ECB rate + 5 pp, Government Regulation 87/1995 Coll.; CZ: CNB repo rate + 8 pp, Government Regulation 351/2013 Coll.).",
+      "recordPayment": "Record payment",
+      "overdueCreditApplied": "The overpayment of {amount} has already been deducted from the oldest unpaid months.",
+      "overdueRatesStale": "Note: the rate table was last confirmed on {date}. Check the current central-bank rate before claiming interest.",
+      "overdueRatesMissing": "Note: the central-bank rates have not been confirmed automatically yet. Check the current rate before claiming interest."
     },
     "home": {
       "numbersLabel": "Key figures",
@@ -3226,7 +3667,7 @@
     },
     "vyuctovanie": {
       "title": "Annual settlement",
-      "subtitle": "Service-advance settlement — actual costs vs. received advances (the repair fund is not settled)",
+      "subtitle": "Settlement of service advances — actual costs vs. prescribed advances (the repair fund is not settled)",
       "backToAccounting": "Back to accounting",
       "loadError": "Failed to load the settlement.",
       "ownerNotReady": "The settlement for {year} is not ready yet.",
@@ -3234,7 +3675,7 @@
       "ownerOpenKarta": "Open unit card",
       "gatesTitle": "Pre-settlement checks",
       "gateUnmatched": "{count, plural, =0 {All bank payments are matched} one {# unmatched payment} other {# unmatched payments}}",
-      "gateUncategorized": "{count, plural, =0 {All invoices are categorized} one {# uncategorized invoice} other {# uncategorized invoices}}",
+      "gateUncategorized": "{count, plural, =0 {All invoices booked into the year are categorized} one {# uncategorized invoice booked into the year} other {# uncategorized invoices booked into the year}}",
       "gateReadings": "{count, plural, =0 {All units have readings} one {# unit without a reading} other {# units without readings}} (informational)",
       "resolve": "resolve →",
       "alreadyPublished": "This period is already published.",
@@ -3245,14 +3686,56 @@
       "cellTitle": "Cost {cost} − advances {advances}",
       "footTotals": "Building total",
       "footTitle": "Costs {cost} − advances {advances}",
-      "signHint": "Positive = arrears (owner pays), negative = overpayment (returned).",
+      "signHint": "Positive amount = arrears (owner pays), negative = overpayment (refunded).",
       "publishConfirm": "Publish the {year} settlement and lock the period. This is IRREVERSIBLE — later corrections post only as reversals in the open period.",
       "publish": "Publish & lock",
       "publishing": "Publishing…",
       "publishError": "Publishing failed",
       "unprescribedWarning": "⚠️ Costs without any prescription: {categories}. An equal split has no legal basis — add the service to the schedule or recategorize the expense. Publishing is blocked.",
       "draftScheduleWarning": "{count, plural, one {# unpublished schedule draft exists} other {# unpublished schedule drafts exist}} for this year — after locking the period it can no longer be published.",
-      "gateSingleReadingBlocking": "{count, plural, one {# flat has} other {# flats have}} only one heat or hot-water reading in the year. The meter state would be billed as consumption — add the start-of-year reading; until then the statement cannot be published."
+      "gateSingleReadingBlocking": "{count, plural, one {# flat has} other {# flats have}} only one heat or hot-water reading in the year. The meter state would be billed as consumption — add the start-of-year reading; until then the statement cannot be published.",
+      "yearLabel": "Settlement year",
+      "basisHint": "Settlement result = share of actual costs − prescribed advances. Unpaid advances are shown separately and are not part of the result — they remain a debt on the monthly prescriptions.",
+      "colCost": "Costs",
+      "colPrescribed": "Prescribed advances",
+      "colUnpaid": "Of which unpaid",
+      "colResult": "Settlement result",
+      "byService": "By service",
+      "serviceLine": "costs {cost} − prescribed {prescribed} = {result}",
+      "ledgerOk": "✅ The settlement matches the books to the cent.",
+      "blockers": {
+        "METER_SINGLE_READING": "A metered split rests on a single reading in the year — record the start-of-year reading.",
+        "METER_READINGS_MISSING": "{service}: readings are missing for units {units}. Without them the metered split is impossible and the app does not support a substitute method — record the readings.",
+        "METER_AREA_MISSING": "{service}: units {units} have no floor area, which the metered split needs.",
+        "SPLIT_KEY_NO_DATA": "{service}: no prescription data for the key “{key}” in the year.",
+        "SPLIT_KEY_NO_WEIGHT": "{service}: the key “{key}” sums to zero for the year (e.g. no person-months) — there is nothing to split the cost by.",
+        "PERSON_MONTHS_UNRESOLVED": "{service}: the reading round has unreviewed person-months. Mark them resolved before they are used for the split.",
+        "LEDGER_COST_UNCATEGORIZED": "The books contain service costs not assigned to a service. Assign them (or void and re-enter them).",
+        "LEDGER_COST_NEGATIVE": "The net cost of {services} is negative for the period (reversals exceed invoices) — check the entries.",
+        "LEDGER_MISMATCH": "The settlement does not match the books — publishing is blocked."
+      },
+      "ledgerViolation": {
+        "COST_MISMATCH": "Costs {ref}: books {expected}, settlement {actual}.",
+        "PRESCRIBED_MISMATCH": "Prescription of unit {ref}: booked {expected}, settlement {actual}.",
+        "DIFFERENCE_MISMATCH": "Result {ref}: expected {expected}, found {actual}."
+      },
+      "errors": {
+        "METER_SINGLE_READING": "A metered split rests on a single reading in the year. Record the start-of-year reading.",
+        "METER_READINGS_MISSING": "Some units are missing heat or hot-water readings. Record them — the app does not support a substitute split method.",
+        "METER_AREA_MISSING": "Some units have no floor area, which the metered split needs.",
+        "SPLIT_KEY_NO_DATA": "A service's allocation key has no data for the year.",
+        "SPLIT_KEY_NO_WEIGHT": "A service's allocation key sums to zero — there is nothing to split the cost by.",
+        "PERSON_MONTHS_UNRESOLVED": "The reading round has unreviewed person-months.",
+        "LEDGER_COST_UNCATEGORIZED": "The books contain service costs not assigned to a service.",
+        "LEDGER_COST_NEGATIVE": "A service's net cost for the period is negative.",
+        "LEDGER_MISMATCH": "The settlement does not match the books to the cent — nothing was published.",
+        "PERIOD_NOT_FOUND": "No accounting period exists for this year.",
+        "PERIOD_NOT_OPEN": "The period is no longer open — the settlement was probably already published.",
+        "GATES_NOT_PASSED": "Checks not passed: the year must be over, bank payments matched and invoices categorized.",
+        "UNPRESCRIBED_COSTS": "Some costs have no prescription. Add the service to the prescription or recategorize the expense.",
+        "NOTHING_TO_SETTLE": "There is nothing to settle for this year.",
+        "UNKNOWN": "Publishing failed with an unexpected error. Nothing was changed."
+      }
     },
     "vyuctovaniePdf": {
       "download": "Settlement {year} (PDF)",
@@ -3278,7 +3761,12 @@
       "allocationKey_meters": "by meters",
       "qrTitle": "Pay the arrears via PAY by square",
       "iban": "IBAN",
-      "footer": "Generated by OpenResiApp."
+      "footer": "Generated by OpenResiApp.",
+      "prescribedAdvances": "Prescribed advances",
+      "unpaid": "Of which unpaid",
+      "result": "Settlement result",
+      "arrearsTitle": "Unpaid advances as of the settlement date",
+      "arrearsNote": "Unpaid advances are not part of the settlement result. They are recorded as a debt on the monthly prescriptions and are paid separately."
     },
     "upomienkaPdf": {
       "download": "Generate dunning letter (PDF)",
@@ -3297,7 +3785,12 @@
       "demand": "TOTAL TO PAY (principal + interest)",
       "qrTitle": "Pay via PAY by square",
       "iban": "IBAN",
-      "footer": "Generated by OpenResiApp."
+      "footer": "Generated by OpenResiApp.",
+      "addressee": "Addressee",
+      "flat": "Flat no.",
+      "signatureRole": "chairman of the association / property manager",
+      "downloadAll": "Reminders for all debtors (PDF)",
+      "noneToSend": "No flat has overdue arrears — there is nobody to send a reminder to."
     },
     "journal": {
       "title": "For the accountant / audit",
@@ -3325,22 +3818,62 @@
       "verifyHint": "Verify an export: upload a previously downloaded file — the system attests it was not modified.",
       "verifyValid": "The file is authentic and unmodified (generated {generatedAt}).",
       "verifyInvalid": "The file does NOT match — it was modified or did not originate from this system.",
-      "verifyError": "Verification failed. Try again."
+      "verifyError": "Verification failed. Try again.",
+      "yearLabel": "Accounting year",
+      "trialBalanceYearTitle": "Trial balance {year}",
+      "trialBalanceYearHint": "Opening balance (at 1 Jan), turnover of the year and closing balance of every account. Debit and credit totals must be equal.",
+      "colOpening": "Opening balance",
+      "colTurnoverDr": "Debit turnover",
+      "colTurnoverCr": "Credit turnover",
+      "colClosing": "Closing balance",
+      "sideDr": "Dr",
+      "sideCr": "Cr",
+      "totalsOpening": "Opening balances total",
+      "totalsTurnover": "Turnover total",
+      "totalsClosing": "Closing balances total",
+      "totalsUnbalanced": "Warning: debit and credit totals differ. Please contact support — the books are out of balance.",
+      "fpuoTitle": "Repair fund per flat {year}",
+      "fpuoHint": "Balance of the repair and maintenance fund for each flat. Fund spending and other fund income are split by ownership share (Section 10(1) of Act No. 182/1993). The sum over flats must equal the balance of account 472.",
+      "fpuoShareMissing": "ownership share missing — spending not assigned",
+      "fpuoColOpening": "Opening",
+      "fpuoColPredpis": "Charged",
+      "fpuoColPaid": "Paid of charges",
+      "fpuoColUses": "Spending",
+      "fpuoColIncome": "Other income",
+      "fpuoColOther": "Corrections",
+      "fpuoColClosing": "Closing",
+      "fpuoReconciled": "The sum over flats matches the balance of account 472: {amount}.",
+      "fpuoDifference": "Warning: account 472 balance is {ledger}; the sum over flats differs by {difference}.",
+      "fpuoUnallocated": "Not assigned to flats (no flat has a share recorded): {amount}."
     },
     "zavierka": {
       "title": "Annual accounts approval",
       "hint": "The annual accounts are approved by the owners' assembly (§7c ods. 9 zák. 182/1993). Approving here only records the decision — nothing is posted to the ledger.",
       "yearLabel": "Year",
       "approved": "The annual accounts for {year} were approved by the assembly.",
-      "votePlaceholder": "Assembly voting-item ID",
-      "voteHint": "Paste the ID of the closed voting item by which the assembly approved the accounts (found on the vote detail page).",
+      "votePlaceholder": "— Choose an approved voting item —",
+      "voteHint": "Only items approved in a closed voting with a published result are listed.",
       "approve": "Approve accounts",
       "approving": "Approving…",
       "chairmanOnly": "The chairman approves the accounts (separation of duties).",
       "blockedNotPublished": "Publish the annual settlement first — only then can the accounts be approved.",
       "approveError": "Approval failed.",
       "loading": "Loading…",
-      "loadError": "Could not load the accounts-approval status."
+      "loadError": "Could not load the accounts-approval status.",
+      "voteLabel": "Owners' meeting decision",
+      "voteOption": "{voting} — item {idx}: {item} ({date})",
+      "noEligibleVotes": "There is no approved voting item with a published result yet. Have the owners' meeting approve the accounts first and publish the voting result.",
+      "errors": {
+        "VOTE_REQUIRED": "Choose the voting item by which the owners' meeting approved the accounts.",
+        "PERIOD_NOT_FOUND": "No accounting period exists for this year.",
+        "ALREADY_APPROVED": "The accounts for this year are already approved.",
+        "NOT_PUBLISHED": "Publish the annual settlement first.",
+        "VOTE_NOT_FOUND": "The voting was not found or does not belong to this community.",
+        "VOTE_NOT_CLOSED": "The voting is not closed yet.",
+        "RESULT_NOT_PUBLISHED": "The voting result has not been published yet.",
+        "ITEM_NOT_PASSED": "The selected item did not pass.",
+        "UNKNOWN": "Approval failed with an unexpected error."
+      }
     },
     "attachments": {
       "gdprWarning": "The document may contain personal data. Under the right to inspect, owners will see it — mark redaction or restriction if needed.",
@@ -3410,7 +3943,9 @@
       "boardSubtitle": "Every unit in arrears, with owner names — the board's internal view (chairman, treasurer, administrator).",
       "boardNone": "No unit is in arrears.",
       "boardNote": "Internal list for the board. Do not publish it to owners — publication follows the statutory rules approved by the owners' meeting and the threshold set by the board.",
-      "boardNoOwner": "— (no active owner)"
+      "boardNoOwner": "— (no active owner)",
+      "boardNetNote": "The amount is the arrears net of overpayments — the same figure as the balance on the flat ledger.",
+      "totalRow": "Total ({count})"
     },
     "votingImpacts": {
       "title": "Financial impacts",
@@ -3583,6 +4118,89 @@
       "credentialsFromEnv": "Application {appId} is configured in the server environment. Only whoever runs the server can change it.",
       "envAlternative": "Alternative: environment variables",
       "envAlternativeBody": "If you run the server, you can set the values in docker-compose or .env instead of the form and restart the app. Environment variables take precedence over the form."
+    },
+    "reports": {
+      "exportXlsx": "Download Excel (XLSX)",
+      "exportCsv": "Download CSV",
+      "generatedAt": "Generated {date}",
+      "total": "Total",
+      "totalExclVoided": "Total ({count} payments, voided excluded)",
+      "totalCount": "Total ({count})",
+      "tb": {
+        "sheet": "Trial balance {year}",
+        "title": "Trial balance for {year}",
+        "colCode": "Account",
+        "colName": "Account name",
+        "colOpeningDr": "Opening Dr",
+        "colOpeningCr": "Opening Cr",
+        "colTurnoverDr": "Turnover Dr",
+        "colTurnoverCr": "Turnover Cr",
+        "colClosingDr": "Closing Dr",
+        "colClosingCr": "Closing Cr",
+        "note": "Year by the accounting period of the posting. Opening = all postings of earlier periods."
+      },
+      "fpuo": {
+        "sheet": "Repair fund {year}",
+        "title": "Repair and maintenance fund per flat for {year}",
+        "colUnit": "Flat",
+        "colOpening": "Opening",
+        "colPredpis": "Charged",
+        "colPaid": "Paid of charges",
+        "colUses": "Spending (by share)",
+        "colIncome": "Other income (by share)",
+        "colOther": "Corrections",
+        "colClosing": "Closing",
+        "shareMissing": "share missing",
+        "note": "Closing = opening + charged − spending + other income + corrections. Spending and other income are split by ownership share (Section 10(1) of Act No. 182/1993). The “Paid” column is informative.",
+        "reconcile": "Check: account 472 balance = {ledger} €, difference = {difference} €.",
+        "unallocated": "Not assigned to flats (shares missing): {amount} €."
+      },
+      "payments": {
+        "sheet": "Payments",
+        "title": "Payments received from {from} to {to}",
+        "colDate": "Date",
+        "colUnit": "Flat",
+        "colVs": "VS",
+        "colAmount": "Amount",
+        "colAllocated": "Allocated to charges",
+        "colCredit": "Overpayment",
+        "colSource": "Source",
+        "colNote": "Note",
+        "voided": "Voided"
+      },
+      "debtors": {
+        "sheet": "Debtors",
+        "title": "Flats in arrears (net of overpayments)",
+        "colUnit": "Flat",
+        "colOwners": "Owners",
+        "colBalance": "Arrears"
+      },
+      "card": {
+        "sheet": "Card {unit}",
+        "title": "Flat ledger {unit}",
+        "vs": "Variable symbol: {vs}",
+        "colDate": "Date",
+        "colDescription": "Description",
+        "colPredpis": "Charged",
+        "colPaid": "Paid",
+        "colBalance": "Balance",
+        "noteOwes": "Positive balance = the owner owes.",
+        "noteCredit": "Negative balance = the owner has an overpayment.",
+        "noteSettled": "The balance is settled."
+      }
+    },
+    "bankBalance": {
+      "match": "The statement balance on {date} matches account 221 in the books.",
+      "mismatch": "The statement balance on {date} does not match account 221 in the books.",
+      "statement": "Closing balance per bank",
+      "ledger": "Account 221 in the books",
+      "difference": "Difference (bank − books)",
+      "causesIntro": "Most common causes of the difference:",
+      "pendingCredits": "{count, plural, one {# incoming payment is} other {# incoming payments are}} waiting to be assigned to a flat ({amount}) — booked only after you confirm.",
+      "debitsIntro": "The import does not book outgoing payments. The statement has {count, plural, one {# outgoing payment} other {# outgoing payments}} totalling {amount} — record each one as an expense payment (invoice, bank fee):",
+      "noDebits": "The statement has no outgoing payments.",
+      "unknownCounterparty": "Unknown recipient",
+      "otherCauses": "Other possible causes: a missing earlier statement, a wrong opening bank balance, or a payment recorded both by hand and from the bank."
     }
   },
   "Home": {
@@ -3941,7 +4559,12 @@
       "revokeHint": "You can revoke access at any time in Profile → Connected AI apps.",
       "errorTitle": "This request cannot be processed",
       "errorInvalidClient": "The app could not be verified. Try connecting it again from your AI app.",
-      "errorInvalidRedirect": "The return address does not belong to this app. The request was stopped for your safety."
+      "errorInvalidRedirect": "The return address does not belong to this app. The request was stopped for your safety.",
+      "registeredHost": "The app connects via {host}.",
+      "registeredLocal": "The app runs on your computer (e.g. Claude Desktop).",
+      "registeredExplain": "Most AI apps connect this way: it registered automatically, so its domain cannot be verified. Allow access only if you started this connection yourself just now.",
+      "redirectMismatch": "Warning: the app from {app} sends the access to a different domain ({host}).",
+      "redirectMismatchExplain": "This can be a sign of impersonation. If you are not sure, deny access."
     },
     "scopes": {
       "read": "read your community data: profile, announcements, votings and documents you can see",
@@ -4015,7 +4638,10 @@
         "Changes are made only after you click confirm.",
         "Votes are confirmed by e-mail or in the app.",
         "Disconnecting below removes the AI's access immediately."
-      ]
+      ],
+      "claudeDesktopNote": "Claude Desktop (Windows, Mac) uses the connectors from your claude.ai account — add them once. Restart the app after adding.",
+      "mobileNote": "Connectors cannot be added in the mobile app; add it on the web, then switch it on in a chat on your phone.",
+      "confirmInBrowser": "Some AI apps cannot show the confirm buttons in the chat. You then get a link and confirm the change in this app in your browser."
     },
     "actions": {
       "match_payment": {
@@ -4126,6 +4752,23 @@
         "title": "Remove directory entry",
         "summary": "Remove your entry from the neighbours' directory",
         "done": "Your entry was removed from the directory."
+      },
+      "match_payments": {
+        "title": "Match several bank payments",
+        "summary": "Credit {count, plural, one {# payment} other {# payments}} totalling {amount} to units",
+        "done": "The payments were matched.",
+        "donePartial": "{matched} of {total} payments were matched. The others changed in the meantime — check them in payment matching."
+      },
+      "link_owner_accounts": {
+        "title": "Link several owners to accounts",
+        "summary": "Link {count, plural, one {# owner record} other {# owner records}} to accounts",
+        "done": "The owner records were linked to the accounts.",
+        "donePartial": "{linked} of {total} records were linked. The others changed in the meantime — check them under Owners."
+      },
+      "transfer_unit_ownership": {
+        "title": "Change of unit owner",
+        "summary": "Change the owner of unit {unit} as of {date}",
+        "done": "The unit owner was changed."
       }
     },
     "preview": {
@@ -4248,7 +4891,34 @@
       "shareEmail": "Share e-mail",
       "directoryNote": "Note",
       "directorySkills": "How I can help",
-      "notInDirectory": "not in the directory"
+      "notInDirectory": "not in the directory",
+      "paymentCount": "Payments",
+      "amountTotal": "Total amount",
+      "unitCount": "Units",
+      "paymentN": "Payment {n}",
+      "paymentLine": "{amount} · {date} · VS {vs} · {counterparty} → {unit}",
+      "unitBalanceOf": "Balance of unit {unit}",
+      "linkCount": "Links",
+      "linkN": "Link {n}",
+      "linkLine": "{owner} ({units}) → {name}",
+      "linkLineApprove": "{owner} ({units}) → {name} (registration is approved)",
+      "transferFrom": "Leaving owners",
+      "transferTo": "New owners (share)",
+      "transferDate": "Date of change",
+      "transferKind": "Reason",
+      "unitsExisting": "Units already in the app",
+      "unitShareSumWithExisting": "Sum of unit shares (existing + import)",
+      "unitShareSumGap": "{sum} ({diff} short of 1/1)",
+      "lvRecognised": "Recognised from the LV",
+      "lvRecognisedValue": "{owners, plural, one {# owner} other {# owners}}, {units, plural, one {# unit} other {# units}}",
+      "lvSkippedCount": "LV rows not recognised",
+      "lvRowN": "LV, row no. {n}",
+      "lvRow": "LV",
+      "lvSkip_no_share": "no share",
+      "lvSkip_share_invalid": "invalid share",
+      "lvSkip_unreadable": "unreadable row",
+      "lvSkip_no_unit_sections": "the LV lists no units (entrances) — it records the building as a whole",
+      "lvSkip_building_owner": "owner of the whole building, not of a unit"
     },
     "consequences": {
       "allocatePayment": "The payment is allocated to the unit’s oldest charges and changes its balance.",
@@ -4288,7 +4958,12 @@
       "directoryPhoneShared": "Neighbours will see the phone number from your profile.",
       "directoryEmailShared": "Neighbours will see the e-mail from your profile.",
       "directoryUndo": "You can edit the entry or remove it from the directory at any time.",
-      "directoryRemoved": "Your entry leaves the directory and neighbours no longer see your contact."
+      "directoryRemoved": "Your entry leaves the directory and neighbours no longer see your contact.",
+      "batchPerItem": "Each item is written separately. If one changes in the meantime it is skipped and the others are written.",
+      "mergeOwnerRecords": "{count, plural, one {# owner record is} other {# owner records are}} merged into the accounts; units, shares and history move to the accounts.",
+      "accessGrantedCount": "{count, plural, one {# pending registration is} other {# pending registrations are}} approved and get access to the app.",
+      "importOwnerGroups": "{count, plural, one {# person owns} other {# people own}} several units — each is created only once.",
+      "transferHistoryKept": "History is kept: past votes and charges stay with the previous owner."
     },
     "warnings": {
       "ocrAmountMismatch": "The amount differs from the amount read from the scan ({ocr}).",
@@ -4302,7 +4977,14 @@
       "suggestedOwnerRecord": "The app suggests linking to the owner record {name}. Approving without linking creates a second record of the same person.",
       "approveWithoutUnit": "The person will have no unit assigned — you can assign one later in the app.",
       "noPhotoViaAi": "Photos and attachments cannot be added through AI — add them in the app.",
-      "eventInPast": "The event date is in the past."
+      "eventInPast": "The event date is in the past.",
+      "matchDiffersFromSuggestion": "Payment {n}: the app suggests unit {suggested}, not {unit}.",
+      "namesDifferItem": "Link {n}: the names {owner} and {name} differ — check that this is the same person.",
+      "emailNotVerifiedItem": "Link {n}: {name} has not confirmed their e-mail yet.",
+      "importShareSum": "The unit shares sum to {sum}, not 1/1 (difference {diff}). Check that the import contains every unit.",
+      "importShareSumWithExisting": "Existing units ({existing}) and this import ({imported}) sum to {sum}, not 1/1 (difference {diff}). Fine when importing in parts until the rest is added.",
+      "importWarning": "Row {row}: import warning ({code}).",
+      "lvRowsSkipped": "{count, plural, one {# LV row} other {# LV rows}} could not be read and will not be imported. Add them manually."
     },
     "view": {
       "confirm": "Confirm",
@@ -4317,7 +4999,8 @@
       "confirmedTitle": "Confirmed.",
       "cancelledMessage": "The change was cancelled. Nothing was written.",
       "pendingText": "Waiting for your confirmation: {summary}. Nothing has been written yet.",
-      "fallbackText": "Confirm or cancel in the card below, or in the app: {url} (valid until {time})."
+      "fallbackText": "Confirm or cancel it in the card below, or in the app: {url} (valid until {time}).",
+      "fallbackTextLinkOnly": "Confirm or cancel it in the app at this link: {url} (valid until {time}). Nothing is written without your click."
     },
     "errors": {
       "action_expired": "This request has expired or was already handled. Ask the AI assistant for a new proposal.",
@@ -5116,6 +5799,106 @@
       "MEETING_PLACE_REQUIRED": "Enter where the meeting takes place.",
       "MEETING_NOTICE_TOO_SHORT": "The new date must be at least 7 full days from today.",
       "MEETING_EXPORT_UNAVAILABLE": "The attendance list export is available only for a flat owners' association."
+    },
+    "invitationPdf": {
+      "heading": "Printable invitation",
+      "hint": "Print the invitation for owners without e-mail – one page per owner with their units and share. Deliver it at least 7 days before the meeting.",
+      "generic": "Invitation (no addressee)",
+      "noEmail": "Owners without e-mail ({count})",
+      "all": "All owners ({count})",
+      "title": "Invitation to the owners' meeting",
+      "addressee": "Addressee",
+      "units": "Units",
+      "share": "Share of votes",
+      "when": "Date and time",
+      "place": "Place",
+      "agenda": "Agenda",
+      "rsvpHint": "You can confirm your attendance in the app or with the chair or the administrator.",
+      "convenedBy": "Convened by",
+      "issuedOn": "Issued on",
+      "ico": "Company ID"
+    }
+  },
+  "BoardPrint": {
+    "title": "Notice board",
+    "print": "Print",
+    "back": "Back to notices",
+    "hint": "Latest notices for printing on A4 (count: {count}).",
+    "empty": "There are no notices yet."
+  },
+  "ClaimLetters": {
+    "openButton": "Letters for owners without an account",
+    "title": "Letters for owners without an account",
+    "intro": "Creates one PDF with one A4 page per owner: QR code, short code and plain instructions. A letter is valid for 60 days.",
+    "note": "Each run issues new links; older unused links stay valid until they expire or are used.",
+    "loadFailed": "The owners list could not be loaded.",
+    "paperFailed": "The flag could not be saved.",
+    "nothingToPrint": "Nothing to print. Select at least one owner.",
+    "generateFailed": "The PDF could not be created. Try again.",
+    "done": "PDF downloaded. Number of letters: {count}.",
+    "empty": "All owners already have an account, or none are waiting.",
+    "selectAll": "Everyone ({count})",
+    "selectNoEmail": "Only without e-mail ({count})",
+    "selectNone": "Clear selection",
+    "flats": "flat {flats}",
+    "noEmail": "No e-mail",
+    "paperOnly": "Paper communication only",
+    "generate": "Create PDF ({count})",
+    "pdf": {
+      "title": "Access to the owners' app",
+      "to": "For: {name} (flat {flats})",
+      "step1": "1. If you have a smartphone, scan the QR code below with the camera and a page opens.",
+      "step2": "2. Or on a computer open {url} and enter the short code from this letter.",
+      "step3": "3. Enter your e-mail and choose a password. Then you can sign in.",
+      "codeLabel": "Short code:",
+      "valid": "This letter is valid until {date}. The code and QR code can be used once, by one person.",
+      "help": "No e-mail or smartphone? No problem. Contact the board and ask for paper communication. We will deliver notices and documents to you in print."
+    }
+  },
+  "SmtpStatus": {
+    "title": "E-mails are not being sent",
+    "body": "No SMTP server is configured (SMTP_HOST). Invitations, notices, documents and meeting invitations will not reach owners by e-mail. Ask the server administrator to set it up."
+  },
+  "LegalCopy": {
+    "hoa": {
+      "minutesHeading": "VOTING MINUTES",
+      "memberLabel": "Owner",
+      "memberLabelPlural": "owners",
+      "assemblyName": "owners' meeting"
+    },
+    "cooperative": {
+      "sk": {
+        "noticeTitle": "Invitation to the members' meeting",
+        "noticeLegalBasis": "Under § 239 of the Commercial Code (Act No. 513/1991 Coll.) and the cooperative's articles",
+        "ballotHeading": "Cooperative member's ballot",
+        "attendanceHeading": "List of members present",
+        "attendanceBlankHeading": "List of members present (for signature)",
+        "minutesHeading": "MINUTES OF THE MEMBERS' MEETING",
+        "memberLabel": "Member",
+        "memberLabelPlural": "members",
+        "assemblyName": "members' meeting"
+      },
+      "cz": {
+        "noticeTitle": "Invitation to the members' meeting",
+        "noticeLegalBasis": "Under § 636 of Act No. 90/2012 Coll., on Business Corporations (Czechia), and the cooperative's articles",
+        "ballotHeading": "Cooperative member's ballot",
+        "attendanceHeading": "List of members present",
+        "attendanceBlankHeading": "List of members present (for signature)",
+        "minutesHeading": "MINUTES OF THE MEMBERS' MEETING",
+        "memberLabel": "Member",
+        "memberLabelPlural": "members",
+        "assemblyName": "members' meeting"
+      }
+    },
+    "topics": {
+      "votes": "Counting votes",
+      "notice": "Convening and notice period",
+      "majorities": "Required majorities",
+      "quorum": "Quorum",
+      "minutes": "Minutes",
+      "board": "Board of directors",
+      "supervisory": "Supervisory committee",
+      "perRollam": "Decisions outside a meeting (per rollam)"
     }
   }
 }

@@ -6,6 +6,8 @@ import { useTranslations } from "next-intl";
 import { Button, Field, Modal, Select } from "@/components/ui";
 import type { UnitOption } from "@/lib/owners-board";
 import type { UserRole } from "@/types";
+import { useOptionalShell } from "@/components/layout/ShellContext";
+import { roleOptionsFor, unitHolderRoleFor } from "@/lib/role-options";
 import { approveRegistration } from "./owner-requests";
 
 interface PendingUser {
@@ -14,7 +16,6 @@ interface PendingUser {
   email: string;
 }
 
-const ROLE_OPTIONS: UserRole[] = ["owner", "tenant", "admin", "vote_counter", "caretaker"];
 
 /**
  * Approve a self-registration as a new account. Request unchanged:
@@ -37,7 +38,9 @@ export default function PendingApprovalModal({
   const tCommon = useTranslations("Common");
 
   const [flatId, setFlatId] = useState("");
-  const [role, setRole] = useState<UserRole>("owner");
+  const templateSlug = useOptionalShell()?.community?.templateSlug;
+  const roleOptions = roleOptionsFor(templateSlug, { includeAdmin: true });
+  const [role, setRole] = useState<UserRole>(() => unitHolderRoleFor(templateSlug));
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -62,6 +65,9 @@ export default function PendingApprovalModal({
     tenant: tOwners("roleTenant"),
     vote_counter: tOwners("roleVoteCounter"),
     caretaker: tOwners("roleCaretaker"),
+    member: tOwners("roleMember"),
+    accountant: tOwners("roleAccountant"),
+    spravca: tOwners("roleSpravca"),
   };
 
   const formId = `approve-${user.id}`;
@@ -107,7 +113,7 @@ export default function PendingApprovalModal({
 
         <Field label={t("roleLabel")}>
           <Select value={role} onChange={(e) => setRole(e.target.value as UserRole)}>
-            {ROLE_OPTIONS.map((r) => (
+            {roleOptions.map((r) => (
               <option key={r} value={r}>
                 {roleLabels[r]}
               </option>

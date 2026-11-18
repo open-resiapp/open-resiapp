@@ -1,6 +1,7 @@
 import "server-only";
 
 import { and, asc, eq } from "drizzle-orm";
+import { db } from "@/db";
 import { accountingPeriods } from "../db/schema";
 import type { Tx } from "../engine/booking";
 
@@ -122,4 +123,40 @@ export async function getOrCreateOpenPeriod(
     );
   }
   return period;
+}
+
+/**
+ * Read-only view of where a dated document books (no period is minted):
+ * `openYears` — years whose period exists and is open (a document dated
+ * there books into its own year); `fallbackYear` — where everything else
+ * books per periodForReceivedAt / getCurrentOpenPeriod (the earliest open
+ * or not-yet-created period from the current year on). The expense form
+ * uses it to warn that an invoice of a locked year lands in — and is
+ * settled with — the fallback year's vyúčtovanie.
+ */
+export async function getPeriodBookingInfo(entityId: string): Promise<{
+  openYears: number[];
+  lockedYears: number[];
+  fallbackYear: number | null;
+}> {
+  const rows = await db
+    .select({ year: accountingPeriods.year, status: accountingPeriods.status })
+    .from(accountingPeriods)
+    .where(eq(accountingPeriods.entityId, entityId))
+    .orderBy(asc(accountingPeriods.year));
+  const byYear = new Map(rows.map((r) => [r.year, r.status]));
+  const currentYear = new Date().getUTCFullYear();
+  let fallbackYear: number | null = null;
+  for (let year = currentYear; year < currentYear + 5; year++) {
+    const status = byYear.get(year);
+    if (!status || status === "open") {
+      fallbackYear = year;
+      break;
+    }
+  }
+  return {
+    openYears: rows.filter((r) => r.status === "open").map((r) => r.year),
+    lockedYears: rows.filter((r) => r.status !== "open").map((r) => r.year),
+    fallbackYear,
+  };
 }

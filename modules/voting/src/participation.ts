@@ -13,6 +13,7 @@ import {
   type CanonicalVotingMethod,
 } from "@/lib/voting-method";
 import { votings, ballots, eligibilitySnapshots } from "./db/schema";
+import { VOTING_ROLES } from "./voting-roles";
 
 type Tx = Parameters<Parameters<typeof db.transaction>[0]>[0];
 type Exec = Tx | typeof db;
@@ -157,9 +158,11 @@ export async function loadLiveEligible(
         eq(memberships.status, "active"),
         isNull(entities.archivedAt),
         scopeFilter,
-        ...(unitScoped
-          ? [eq(entities.kind, "unit"), inArray(memberships.role, ["owner"])]
-          : [])
+        // Voting roles only (voting-roles.ts: owner + družstvo member) — for
+        // member-scoped methods too, so the eligible set equals the set
+        // validateCast lets vote (a tenant / accountant never votes).
+        inArray(memberships.role, [...VOTING_ROLES]),
+        ...(unitScoped ? [eq(entities.kind, "unit")] : [])
       )
     );
 

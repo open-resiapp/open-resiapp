@@ -207,7 +207,12 @@ export interface OwnerPaymentSummary {
    * < 0 = preplatok; null when the PDF template does not serve the country.
    */
   latestSettlement: { year: number; differenceCents: number | null } | null;
-  overdue: { totalOpenCents: number; months: number };
+  /**
+   * `creditAppliedCents`: parked preplatok already netted against the
+   * oldest overdue items (overdue.ts, virtual — not posted). > 0 means the
+   * open total is already net of it.
+   */
+  overdue: { totalOpenCents: number; months: number; creditAppliedCents: number };
   // Meter / persons self-reading lives in the reading-round view
   // (reading-rounds.ts getOwnerReadingsView, BYT-20261118-006): visibility
   // follows an OPEN round, not historic readings.
@@ -301,6 +306,13 @@ export async function getOwnerPaymentSummary(input: {
     overdue: {
       totalOpenCents: overdueItems.reduce((s, i) => s + i.openCents, 0),
       months: overdueMonths,
+      // The netting is unit-wide; a windowed viewer is credited at most with
+      // the preplatok of their own period.
+      creditAppliedCents: overdue
+        ? windows
+          ? Math.min(overdue.creditAppliedCents, Math.max(0, preplatokCents))
+          : overdue.creditAppliedCents
+        : 0,
     },
   };
 }

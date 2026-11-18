@@ -18,6 +18,8 @@ export interface BuildingInfo {
   country: string;
   governanceModel: string;
   legalNotice: string | null;
+  /** Stanovy notice lead time — edited in VotingSettingsTab, not here. */
+  noticeLeadDays?: number | null;
 }
 
 interface BuildingInfoTabProps {
@@ -90,7 +92,9 @@ export default function BuildingInfoTab({ canEdit, initial }: BuildingInfoTabPro
       ? t("governanceCommittee")
       : governanceModel === "chairman_only"
         ? t("governanceChairmanOnly")
-        : t("governanceChairmanCouncil");
+        : governanceModel === "board_supervisory"
+          ? t("governanceBoardSupervisory")
+          : t("governanceChairmanCouncil");
 
   return (
     <Card as="section" padding="lg" aria-labelledby="community-heading" className="space-y-5">
@@ -133,6 +137,7 @@ export default function BuildingInfoTab({ canEdit, initial }: BuildingInfoTabPro
                 <option value="chairman_council">{t("governanceChairmanCouncil")}</option>
                 <option value="committee">{t("governanceCommittee")}</option>
                 <option value="chairman_only">{t("governanceChairmanOnly")}</option>
+                <option value="board_supervisory">{t("governanceBoardSupervisory")}</option>
               </Select>
             </Field>
           </div>

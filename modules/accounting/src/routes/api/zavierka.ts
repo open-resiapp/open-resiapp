@@ -1,15 +1,22 @@
 import { NextRequest, NextResponse } from "next/server";
+import { getTranslations } from "next-intl/server";
 
 import { requireApprover, requireReader } from "@modules/accounting/src/lib/api-guard";
 import { canApproveAccounting } from "@modules/accounting/src/lib/authz";
 import {
   approveZavierka,
   getZavierkaStatus,
+  isZavierkaError,
+  listEligibleZavierkaItems,
 } from "@modules/accounting/src/lib/zavierka";
+import { requestLocale } from "@modules/accounting/src/lib/input-errors.server";
 
 // Účtovná závierka approval API (AC 423/521).
-//   GET  — status (reader: treasurer/chairman/admin)
-//   POST — approve (approver: chairman/admin only — no ledger write)
+//   GET  — status (reader: treasurer/chairman/admin); for an approver on an
+//          approvable year also `eligibleItems` — the passed items of closed
+//          votings with a published result (the picker; no raw IDs)
+//   POST — approve (approver: chairman/admin only — no ledger write);
+//          failures return a stable `code` + localized `error`
 
 /** GET /api/accounting/zavierka?year=YYYY */
 export async function handleGet(req: NextRequest): Promise<NextResponse> {
@@ -30,7 +37,11 @@ export async function handleGet(req: NextRequest): Promise<NextResponse> {
       ctx.root.id
     ),
   ]);
-  return NextResponse.json({ ...status, viewerCanApprove });
+  const eligibleItems =
+    status.canApprove && viewerCanApprove
+      ? await listEligibleZavierkaItems(ctx.root.id)
+      : [];
+  return NextResponse.json({ ...status, viewerCanApprove, eligibleItems });
 }
 
 /** POST /api/accounting/zavierka — { year, votingItemId }. Chairman only. */
@@ -62,8 +73,23 @@ export async function handleApprove(req: NextRequest): Promise<NextResponse> {
     });
     return NextResponse.json({ ok: true });
   } catch (err) {
-    const message = err instanceof Error ? err.message : "approval failed";
-    const status = message.includes("not found") ? 404 : 400;
-    return NextResponse.json({ error: message }, { status });
+    const t = await getTranslations({
+      locale: requestLocale(req),
+      namespace: "Accounting.zavierka.errors",
+    });
+    if (isZavierkaError(err)) {
+      const status =
+        err.code === "PERIOD_NOT_FOUND" || err.code === "VOTE_NOT_FOUND"
+          ? 404
+          : err.code === "VOTE_REQUIRED"
+            ? 400
+            : 409;
+      return NextResponse.json(
+        { error: t(err.code as Parameters<typeof t>[0]), code: err.code },
+        { status }
+      );
+    }
+    console.error("[accounting] závierka approval failed:", err);
+    return NextResponse.json({ error: t("UNKNOWN"), code: "UNKNOWN" }, { status: 500 });
   }
 }

@@ -20,7 +20,7 @@ import { openReceivablesForUnit } from "./payments";
 import { applyPaymentCredit } from "../engine/booking";
 import { getCurrentOpenPeriod } from "./periods";
 import { domUnitsWhere, listDomUnits } from "./dom-units";
-import { hasBoardRole } from "./authz";
+import { canReadAccounting } from "./authz";
 import { postAllDueMonths } from "./fee-schedule-publish";
 import {
   inScope,
@@ -64,14 +64,16 @@ export type UnitReadScope =
   | { wholeDom: true; windows: undefined; current: true }
   | { wholeDom: false; windows: OwnershipWindow[]; current: boolean };
 
-/** admin / treasurer / chairman — whole-dom history (canReadAccounting rule). */
+/**
+ * Whole-dom history: admin / accountant / spravca (readAccounting) or a
+ * treasurer / chairman board seat — authz.ts canReadAccounting.
+ */
 export async function isWholeDomReader(
   userId: string,
   userRole: string,
   entityId: string
 ): Promise<boolean> {
-  if (userRole === "admin") return true;
-  return hasBoardRole(userId, entityId, ["treasurer", "chairman"]);
+  return canReadAccounting(userId, userRole, entityId);
 }
 
 /** null = no access to the unit at all (route answers 403). */

@@ -102,6 +102,12 @@ export default function AiConnectGuide({
           {app !== "other" ? (
             <p className="mt-3 text-base text-ui-text-muted">{t(`${app}Note`)}</p>
           ) : null}
+          {app === "claude" ? (
+            <p className="mt-2 text-base text-ui-text-muted">{t("claudeDesktopNote")}</p>
+          ) : null}
+          {app !== "other" ? (
+            <p className="mt-2 text-base text-ui-text-muted">{t("mobileNote")}</p>
+          ) : null}
           {link ? (
             <p className="mt-2 text-base">
               <a
@@ -124,6 +130,7 @@ export default function AiConnectGuide({
             <li key={i}>{t(`safety.${i}`)}</li>
           ))}
         </ul>
+        <p className="mt-2 text-base text-ui-text">{t("confirmInBrowser")}</p>
       </div>
     </div>
   );

@@ -46,6 +46,12 @@ export interface CommunityRootRow {
    * Phase 5, falls back to "hoa" in callers that need a default.
    */
   templateSlug: string | null;
+  /**
+   * BYT-20261118-020: stanovy notice lead time in full days
+   * (entities.data.notice_lead_days). Null = statutory floor only
+   * (modules/voting/src/workflow/notice.ts effectiveLeadDays).
+   */
+  noticeLeadDays: number | null;
   createdAt: Date;
 }
 
@@ -68,6 +74,7 @@ export async function getCommunityRoot(): Promise<CommunityRootRow | null> {
       legalNotice: sql<string | null>`${entities.data}->>'legal_notice'`,
       communityCrossEntranceVisible: sql<boolean>`coalesce((${entities.data}->>'community_cross_entrance_visible')::boolean, false)`,
       templateSlug: sql<string | null>`${entities.data}->>'template_slug'`,
+      noticeLeadDays: sql<number | null>`(${entities.data}->>'notice_lead_days')::int`,
       createdAt: entities.createdAt,
     })
     .from(entities)
@@ -98,6 +105,7 @@ export async function listCommunityRoots(): Promise<CommunityRootRow[]> {
       legalNotice: sql<string | null>`${entities.data}->>'legal_notice'`,
       communityCrossEntranceVisible: sql<boolean>`coalesce((${entities.data}->>'community_cross_entrance_visible')::boolean, false)`,
       templateSlug: sql<string | null>`${entities.data}->>'template_slug'`,
+      noticeLeadDays: sql<number | null>`(${entities.data}->>'notice_lead_days')::int`,
       createdAt: entities.createdAt,
     })
     .from(entities)
@@ -172,6 +180,10 @@ export async function getUserPrimaryRole(userId: string): Promise<MembershipRole
     vote_counter: 2,
     owner: 3,
     admin: 4,
+    // BYT-20261118-020 — mirrors ROLE_RANK in entity-tree.ts.
+    member: 3,
+    accountant: 1,
+    spravca: 2,
   };
   let best: MembershipRole = "owner";
   for (const r of rows) {

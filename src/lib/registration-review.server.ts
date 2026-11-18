@@ -4,6 +4,7 @@ import { and, eq } from "drizzle-orm";
 
 import { db } from "@/db";
 import { entities, memberships, users } from "@/db/schema";
+import { ASSIGNABLE_ROLES } from "@/lib/role-options";
 import type { UserRole } from "@/types";
 
 // Approve / reject of a pending registration — extracted unchanged from
@@ -12,13 +13,9 @@ import type { UserRole } from "@/types";
 // commit through the same code as the owners inbox. No e-mail is sent
 // to the person on either path.
 
-export const REGISTRATION_APPROVE_ROLES: UserRole[] = [
-  "admin",
-  "owner",
-  "tenant",
-  "vote_counter",
-  "caretaker",
-];
+// BYT-20261118-020: + member / accountant / spravca. Approval is gated by
+// manageUsers (admin only), so spravca cannot grant `admin` this way.
+export const REGISTRATION_APPROVE_ROLES: UserRole[] = ASSIGNABLE_ROLES;
 
 export type ApproveRegistrationError = "invalid_role" | "not_found" | "flat_not_found";
 

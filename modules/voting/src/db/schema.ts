@@ -11,6 +11,8 @@ import {
   pgEnum,
   uniqueIndex,
   index,
+  date,
+  check,
 } from "drizzle-orm/pg-core";
 import { relations, sql } from "drizzle-orm";
 
@@ -76,6 +78,8 @@ export const votingEventKindEnum = pgEnum("mod_voting_event_kind", [
   "ballot_superseded",
   "document_generated",
   "minutes_finalised",
+  // A board member revoked (deleted) a power of attorney before the close.
+  "mandate_revoked",
 ]);
 
 export const votingOfficialRoleEnum = pgEnum("mod_voting_official_role", [
@@ -171,9 +175,17 @@ export const mandates = pgTable(
     fromEntityId: uuid("from_entity_id")
       .references(() => entities.id, { onDelete: "restrict" })
       .notNull(),
-    toOwnerId: uuid("to_owner_id")
-      .references(() => users.id, { onDelete: "restrict" })
-      .notNull(),
+    // NULL when the proxy is not an owner account (2026-11-18, §14 ods. 4
+    // zák. 182/1993 Z.z.: "splnomocniť inú osobu" — any person, not only an
+    // owner). Then proxy_name is required (check below).
+    toOwnerId: uuid("to_owner_id").references(() => users.id, { onDelete: "restrict" }),
+    // External proxy (no account): identification as written on the paper PoA.
+    // Plain columns on the mandate row — part of the §14a ods. 8 annex; they
+    // live and die with it (the row cascades with its voting).
+    proxyName: varchar("proxy_name", { length: 255 }),
+    proxyBirthDate: date("proxy_birth_date", { mode: "string" }),
+    proxyAddress: varchar("proxy_address", { length: 500 }),
+    proxyNote: text("proxy_note"),
     paperDocumentConfirmed: boolean("paper_document_confirmed")
       .notNull()
       .default(false),
@@ -190,6 +202,10 @@ export const mandates = pgTable(
     votingEntityIdx: uniqueIndex("mod_voting_mandates_voting_entity_idx").on(
       table.votingId,
       table.fromEntityId
+    ),
+    proxyCheck: check(
+      "mod_voting_mandates_proxy_chk",
+      sql`${table.toOwnerId} IS NOT NULL OR ${table.proxyName} IS NOT NULL`
     ),
   })
 );

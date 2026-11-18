@@ -9,6 +9,7 @@ import { isUnitScoped, normalizeVotingMethod } from "@/lib/voting-method";
 import { computeTotalPossibleWeight } from "./freeze.server";
 import { loadEligibilitySnapshot } from "./participation";
 import { getCommunityRoot } from "@/lib/legacy-compat";
+import { VOTING_ROLES, isVotingRole } from "./voting-roles";
 import type {
   VoteChoice,
   VoteWithOwnership,
@@ -292,7 +293,7 @@ async function legacyMembershipFallback(
       )
     );
   const rank = (m: (typeof ms)[number]) =>
-    (m.validAsOf ? 4 : m.status === "active" ? 2 : 0) + (m.role === "owner" ? 1 : 0);
+    (m.validAsOf ? 4 : m.status === "active" ? 2 : 0) + (isVotingRole(m.role) ? 1 : 0);
   const best = new Map<string, (typeof ms)[number]>();
   for (const m of ms) {
     if (!m.validAsOf && m.status !== "active") continue;
@@ -330,7 +331,9 @@ async function livePresenceRows(
         sql`${memberships.status} <> 'pending'`,
         membershipAsOf,
         sql`${memberships.endReason} IS DISTINCT FROM 'merged'`,
-        ...(unitScoped ? [eq(memberships.role, "owner")] : [])
+        // Voting roles only (voting-roles.ts) — for member-scoped methods too:
+        // a tenant / accountant membership never carries a vote.
+        inArray(memberships.role, [...VOTING_ROLES])
       )
     )
     .leftJoin(

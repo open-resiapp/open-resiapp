@@ -4,6 +4,7 @@
 // and the injectable HTTP layer.
 
 import type { NormalizedBankLine } from "./bank-import";
+import { normalizeSymbol } from "./payment-symbols";
 
 const FIO_BASE = "https://fioapi.fio.cz/v1/rest";
 
@@ -87,9 +88,9 @@ export function mapFioTransactions(json: FioStatementJson): {
       direction: signedCents >= 0 ? "credit" : "debit",
       bookingDate: date,
       valueDate: date,
-      vs: col(tx, "column5")?.replace(/^0+/, "") || null,
-      ss: col(tx, "column6")?.replace(/^0+/, "") || null,
-      ks: col(tx, "column4")?.replace(/^0+/, "") || null,
+      vs: normalizeSymbol(col(tx, "column5")),
+      ss: normalizeSymbol(col(tx, "column6")),
+      ks: normalizeSymbol(col(tx, "column4")),
       // Fio gives domestic account/bank-code, not IBAN — keep the pair as
       // an identifier string; IBAN-based matching simply won't fire.
       counterpartyIban:

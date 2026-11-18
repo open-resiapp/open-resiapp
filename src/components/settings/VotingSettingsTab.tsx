@@ -4,7 +4,14 @@ import { useTranslations } from "next-intl";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import type { VotingMethod } from "@/types";
-import { Badge, Button, Card, Field, Icon, Textarea } from "@/components/ui";
+import { Badge, Button, Card, Field, Icon, Input, Textarea } from "@/components/ui";
+import { useOptionalShell } from "@/components/layout/ShellContext";
+import { getLegalCopy } from "@/lib/legal-copy";
+import { normalizeVotingMethod, type CanonicalVotingMethod } from "@/lib/voting-method";
+import {
+  STATUTORY_LEAD_DAYS,
+  validateNoticeLeadSetting,
+} from "@modules/voting/src/workflow/notice";
 import Notice, { type NoticeState } from "./Notice";
 
 interface VotingSettingsTabProps {
@@ -12,30 +19,77 @@ interface VotingSettingsTabProps {
   /** Stored voting settings, resolved by the server page. */
   initialMethod: string;
   initialLegalNotice: string | null;
+  /**
+   * BYT-20261118-020: stanovy notice lead time (entities.data.notice_lead_days).
+   * `undefined` = the page does not load / persist it yet → section hidden,
+   * so the field can never be a silent no-op.
+   */
+  initialNoticeLeadDays?: number | null;
 }
 
-const methods: { value: VotingMethod; labelKey: string; descKey: string }[] = [
-  { value: "per_share", labelKey: "votingMethodPerShare", descKey: "votingMethodPerShareDesc" },
-  { value: "per_flat", labelKey: "votingMethodPerFlat", descKey: "votingMethodPerFlatDesc" },
-  { value: "per_area", labelKey: "votingMethodPerArea", descKey: "votingMethodPerAreaDesc" },
+// Radio value = the value PATCHed to /api/building. The HOA trio keeps its
+// legacy names (what every existing install stores); the member-scoped
+// methods only exist as canonical names.
+const methods: {
+  value: VotingMethod | CanonicalVotingMethod;
+  canonical: CanonicalVotingMethod;
+  labelKey: string;
+  descKey: string;
+}[] = [
+  { value: "per_share", canonical: "weighted_by_share", labelKey: "votingMethodPerShare", descKey: "votingMethodPerShareDesc" },
+  { value: "per_flat", canonical: "one_per_unit", labelKey: "votingMethodPerFlat", descKey: "votingMethodPerFlatDesc" },
+  { value: "per_area", canonical: "per_area", labelKey: "votingMethodPerArea", descKey: "votingMethodPerAreaDesc" },
+  { value: "one_per_member", canonical: "one_per_member", labelKey: "votingMethodPerMember", descKey: "votingMethodPerMemberDesc" },
+  { value: "custom_weight", canonical: "custom_weight", labelKey: "votingMethodCustomWeight", descKey: "votingMethodCustomWeightDesc" },
 ];
 
-// Both the Slovak (zák. 182/1993) and Czech (SVJ) default is "by co-ownership
-// share". Stored values may use the canonical names; show them on the radio
-// that means the same thing.
-const DEFAULT_METHOD: VotingMethod = "per_share";
+// Stored values may use the canonical or the legacy names; show them on the
+// radio that means the same thing.
 function toRadioValue(stored: string): string {
-  if (stored === "weighted_by_share") return "per_share";
-  if (stored === "one_per_unit") return "per_flat";
-  return stored;
+  const canonical = normalizeVotingMethod(stored);
+  return methods.find((m) => m.canonical === canonical)?.value ?? stored;
 }
 
-export default function VotingSettingsTab({ canEdit, initialMethod, initialLegalNotice }: VotingSettingsTabProps) {
+const NOTICE_SETTING_ERROR_KEYS = {
+  NOTICE_LEAD_SETTING_INVALID: "noticeLeadErrorInvalid",
+  NOTICE_LEAD_SETTING_BELOW_STATUTORY: "noticeLeadErrorBelowStatutory",
+} as const;
+
+// Error codes returned by PATCH /api/building (src/app/api/building/route.ts).
+const API_ERROR_KEYS: Record<string, string> = {
+  ...NOTICE_SETTING_ERROR_KEYS,
+  VOTING_METHOD_NOT_ALLOWED: "votingMethodNotAllowedError",
+};
+
+class PatchError extends Error {
+  constructor(
+    readonly code: string | null,
+    readonly minDays?: number
+  ) {
+    super(code ?? "PATCH_FAILED");
+  }
+}
+
+export default function VotingSettingsTab({
+  canEdit,
+  initialMethod,
+  initialLegalNotice,
+  initialNoticeLeadDays,
+}: VotingSettingsTabProps) {
   const t = useTranslations("Settings");
   const th = useTranslations("SettingsHub");
   const tc = useTranslations("Common");
   const router = useRouter();
-  const startMethod = toRadioValue(initialMethod || DEFAULT_METHOD);
+  const shell = useOptionalShell();
+  // Statute-driven: SK zák. 182/1993 §14 ods. 3 counts votes per unit, so an
+  // SVB never sees "one member = one vote"; a bytové družstvo (§240 Obch.
+  // zák. / §755 ZOK) never sees the per-unit methods.
+  const legal = getLegalCopy(shell?.community?.templateSlug, shell?.community?.country);
+  const defaultRadio = toRadioValue(legal.defaultVotingMethod);
+  const startMethod = toRadioValue(initialMethod || legal.defaultVotingMethod);
+  const visibleMethods = methods.filter(
+    (m) => legal.votingMethods.includes(m.canonical) || m.value === startMethod
+  );
   const [currentMethod, setCurrentMethod] = useState<string>(startMethod);
   const [selectedMethod, setSelectedMethod] = useState<string>(startMethod);
   const [legalNotice, setLegalNotice] = useState(initialLegalNotice ?? "");
@@ -44,6 +98,19 @@ export default function VotingSettingsTab({ canEdit, initialMethod, initialLegal
   const [savingNotice, setSavingNotice] = useState(false);
   const [missingAreas, setMissingAreas] = useState(false);
   const [message, setMessage] = useState<NoticeState>(null);
+  const isAllowed = (value: string) =>
+    legal.votingMethods.includes(normalizeVotingMethod(value)) &&
+    methods.some((m) => m.value === value);
+
+  // Stanovy notice lead time (empty input = statutory minimum only).
+  const showNoticeLead = initialNoticeLeadDays !== undefined;
+  const statutoryLead = STATUTORY_LEAD_DAYS[legal.regime][legal.country];
+  const savedLeadText = initialNoticeLeadDays == null ? "" : String(initialNoticeLeadDays);
+  const [savedLead, setSavedLead] = useState(savedLeadText);
+  const [leadInput, setLeadInput] = useState(savedLeadText);
+  const [savingLead, setSavingLead] = useState(false);
+  const leadValue = leadInput.trim() === "" ? null : Number(leadInput);
+  const leadError = validateNoticeLeadSetting(legal.country, legal.regime, leadValue);
 
   // The flat list is only needed to warn about missing areas when the
   // "by area" method is chosen — fetch it lazily, once.
@@ -57,7 +124,7 @@ export default function VotingSettingsTab({ canEdit, initialMethod, initialLegal
       .catch(() => {});
   }, [selectedMethod, areasChecked]);
 
-  const hasChanges = selectedMethod !== currentMethod;
+  const hasChanges = selectedMethod !== currentMethod && isAllowed(selectedMethod);
   const hasNoticeChanges = legalNotice !== savedLegalNotice;
 
   const patch = async (body: Record<string, unknown>) => {
@@ -66,7 +133,23 @@ export default function VotingSettingsTab({ canEdit, initialMethod, initialLegal
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(body),
     });
-    if (!res.ok) throw new Error();
+    if (!res.ok) {
+      const data = (await res.json().catch(() => null)) as
+        | { error?: unknown; minDays?: unknown }
+        | null;
+      throw new PatchError(
+        typeof data?.error === "string" ? data.error : null,
+        typeof data?.minDays === "number" ? data.minDays : undefined
+      );
+    }
+  };
+
+  // Server-side code → catalog entry; unknown codes fall back to `fallbackKey`.
+  const errorText = (err: unknown, fallbackKey: string) => {
+    if (err instanceof PatchError && err.code && API_ERROR_KEYS[err.code]) {
+      return t(API_ERROR_KEYS[err.code], { days: err.minDays ?? 0 });
+    }
+    return t(fallbackKey);
   };
 
   const handleSave = async () => {
@@ -77,10 +160,26 @@ export default function VotingSettingsTab({ canEdit, initialMethod, initialLegal
       setCurrentMethod(selectedMethod);
       setMessage({ type: "success", text: t("votingMethodSaved") });
       router.refresh();
-    } catch {
-      setMessage({ type: "error", text: t("votingMethodSaveFailed") });
+    } catch (err) {
+      setMessage({ type: "error", text: errorText(err, "votingMethodSaveFailed") });
     } finally {
       setSaving(false);
+    }
+  };
+
+  const handleSaveLead = async () => {
+    if (leadError) return;
+    setSavingLead(true);
+    setMessage(null);
+    try {
+      await patch({ noticeLeadDays: leadValue });
+      setSavedLead(leadInput.trim());
+      setMessage({ type: "success", text: t("noticeLeadSaved") });
+      router.refresh();
+    } catch (err) {
+      setMessage({ type: "error", text: errorText(err, "noticeLeadSaveFailed") });
+    } finally {
+      setSavingLead(false);
     }
   };
 
@@ -112,8 +211,9 @@ export default function VotingSettingsTab({ canEdit, initialMethod, initialLegal
 
       <fieldset className="space-y-3">
         <legend className="sr-only">{t("votingMethod")}</legend>
-        {methods.map((method) => {
+        {visibleMethods.map((method) => {
           const selected = selectedMethod === method.value;
+          const allowed = isAllowed(method.value);
           return (
             <label
               key={method.value}
@@ -126,14 +226,15 @@ export default function VotingSettingsTab({ canEdit, initialMethod, initialLegal
                 name="votingMethod"
                 value={method.value}
                 checked={selected}
-                onChange={() => canEdit && setSelectedMethod(method.value)}
-                disabled={!canEdit}
+                onChange={() => canEdit && allowed && setSelectedMethod(method.value)}
+                disabled={!canEdit || !allowed}
                 className="mt-1 h-5 w-5 shrink-0 accent-ui-primary"
               />
               <span className="min-w-0">
                 <span className="flex flex-wrap items-center gap-2">
                   <span className="text-base font-medium text-ui-text">{t(method.labelKey)}</span>
-                  {method.value === DEFAULT_METHOD ? <Badge tone="info">{th("defaultBadge")}</Badge> : null}
+                  {method.value === defaultRadio ? <Badge tone="info">{th("defaultBadge")}</Badge> : null}
+                  {!allowed ? <Badge tone="warning">{t("votingMethodNotAllowed")}</Badge> : null}
                 </span>
                 <span className="mt-0.5 block text-base text-ui-text-muted">{t(method.descKey)}</span>
               </span>
@@ -148,6 +249,12 @@ export default function VotingSettingsTab({ canEdit, initialMethod, initialLegal
         </p>
       ) : null}
 
+      {!isAllowed(currentMethod) ? (
+        <p className="rounded-lg border border-ui-warning/40 bg-ui-warning/10 p-3 text-base text-ui-text">
+          {t("votingMethodNotAllowedHint")}
+        </p>
+      ) : null}
+
       {canEdit && hasChanges ? (
         <div className="flex flex-wrap gap-3">
           <Button onClick={handleSave} loading={saving}>
@@ -156,6 +263,45 @@ export default function VotingSettingsTab({ canEdit, initialMethod, initialLegal
           <Button variant="secondary" onClick={() => setSelectedMethod(currentMethod)}>
             {tc("cancel")}
           </Button>
+        </div>
+      ) : null}
+
+      {showNoticeLead ? (
+        <div className="space-y-3 rounded-lg border border-ui-border p-4">
+          <Field
+            label={t("noticeLeadLabel")}
+            hint={
+              statutoryLead === null
+                ? t("noticeLeadHintStanovy")
+                : t("noticeLeadHintStatutory", { days: statutoryLead })
+            }
+            error={
+              leadError
+                ? t(NOTICE_SETTING_ERROR_KEYS[leadError.code], { days: leadError.minDays ?? 0 })
+                : undefined
+            }
+          >
+            <Input
+              type="number"
+              inputMode="numeric"
+              min={statutoryLead ?? 0}
+              step={1}
+              value={leadInput}
+              onChange={(e) => canEdit && setLeadInput(e.target.value)}
+              disabled={!canEdit}
+              placeholder={statutoryLead === null ? "" : String(statutoryLead)}
+            />
+          </Field>
+          {canEdit && leadInput.trim() !== savedLead ? (
+            <div className="flex flex-wrap gap-3">
+              <Button onClick={handleSaveLead} loading={savingLead} disabled={!!leadError}>
+                {savingLead ? tc("saving") : tc("save")}
+              </Button>
+              <Button variant="secondary" onClick={() => setLeadInput(savedLead)}>
+                {tc("cancel")}
+              </Button>
+            </div>
+          ) : null}
         </div>
       ) : null}
 

@@ -24,7 +24,7 @@ import { postAssessmentsForMonth } from "../engine/booking";
 import { domUnitsWhere } from "./dom-units";
 import { lockDraft } from "./fee-schedules";
 import { lockOpenPeriods } from "./periods";
-import type { AllocationKey } from "./constants";
+import type { AllocationKey, RateMode } from "./constants";
 
 // Predpis publish flow (spec §Predpis + iteration 2). Publishing a draft:
 //   1. locks the PERIOD row (serializes concurrent publishes for the
@@ -154,6 +154,7 @@ interface ScheduleForPublish {
     serviceCategoryId: string;
     allocationKey: AllocationKey;
     rateCents: number | null;
+    rateMode: RateMode;
     fixedAmountCents: number | null;
   }[];
 }
@@ -188,6 +189,7 @@ async function loadSchedule(
       serviceCategoryId: feeScheduleServices.serviceCategoryId,
       allocationKey: feeScheduleServices.allocationKey,
       rateCents: feeScheduleServices.rateCents,
+      rateMode: feeScheduleServices.rateMode,
       fixedAmountCents: feeScheduleServices.fixedAmountCents,
     })
     .from(feeScheduleServices)
@@ -198,7 +200,13 @@ async function loadSchedule(
     .where(eq(feeScheduleServices.scheduleId, scheduleId))
     .orderBy(asc(serviceCategories.sortOrder));
 
-  return { ...header, services };
+  return {
+    ...header,
+    services: services.map((s) => ({
+      ...s,
+      rateMode: s.rateMode === "per_unit" ? ("per_unit" as const) : ("total" as const),
+    })),
+  };
 }
 
 function monthsFrom(effectiveFrom: Date): number[] {

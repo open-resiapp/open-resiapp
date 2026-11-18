@@ -16,7 +16,7 @@ import {
   unitSettings,
 } from "../db/schema";
 import type { Tx } from "../engine/booking";
-import { hasBoardRole } from "./authz";
+import { canReadAccounting } from "./authz";
 import { domUnitsWhere, listDomUnits } from "./dom-units";
 import { insertReadingTx, voidReadingTx } from "./meters";
 import {
@@ -1237,6 +1237,45 @@ export async function voidBuildingReading(input: {
   });
 }
 
+// ── Hand-off: person-months → vyúčtovanie ──────────────
+
+/**
+ * The year's person-months as reported in the reading round, for the
+ * vyúčtovanie cost split of `persons`-keyed services (lib/vyuctovanie.ts
+ * buildKeyWeights). Only RESOLVED (board-reviewed), non-voided months count;
+ * `unresolved` lets the vyúčtovanie block until the board has reviewed the
+ * rest. Read-only — independent of "Použiť pre mesačné platby" below, which
+ * only feeds the NEXT predpis.
+ */
+export async function getResolvedPersonMonths(
+  dbh: Pick<typeof db, "select"> | Tx,
+  entityId: string,
+  year: number
+): Promise<{ resolved: Map<string, number>; unresolved: number }> {
+  const rows = await dbh
+    .select({
+      unitEntityId: personMonths.unitEntityId,
+      month: personMonths.month,
+      personsCount: personMonths.personsCount,
+      resolvedAt: personMonths.resolvedAt,
+    })
+    .from(personMonths)
+    .where(
+      and(
+        eq(personMonths.entityId, entityId),
+        eq(personMonths.year, year),
+        isNull(personMonths.voidedAt)
+      )
+    );
+  const resolved = new Map<string, number>();
+  let unresolved = 0;
+  for (const r of rows) {
+    if (r.resolvedAt) resolved.set(`${r.unitEntityId}|${r.month}`, r.personsCount);
+    else unresolved += 1;
+  }
+  return { resolved, unresolved };
+}
+
 // ── Hand-off: person-months → unit_persons ─────────────
 
 /**
@@ -1244,7 +1283,9 @@ export async function voidBuildingReading(input: {
  * months not yet applied, writes mod_accounting_unit_persons rows only at
  * months where the count changes (vs. the value effective just before).
  * Affects only the NEXT predpis publish: published fee_assessments carry
- * their own snapshot and are never touched here.
+ * their own snapshot and are never touched here. The SAME year's
+ * vyúčtovanie reads the resolved person-months directly
+ * (getResolvedPersonMonths) — it does not depend on this action.
  */
 export async function applyPersonsToUnitPersons(input: {
   entityId: string;
@@ -1360,9 +1401,8 @@ export async function resolveReadingPhoto(input: {
   userId: string;
   userRole: string;
 }): Promise<{ storageKey: string } | null> {
-  const isBoard =
-    input.userRole === "admin" ||
-    (await hasBoardRole(input.userId, input.entityId, ["treasurer", "chairman"]));
+  // BYT-20261118-020: + accountant / spravca (readAccounting).
+  const isBoard = await canReadAccounting(input.userId, input.userRole, input.entityId);
   if (input.kind === "building") {
     if (!isBoard) return null;
     const [row] = await db

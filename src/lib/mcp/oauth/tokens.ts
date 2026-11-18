@@ -247,6 +247,14 @@ export interface ValidAccessToken {
   clientRowId: string;
   clientId: string;
   clientName: string;
+  /**
+   * MCP Apps UI capability the client declared at its last `initialize`
+   * (null = never recorded) + the protocol version and when — see
+   * src/lib/mcp/client-capabilities.ts.
+   */
+  clientAppsUi: boolean | null;
+  clientProtocolVersion: string | null;
+  clientCapabilitiesSeenAt: Date | null;
   scopes: Scope[];
   resource: string;
   expiresAt: Date;
@@ -267,6 +275,9 @@ export async function validateAccessToken(
       token: oauthTokens,
       clientId: oauthClients.clientId,
       clientName: oauthClients.name,
+      clientAppsUi: oauthClients.appsUiDeclared,
+      clientProtocolVersion: oauthClients.mcpProtocolVersion,
+      clientCapabilitiesSeenAt: oauthClients.capabilitiesSeenAt,
     })
     .from(oauthTokens)
     .innerJoin(oauthClients, eq(oauthClients.id, oauthTokens.clientId))
@@ -292,6 +303,9 @@ export async function validateAccessToken(
     clientRowId: t.clientId,
     clientId: row.clientId,
     clientName: row.clientName,
+    clientAppsUi: row.clientAppsUi,
+    clientProtocolVersion: row.clientProtocolVersion,
+    clientCapabilitiesSeenAt: row.clientCapabilitiesSeenAt,
     scopes: normalizeStoredScopes(t.scopes),
     resource: t.resource,
     expiresAt: t.accessExpiresAt,

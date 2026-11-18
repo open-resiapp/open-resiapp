@@ -1,10 +1,12 @@
 import "server-only";
 
-import { and, eq, isNull, sql } from "drizzle-orm";
+import { and, eq, inArray, isNull, sql } from "drizzle-orm";
 
 import { db } from "@/db";
 import { entities, memberships, posts } from "@/db/schema";
 import { getCommunityRoot, type CommunityRootRow } from "@/lib/legacy-compat";
+import { resolveKindChain } from "@/lib/import/seed";
+import { UNIT_HOLDER_ROLES } from "@/lib/role-options";
 
 // RES-20260609-001: single signal consumed by the dashboard onboarding
 // banner ("should I nag?") and the /onboarding wizard ("which steps are
@@ -25,17 +27,20 @@ export async function getOnboardingStatus(
 ): Promise<OnboardingStatus> {
   const root = preloadedRoot === undefined ? await getCommunityRoot() : preloadedRoot;
   const communityConfigured = !!(root && root.name && root.address);
+  // BYT-20261118-020: the template's leaf kind (unit / plot / garage …),
+  // so non-HOA communities can finish the units step; HOA stays `unit`.
+  const { leaf } = await resolveKindChain(root?.templateSlug ?? undefined);
 
   const [[{ count: unitCount }], [{ count: ownerCount }], [{ count: postCount }]] =
     await Promise.all([
       db
         .select({ count: sql<number>`count(*)::int` })
         .from(entities)
-        .where(and(eq(entities.kind, "unit"), isNull(entities.archivedAt))),
+        .where(and(eq(entities.kind, leaf), isNull(entities.archivedAt))),
       db
         .select({ count: sql<number>`count(*)::int` })
         .from(memberships)
-        .where(and(eq(memberships.role, "owner"), eq(memberships.status, "active"))),
+        .where(and(inArray(memberships.role, UNIT_HOLDER_ROLES), eq(memberships.status, "active"))),
       db.select({ count: sql<number>`count(*)::int` }).from(posts),
     ]);
 

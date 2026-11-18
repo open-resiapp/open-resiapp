@@ -4,7 +4,7 @@ import { and, asc, eq, isNull } from "drizzle-orm";
 import { db } from "@/db";
 import { getStorage, buildStorageKey } from "@/lib/storage";
 import { expenses, expenseAttachments, auditLog } from "../db/schema";
-import { hasBoardRole, canWriteAccounting } from "./authz";
+import { canReadAccounting, canWriteAccounting } from "./authz";
 import { listOwnedUnits } from "./ownership-windows";
 
 // Expense attachments + right-to-inspect visibility (spec §Owner
@@ -226,9 +226,8 @@ export async function resolveAttachmentDownload(input: {
     );
   if (!att || att.voidedAt) return null;
 
-  const isBoard =
-    input.userRole === "admin" ||
-    (await hasBoardRole(input.userId, input.entityId, ["treasurer", "chairman"]));
+  // BYT-20261118-020: + accountant / spravca (readAccounting).
+  const isBoard = await canReadAccounting(input.userId, input.userRole, input.entityId);
   if (isBoard) {
     return {
       storageKey: att.storageKey,
@@ -259,9 +258,9 @@ export function canManageAttachments(
 }
 
 /**
- * Who may use the right to inspect (list + doklad download): the operator
- * admin, an active board reader (treasurer / chairman, term in force — they
- * see original scans), or a CURRENT owner of a unit in the dom (validity
+ * Who may use the right to inspect (list + doklad download): an accounting
+ * reader (admin / accountant / spravca, or treasurer / chairman with the
+ * term in force — they see original scans), or a CURRENT owner / člen of a unit in the dom (validity
  * window contains today; doklady filtered by visibility). Shared by the
  * inspect / download routes and the MCP `inspect_expenses` tool
  * (BYT-20261118-012).
@@ -271,8 +270,8 @@ export async function canInspectExpenses(
   userRole: string,
   entityId: string
 ): Promise<boolean> {
-  if (userRole === "admin") return true;
-  if (await hasBoardRole(userId, entityId, ["treasurer", "chairman"])) return true;
+  // admin / accountant / spravca / treasurer / chairman (BYT-20261118-020).
+  if (await canReadAccounting(userId, userRole, entityId)) return true;
   return (await listOwnedUnits(userId, entityId)).length > 0;
 }
 
@@ -326,9 +325,8 @@ export async function listInspectExpenses(input: {
 
   if (rows.length === 0) return [];
 
-  const isBoard =
-    input.userRole === "admin" ||
-    (await hasBoardRole(input.userId, input.entityId, ["treasurer", "chairman"]));
+  // BYT-20261118-020: + accountant / spravca (readAccounting).
+  const isBoard = await canReadAccounting(input.userId, input.userRole, input.entityId);
 
   // Non-voided attachments per expense (original + redacted).
   const atts = await db

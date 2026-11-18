@@ -25,7 +25,12 @@ import {
   type TransitionErrorCode,
   type VotingAction,
 } from "./workflow/transitions";
-import { validateNotice, type NoticeErrorCode } from "./workflow/notice";
+import {
+  noticeRulesFor,
+  validateNotice,
+  type NoticeErrorCode,
+  type NoticeRules,
+} from "./workflow/notice";
 
 export type TransitionFailureCode =
   | TransitionErrorCode
@@ -69,9 +74,11 @@ export async function transitionVoting(input: {
 
   // Country / time zone are read outside the transaction (cheap, no lock).
   let country: Country = "sk";
+  let noticeRules: NoticeRules = {};
   if (action === "announce") {
     const root = await getCommunityRoot();
     country = (root?.country ?? "sk") as Country;
+    noticeRules = noticeRulesFor(root);
   }
 
   try {
@@ -106,6 +113,7 @@ export async function transitionVoting(input: {
           startsAt: current.startsAt,
           endsAt: current.endsAt,
           timeZone: timeZoneForCountry(country),
+          rules: noticeRules,
         });
         if (noticeError) throw new Abort(noticeError.code, 400, noticeError.minDate);
         if (current.votingType === "written") {

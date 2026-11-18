@@ -16,6 +16,7 @@ import {
 import { getDebtorListForPrincipal } from "@modules/accounting/src/lib/debtors";
 import { listInbox } from "@modules/accounting/src/lib/expense-inbox";
 import { listExpenses } from "@modules/accounting/src/lib/expenses";
+import { listServiceCategories } from "@modules/accounting/src/lib/fee-schedules";
 import { postAllDueMonths } from "@modules/accounting/src/lib/fee-schedule-publish";
 import {
   getUnitLedger,
@@ -31,7 +32,9 @@ import { getVyuctovaniePreview } from "@modules/accounting/src/lib/vyuctovanie";
 import { getZavierkaStatus } from "@modules/accounting/src/lib/zavierka";
 import { getVotingParticipation } from "@modules/voting/src/participation";
 import { listVisibleVotings } from "@modules/voting/src/votings";
+import { resolveActionLocale, translatorFor } from "../actions/format";
 import { isBoard } from "../authz";
+import { freshnessLine, getDataFreshness } from "./freshness";
 import { McpError } from "../errors";
 import {
   iso,
@@ -69,7 +72,7 @@ const getBoardOverview = defineTool({
   title: "Board overview — what needs attention",
   description:
     "Returns what needs the board's attention today: unmatched bank lines, inbox scans, overdue invoices, vyúčtovanie deadline, revisions, debtors, active votings with turnout and drafts.\n" +
-    "Treasurer, chairman or admin. Money in cents; positive balance = debt.",
+    "Treasurer, chairman or admin. Money in cents; positive balance = debt. accounting.lastBankImportAt tells how current the payments are — mention it.",
   scopes: ["read", "finance:read"],
   visible: isReader,
   input: z.object({}),
@@ -80,12 +83,14 @@ const getBoardOverview = defineTool({
 
     if (ctx.enabledModules.has("accounting")) {
       await postDueMonths(ctx);
-      const [tiles, inbox] = await Promise.all([
+      const [tiles, inbox, freshness] = await Promise.all([
         getDashboardTiles(ctx.root.id, ctx.root.country),
         isWriter(ctx) ? listInbox(ctx.root.id, "pending") : Promise.resolve(null),
+        getDataFreshness(ctx.root.id),
       ]);
       const a = tiles.attention;
       data.accounting = {
+        ...freshness,
         unmatchedBankLines: a.unmatchedBankLines,
         inboxPending: inbox ? inbox.length : null,
         uncategorizedExpenses: a.uncategorizedExpenses,
@@ -107,7 +112,8 @@ const getBoardOverview = defineTool({
         a.revisionsOverdue ? `${a.revisionsOverdue} revision(s) OVERDUE` : "",
         a.vyuctovanieDeadline
           ? `vyúčtovanie ${a.vyuctovanieDeadline.year} due ${a.vyuctovanieDeadline.deadline}`
-          : ""
+          : "",
+        freshnessLine(freshness)
       );
     }
 
@@ -156,7 +162,7 @@ const getAccountingDashboard = defineTool({
   title: "Accounting dashboard",
   description:
     "Returns the community's current cash box, bank, repair fund (FPÚO, cash basis) and arrears totals, as on the accounting dashboard.\n" +
-    "Treasurer, chairman or admin. Money in cents with a formatted string.",
+    "Treasurer, chairman or admin. Money in cents with a formatted string. lastBankImportAt / balancesAsOf tell how current it is — mention them.",
   scopes: ["read", "finance:read"],
   module: "accounting",
   visible: isReader,
@@ -164,8 +170,12 @@ const getAccountingDashboard = defineTool({
   async run(_args, ctx) {
     assertReader(ctx.principal);
     await postDueMonths(ctx);
-    const t = await getDashboardTiles(ctx.root.id, ctx.root.country);
+    const [t, freshness] = await Promise.all([
+      getDashboardTiles(ctx.root.id, ctx.root.country),
+      getDataFreshness(ctx.root.id),
+    ]);
     const data = {
+      ...freshness,
       pokladnica: money(t.pokladnicaCents, ctx),
       banka: money(t.bankaCents, ctx),
       fondOprav: money(t.fondOpravCents, ctx),
@@ -175,7 +185,7 @@ const getAccountingDashboard = defineTool({
       url: link(ctx, "/accounting"),
     };
     return {
-      summary: `Bank ${data.banka.formatted}, cash ${data.pokladnica.formatted}, repair fund ${data.fondOprav.formatted}; ${t.nedoplatky.count} debtor(s) owing ${data.nedoplatky.total.formatted}.`,
+      summary: `Bank ${data.banka.formatted}, cash ${data.pokladnica.formatted}, repair fund ${data.fondOprav.formatted}; ${t.nedoplatky.count} debtor(s) owing ${data.nedoplatky.total.formatted}. ${freshnessLine(freshness)}`,
       data,
     };
   },
@@ -186,18 +196,22 @@ const listDebtors = defineTool({
   title: "List debtors",
   description:
     "Lists units in arrears (positive balance = debt). Treasurer, chairman and admin get every unit with owner names.\n" +
-    "Owners get the statutory disclosure view (threshold, SK 500 € name rule). Paginated.",
+    "Owners get the statutory disclosure view (threshold, SK 500 € name rule). Paginated. Debts are only as current as lastBankImportAt — mention it.",
   scopes: ["read", "finance:read"],
   module: "accounting",
   visible: (ctx) => isReader(ctx) || ctx.isDomOwner,
   input: z.object({ ...paginationShape }),
   async run(args, ctx) {
-    const list = await getDebtorListForPrincipal(ctx.principal, ctx.root.country);
+    const [list, freshness] = await Promise.all([
+      getDebtorListForPrincipal(ctx.principal, ctx.root.country),
+      getDataFreshness(ctx.root.id),
+    ]);
     const page = paginate(list.debtors, args);
     const total = list.debtors.reduce((s, d) => s + d.balanceCents, 0);
     return {
-      summary: `${list.debtors.length} debtor(s) owing ${money(total, ctx).formatted} (${list.audience} view).`,
+      summary: `${list.debtors.length} debtor(s) owing ${money(total, ctx).formatted} (${list.audience} view). ${freshnessLine(freshness)}`,
       data: {
+        ...freshness,
         audience: list.audience,
         enabled: list.enabled,
         threshold: list.audience === "owner" && list.thresholdCents !== null ? money(list.thresholdCents, ctx) : null,
@@ -532,11 +546,66 @@ const listExpensesTool = defineTool({
   },
 });
 
+const listServiceCategoriesTool = defineTool({
+  name: "list_service_categories",
+  title: "Service categories",
+  description:
+    "Lists the expense / service categories of this country with their id, slug, localised name and okruh (fpuo = repair fund, svc = services).\n" +
+    "Treasurer, chairman or admin. Use the id as serviceCategoryId in post_expense_from_inbox; a category decides the okruh.",
+  scopes: ["read", "finance:read"],
+  module: "accounting",
+  visible: isReader,
+  input: z.object({}),
+  async run(_args, ctx) {
+    assertReader(ctx.principal);
+    const country = ctx.root.country === "cz" ? "cz" : "sk";
+    const [rows, t] = await Promise.all([
+      listServiceCategories(country),
+      translatorFor(resolveActionLocale(undefined, ctx.root)),
+    ]);
+    const categories = rows.map((r) => {
+      let name: string = r.slug;
+      try {
+        name = t(`Accounting.serviceCategories.${r.slug}`);
+      } catch {
+        // unknown slug in the catalog → keep the slug
+      }
+      return { id: r.id, slug: r.slug, name, okruh: r.okruh };
+    });
+    return {
+      summary: `${categories.length} service categor${categories.length === 1 ? "y" : "ies"} (${country.toUpperCase()}).`,
+      data: { country, categories },
+    };
+  },
+});
+
+const getExpenseUploadLink = defineTool({
+  name: "get_expense_upload_link",
+  title: "Where to upload an invoice",
+  description:
+    "Returns the link to the screen where the user uploads a supplier invoice (PDF / photo) into the expense inbox.\n" +
+    "Treasurer or admin. Files cannot be uploaded through this connector: send the user the link, then use list_expense_inbox and post_expense_from_inbox.",
+  scopes: ["read", "finance:read"],
+  module: "accounting",
+  visible: isWriter,
+  input: z.object({}),
+  async run(_args, ctx) {
+    assertWriter(ctx.principal);
+    const url = link(ctx, "/accounting/expenses");
+    return {
+      summary: `Upload the invoice in the app (inbox section at the top of the invoices page): ${url}. Then list_expense_inbox shows it with OCR hints.`,
+      data: { url, next: ["list_expense_inbox", "post_expense_from_inbox"] },
+    };
+  },
+});
+
 const getVyuctovaniePreviewTool = defineTool({
   name: "get_vyuctovanie_preview",
   title: "Annual settlement preview",
   description:
-    "Returns the annual settlement (vyúčtovanie) preview for a year: publish gates, per-service totals and per-unit differences (positive = owner pays).\n" +
+    "Returns the annual settlement (vyúčtovanie) preview for a year: publish gates, per-service totals and per-unit results.\n" +
+    "Result (differenceVsPrescribed) = cost share − PRESCRIBED advances (positive = nedoplatok, owner pays; negative = preplatok). " +
+    "Unpaid advances (unpaid = prescribed − paid) are NOT in the result — they stay as arrears on the owner's ledger; report both, never add them twice.\n" +
     "Treasurer, chairman or admin. Defaults to last year. Publishing stays in the app.",
   scopes: ["read", "finance:read"],
   module: "accounting",
@@ -549,7 +618,7 @@ const getVyuctovaniePreviewTool = defineTool({
     const units = pv.settlement?.units ?? [];
     const page = paginate(units, args);
     return {
-      summary: `Vyúčtovanie ${year}: period ${pv.gates.periodStatus}, ${pv.gates.canPublish ? "ready to publish" : "not publishable yet"}${pv.settlement ? `, total difference ${money(pv.settlement.totalDifferenceCents, ctx).formatted}` : ""}.`,
+      summary: `Vyúčtovanie ${year}: period ${pv.gates.periodStatus}, ${pv.gates.canPublish ? "ready to publish" : "not publishable yet"}${pv.settlement ? `, total result vs prescribed advances ${money(pv.settlement.totalDifferenceCents, ctx).formatted}, unpaid advances (separate arrears) ${money(units.reduce((sum, u) => sum + u.totalUnpaidCents, 0), ctx).formatted}` : ""}.`,
       data: {
         year,
         gates: pv.gates,
@@ -558,12 +627,17 @@ const getVyuctovaniePreviewTool = defineTool({
         ),
         settlement: pv.settlement
           ? {
-              totalDifference: money(pv.settlement.totalDifferenceCents, ctx),
+              totalDifferenceVsPrescribed: money(pv.settlement.totalDifferenceCents, ctx),
+              // Over ALL units (not just this page): arrears that stay on the
+              // owners' ledgers, separate from the result above.
+              totalUnpaid: money(units.reduce((sum, u) => sum + u.totalUnpaidCents, 0), ctx),
               perService: pv.settlement.perService.map((s) => ({
                 category: pv.categorySlugs[s.serviceCategoryId] ?? s.serviceCategoryId,
                 actualCost: money(s.actualCostCents, ctx),
                 prescribed: money(s.prescribedCents, ctx),
-                advances: money(s.advancesCents, ctx),
+                advancesPaid: money(s.advancesCents, ctx),
+                differenceVsPrescribed: money(s.actualCostCents - s.prescribedCents, ctx),
+                unpaid: money(s.prescribedCents - s.advancesCents, ctx),
               })),
               total: page.total,
               nextCursor: page.nextCursor,
@@ -571,8 +645,10 @@ const getVyuctovaniePreviewTool = defineTool({
                 unitId: u.unitEntityId,
                 label: pv.unitLabels[u.unitEntityId] ?? u.unitEntityId,
                 totalCost: money(u.totalCostCents, ctx),
-                totalAdvances: money(u.totalAdvancesCents, ctx),
-                difference: money(u.totalDifferenceCents, ctx),
+                totalPrescribed: money(u.totalPrescribedCents, ctx),
+                totalAdvancesPaid: money(u.totalAdvancesCents, ctx),
+                totalUnpaid: money(u.totalUnpaidCents, ctx),
+                differenceVsPrescribed: money(u.totalDifferenceCents, ctx),
               })),
             }
           : null,
@@ -613,6 +689,8 @@ export const ACCOUNTING_TOOLS: ToolDef[] = [
   listUnmatchedPayments,
   listExpenseInbox,
   listExpensesTool,
+  listServiceCategoriesTool,
+  getExpenseUploadLink,
   getVyuctovaniePreviewTool,
   getZavierkaStatusTool,
 ];

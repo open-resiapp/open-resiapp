@@ -8,6 +8,7 @@ import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { Button, Card, Field, Input, Textarea } from "@/components/ui";
 import MandateModal from "@/components/voting/MandateModal";
+import MandateList from "@/components/voting/MandateList";
 import PaperVoteModal from "@/components/voting/PaperVoteModal";
 import DownloadMinutesButton from "@/components/voting/DownloadMinutesButton";
 import VotingFinancialImpacts from "@modules/voting/src/ui/VotingFinancialImpacts";
@@ -129,6 +130,7 @@ export default function BoardConsole({
   const tWorkflow = useTranslations("VotingWorkflow");
   const [overviewFilter, setOverviewFilter] = useState<OverviewFilter>("all");
   const [showMandateModal, setShowMandateModal] = useState(false);
+  const [mandatesReload, setMandatesReload] = useState(0);
   const [showPaperModal, setShowPaperModal] = useState(false);
   const [paperPreset, setPaperPreset] = useState<{ ownerId: string; unitId: string } | null>(
     null
@@ -163,6 +165,16 @@ export default function BoardConsole({
             </Button>
           )}
         </div>
+      )}
+
+      {/* Powers of attorney + revoke (undo) — board only, until the close. */}
+      {isActive && canManage && (
+        <MandateList
+          votingId={votingId}
+          canRevoke={canManage && !isClosed}
+          reloadKey={mandatesReload}
+          onChanged={onRefresh}
+        />
       )}
 
       {/* Turnout + a one-line "not voted yet" jump to the drill-down (board / vote counter) */}
@@ -298,7 +310,7 @@ export default function BoardConsole({
                     alt={`${b.ownerName} - ${b.flatNumber}`}
                     className="h-32 w-full object-cover"
                   />
-                  <div className="p-2 text-sm text-ui-text-muted">
+                  <div className="p-2 text-base text-ui-text-muted">
                     {b.ownerName} &middot; {t("flatHeader", { number: b.flatNumber })}
                   </div>
                 </a>
@@ -325,7 +337,10 @@ export default function BoardConsole({
           votingId={votingId}
           currentUserId={sessionUserId}
           onClose={() => setShowMandateModal(false)}
-          onCreated={onRefresh}
+          onCreated={() => {
+            setMandatesReload((n) => n + 1);
+            onRefresh();
+          }}
         />
       )}
     </>

@@ -16,7 +16,13 @@ import {
 // Display labels arrive translated via props; legal text is hardcoded
 // Slovak.
 //
-// ⚠️ Legal copy pending Filip's review before first real delivery.
+// ⚠️ Legal copy pending Filip's review before first real delivery —
+// NEEDS LEGAL-COPY SIGN-OFF: the addressee block, the pay-by sentence
+// ("najneskôr do …"), the signature block and the poučenie below.
+//
+// One Page per letter (UpomienkaPageSk) so the bulk "upomienky pre
+// všetkých dlžníkov" renders ONE file with a page per debtor; the default
+// export wraps a single letter for the per-unit download.
 
 Font.register({
   family: "Roboto",
@@ -83,6 +89,22 @@ const styles = StyleSheet.create({
   qrImage: { width: 100, height: 100 },
   qrLine: { fontSize: 10, marginBottom: 3 },
   legal: { marginTop: 16, fontSize: 8, color: "#555", lineHeight: 1.5 },
+  addressBlock: {
+    marginLeft: "55%",
+    marginBottom: 18,
+    fontSize: 11,
+    lineHeight: 1.4,
+  },
+  addressLabel: { fontSize: 8, color: "#777", marginBottom: 2 },
+  payBy: { marginTop: 12, fontSize: 11, lineHeight: 1.5, fontWeight: 700 },
+  signature: { marginTop: 36, width: "45%", marginLeft: "55%" },
+  signatureLine: {
+    borderTopWidth: 1,
+    borderTopColor: "#555",
+    paddingTop: 4,
+    fontSize: 10,
+    textAlign: "center",
+  },
   footer: {
     position: "absolute",
     bottom: 30,
@@ -94,9 +116,35 @@ const styles = StyleSheet.create({
   },
 });
 
-export interface UpomienkaPDFSkProps {
+export interface UpomienkaLetterSk {
+  asOf: string;
+  unitLabel: string;
+  vs: string | null;
+  /** Addressee: owner names + postal address (the flat's address). */
+  addressee: { names: string[]; address: string };
+  /** Formatted pay-by date (asOf + lehota). */
+  paymentDue: string;
+  /** Signatory name; null → blank line for a hand signature. */
+  signatoryName: string | null;
+  rows: {
+    name: string;
+    due: string;
+    days: number;
+    open: string;
+    ratePct: number;
+    interest: string;
+  }[];
+  totals: { open: string; interest: string; demand: string };
+  iban: string | null;
+  qrDataUrl: string | null;
+}
+
+export interface UpomienkaPDFSkProps extends UpomienkaLetterSk {
   building: { name: string; address: string; ico: string | null; dic?: string | null };
-  labels: {
+  labels: UpomienkaLabelsSk;
+}
+
+export interface UpomienkaLabelsSk {
     unit: string;
     vs: string;
     intro: string;
@@ -111,26 +159,14 @@ export interface UpomienkaPDFSkProps {
     qrTitle: string;
     iban: string;
     footer: string;
-  };
-  asOf: string;
-  unitLabel: string;
-  vs: string | null;
-  rows: {
-    name: string;
-    due: string;
-    days: number;
-    open: string;
-    ratePct: number;
-    interest: string;
-  }[];
-  totals: { open: string; interest: string; demand: string };
-  iban: string | null;
-  qrDataUrl: string | null;
+    addressee: string;
+    flat: string;
+    signatureRole: string;
 }
 
-export default function UpomienkaPDFSk(props: UpomienkaPDFSkProps) {
+/** One letter = one A4 page (used alone and by the bulk document). */
+export function UpomienkaPageSk(props: UpomienkaPDFSkProps) {
   return (
-    <Document>
       <Page size="A4" style={styles.page}>
         <View style={styles.header}>
           <Text style={styles.buildingName}>{props.building.name}</Text>
@@ -141,6 +177,20 @@ export default function UpomienkaPDFSk(props: UpomienkaPDFSkProps) {
           {props.building.dic && (
             <Text style={styles.buildingIco}>DIČ: {props.building.dic}</Text>
           )}
+        </View>
+
+        {/* Addressee (window-envelope position, right column). */}
+        <View style={styles.addressBlock}>
+          <Text style={styles.addressLabel}>{props.labels.addressee}</Text>
+          {props.addressee.names.map((n, i) => (
+            <Text key={i} style={{ fontWeight: 700 }}>
+              {n}
+            </Text>
+          ))}
+          <Text>
+            {props.labels.flat} {props.unitLabel}
+          </Text>
+          <Text>{props.addressee.address}</Text>
         </View>
 
         {/* SK statutory identity — hardcoded by design. */}
@@ -200,6 +250,14 @@ export default function UpomienkaPDFSk(props: UpomienkaPDFSkProps) {
           </Text>
         </View>
 
+        {/* SK demand with the pay-by date — hardcoded by design. */}
+        <Text style={styles.payBy}>
+          Dlžnú sumu {props.totals.demand} uhraďte, prosím, najneskôr do{" "}
+          {props.paymentDue}
+          {props.iban ? ` na účet ${props.iban}` : ""}
+          {props.vs ? ` s variabilným symbolom ${props.vs}` : ""}.
+        </Text>
+
         {props.qrDataUrl && props.iban && (
           <View style={styles.qrSection}>
             {/* eslint-disable-next-line jsx-a11y/alt-text */}
@@ -231,8 +289,47 @@ export default function UpomienkaPDFSk(props: UpomienkaPDFSkProps) {
           túto upomienku za bezpredmetnú.
         </Text>
 
-        <Text style={styles.footer}>{props.labels.footer}</Text>
+        <View style={styles.signature}>
+          <Text style={{ marginBottom: 28, fontSize: 10 }}>
+            Dňa {props.asOf}
+          </Text>
+          <Text style={styles.signatureLine}>
+            {props.signatoryName ?? " "}
+            {"\n"}
+            {props.labels.signatureRole}
+          </Text>
+        </View>
+
+        <Text style={styles.footer} fixed>
+          {props.labels.footer}
+        </Text>
       </Page>
+  );
+}
+
+export default function UpomienkaPDFSk(props: UpomienkaPDFSkProps) {
+  return (
+    <Document>
+      <UpomienkaPageSk {...props} />
+    </Document>
+  );
+}
+
+/** Bulk: ONE document, one page per debtor. */
+export function UpomienkyBulkPDFSk({
+  building,
+  labels,
+  letters,
+}: {
+  building: UpomienkaPDFSkProps["building"];
+  labels: UpomienkaLabelsSk;
+  letters: UpomienkaLetterSk[];
+}) {
+  return (
+    <Document>
+      {letters.map((l, i) => (
+        <UpomienkaPageSk key={i} {...l} building={building} labels={labels} />
+      ))}
     </Document>
   );
 }

@@ -1,15 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
-import { and, eq, inArray, isNull } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 
 import { auth } from "@/lib/auth";
 import { db } from "@/db";
-import { entities, memberships } from "@/db/schema";
 import { votings, votingItems, ballots } from "@modules/voting/src/db/schema";
 import { getVisibleVotingDetail } from "@modules/voting/src/votings";
+import { notifyVotingStarted } from "@modules/voting/src/voting-notify.server";
 import { assertBoard } from "@/lib/mcp/authz";
 import { isMcpError, mcpErrorStatus } from "@/lib/mcp/errors";
 import { principalFromSession, type Principal } from "@/lib/mcp/principal";
-import { sendPushToAll } from "@/lib/push";
 import { dispatchHook } from "@/lib/modules/dispatch";
 import { isModuleEnabled } from "@/lib/modules/route-guard";
 import { getCommunityRoot } from "@/lib/legacy-compat";
@@ -171,17 +170,35 @@ export async function PATCH(
   }
 
   // ── Officials (BYT-20261118-002 §2) ───────────────────
-  // Whole-list replace. Draft: preparation. Closed + unpublished: the minutes
-  // step records a verifier's refusal to sign (§14a ods. 8).
+  // Whole-list replace, allowed until the result is published (2026-11-18):
+  // draft = preparation; active = the meeting elects its chair / recorder /
+  // verifiers, or a verifier of a written vote is replaced; closed +
+  // unpublished = the minutes step (incl. a verifier's refusal to sign,
+  // §14a ods. 8 zák. 182/1993 Z.z.). After publication the minutes are
+  // final → read-only.
   if (body.officials !== undefined && body.action === undefined && body.status === undefined) {
-    if (current.status === "active" || current.resultPublishedAt) {
+    if (current.resultPublishedAt) {
       return NextResponse.json({ error: "VOTING_LOCKED" }, { status: 400 });
     }
     const normalized = normalizeOfficials(body.officials);
     if ("error" in normalized) {
       return NextResponse.json({ error: normalized.error }, { status: 400 });
     }
-    await db.transaction((tx) => replaceOfficials(tx, id, normalized.officials));
+    // Re-check under a row lock so a concurrent publish cannot slip in between.
+    const locked = await db.transaction(async (tx) => {
+      const [row] = await tx
+        .select({ resultPublishedAt: votings.resultPublishedAt })
+        .from(votings)
+        .where(eq(votings.id, id))
+        .limit(1)
+        .for("update");
+      if (!row || row.resultPublishedAt) return true;
+      await replaceOfficials(tx, id, normalized.officials);
+      return false;
+    });
+    if (locked) {
+      return NextResponse.json({ error: "VOTING_LOCKED" }, { status: 400 });
+    }
     if (Object.keys(body).length === 1) {
       return NextResponse.json({ officials: await listOfficials(id) });
     }
@@ -223,7 +240,9 @@ export async function PATCH(
     if (action === "close") await afterClose(updated);
     // Only the announcement notifies owners; a reopen (correction mode) must
     // not re-send the "new voting" push.
-    if (action === "announce") await notifyVotingStarted(updated);
+    // Push + e-mail fallback (voting-notify.server.ts); never throws, not
+    // awaited so the e-mail loop does not hold the response.
+    if (action === "announce") void notifyVotingStarted(updated);
     return NextResponse.json(updated);
   }
 
@@ -411,36 +430,5 @@ async function afterClose(updated: typeof votings.$inferSelect) {
     } catch (err) {
       console.error("[voting] accounting pipeline failed on close:", err);
     }
-  }
-}
-
-/** Push notify owners in the voting's subtree on the announcement. */
-async function notifyVotingStarted(updated: typeof votings.$inferSelect) {
-  if (!updated.entityId) return;
-  const [scope] = await db
-    .select({ path: entities.path })
-    .from(entities)
-    .where(eq(entities.id, updated.entityId))
-    .limit(1);
-  if (!scope) return;
-  const ownerRows = await db
-    .select({ userId: memberships.userId })
-    .from(memberships)
-    .innerJoin(entities, eq(memberships.entityId, entities.id))
-    .where(
-      and(
-        eq(memberships.status, "active"),
-        inArray(memberships.role, ["admin", "owner"]),
-        isNull(entities.archivedAt)
-        // Accept slight overestimation (no path filter) — unchanged behaviour.
-      )
-    );
-  const ownerIds = ownerRows.map((r) => r.userId);
-  if (ownerIds.length > 0) {
-    sendPushToAll(
-      { title: "Nové hlasovanie", body: updated.title, url: `/voting/${updated.id}` },
-      "votingStarted",
-      ownerIds
-    ).catch(() => {});
   }
 }

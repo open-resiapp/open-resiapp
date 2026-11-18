@@ -196,8 +196,10 @@ console.log("settlement integration");
   const b = res.units.find((u) => u.unitEntityId === "B")!;
   check("A uses metered share 60000 (not prescribed 50/50)",
     a.services[0].costShareCents === 60000);
-  check("A nedoplatok 20000 (60000−40000)", a.totalDifferenceCents === 20000);
-  check("B preplatok −20000 (40000−60000)", b.totalDifferenceCents === -20000);
+  // Result vs PRESCRIBED (ledger basis); paid advances only feed "unpaid".
+  check("A nedoplatok 10000 (60000−50000)", a.totalDifferenceCents === 10000);
+  check("B preplatok −10000 (40000−50000)", b.totalDifferenceCents === -10000);
+  check("A unpaid 10000 (50000−40000)", a.totalUnpaidCents === 10000);
 
   let threw = false;
   try {

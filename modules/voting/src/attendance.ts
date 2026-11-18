@@ -19,7 +19,7 @@ import type { Country } from "@/types";
 import { canRecordForVoting } from "./counter-authz.server";
 import { attendance, ballots, mandates, votingItems, votings } from "./db/schema";
 import { listEligibleVoters } from "./participation";
-import { validateNotice } from "./workflow/notice";
+import { noticeRulesFor, validateNotice, type NoticeRules } from "./workflow/notice";
 import {
   attendanceWriteError,
   buildAttendanceExport,
@@ -37,7 +37,7 @@ import {
   type RsvpSource,
   type RsvpStatus,
 } from "./workflow/attendance";
-import { getDisplayTemplateSlug } from "@/lib/templates/display-slug";
+import { getLegalCopy } from "@/lib/legal-copy";
 
 // BYT-20261118-001 — owners' meeting: announcement post, RSVP, attendance
 // list (prezenčná listina). Query functions only; routes gate authz and map
@@ -117,11 +117,16 @@ export async function eligibleLines(votingId: string): Promise<EligibleLine[]> {
   return listEligibleVoters(votingId);
 }
 
-async function communityContext(): Promise<{ country: Country; votingMethod: ReturnType<typeof normalizeVotingMethod> }> {
+async function communityContext(): Promise<{
+  country: Country;
+  votingMethod: ReturnType<typeof normalizeVotingMethod>;
+  noticeRules: NoticeRules;
+}> {
   const root = await getCommunityRoot();
   return {
     country: (root?.country ?? "sk") as Country,
     votingMethod: normalizeVotingMethod(root?.votingMethod),
+    noticeRules: noticeRulesFor(root),
   };
 }
 
@@ -198,13 +203,14 @@ export async function changeMeeting(
   const endsAt = new Date(startsAt.getTime() + (v.endsAt.getTime() - v.startsAt.getTime()));
 
   if (startsAt.getTime() !== v.startsAt.getTime()) {
-    const { country } = await communityContext();
+    const { country, noticeRules } = await communityContext();
     const notice = validateNotice({
       country,
       announcedAt: new Date(),
       startsAt,
       endsAt,
       timeZone: timeZoneForCountry(country),
+      rules: noticeRules,
     });
     if (notice) {
       throw new MeetingError("MEETING_NOTICE_TOO_SHORT", 400, { minDate: notice.minDate ?? null });
@@ -433,7 +439,8 @@ async function verifiedMandates(votingId: string) {
     .select({
       id: mandates.id,
       fromOwnerId: mandates.fromOwnerId,
-      toOwnerName: users.name,
+      // Owner account name, else the external proxy's name (2026-11-18).
+      toOwnerName: sql<string | null>`coalesce(${users.name}, ${mandates.proxyName})`,
     })
     .from(mandates)
     .leftJoin(users, eq(users.id, mandates.toOwnerId))
@@ -525,7 +532,10 @@ export async function recordAttendance(input: {
     // §14 ods. 4: only a verified paper PoA for THIS voting from THIS owner.
     if (!input.mandateId) throw new MeetingError("ATTENDANCE_MANDATE_REQUIRED");
     const [m] = await db
-      .select({ id: mandates.id, toOwnerName: users.name })
+      .select({
+        id: mandates.id,
+        toOwnerName: sql<string | null>`coalesce(${users.name}, ${mandates.proxyName})`,
+      })
       .from(mandates)
       .leftJoin(users, eq(users.id, mandates.toOwnerId))
       .where(
@@ -672,8 +682,10 @@ export async function getAttendanceExport(
   const v = await loadMeetingVoting(votingId);
   if (!v) return null;
   const root = await getCommunityRoot();
-  // Legal content rule: HOA template only until wording sign-off (spec L6).
-  if ((getDisplayTemplateSlug(root?.templateSlug) ?? "hoa") !== "hoa" || v.votingType !== "meeting") {
+  // Legal content rule: only where the attendance wording is signed off
+  // (src/lib/legal-copy — today any HOA; bytové družstvo waits, spec L6).
+  const lc = getLegalCopy(root?.templateSlug, root?.country);
+  if (!lc.signedOff.attendance || v.votingType !== "meeting") {
     throw new MeetingError("MEETING_EXPORT_UNAVAILABLE", 400);
   }
   const [eligible, rows] = await Promise.all([eligibleLines(votingId), attendanceRows(votingId)]);
@@ -698,6 +710,11 @@ export async function getAttendanceExport(
       country: (root?.country ?? "sk") as Country,
     },
     community: { name: root?.name ?? "" },
+    /** i18n keys (root namespace) of the document heading — legal-copy. */
+    headingKeys: {
+      filled: lc.keys.attendanceHeading,
+      blank: lc.keys.attendanceBlankHeading,
+    },
     ...buildAttendanceExport({ document, mode, eligible, rows, closed: v.status === "closed", includeUnit }),
   };
 }

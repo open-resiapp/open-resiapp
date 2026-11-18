@@ -6,6 +6,21 @@ import QRCode from "qrcode";
 
 import { Button, Field, Modal, Select } from "@/components/ui";
 import type { UnitOption } from "@/lib/owners-board";
+import { useOptionalShell } from "@/components/layout/ShellContext";
+import { roleOptionsFor, unitHolderRoleFor } from "@/lib/role-options";
+import type { UserRole } from "@/types";
+
+// Invitations.* label key per role (no `admin`: a generic link never grants it).
+const ROLE_LABEL_KEYS: Record<UserRole, string> = {
+  admin: "roleAdmin",
+  owner: "roleOwner",
+  member: "roleMember",
+  tenant: "roleTenant",
+  vote_counter: "roleVoteCounter",
+  caretaker: "roleCaretaker",
+  accountant: "roleAccountant",
+  spravca: "roleSpravca",
+};
 
 interface InvitationModalProps {
   isOpen: boolean;
@@ -27,7 +42,10 @@ export default function InvitationModal({ isOpen, onClose, units }: InvitationMo
 function InvitationModalBody({ onClose, units }: Omit<InvitationModalProps, "isOpen">) {
   const t = useTranslations("Invitations");
   const tCommon = useTranslations("Common");
-  const [role, setRole] = useState("owner");
+  // BYT-20261118-020: template-aware (člen družstva instead of vlastník).
+  const templateSlug = useOptionalShell()?.community?.templateSlug;
+  const roleOptions = roleOptionsFor(templateSlug);
+  const [role, setRole] = useState<string>(() => unitHolderRoleFor(templateSlug));
   const [flatId, setFlatId] = useState("");
   const [expiresInDays, setExpiresInDays] = useState(7);
   const [loading, setLoading] = useState(false);
@@ -101,10 +119,11 @@ function InvitationModalBody({ onClose, units }: Omit<InvitationModalProps, "isO
         <form id={formId} onSubmit={handleGenerate} className="space-y-4">
           <Field label={t("roleLabel")}>
             <Select value={role} onChange={(e) => setRole(e.target.value)}>
-              <option value="owner">{t("roleOwner")}</option>
-              <option value="tenant">{t("roleTenant")}</option>
-              <option value="vote_counter">{t("roleVoteCounter")}</option>
-              <option value="caretaker">{t("roleCaretaker")}</option>
+              {roleOptions.map((r) => (
+                <option key={r} value={r}>
+                  {t(ROLE_LABEL_KEYS[r])}
+                </option>
+              ))}
             </Select>
           </Field>
 

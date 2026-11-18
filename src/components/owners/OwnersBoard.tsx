@@ -5,6 +5,7 @@ import { useFormatter, useTranslations } from "next-intl";
 
 import {
   ActionMenu,
+  Badge,
   Button,
   ButtonLink,
   Card,
@@ -32,6 +33,7 @@ import UnitTypeBadge from "@/components/units/UnitTypeBadge";
 import OwnersHealth, { type CheckFilter } from "./OwnersHealth";
 import OwnersInbox from "./OwnersInbox";
 import PendingApprovalModal from "./PendingApprovalModal";
+import ClaimLettersDialog from "./ClaimLettersDialog";
 import ShellClaimDialog from "./ShellClaimDialog";
 import ShellMergeDialog from "./ShellMergeDialog";
 import { rejectRegistration } from "./owner-requests";
@@ -81,6 +83,7 @@ export default function OwnersBoard({
 }: OwnersBoardProps) {
   const t = useTranslations("Owners.board");
   const tHealth = useTranslations("OwnerHealth");
+  const tLetters = useTranslations("ClaimLetters");
   const tCommon = useTranslations("Common");
   const format = useFormatter();
   const router = useRouter();
@@ -91,6 +94,7 @@ export default function OwnersBoard({
   );
   const [query, setQuery] = useState("");
   const [dialog, setDialog] = useState<Dialog>({ kind: "none" });
+  const [lettersOpen, setLettersOpen] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -270,6 +274,10 @@ export default function OwnersBoard({
               <Icon name="plus" size={20} />
               {t("addOwner")}
             </Button>
+            <Button variant="secondary" onClick={() => setLettersOpen(true)}>
+              <Icon name="qr" size={20} />
+              {tLetters("openButton")}
+            </Button>
             <ButtonLink variant="ghost" href="/settings/registration-qr">
               <Icon name="qr" size={20} />
               {t("registrationQrLink")}
@@ -404,6 +412,11 @@ export default function OwnersBoard({
                         {row.name}
                       </Link>
                       {row.email ? <p className="break-all text-ui-text-muted">{row.email}</p> : null}
+                      {row.paperOnly ? (
+                        <span className="mt-1 inline-flex">
+                          <Badge tone="neutral">{t("paperOnly")}</Badge>
+                        </span>
+                      ) : null}
                     </div>
                     <span className="md:hidden">
                       <OwnerStatusBadge status={row.status} deactivated={row.deactivated} />
@@ -475,6 +488,8 @@ export default function OwnersBoard({
           onGenericLink={() => setDialog({ kind: "generic" })}
         />
       )}
+
+      <ClaimLettersDialog open={lettersOpen} onClose={() => setLettersOpen(false)} locale={locale} />
 
       <InvitationModal isOpen={dialog.kind === "generic"} onClose={close} units={data.units} />
 

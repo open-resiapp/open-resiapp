@@ -409,6 +409,11 @@ export const feeScheduleServices = pgTable(
     // except `fixed`, which reads fixedAmountCents per unit instead.
     rateCents: integer("rate_cents"),
     fixedAmountCents: integer("fixed_amount_cents"),
+    // How rateCents is read (non-fixed keys): "total" = dom-wide monthly
+    // total split by the key (original behaviour); "per_unit" = cents per
+    // m² / per person per month (area_m2 / persons keys only) — each unit
+    // pays rate × its weight, the dom total is the sum.
+    rateMode: varchar("rate_mode", { length: 16 }).notNull().default("total"),
   },
   (table) => ({
     scheduleCategoryUnique: uniqueIndex(

@@ -20,6 +20,7 @@ interface ClaimResult {
   claimUrl: string;
   expiresAt: string;
   emailSent: boolean;
+  emailStatus: "sent" | "not_configured" | "failed" | "not_requested";
 }
 
 /**
@@ -165,6 +166,12 @@ export default function ShellClaimDialog(props: ShellClaimDialogProps) {
             {result.emailSent && (
               <p role="status" className="rounded-lg border border-ui-success/30 bg-ui-success/10 px-4 py-3 text-ui-success">
                 {t("emailSent")}
+              </p>
+            )}
+
+            {(result.emailStatus === "not_configured" || result.emailStatus === "failed") && (
+              <p role="alert" className="rounded-lg border border-ui-danger/30 bg-ui-danger/10 px-4 py-3 text-ui-danger">
+                {result.emailStatus === "not_configured" ? t("emailNotConfigured") : t("emailFailed")}
               </p>
             )}
 

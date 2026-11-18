@@ -13,16 +13,24 @@ export const DOC_TEXT_CAP = 40_000;
 const PDF_MAX_BYTES = 25 * 1024 * 1024;
 
 export interface DocumentText {
-  /** Truncated to DOC_TEXT_CAP characters. */
+  /** One chunk: up to DOC_TEXT_CAP characters starting at `offset`. */
   text: string;
   hasTextLayer: boolean;
+  /** More text follows (nextOffset !== null). */
   truncated: boolean;
   totalChars: number;
+  offset: number;
+  /** Offset of the next chunk, null at the end of the document. */
+  nextOffset: number | null;
 }
 
-/** Throws McpError validation.id {reason: not_pdf | too_large | unreadable_pdf} / not_found. */
+/**
+ * Throws McpError validation.id {reason: not_pdf | too_large | unreadable_pdf} / not_found,
+ * validation.offset {reason: beyond_end} when `offset` is past the end of a text layer.
+ */
 export async function readDocumentText(
-  doc: Pick<DocumentRow, "mimeType" | "storageKey">
+  doc: Pick<DocumentRow, "mimeType" | "storageKey">,
+  offset = 0
 ): Promise<DocumentText> {
   if (doc.mimeType !== "application/pdf") {
     throw new McpError("validation.id", { reason: "not_pdf" });
@@ -38,11 +46,20 @@ export async function readDocumentText(
   } catch {
     throw new McpError("validation.id", { reason: "unreadable_pdf" });
   }
-  const truncated = text.length > DOC_TEXT_CAP;
+  const hasTextLayer = text.replace(/\s+/g, "").length > 0;
+  if (!hasTextLayer) {
+    return { text: "", hasTextLayer, truncated: false, totalChars: 0, offset: 0, nextOffset: null };
+  }
+  if (offset >= text.length) throw new McpError("validation.offset", { reason: "beyond_end" });
+  const body = text.slice(offset, offset + DOC_TEXT_CAP);
+  const end = offset + body.length;
+  const nextOffset = end < text.length ? end : null;
   return {
-    text: truncated ? text.slice(0, DOC_TEXT_CAP) : text,
-    hasTextLayer: text.replace(/\s+/g, "").length > 0,
-    truncated,
+    text: body,
+    hasTextLayer,
+    truncated: nextOffset !== null,
     totalChars: text.length,
+    offset,
+    nextOffset,
   };
 }

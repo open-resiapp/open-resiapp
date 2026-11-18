@@ -3,6 +3,7 @@ import "server-only";
 import { and, asc, eq, inArray, sql } from "drizzle-orm";
 import { db } from "@/db";
 import { entities, memberships } from "@/db/schema";
+import { UNIT_HOLDER_ROLES } from "@/lib/role-options";
 import { domUnitsWhere } from "./dom-units";
 
 // Ownership windows (BYT-20261118-007 validity dates, BYT-20261118-012):
@@ -48,7 +49,8 @@ export async function listOwnedUnits(
       and(
         domUnitsWhere(entityId),
         eq(memberships.userId, userId),
-        eq(memberships.role, "owner"),
+        // owner (SVB) or člen družstva — the unit's holder.
+        inArray(memberships.role, UNIT_HOLDER_ROLES),
         eq(memberships.status, "active"),
         sql`${memberships.validFrom} <= ${today}::date`,
         sql`(${memberships.validTo} IS NULL OR ${memberships.validTo} > ${today}::date)`
@@ -95,7 +97,8 @@ export async function listOwnershipWindows(
       and(
         domUnitsWhere(entityId),
         eq(memberships.userId, userId),
-        eq(memberships.role, "owner"),
+        // owner (SVB) or člen družstva — the unit's holder.
+        inArray(memberships.role, UNIT_HOLDER_ROLES),
         inArray(memberships.status, ["active", "archived"]),
         // A future ownership is not visible yet.
         sql`${memberships.validFrom} <= ${today}::date`

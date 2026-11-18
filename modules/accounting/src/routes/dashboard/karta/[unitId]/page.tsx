@@ -12,6 +12,7 @@ import { formatEur } from "@modules/accounting/src/lib/money";
 import DownloadPredpisButton from "@modules/accounting/src/components/DownloadPredpisButton";
 import DownloadVyuctovanieButton from "@modules/accounting/src/components/DownloadVyuctovanieButton";
 import DownloadUpomienkaButton from "@modules/accounting/src/components/DownloadUpomienkaButton";
+import ExportButtons from "@modules/accounting/src/components/ExportButtons";
 
 interface LedgerLine {
   categorySlug: string | null;
@@ -57,6 +58,10 @@ interface OverdueSummary {
   items: OverdueItem[];
   totalOpenCents: number;
   totalInterestCents: number;
+  /** Parked preplatok already netted against the oldest items. */
+  creditAppliedCents?: number;
+  ratesUnverified?: boolean;
+  ratesCheckedAt?: string | null;
 }
 
 export default function KartaDetailPage({ unitId }: { unitId: string }) {
@@ -136,12 +141,21 @@ export default function KartaDetailPage({ unitId }: { unitId: string }) {
   }
 
   const hasOpenDebt = ledger.balanceCents + ledger.preplatokCents > 0;
+  // A reminder only makes sense when the NET position is a debt: overdue
+  // items are already netted against the parked preplatok server-side, and
+  // the net balance (311 + 379) must agree — same figure as the debtors
+  // list, so the two screens can never disagree about who owes.
+  const canRemind =
+    canWrite &&
+    ledger.balanceCents > 0 &&
+    !!overdue &&
+    overdue.items.length > 0;
 
   return (
     <div className="max-w-4xl">
       <Link
         href="/accounting/karta"
-        className="text-sm text-blue-600 dark:text-blue-400 hover:underline"
+        className="inline-flex min-h-11 items-center text-base text-blue-600 dark:text-blue-400 hover:underline"
       >
         ← {t("backToList")}
       </Link>
@@ -156,7 +170,7 @@ export default function KartaDetailPage({ unitId }: { unitId: string }) {
           {canWrite && (
             <Link
               href={`/accounting/payments?unit=${unitId}`}
-              className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm"
+              className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-base"
             >
               {t("recordPayment")}
             </Link>
@@ -165,13 +179,14 @@ export default function KartaDetailPage({ unitId }: { unitId: string }) {
             <DownloadVyuctovanieButton key={y} unitId={unitId} year={y} />
           ))}
           <DownloadPredpisButton unitId={unitId} />
+          <ExportButtons report="unit-card" params={{ unit: unitId }} />
         </span>
       </div>
 
       {/* Summary */}
       <div className="flex flex-wrap gap-4 mb-6">
         <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg px-5 py-4">
-          <p className="text-sm text-gray-600 dark:text-gray-400">
+          <p className="text-base text-gray-600 dark:text-gray-400">
             {t("balance")}
           </p>
           <p
@@ -185,7 +200,7 @@ export default function KartaDetailPage({ unitId }: { unitId: string }) {
           >
             {formatEur(ledger.balanceCents)}
           </p>
-          <p className="text-xs text-gray-500 dark:text-gray-400">
+          <p className="text-base text-gray-500 dark:text-gray-400">
             {ledger.balanceCents > 0
               ? t("balanceOwes")
               : ledger.balanceCents < 0
@@ -195,7 +210,7 @@ export default function KartaDetailPage({ unitId }: { unitId: string }) {
         </div>
         {ledger.preplatokCents > 0 && (
           <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg px-5 py-4">
-            <p className="text-sm text-gray-600 dark:text-gray-400">
+            <p className="text-base text-gray-600 dark:text-gray-400">
               {t("preplatok")}
             </p>
             <p className="text-xl font-bold text-green-700 dark:text-green-400">
@@ -205,7 +220,7 @@ export default function KartaDetailPage({ unitId }: { unitId: string }) {
               <button
                 onClick={applyCredit}
                 disabled={applying}
-                className="mt-2 text-sm text-blue-600 dark:text-blue-400 hover:underline disabled:opacity-50"
+                className="mt-2 min-h-11 text-base text-blue-600 dark:text-blue-400 hover:underline disabled:opacity-50"
               >
                 {applying ? t("applyingCredit") : t("applyCredit")}
               </button>
@@ -215,7 +230,7 @@ export default function KartaDetailPage({ unitId }: { unitId: string }) {
       </div>
 
       {error && (
-        <p className="text-red-600 dark:text-red-400 text-sm mb-4">
+        <p className="text-red-600 dark:text-red-400 text-base mb-4">
           {t("submitError")} ({error})
         </p>
       )}
@@ -234,15 +249,62 @@ export default function KartaDetailPage({ unitId }: { unitId: string }) {
               ).size,
             })}
           </p>
+          {(overdue.creditAppliedCents ?? 0) > 0 && (
+            <p className="mt-1 text-base text-gray-700 dark:text-gray-300">
+              {t("overdueCreditApplied", {
+                amount: formatEur(overdue.creditAppliedCents ?? 0),
+              })}
+            </p>
+          )}
+          {canRemind && (
+            <div className="mt-3">
+              <DownloadUpomienkaButton unitId={unitId} />
+            </div>
+          )}
           <details className="mt-2 group">
             <summary className="flex min-h-11 cursor-pointer items-center text-base font-medium text-gray-900 dark:text-gray-100 underline underline-offset-4">
               {t("overdueTitle")}
             </summary>
-          <p className="text-xs text-gray-500 dark:text-gray-400 mb-3">
+          <p className="text-base text-gray-600 dark:text-gray-400 mb-3">
             {t("overdueHint", { asOf: overdue.asOf })}
           </p>
-          <div className="overflow-x-auto">
-          <table className="w-full text-sm">
+          {/* < sm: one card per overdue item (390 px, no sideways scroll) */}
+          <ul className="sm:hidden divide-y divide-gray-100 dark:divide-gray-800">
+            {overdue.items.map((item) => (
+              <li key={item.id} className="py-3 text-base">
+                <p className="font-semibold text-gray-900 dark:text-gray-100">
+                  {tCat(item.categorySlug as Parameters<typeof tCat>[0])}{" "}
+                  {item.periodYear}-{String(item.month).padStart(2, "0")}
+                </p>
+                <dl className="mt-1 grid grid-cols-2 gap-x-3 text-gray-700 dark:text-gray-300">
+                  <dt>{t("overdueColDue")}</dt>
+                  <dd className="text-right">
+                    {format.dateTime(new Date(`${item.dueDate}T00:00:00Z`), { dateStyle: "medium" })}
+                  </dd>
+                  <dt>{t("overdueColDays")}</dt>
+                  <dd className="text-right">{item.daysLate}</dd>
+                  <dt>{t("overdueColOpen")}</dt>
+                  <dd className="text-right text-red-600 dark:text-red-400">{formatEur(item.openCents)}</dd>
+                  <dt>{t("overdueColRate")}</dt>
+                  <dd className="text-right">{item.ratePct} %</dd>
+                  <dt>{t("overdueColInterest")}</dt>
+                  <dd className="text-right">{formatEur(item.interestCents)}</dd>
+                </dl>
+              </li>
+            ))}
+            <li className="py-3 text-base font-semibold text-gray-900 dark:text-gray-100">
+              <div className="flex justify-between gap-3">
+                <span>{t("overdueTotal")}</span>
+                <span className="text-red-600 dark:text-red-400">{formatEur(overdue.totalOpenCents)}</span>
+              </div>
+              <div className="flex justify-between gap-3">
+                <span>{t("overdueColInterest")}</span>
+                <span>{formatEur(overdue.totalInterestCents)}</span>
+              </div>
+            </li>
+          </ul>
+          <div className="hidden sm:block overflow-x-auto">
+          <table className="w-full text-base">
             <thead>
               <tr className="text-left text-gray-600 dark:text-gray-400 border-b border-gray-200 dark:border-gray-700">
                 <th className="py-2 pr-4">{t("overdueColItem")}</th>
@@ -299,11 +361,19 @@ export default function KartaDetailPage({ unitId }: { unitId: string }) {
             </tfoot>
           </table>
           </div>
-          <div className="flex flex-wrap items-center justify-between gap-2 mt-2">
-            <p className="text-[11px] text-gray-400 dark:text-gray-500">
+          <div className="mt-2 space-y-1">
+            <p className="text-base text-gray-600 dark:text-gray-400">
               {t("overdueDisclaimer")}
             </p>
-            {canWrite && <DownloadUpomienkaButton unitId={unitId} />}
+            {/* Only when the rate table was not re-confirmed by the
+                rate-sync job within one ECB cycle (overdue.ts). */}
+            {overdue.ratesUnverified && (
+              <p className="text-base font-medium text-amber-700 dark:text-amber-400">
+                {overdue.ratesCheckedAt
+                  ? t("overdueRatesStale", { date: overdue.ratesCheckedAt })
+                  : t("overdueRatesMissing")}
+              </p>
+            )}
           </div>
           </details>
         </div>
@@ -320,7 +390,7 @@ export default function KartaDetailPage({ unitId }: { unitId: string }) {
           {ledger.rows.map((row) => (
             <li key={row.journalEntryId} className="px-4 py-3">
               <div className="flex items-baseline justify-between gap-3">
-                <span className="text-sm text-gray-600 dark:text-gray-400">
+                <span className="text-base text-gray-600 dark:text-gray-400">
                   {format.dateTime(new Date(row.postedAt), {
                     dateStyle: "medium",
                   })}
@@ -343,7 +413,7 @@ export default function KartaDetailPage({ unitId }: { unitId: string }) {
                 {row.description}
               </p>
               <p
-                className={`text-sm ${
+                className={`text-base ${
                   row.balanceCents > 0
                     ? "text-red-600 dark:text-red-400"
                     : "text-gray-600 dark:text-gray-400"
@@ -355,7 +425,7 @@ export default function KartaDetailPage({ unitId }: { unitId: string }) {
           ))}
         </ul>
         <div className="hidden sm:block bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg p-6 overflow-x-auto">
-          <table className="w-full text-sm">
+          <table className="w-full text-base">
             <thead>
               <tr className="text-left text-gray-600 dark:text-gray-400 border-b border-gray-200 dark:border-gray-700">
                 <th className="py-2 pr-4">{t("colDate")}</th>
@@ -416,7 +486,7 @@ export default function KartaDetailPage({ unitId }: { unitId: string }) {
                   {expanded === row.journalEntryId && (
                     <tr className="border-b border-gray-100 dark:border-gray-800 bg-gray-50 dark:bg-gray-800/30">
                       <td colSpan={5} className="py-2 px-6">
-                        <ul className="space-y-0.5 text-xs text-gray-600 dark:text-gray-400">
+                        <ul className="space-y-0.5 text-base text-gray-600 dark:text-gray-400">
                           {row.lines.map((line, i) => (
                             <li key={i} className="flex justify-between">
                               <span>

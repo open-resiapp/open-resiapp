@@ -20,6 +20,8 @@ import { entities, entityAuditLog, invitations, memberships, users } from "@/db/
 import { getUnitType } from "@/lib/unit-type";
 import { rankCandidates } from "@/lib/name-match";
 import { mul, rational } from "@/lib/rational";
+import { getTemplate } from "@/lib/templates/loader";
+import { ASSIGNABLE_ROLES, isUnitHolderRole, UNIT_HOLDER_ROLES } from "@/lib/role-options";
 import type { UserRole } from "@/types";
 import type {
   CreateOwnerErrorCode,
@@ -41,7 +43,26 @@ import type {
 // Replaces the client fetches of /api/users, /api/admin/shell-users,
 // /api/admin/pending-registrations and /api/flats on the owners screens.
 
-const ROLES: UserRole[] = ["admin", "owner", "tenant", "vote_counter", "caretaker"];
+// BYT-20261118-020: + member / accountant / spravca. Callers of
+// createShellOwner are gated by manageUsers (admin only), so spravca can
+// never reach a path that grants `admin`.
+const ROLES: UserRole[] = ASSIGNABLE_ROLES;
+
+/**
+ * The membership role a unit holder gets in this community: the template's
+ * member_role (`member` in a bytové družstvo), `owner` otherwise. Same
+ * source as the import seeder (src/lib/import/seed.ts resolveHolderRole).
+ */
+async function holderRoleForRoot(rootId: string): Promise<"owner" | "member"> {
+  const [root] = await db
+    .select({ slug: sql<string | null>`${entities.data}->>'template_slug'` })
+    .from(entities)
+    .where(eq(entities.id, rootId))
+    .limit(1);
+  if (!root?.slug) return "owner";
+  const tpl = await getTemplate(root.slug);
+  return tpl?.member_role ?? "owner";
+}
 
 // Same name-similarity threshold the pending-registrations API uses.
 const SUGGESTION_THRESHOLD = 0.5;
@@ -123,6 +144,8 @@ async function loadRaw(rootId: string) {
         // BYT-20261118-003: board-only (queue + owner detail); never copied
         // into OwnerRow, so it cannot leak through the people list.
         lastLoginAt: users.lastLoginAt,
+        // Wave-1 users.paper_only: delivery on paper only (badge in the list).
+        paperOnly: users.paperOnly,
       })
       .from(users)
       .where(
@@ -282,6 +305,7 @@ function buildBoard(
       status,
       deactivated: !u.isActive,
       emailVerified: u.emailVerifiedAt !== null,
+      paperOnly: u.paperOnly,
       flats,
       invite: invite
         ? {
@@ -503,12 +527,12 @@ export async function createShellOwner(
   if (!rootId) return { ok: false, error: "unit_not_found" };
 
   const unitId = input.unitId || null;
-  if (!unitId && input.role === "owner") return { ok: false, error: "unit_required" };
+  if (!unitId && isUnitHolderRole(input.role)) return { ok: false, error: "unit_required" };
 
   // Owner share and voting weight only mean something for an owner on a
   // unit. The columns are NOT NULL (default 1/1, weight 1) — no schema
   // change here — so other roles simply keep the column defaults.
-  const isOwner = input.role === "owner";
+  const isOwner = isUnitHolderRole(input.role);
   const { shareNum, shareDen } = isOwner ? input : { shareNum: 1, shareDen: 1 };
   if (
     !Number.isInteger(shareNum) ||
@@ -673,7 +697,7 @@ export async function loadUnitRoster(rootId: string): Promise<UnitRosterEntry[]>
       .where(
         and(
           eq(memberships.status, "active"),
-          eq(memberships.role, "owner"),
+          inArray(memberships.role, UNIT_HOLDER_ROLES),
           eq(entities.kind, "unit"),
           eq(entities.rootId, rootId),
           isNull(entities.archivedAt)
@@ -867,13 +891,14 @@ export async function addUnitOwner(input: {
   if (!(await isUserInRoot(input.userId, input.rootId))) return { ok: false, error: "not_in_root" };
   const weight = await unitOwnerWeight(input.rootId, input.unitId, shareNum, shareDen);
   if (weight === null) return { ok: false, error: "unit_not_found" };
+  const holderRole = await holderRoleForRoot(input.rootId);
 
   try {
     await db.transaction(async (tx) => {
       await tx.insert(memberships).values({
         userId: input.userId,
         entityId: input.unitId,
-        role: "owner",
+        role: holderRole,
         weight,
         ownerUnitShareNumerator: shareNum,
         ownerUnitShareDenominator: shareDen,
@@ -885,7 +910,7 @@ export async function addUnitOwner(input: {
         entityId: input.unitId,
         afterJson: JSON.stringify({
           userId: input.userId,
-          role: "owner",
+          role: holderRole,
           ownerUnitShare: `${shareNum}/${shareDen}`,
           source: input.source ?? "owners.assign",
         }),

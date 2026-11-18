@@ -1,0 +1,26 @@
+{
+  "slug": "bytove_druzstvo",
+  "display_name_key": "Templates.bytove_druzstvo.name",
+  "description_key": "Templates.bytove_druzstvo.description",
+  "category": "residential",
+  "root_kind": "community",
+  "default_voting_method": "one_per_member",
+  "default_roles": ["admin", "member", "tenant", "vote_counter", "accountant", "spravca"],
+  "member_role": "member",
+  "default_governance_model": "board_supervisory",
+  "legal_regime": "cooperative",
+  "notice": {
+    "default_lead_days": 15,
+    "configurable": true
+  },
+  "unit_types": ["flat", "non_residential", "garage"],
+  "starter_tree": [
+    {
+      "kind": "community",
+      "name_key": "Templates.bytove_druzstvo.sampleCommunityName"
+    }
+  ],
+  "import_levels": ["community", "building", "entrance", "unit"],
+  "legal_review_required": true,
+  "notes_url": "https://www.slov-lex.sk/pravne-predpisy/SK/ZZ/1991/513/"
+}

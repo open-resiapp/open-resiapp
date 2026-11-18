@@ -205,6 +205,19 @@ export interface OpeningBalanceInput {
     unitEntityId: string;
     fpuoCents: number;
     zalohyCents: number;
+    /**
+     * Owner's personal arrears at the opening date (>= 0) — Dr 311.200 on
+     * the unit. Kept separate from the fund/advance balances so a unit can
+     * hold savings in the fund AND owe money at the same time (the single
+     * signed number used to net the two).
+     */
+    nedoplatokCents?: number;
+    /**
+     * Owner's personal credit at the opening date (>= 0) — Cr 379 on the
+     * unit, the same parking account a payment remainder lands on, so the
+     * karta / overdue / debtor views see it as preplatok.
+     */
+    preplatokCents?: number;
   }[];
 }
 
@@ -256,6 +269,27 @@ export async function postOpeningBalance(
         });
       }
     }
+    const nedoplatok = unit.nedoplatokCents ?? 0;
+    const preplatok = unit.preplatokCents ?? 0;
+    if (nedoplatok < 0 || preplatok < 0) {
+      throw new Error("accounting: opening nedoplatok/preplatok must be >= 0");
+    }
+    if (nedoplatok > 0) {
+      lines.push({
+        accountCode: ACCOUNT_CODES.POHLADAVKY_VLASTNICI_SLUZBY,
+        debitCents: nedoplatok,
+        okruh: "svc",
+        unitEntityId: unit.unitEntityId,
+      });
+    }
+    if (preplatok > 0) {
+      lines.push({
+        accountCode: ACCOUNT_CODES.INE_ZAVAZKY,
+        creditCents: preplatok,
+        okruh: "svc",
+        unitEntityId: unit.unitEntityId,
+      });
+    }
   }
 
   const debits = lines.reduce((s, l) => s + (l.debitCents ?? 0), 0);
@@ -285,6 +319,74 @@ export async function postOpeningBalance(
     sourceId: input.periodId,
     createdById: input.createdById,
     lines,
+  });
+}
+
+/**
+ * Reverses a posted opening-balance entry (correction path — never edit or
+ * delete, domain rule "corrections are reversals"). Posts the exact mirror
+ * of every original line (debit ⇄ credit, same unit / category / okruh /
+ * account) dated like the original, into `periodId` (which must be open —
+ * insertEntry asserts it). sourceId = the original entry id: that link is
+ * what marks the original as no longer ACTIVE (lib/opening-balance.ts).
+ */
+export async function reverseOpeningBalance(
+  tx: Tx,
+  input: {
+    entityId: string;
+    country: Country;
+    originalEntryId: string;
+    periodId: string;
+    createdById: string;
+    reason: string;
+  }
+): Promise<string> {
+  const [original] = await tx
+    .select({
+      postedAt: journalEntries.postedAt,
+      sourceType: journalEntries.sourceType,
+      entityId: journalEntries.entityId,
+    })
+    .from(journalEntries)
+    .where(eq(journalEntries.id, input.originalEntryId));
+  if (
+    !original ||
+    original.sourceType !== "opening_balance" ||
+    original.entityId !== input.entityId
+  ) {
+    throw new Error("accounting: opening entry not found");
+  }
+  const originalLines = await tx
+    .select({
+      code: accounts.code,
+      debitCents: journalLines.debitCents,
+      creditCents: journalLines.creditCents,
+      okruh: journalLines.okruh,
+      unitEntityId: journalLines.unitEntityId,
+      serviceCategoryId: journalLines.serviceCategoryId,
+    })
+    .from(journalLines)
+    .innerJoin(accounts, eq(journalLines.accountId, accounts.id))
+    .where(eq(journalLines.journalEntryId, input.originalEntryId));
+
+  return insertEntry(tx, {
+    entityId: input.entityId,
+    periodId: input.periodId,
+    country: input.country,
+    postedAt: original.postedAt,
+    description: `Storno otváracej súvahy — ${input.reason}`,
+    sourceType: "opening_balance",
+    sourceId: input.originalEntryId,
+    createdById: input.createdById,
+    justification: input.reason,
+    lines: originalLines.map((l) => ({
+      accountCode: l.code,
+      debitCents: l.creditCents,
+      creditCents: l.debitCents,
+      okruh: l.okruh as Okruh,
+      unitEntityId: l.unitEntityId,
+      serviceCategoryId: l.serviceCategoryId,
+    })),
   });
 }
 

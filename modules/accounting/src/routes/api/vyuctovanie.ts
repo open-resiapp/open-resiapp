@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { getTranslations } from "next-intl/server";
 
 import {
   requireReader,
@@ -6,9 +7,11 @@ import {
 } from "@modules/accounting/src/lib/api-guard";
 import {
   getVyuctovaniePreview,
+  isVyuctovanieError,
   notifySettlementPublished,
   publishVyuctovanie,
 } from "@modules/accounting/src/lib/vyuctovanie";
+import { requestLocale } from "@modules/accounting/src/lib/input-errors.server";
 
 // Vyúčtovanie wizard API — preview for board roles, publish (period lock,
 // irreversible) for treasurer/admin.
@@ -75,7 +78,22 @@ export async function handlePublish(req: NextRequest): Promise<NextResponse> {
 
     return NextResponse.json({ ...result, delivery }, { status: 201 });
   } catch (err) {
-    const message = err instanceof Error ? err.message : "publish failed";
-    return NextResponse.json({ error: message }, { status: 400 });
+    // Stable code → localized catalog entry (Accounting.vyuctovanie.errors).
+    // Anything else is unexpected: log it, never leak raw English text.
+    const t = await getTranslations({
+      locale: requestLocale(req),
+      namespace: "Accounting.vyuctovanie.errors",
+    });
+    if (isVyuctovanieError(err)) {
+      return NextResponse.json(
+        { error: t(err.code as Parameters<typeof t>[0]), code: err.code },
+        { status: err.code === "PERIOD_NOT_FOUND" ? 404 : 409 }
+      );
+    }
+    console.error("[accounting] vyúčtovanie publish failed:", err);
+    return NextResponse.json(
+      { error: t("UNKNOWN"), code: "UNKNOWN" },
+      { status: 500 }
+    );
   }
 }

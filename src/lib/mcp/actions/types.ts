@@ -36,6 +36,9 @@ export const ACTION_KINDS = [
   "delete_community_post",
   "set_directory_entry",
   "remove_directory_entry",
+  "match_payments",
+  "link_owner_accounts",
+  "transfer_unit_ownership",
 ] as const;
 export type ActionKind = (typeof ACTION_KINDS)[number];
 
@@ -94,6 +97,12 @@ export interface CommitResult {
   data: Record<string, unknown>;
   /** App path (without origin / locale) to the created or changed record. */
   path: string | null;
+  /**
+   * Outcome message key + values when the static `Mcp.actions.<kind>.done`
+   * would mislead (a batch where some items could not be applied).
+   */
+  doneKey?: string;
+  doneValues?: Record<string, string | number>;
 }
 
 /** Facts about the pending action the commit may need (audit links, email locale). */

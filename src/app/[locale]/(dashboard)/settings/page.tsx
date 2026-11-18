@@ -11,6 +11,7 @@ import CommunityTab from "@/components/settings/CommunityTab";
 import StructureTab from "@/components/settings/StructureTab";
 import BoardMembersTab from "@/components/settings/BoardMembersTab";
 import VotingSettingsTab from "@/components/settings/VotingSettingsTab";
+import SmtpStatusBanner from "@/components/settings/SmtpStatusBanner";
 
 // Old `?tab=` values keep working. Phase 5 layout: Spoločenstvo (incl. logo) ·
 // Budova a byty · Orgány správy · Hlasovanie. `connections` moved to
@@ -71,6 +72,7 @@ export default async function SettingsPage({
           country: root.country as string,
           governanceModel: root.governanceModel as string,
           legalNotice: root.legalNotice,
+          noticeLeadDays: root.noticeLeadDays,
         }
       : null;
   }
@@ -78,6 +80,7 @@ export default async function SettingsPage({
   return (
     <div className="max-w-4xl">
       <PageHeader title={t("title")} className="mb-4" />
+      <SmtpStatusBanner />
       <SettingsTabs activeTab={tab} />
 
       <div className="mt-6">
@@ -89,6 +92,7 @@ export default async function SettingsPage({
             canEdit={canEdit}
             initialMethod={building?.votingMethod ?? "per_share"}
             initialLegalNotice={building?.legalNotice ?? null}
+            initialNoticeLeadDays={building?.noticeLeadDays ?? null}
           />
         )}
       </div>

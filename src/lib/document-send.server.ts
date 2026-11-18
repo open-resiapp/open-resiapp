@@ -1,5 +1,6 @@
 import "server-only";
 import { and, eq, gt, inArray, sql } from "drizzle-orm";
+import { UNIT_HOLDER_ROLES } from "@/lib/role-options";
 
 import { db } from "@/db";
 import {
@@ -9,7 +10,7 @@ import {
   users,
 } from "@/db/schema";
 import { getStorage } from "@/lib/storage";
-import { sendDocumentToOwner } from "@/lib/email";
+import { isSmtpConfigured, sendDocumentToOwner } from "@/lib/email";
 import { routing } from "@/i18n/routing";
 import {
   DOCUMENT_EMAIL_ATTACHMENT_MAX_DEFAULT,
@@ -46,9 +47,10 @@ export interface SendRecipientOption {
 
 /**
  * People the board may send this document to: the owner-folder subject, or —
- * for a doc without subject — the active owners of the anchor entity itself
- * (a unit). A building-wide doc has no implicit recipients (bulk send is out
- * of scope).
+ * for a doc without subject — the active owners of the anchor entity (a unit)
+ * or, for a building / entrance level document, of every unit below it
+ * (materialized path). Each is still checked against the visibility resolver
+ * (`canSee`) before anything is sent.
  */
 export async function listSendRecipients(
   doc: DocumentRow
@@ -57,16 +59,24 @@ export async function listSendRecipients(
   if (doc.subjectUserId) {
     ids = [doc.subjectUserId];
   } else {
-    const rows = await db
-      .select({ userId: memberships.userId })
-      .from(memberships)
-      .where(
-        and(
-          eq(memberships.entityId, doc.entityId),
-          eq(memberships.role, "owner"),
-          eq(memberships.status, "active")
-        )
-      );
+    const [anchor] = await db
+      .select({ path: entities.path })
+      .from(entities)
+      .where(eq(entities.id, doc.entityId))
+      .limit(1);
+    const rows = anchor
+      ? await db
+          .select({ userId: memberships.userId })
+          .from(memberships)
+          .innerJoin(entities, eq(entities.id, memberships.entityId))
+          .where(
+            and(
+              sql`(${entities.id} = ${doc.entityId} OR ${entities.path} LIKE ${anchor.path} || '%')`,
+              inArray(memberships.role, UNIT_HOLDER_ROLES),
+              eq(memberships.status, "active")
+            )
+          )
+      : [];
     ids = [...new Set(rows.map((r) => r.userId))];
   }
   if (!ids.length) return [];
@@ -95,14 +105,19 @@ export async function sendDocumentByEmail(input: {
   actorUserId: string;
   recipientUserId: string;
   message?: string | null;
+  /** Bulk send resolves the candidate list once (canSee is one query per person). */
+  preResolved?: SendRecipientOption[];
 }): Promise<SendResult> {
   const { doc, actorUserId, recipientUserId } = input;
+
+  // Never skip silently: tell the board nothing can be sent from this instance.
+  if (!isSmtpConfigured()) return { ok: false, code: "document.send.smtp_missing" };
 
   // Board-only docs are refused outright — the UI offers a visibility PATCH
   // instead (audited), we never auto-widen.
   if (doc.audience === "admin") return { ok: false, code: "document.send.board_only" };
 
-  const allowed = await listSendRecipients(doc);
+  const allowed = input.preResolved ?? (await listSendRecipients(doc));
   const target = allowed.find((r) => r.id === recipientUserId);
   if (!target) return { ok: false, code: "document.send.no_recipient" };
   // Recipient must pass the SAME resolver as a download would.
@@ -221,4 +236,68 @@ export async function sendDocumentByEmail(input: {
   const mode = attachment ? "attachment" : "link";
   await logDocumentEmailSent(doc.id, actorUserId, recipient.id, mode);
   return { ok: true, mode };
+}
+
+export interface BulkSendSummary {
+  /** Owners eligible right now (has e-mail, passes the visibility resolver). */
+  eligible: number;
+  sent: number;
+  /** Per-recipient failures by code (throttled, too_large_no_account, failed, …). */
+  failed: Record<string, number>;
+  /** Candidates left out up front: no e-mail / cannot see the document. */
+  noEmail: number;
+  cannotSee: number;
+}
+
+/** Recipients a bulk send would reach: has e-mail AND may see the document. */
+export function eligibleForBulk(all: SendRecipientOption[]): SendRecipientOption[] {
+  return all.filter((r) => r.hasEmail && r.canSee);
+}
+
+/**
+ * "Send to all owners with e-mail". Reuses sendDocumentByEmail per recipient,
+ * so board-only refusal, the visibility check, the per-(document, recipient)
+ * advisory-lock throttle and the audit log all stay in force. `expectedCount`
+ * is the number the board confirmed in the dialog; if the eligible set changed
+ * since, nothing is sent (count_changed) and the dialog re-confirms.
+ */
+export async function sendDocumentToAllOwners(input: {
+  doc: DocumentRow;
+  actorUserId: string;
+  message?: string | null;
+  expectedCount: number;
+}): Promise<
+  | { ok: true; summary: BulkSendSummary }
+  | { ok: false; code: DocumentErrorCode }
+> {
+  const { doc, actorUserId } = input;
+  if (doc.audience === "admin") return { ok: false, code: "document.send.board_only" };
+  if (!isSmtpConfigured()) return { ok: false, code: "document.send.smtp_missing" };
+
+  const all = await listSendRecipients(doc);
+  const eligible = eligibleForBulk(all);
+  if (eligible.length === 0) return { ok: false, code: "document.send.no_recipient" };
+  if (eligible.length !== input.expectedCount) {
+    return { ok: false, code: "document.send.count_changed" };
+  }
+
+  const summary: BulkSendSummary = {
+    eligible: eligible.length,
+    sent: 0,
+    failed: {},
+    noEmail: all.filter((r) => !r.hasEmail).length,
+    cannotSee: all.filter((r) => r.hasEmail && !r.canSee).length,
+  };
+  for (const r of eligible) {
+    const res = await sendDocumentByEmail({
+      doc,
+      actorUserId,
+      recipientUserId: r.id,
+      message: input.message,
+      preResolved: all,
+    });
+    if (res.ok) summary.sent += 1;
+    else summary.failed[res.code] = (summary.failed[res.code] ?? 0) + 1;
+  }
+  return { ok: true, summary };
 }

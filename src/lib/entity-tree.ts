@@ -33,6 +33,11 @@ const ROLE_RANK: Record<MembershipRole, number> = {
   vote_counter: 2,
   owner: 3,
   admin: 4,
+  // BYT-20261118-020 — only used to pick the strongest of several
+  // memberships: člen družstva ≈ owner; účtovník ≈ caretaker.
+  member: 3,
+  accountant: 1,
+  spravca: 2,
 };
 
 export function buildPath(parentPath: string | null, selfId: string): string {

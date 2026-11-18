@@ -32,6 +32,10 @@ interface Template {
   slug: string;
   root_kind: string;
   default_voting_method: string;
+  /** BYT-20261118-020 — optional; absent on pre-družstvo templates. */
+  default_governance_model?: string;
+  member_role?: "owner" | "member";
+  notice?: { default_lead_days: number | null; configurable: boolean };
   starter_tree: TemplateStarterNode[];
   import_levels: string[];
 }
@@ -187,6 +191,13 @@ async function main() {
       // admin badges) can identify which template the instance was
       // bootstrapped from without inferring it from the voting method.
       data.template_slug = template.slug;
+      // BYT-20261118-020: same root defaults PATCH /api/building writes
+      // on its bootstrap path, so both first-boot routes agree.
+      data.governance_model = template.default_governance_model ?? "chairman_council";
+      data.notice_lead_days = template.notice?.default_lead_days ?? null;
+      // No memberships are created here; the import seeder
+      // (src/lib/import/seed.ts resolveHolderRole) reads the template's
+      // member_role ("member" for bytove_druzstvo) when units get holders.
     }
 
     await db.insert(entities).values({

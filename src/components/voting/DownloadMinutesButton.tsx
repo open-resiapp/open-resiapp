@@ -5,6 +5,8 @@ import { useTranslations } from "next-intl";
 import type { VotingResults, QuorumType } from "@/types";
 import { useCommunityKinds } from "@/hooks/useCommunityKinds";
 import { timeZoneForCountry } from "@/lib/time-zone";
+import { getDisplayTemplateSlug } from "@/lib/templates/display-slug";
+import { getLegalCopy } from "@/lib/legal-copy";
 import {
   buildMinutesInput,
   type MinutesBallotIn,
@@ -51,6 +53,8 @@ interface BuildingInfo {
   address: string;
   ico: string | null;
   country?: "sk" | "cz";
+  /** Root template slug (null on pre-template installs = hoa). */
+  templateSlug?: string | null;
 }
 
 interface DownloadMinutesButtonProps {
@@ -86,6 +90,10 @@ export default function DownloadMinutesButton({
   const unitLabel = leafKind ? tRoot(`Kinds.${leafKind}`) : "Byt";
   const [generating, setGenerating] = useState(false);
   const [error, setError] = useState("");
+  // BYT-20261118-020: minutes wording per regime + country. A pair whose
+  // copy is not signed off (bytové družstvo today) gets no minutes — never
+  // the HOA statute text.
+  const lc = getLegalCopy(building.templateSlug, building.country);
 
   async function handleDownload() {
     setGenerating(true);
@@ -99,9 +107,46 @@ export default function DownloadMinutesButton({
         import("qrcode"),
       ]);
 
-      // Fetch mandates
-      const mandatesRes = await fetch(`/api/mandates?votingId=${votingId}`);
+      // §14a ods. 8 protocol sections: SK HOA template only (statute does
+      // not apply to CZ / non-HOA communities — never parametrized).
+      const statutory =
+        building.country === "sk" &&
+        (getDisplayTemplateSlug(building.templateSlug) ?? "hoa") === "hoa";
+
+      // Mandates + (meeting) the attendance list frozen at close — fetched
+      // once, on this click only.
+      const [mandatesRes, attendanceRes] = await Promise.all([
+        fetch(`/api/mandates?votingId=${votingId}`),
+        statutory && voting.votingType === "meeting"
+          ? fetch(`/api/votings/${votingId}/attendance`).catch(() => null)
+          : Promise.resolve(null),
+      ]);
       const mandateRows = mandatesRes.ok ? await mandatesRes.json() : [];
+      const attendanceJson = attendanceRes?.ok
+        ? ((await attendanceRes.json()) as {
+            attendance?: {
+              summary?: {
+                eligibleOwners: number;
+                presentOwners: number;
+                representedOwners: number;
+                absentOwners: number;
+                eligibleWeight: number;
+                presentWeight: number;
+              };
+            };
+          })
+        : null;
+      const summary = attendanceJson?.attendance?.summary ?? null;
+      const attendance = summary
+        ? {
+            eligibleOwners: summary.eligibleOwners,
+            presentOwners: summary.presentOwners,
+            representedOwners: summary.representedOwners,
+            absentOwners: summary.absentOwners,
+            eligibleWeight: summary.eligibleWeight,
+            presentWeight: summary.presentWeight,
+          }
+        : null;
 
       // Generate QR code
       const qrData = `${window.location.origin}${window.location.pathname}`;
@@ -140,14 +185,14 @@ export default function DownloadMinutesButton({
       };
 
       // BYT-20261118-002 §7: one typed hand-off object (assembly moved
-      // unchanged into workflow/minutes.ts). `protocol` is passed but not
-      // rendered until the Phase B legal sign-off.
+      // unchanged into workflow/minutes.ts). `protocol` is printed for the
+      // SK HOA template (TODO(legal-copy sign-off): wording).
       const { items, ballots, flatNumbersByUnitId, protocol: builtProtocol } = buildMinutesInput({
         items: ballotData.items,
         results: ballotData.results,
         ballots: ballotData.ballots,
         confirmationText,
-        protocolSource: protocol,
+        protocolSource: protocol ? { ...protocol, attendance } : undefined,
       });
 
       const doc = (
@@ -165,6 +210,11 @@ export default function DownloadMinutesButton({
           flatNumbersByUnitId={flatNumbersByUnitId}
           unitLabel={unitLabel}
           protocol={builtProtocol}
+          statutory={statutory}
+          // HOA / other: omitted → SK HOA wording, byte-identical to before.
+          {...(lc.regime === "cooperative"
+            ? { minutesHeading: tRoot(lc.keys.minutesHeading), memberLabel: tRoot(lc.keys.memberLabel) }
+            : {})}
         />
       );
 
@@ -183,6 +233,10 @@ export default function DownloadMinutesButton({
     } finally {
       setGenerating(false);
     }
+  }
+
+  if (!lc.signedOff.minutes) {
+    return <p className="text-base text-ui-text-muted">{t("pendingLegalSignoff")}</p>;
   }
 
   return (
@@ -221,7 +275,7 @@ export default function DownloadMinutesButton({
         )}
       </button>
       {error && (
-        <p className="text-red-600 text-sm mt-2">{error}</p>
+        <p className="text-red-600 text-base mt-2">{error}</p>
       )}
     </div>
   );

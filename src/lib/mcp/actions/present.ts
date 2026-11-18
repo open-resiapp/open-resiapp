@@ -112,7 +112,11 @@ export async function presentProposal(
   const summary = [
     t("Mcp.view.pendingText", { summary: r.preview.summary }),
     previewText(r.preview),
-    t("Mcp.view.fallbackText", { url: confirmUrl, time: fmtDateTime(r.expiresAt, r.locale) }),
+    // "In the card below" only where a card is actually rendered.
+    t(withToken ? "Mcp.view.fallbackText" : "Mcp.view.fallbackTextLinkOnly", {
+      url: confirmUrl,
+      time: fmtDateTime(r.expiresAt, r.locale),
+    }),
   ].join("\n\n");
 
   return {

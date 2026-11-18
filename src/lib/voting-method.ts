@@ -23,6 +23,8 @@
 // resolution; the member-scoped methods skip unit grouping and count
 // each active membership independently.
 
+import type { LegalCountry, LegalRegime } from "@/lib/legal-copy/regime";
+
 export type CanonicalVotingMethod =
   | "weighted_by_share"
   | "one_per_unit"
@@ -140,4 +142,64 @@ export function computeMemberWeight(
         `computeMemberWeight: method "${method}" is unit-scoped — use computeUnitWeight instead.`
       );
   }
+}
+
+// ── BYT-20261118-020: which methods a community may choose ─────────────
+//
+// Statute-driven, so it depends on the legal regime (template) and the
+// country, not on UI taste.
+//
+//   hoa (SK)  zák. 182/1993 §14 ods. 3: "Za každý byt a nebytový priestor
+//             v dome má vlastník … jeden hlas" — votes are per unit, never
+//             per person. one_per_member is NOT allowed (an owner of three
+//             flats has three votes). The app keeps the three HOA options
+//             it offered before (share / unit / area).
+//   hoa (CZ)  §1206 ods. 1 zák. 89/2012 Sb.: votes by share on the common
+//             parts; same three options as before (unchanged).
+//   cooperative (SK) §240 Obch. zák. 513/1991: "Pri hlasovaní má každý
+//             člen jeden hlas, pokiaľ stanovy neurčujú inak" → default
+//             one_per_member; custom_weight when stanovy say otherwise
+//             (NOT for §239 ods. 4 písm. g) / dissolution — same §240).
+//   cooperative (CZ) §755 zák. 90/2012 Sb.: each member of a bytové
+//             družstvo has 1 vote (§650 ods. 1 does not apply); stanovy may
+//             give tenants of družstevní byty more votes except for the
+//             listed decisions → one_per_member default, custom_weight.
+//   other     every canonical method (the template picks the default).
+//
+// TODO(legal-signoff): the custom_weight exceptions (§240 veta 2 Obch. zák.,
+// §755 + §650 ods. 2 ZOK) are not enforced per question yet — the
+// administrator is responsible for using one_per_member for them.
+
+const HOA_METHODS: CanonicalVotingMethod[] = ["weighted_by_share", "one_per_unit", "per_area"];
+const COOPERATIVE_METHODS: CanonicalVotingMethod[] = ["one_per_member", "custom_weight"];
+
+export function allowedVotingMethods(
+  regime: LegalRegime,
+  _country: LegalCountry
+): CanonicalVotingMethod[] {
+  switch (regime) {
+    case "hoa":
+      return HOA_METHODS;
+    case "cooperative":
+      return COOPERATIVE_METHODS;
+    case "other":
+      return CANONICAL_VOTING_METHODS;
+  }
+}
+
+/** Statutory default per regime (template JSON default_voting_method mirrors it). */
+export function defaultVotingMethodFor(regime: LegalRegime): CanonicalVotingMethod {
+  return regime === "cooperative" ? "one_per_member" : "weighted_by_share";
+}
+
+/** Server-side guard for PATCH /api/building (accepts legacy aliases). */
+export function isVotingMethodAllowed(
+  raw: string,
+  regime: LegalRegime,
+  country: LegalCountry
+): boolean {
+  const known =
+    raw in LEGACY_TO_CANONICAL || (CANONICAL_VOTING_METHODS as string[]).includes(raw);
+  if (!known) return false;
+  return allowedVotingMethods(regime, country).includes(normalizeVotingMethod(raw));
 }
