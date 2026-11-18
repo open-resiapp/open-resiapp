@@ -4,6 +4,7 @@ import { notFound, redirect } from "next/navigation";
 
 import { routing } from "@/i18n/routing";
 import { auth } from "@/lib/auth";
+import { requestUrlFromHeaders } from "@/lib/mcp/config";
 import { isMcpEnabled } from "@/lib/mcp/module-state";
 import {
   authorizeParamsToQuery,
@@ -34,9 +35,12 @@ export async function decideAuthorization(formData: FormData): Promise<void> {
   const params = readAuthorizeParams(formData);
   const consentPath = `/${locale}/oauth/authorize?${authorizeParamsToQuery(params)}`;
 
-  const v = await validateAuthorizeRequest(params);
+  // Same origin fallback as /api/oauth/authorize (req.url) when no public
+  // URL is configured — else resource validation fails as invalid_target.
+  const requestUrl = await requestUrlFromHeaders();
+  const v = await validateAuthorizeRequest(params, requestUrl);
   if (v.kind === "fatal") redirect(consentPath);
-  if (v.kind === "redirect_error") redirect(errorRedirectFor(v));
+  if (v.kind === "redirect_error") redirect(errorRedirectFor(v, requestUrl));
 
   const session = await auth();
   if (!session) {
@@ -44,7 +48,7 @@ export async function decideAuthorization(formData: FormData): Promise<void> {
   }
 
   if (formData.get("decision") !== "allow") {
-    redirect(buildClientRedirect(v.redirectUri, { error: "access_denied", state: v.state }));
+    redirect(buildClientRedirect(v.redirectUri, { error: "access_denied", state: v.state }, requestUrl));
   }
 
   const user = await getUserAuthRow(session.user.id);
@@ -54,7 +58,7 @@ export async function decideAuthorization(formData: FormData): Promise<void> {
         error: "access_denied",
         error_description: "account not active",
         state: v.state,
-      })
+      }, requestUrl)
     );
   }
 
@@ -66,5 +70,5 @@ export async function decideAuthorization(formData: FormData): Promise<void> {
     resource: v.resource,
     scopes: v.scopes,
   });
-  redirect(buildClientRedirect(v.redirectUri, { code, state: v.state }));
+  redirect(buildClientRedirect(v.redirectUri, { code, state: v.state }, requestUrl));
 }
