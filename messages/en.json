@@ -3057,7 +3057,7 @@
     "openVoting": "Open the vote",
     "goToVoting": "Go to voting",
     "activatesPasskey": "Confirming also switches on your new passkey.",
-    "passkeyActivated": "Your passkey is now active. You can confirm further votes with it directly in the app.",
+    "passkeyActivated": "Your passkey is now active. Use it to sign in and to confirm further votes directly in the app.",
     "withdraw": {
       "title": "Confirm withdrawing your vote",
       "summary": "You are withdrawing your vote for unit {unit}.",
@@ -3114,7 +3114,7 @@
     "activatePage": {
       "title": "Confirm your new passkey",
       "device": "Device: {device}",
-      "explain": "The passkey starts working only after you press the button below. You can then use it to confirm votes.",
+      "explain": "The passkey starts working only after you press the button below. You can then use it to sign in and confirm votes.",
       "button": "Confirm passkey",
       "done": "Your passkey is active.",
       "goToVoting": "Go to voting",

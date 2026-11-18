@@ -3057,7 +3057,7 @@
     "openVoting": "Otevřít hlasování",
     "goToVoting": "Přejít na hlasování",
     "activatesPasskey": "Potvrzením se zároveň zapne váš nový přístupový klíč.",
-    "passkeyActivated": "Váš přístupový klíč je zapnutý. Další hlasy jím potvrdíte přímo v aplikaci.",
+    "passkeyActivated": "Váš přístupový klíč je zapnutý. Přihlásíte se jím a další hlasy jím potvrdíte přímo v aplikaci.",
     "withdraw": {
       "title": "Potvrďte stažení hlasu",
       "summary": "Stahujete svůj hlas za jednotku {unit}.",
@@ -3114,7 +3114,7 @@
     "activatePage": {
       "title": "Potvrďte nový přístupový klíč",
       "device": "Zařízení: {device}",
-      "explain": "Klíč začne fungovat až po stisknutí tlačítka níže. Pak jím můžete potvrzovat hlasování.",
+      "explain": "Klíč začne fungovat až po stisknutí tlačítka níže. Pak se jím můžete přihlásit a potvrzovat hlasy.",
       "button": "Potvrdit přístupový klíč",
       "done": "Přístupový klíč je zapnutý.",
       "goToVoting": "Přejít na hlasování",

@@ -3057,7 +3057,7 @@
     "openVoting": "Otvoriť hlasovanie",
     "goToVoting": "Prejsť na hlasovanie",
     "activatesPasskey": "Potvrdením sa zároveň zapne váš nový prístupový kľúč.",
-    "passkeyActivated": "Váš prístupový kľúč je zapnutý. Ďalšie hlasy ním potvrdíte priamo v aplikácii.",
+    "passkeyActivated": "Váš prístupový kľúč je zapnutý. Prihlásite sa ním a ďalšie hlasy ním potvrdíte priamo v aplikácii.",
     "withdraw": {
       "title": "Potvrďte stiahnutie hlasu",
       "summary": "Sťahujete svoj hlas za byt {unit}.",
@@ -3114,7 +3114,7 @@
     "activatePage": {
       "title": "Potvrďte nový prístupový kľúč",
       "device": "Zariadenie: {device}",
-      "explain": "Kľúč začne fungovať až po stlačení tlačidla nižšie. Potom ním môžete potvrdzovať hlasovanie.",
+      "explain": "Kľúč začne fungovať až po stlačení tlačidla nižšie. Potom sa ním môžete prihlásiť a potvrdzovať hlasy.",
       "button": "Potvrdiť prístupový kľúč",
       "done": "Prístupový kľúč je zapnutý.",
       "goToVoting": "Prejsť na hlasovanie",
