@@ -75,8 +75,15 @@ async function handler(
     .leftJoin(users, eq(ballots.ownerId, users.id))
     .where(eq(ballots.votingId, id));
 
-  const votesByItem = new Map<string, typeof itemVotes>();
-  for (const iv of itemVotes) {
+  // A `read` key gets per-flat choices only (as printed in the minutes);
+  // owner identity (id, name) is personal data reserved for `full` keys.
+  const fullKey = apiKeyCanSeeDraftVotings(apiKey.permissions);
+  const visibleVotes = fullKey
+    ? itemVotes
+    : itemVotes.map((iv) => ({ ...iv, ownerId: null, ownerName: null }));
+
+  const votesByItem = new Map<string, typeof visibleVotes>();
+  for (const iv of visibleVotes) {
     const slot = votesByItem.get(iv.itemId) ?? [];
     slot.push(iv);
     votesByItem.set(iv.itemId, slot);
