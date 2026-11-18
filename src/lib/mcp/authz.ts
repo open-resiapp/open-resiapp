@@ -49,6 +49,22 @@ export function assertBoard(
   if (!isBoard(p, opts)) throw new McpError("forbidden");
 }
 
+/**
+ * Who may edit / pin / delete board notices — same authority as creating one
+ * (assertBoard with caretaker: admin, active chairman, caretaker). Admins
+ * and holders of an active board role manage every notice; a caretaker
+ * without a board role only the notices they wrote. Used by
+ * PATCH/DELETE /api/posts/[id] and the board page viewer caps.
+ */
+export function noticeManageScope(
+  p: Pick<Principal, "role" | "status" | "boardRoles">
+): "all" | "own" | null {
+  if (p.status !== "active") return null;
+  if (!isBoard(p, { allowCaretaker: true })) return null;
+  if (p.role === "admin" || p.boardRoles.length > 0) return "all";
+  return "own";
+}
+
 export async function assertModuleEnabled(
   name: "accounting" | "voting" | "mcp" | (string & {})
 ): Promise<void> {

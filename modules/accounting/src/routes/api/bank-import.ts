@@ -9,6 +9,7 @@ import {
 } from "@modules/accounting/src/lib/bank-import";
 import { listPayableUnits } from "@modules/accounting/src/lib/payments";
 import { validateMatchInput } from "@modules/accounting/src/lib/input-validators";
+import { inputErrorResponse } from "@modules/accounting/src/lib/input-errors.server";
 
 // Bank import + reconciliation API — treasurer/admin only (whole-dom
 // financial mutation surface).
@@ -74,7 +75,7 @@ export async function handleConfirmMatch(
   }
   const parsed = validateMatchInput(body);
   if (!parsed.ok) {
-    return NextResponse.json({ error: parsed.message }, { status: 400 });
+    return inputErrorResponse(req, parsed);
   }
 
   try {

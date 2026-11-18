@@ -10,6 +10,7 @@ import {
 import { uploadAttachment } from "@modules/accounting/src/lib/attachments";
 import { listServiceCategories } from "@modules/accounting/src/lib/fee-schedules";
 import { validateExpenseInput } from "@modules/accounting/src/lib/input-validators";
+import { inputErrorResponse } from "@modules/accounting/src/lib/input-errors.server";
 
 // Expense ledger API — list: treasurer/chairman/admin; mutations:
 // treasurer/admin only.
@@ -59,7 +60,7 @@ export async function handleCreate(req: NextRequest): Promise<NextResponse> {
   }
   const parsed = validateExpenseInput(body);
   if (!parsed.ok) {
-    return NextResponse.json({ error: parsed.message }, { status: 400 });
+    return inputErrorResponse(req, parsed);
   }
   const input = parsed.value;
 

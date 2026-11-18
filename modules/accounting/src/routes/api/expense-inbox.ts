@@ -8,6 +8,7 @@ import {
   postInboxItemAsExpense,
 } from "@modules/accounting/src/lib/expense-inbox";
 import { validateExpenseInput } from "@modules/accounting/src/lib/input-validators";
+import { inputErrorResponse } from "@modules/accounting/src/lib/input-errors.server";
 
 // Expense collector inbox API (AC 478/479) — write-privileged (treasurer /
 // admin) only. Upload a PDF/image invoice → OCR-parked row → post as a real
@@ -98,7 +99,7 @@ export async function handlePost(
   // Same doklad requirements (AC 440) as expense create — shared validator.
   const parsed = validateExpenseInput(body);
   if (!parsed.ok) {
-    return NextResponse.json({ error: parsed.message }, { status: 400 });
+    return inputErrorResponse(req, parsed);
   }
   // Inbox posting never links an expense authorisation (historical shape).
   // eslint-disable-next-line @typescript-eslint/no-unused-vars

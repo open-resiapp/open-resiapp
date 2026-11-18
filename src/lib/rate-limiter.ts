@@ -28,7 +28,14 @@ export const RATE_LIMITS = {
   // BYT-20261117-001 §7: MCP calls per access token.
   mcpToken: { maxRequests: 60, windowMs: 60 * 1000 } as RateLimitConfig, // 60/min
   // OAuth endpoints (authorize / token / register / revoke) per IP.
+  // Browser-facing /oauth/authorize, per user IP (feeds the IP block list).
   oauth: { maxRequests: 30, windowMs: 60 * 1000 } as RateLimitConfig, // 30/min
+  // Server-to-server MCP / OAuth traffic arrives from a few AI-host egress IPs
+  // shared by every user, so the per-IP limit is generous and never blocks
+  // the IP (blockOnRepeat: false). The per-token limit is the real control.
+  mcpIp: { maxRequests: 1200, windowMs: 60 * 1000 } as RateLimitConfig, // 1200/min
+  oauthHost: { maxRequests: 300, windowMs: 60 * 1000 } as RateLimitConfig, // 300/min
+  oauthRegister: { maxRequests: 60, windowMs: 60 * 1000 } as RateLimitConfig, // 60/min
   // BYT-20261117-001 §6: ballot email-link confirm page + decision, per user.
   ballotConfirm: { maxRequests: 20, windowMs: 60 * 60 * 1000 } as RateLimitConfig, // 20/hr
 };
@@ -45,16 +52,29 @@ export function getClientIp(request: NextRequest): string {
   return "unknown";
 }
 
+export interface RateLimitOptions {
+  /**
+   * Default true: repeated limit hits put the IP on the 15-minute block list,
+   * and a blocked IP is refused. Set false for endpoints whose callers share
+   * egress IPs (MCP / OAuth server-to-server traffic from AI hosts) — the
+   * request is still counted and limited, but the IP is never blocked and
+   * the block list is not consulted.
+   */
+  blockOnRepeat?: boolean;
+}
+
 export function checkRateLimit(
   request: NextRequest,
   config: RateLimitConfig,
-  tier: string = "default"
+  tier: string = "default",
+  options: RateLimitOptions = {}
 ): NextResponse | null {
   const ip = getClientIp(request);
   if (ip === "unknown") return null;
+  const blockOnRepeat = options.blockOnRepeat ?? true;
 
   // Check IP block first
-  if (isIpBlocked(ip)) {
+  if (blockOnRepeat && isIpBlocked(ip)) {
     return NextResponse.json(
       { error: "Too many requests. Try again later." },
       {
@@ -76,7 +96,7 @@ export function checkRateLimit(
   entry.count++;
 
   if (entry.count > config.maxRequests) {
-    trackRateLimitHit(ip);
+    if (blockOnRepeat) trackRateLimitHit(ip);
     const retryAfter = Math.ceil((entry.resetAt - now) / 1000);
     return NextResponse.json(
       { error: "Too many requests. Try again later." },

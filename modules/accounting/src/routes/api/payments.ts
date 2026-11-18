@@ -8,6 +8,7 @@ import {
   voidManualPayment,
 } from "@modules/accounting/src/lib/payments";
 import { validateManualPaymentInput } from "@modules/accounting/src/lib/input-validators";
+import { inputErrorResponse } from "@modules/accounting/src/lib/input-errors.server";
 
 // Manual payment API — list (treasurer/chairman/admin), create + void
 // (treasurer/admin). Void requires a reason (audit-logged reversal).
@@ -34,7 +35,7 @@ export async function handleCreate(req: NextRequest): Promise<NextResponse> {
   }
   const parsed = validateManualPaymentInput(body);
   if (!parsed.ok) {
-    return NextResponse.json({ error: parsed.message }, { status: 400 });
+    return inputErrorResponse(req, parsed);
   }
   const input = parsed.value;
 

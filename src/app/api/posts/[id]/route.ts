@@ -3,34 +3,38 @@ import { auth } from "@/lib/auth";
 import { db } from "@/db";
 import { posts, users } from "@/db/schema";
 import { eq } from "drizzle-orm";
-import { hasPermission } from "@/lib/permissions";
+import type { Session } from "next-auth";
 import { deleteLinksForTarget } from "@/lib/documents.server";
-import { getRequestCommunityRoot, listActiveBoardRoles } from "@/lib/shell.server";
-import type { UserRole } from "@/types";
+import { noticeManageScope } from "@/lib/mcp/authz";
+import { McpError } from "@/lib/mcp/errors";
+import { principalFromSession } from "@/lib/mcp/principal";
 
 /**
- * Who may edit / pin / delete a board notice: admins and board members
- * (active board role on the community) any notice; everyone else holding
- * `createPost` (the caretaker) only the notices they wrote.
- * Mirrored in FeedList (FeedViewerCaps.canManageAllNotices).
+ * Who may edit / pin / delete a board notice — the same authority as
+ * creating one (admin, active chairman, caretaker; see noticeManageScope):
+ * admins and board members any notice, a caretaker only the notices they
+ * wrote. Mirrored in the board page (FeedViewerCaps.canManageAllNotices).
  */
 async function checkNoticeAccess(
-  userId: string,
-  role: UserRole,
+  session: Session,
   postId: string
 ): Promise<"ok" | "forbidden" | "not_found"> {
-  if (!hasPermission(role, "createPost")) return "forbidden";
-  if (role === "admin") return "ok";
+  let scope: "all" | "own" | null;
+  try {
+    scope = noticeManageScope(await principalFromSession(session));
+  } catch (err) {
+    if (err instanceof McpError) return "forbidden";
+    throw err;
+  }
+  if (!scope) return "forbidden";
   const [post] = await db
     .select({ authorId: posts.authorId })
     .from(posts)
     .where(eq(posts.id, postId))
     .limit(1);
   if (!post) return "not_found";
-  if (post.authorId === userId) return "ok";
-  const root = await getRequestCommunityRoot();
-  const boardRoles = root ? await listActiveBoardRoles(userId, root.id) : [];
-  return boardRoles.length > 0 ? "ok" : "forbidden";
+  if (scope === "all" || post.authorId === session.user.id) return "ok";
+  return "forbidden";
 }
 
 function accessError(result: "forbidden" | "not_found") {
@@ -87,7 +91,7 @@ export async function PATCH(
   }
 
   const { id } = await params;
-  const access = await checkNoticeAccess(session.user.id, session.user.role as UserRole, id);
+  const access = await checkNoticeAccess(session, id);
   if (access !== "ok") return accessError(access);
   const body = await request.json();
   const updateData: Record<string, unknown> = {};
@@ -121,7 +125,7 @@ export async function DELETE(
   }
 
   const { id } = await params;
-  const access = await checkNoticeAccess(session.user.id, session.user.role as UserRole, id);
+  const access = await checkNoticeAccess(session, id);
   if (access !== "ok") return accessError(access);
 
   const [deleted] = await db

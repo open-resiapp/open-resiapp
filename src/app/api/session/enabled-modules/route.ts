@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 
 import { auth } from "@/lib/auth";
-import { listEnabledModuleNames } from "@/lib/modules/enabled.server";
+import { listEnabledModules } from "@/lib/modules/route-guard";
 
 // Lightweight endpoint for client UI that needs the enabled-module set.
 // The dashboard shell no longer calls it — the server layout resolves the
@@ -11,5 +11,5 @@ export async function GET() {
   if (!session) {
     return NextResponse.json({ error: "Neautorizovaný prístup" }, { status: 401 });
   }
-  return NextResponse.json(await listEnabledModuleNames());
+  return NextResponse.json(await listEnabledModules());
 }
