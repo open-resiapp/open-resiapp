@@ -94,7 +94,7 @@ export default function ConfirmEmailVote({
           <summary className="min-h-11 cursor-pointer py-2 text-base font-medium text-ui-text">
             {tCast("details")}
           </summary>
-          <p className="mt-2 break-all font-mono text-sm text-ui-text">{done.ballotHash}</p>
+          <p className="mt-2 break-all font-mono text-base text-ui-text">{done.ballotHash}</p>
         </details>
         {done.passkeyActivated && (
           <p role="status" className="mb-4 text-base font-medium text-ui-success">

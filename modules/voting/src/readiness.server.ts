@@ -4,13 +4,14 @@ import "server-only";
 // server render of Domov — not live, not polled, no client fetch, no cache.
 // TODO(perf): EXPLAIN ANALYZE on the largest demo community before shipping
 // (spec §8).
-import { and, eq, isNotNull, isNull, sql } from "drizzle-orm";
+import { and, eq, inArray, isNotNull, isNull, sql } from "drizzle-orm";
 
 import { db } from "@/db";
 import { entities, memberships, users, webauthnCredentials } from "@/db/schema";
 import type { CommunityRootRow } from "@/lib/legacy-compat";
 import { normalizeVotingMethod } from "@/lib/voting-method";
 import { votings } from "./db/schema";
+import { VOTING_ROLES } from "./voting-roles";
 import { computeEVoteReadiness, type ReadinessRow } from "./workflow/readiness";
 import { publicationDeadline } from "./workflow/transitions";
 import type { Country } from "./rules";
@@ -48,7 +49,7 @@ export async function getEVoteReadiness(root: CommunityRootRow): Promise<Readine
     .where(
       and(
         eq(memberships.status, "active"),
-        eq(memberships.role, "owner"),
+        inArray(memberships.role, [...VOTING_ROLES]),
         eq(entities.kind, "unit"),
         isNull(entities.archivedAt)
       )

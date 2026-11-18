@@ -10,7 +10,8 @@ import { createVoting } from "@modules/voting/src/votings";
 import { findDisallowedQuorum } from "@modules/voting/src/quorum-guard.server";
 import { assertBoard } from "../authz";
 import { validationError } from "../errors";
-import { fmtDate, fmtDateTime, fmtMoney, translatorFor } from "./format";
+import { timeZoneForCountry } from "@/lib/time-zone";
+import { fmtDateTime, fmtMoney, isDateOnly, translatorFor, zonedDateTimeToUtc } from "./format";
 import { defineAction, type PreviewRow } from "./types";
 
 // Governance pending actions (BYT-20261117-001 §4 #29–#30): announcement and
@@ -106,8 +107,18 @@ export const draftVotingSchema = z.object({
   title: z.string().trim().min(1).max(500).describe("Voting title."),
   description: z.string().max(10_000).optional(),
   votingType: z.enum(["written", "meeting"]).optional().describe("written (per rollam, default) | meeting."),
-  startsAt: z.string().min(8).max(40).describe("Start (ISO 8601)."),
-  endsAt: z.string().min(8).max(40).describe("End (ISO 8601); written votings have a statutory minimum duration."),
+  startsAt: z
+    .string()
+    .min(8)
+    .max(40)
+    .describe("Start (ISO 8601). A bare date (YYYY-MM-DD) means 00:00 in the community's time zone."),
+  endsAt: z
+    .string()
+    .min(8)
+    .max(40)
+    .describe(
+      "End (ISO 8601). A bare date (YYYY-MM-DD) means the END of that day, 23:59:59 in the community's time zone. Written votings have a statutory minimum duration."
+    ),
   items: z.array(itemSchema).min(1).max(30).describe("Ballot items, each with its own quorum."),
 });
 
@@ -118,13 +129,22 @@ const draftVoting = defineAction({
   schema: draftVotingSchema,
   authorize: (ctx) => assertBoard(ctx.principal),
   async validate(ctx, p) {
-    const start = new Date(p.startsAt);
-    const end = new Date(p.endsAt);
-    if (Number.isNaN(start.getTime())) throw validationError("startsAt");
-    if (Number.isNaN(end.getTime()) || end <= start) throw validationError("endsAt");
-    const votingType = p.votingType ?? "written";
     // Same fallback as createVoting: a community without a country is SK.
     const country = (ctx.root.country ?? "sk") as Country;
+    // A bare date is a calendar day in the community's time zone: the start
+    // opens at 00:00, the end closes at 23:59:59 — "until 30. 11." means the
+    // whole 30th, not midnight UTC at its start. The normalised payload
+    // carries full ISO instants, so re-validation at confirm is identical.
+    const tz = timeZoneForCountry(country);
+    const start = isDateOnly(p.startsAt)
+      ? zonedDateTimeToUtc(p.startsAt, { h: 0, m: 0, s: 0 }, tz)
+      : new Date(p.startsAt);
+    const end = isDateOnly(p.endsAt)
+      ? zonedDateTimeToUtc(p.endsAt, { h: 23, m: 59, s: 59 }, tz)
+      : new Date(p.endsAt);
+    if (!start || Number.isNaN(start.getTime())) throw validationError("startsAt");
+    if (!end || Number.isNaN(end.getTime()) || end <= start) throw validationError("endsAt");
+    const votingType = p.votingType ?? "written";
     if (votingType === "written") {
       const minEnd = validatePerRollamDuration(country, start, end);
       if (minEnd) {
@@ -189,7 +209,7 @@ const draftVoting = defineAction({
           : []),
         { label: t("Mcp.preview.votingType"), value: t(`Mcp.preview.votingType_${p.votingType ?? "written"}`) },
         { label: t("Mcp.preview.startsAt"), value: fmtDateTime(p.startsAt, locale) },
-        { label: t("Mcp.preview.endsAt"), value: fmtDate(p.endsAt, locale) },
+        { label: t("Mcp.preview.endsAt"), value: fmtDateTime(p.endsAt, locale) },
         ...itemRows,
         { label: t("Mcp.preview.status"), before: "—", after: t("Mcp.preview.statusDraft") },
       ],

@@ -10,14 +10,61 @@ import { useFormatter, useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { formatEur } from "@modules/accounting/src/lib/money";
 import ZavierkaPanel from "@modules/accounting/src/components/ZavierkaPanel";
+import ExportButtons from "@modules/accounting/src/components/ExportButtons";
 
-interface TrialBalanceRow {
+interface TrialBalanceYearRow {
   code: string;
   name: string;
   kind: string;
+  openingCents: number;
   debitCents: number;
   creditCents: number;
-  balanceCents: number;
+  closingCents: number;
+}
+
+interface TrialBalanceYear {
+  year: number;
+  rows: TrialBalanceYearRow[];
+  totals: {
+    openingDebitCents: number;
+    openingCreditCents: number;
+    debitCents: number;
+    creditCents: number;
+    closingDebitCents: number;
+    closingCreditCents: number;
+  };
+}
+
+interface FpuoRow {
+  unitEntityId: string;
+  unitLabel: string;
+  shareMissing: boolean;
+  openingCents: number;
+  predpisCents: number;
+  paidCents: number;
+  usesCents: number;
+  incomeCents: number;
+  otherCents: number;
+  closingCents: number;
+}
+
+interface FpuoReport {
+  year: number;
+  rows: FpuoRow[];
+  totals: Omit<FpuoRow, "unitEntityId" | "unitLabel" | "shareMissing">;
+  unallocatedCents: number;
+  ledgerClosingCents: number;
+  differenceCents: number;
+}
+
+/** Dr − Cr balance shown as a signed amount with an MD/D marker. */
+function SideAmount({ cents, dr, cr }: { cents: number; dr: string; cr: string }) {
+  if (cents === 0) return <>{formatEur(0)}</>;
+  return (
+    <>
+      {formatEur(Math.abs(cents))} <span className="text-ui-text-muted">{cents > 0 ? dr : cr}</span>
+    </>
+  );
 }
 
 interface JournalLine {
@@ -39,9 +86,9 @@ interface JournalEntry {
 }
 
 interface Payload {
-  trialBalance: TrialBalanceRow[];
   journal: { entries: JournalEntry[]; total: number };
   page: number;
+  years: number[];
 }
 
 const PAGE_SIZE = 50;
@@ -52,6 +99,10 @@ export default function JournalPage() {
 
   const [data, setData] = useState<Payload | null>(null);
   const [page, setPage] = useState(0);
+  const [year, setYear] = useState<number>(new Date().getFullYear());
+  const [tb, setTb] = useState<TrialBalanceYear | null>(null);
+  const [fpuo, setFpuo] = useState<FpuoReport | null>(null);
+  const [fpuoOpen, setFpuoOpen] = useState(false);
   const [expanded, setExpanded] = useState<string | null>(null);
   const [error, setError] = useState(false);
   const [verifyResult, setVerifyResult] = useState<
@@ -79,7 +130,7 @@ export default function JournalPage() {
   }
 
   const load = useCallback(() => {
-    fetch(`/api/accounting/journal?page=${page}`)
+    fetch(`/api/accounting/journal?page=${page}&tb=0`)
       .then((r) => {
         if (!r.ok) throw new Error(String(r.status));
         return r.json();
@@ -89,6 +140,32 @@ export default function JournalPage() {
   }, [page]);
 
   useEffect(load, [load]);
+
+  // Trial balance for the chosen accounting year (opening / turnover /
+  // closing). Fetched per year change only — not on journal paging.
+  useEffect(() => {
+    setTb(null);
+    fetch(`/api/accounting/reports/trial-balance?format=json&year=${year}`)
+      .then((r) => {
+        if (!r.ok) throw new Error(String(r.status));
+        return r.json();
+      })
+      .then((payload: TrialBalanceYear) => setTb(payload))
+      .catch(() => setError(true));
+  }, [year]);
+
+  // FPÚO per unit — only once the section is opened (heavier query).
+  useEffect(() => {
+    if (!fpuoOpen) return;
+    setFpuo(null);
+    fetch(`/api/accounting/reports/fpuo?format=json&year=${year}`)
+      .then((r) => {
+        if (!r.ok) throw new Error(String(r.status));
+        return r.json();
+      })
+      .then((payload: FpuoReport) => setFpuo(payload))
+      .catch(() => setError(true));
+  }, [fpuoOpen, year]);
 
   if (error) {
     return <p className="text-red-600 dark:text-red-400">{t("loadError")}</p>;
@@ -100,26 +177,23 @@ export default function JournalPage() {
   }
 
   const pages = Math.max(1, Math.ceil(data.journal.total / PAGE_SIZE));
-  const activeAccounts = data.trialBalance.filter(
-    (r) => r.debitCents !== 0 || r.creditCents !== 0
-  );
 
   return (
     <div className="max-w-5xl">
       <Link
         href="/accounting"
-        className="text-sm text-blue-600 dark:text-blue-400 hover:underline"
+        className="inline-flex min-h-11 items-center text-base text-blue-600 dark:text-blue-400 hover:underline"
       >
         ← {t("backToAccounting")}
       </Link>
-      <div className="flex items-center justify-between mt-2 mb-1">
+      <div className="flex flex-wrap items-center justify-between gap-3 mt-2 mb-1">
         <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
           {t("title")}
         </h1>
         <a
           href="/api/accounting/export"
           download
-          className="px-4 py-2 border border-blue-600 text-blue-600 dark:text-blue-400 dark:border-blue-400 rounded-lg text-sm"
+          className="px-4 py-2 border border-blue-600 text-blue-600 dark:text-blue-400 dark:border-blue-400 rounded-lg text-base"
         >
           {t("exportButton")}
         </a>
@@ -130,7 +204,7 @@ export default function JournalPage() {
       <ZavierkaPanel />
 
       {/* Bundle verification */}
-      <div className="mb-6 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg p-4 text-sm">
+      <div className="mb-6 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg p-4 text-base">
         <p className="text-gray-700 dark:text-gray-300 mb-2">
           {t("verifyHint")}
         </p>
@@ -142,7 +216,7 @@ export default function JournalPage() {
             if (file) verifyBundle(file);
             e.target.value = "";
           }}
-          className="text-sm text-gray-700 dark:text-gray-300"
+          className="text-base text-gray-700 dark:text-gray-300"
         />
         {verifyResult === "valid" && (
           <p className="mt-2 text-green-700 dark:text-green-400">
@@ -161,86 +235,229 @@ export default function JournalPage() {
         )}
       </div>
 
-      {/* Trial balance */}
-      <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg p-6 mb-6 overflow-x-auto">
-        <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-3">
-          {t("trialBalanceTitle")}
-        </h2>
-        {activeAccounts.length === 0 ? (
-          <p className="text-gray-600 dark:text-gray-400">{t("empty")}</p>
-        ) : (
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="text-left text-gray-600 dark:text-gray-400 border-b border-gray-200 dark:border-gray-700">
-                <th className="py-2 pr-4">{t("colAccount")}</th>
-                <th className="py-2 pr-4">{t("colName")}</th>
-                <th className="py-2 pr-4 text-right">{t("colDebit")}</th>
-                <th className="py-2 pr-4 text-right">{t("colCredit")}</th>
-                <th className="py-2 text-right">{t("colBalance")}</th>
-              </tr>
-            </thead>
-            <tbody>
-              {activeAccounts.map((row) => (
-                <tr
-                  key={row.code}
-                  className="border-b border-gray-100 dark:border-gray-800"
-                >
-                  <td className="py-2 pr-4 font-mono text-gray-900 dark:text-gray-100">
-                    {row.code}
-                  </td>
-                  <td className="py-2 pr-4 text-gray-900 dark:text-gray-100">
-                    {row.name}
-                  </td>
-                  <td className="py-2 pr-4 text-right text-gray-500 dark:text-gray-400">
-                    {formatEur(row.debitCents)}
-                  </td>
-                  <td className="py-2 pr-4 text-right text-gray-500 dark:text-gray-400">
-                    {formatEur(row.creditCents)}
-                  </td>
-                  <td className="py-2 text-right font-medium text-gray-900 dark:text-gray-100">
-                    {formatEur(row.balanceCents)}
-                  </td>
-                </tr>
+      {/* Year selector — drives the trial balance and the FPÚO report. */}
+      <div className="mb-4 flex flex-wrap items-end gap-3">
+        <label className="flex flex-col text-base text-gray-700 dark:text-gray-300">
+          {t("yearLabel")}
+          <select
+            value={year}
+            onChange={(e) => setYear(Number(e.target.value))}
+            className="mt-1 min-h-11 rounded-lg border border-gray-300 bg-white px-3 text-base text-gray-900 dark:border-gray-600 dark:bg-gray-900 dark:text-gray-100"
+          >
+            {[...new Set([year, ...data.years])]
+              .sort((a, b) => b - a)
+              .map((y) => (
+                <option key={y} value={y}>
+                  {y}
+                </option>
               ))}
-            </tbody>
-            <tfoot>
-              <tr className="font-semibold text-gray-900 dark:text-gray-100">
-                <td className="py-2 pr-4" colSpan={2}>
-                  {t("totals")}
-                </td>
-                <td className="py-2 pr-4 text-right">
-                  {formatEur(
-                    activeAccounts.reduce((s, r) => s + r.debitCents, 0)
-                  )}
-                </td>
-                <td className="py-2 pr-4 text-right">
-                  {formatEur(
-                    activeAccounts.reduce((s, r) => s + r.creditCents, 0)
-                  )}
-                </td>
-                <td className="py-2 text-right">
-                  {formatEur(
-                    activeAccounts.reduce((s, r) => s + r.balanceCents, 0)
-                  )}
-                </td>
-              </tr>
-            </tfoot>
-          </table>
-        )}
+          </select>
+        </label>
       </div>
 
+      {/* Trial balance (obratová predvaha) for the year */}
+      <section className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg p-4 sm:p-6 mb-6">
+        <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+            {t("trialBalanceYearTitle", { year })}
+          </h2>
+          <ExportButtons report="trial-balance" params={{ year }} />
+        </div>
+        <p className="mb-3 text-base text-gray-600 dark:text-gray-400">
+          {t("trialBalanceYearHint")}
+        </p>
+        {!tb ? (
+          <div className="h-24 animate-pulse rounded-lg bg-gray-100 dark:bg-gray-800" />
+        ) : tb.rows.every(
+            (r) => r.openingCents === 0 && r.debitCents === 0 && r.creditCents === 0
+          ) ? (
+          <p className="text-base text-gray-600 dark:text-gray-400">{t("empty")}</p>
+        ) : (
+          <>
+            {(() => {
+              const active = tb.rows.filter(
+                (r) => r.openingCents !== 0 || r.debitCents !== 0 || r.creditCents !== 0
+              );
+              return (
+                <>
+                  {/* < sm: one card per account (390 px, no sideways scroll) */}
+                  <ul className="sm:hidden divide-y divide-gray-100 dark:divide-gray-800">
+                    {active.map((row) => (
+                      <li key={row.code} className="py-3 text-base">
+                        <p className="font-semibold text-gray-900 dark:text-gray-100">
+                          <span className="font-mono">{row.code}</span> {row.name}
+                        </p>
+                        <dl className="mt-1 grid grid-cols-2 gap-x-3 text-gray-700 dark:text-gray-300">
+                          <dt>{t("colOpening")}</dt>
+                          <dd className="text-right">
+                            <SideAmount cents={row.openingCents} dr={t("sideDr")} cr={t("sideCr")} />
+                          </dd>
+                          <dt>{t("colTurnoverDr")}</dt>
+                          <dd className="text-right">{formatEur(row.debitCents)}</dd>
+                          <dt>{t("colTurnoverCr")}</dt>
+                          <dd className="text-right">{formatEur(row.creditCents)}</dd>
+                          <dt className="font-semibold">{t("colClosing")}</dt>
+                          <dd className="text-right font-semibold">
+                            <SideAmount cents={row.closingCents} dr={t("sideDr")} cr={t("sideCr")} />
+                          </dd>
+                        </dl>
+                      </li>
+                    ))}
+                  </ul>
+                  <div className="hidden sm:block overflow-x-auto">
+                    <table className="w-full text-base">
+                      <thead>
+                        <tr className="text-left text-gray-600 dark:text-gray-400 border-b border-gray-200 dark:border-gray-700">
+                          <th className="py-2 pr-4">{t("colAccount")}</th>
+                          <th className="py-2 pr-4">{t("colName")}</th>
+                          <th className="py-2 pr-4 text-right">{t("colOpening")}</th>
+                          <th className="py-2 pr-4 text-right">{t("colTurnoverDr")}</th>
+                          <th className="py-2 pr-4 text-right">{t("colTurnoverCr")}</th>
+                          <th className="py-2 text-right">{t("colClosing")}</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {active.map((row) => (
+                          <tr key={row.code} className="border-b border-gray-100 dark:border-gray-800">
+                            <td className="py-2 pr-4 font-mono text-gray-900 dark:text-gray-100">{row.code}</td>
+                            <td className="py-2 pr-4 text-gray-900 dark:text-gray-100">{row.name}</td>
+                            <td className="py-2 pr-4 text-right whitespace-nowrap text-gray-700 dark:text-gray-300">
+                              <SideAmount cents={row.openingCents} dr={t("sideDr")} cr={t("sideCr")} />
+                            </td>
+                            <td className="py-2 pr-4 text-right whitespace-nowrap text-gray-700 dark:text-gray-300">
+                              {formatEur(row.debitCents)}
+                            </td>
+                            <td className="py-2 pr-4 text-right whitespace-nowrap text-gray-700 dark:text-gray-300">
+                              {formatEur(row.creditCents)}
+                            </td>
+                            <td className="py-2 text-right whitespace-nowrap font-medium text-gray-900 dark:text-gray-100">
+                              <SideAmount cents={row.closingCents} dr={t("sideDr")} cr={t("sideCr")} />
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                  {/* Totals — Σ MD must equal Σ D in every column pair. */}
+                  <dl className="mt-3 grid grid-cols-1 gap-1 text-base font-semibold text-gray-900 dark:text-gray-100 sm:grid-cols-3">
+                    <div>
+                      <dt className="font-normal text-gray-600 dark:text-gray-400">{t("totalsOpening")}</dt>
+                      <dd>
+                        {formatEur(tb.totals.openingDebitCents)} {t("sideDr")} / {formatEur(tb.totals.openingCreditCents)} {t("sideCr")}
+                      </dd>
+                    </div>
+                    <div>
+                      <dt className="font-normal text-gray-600 dark:text-gray-400">{t("totalsTurnover")}</dt>
+                      <dd>
+                        {formatEur(tb.totals.debitCents)} {t("sideDr")} / {formatEur(tb.totals.creditCents)} {t("sideCr")}
+                      </dd>
+                    </div>
+                    <div>
+                      <dt className="font-normal text-gray-600 dark:text-gray-400">{t("totalsClosing")}</dt>
+                      <dd>
+                        {formatEur(tb.totals.closingDebitCents)} {t("sideDr")} / {formatEur(tb.totals.closingCreditCents)} {t("sideCr")}
+                      </dd>
+                    </div>
+                  </dl>
+                  {(tb.totals.debitCents !== tb.totals.creditCents ||
+                    tb.totals.closingDebitCents !== tb.totals.closingCreditCents) && (
+                    <p role="alert" className="mt-2 text-base font-medium text-red-700 dark:text-red-400">
+                      {t("totalsUnbalanced")}
+                    </p>
+                  )}
+                </>
+              );
+            })()}
+          </>
+        )}
+      </section>
+
+      {/* FPÚO per unit (§ 10 zák. 182/1993) */}
+      <details
+        className="mb-6 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg p-4 sm:p-6"
+        onToggle={(e) => setFpuoOpen((e.target as HTMLDetailsElement).open)}
+      >
+        <summary className="flex min-h-11 cursor-pointer items-center text-lg font-semibold text-gray-900 dark:text-gray-100">
+          {t("fpuoTitle", { year })}
+        </summary>
+        <div className="mt-3 space-y-3">
+          <p className="text-base text-gray-600 dark:text-gray-400">{t("fpuoHint")}</p>
+          <ExportButtons report="fpuo" params={{ year }} />
+          {!fpuo ? (
+            <div className="h-24 animate-pulse rounded-lg bg-gray-100 dark:bg-gray-800" />
+          ) : (
+            <>
+              <ul className="divide-y divide-gray-100 dark:divide-gray-800">
+                {[...fpuo.rows, null].map((row) => {
+                  const r = row ?? { ...fpuo.totals, unitLabel: t("totals"), shareMissing: false, unitEntityId: "total" };
+                  return (
+                    <li key={r.unitEntityId} className={`py-3 text-base ${row ? "" : "font-semibold"}`}>
+                      <p className="font-semibold text-gray-900 dark:text-gray-100">
+                        {r.unitLabel}
+                        {r.shareMissing && (
+                          <span className="ml-2 font-normal text-amber-700 dark:text-amber-400">
+                            {t("fpuoShareMissing")}
+                          </span>
+                        )}
+                      </p>
+                      <dl className="mt-1 grid grid-cols-2 gap-x-3 text-gray-700 dark:text-gray-300 sm:grid-cols-4 lg:grid-cols-7">
+                        {(
+                          [
+                            ["fpuoColOpening", r.openingCents],
+                            ["fpuoColPredpis", r.predpisCents],
+                            ["fpuoColPaid", r.paidCents],
+                            ["fpuoColUses", r.usesCents],
+                            ["fpuoColIncome", r.incomeCents],
+                            ["fpuoColOther", r.otherCents],
+                            ["fpuoColClosing", r.closingCents],
+                          ] as const
+                        ).map(([key, cents]) => (
+                          <div key={key} className="flex justify-between gap-2 sm:block">
+                            <dt className="text-gray-600 dark:text-gray-400">{t(key)}</dt>
+                            <dd className="sm:text-left">{formatEur(cents)}</dd>
+                          </div>
+                        ))}
+                      </dl>
+                    </li>
+                  );
+                })}
+              </ul>
+              <p
+                className={`text-base ${
+                  fpuo.differenceCents === 0
+                    ? "text-green-700 dark:text-green-400"
+                    : "font-medium text-red-700 dark:text-red-400"
+                }`}
+              >
+                {fpuo.differenceCents === 0
+                  ? t("fpuoReconciled", { amount: formatEur(fpuo.ledgerClosingCents) })
+                  : t("fpuoDifference", {
+                      ledger: formatEur(fpuo.ledgerClosingCents),
+                      difference: formatEur(fpuo.differenceCents),
+                    })}
+              </p>
+              {fpuo.unallocatedCents !== 0 && (
+                <p className="text-base text-amber-700 dark:text-amber-400">
+                  {t("fpuoUnallocated", { amount: formatEur(fpuo.unallocatedCents) })}
+                </p>
+              )}
+            </>
+          )}
+        </div>
+      </details>
+
       {/* Journal */}
-      <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg p-6 overflow-x-auto">
-        <div className="flex items-center justify-between mb-3">
+      <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg p-4 sm:p-6">
+        <div className="flex flex-wrap items-center justify-between gap-3 mb-3">
           <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
             {t("journalTitle", { total: data.journal.total })}
           </h2>
           {pages > 1 && (
-            <span className="flex items-center gap-2 text-sm">
+            <span className="flex items-center gap-2 text-base">
               <button
                 onClick={() => setPage((p) => Math.max(0, p - 1))}
                 disabled={page === 0}
-                className="px-2 py-1 border border-gray-300 dark:border-gray-600 rounded disabled:opacity-30"
+                className="min-h-11 min-w-11 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded disabled:opacity-30"
               >
                 ←
               </button>
@@ -250,7 +467,7 @@ export default function JournalPage() {
               <button
                 onClick={() => setPage((p) => Math.min(pages - 1, p + 1))}
                 disabled={page >= pages - 1}
-                className="px-2 py-1 border border-gray-300 dark:border-gray-600 rounded disabled:opacity-30"
+                className="min-h-11 min-w-11 px-3 py-2 border border-gray-300 dark:border-gray-600 rounded disabled:opacity-30"
               >
                 →
               </button>
@@ -264,7 +481,7 @@ export default function JournalPage() {
                 onClick={() =>
                   setExpanded((prev) => (prev === entry.id ? null : entry.id))
                 }
-                className="w-full flex items-center justify-between gap-3 px-3 py-2 rounded hover:bg-gray-50 dark:hover:bg-gray-800/50 text-left text-sm"
+                className="w-full flex items-center justify-between gap-3 px-3 py-2 rounded hover:bg-gray-50 dark:hover:bg-gray-800/50 text-left text-base flex-wrap"
               >
                 <span className="text-gray-900 dark:text-gray-100">
                   {format.dateTime(new Date(entry.postedAt), {
@@ -272,12 +489,13 @@ export default function JournalPage() {
                   })}{" "}
                   — {entry.description}
                 </span>
-                <span className="text-xs text-gray-500 dark:text-gray-400 whitespace-nowrap">
+                <span className="text-base text-gray-600 dark:text-gray-400 whitespace-nowrap">
                   {entry.periodYear} · {t.has(`sourceType.${entry.sourceType}`) ? t(`sourceType.${entry.sourceType}`) : entry.sourceType}
                 </span>
               </button>
               {expanded === entry.id && (
-                <table className="w-full text-xs bg-gray-50 dark:bg-gray-800/30 rounded mb-1">
+                <div className="overflow-x-auto">
+                <table className="w-full text-base bg-gray-50 dark:bg-gray-800/30 rounded mb-1">
                   <tbody>
                     {entry.lines.map((line, i) => (
                       <tr key={i}>
@@ -302,6 +520,7 @@ export default function JournalPage() {
                     ))}
                   </tbody>
                 </table>
+                </div>
               )}
             </li>
           ))}

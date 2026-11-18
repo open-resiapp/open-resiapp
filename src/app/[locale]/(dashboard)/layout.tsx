@@ -1,3 +1,4 @@
+import { headers } from "next/headers";
 import { SessionProvider } from "next-auth/react";
 
 import { auth } from "@/lib/auth";
@@ -18,6 +19,22 @@ import ConsentGate from "@/components/consent/ConsentGate";
 // reuses this layout without re-rendering it; `router.refresh()` after a
 // shell-relevant mutation re-resolves it.
 
+/** Request header with the original path + query, set by src/proxy.ts. */
+const PATH_HEADER = "x-resiapp-path";
+
+/**
+ * Where to return after login: the requested in-app path (with query) when
+ * it is a safe same-origin relative path — never protocol-relative, never a
+ * backslash trick, never the auth pages themselves.
+ */
+function safeCallbackPath(raw: string | null, locale: string): string | null {
+  if (!raw || raw.length > 2048) return null;
+  if (!raw.startsWith(`/${locale}/`) && raw !== `/${locale}`) return null;
+  if (raw.startsWith("//") || raw.includes("\\") || /[\u0000-\u001f]/.test(raw)) return null;
+  if (/^\/[^/]+\/(login|register|forgot-password|reset-password)(\/|\?|$)/.test(raw)) return null;
+  return raw;
+}
+
 export default async function DashboardLayout({
   children,
   params,
@@ -28,7 +45,13 @@ export default async function DashboardLayout({
   const [{ locale }, session] = await Promise.all([params, auth()]);
 
   if (!session?.user?.id) {
-    redirect({ href: "/login", locale });
+    // Keep the target (e.g. an AI confirm link or an e-mailed vote link) so
+    // login lands back on it instead of the home page.
+    const back = safeCallbackPath((await headers()).get(PATH_HEADER), locale);
+    redirect({
+      href: back ? { pathname: "/login", query: { callbackUrl: back } } : "/login",
+      locale,
+    });
     // `redirect` throws; the return keeps TypeScript's narrowing honest.
     return null;
   }

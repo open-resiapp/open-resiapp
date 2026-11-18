@@ -2,12 +2,13 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState, useTransition } from "react";
 
-import { useRouter } from "@/i18n/navigation";
+import { Link } from "@/i18n/navigation";
 import { getDisplayTemplateSlug } from "@/lib/templates/display-slug";
 import { isUnitType } from "@/lib/unit-type";
+import { normalizeVotingMethod } from "@/lib/voting-method";
 import { useTranslations } from "next-intl";
 
-import { PageHeader, useConfirm } from "@/components/ui";
+import { Button, PageHeader, Textarea, useConfirm } from "@/components/ui";
 import { useLocalStorage } from "@/hooks/useLocalStorage";
 import {
   communityColumns,
@@ -17,18 +18,34 @@ import type {
   ImportError,
   ImportPreview,
   ImportRow,
+  LvParseReport,
   StructureVariant,
 } from "@/lib/import/types";
 
 import {
+  claimImportedOwnerAction,
   commitImportAction,
   exportCurrentDataAction,
   exportRowsAsXlsxAction,
   generateTemplateAction,
+  parsePasteAction,
   parsePdfAction,
   parseUploadedFileAction,
   previewImportAction,
+  type ImportCommitSummary,
+  type ImportMode,
+  type WizardPreview,
 } from "./actions";
+import {
+  CommitSummaryPanel,
+  ContactPlanPanel,
+  LvReportPanel,
+  OwnerGroupsPanel,
+  WarningsPanel,
+  actionErrorText,
+  columnText,
+  useImportErrorText,
+} from "./ImportPanels";
 
 type RowDict = Record<string, string | number | undefined>;
 
@@ -89,6 +106,30 @@ function templateUsesHoaKinds(levels: string[]): boolean {
   return HOA_LEAF_KINDS.has(leaf);
 }
 
+/** Import enum value for a stored (legacy or canonical) voting method. */
+function importVotingMethod(stored: string | null | undefined): string {
+  switch (normalizeVotingMethod(stored)) {
+    case "one_per_unit":
+      return "per_flat";
+    case "per_area":
+      return "per_area";
+    case "one_per_member":
+      return "one_per_member";
+    case "custom_weight":
+      return "custom_weight";
+    default:
+      return "per_share";
+  }
+}
+
+/** Human label of an enum option in the community panel / grid. */
+function enumOptionKey(column: string, opt: string): string | null {
+  if (column === "voting_method") return `votingMethodOptions.${opt}`;
+  if (column === "country") return `countryOptions.${opt}`;
+  if (column === "ownership_form") return `ownershipFormOptions.${opt}`;
+  return null;
+}
+
 function downloadBlob(filename: string, base64: string, mimeType: string) {
   const binary = atob(base64);
   const len = binary.length;
@@ -110,9 +151,15 @@ function downloadBlob(filename: string, base64: string, mimeType: string) {
 export default function ImportWizardPage() {
   const t = useTranslations("Import");
   const tUnitType = useTranslations("UnitType");
+  const tKinds = useTranslations("Kinds");
   const confirm = useConfirm();
   const tHub = useTranslations("SettingsHub");
-  const router = useRouter();
+  const errorText = useImportErrorText();
+  const optionLabel = (column: string, opt: string): string => {
+    if (column === "unit_type" && isUnitType(opt)) return tUnitType(opt);
+    const k = enumOptionKey(column, opt);
+    return k && t.has(k as never) ? t(k as never) : opt;
+  };
 
   const [structure, setStructure] = useState<StructureVariant>(
     "community_entrance_unit"
@@ -129,6 +176,9 @@ export default function ImportWizardPage() {
     country: "sk",
     voting_method: "per_share",
   });
+  // Append mode: the community exists and its stored address is empty —
+  // not a blocker (the server falls back to the name); link to Settings.
+  const [addressMissing, setAddressMissing] = useState(false);
   // If a community is already configured in Settings, the wizard switches
   // into "append" mode: the Community panel is prefilled and locked, and
   // the seeder attaches new units/owners under the existing root instead
@@ -136,6 +186,7 @@ export default function ImportWizardPage() {
   const [existingCommunityId, setExistingCommunityId] = useState<string | null>(
     null
   );
+  const appendMode = !!existingCommunityId;
 
   useEffect(() => {
     fetch("/api/building")
@@ -143,15 +194,16 @@ export default function ImportWizardPage() {
       .then((data) => {
         if (!data?.id) return;
         setExistingCommunityId(data.id);
-        setCommunity((prev) => ({
-          ...prev,
-          community_name: prev.community_name ?? data.name ?? "",
-          community_address: prev.community_address ?? data.address ?? "",
-          community_ico: prev.community_ico ?? data.ico ?? "",
-          community_dic: prev.community_dic ?? data.dic ?? "",
-          country: prev.country ?? data.country ?? "sk",
-          voting_method: prev.voting_method ?? data.votingMethod ?? "per_share",
-        }));
+        // Locked panel shows the STORED values (the server uses them too).
+        setCommunity({
+          community_name: data.name ?? "",
+          community_address: data.address ?? "",
+          community_ico: data.ico ?? "",
+          community_dic: data.dic ?? "",
+          country: data.country === "cz" ? "cz" : "sk",
+          voting_method: importVotingMethod(data.votingMethod),
+        });
+        setAddressMissing(!data.address);
         // Pre-Phase-5 installs carry a legacy kind slug (housing_community);
         // map it to the catalog template so the detail fetch resolves.
         if (data.templateSlug)
@@ -181,19 +233,28 @@ export default function ImportWizardPage() {
         if (cancelled || !tpl) return;
         setTemplateDetail(tpl);
         setStructure(structureFromTemplate(tpl.import_levels));
-        // Only seed defaults — don't clobber operator edits.
-        setCommunity((prev) => ({
-          ...prev,
-          voting_method: prev.voting_method || tpl.default_voting_method,
-        }));
+        // New community: the template's default voting method (append mode
+        // keeps the stored one — the panel is locked).
+        if (!existingCommunityId) {
+          setCommunity((prev) => ({
+            ...prev,
+            voting_method: importVotingMethod(tpl.default_voting_method),
+          }));
+        }
       })
       .catch(() => {});
     return () => {
       cancelled = true;
     };
-  }, [templateSlug]);
+  }, [templateSlug, existingCommunityId]);
   const [rows, setRows] = useState<RowDict[]>([]);
-  const [preview, setPreview] = useState<ImportPreview | null>(null);
+  const [preview, setPreview] = useState<WizardPreview | ImportPreview | null>(null);
+  const [lvReport, setLvReport] = useState<LvParseReport | null>(null);
+  const [pasteText, setPasteText] = useState("");
+  const [splitGroups, setSplitGroups] = useState<Set<string>>(new Set());
+  const [acknowledged, setAcknowledged] = useState<Set<string>>(new Set());
+  const [importMode, setImportMode] = useState<ImportMode>("append");
+  const [commitSummary, setCommitSummary] = useState<ImportCommitSummary | null>(null);
   const [committing, startCommit] = useTransition();
   const [previewing, startPreview] = useTransition();
   const [generalError, setGeneralError] = useState<string | null>(null);
@@ -256,7 +317,7 @@ export default function ImportWizardPage() {
     setGeneralError(null);
     generateTemplateAction(structure, format)
       .then((blob) => downloadBlob(blob.filename, blob.base64, blob.mimeType))
-      .catch((err: Error) => setGeneralError(err.message));
+      .catch((err: unknown) => setGeneralError(actionErrorText(t, err)));
   }
 
   function onExportCurrentData(format: "xlsx" | "csv") {
@@ -269,7 +330,7 @@ export default function ImportWizardPage() {
         }
         downloadBlob(res.filename, res.base64, res.mimeType);
       })
-      .catch((err: Error) => setGeneralError(err.message));
+      .catch((err: unknown) => setGeneralError(actionErrorText(t, err)));
   }
 
   function onFileUpload(file: File) {
@@ -304,10 +365,57 @@ export default function ImportWizardPage() {
           });
           setRows(rowsOnly);
           setPreview(res);
+          setLvReport(null);
+          setSplitGroups(new Set());
+          setAcknowledged(new Set());
         })
-        .catch((err: Error) => setGeneralError(err.message));
+        .catch((err: unknown) => setGeneralError(actionErrorText(t, err)));
     };
     reader.readAsArrayBuffer(file);
+  }
+
+  /**
+   * Rows from an LV (PDF or pasted text) REPLACE the grid — uploading the
+   * same LV twice must not double every owner. Asks first when the grid
+   * already holds rows.
+   */
+  async function applyLvResult(res: {
+    rows: Partial<ImportRow>[];
+    recognised: number;
+    report: LvParseReport | null;
+  }) {
+    if (res.report) setLvReport(res.report);
+    if (res.recognised === 0) {
+      if (!res.report || res.report.skipped.length === 0) setGeneralError(t("pasteUnrecognised"));
+      return;
+    }
+    if (rows.length > 0) {
+      const ok = await confirm({
+        title: t("replaceRowsTitle"),
+        description: t("replaceRowsConfirm", { count: rows.length }),
+        confirmLabel: t("replaceRows"),
+      });
+      if (!ok) return;
+    }
+    // Lift community_address from first parsed row if Community panel is empty.
+    if (!community.community_address && !appendMode) {
+      const inferred = (res.rows[0] as unknown as Record<string, unknown>)?.community_address;
+      if (typeof inferred === "string" && inferred !== "") {
+        setCommunity((c) => ({ ...c, community_address: inferred }));
+      }
+    }
+    const rowOnly = res.rows.map((d) => {
+      const stripped: RowDict = {};
+      for (const c of columns) {
+        const v = (d as unknown as Record<string, unknown>)[c.key];
+        if (v !== undefined) stripped[c.key] = v as string | number;
+      }
+      return stripped;
+    });
+    setRows(rowOnly);
+    setPreview(null);
+    setSplitGroups(new Set());
+    setAcknowledged(new Set());
   }
 
   function onPdfUpload(file: File) {
@@ -324,31 +432,19 @@ export default function ImportWizardPage() {
             setGeneralError(t("pdfScannedHint"));
             return;
           }
-          if (res.recognised === 0) {
-            setGeneralError(t("pasteUnrecognised"));
-            return;
-          }
-          // Lift community_address from first parsed row if Community panel is empty.
-          if (!community.community_address) {
-            const inferred = (res.rows[0] as unknown as Record<string, unknown>)
-              ?.community_address;
-            if (typeof inferred === "string" && inferred !== "") {
-              setCommunity((c) => ({ ...c, community_address: inferred }));
-            }
-          }
-          const rowOnly = res.rows.map((d) => {
-            const stripped: RowDict = {};
-            for (const c of columns) {
-              const v = (d as unknown as Record<string, unknown>)[c.key];
-              if (v !== undefined) stripped[c.key] = v as string | number;
-            }
-            return stripped;
-          });
-          setRows((prev) => [...prev, ...rowOnly]);
+          return applyLvResult(res);
         })
-        .catch((err: Error) => setGeneralError(err.message));
+        .catch((err: unknown) => setGeneralError(actionErrorText(t, err)));
     };
     reader.readAsArrayBuffer(file);
+  }
+
+  function onPasteParse() {
+    setGeneralError(null);
+    if (!pasteText.trim()) return;
+    parsePasteAction(pasteText)
+      .then((res) => applyLvResult(res))
+      .catch((err: unknown) => setGeneralError(actionErrorText(t, err)));
   }
 
   async function onClearGrid() {
@@ -362,6 +458,9 @@ export default function ImportWizardPage() {
     if (!ok) return;
     setRows([]);
     setPreview(null);
+    setLvReport(null);
+    setSplitGroups(new Set());
+    setAcknowledged(new Set());
     setGeneralError(null);
   }
 
@@ -392,28 +491,55 @@ export default function ImportWizardPage() {
     const exportRows = rows.map((r) => ({ ...community, ...r }));
     exportRowsAsXlsxAction(exportRows, structure)
       .then((blob) => downloadBlob(blob.filename, blob.base64, blob.mimeType))
-      .catch((err: Error) => setGeneralError(err.message));
+      .catch((err: unknown) => setGeneralError(actionErrorText(t, err)));
   }
 
-  function onPreview() {
+  function runPreview(split: Set<string> = splitGroups, mode: ImportMode = importMode) {
     setGeneralError(null);
+    setCommitSummary(null);
     startPreview(() => {
       previewImportAction(
         rows,
         structure,
         community,
         existingCommunityId ?? undefined,
-        templateSlug
+        templateSlug,
+        { splitOwnerGroups: [...split], mode }
       )
         .then(setPreview)
-        .catch((err: Error) => setGeneralError(err.message));
+        .catch((err: unknown) => setGeneralError(actionErrorText(t, err)));
     });
   }
+
+  function onPreview() {
+    runPreview();
+  }
+
+  function onSplitChange(key: string, separate: boolean) {
+    const next = new Set(splitGroups);
+    if (separate) next.add(key);
+    else next.delete(key);
+    setSplitGroups(next);
+    // Counts depend on the grouping — refresh the preview.
+    runPreview(next);
+  }
+
+  function onModeChange(mode: ImportMode) {
+    setImportMode(mode);
+    if (preview) runPreview(splitGroups, mode);
+  }
+
+  const warnings = preview?.warnings ?? [];
+  const allAcknowledged = warnings.every((w) => acknowledged.has(w.code));
 
   function onCommit() {
     setGeneralError(null);
     if (!preview?.ok) {
       setGeneralError(t("fixErrorsFirst"));
+      return;
+    }
+    if (!allAcknowledged) {
+      setGeneralError(t("errors.warnings_not_acknowledged"));
       return;
     }
     startCommit(() => {
@@ -422,22 +548,37 @@ export default function ImportWizardPage() {
         structure,
         community,
         existingCommunityId ?? undefined,
-        templateSlug
+        templateSlug,
+        {
+          splitOwnerGroups: [...splitGroups],
+          acknowledgedWarnings: [...acknowledged],
+          mode: importMode,
+        }
       )
         .then((res) => {
-          if (res.ok && res.communityEntityId) {
-            router.push("/");
+          if (res.ok && res.summary) {
+            setCommitSummary(res.summary);
+            setRows([]);
+            setPreview(null);
+            setLvReport(null);
+            if (res.communityEntityId) setExistingCommunityId(res.communityEntityId);
           } else if (res.errors) {
-            setPreview({
-              ok: false,
-              rows: preview.rows,
-              errors: res.errors,
-              summary: preview.summary,
-            });
+            setPreview({ ...preview, ok: false, errors: res.errors });
           }
         })
-        .catch((err: Error) => setGeneralError(err.message));
+        .catch((err: unknown) => setGeneralError(actionErrorText(t, err)));
     });
+  }
+
+  async function onClaim(userId: string): Promise<string | null> {
+    try {
+      const res = await claimImportedOwnerAction(userId);
+      if (res.ok) return null;
+      const key = `claim.errors.${res.error}`;
+      return t.has(key as never) ? t(key as never) : t("claim.errors.failed");
+    } catch (err) {
+      return actionErrorText(t, err);
+    }
   }
 
   const errorsByCell = useMemo(() => {
@@ -459,7 +600,7 @@ export default function ImportWizardPage() {
     for (const e of preview?.errors ?? []) {
       if (e.row !== 0 || !e.column) continue;
       const isCommunityField = communityCols.some((c) => c.key === e.column);
-      if (isCommunityField) m.set(e.column, e.message);
+      if (isCommunityField) m.set(e.column, errorText(e));
     }
     return m;
   }, [preview, communityCols]);
@@ -474,6 +615,14 @@ export default function ImportWizardPage() {
         className="mb-0"
       />
 
+      {commitSummary && (
+        <CommitSummaryPanel
+          summary={commitSummary}
+          onClaim={onClaim}
+          onStartOver={() => setCommitSummary(null)}
+        />
+      )}
+
       {/* Step 1a: Template (Phase 6) */}
       <section className="rounded-lg border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-4">
         <h2 className="text-lg font-semibold mb-3 text-gray-900 dark:text-gray-100">
@@ -486,12 +635,20 @@ export default function ImportWizardPage() {
           templates={templates}
           value={templateSlug}
           onChange={setTemplateSlug}
+          disabled={appendMode}
         />
+        {appendMode && (
+          <p className="mt-2 text-base text-gray-600 dark:text-gray-400">
+            {t("templateLocked")}
+          </p>
+        )}
         {templateDetail && !templateUsesHoaKinds(templateDetail.import_levels) && (
-          <div className="mt-3 rounded border border-amber-200 dark:border-amber-900 bg-amber-50 dark:bg-amber-950 px-3 py-2 text-sm text-amber-900 dark:text-amber-100">
+          <div className="mt-3 rounded border border-amber-200 dark:border-amber-900 bg-amber-50 dark:bg-amber-950 px-3 py-2 text-base text-amber-900 dark:text-amber-100">
             <strong>{t("templateNonHoaTitle")}</strong>{" "}
             {t("templateNonHoaBody", {
-              levels: templateDetail.import_levels.join(" → "),
+              levels: templateDetail.import_levels
+                .map((k) => (tKinds.has(k as never) ? tKinds(k as never) : k))
+                .join(" → "),
             })}
           </div>
         )}
@@ -537,8 +694,15 @@ export default function ImportWizardPage() {
           {t("communityTitle")}
         </h2>
         {existingCommunityId ? (
-          <div className="mb-3 rounded border border-emerald-200 dark:border-emerald-900 bg-emerald-50 dark:bg-emerald-950 px-3 py-2 text-sm text-emerald-900 dark:text-emerald-100">
-            <strong>{t("appendModeTitle")}</strong> {t("appendModeBody")}
+          <div className="mb-3 rounded border border-emerald-200 dark:border-emerald-900 bg-emerald-50 dark:bg-emerald-950 px-3 py-2 text-base text-emerald-900 dark:text-emerald-100">
+            <strong>{t("appendModeTitle")}</strong> {t("appendModeBody")}{" "}
+            <Link
+              href={{ pathname: "/settings", query: { tab: "community" } }}
+              className="underline font-medium"
+            >
+              {t("editInSettings")}
+            </Link>
+            {addressMissing && <p className="mt-1">{t("addressMissingHint")}</p>}
           </div>
         ) : (
           <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
@@ -562,7 +726,7 @@ export default function ImportWizardPage() {
               return (
                 <label key={c.key} className="block text-sm">
                   <span className="text-gray-700 dark:text-gray-200 font-medium">
-                    {c.label}
+                    {columnText(t, c.key)}
                     {c.required ? " *" : ""}
                   </span>
                   <select
@@ -574,7 +738,7 @@ export default function ImportWizardPage() {
                     <option value="" />
                     {c.enumOptions?.map((opt) => (
                       <option key={opt} value={opt}>
-                        {opt}
+                        {optionLabel(c.key, opt)}
                       </option>
                     ))}
                   </select>
@@ -589,14 +753,14 @@ export default function ImportWizardPage() {
             return (
               <label key={c.key} className="block text-sm">
                 <span className="text-gray-700 dark:text-gray-200 font-medium">
-                  {c.label}
+                  {columnText(t, c.key)}
                   {c.required ? " *" : ""}
                 </span>
                 <input
                   type="text"
                   value={value}
                   onChange={(e) => onChange(e.target.value)}
-                  placeholder={c.comment}
+                  placeholder={t.has(`columnHelp.${c.key}` as never) ? t(`columnHelp.${c.key}` as never) : undefined}
                   readOnly={locked}
                   className={`mt-1 w-full px-2 py-1.5 border rounded text-sm ${lockedClass} ${borderClass}`}
                 />
@@ -682,6 +846,32 @@ export default function ImportWizardPage() {
             </div>
           </details>
         </div>
+
+        {/* LV as text: paste from the ÚGKK / katasterportál page or a PDF viewer. */}
+        <div className="mt-4">
+          <label htmlFor="lv-paste" className="block text-base font-medium text-gray-900 dark:text-gray-100">
+            {t("pasteLabel")}
+          </label>
+          <p className="text-base text-gray-600 dark:text-gray-400">{t("pasteHelp")}</p>
+          <Textarea
+            id="lv-paste"
+            rows={5}
+            value={pasteText}
+            onChange={(e) => setPasteText(e.target.value)}
+            className="mt-2 font-mono"
+          />
+          <Button
+            type="button"
+            className="mt-2"
+            variant="secondary"
+            disabled={!pasteText.trim()}
+            onClick={onPasteParse}
+          >
+            {t("pasteParse")}
+          </Button>
+        </div>
+
+        {lvReport && <LvReportPanel report={lvReport} />}
       </section>
 
       {/* Step 3: Grid */}
@@ -758,10 +948,10 @@ export default function ImportWizardPage() {
                     <th
                       key={c.key}
                       className={`relative px-2 py-1 text-left font-semibold ${c.required ? "text-blue-700 dark:text-blue-300" : "text-gray-700 dark:text-gray-300"}`}
-                      title={c.comment}
+                      title={t.has(`columnHelp.${c.key}` as never) ? t(`columnHelp.${c.key}` as never) : undefined}
                     >
                       <span className="truncate block pr-2">
-                        {c.key === "unit_type" ? tUnitType("column") : c.label}
+                        {c.key === "unit_type" ? tUnitType("column") : columnText(t, c.key)}
                         {c.required ? " *" : ""}
                       </span>
                       <span
@@ -802,16 +992,14 @@ export default function ImportWizardPage() {
                                   onCellChange(idx, c.key, e.target.value)
                                 }
                                 className={`w-full px-1 py-0.5 border rounded text-sm bg-white dark:bg-gray-900 ${hasError ? "border-red-500" : "border-gray-300 dark:border-gray-700"}`}
-                                title={cellErrors.map((e) => e.message).join("\n")}
+                                title={cellErrors.map((e) => errorText(e)).join("\n")}
                               >
                                 <option value="">
                                   {c.key === "unit_type" ? tUnitType("unset") : ""}
                                 </option>
                                 {c.enumOptions?.map((opt) => (
                                   <option key={opt} value={opt}>
-                                    {c.key === "unit_type" && isUnitType(opt)
-                                      ? tUnitType(opt)
-                                      : opt}
+                                    {optionLabel(c.key, opt)}
                                   </option>
                                 ))}
                               </select>
@@ -827,7 +1015,7 @@ export default function ImportWizardPage() {
                                 onCellChange(idx, c.key, e.target.value)
                               }
                               className={`w-full px-1 py-0.5 border rounded text-sm bg-white dark:bg-gray-900 ${hasError ? "border-red-500" : "border-gray-300 dark:border-gray-700"}`}
-                              title={cellErrors.map((e) => e.message).join("\n")}
+                              title={cellErrors.map((e) => errorText(e)).join("\n")}
                             />
                           </td>
                         );
@@ -851,35 +1039,125 @@ export default function ImportWizardPage() {
         )}
       </section>
 
+      {/* Re-import mode (community exists): explicit per-state choice. */}
+      {appendMode && rows.length > 0 && (
+        <section className="rounded-lg border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-4">
+          <h2 className="text-lg font-semibold mb-2 text-gray-900 dark:text-gray-100">
+            {t("modeTitle")}
+          </h2>
+          <div className="flex flex-col gap-2 sm:flex-row" role="group" aria-label={t("modeTitle")}>
+            <Button
+              type="button"
+              variant={importMode === "append" ? "primary" : "secondary"}
+              aria-pressed={importMode === "append"}
+              onClick={() => onModeChange("append")}
+            >
+              {t("modeAppend")}
+            </Button>
+            <Button
+              type="button"
+              variant={importMode === "update_contacts" ? "primary" : "secondary"}
+              aria-pressed={importMode === "update_contacts"}
+              onClick={() => onModeChange("update_contacts")}
+            >
+              {t("modeUpdateContacts")}
+            </Button>
+          </div>
+          <p className="mt-2 text-base text-gray-600 dark:text-gray-400">
+            {importMode === "append" ? t("modeAppendHelp") : t("modeUpdateContactsHelp")}
+          </p>
+        </section>
+      )}
+
       {/* Preview summary + commit */}
       {preview?.summary && (
         <section className="rounded-lg border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-4">
           <h2 className="text-lg font-semibold mb-3 text-gray-900 dark:text-gray-100">
             {t("step4Title")}
           </h2>
-          <dl className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-sm">
-            <Stat label={t("summaryCommunity")} value={preview.summary.communityName} />
-            <Stat label={t("summaryBlocks")} value={preview.summary.blocks} />
-            <Stat label={t("summaryEntrances")} value={preview.summary.entrances} />
-            <Stat label={t("summaryUnits")} value={preview.summary.units} />
-            <Stat label={t("summaryOwners")} value={preview.summary.ownersNew} />
-            <Stat
-              label={t("summaryTotalShare")}
-              value={`${preview.summary.totalUnitShare.num}/${preview.summary.totalUnitShare.den}`}
-            />
-          </dl>
+          {"contactPlan" in preview && preview.contactPlan ? (
+            <ContactPlanPanel plan={preview.contactPlan} />
+          ) : (
+            <>
+              <dl className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-base">
+                <Stat label={t("summaryCommunity")} value={preview.summary.communityName} />
+                <Stat label={t("summaryBlocks")} value={preview.summary.blocks} />
+                <Stat label={t("summaryEntrances")} value={preview.summary.entrances} />
+                <Stat label={t("summaryUnits")} value={preview.summary.units} />
+                <Stat label={t("summaryOwners")} value={preview.summary.ownersNew} />
+                {preview.summary.ownersMatched > 0 && (
+                  <Stat label={t("summaryOwnersMatched")} value={preview.summary.ownersMatched} />
+                )}
+                {preview.summary.unitsSkipped !== undefined && preview.summary.unitsSkipped > 0 && (
+                  <Stat label={t("summaryUnitsSkipped")} value={preview.summary.unitsSkipped} />
+                )}
+                <Stat
+                  label={t("summaryTotalShare")}
+                  value={`${preview.summary.totalUnitShare.num}/${preview.summary.totalUnitShare.den}`}
+                />
+                {preview.summary.communityShareWithExisting && (
+                  <Stat
+                    label={t("summaryShareWithExisting")}
+                    value={`${preview.summary.communityShareWithExisting.num}/${preview.summary.communityShareWithExisting.den}`}
+                  />
+                )}
+              </dl>
+              {"skippedUnits" in preview && preview.skippedUnits && preview.skippedUnits.length > 0 && (
+                <p className="mt-3 text-base text-gray-700 dark:text-gray-300">
+                  {t("skippedUnitsList", { units: preview.skippedUnits.join(", ") })}
+                </p>
+              )}
+              <OwnerGroupsPanel
+                groups={preview.ownerGroups ?? []}
+                split={splitGroups}
+                onChange={onSplitChange}
+                disabled={previewing}
+              />
+            </>
+          )}
+          <WarningsPanel
+            warnings={warnings}
+            acknowledged={acknowledged}
+            onToggle={(code, on) =>
+              setAcknowledged((prev) => {
+                const next = new Set(prev);
+                if (on) next.add(code);
+                else next.delete(code);
+                return next;
+              })
+            }
+          />
+          {!preview.ok && preview.errors.some((e) => e.row > 0) && (
+            <ul className="mt-4 list-disc pl-5 space-y-1 text-base text-red-700 dark:text-red-300">
+              {preview.errors
+                .filter((e) => e.row > 0)
+                .slice(0, 50)
+                .map((e, i) => (
+                  <li key={i}>
+                    {e.column
+                      ? t("errorAtColumn", { row: e.row, column: columnText(t, e.column) })
+                      : t("errorAt", { row: e.row })}{" "}
+                    {errorText(e)}
+                  </li>
+                ))}
+            </ul>
+          )}
           <div className="mt-4 flex items-center gap-3">
             <button
               type="button"
               onClick={onCommit}
-              disabled={!preview.ok || committing}
+              disabled={!preview.ok || !allAcknowledged || committing || previewing}
               className="px-4 py-2 rounded bg-emerald-600 hover:bg-emerald-700 text-white font-medium disabled:opacity-50"
             >
-              {committing ? t("committing") : t("commit")}
+              {committing
+                ? t("committing")
+                : importMode === "update_contacts" && appendMode
+                  ? t("commitContacts")
+                  : t("commit")}
             </button>
             {!preview.ok && (
-              <span className="text-sm text-red-600 dark:text-red-400">
-                {preview.errors.length} {t("errorsCount")}
+              <span className="text-base text-red-600 dark:text-red-400">
+                {t("errorsCountN", { count: preview.errors.length })}
               </span>
             )}
           </div>
@@ -887,10 +1165,10 @@ export default function ImportWizardPage() {
       )}
 
       {(generalError || generalErrors.length > 0) && (
-        <div className="rounded-lg border border-red-200 dark:border-red-900 bg-red-50 dark:bg-red-950 p-3 text-sm text-red-800 dark:text-red-200">
+        <div role="alert" className="rounded-lg border border-red-200 dark:border-red-900 bg-red-50 dark:bg-red-950 p-3 text-base text-red-800 dark:text-red-200">
           {generalError && <div>{generalError}</div>}
           {generalErrors.map((e, i) => (
-            <div key={i}>{e.message}</div>
+            <div key={i}>{errorText(e)}</div>
           ))}
         </div>
       )}
@@ -922,10 +1200,12 @@ function TemplatePicker({
   templates,
   value,
   onChange,
+  disabled,
 }: {
   templates: WizardTemplate[];
   value: string;
   onChange: (slug: string) => void;
+  disabled?: boolean;
 }) {
   const tRoot = useTranslations();
   const tCat = useTranslations("Templates.Categories");
@@ -947,7 +1227,8 @@ function TemplatePicker({
       <select
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="w-full px-2 py-1.5 border rounded text-sm bg-white dark:bg-gray-900 border-gray-300 dark:border-gray-700"
+        disabled={disabled}
+        className="w-full px-2 py-1.5 border rounded text-base bg-white dark:bg-gray-900 border-gray-300 dark:border-gray-700 disabled:bg-gray-100 dark:disabled:bg-gray-800 disabled:cursor-not-allowed"
       >
         <option value={value}>{value}</option>
       </select>
@@ -958,7 +1239,8 @@ function TemplatePicker({
     <select
       value={value}
       onChange={(e) => onChange(e.target.value)}
-      className="w-full px-2 py-1.5 border rounded text-sm bg-white dark:bg-gray-900 border-gray-300 dark:border-gray-700"
+      disabled={disabled}
+      className="w-full px-2 py-1.5 border rounded text-base bg-white dark:bg-gray-900 border-gray-300 dark:border-gray-700 disabled:bg-gray-100 dark:disabled:bg-gray-800 disabled:cursor-not-allowed"
     >
       {(["residential", "land", "commercial", "civic", "custom"] as const).map(
         (cat) =>

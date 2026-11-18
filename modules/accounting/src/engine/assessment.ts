@@ -13,7 +13,12 @@
 //     holding the unit at publish time
 
 import { splitByWeights } from "./allocation";
-import type { AllocationKey } from "../lib/constants";
+import {
+  ERR_RATE_MODE_KEY,
+  PER_UNIT_RATE_KEYS,
+  type AllocationKey,
+  type RateMode,
+} from "../lib/constants";
 
 export interface AssessmentUnitInput {
   unitEntityId: string;
@@ -34,8 +39,13 @@ export interface AssessmentUnitInput {
 export interface AssessmentServiceInput {
   serviceCategoryId: string;
   allocationKey: AllocationKey;
-  /** Dom-wide monthly total — split across units (all keys but `fixed`). */
+  /**
+   * Non-fixed keys. rateMode "total" (default): dom-wide monthly total,
+   * split across units. rateMode "per_unit": cents per m² / per person per
+   * month — each unit pays round(rate × weight).
+   */
   rateCents: number | null;
+  rateMode?: RateMode;
   /** Per-unit monthly amount (only `fixed`). */
   fixedAmountCents: number | null;
 }
@@ -49,6 +59,8 @@ export interface ComputedAssessment {
   allocationBasisSnapshot: {
     allocationKey: AllocationKey;
     rateCents: number | null;
+    /** Present only for per_unit rows (rateCents is then a per-m²/person rate). */
+    rateMode?: RateMode;
     fixedAmountCents: number | null;
     weight: number;
     shareNumerator: number | null;
@@ -93,6 +105,16 @@ function unitWeight(
     case "fixed":
       throw new Error("accounting: fixed key has no weight");
   }
+}
+
+/**
+ * Per-unit rate × weight in integer cents, half-up. Area is a decimal m²
+ * (e.g. 63.45) — round the product to 1/1000 cent first so binary float
+ * drift (35 × 63.45 = 2220.7499999…) cannot flip the half-up decision.
+ */
+export function perUnitAmountCents(rateCents: number, weight: number): number {
+  const exact = Math.round(rateCents * weight * 1000) / 1000;
+  return Math.floor(exact + 0.5);
 }
 
 /**
@@ -150,10 +172,18 @@ export function computeAssessments(input: {
         weights = units.map((u) =>
           unitWeight(u, service.allocationKey, month)
         );
-        amounts = splitByWeights(
-          service.rateCents,
-          units.map((u, i) => ({ id: u.unitEntityId, weight: weights[i] }))
-        ).map((a) => a.amountCents);
+        if (service.rateMode === "per_unit") {
+          if (!PER_UNIT_RATE_KEYS.includes(service.allocationKey)) {
+            throw new Error(ERR_RATE_MODE_KEY);
+          }
+          const rate = service.rateCents;
+          amounts = weights.map((w) => perUnitAmountCents(rate, w));
+        } else {
+          amounts = splitByWeights(
+            service.rateCents,
+            units.map((u, i) => ({ id: u.unitEntityId, weight: weights[i] }))
+          ).map((a) => a.amountCents);
+        }
       }
 
       for (let i = 0; i < units.length; i++) {
@@ -167,6 +197,9 @@ export function computeAssessments(input: {
           allocationBasisSnapshot: {
             allocationKey: service.allocationKey,
             rateCents: service.rateCents,
+            ...(service.rateMode === "per_unit"
+              ? { rateMode: "per_unit" as const }
+              : {}),
             fixedAmountCents: service.fixedAmountCents,
             weight: weights[i],
             shareNumerator: unit.shareNumerator,

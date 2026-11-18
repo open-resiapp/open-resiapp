@@ -9,6 +9,22 @@
 // No code change required for new templates.
 
 import type { CanonicalVotingMethod } from "@/lib/voting-method";
+import type { GovernanceModel } from "@/types";
+
+import type { LegalRegime } from "@/lib/legal-copy/regime";
+
+export type { LegalRegime };
+
+export interface TemplateNoticeConfig {
+  /**
+   * Default lead time (full days between notice and meeting) used until
+   * the community stores its own (stanovy) value. The statutory minimum
+   * per country is enforced separately (modules/voting/src/workflow/notice.ts).
+   */
+  default_lead_days: number | null;
+  /** True when the community may set its own lead time (stanovy). */
+  configurable: boolean;
+}
 
 export interface TemplateStarterNode {
   /** entity_kinds.slug for this node. Must be registered in the catalog. */
@@ -62,6 +78,25 @@ export interface Template {
   legal_review_required?: boolean;
   /** URL to the relevant statute / domain documentation, if any. */
   notes_url?: string;
+
+  // ── BYT-20261118-020 (bytové družstvo) — all optional, absent on the
+  //    pre-existing templates, which keep their current behaviour. ──
+
+  // Which voting methods a community may pick is statute-driven and lives
+  // in src/lib/legal-copy (allowedVotingMethods), not here.
+  /** Membership role a unit's holder gets (`owner` when absent). */
+  member_role?: "owner" | "member";
+  /** governance_model written on bootstrap (`chairman_council` when absent). */
+  default_governance_model?: GovernanceModel;
+  /**
+   * Documentation only — the runtime source of truth is legalRegimeFor()
+   * in src/lib/legal-copy/regime.ts (client code has no template JSON).
+   */
+  legal_regime?: LegalRegime;
+  /** Notice (lead time) defaults. Absent → statutory per country only. */
+  notice?: TemplateNoticeConfig;
+  /** unit_type values (src/lib/unit-type.ts) the import / unit form offer. */
+  unit_types?: string[];
 }
 
 export interface TemplateSummary {

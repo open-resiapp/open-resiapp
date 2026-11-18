@@ -4,9 +4,12 @@ import type { StructureVariant } from "./types";
 // Column ordering and labels live here so CSV + XLSX generators and the
 // in-app grid all stay aligned with one source of truth.
 
+// Human labels + help texts are i18n: `Import.columns.<key>` and
+// `Import.columnHelp.<key>` (sk/en/cs). `label` is the FILE header (stable
+// key, round-trip safe for export → re-import); never shown in the UI.
 export interface ColumnDef {
   key: string;
-  label: string; // header shown in template + grid
+  label: string; // header written to the XLSX / CSV template
   required: boolean;
   /**
    * Where this field is captured in the wizard:
@@ -23,7 +26,6 @@ export interface ColumnDef {
   //   "string" → general text
   excelFormat: "text" | "int" | "enum" | "string";
   enumOptions?: string[];
-  comment?: string;
 }
 
 const COMMON_HEAD: ColumnDef[] = [
@@ -33,7 +35,6 @@ const COMMON_HEAD: ColumnDef[] = [
     required: true,
     scope: "community",
     excelFormat: "string",
-    comment: "Názov bytového domu (rovnaký na každom riadku).",
   },
   {
     key: "community_address",
@@ -41,7 +42,6 @@ const COMMON_HEAD: ColumnDef[] = [
     required: true,
     scope: "community",
     excelFormat: "string",
-    comment: "Ulica + mesto. Z LV: 'Popis stavby' bez čísla vchodu.",
   },
   {
     key: "community_ico",
@@ -49,7 +49,6 @@ const COMMON_HEAD: ColumnDef[] = [
     required: false,
     scope: "community",
     excelFormat: "string",
-    comment: "IČO SVB, ak je pridelené (voliteľné).",
   },
   {
     key: "community_dic",
@@ -57,7 +56,6 @@ const COMMON_HEAD: ColumnDef[] = [
     required: false,
     scope: "community",
     excelFormat: "string",
-    comment: "DIČ SVB, ak je pridelené (voliteľné).",
   },
   {
     key: "country",
@@ -66,7 +64,6 @@ const COMMON_HEAD: ColumnDef[] = [
     scope: "community",
     excelFormat: "enum",
     enumOptions: ["sk", "cz"],
-    comment: "Krajina — sk alebo cz.",
   },
   {
     key: "voting_method",
@@ -74,8 +71,7 @@ const COMMON_HEAD: ColumnDef[] = [
     required: true,
     scope: "community",
     excelFormat: "enum",
-    enumOptions: ["per_share", "per_flat", "per_area"],
-    comment: "Spôsob hlasovania.",
+    enumOptions: ["per_share", "per_flat", "per_area", "one_per_member", "custom_weight"],
   },
   {
     key: "supisne_cislo",
@@ -83,7 +79,6 @@ const COMMON_HEAD: ColumnDef[] = [
     required: false,
     scope: "community",
     excelFormat: "string",
-    comment: "Súpisné číslo stavby (z LV).",
   },
 ];
 
@@ -93,7 +88,6 @@ const BLOCK_COL: ColumnDef = {
   required: true,
   scope: "row",
   excelFormat: "string",
-  comment: "Názov bloku, napr. 'Blok A'.",
 };
 
 const ENTRANCE_COL: ColumnDef = {
@@ -102,7 +96,6 @@ const ENTRANCE_COL: ColumnDef = {
   required: true,
   scope: "row",
   excelFormat: "string",
-  comment: "Označenie vchodu, napr. '1' alebo 'Štúrova 12'.",
 };
 
 const UNIT_AND_OWNER: ColumnDef[] = [
@@ -112,15 +105,14 @@ const UNIT_AND_OWNER: ColumnDef[] = [
     required: true,
     scope: "row",
     excelFormat: "string",
-    comment: "Číslo bytu z LV.",
   },
   {
     key: "unit_floor",
     label: "unit_floor",
-    required: true,
+    // Required for flats only; garages / nebytové priestory may leave it empty.
+    required: false,
     scope: "row",
     excelFormat: "string",
-    comment: "Poschodie. 'prízemie' alebo '0', '1', '2', …",
   },
   {
     key: "unit_area_m2",
@@ -128,7 +120,6 @@ const UNIT_AND_OWNER: ColumnDef[] = [
     required: false,
     scope: "row",
     excelFormat: "int",
-    comment: "Výmera bytu v m². V LV nie je — voliteľné, doplníte neskôr.",
   },
   {
     key: "unit_share_numerator",
@@ -136,7 +127,6 @@ const UNIT_AND_OWNER: ColumnDef[] = [
     required: true,
     scope: "row",
     excelFormat: "text",
-    comment: "Čitateľ podielu BYTU na komunite. Z LV: 'Podiel priestoru ... k pozemku' (napr. 1 z '1/96').",
   },
   {
     key: "unit_share_denominator",
@@ -144,7 +134,6 @@ const UNIT_AND_OWNER: ColumnDef[] = [
     required: true,
     scope: "row",
     excelFormat: "text",
-    comment: "Menovateľ podielu BYTU na komunite (napr. 96 z '1/96').",
   },
   // Typ priestoru — src/lib/unit-type.ts. LV import fills it; empty = not
   // classified yet (read as byt). Voting weight is unaffected (SK §14(3)).
@@ -155,8 +144,6 @@ const UNIT_AND_OWNER: ColumnDef[] = [
     scope: "row",
     excelFormat: "enum",
     enumOptions: [...UNIT_TYPES],
-    comment:
-      "Typ priestoru: flat = byt, non_residential = nebytový priestor, garage = garáž, other = iné. Prázdne = doplníte neskôr.",
   },
   {
     key: "owner_name",
@@ -164,7 +151,20 @@ const UNIT_AND_OWNER: ColumnDef[] = [
     required: true,
     scope: "row",
     excelFormat: "string",
-    comment: "Meno a priezvisko vlastníka (z LV).",
+  },
+  {
+    key: "owner_birth_name",
+    label: "owner_birth_name",
+    required: false,
+    scope: "row",
+    excelFormat: "string",
+  },
+  {
+    key: "owner_ico",
+    label: "owner_ico",
+    required: false,
+    scope: "row",
+    excelFormat: "string",
   },
   {
     key: "owner_address",
@@ -172,7 +172,6 @@ const UNIT_AND_OWNER: ColumnDef[] = [
     required: false,
     scope: "row",
     excelFormat: "string",
-    comment: "Trvalý pobyt vlastníka (z LV). Voliteľné.",
   },
   {
     key: "owner_email",
@@ -180,7 +179,6 @@ const UNIT_AND_OWNER: ColumnDef[] = [
     required: false,
     scope: "row",
     excelFormat: "string",
-    comment: "Email vlastníka. Ak chýba, vytvorí sa pending účet bez prihlásenia.",
   },
   {
     key: "owner_phone",
@@ -188,7 +186,6 @@ const UNIT_AND_OWNER: ColumnDef[] = [
     required: false,
     scope: "row",
     excelFormat: "string",
-    comment: "Telefón vlastníka. Voliteľné.",
   },
   {
     key: "owner_unit_share_numerator",
@@ -196,7 +193,6 @@ const UNIT_AND_OWNER: ColumnDef[] = [
     required: true,
     scope: "row",
     excelFormat: "text",
-    comment: "Čitateľ podielu vlastníka na BYTE. Z LV 'Spoluvlastnícky podiel' (napr. 1 z '1/2'). Sole owner = 1.",
   },
   {
     key: "owner_unit_share_denominator",
@@ -204,7 +200,6 @@ const UNIT_AND_OWNER: ColumnDef[] = [
     required: true,
     scope: "row",
     excelFormat: "text",
-    comment: "Menovateľ podielu vlastníka na BYTE. Sole owner = 1.",
   },
   // BYT-20261118-003: LV facts for the owner-registry checks. Filled by the
   // LV paste/PDF parser; optional for manual and CSV rows.
@@ -214,7 +209,6 @@ const UNIT_AND_OWNER: ColumnDef[] = [
     required: false,
     scope: "row",
     excelFormat: "int",
-    comment: "Poradové číslo vlastníka z LV (časť B). Manželia v BSM majú rovnaké. Voliteľné.",
   },
   {
     key: "ownership_form",
@@ -223,7 +217,6 @@ const UNIT_AND_OWNER: ColumnDef[] = [
     scope: "row",
     excelFormat: "enum",
     enumOptions: ["bsm"],
-    comment: "bsm = bezpodielové spoluvlastníctvo manželov (z LV). Inak prázdne.",
   },
 ];
 
@@ -277,4 +270,129 @@ export function sampleRow(s: StructureVariant): Record<string, string> {
     row.block_name = "Blok A";
   }
   return row;
+}
+
+// ── Header aliases ────────────────────────────────────────
+//
+// Spreadsheets from a správca rarely use our column keys. Headers are folded
+// (lower case, no diacritics, no "*", single spaces) and mapped to a column
+// key. A combined "a/b" value in a share column is split by the validator.
+
+function foldHeader(h: string): string {
+  return h
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/[*:]/g, "")
+    .replace(/[_\s]+/g, " ")
+    .trim();
+}
+
+const HEADER_ALIASES: Record<string, string> = {
+  // unit
+  byt: "unit_number",
+  "cislo bytu": "unit_number",
+  "c bytu": "unit_number",
+  "c. bytu": "unit_number",
+  jednotka: "unit_number",
+  "cislo jednotky": "unit_number",
+  priestor: "unit_number",
+  "unit number": "unit_number",
+  unit: "unit_number",
+  flat: "unit_number",
+  poschodie: "unit_floor",
+  podlazie: "unit_floor",
+  patro: "unit_floor",
+  floor: "unit_floor",
+  vchod: "entrance_label",
+  "cislo vchodu": "entrance_label",
+  entrance: "entrance_label",
+  blok: "block_name",
+  block: "block_name",
+  vymera: "unit_area_m2",
+  plocha: "unit_area_m2",
+  "vymera m2": "unit_area_m2",
+  "plocha m2": "unit_area_m2",
+  "podlahova plocha": "unit_area_m2",
+  area: "unit_area_m2",
+  podiel: "unit_share_numerator",
+  "podiel bytu": "unit_share_numerator",
+  "podiel na spolocnych castiach": "unit_share_numerator",
+  "podiel k pozemku": "unit_share_numerator",
+  podil: "unit_share_numerator",
+  share: "unit_share_numerator",
+  "typ priestoru": "unit_type",
+  "typ prostoru": "unit_type",
+  typ: "unit_type",
+  type: "unit_type",
+  // owner
+  meno: "owner_name",
+  "meno a priezvisko": "owner_name",
+  "priezvisko a meno": "owner_name",
+  "priezvisko meno": "owner_name",
+  vlastnik: "owner_name",
+  jmeno: "owner_name",
+  "jmeno a prijmeni": "owner_name",
+  "prijmeni a jmeno": "owner_name",
+  name: "owner_name",
+  owner: "owner_name",
+  "rodne priezvisko": "owner_birth_name",
+  ico: "owner_ico",
+  adresa: "owner_address",
+  "trvaly pobyt": "owner_address",
+  bydlisko: "owner_address",
+  address: "owner_address",
+  email: "owner_email",
+  "e mail": "owner_email",
+  "e-mail": "owner_email",
+  mail: "owner_email",
+  telefon: "owner_phone",
+  "tel c": "owner_phone",
+  mobil: "owner_phone",
+  phone: "owner_phone",
+  "spoluvlastnicky podiel": "owner_unit_share_numerator",
+  "podiel vlastnika": "owner_unit_share_numerator",
+  "spoluvlastnicky podil": "owner_unit_share_numerator",
+  "owner share": "owner_unit_share_numerator",
+  "poradove cislo": "lv_ordinal",
+  bsm: "ownership_form",
+};
+
+const KNOWN_KEYS = new Set(
+  [...COMMON_HEAD, BLOCK_COL, ENTRANCE_COL, ...UNIT_AND_OWNER].map((c) => c.key)
+);
+
+/** Column key for a file header, or null when unknown. */
+export function columnKeyForHeader(header: string): string | null {
+  const trimmed = header.trim().replace(/\s*\*$/, "");
+  if (KNOWN_KEYS.has(trimmed)) return trimmed;
+  const folded = foldHeader(header);
+  if (KNOWN_KEYS.has(folded.replace(/ /g, "_"))) return folded.replace(/ /g, "_");
+  return HEADER_ALIASES[folded] ?? HEADER_ALIASES[folded.replace(/-/g, " ")] ?? null;
+}
+
+/**
+ * Re-key raw spreadsheet rows by column key. Unknown headers are dropped;
+ * when two headers map to the same key the first non-empty value wins.
+ */
+export function canonicaliseRows(raw: Record<string, unknown>[]): Record<string, unknown>[] {
+  if (raw.length === 0) return raw;
+  const headers = Object.keys(raw[0]);
+  const map = new Map<string, string>();
+  for (const h of headers) {
+    const k = columnKeyForHeader(h);
+    if (k) map.set(h, k);
+  }
+  return raw.map((r) => {
+    const out: Record<string, unknown> = {};
+    for (const [h, v] of Object.entries(r)) {
+      const k = map.get(h) ?? columnKeyForHeader(h);
+      if (!k) continue;
+      const empty = v === undefined || v === null || (typeof v === "string" && v.trim() === "");
+      if (out[k] === undefined || (!empty && (out[k] === "" || out[k] === undefined))) {
+        out[k] = v;
+      }
+    }
+    return out;
+  });
 }

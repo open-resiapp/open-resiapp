@@ -4,7 +4,7 @@ import { and, asc, eq, isNull } from "drizzle-orm";
 import { db } from "@/db";
 import { getStorage, buildStorageKey } from "@/lib/storage";
 import { expenses, expenseAttachments, auditLog } from "../db/schema";
-import { hasBoardRole, canWriteAccounting } from "./authz";
+import { canReadAccounting, canWriteAccounting } from "./authz";
 
 // Expense attachments + right-to-inspect visibility (spec §Owner
 // self-service, §11 ods. 6 zák. 182/1993). Scans stored via the shared
@@ -225,9 +225,8 @@ export async function resolveAttachmentDownload(input: {
     );
   if (!att || att.voidedAt) return null;
 
-  const isBoard =
-    input.userRole === "admin" ||
-    (await hasBoardRole(input.userId, input.entityId, ["treasurer", "chairman"]));
+  // BYT-20261118-020: + accountant / spravca (readAccounting).
+  const isBoard = await canReadAccounting(input.userId, input.userRole, input.entityId);
   if (isBoard) {
     return {
       storageKey: att.storageKey,
@@ -307,9 +306,8 @@ export async function listInspectExpenses(input: {
 
   if (rows.length === 0) return [];
 
-  const isBoard =
-    input.userRole === "admin" ||
-    (await hasBoardRole(input.userId, input.entityId, ["treasurer", "chairman"]));
+  // BYT-20261118-020: + accountant / spravca (readAccounting).
+  const isBoard = await canReadAccounting(input.userId, input.userRole, input.entityId);
 
   // Non-voided attachments per expense (original + redacted).
   const atts = await db

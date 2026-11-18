@@ -84,8 +84,20 @@ export const MAX_DOCUMENT_SIZE = 25 * 1024 * 1024; // 25 MB
 // owner-inspection right; resident = everyone; admin = board only.
 const AUDIENCE_ROLES: Record<DocumentAudience, readonly UserRole[]> = {
   admin: ["admin"],
-  owner: ["admin", "owner"],
-  resident: ["admin", "owner", "tenant", "vote_counter", "caretaker"],
+  // BYT-20261118-020: člen družstva has the member's inspection right
+  // (§231 ods. 1 Obch. zák. 513/1991 — TODO(legal-signoff)) → owner tier.
+  // accountant / spravca are staff: resident tier only.
+  owner: ["admin", "owner", "member"],
+  resident: [
+    "admin",
+    "owner",
+    "member",
+    "tenant",
+    "vote_counter",
+    "caretaker",
+    "accountant",
+    "spravca",
+  ],
 };
 
 export interface UserMembershipLite {
@@ -173,6 +185,8 @@ export const DOCUMENT_ERROR_CODES = [
   "document.send.no_recipient",
   "document.send.throttled",
   "document.send.failed",
+  "document.send.smtp_missing",
+  "document.send.count_changed",
 ] as const;
 export type DocumentErrorCode = (typeof DOCUMENT_ERROR_CODES)[number];
 

@@ -15,14 +15,19 @@ import {
 import { db } from "@/db";
 import { entities, memberships, users } from "@/db/schema";
 import {
+  accounts,
   feeAssessments,
   accountingPeriods,
   accountingSettings,
+  expenses,
+  journalEntries,
+  journalLines,
   payments,
   paymentAllocations,
   unitSettings,
   auditLog,
 } from "../db/schema";
+import { ACCOUNT_CODES } from "../seeds/coa-sk";
 import {
   parseCamt053,
   Camt053ParseError,
@@ -168,6 +173,137 @@ export interface ImportSummary {
    * Also counted in needsReview.
    */
   possibleDuplicates: number;
+  /**
+   * Per statement that carries a booked closing balance (CLBD): the bank's
+   * figure vs the ledger's 221 balance at the statement end date. camt.053
+   * only — Fio / Enable Banking syncs leave it empty.
+   */
+  balanceChecks?: BankBalanceCheck[];
+}
+
+export interface BankBalanceCheck {
+  statementId: string | null;
+  iban: string | null;
+  /** Statement end date (ISO) the balances are compared at. */
+  asOf: string;
+  statementClosingCents: number;
+  /** 221 Bankové účty (Dr − Cr), value-dated, at asOf end of day. */
+  ledgerCents: number;
+  /** statement − ledger; 0 = reconciled. */
+  differenceCents: number;
+  /**
+   * Outgoing lines on the statement — the import never books debits
+   * (they are supplier payments / fees booked via expenses), so any of
+   * them not yet booked as an expense payment explains a difference.
+   */
+  debits: {
+    date: string | null;
+    amountCents: number;
+    counterpartyName: string | null;
+    narrative: string | null;
+  }[];
+  debitsTotalCents: number;
+  /** Incoming lines imported but still waiting for a flat (not on 221 yet). */
+  pendingCreditsCents: number;
+  pendingCreditsCount: number;
+}
+
+/**
+ * 221 balance VALUE-DATED at the end of `asOf`: a payment entry dates at
+ * the payment's receipt day, a supplier payment at the expense's paidAt,
+ * everything else at its postedAt (journal entries carry the posting
+ * moment, which for bank lines is the import time, not the bank date).
+ */
+async function bankLedgerBalanceAt(
+  tx: Tx,
+  entityId: string,
+  country: Country,
+  asOf: string
+): Promise<number> {
+  const effective = sql`coalesce(
+    (select p.received_at from ${payments} p where p.journal_entry_id = ${journalEntries.id} limit 1),
+    (select e.paid_at from ${expenses} e where e.payment_journal_entry_id = ${journalEntries.id} limit 1),
+    ${journalEntries.postedAt}
+  )`;
+  const [row] = await tx
+    .select({
+      balance: sql<number>`coalesce(sum(${journalLines.debitCents} - ${journalLines.creditCents}), 0)::bigint`,
+    })
+    .from(journalLines)
+    .innerJoin(journalEntries, eq(journalLines.journalEntryId, journalEntries.id))
+    .innerJoin(accounts, eq(journalLines.accountId, accounts.id))
+    .where(
+      and(
+        eq(journalEntries.entityId, entityId),
+        eq(accounts.country, country),
+        eq(accounts.code, ACCOUNT_CODES.BANKA),
+        sql`${effective} < (${asOf}::date + interval '1 day')`
+      )
+    );
+  return Number(row?.balance ?? 0);
+}
+
+async function balanceCheckFor(
+  tx: Tx,
+  entityId: string,
+  country: Country,
+  stmt: {
+    statementId: string | null;
+    iban: string | null;
+    toDate: string | null;
+    closingBalanceCents: number | null;
+    transactions: Camt053Transaction[];
+  }
+): Promise<BankBalanceCheck | null> {
+  if (stmt.closingBalanceCents === null || stmt.closingBalanceCents === undefined) {
+    return null;
+  }
+  const asOf =
+    stmt.toDate ??
+    stmt.transactions
+      .map((t) => t.bookingDate)
+      .filter((d): d is string => !!d)
+      .sort()
+      .at(-1) ??
+    null;
+  if (!asOf) return null;
+
+  const ledgerCents = await bankLedgerBalanceAt(tx, entityId, country, asOf);
+  const debits = stmt.transactions
+    .filter((t) => t.direction === "debit" && t.amountCents > 0)
+    .map((t) => ({
+      date: t.bookingDate,
+      amountCents: t.amountCents,
+      counterpartyName: t.counterpartyName,
+      narrative: t.narrative,
+    }));
+  const [pending] = await tx
+    .select({
+      cents: sql<number>`coalesce(sum(${payments.amountCents}), 0)::bigint`,
+      count: sql<number>`count(*)::int`,
+    })
+    .from(payments)
+    .where(
+      and(
+        eq(payments.entityId, entityId),
+        isNull(payments.journalEntryId),
+        isNull(payments.voidedAt),
+        ne(payments.source, "manual"),
+        sql`${payments.receivedAt} < (${asOf}::date + interval '1 day')`
+      )
+    );
+  return {
+    statementId: stmt.statementId,
+    iban: stmt.iban,
+    asOf,
+    statementClosingCents: stmt.closingBalanceCents,
+    ledgerCents,
+    differenceCents: stmt.closingBalanceCents - ledgerCents,
+    debits,
+    debitsTotalCents: debits.reduce((s, d) => s + d.amountCents, 0),
+    pendingCreditsCents: Number(pending?.cents ?? 0),
+    pendingCreditsCount: pending?.count ?? 0,
+  };
 }
 
 type BankSource = "bank_import" | "fio_api" | "enable_banking_api";
@@ -543,6 +679,15 @@ export async function importCamt053Statement(input: {
       lines,
       summary,
     });
+
+    // Bank ↔ ledger reconciliation at each statement's end date, AFTER the
+    // auto-matched lines posted (same tx sees them).
+    const checks: BankBalanceCheck[] = [];
+    for (const stmt of statements) {
+      const check = await balanceCheckFor(tx, input.entityId, input.country, stmt);
+      if (check) checks.push(check);
+    }
+    summary.balanceChecks = checks;
 
     await tx.insert(auditLog).values({
       entityId: input.entityId,

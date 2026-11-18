@@ -37,6 +37,8 @@ interface WriteToolSpec {
   /** First line complete sentence ≤200 chars. */
   description: string;
   visible: (ctx: ToolContext) => boolean;
+  /** Payload fields the server fills itself — not advertised, not accepted from the model. */
+  internalFields?: readonly string[];
 }
 
 const WRITE_TOOLS: readonly WriteToolSpec[] = [
@@ -46,6 +48,15 @@ const WRITE_TOOLS: readonly WriteToolSpec[] = [
     description:
       "Proposes crediting an unmatched bank line to a unit (from list_unmatched_payments).\n" +
       "Treasurer or admin.",
+    visible: isWriter,
+  },
+  {
+    kind: "match_payments",
+    title: "Match many bank payments at once",
+    description:
+      "Proposes crediting up to 50 unmatched bank lines to units in ONE confirmation (items: [{paymentId, unitId}]).\n" +
+      "Treasurer or admin. Prefer this over repeated match_payment calls. Any invalid item rejects the call with per-item codes " +
+      "(errors: [{item, paymentId, code}]) — drop or fix those and retry. The preview flags items whose unit differs from the app's suggestion.",
     visible: isWriter,
   },
   {
@@ -61,7 +72,9 @@ const WRITE_TOOLS: readonly WriteToolSpec[] = [
     title: "Post an inbox invoice as an expense",
     description:
       "Proposes booking a scanned invoice from the expense inbox as an expense with supplier, amounts and VAT.\n" +
-      "Treasurer or admin. Amounts in cents; netto + DPH must equal brutto.",
+      "Treasurer or admin. Amounts in cents; netto + DPH must equal brutto. serviceCategoryId from list_service_categories (the category decides the okruh). " +
+      "okruh fpuo or svc only — management costs (mgmt) cannot be booked from the inbox yet; book those in the app. " +
+      "The invoice must already be in the inbox: get_expense_upload_link tells the user where to upload it.",
     visible: isWriter,
   },
   {
@@ -116,16 +129,20 @@ const WRITE_TOOLS: readonly WriteToolSpec[] = [
     kind: "import_owners",
     title: "Import units and owners",
     description:
-      "Proposes adding units and their owners to the current community from a table the user shared (Excel, CSV, pasted).\n" +
-      "Admin only. Read ANY layout yourself (any column names/order, merged name columns) and map it to the row keys; ask the user only when a mapping is genuinely ambiguous. " +
-      "One row per (unit, owner); co-owners repeat the unit. Keys: unit_number, unit_floor (int ≥ 0, 'prízemie' = 0), " +
-      "unit_share_numerator/_denominator (unit's share of the building), owner_name, owner_unit_share_numerator/_denominator (sole owner 1/1) — required; " +
+      "Proposes adding units and their owners to the current community from a table the user shared (Excel, CSV, pasted) or from the text of a Slovak list vlastníctva (LV).\n" +
+      "Admin only. LV: pass its plain text as lv_text — the server parses units, shares, owners, BSM and LV row numbers and reports every LV row it could not read (show that report to the user). " +
+      "Table: read ANY layout yourself (any column names/order, merged name columns) and map it to the row keys; ask the user only when a mapping is genuinely ambiguous. " +
+      "One row per (unit, owner); co-owners repeat the unit. Keys: unit_number, unit_share_numerator/_denominator (unit's share of the building), owner_name — required; " +
+      "unit_floor (int -5..60; 'prízemie' = 0, '1. NP' = 0, suterén / pivnica / '1. PP' = -1, '2. PP' = -2; required for flats, optional for garages / non-residential / other), " +
+      "owner_unit_share_numerator/_denominator (leave both blank for a sole owner = 1/1; co-owners need them), " +
+      "unit_type (byt | nebytový priestor | garáž | other), ownership_form ('bsm' for spouses), lv_ordinal (LV row number), owner_birth_name, owner_ico, supisne_cislo, " +
       "unit_area_m2, owner_email, owner_phone, owner_address — optional; entrance_label / block_name per structure. " +
-      "Shares are positive integers: '1/2' → 1,2; '50 %' → 1,2; '2800/10000' → 2800,10000. Community columns come from the current community. " +
-      "Owner shares per unit sum to 1; unit shares of the whole table sum to 1 (send the whole building). " +
-      "Units existing WITH owners are skipped; owners are created without login (no invitation); an existing account's e-mail links it. " +
-      "Errors return {row, column, code}: fix the mapping and retry. After the import, call list_units / list_pending_registrations to propose account links.",
+      "Shares are positive integers: '1/2' → 1,2; '50 %' → 1,2; '2800/10000' → 2800,10000; a combined 'a/b' in the numerator cell with the denominator blank is also accepted and split. Community columns come from the current community. " +
+      "Owner shares per unit must sum to 1. Unit shares: existing units + this import should sum to 1 — a building can be imported in batches; the preview shows the actual sum and the gap as a warning. " +
+      "Units existing WITH owners are skipped; owners are created without login (no invitation); an existing account's e-mail links it; one person on several units becomes ONE owner. " +
+      "Errors return {row, column, code}: fix the mapping and retry. After the import, call list_units / list_pending_registrations and propose link_owner_accounts.",
     visible: (ctx) => hasPermission(ctx.principal.role as UserRole, "manageSettings"),
+    internalFields: ["lv_report"],
   },
   {
     kind: "assign_unit_owner",
@@ -134,6 +151,16 @@ const WRITE_TOOLS: readonly WriteToolSpec[] = [
       "Proposes making a person an owner of one unit with an ownership share (default 1/1).\n" +
       "Admin only. Give unitId (from list_units) and either userId (a person already in this community) or newOwner {name, email?, phone?} " +
       "(created without login, no invitation sent). The unit's owner shares must not exceed 1 in total.",
+    visible: (ctx) => hasPermission(ctx.principal.role as UserRole, "manageUsers"),
+  },
+  {
+    kind: "transfer_unit_ownership",
+    title: "Change the owner of a unit (sale, inheritance, gift)",
+    description:
+      "Proposes ending the current owner(s) of a unit at a date and making other people the owners — the same change as \"Zmena vlastníka\" in the app.\n" +
+      "Admin only. unitId and fromUserIds from list_units; toUsers (existing people with shares) and/or toNewOwners (name + share, created without login); " +
+      "date = YYYY-MM-DD, not in the future; kind sale | inheritance | gift | correction. Remaining co-owners + new owners must sum to 1/1. " +
+      "History is kept (the seller's past ballots and charges stay theirs); the preview lists warnings such as votings the buyer missed.",
     visible: (ctx) => hasPermission(ctx.principal.role as UserRole, "manageUsers"),
   },
   {
@@ -162,7 +189,16 @@ const WRITE_TOOLS: readonly WriteToolSpec[] = [
       "Admin only. Use it when the import (or manual entry) created an owner record for someone who already has an account, " +
       "AND when a person registered and you want to attach the owner record / units to their account — it is one operation. " +
       "ownerId: owner record (status no_account / invited, no e-mail) from list_units; accountUserId: active account or pending registration in this community. " +
-      "A pending account is also approved. No e-mail is sent.",
+      "A pending account is also approved. No e-mail is sent. For several links use link_owner_accounts.",
+    visible: (ctx) => hasPermission(ctx.principal.role as UserRole, "manageUsers"),
+  },
+  {
+    kind: "link_owner_accounts",
+    title: "Link many owner records to accounts at once",
+    description:
+      "Proposes up to 50 owner-record → account links (items: [{ownerId, accountUserId}]) in ONE confirmation; each works like link_owner_account.\n" +
+      "Admin only. Typical after an import, using accountMatch from list_units. Any invalid item rejects the call with per-item codes " +
+      "(errors: [{item, ownerId, code}]) — drop or fix those and retry. Pending accounts are approved; no e-mail is sent.",
     visible: (ctx) => hasPermission(ctx.principal.role as UserRole, "manageUsers"),
   },
 ];
@@ -175,7 +211,9 @@ const localeArg = z
 function writeTool(spec: WriteToolSpec): ToolDef {
   const def = getActionDef(spec.kind);
   if (!def) throw new Error(`mcp: no action def for ${spec.kind}`);
-  const input = (def.schema as unknown as z.ZodObject).extend({ locale: localeArg });
+  const base = def.schema as unknown as z.ZodObject;
+  const hidden = Object.fromEntries((spec.internalFields ?? []).map((k) => [k, true as const]));
+  const input = (spec.internalFields?.length ? base.omit(hidden as never) : base).extend({ locale: localeArg });
   return defineTool({
     name: spec.kind,
     title: spec.title,

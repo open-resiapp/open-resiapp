@@ -32,6 +32,12 @@ export async function translatorFor(locale: AppLocale): Promise<Translator> {
   return (key, values) => t(key as never, values as never);
 }
 
+/** Does the catalog of `locale` have `key`? (Optional keys owned by other features.) */
+export async function hasMessage(locale: AppLocale, key: string): Promise<boolean> {
+  const t = await getTranslations({ locale });
+  return t.has(key as never);
+}
+
 const BCP47: Record<AppLocale, string> = { sk: "sk-SK", en: "en-GB", cs: "cs-CZ" };
 
 export function fmtMoney(cents: number, locale: AppLocale): string {
@@ -78,4 +84,50 @@ export function appLink(ctx: Pick<ActionContext, "origin">, locale: AppLocale, p
 /** Audit justification stamped on accounting audit rows for AI-proposed writes. */
 export function mcpJustification(ctx: Pick<ActionContext, "clientName">): string {
   return `MCP: ${ctx.clientName}`.slice(0, 255);
+}
+
+const DATE_ONLY_RE = /^(\d{4})-(\d{2})-(\d{2})$/;
+
+/** Is the input a bare calendar date (YYYY-MM-DD, no time)? */
+export function isDateOnly(raw: string): boolean {
+  return DATE_ONLY_RE.test(raw.trim());
+}
+
+/** Offset (ms) of `timeZone` from UTC at the instant `utcMs`. */
+function zoneOffsetMs(utcMs: number, timeZone: string): number {
+  const parts = new Intl.DateTimeFormat("en-US", {
+    timeZone,
+    hourCycle: "h23",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+  }).formatToParts(new Date(utcMs));
+  const get = (type: string) => Number(parts.find((p) => p.type === type)?.value ?? 0);
+  const asUtc = Date.UTC(get("year"), get("month") - 1, get("day"), get("hour"), get("minute"), get("second"));
+  return asUtc - Math.floor(utcMs / 1000) * 1000;
+}
+
+/**
+ * A bare date (YYYY-MM-DD) at a wall-clock time in `timeZone` → the UTC
+ * instant. DST-safe: the offset is re-read at the candidate instant.
+ * Null when `raw` is not a valid bare date.
+ */
+export function zonedDateTimeToUtc(
+  raw: string,
+  time: { h: number; m: number; s: number },
+  timeZone: string
+): Date | null {
+  const m = DATE_ONLY_RE.exec(raw.trim());
+  if (!m) return null;
+  const [y, mo, d] = [Number(m[1]), Number(m[2]), Number(m[3])];
+  const wall = Date.UTC(y, mo - 1, d, time.h, time.m, time.s);
+  const check = new Date(Date.UTC(y, mo - 1, d));
+  if (check.getUTCFullYear() !== y || check.getUTCMonth() !== mo - 1 || check.getUTCDate() !== d) return null;
+  let utc = wall - zoneOffsetMs(wall, timeZone);
+  const corrected = wall - zoneOffsetMs(utc, timeZone);
+  if (corrected !== utc) utc = corrected;
+  return new Date(utc);
 }

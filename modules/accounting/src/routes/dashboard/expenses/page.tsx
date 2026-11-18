@@ -24,6 +24,7 @@ import {
 import { formatEur } from "@modules/accounting/src/lib/money";
 import ExpenseAttachments from "@modules/accounting/src/components/ExpenseAttachments";
 import ExpenseFormModal, {
+  type PeriodBooking,
   type ExpenseCategory,
   type ExpensePrefill,
 } from "@modules/accounting/src/components/ExpenseFormModal";
@@ -53,6 +54,7 @@ export default function ExpensesPage() {
 
   const [rows, setRows] = useState<ExpenseRow[] | null>(null);
   const [categories, setCategories] = useState<ExpenseCategory[]>([]);
+  const [periodBooking, setPeriodBooking] = useState<PeriodBooking | null>(null);
   const [loadError, setLoadError] = useState(false);
   const [actionError, setActionError] = useState<string | null>(null);
   const [inboxReload, setInboxReload] = useState(0);
@@ -74,9 +76,14 @@ export default function ExpensesPage() {
         if (!r.ok) throw new Error(String(r.status));
         return r.json();
       })
-      .then((data: { expenses: ExpenseRow[]; categories: ExpenseCategory[] }) => {
+      .then((data: {
+        expenses: ExpenseRow[];
+        categories: ExpenseCategory[];
+        periodBooking?: PeriodBooking;
+      }) => {
         setRows(data.expenses);
         setCategories(data.categories);
+        setPeriodBooking(data.periodBooking ?? null);
       })
       .catch(() => setLoadError(true));
   }, []);
@@ -282,6 +289,7 @@ export default function ExpensesPage() {
           open={formOpen}
           onClose={() => setFormOpen(false)}
           categories={categories}
+          periodBooking={periodBooking}
           prefill={prefill}
           onSaved={() => {
             load();

@@ -1,10 +1,11 @@
 "use client";
 
-// Ročné vyúčtovanie wizard — preview stage (BYT-20260512-002 Phase 4).
-// Gates first (spec: can't proceed with unreconciled bank lines or
-// uncategorized invoices), then the per-unit settlement table. Publish
-// (PDF + delivery + period lock) arrives in the next slice — the preview
-// carries an explicit draft banner until then.
+// Ročné vyúčtovanie wizard — gates, preview, publish (BYT-20260512-002
+// Phase 4). Fix wave 2026-11-18: the result is náklady − PREDPÍSANÉ zálohy
+// (what the ledger books); unpaid advances are a separate "z toho
+// neuhradené" column, never part of the result. Every publish blocker
+// arrives as a stable code (gates.blockers) with details, mapped to i18n
+// here. Layout: unit cards on phones, a table from sm up — min 16px text.
 
 import { useCallback, useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
@@ -33,21 +34,39 @@ interface ServiceLine {
   serviceCategoryId: string;
   prescribedCents: number;
   advancesCents: number;
+  unpaidCents: number;
   costShareCents: number;
   differenceCents: number;
+  allocationKey: string | null;
 }
 
 interface UnitSettlement {
   unitEntityId: string;
   services: ServiceLine[];
   totalCostCents: number;
+  totalPrescribedCents: number;
   totalAdvancesCents: number;
+  totalUnpaidCents: number;
   totalDifferenceCents: number;
+}
+
+interface BlockerDetails {
+  meterReadingsMissing: { categoryId: string; unitIds: string[] }[];
+  meterAreaMissing: { categoryId: string; unitIds: string[] }[];
+  splitKey: { categoryId: string; key: string; code: string }[];
+  negativeCostCategoryIds: string[];
+  ledgerViolations: {
+    code: string;
+    ref: string | null;
+    expectedCents: number;
+    actualCents: number;
+  }[];
 }
 
 interface Preview {
   year: number;
   gates: Gates;
+  blockerDetails?: BlockerDetails;
   unprescribedCostCategories: string[];
   settlement: {
     units: UnitSettlement[];
@@ -63,9 +82,17 @@ interface Preview {
   unitLabels: Record<string, string>;
 }
 
+const resultClass = (cents: number) =>
+  cents > 0
+    ? "text-red-700 dark:text-red-400"
+    : cents < 0
+      ? "text-green-700 dark:text-green-400"
+      : "text-gray-900 dark:text-gray-100";
+
 export default function VyuctovaniePage() {
   const t = useTranslations("Accounting.vyuctovanie");
   const tCat = useTranslations("Accounting.serviceCategories");
+  const tKey = useTranslations("Accounting.vyuctovaniePdf");
   const tRounds = useTranslations("ReadingRounds.gate");
   const router = useRouter();
 
@@ -109,11 +136,12 @@ export default function VyuctovaniePage() {
         body: JSON.stringify({ year }),
       });
       const body = await res.json().catch(() => null);
-      if (!res.ok) throw new Error(body?.error ?? String(res.status));
+      // The API returns a localized message for every known code.
+      if (!res.ok) throw new Error(body?.error ?? t("publishError"));
       setConfirmPublish(false);
       load();
     } catch (err) {
-      setPublishError(err instanceof Error ? err.message : "publish");
+      setPublishError(err instanceof Error ? err.message : t("publishError"));
     } finally {
       setPublishing(false);
     }
@@ -122,21 +150,29 @@ export default function VyuctovaniePage() {
   if (forbidden) return null;
 
   if (error) {
-    return <p className="text-red-600 dark:text-red-400">{t("loadError")}</p>;
+    return <p className="text-base text-red-700 dark:text-red-400">{t("loadError")}</p>;
   }
+
+  const catName = (id: string) =>
+    preview?.categorySlugs[id]
+      ? tCat(preview.categorySlugs[id] as Parameters<typeof tCat>[0])
+      : id;
+  const unitName = (id: string) => preview?.unitLabels[id] ?? id;
+  const keyName = (key: string | null) =>
+    key ? tKey(`allocationKey_${key}` as Parameters<typeof tKey>[0]) : "—";
 
   const gateItem = (
     ok: boolean,
     label: string,
     link?: { href: string; text: string }
   ) => (
-    <li className="flex items-center gap-2 text-sm">
-      <span>{ok ? "✅" : "❌"}</span>
-      <span className="text-gray-900 dark:text-gray-100">{label}</span>
+    <li className="flex flex-wrap items-start gap-2 text-base">
+      <span aria-hidden>{ok ? "✅" : "❌"}</span>
+      <span className="flex-1 min-w-0 text-gray-900 dark:text-gray-100">{label}</span>
       {!ok && link && (
         <Link
           href={link.href}
-          className="text-blue-600 dark:text-blue-400 hover:underline"
+          className="text-blue-700 dark:text-blue-400 hover:underline"
         >
           {link.text}
         </Link>
@@ -144,22 +180,91 @@ export default function VyuctovaniePage() {
     </li>
   );
 
+  const blockerLine = (code: string): string => {
+    const d = preview?.blockerDetails;
+    switch (code) {
+      case "METER_READINGS_MISSING":
+        return (d?.meterReadingsMissing ?? [])
+          .map((m) =>
+            t("blockers.METER_READINGS_MISSING", {
+              service: catName(m.categoryId),
+              units: m.unitIds.map(unitName).join(", "),
+            })
+          )
+          .join(" ");
+      case "METER_AREA_MISSING":
+        return (d?.meterAreaMissing ?? [])
+          .map((m) =>
+            t("blockers.METER_AREA_MISSING", {
+              service: catName(m.categoryId),
+              units: m.unitIds.map(unitName).join(", "),
+            })
+          )
+          .join(" ");
+      case "SPLIT_KEY_NO_DATA":
+      case "SPLIT_KEY_NO_WEIGHT":
+      case "PERSON_MONTHS_UNRESOLVED":
+        return (d?.splitKey ?? [])
+          .filter((s) => s.code === code)
+          .map((s) =>
+            t(`blockers.${code}` as Parameters<typeof t>[0], {
+              service: catName(s.categoryId),
+              key: keyName(s.key),
+            })
+          )
+          .join(" ");
+      case "LEDGER_COST_NEGATIVE":
+        return t("blockers.LEDGER_COST_NEGATIVE", {
+          services: (d?.negativeCostCategoryIds ?? []).map(catName).join(", "),
+        });
+      case "LEDGER_MISMATCH":
+        return [
+          t("blockers.LEDGER_MISMATCH"),
+          ...(d?.ledgerViolations ?? []).map((v) =>
+            t(`ledgerViolation.${v.code}` as Parameters<typeof t>[0], {
+              ref: v.ref
+                ? preview?.categorySlugs[v.ref]
+                  ? catName(v.ref)
+                  : unitName(v.ref)
+                : "—",
+              expected: formatEur(v.expectedCents),
+              actual: formatEur(v.actualCents),
+            })
+          ),
+        ].join(" ");
+      case "METER_SINGLE_READING":
+        return t("gateSingleReadingBlocking", {
+          count: preview?.gates.meteredSingleReadingUnits ?? 0,
+        });
+      default:
+        return t(`blockers.${code}` as Parameters<typeof t>[0]);
+    }
+  };
+
+  const s = preview?.settlement ?? null;
+  const domCost = s ? s.units.reduce((a, u) => a + u.totalCostCents, 0) : 0;
+  const domPrescribed = s ? s.units.reduce((a, u) => a + u.totalPrescribedCents, 0) : 0;
+  const domUnpaid = s ? s.units.reduce((a, u) => a + u.totalUnpaidCents, 0) : 0;
+  const ledgerOk =
+    preview !== null && !(preview.gates.blockers ?? []).includes("LEDGER_MISMATCH");
+
   return (
     <div className="max-w-5xl">
       <Link
         href="/accounting"
-        className="text-sm text-blue-600 dark:text-blue-400 hover:underline"
+        className="text-base text-blue-700 dark:text-blue-400 hover:underline"
       >
         ← {t("backToAccounting")}
       </Link>
-      <div className="flex items-center gap-4 mt-2 mb-1">
+      <div className="flex flex-wrap items-center gap-4 mt-2 mb-1">
         <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">
           {t("title")}
         </h1>
         <select
           value={year}
           onChange={(e) => setYear(Number(e.target.value))}
-          className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 text-sm"
+          aria-label={t("yearLabel")}
+          className="px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 text-base"
         >
           {/* Only ELAPSED years — a mid-year settlement would charge 12
               months of prescriptions against a partial year. */}
@@ -173,14 +278,14 @@ export default function VyuctovaniePage() {
           })}
         </select>
       </div>
-      <p className="text-gray-600 dark:text-gray-400 mb-6">{t("subtitle")}</p>
+      <p className="text-base text-gray-700 dark:text-gray-300 mb-6">{t("subtitle")}</p>
 
       {!preview ? (
         <div className="animate-pulse h-40 bg-gray-100 dark:bg-gray-800 rounded-lg" />
       ) : (
         <>
           {/* Gates */}
-          <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg p-5 mb-6">
+          <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg p-4 sm:p-5 mb-6">
             <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-3">
               {t("gatesTitle")}
             </h2>
@@ -199,11 +304,11 @@ export default function VyuctovaniePage() {
                 }),
                 { href: "/accounting/expenses", text: t("resolve") }
               )}
-              <li className="flex items-center gap-2 text-sm">
-                <span>
+              <li className="flex flex-wrap items-start gap-2 text-base">
+                <span aria-hidden>
                   {preview.gates.unitsWithoutReadings === 0 ? "✅" : "⚠️"}
                 </span>
-                <span className="text-gray-900 dark:text-gray-100">
+                <span className="flex-1 min-w-0 text-gray-900 dark:text-gray-100">
                   {t("gateReadings", {
                     count: preview.gates.unitsWithoutReadings,
                   })}
@@ -211,7 +316,7 @@ export default function VyuctovaniePage() {
                 {preview.gates.unitsWithoutReadings > 0 && (
                   <Link
                     href={`/accounting/readings?year=${preview.year}`}
-                    className="text-blue-600 dark:text-blue-400 hover:underline"
+                    className="text-blue-700 dark:text-blue-400 hover:underline"
                   >
                     {t("resolve")}
                   </Link>
@@ -219,14 +324,14 @@ export default function VyuctovaniePage() {
               </li>
               {/* Reading round hand-off (BYT-20261118-006) — informational. */}
               {preview.gates.readingRound?.hasRound && (
-                <li className="flex items-center gap-2 text-sm">
-                  <span>
+                <li className="flex flex-wrap items-start gap-2 text-base">
+                  <span aria-hidden>
                     {preview.gates.readingRound.missingUnits === 0 &&
                     preview.gates.readingRound.unresolvedUnits === 0
                       ? "✅"
                       : "⚠️"}
                   </span>
-                  <span className="text-gray-900 dark:text-gray-100">
+                  <span className="flex-1 min-w-0 text-gray-900 dark:text-gray-100">
                     {tRounds("round", {
                       missing: preview.gates.readingRound.missingUnits,
                       unresolved: preview.gates.readingRound.unresolvedUnits,
@@ -234,35 +339,41 @@ export default function VyuctovaniePage() {
                   </span>
                   <Link
                     href={`/accounting/readings?year=${preview.year}`}
-                    className="text-blue-600 dark:text-blue-400 hover:underline"
+                    className="text-blue-700 dark:text-blue-400 hover:underline"
                   >
                     {t("resolve")}
                   </Link>
                 </li>
               )}
-              {/* Blocking: a metered split on a single reading would bill
-                  the absolute counter as the year's consumption. */}
-              {(preview.gates.meteredSingleReadingUnits ?? 0) > 0 && (
-                <li className="flex items-center gap-2 text-sm">
-                  <span>❌</span>
-                  <span className="text-gray-900 dark:text-gray-100">
-                    {t("gateSingleReadingBlocking", {
-                      count: preview.gates.meteredSingleReadingUnits ?? 0,
-                    })}
+              {/* Blocking codes with their details. */}
+              {(preview.gates.blockers ?? []).map((code) => (
+                <li key={code} className="flex flex-wrap items-start gap-2 text-base">
+                  <span aria-hidden>❌</span>
+                  <span className="flex-1 min-w-0 text-gray-900 dark:text-gray-100">
+                    {blockerLine(code)}
                   </span>
-                  <Link
-                    href={`/accounting/readings?year=${preview.year}`}
-                    className="text-blue-600 dark:text-blue-400 hover:underline"
-                  >
-                    {t("resolve")}
-                  </Link>
+                  {code.startsWith("METER_") || code === "PERSON_MONTHS_UNRESOLVED" ? (
+                    <Link
+                      href={`/accounting/readings?year=${preview.year}`}
+                      className="text-blue-700 dark:text-blue-400 hover:underline"
+                    >
+                      {t("resolve")}
+                    </Link>
+                  ) : code.startsWith("LEDGER_") ? (
+                    <Link
+                      href="/accounting/journal"
+                      className="text-blue-700 dark:text-blue-400 hover:underline"
+                    >
+                      {t("resolve")}
+                    </Link>
+                  ) : null}
                 </li>
-              )}
-              {(preview.gates.meteredSingleReadingUnits ?? 0) === 0 &&
+              ))}
+              {(preview.gates.blockers ?? []).length === 0 &&
                 (preview.gates.readingRound?.singleReadingUnits ?? 0) > 0 && (
-                <li className="flex items-center gap-2 text-sm">
-                  <span>⚠️</span>
-                  <span className="text-gray-900 dark:text-gray-100">
+                <li className="flex flex-wrap items-start gap-2 text-base">
+                  <span aria-hidden>⚠️</span>
+                  <span className="flex-1 min-w-0 text-gray-900 dark:text-gray-100">
                     {tRounds("singleReading", {
                       count: preview.gates.readingRound!.singleReadingUnits,
                     })}
@@ -271,19 +382,21 @@ export default function VyuctovaniePage() {
               )}
             </ul>
             {preview.gates.periodStatus === "published" && (
-              <p className="mt-3 text-sm text-green-700 dark:text-green-400">
+              <p className="mt-3 text-base text-green-700 dark:text-green-400">
                 {t("alreadyPublished")}
               </p>
             )}
             {preview.unprescribedCostCategories.length > 0 && (
-              <p className="mt-3 text-sm text-red-600 dark:text-red-400">
+              <p className="mt-3 text-base text-red-700 dark:text-red-400">
                 {t("unprescribedWarning", {
-                  categories: preview.unprescribedCostCategories.join(", "),
+                  categories: preview.unprescribedCostCategories
+                    .map((slug) => tCat(slug as Parameters<typeof tCat>[0]))
+                    .join(", "),
                 })}
               </p>
             )}
             {preview.gates.draftSchedules > 0 && (
-              <p className="mt-3 text-sm text-amber-700 dark:text-amber-400">
+              <p className="mt-3 text-base text-amber-800 dark:text-amber-400">
                 {t("draftScheduleWarning", {
                   count: preview.gates.draftSchedules,
                 })}
@@ -292,125 +405,197 @@ export default function VyuctovaniePage() {
           </div>
 
           {/* Settlement preview */}
-          {preview.settlement === null ? (
-            <p className="text-gray-600 dark:text-gray-400">
+          {s === null ? (
+            <p className="text-base text-gray-700 dark:text-gray-300">
               {t("blockedHint")}
             </p>
           ) : (
-            <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg p-6 overflow-x-auto">
-              <div className="mb-4 bg-amber-50 dark:bg-amber-950 border border-amber-200 dark:border-amber-800 rounded-lg px-4 py-2 text-sm text-amber-900 dark:text-amber-200">
+            <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg p-4 sm:p-6">
+              <div className="mb-4 bg-amber-50 dark:bg-amber-950 border border-amber-200 dark:border-amber-800 rounded-lg px-4 py-2 text-base text-amber-900 dark:text-amber-200">
                 {t("draftBanner")}
               </div>
-              <table className="w-full text-sm">
-                <thead>
-                  <tr className="text-left text-gray-600 dark:text-gray-400 border-b border-gray-200 dark:border-gray-700">
-                    <th className="py-2 pr-4">{t("colUnit")}</th>
-                    {preview.settlement.perService.map((s) => (
-                      <th
-                        key={s.serviceCategoryId}
-                        className="py-2 pr-4 text-right"
-                      >
-                        {preview.categorySlugs[s.serviceCategoryId]
-                          ? tCat(
-                              preview.categorySlugs[
-                                s.serviceCategoryId
-                              ] as Parameters<typeof tCat>[0]
-                            )
-                          : s.serviceCategoryId}
-                      </th>
-                    ))}
-                    <th className="py-2 text-right">{t("colTotal")}</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {preview.settlement.units.map((u) => (
-                    <tr
-                      key={u.unitEntityId}
-                      className="border-b border-gray-100 dark:border-gray-800"
-                    >
-                      <td className="py-2 pr-4 text-gray-900 dark:text-gray-100">
-                        {preview.unitLabels[u.unitEntityId] ?? u.unitEntityId}
-                      </td>
-                      {u.services.map((s) => (
-                        <td
-                          key={s.serviceCategoryId}
-                          className={`py-2 pr-4 text-right ${
-                            s.differenceCents > 0
-                              ? "text-red-600 dark:text-red-400"
-                              : s.differenceCents < 0
-                                ? "text-green-700 dark:text-green-400"
-                                : "text-gray-500 dark:text-gray-400"
-                          }`}
-                          title={t("cellTitle", {
-                            cost: formatEur(s.costShareCents),
-                            advances: formatEur(s.advancesCents),
-                          })}
-                        >
-                          {formatEur(s.differenceCents)}
-                        </td>
-                      ))}
-                      <td
-                        className={`py-2 text-right font-medium ${
-                          u.totalDifferenceCents > 0
-                            ? "text-red-600 dark:text-red-400"
-                            : u.totalDifferenceCents < 0
-                              ? "text-green-700 dark:text-green-400"
-                              : "text-gray-900 dark:text-gray-100"
-                        }`}
-                      >
+              <p className="mb-4 text-base text-gray-700 dark:text-gray-300">
+                {t("basisHint")}
+              </p>
+
+              {/* Phones: one card per unit. */}
+              <ul className="sm:hidden space-y-3">
+                {s.units.map((u) => (
+                  <li
+                    key={u.unitEntityId}
+                    className="border border-gray-200 dark:border-gray-700 rounded-lg p-3 text-base"
+                  >
+                    <div className="flex items-baseline justify-between gap-2">
+                      <span className="font-semibold text-gray-900 dark:text-gray-100">
+                        {unitName(u.unitEntityId)}
+                      </span>
+                      <span className={`font-semibold ${resultClass(u.totalDifferenceCents)}`}>
                         {formatEur(u.totalDifferenceCents)}
+                      </span>
+                    </div>
+                    <dl className="mt-2 grid grid-cols-[1fr_auto] gap-x-3 gap-y-1 text-gray-800 dark:text-gray-200">
+                      <dt>{t("colCost")}</dt>
+                      <dd className="text-right">{formatEur(u.totalCostCents)}</dd>
+                      <dt>{t("colPrescribed")}</dt>
+                      <dd className="text-right">{formatEur(u.totalPrescribedCents)}</dd>
+                      <dt>{t("colUnpaid")}</dt>
+                      <dd className="text-right">{formatEur(u.totalUnpaidCents)}</dd>
+                    </dl>
+                    <details className="mt-2">
+                      <summary className="cursor-pointer text-blue-700 dark:text-blue-400">
+                        {t("byService")}
+                      </summary>
+                      <ul className="mt-2 space-y-2">
+                        {u.services.map((l) => (
+                          <li key={l.serviceCategoryId}>
+                            <div className="font-medium text-gray-900 dark:text-gray-100">
+                              {catName(l.serviceCategoryId)} ({keyName(l.allocationKey)})
+                            </div>
+                            <div className="text-gray-700 dark:text-gray-300">
+                              {t("serviceLine", {
+                                cost: formatEur(l.costShareCents),
+                                prescribed: formatEur(l.prescribedCents),
+                                result: formatEur(l.differenceCents),
+                              })}
+                            </div>
+                          </li>
+                        ))}
+                      </ul>
+                    </details>
+                  </li>
+                ))}
+                <li className="border-t-2 border-gray-300 dark:border-gray-600 pt-3 text-base">
+                  <div className="flex items-baseline justify-between gap-2 font-semibold text-gray-900 dark:text-gray-100">
+                    <span>{t("footTotals")}</span>
+                    <span className={resultClass(s.totalDifferenceCents)}>
+                      {formatEur(s.totalDifferenceCents)}
+                    </span>
+                  </div>
+                  <dl className="mt-2 grid grid-cols-[1fr_auto] gap-x-3 gap-y-1 text-gray-800 dark:text-gray-200">
+                    <dt>{t("colCost")}</dt>
+                    <dd className="text-right">{formatEur(domCost)}</dd>
+                    <dt>{t("colPrescribed")}</dt>
+                    <dd className="text-right">{formatEur(domPrescribed)}</dd>
+                    <dt>{t("colUnpaid")}</dt>
+                    <dd className="text-right">{formatEur(domUnpaid)}</dd>
+                  </dl>
+                </li>
+              </ul>
+
+              {/* sm+: unit table. */}
+              <div className="hidden sm:block overflow-x-auto">
+                <table className="w-full text-base">
+                  <thead>
+                    <tr className="text-left text-gray-700 dark:text-gray-300 border-b border-gray-200 dark:border-gray-700">
+                      <th className="py-2 pr-4">{t("colUnit")}</th>
+                      <th className="py-2 pr-4 text-right">{t("colCost")}</th>
+                      <th className="py-2 pr-4 text-right">{t("colPrescribed")}</th>
+                      <th className="py-2 pr-4 text-right">{t("colUnpaid")}</th>
+                      <th className="py-2 text-right">{t("colResult")}</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {s.units.map((u) => (
+                      <tr
+                        key={u.unitEntityId}
+                        className="border-b border-gray-100 dark:border-gray-800"
+                      >
+                        <td className="py-2 pr-4 text-gray-900 dark:text-gray-100">
+                          {unitName(u.unitEntityId)}
+                        </td>
+                        <td className="py-2 pr-4 text-right whitespace-nowrap">
+                          {formatEur(u.totalCostCents)}
+                        </td>
+                        <td className="py-2 pr-4 text-right whitespace-nowrap">
+                          {formatEur(u.totalPrescribedCents)}
+                        </td>
+                        <td className="py-2 pr-4 text-right whitespace-nowrap">
+                          {formatEur(u.totalUnpaidCents)}
+                        </td>
+                        <td
+                          className={`py-2 text-right whitespace-nowrap font-medium ${resultClass(u.totalDifferenceCents)}`}
+                        >
+                          {formatEur(u.totalDifferenceCents)}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                  <tfoot>
+                    <tr className="font-semibold text-gray-900 dark:text-gray-100">
+                      <td className="py-2 pr-4">{t("footTotals")}</td>
+                      <td className="py-2 pr-4 text-right whitespace-nowrap">{formatEur(domCost)}</td>
+                      <td className="py-2 pr-4 text-right whitespace-nowrap">{formatEur(domPrescribed)}</td>
+                      <td className="py-2 pr-4 text-right whitespace-nowrap">{formatEur(domUnpaid)}</td>
+                      <td className="py-2 text-right whitespace-nowrap">
+                        {formatEur(s.totalDifferenceCents)}
                       </td>
                     </tr>
-                  ))}
-                </tbody>
-                <tfoot>
-                  <tr className="font-semibold text-gray-900 dark:text-gray-100">
-                    <td className="py-2 pr-4">{t("footTotals")}</td>
-                    {preview.settlement.perService.map((s) => (
-                      <td
-                        key={s.serviceCategoryId}
-                        className="py-2 pr-4 text-right"
-                        title={t("footTitle", {
-                          cost: formatEur(s.actualCostCents),
-                          advances: formatEur(s.advancesCents),
+                  </tfoot>
+                </table>
+              </div>
+
+              {/* Per service: cost, key, prescription, result. */}
+              <h3 className="mt-6 mb-2 text-lg font-semibold text-gray-900 dark:text-gray-100">
+                {t("byService")}
+              </h3>
+              <ul className="space-y-2 text-base">
+                {s.perService.map((p) => {
+                  const key =
+                    s.units[0]?.services.find(
+                      (l) => l.serviceCategoryId === p.serviceCategoryId
+                    )?.allocationKey ?? null;
+                  return (
+                    <li
+                      key={p.serviceCategoryId}
+                      className="flex flex-wrap justify-between gap-x-4 gap-y-1 border-b border-gray-100 dark:border-gray-800 pb-2"
+                    >
+                      <span className="text-gray-900 dark:text-gray-100">
+                        {catName(p.serviceCategoryId)} ({keyName(key)})
+                      </span>
+                      <span className="text-gray-700 dark:text-gray-300">
+                        {t("serviceLine", {
+                          cost: formatEur(p.actualCostCents),
+                          prescribed: formatEur(p.prescribedCents),
+                          result: formatEur(p.actualCostCents - p.prescribedCents),
                         })}
-                      >
-                        {formatEur(s.actualCostCents - s.advancesCents)}
-                      </td>
-                    ))}
-                    <td className="py-2 text-right">
-                      {formatEur(preview.settlement.totalDifferenceCents)}
-                    </td>
-                  </tr>
-                </tfoot>
-              </table>
-              <p className="text-xs text-gray-500 dark:text-gray-400 mt-3">
+                      </span>
+                    </li>
+                  );
+                })}
+              </ul>
+
+              <p className="text-base text-gray-700 dark:text-gray-300 mt-4">
                 {t("signHint")}
+              </p>
+              <p
+                className={`text-base mt-2 ${ledgerOk ? "text-green-700 dark:text-green-400" : "text-red-700 dark:text-red-400"}`}
+              >
+                {ledgerOk ? t("ledgerOk") : t("blockers.LEDGER_MISMATCH")}
               </p>
 
               {/* Publish */}
               {preview.gates.canPublish &&
                 preview.unprescribedCostCategories.length === 0 && (
-                <div className="mt-6 bg-blue-50 dark:bg-blue-950 border border-blue-200 dark:border-blue-800 rounded-lg p-4 text-sm">
+                <div className="mt-6 bg-blue-50 dark:bg-blue-950 border border-blue-200 dark:border-blue-800 rounded-lg p-4 text-base">
                   <label className="flex items-start gap-2 text-blue-900 dark:text-blue-200">
                     <input
                       type="checkbox"
                       checked={confirmPublish}
                       onChange={(e) => setConfirmPublish(e.target.checked)}
-                      className="mt-1"
+                      className="mt-1 h-5 w-5"
                     />
                     <span>{t("publishConfirm", { year: preview.year })}</span>
                   </label>
                   {publishError && (
-                    <p className="text-red-600 dark:text-red-400 mt-2">
-                      {t("publishError")} ({publishError})
+                    <p className="text-red-700 dark:text-red-400 mt-2">
+                      {publishError}
                     </p>
                   )}
                   <div className="flex justify-end mt-3">
                     <button
                       onClick={publish}
                       disabled={publishing || !confirmPublish}
-                      className="px-5 py-2 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white rounded-lg"
+                      className="min-h-11 px-5 py-2 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white rounded-lg"
                     >
                       {publishing ? t("publishing") : t("publish")}
                     </button>

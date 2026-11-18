@@ -33,7 +33,7 @@ const STATUS_STYLES: Record<DocumentProjectStatus, string> = {
 const inputCls =
   "w-full px-4 py-2 border border-gray-300 rounded-lg text-base focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-gray-900 dark:border-gray-700 dark:text-gray-100";
 const labelCls =
-  "block text-sm font-medium text-gray-700 mb-1 dark:text-gray-300";
+  "block text-base font-medium text-gray-700 mb-1 dark:text-gray-300";
 
 export default function ProjectsPanel({
   projects,
@@ -394,14 +394,14 @@ function ProjectRow({
         >
           <div className="flex items-center gap-2 flex-wrap">
             <span
-              className={`text-xs font-medium px-2 py-0.5 rounded-full ${STATUS_STYLES[project.status]}`}
+              className={`text-base font-medium px-2 py-0.5 rounded-full ${STATUS_STYLES[project.status]}`}
             >
               {t(`projects.status.${project.status}`)}
             </span>
-            <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-amber-50 text-amber-700 dark:bg-amber-900/40 dark:text-amber-200">
+            <span className="text-base font-medium px-2 py-0.5 rounded-full bg-amber-50 text-amber-700 dark:bg-amber-900/40 dark:text-amber-200">
               {t(`audience.${project.audience}`)}
             </span>
-            <span className="text-xs text-gray-400 dark:text-gray-500">
+            <span className="text-base text-gray-400 dark:text-gray-500">
               {t("projects.docCount", { count: project.documentCount })}
             </span>
           </div>
@@ -409,7 +409,7 @@ function ProjectRow({
             {project.title}
           </h3>
           {project.description && (
-            <p className="text-sm text-gray-500 mt-1 dark:text-gray-400">
+            <p className="text-base text-gray-500 mt-1 dark:text-gray-400">
               {project.description}
             </p>
           )}
@@ -417,14 +417,14 @@ function ProjectRow({
         <div className="flex flex-col gap-2 shrink-0">
           <button
             onClick={toggle}
-            className="px-3 py-2 text-sm font-medium text-blue-600 hover:bg-blue-50 rounded-lg dark:text-blue-300 dark:hover:bg-blue-900/30"
+            className="px-3 py-2 text-base font-medium text-blue-600 hover:bg-blue-50 rounded-lg dark:text-blue-300 dark:hover:bg-blue-900/30"
           >
             {open ? t("projects.close") : t("projects.open")}
           </button>
           {canManage && (
             <button
               onClick={del}
-              className="px-3 py-2 text-sm font-medium text-red-600 hover:bg-red-50 rounded-lg dark:text-red-400 dark:hover:bg-red-900/30"
+              className="px-3 py-2 text-base font-medium text-red-600 hover:bg-red-50 rounded-lg dark:text-red-400 dark:hover:bg-red-900/30"
             >
               {t("projects.delete")}
             </button>
@@ -445,25 +445,25 @@ function ProjectRow({
                     value={finCost}
                     onChange={(e) => setFinCost(e.target.value)}
                     placeholder={t("financing.estimatedCost")}
-                    className="sm:w-44 px-3 py-2 text-sm border border-gray-300 rounded-lg dark:bg-gray-800 dark:border-gray-700 dark:text-gray-100"
+                    className="sm:w-44 px-3 py-2 text-base border border-gray-300 rounded-lg dark:bg-gray-800 dark:border-gray-700 dark:text-gray-100"
                   />
                   <input
                     type="text"
                     value={finNote}
                     onChange={(e) => setFinNote(e.target.value)}
                     placeholder={t("financing.fundingNotePlaceholder")}
-                    className="flex-1 px-3 py-2 text-sm border border-gray-300 rounded-lg dark:bg-gray-800 dark:border-gray-700 dark:text-gray-100"
+                    className="flex-1 px-3 py-2 text-base border border-gray-300 rounded-lg dark:bg-gray-800 dark:border-gray-700 dark:text-gray-100"
                   />
                   <button
                     onClick={saveFin}
-                    className="px-3 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg"
+                    className="px-3 py-2 text-base font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg"
                   >
                     {tCommon("save")}
                   </button>
                 </div>
               ) : (
                 <div className="flex items-center justify-between gap-2 flex-wrap">
-                  <span className="text-sm text-gray-700 dark:text-gray-200">
+                  <span className="text-base text-gray-700 dark:text-gray-200">
                     💰{" "}
                     {project.estimatedCost != null
                       ? project.estimatedCost.toLocaleString()
@@ -473,7 +473,7 @@ function ProjectRow({
                   {canManage && (
                     <button
                       onClick={startEditFin}
-                      className="text-xs text-blue-600 hover:underline dark:text-blue-300"
+                      className="text-base text-blue-600 hover:underline dark:text-blue-300"
                     >
                       {tCommon("edit")}
                     </button>
@@ -485,7 +485,7 @@ function ProjectRow({
 
           <div className="space-y-3">
             <div className="flex items-center justify-between gap-2">
-              <h4 className="text-sm font-semibold text-gray-900 dark:text-gray-100">
+              <h4 className="text-base font-semibold text-gray-900 dark:text-gray-100">
                 📄 {t("documentsTab")}
               </h4>
               {canManage && (
@@ -494,7 +494,7 @@ function ProjectRow({
                     setDocEdit((v) => !v);
                     setShowUpload(false);
                   }}
-                  className="text-xs text-blue-600 hover:underline dark:text-blue-300"
+                  className="text-base text-blue-600 hover:underline dark:text-blue-300"
                 >
                   {docEdit ? tCommon("close") : tCommon("edit")}
                 </button>
@@ -515,14 +515,14 @@ function ProjectRow({
               ) : (
                 <button
                   onClick={() => setShowUpload(true)}
-                  className="text-sm font-medium text-blue-600 hover:underline dark:text-blue-300"
+                  className="text-base font-medium text-blue-600 hover:underline dark:text-blue-300"
                 >
                   + {t("projects.addDocument")}
                 </button>
               ))}
 
             {loading ? (
-              <p className="text-sm text-gray-500 dark:text-gray-400">…</p>
+              <p className="text-base text-gray-500 dark:text-gray-400">…</p>
             ) : docs && docs.length > 0 ? (
               docs.map((d) => (
                 <DocumentCard
@@ -534,17 +534,17 @@ function ProjectRow({
                 />
               ))
             ) : (
-              <p className="text-sm text-gray-500 dark:text-gray-400">{t("empty")}</p>
+              <p className="text-base text-gray-500 dark:text-gray-400">{t("empty")}</p>
             )}
           </div>
 
           {interest && (
             <div className="rounded-lg border border-gray-200 p-3 dark:border-gray-700">
               <div className="flex items-center justify-between gap-2 mb-2 flex-wrap">
-                <h4 className="text-sm font-semibold text-gray-900 dark:text-gray-100">
+                <h4 className="text-base font-semibold text-gray-900 dark:text-gray-100">
                   {t("anketa.title")}
                 </h4>
-                <span className="text-xs text-gray-400 dark:text-gray-500">
+                <span className="text-base text-gray-400 dark:text-gray-500">
                   {t("anketa.disclaimer")}
                 </span>
               </div>
@@ -552,7 +552,7 @@ function ProjectRow({
                 <button
                   onClick={() => react("up")}
                   disabled={!canReact}
-                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
+                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-base font-medium transition-colors ${
                     interest.mine === "up"
                       ? "bg-green-600 text-white"
                       : "bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-200"
@@ -563,7 +563,7 @@ function ProjectRow({
                 <button
                   onClick={() => react("down")}
                   disabled={!canReact}
-                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
+                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-base font-medium transition-colors ${
                     interest.mine === "down"
                       ? "bg-red-600 text-white"
                       : "bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-200"
@@ -578,7 +578,7 @@ function ProjectRow({
                     onClick={() =>
                       router.push(`/voting/new?projectId=${project.id}`)
                     }
-                    className="text-sm font-medium text-blue-600 hover:underline dark:text-blue-300"
+                    className="text-base font-medium text-blue-600 hover:underline dark:text-blue-300"
                   >
                     {t("anketa.startVote")} →
                   </button>
@@ -588,7 +588,7 @@ function ProjectRow({
           )}
 
           <div>
-            <h4 className="text-sm font-semibold text-gray-900 mb-2 dark:text-gray-100">
+            <h4 className="text-base font-semibold text-gray-900 mb-2 dark:text-gray-100">
               💬 {t("discussion.title")}
             </h4>
             <div className="space-y-2 mb-3">
@@ -599,25 +599,25 @@ function ProjectRow({
                     className="bg-gray-50 rounded-lg px-3 py-2 dark:bg-gray-900"
                   >
                     <div className="flex items-center justify-between gap-2">
-                      <span className="text-xs font-medium text-gray-600 dark:text-gray-300">
+                      <span className="text-base font-medium text-gray-600 dark:text-gray-300">
                         {c.authorName ?? tCommon("unknown")}
                       </span>
                       {(c.isMine || canManage) && (
                         <button
                           onClick={() => deleteComment(c.id)}
-                          className="text-xs text-red-600 hover:underline dark:text-red-400"
+                          className="text-base text-red-600 hover:underline dark:text-red-400"
                         >
                           {t("discussion.delete")}
                         </button>
                       )}
                     </div>
-                    <p className="text-sm text-gray-800 whitespace-pre-wrap dark:text-gray-200">
+                    <p className="text-base text-gray-800 whitespace-pre-wrap dark:text-gray-200">
                       {c.content}
                     </p>
                   </div>
                 ))
               ) : (
-                <p className="text-sm text-gray-500 dark:text-gray-400">
+                <p className="text-base text-gray-500 dark:text-gray-400">
                   {t("discussion.empty")}
                 </p>
               )}
@@ -628,12 +628,12 @@ function ProjectRow({
                 onChange={(e) => setCommentText(e.target.value)}
                 placeholder={t("discussion.placeholder")}
                 maxLength={5000}
-                className="flex-1 px-3 py-2 text-sm border border-gray-300 rounded-lg dark:bg-gray-900 dark:border-gray-700 dark:text-gray-100"
+                className="flex-1 px-3 py-2 text-base border border-gray-300 rounded-lg dark:bg-gray-900 dark:border-gray-700 dark:text-gray-100"
               />
               <button
                 type="submit"
                 disabled={posting}
-                className="px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg disabled:opacity-50"
+                className="px-4 py-2 text-base font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg disabled:opacity-50"
               >
                 {t("discussion.send")}
               </button>

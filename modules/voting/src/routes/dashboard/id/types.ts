@@ -60,7 +60,8 @@ export interface VotingEvent {
     | "result_published"
     | "ballot_superseded"
     | "document_generated"
-    | "minutes_finalised";
+    | "minutes_finalised"
+    | "mandate_revoked";
   actorName: string | null;
   note: string | null;
   payload: unknown;

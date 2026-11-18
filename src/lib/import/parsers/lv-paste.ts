@@ -4,18 +4,24 @@
 //
 // Contract:
 //   parseLvText(text) → DraftRow[] (best-effort, never throws)
+//   parseLvTextWithReport(text) → { rows, report } — same rows plus what was
+//     recognised and every owner-like LV row that was NOT turned into a row
+//     (with a reason code), so nothing is dropped silently.
 //
 // Unit type: flat ("Číslo bytu") vs nebytový priestor / garáž — see
 // detectUnit(). Voting weight does not depend on it (SK §14(3)).
 //
 // What we DON'T extract:
-//   - Date of birth, rodné číslo, IČO (PII, GDPR exclusion)
+//   - Date of birth, rodné číslo (PII, GDPR exclusion). IČO of a legal-entity
+//     owner IS extracted — it is public register data and identifies the
+//     owner (družstvo, obec, s.r.o.).
 //   - Areas in m² (not present in LV)
 //   - Emails, phones (not present in LV)
 //   - Časť C (Ťarchy) — liens, separate concern
 
 import type { UnitType } from "../../unit-type";
-import type { ImportRow } from "../types";
+import { normaliseFloor } from "../floor";
+import type { ImportRow, LvParseReport, LvSkippedEntry } from "../types";
 
 type DraftRow = Partial<ImportRow>;
 
@@ -29,18 +35,56 @@ interface LvHeader {
   // overridable per unit block.
 }
 
-const SK_LOCALE = "sk-SK";
-
 export function parseLvText(text: string): DraftRow[] {
+  return parseLvTextWithReport(text).rows;
+}
+
+export interface LvParseResult {
+  rows: DraftRow[];
+  report: LvParseReport;
+}
+
+export function parseLvTextWithReport(text: string): LvParseResult {
   const normalised = text.replace(/\r\n/g, "\n").replace(/ /g, " ");
   const header = parseLvHeader(normalised);
   const blocks = splitUnitBlocks(normalised);
+  const skipped: LvSkippedEntry[] = [];
   const rows: DraftRow[] = [];
-  for (const block of blocks) {
-    const parsed = parseUnitBlock(block, header);
-    rows.push(...parsed);
+
+  if (blocks.length === 0) {
+    // No "Vchod (číslo)" unit sections: the LV lists the building as a
+    // whole (e.g. owned outright by a bytové družstvo or an obec). Its
+    // owners cannot be attached to units — report them instead of
+    // returning an empty result silently.
+    skipped.push({ lvRow: null, text: "", reason: "no_unit_sections" });
+    const partB = sliceBetween(normalised, /ČASŤ\s+B\b/i, /ČASŤ\s+C\b/i);
+    const ownersText = partB
+      ? (sliceBetween(partB, /Spoluvlastnícky\s+podiel\s+/, /(?!)/) ?? partB)
+      : null;
+    if (ownersText) {
+      for (const o of parseOwnerLines(ownersText, skipped)) {
+        skipped.push({
+          lvRow: o.ordinal ?? null,
+          text: shorten(
+            [o.name, o.ico ? `IČO ${o.ico}` : null, `${o.shareNum}/${o.shareDen}`]
+              .filter(Boolean)
+              .join(", ")
+          ),
+          reason: "building_owner",
+        });
+      }
+    }
+    return { rows, report: { recognisedOwners: 0, recognisedUnits: 0, skipped } };
   }
-  return rows;
+
+  for (const block of blocks) {
+    rows.push(...parseUnitBlock(block, header, skipped));
+  }
+  const units = new Set(rows.map((r) => `${r.entrance_label ?? ""}|${r.unit_number ?? ""}`));
+  return {
+    rows,
+    report: { recognisedOwners: rows.length, recognisedUnits: units.size, skipped },
+  };
 }
 
 // ── Header ───────────────────────────────────────────────
@@ -139,7 +183,11 @@ function detectUnit(block: string): { type?: UnitType; number?: string } {
 
 // ── Single unit block ────────────────────────────────────
 
-function parseUnitBlock(block: string, header: LvHeader): DraftRow[] {
+function parseUnitBlock(
+  block: string,
+  header: LvHeader,
+  skipped: LvSkippedEntry[]
+): DraftRow[] {
   // Field extraction is done via free-form regex search on the whole block
   // rather than the previous line-anchored approach — pdf-extracted text
   // collapses each label and its value onto the same line ("Vchod (číslo) 1
@@ -147,7 +195,12 @@ function parseUnitBlock(block: string, header: LvHeader): DraftRow[] {
   // The regex `\s*\n?\s*` between label and value matches either layout
   // (paste-from-text with newlines or pdf-extract with spaces).
   const vchod = block.match(/Vchod\s*\(číslo\)\s*\n?\s*(\S+)/i)?.[1];
-  const poschodieRaw = block.match(/Poschodie\s*\n?\s*(\S+)/i)?.[1];
+  // Whole value up to the next label / line end — "1. PP" is two tokens.
+  const poschodieRaw = block
+    .match(/Poschodie\s*:?\s*\n?\s*([^\n]*)/i)?.[1]
+    ?.split(/\s+(?:Číslo|Druh|Podiel|Súpisné|Vchod)\b/i)[0]
+    ?.trim()
+    .slice(0, 20);
   // Flat ("Číslo bytu") or non-residential unit ("Číslo nebytového priestoru").
   const unit = detectUnit(block);
   const cisloBytu = unit.number;
@@ -174,7 +227,7 @@ function parseUnitBlock(block: string, header: LvHeader): DraftRow[] {
     /Správca\s*-/
   );
 
-  const owners = ownersText ? parseOwnerLines(ownersText) : [];
+  const owners = ownersText ? parseOwnerLines(ownersText, skipped) : [];
 
   const floor = normaliseFloor(poschodieRaw);
 
@@ -193,6 +246,8 @@ function parseUnitBlock(block: string, header: LvHeader): DraftRow[] {
       unit_share_numerator: unitShareNum,
       unit_share_denominator: unitShareDen,
       owner_name: o.name,
+      owner_birth_name: o.birthName,
+      owner_ico: o.ico,
       owner_address: o.address,
       owner_unit_share_numerator: o.shareNum,
       owner_unit_share_denominator: o.shareDen,
@@ -212,6 +267,10 @@ function parseUnitBlock(block: string, header: LvHeader): DraftRow[] {
 
 interface RawOwner {
   name: string;
+  /** Rodné priezvisko ("r. Štolc"), kept out of the name. */
+  birthName?: string;
+  /** IČO of a legal-entity owner. */
+  ico?: string;
   address?: string;
   shareNum: number;
   shareDen: number;
@@ -221,67 +280,55 @@ interface RawOwner {
   bsm?: boolean;
 }
 
-function parseOwnerLines(text: string): RawOwner[] {
+const BOUNDARY = "\n__BOUNDARY__\n";
+/** Prefix of a block that starts with LV metadata (title deed, note, …). */
+const META = "__META__";
+
+/** Marker of an identified person / legal entity inside an owner record. */
+const IDENTITY_RE = /Dátum narodenia:|IČO\s*:?\s*\d/i;
+/** "107 Štolc …" — poradové číslo followed by a capitalised name. */
+const ORDINAL_START_RE = /^(\d{1,4})\.?\s+(?=\p{Lu})/u;
+
+function parseOwnerLines(text: string, skipped: LvSkippedEntry[]): RawOwner[] {
   // Two-pass algorithm hardened against pdftotext's tendency to flatten
   // owner records and their contract metadata onto a single line.
   //
-  //  PASS 1 — strip contract metadata. Inside every physical line, cut
-  //  at the first occurrence of a boundary marker
-  //  (Titul nadobudnutia | Iné údaje | Poznámky | Správca | Iná oprávnená).
-  //  This removes contract references like "R 418/13" before share
-  //  detection — the previous regex was lazy-anchored to end-of-line and
-  //  happily grabbed those as the owner's share.
+  //  PASS 1 — mark boundaries. Fixed phrases ("Poznámky: Bez zápisu",
+  //  "Správca - Neevidovaní", …) become pure boundaries. Metadata whose
+  //  value varies (Titul nadobudnutia, Iné údaje, Poznámky with a real
+  //  entry such as an exekúcia) starts a META block: its text is dropped and
+  //  never glued to the next owner, even when the PDF put both on one line.
   //
-  //  PASS 2 — split the cleaned text into BLOCKS separated by the same
-  //  boundary markers (when those markers occupy whole lines). A block
-  //  is an owner record IFF it contains a "Dátum narodenia:" marker.
-  //  This rules out page footers, contract leftovers, and noise that
-  //  happen to start with a digit.
-  //
-  //  Per block: the share is the LAST `\d+/\d+` token at end of block.
-  //  The leading poradové č. is stripped from the name blob.
-  // Boundary phrases with their known fixed-value form. We replace each
-  // *whole phrase* (keyword + canonical value) with a sentinel, preserving
-  // any text that follows on the same physical line — this is critical
-  // because pdf-extracted text frequently glues a boundary like
-  // "Poznámky: Bez zápisu" to the start of the NEXT owner record on the
-  // same line (e.g. "Poznámky: Bez zápisu 107 Štolc Ondrej r. Štolc…").
-  // For "Titul nadobudnutia:" we cannot enumerate the value (contract
-  // identifiers vary), but everything from "Titul…" up to the next "Iné
-  // údaje:" is contract metadata that we want to discard — the simplest
-  // safe rule is: replace just the keyword, let the block-DOB filter drop
-  // the chunk because it won't contain a DOB.
+  //  PASS 2 — split into blocks at the boundaries. A block is an owner
+  //  record when it starts with a poradové číslo or carries an identity
+  //  marker (Dátum narodenia for a person, IČO for a legal entity). The
+  //  share is the LAST `a/b` token at the end of the block. Owner-like
+  //  blocks that cannot be read are reported in `skipped` — never dropped
+  //  silently.
   const PHRASE_BOUNDARIES: Array<{ re: RegExp; replacement: string }> = [
-    { re: /Iné údaje:\s*Bez zápisu/gi, replacement: "\n__BOUNDARY__\n" },
-    { re: /Poznámky:\s*Bez zápisu/gi, replacement: "\n__BOUNDARY__\n" },
-    {
-      re: /Správca\s*-\s*Neevidovaní/gi,
-      replacement: "\n__BOUNDARY__\n",
-    },
-    {
-      re: /Iná oprávnená osoba\s*-\s*Neevidovaní/gi,
-      replacement: "\n__BOUNDARY__\n",
-    },
-    { re: /Titul nadobudnutia:/gi, replacement: "\n__BOUNDARY__\nTitul:" },
+    { re: /Iné údaje:\s*Bez zápisu/gi, replacement: BOUNDARY },
+    { re: /Poznámky:\s*Bez zápisu/gi, replacement: BOUNDARY },
+    { re: /Správca\s*-\s*Neevidovaní/gi, replacement: BOUNDARY },
+    { re: /Iná oprávnená osoba\s*-\s*Neevidovaní/gi, replacement: BOUNDARY },
+    { re: /Účastník právneho vzťahu:\s*\p{L}+/giu, replacement: BOUNDARY },
+    { re: /Titul nadobudnutia:/gi, replacement: `${BOUNDARY}${META} ` },
+    { re: /Iné údaje:/gi, replacement: `${BOUNDARY}${META} ` },
+    { re: /Poznámky:/gi, replacement: `${BOUNDARY}${META} ` },
   ];
   let pre = text;
   for (const { re, replacement } of PHRASE_BOUNDARIES) {
     pre = pre.replace(re, replacement);
   }
-  // Also drop "X z N" page-footer fragments that occasionally leak in
-  // between owner records — these are page numbers from the original PDF.
+  // Drop "X z N" page-footer fragments that leak in between owner records.
   pre = pre.replace(/\b\d{1,3}\s*z\s*\d{1,3}\b/g, " ");
   const lines = pre.split("\n").map((l) => l.trim());
 
-  // Pass 2 — group lines into blocks split by boundary sentinels.
   const blocks: string[][] = [];
   let current: string[] = [];
   for (const line of lines) {
     if (line === "__BOUNDARY__") {
-      if (current.length > 0) {
-        blocks.push(current);
-        current = [];
-      }
+      if (current.length > 0) blocks.push(current);
+      current = [];
       continue;
     }
     if (line === "") continue;
@@ -289,34 +336,48 @@ function parseOwnerLines(text: string): RawOwner[] {
   }
   if (current.length > 0) blocks.push(current);
 
-  // For each block, treat as an owner record iff it contains a DOB marker.
   const owners: RawOwner[] = [];
   for (const blockLines of blocks) {
-    const blockText = blockLines.join(" ").trim();
-    if (!/Dátum narodenia:/i.test(blockText)) continue;
+    let blockText = blockLines.join(" ").replace(/\s+/g, " ").trim();
+    const isMeta = blockText.startsWith(META);
+    if (isMeta) blockText = blockText.slice(META.length).trim();
 
-    // Share = LAST `\d+/\d+` token, anchored to end. If the block doesn't
-    // end with a share, skip — something unexpected.
+    const hasIdentity = IDENTITY_RE.test(blockText);
+    if (isMeta) {
+      // Pure metadata (title deed, note, exekúcia …) — dropped.
+      if (!hasIdentity) continue;
+      // Metadata glued in front of the next owner: cut it off.
+      const start = findOwnerStart(blockText);
+      if (start < 0) {
+        skipped.push({ lvRow: null, text: shorten(blockText), reason: "unreadable" });
+        continue;
+      }
+      blockText = blockText.slice(start).trim();
+    } else if (!ORDINAL_START_RE.test(blockText) && hasIdentity) {
+      // Leading noise (page header remnant) before the poradové číslo.
+      const start = findOwnerStart(blockText);
+      if (start > 0) blockText = blockText.slice(start).trim();
+    }
+    const startsWithOrdinal = ORDINAL_START_RE.test(blockText);
+    if (!startsWithOrdinal && !IDENTITY_RE.test(blockText)) continue; // noise
+
+    const ordinal = Number(blockText.match(ORDINAL_START_RE)?.[1]) || undefined;
     const shareMatch = blockText.match(/(\d+)\s*\/\s*(\d+)\s*$/);
-    if (!shareMatch) continue;
+    if (!shareMatch) {
+      skipped.push({ lvRow: ordinal ?? null, text: shorten(blockText), reason: "no_share" });
+      continue;
+    }
     const shareNum = Number(shareMatch[1]);
     const shareDen = Number(shareMatch[2]);
-    if (shareNum <= 0 || shareDen <= 0) continue;
-    // Sanity guard: real owner shares have small denominators (≤ 1000).
-    // Cadastre files we've seen use denominators up to ~192 (1/192 for
-    // BSM-of-1/96). Reject anything huge that's almost certainly a
-    // contract identifier leaked through.
-    if (shareDen > 1000) continue;
+    // Large denominators are legitimate (e.g. 6543/123456 on older LVs);
+    // only a share outside (0, 1] is rejected.
+    if (shareNum <= 0 || shareDen <= 0 || shareNum > shareDen) {
+      skipped.push({ lvRow: ordinal ?? null, text: shorten(blockText), reason: "share_invalid" });
+      continue;
+    }
 
     let nameBlob = blockText.slice(0, blockText.length - shareMatch[0].length).trim();
-    // Strip leading poradové č. (with or without trailing dot) — and keep
-    // it (BYT-20261118-003: duplicate-ordinal / BSM-pair checks).
-    const m = nameBlob.match(/^(\d{1,3})\s+(.+)$/);
-    let ordinal: number | undefined;
-    if (m) {
-      ordinal = Number(m[1]);
-      nameBlob = m[2];
-    }
+    if (ordinal !== undefined) nameBlob = nameBlob.replace(ORDINAL_START_RE, "");
 
     const owner = extractOwner(nameBlob, shareNum, shareDen);
     if (owner) owners.push(...owner.map((o) => ({ ...o, ordinal })));
@@ -326,57 +387,71 @@ function parseOwnerLines(text: string): RawOwner[] {
 }
 
 /**
+ * Index where the owner record starts inside a block that begins with
+ * metadata ("Pozn: Vedie sa exekučné konanie EX 12/2020 108 Kováč Peter, …").
+ * The owner is the LAST "<poradové č.> <Name>" before the first identity
+ * marker whose name part (up to the next comma) has no digits. -1 = none.
+ */
+function findOwnerStart(s: string): number {
+  const idMatch = s.match(IDENTITY_RE);
+  const prefix = idMatch ? s.slice(0, idMatch.index) : s;
+  const re = /(?:^|\s)(\d{1,4})\.?\s+(?=\p{Lu})/gu;
+  let best = -1;
+  let m: RegExpExecArray | null;
+  while ((m = re.exec(prefix)) !== null) {
+    const start = m.index + (m[0].length - m[0].trimStart().length);
+    const namePart = prefix.slice(m.index + m[0].length).split(",")[0];
+    if (!/\d/.test(namePart)) best = start;
+  }
+  return best;
+}
+
+/**
  * Convert one owner blob into one or two RawOwner records. BSM (spousal
- * co-ownership) is detected on the FULL pre-DOB string and split BEFORE
- * the name/address heuristic — otherwise the title token "Ing." followed
- * by " a Alena" would be absorbed into the address (real bug observed
- * on byt 76 of LV č. 3182).
+ * co-ownership) is detected on the FULL blob and split BEFORE the
+ * name/address heuristic — otherwise the title token "Ing." followed by
+ * " a Alena" would be absorbed into the address (real bug observed on byt 76
+ * of LV č. 3182).
  */
 function extractOwner(
   blob: string,
   shareNum: number,
   shareDen: number
 ): RawOwner[] | null {
-  // BSM detection must test the FULL blob — the marker (", BSM" or trailing
-  // BSM) sits AFTER the DOB section in the LV format
+  // The BSM marker sits AFTER the DOB section in the LV format
   // ("…, SR, Dátum narodenia: 10.11.1949, Dátum narodenia: 24.02.1958, BSM").
-  // The earlier version tested `cleaned` (DOB stripped) and missed every
-  // BSM case.
-  const hasBsmMarker =
-    /(?:^|[,\s])BSM(?:$|[,\s])/.test(blob);
+  const hasBsmMarker = /(?:^|[,\s])BSM(?:$|[,\s])/.test(blob);
 
-  // Strip the DOB tail. Everything before ", Dátum narodenia:" is name+address.
-  const dobIdx = blob.indexOf(", Dátum narodenia:");
-  let cleaned = (dobIdx >= 0 ? blob.slice(0, dobIdx) : blob).trim();
+  // IČO of a legal-entity owner (public register data, kept).
+  const ico = blob.match(/IČO\s*:?\s*(\d[\d ]{5,10}\d)/i)?.[1]?.replace(/\s+/g, "");
+
+  // Everything before the identity tail is name + address.
+  const idIdx = blob.search(/,?\s*(?:Dátum narodenia:|IČO\s*:?\s*\d)/i);
+  let cleaned = (idIdx >= 0 ? blob.slice(0, idIdx) : blob).trim();
 
   // Country marker at the end ("…, SR") — never part of the address.
   cleaned = cleaned.replace(/,\s*SR\s*$/i, "").trim();
 
-  // BSM split: detect " a " followed by an uppercase token. Use the LAST
-  // such occurrence, since title commas can introduce false " a " matches
-  // earlier (e.g. "Mgr. r. Truchanová" — no " a " there but be defensive).
   const bsmSplit = hasBsmMarker ? lastBsmSplit(cleaned) : null;
   if (bsmSplit) {
-    const leftParts = splitNameAddress(bsmSplit.left);
-    const rightParts = splitNameAddress(bsmSplit.right);
+    const left = splitNameAddress(bsmSplit.left);
+    const right = splitNameAddress(bsmSplit.right);
     // BSM = shared address. Prefer the right side (it usually carries the
     // address fragment after the joint name).
-    const shared = rightParts.address ?? leftParts.address;
+    const shared = right.address ?? left.address;
     return [
-      { name: leftParts.name, address: shared, shareNum, shareDen: shareDen * 2, bsm: true },
-      { name: rightParts.name, address: shared, shareNum, shareDen: shareDen * 2, bsm: true },
+      { name: left.name, birthName: left.birthName, address: shared, shareNum, shareDen: shareDen * 2, bsm: true },
+      { name: right.name, birthName: right.birthName, address: shared, shareNum, shareDen: shareDen * 2, bsm: true },
     ];
   }
 
   const parts = splitNameAddress(cleaned);
-  return [{ name: parts.name, address: parts.address, shareNum, shareDen }];
+  return [{ name: parts.name, birthName: parts.birthName, ico, address: parts.address, shareNum, shareDen }];
 }
 
-function lastBsmSplit(
-  s: string
-): { left: string; right: string } | null {
-  // Find the LAST " a <Uppercase>..." position so titles like ", Ing." that
-  // precede the conjunction stay with the first spouse.
+function lastBsmSplit(s: string): { left: string; right: string } | null {
+  // The LAST " a <Uppercase>" so titles like ", Ing." that precede the
+  // conjunction stay with the first spouse.
   const re = /\s+a\s+\p{Lu}/gu;
   let lastIdx = -1;
   let m: RegExpExecArray | null;
@@ -385,40 +460,68 @@ function lastBsmSplit(
   }
   if (lastIdx < 0) return null;
   const left = s.slice(0, lastIdx).trim().replace(/,\s*$/, "").trim();
-  const right = s.slice(lastIdx + 3).trim(); // 3 = length of " a "
+  const right = s.slice(lastIdx).replace(/^\s+a\s+/, "").trim();
   if (!left || !right) return null;
   return { left, right };
 }
 
-function splitNameAddress(s: string): { name: string; address?: string } {
-  // Address detection: the first comma whose suffix looks like a street.
-  // A street suffix typically contains a digit (house number), a postal
-  // code, or starts with "PSČ".
-  for (let i = 0; i < s.length; i++) {
-    if (s[i] !== ",") continue;
-    const after = s.slice(i + 1).trim();
-    if (!after) continue;
-    if (/\d/.test(after) || /^PSČ/i.test(after) || /^\d{3}\s\d{2}/.test(after)) {
-      return {
-        name: s.slice(0, i).trim(),
-        address: after.replace(/,\s*SR\s*$/i, "").trim(),
-      };
-    }
+const TITLE_TOKEN_RE =
+  /^(?:Ing|Mgr|Bc|MUDr|JUDr|RNDr|PhDr|PaedDr|MVDr|MDDr|PharmDr|ThDr|ThLic|doc|prof|PhD|CSc|DrSc|ArtD|MBA|MPA|MSc|BSc|Dr|Dipl|akad|arch|LL\.?M)\.?$/i;
+const LEGAL_FORM_RE =
+  /^(?:s\.\s*r\.\s*o\.?|spol\.\s*s\s*r\.\s*o\.?|a\.\s*s\.?|v\.\s*o\.\s*s\.?|k\.\s*s\.?|n\.\s*o\.?|o\.\s*z\.?|š\.\s*p\.?|družstvo)$/i;
+const BIRTH_NAME_RE = /(?:^|\s)r\.\s*(\p{Lu}[\p{L}'’-]*(?:\s*-\s*\p{Lu}[\p{L}'’-]*)?)/u;
+
+function isTitleSegment(seg: string): boolean {
+  const tokens = seg.split(/\s+/).filter(Boolean);
+  return tokens.length > 0 && tokens.every((t) => TITLE_TOKEN_RE.test(t));
+}
+
+/**
+ * "Štolc Ondrej r. Štolc, Ing., PhD., Dostojevského 2514/1, Poprad" →
+ *   name "Štolc Ondrej, Ing., PhD.", birthName "Štolc",
+ *   address "Dostojevského 2514/1, Poprad".
+ * Comma segments after the name are consumed while they are titles, a
+ * rodné priezvisko ("r. X") or a legal form (s.r.o.); the rest is address.
+ */
+function splitNameAddress(s: string): { name: string; birthName?: string; address?: string } {
+  const segs = s.split(",").map((t) => t.trim()).filter(Boolean);
+  if (segs.length === 0) return { name: s.trim() };
+  let birthName: string | undefined;
+  let name = segs[0];
+  const bm = name.match(BIRTH_NAME_RE);
+  if (bm) {
+    birthName = bm[1];
+    name = name.replace(bm[0], " ").replace(/\s+/g, " ").trim();
   }
-  return { name: s.trim() };
+  const suffixes: string[] = [];
+  let i = 1;
+  for (; i < segs.length; i++) {
+    const seg = segs[i];
+    if (isTitleSegment(seg) || LEGAL_FORM_RE.test(seg)) {
+      suffixes.push(seg);
+      continue;
+    }
+    const sm = seg.match(/^r\.\s*(\p{Lu}[\p{L}'’ -]*)$/u);
+    if (sm) {
+      birthName = sm[1].trim();
+      continue;
+    }
+    break;
+  }
+  const address = segs.slice(i).join(", ").replace(/,?\s*SR\s*$/i, "").trim();
+  return {
+    name: suffixes.length ? `${name}, ${suffixes.join(", ")}` : name,
+    birthName,
+    address: address || undefined,
+  };
+}
+
+function shorten(s: string, max = 160): string {
+  const t = s.replace(/\s+/g, " ").trim();
+  return t.length > max ? `${t.slice(0, max - 1)}…` : t;
 }
 
 // ── Helpers ──────────────────────────────────────────────
-
-function lineAfter(lines: string[], pattern: RegExp): string | undefined {
-  for (let i = 0; i < lines.length; i++) {
-    if (pattern.test(lines[i])) {
-      const next = lines[i + 1]?.trim();
-      if (next && next !== "") return next;
-    }
-  }
-  return undefined;
-}
 
 function sliceBetween(text: string, start: RegExp, end: RegExp): string | null {
   const s = text.match(start);
@@ -427,14 +530,4 @@ function sliceBetween(text: string, start: RegExp, end: RegExp): string | null {
   const e = after.match(end);
   if (!e) return after; // till end of block
   return after.slice(0, e.index!);
-}
-
-function normaliseFloor(raw: string | undefined): number | undefined {
-  if (!raw) return undefined;
-  const t = raw.toLocaleLowerCase(SK_LOCALE).trim();
-  if (t === "prízemie" || t === "p" || t === "0") return 0;
-  const m = t.match(/^(\d+)\.?p?$/);
-  if (m) return Number(m[1]);
-  const n = Number(t);
-  return Number.isFinite(n) ? n : undefined;
 }

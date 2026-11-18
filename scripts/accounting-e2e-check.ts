@@ -16,7 +16,7 @@ import "dotenv/config";
 process.env.NEXTAUTH_SECRET ??= "e2e-demo-secret";
 
 import { Pool } from "pg";
-import { randomUUID } from "crypto";
+import { createHash, randomUUID } from "crypto";
 import { sql, eq, and } from "drizzle-orm";
 import { db } from "@/db";
 import { entities, users, memberships, notificationPreferences } from "@/db/schema";
@@ -76,7 +76,7 @@ import {
   approveZavierka,
   getZavierkaStatus,
 } from "@modules/accounting/src/lib/zavierka";
-import { votings, votingItems } from "@modules/voting/src/db/schema";
+import { ballotItemVotes, ballots, votings, votingItems } from "@modules/voting/src/db/schema";
 import {
   getVyuctovaniePreview,
   publishVyuctovanie,
@@ -638,6 +638,68 @@ async function main() {
         quorumType: "simple_present",
       })
       .returning({ id: votingItems.id });
+
+    // Closed but unpublished / no ballots → the item has not passed;
+    // approval must refuse (ZavierkaError RESULT_NOT_PUBLISHED / ITEM_NOT_PASSED).
+    let unpublishedBlocked = false;
+    try {
+      await approveZavierka({ entityId: dom.id, year: prevYear, votingItemId: item.id, actorId });
+    } catch {
+      unpublishedBlocked = true;
+    }
+    check("approval blocked while the result is unpublished", unpublishedBlocked);
+
+    // One "za" ballot per owned unit (written vote, simple_present → basis =
+    // cast weight, so the item passes regardless of the unowned 104), then
+    // publish the result (§14a ods. 9 zák. 182/1993).
+    const holders = await db
+      .select({
+        userId: memberships.userId,
+        unitId: memberships.entityId,
+        num: memberships.ownerUnitShareNumerator,
+        den: memberships.ownerUnitShareDenominator,
+        weight: memberships.weight,
+      })
+      .from(memberships)
+      .where(
+        and(
+          sql`${memberships.entityId} IN (${sql.join(
+            unitList.map((u) => sql`${u.unitEntityId}`),
+            sql`, `
+          )})`,
+          eq(memberships.role, "owner"),
+          eq(memberships.status, "active")
+        )
+      );
+    check("závierka fixture has unit owners to vote", holders.length > 0);
+    for (const h of holders) {
+      const fakeHash = createHash("sha256").update(`${voting.id}|${h.unitId}|${h.userId}`).digest("hex");
+      const [ballot] = await db
+        .insert(ballots)
+        .values({
+          votingId: voting.id,
+          entityId: h.unitId,
+          ownerId: h.userId,
+          voteType: "paper",
+          recordedById: actorId,
+          ballotHash: fakeHash,
+          ownerUnitShareNumerator: h.num,
+          ownerUnitShareDenominator: h.den,
+          membershipWeight: h.weight,
+        })
+        .returning({ id: ballots.id });
+      await db.insert(ballotItemVotes).values({
+        ballotId: ballot.id,
+        itemId: item.id,
+        choice: "za",
+        itemAuditHash: fakeHash,
+      });
+    }
+    await db
+      .update(votings)
+      .set({ resultPublishedAt: new Date(Date.UTC(prevYear, 11, 16)) })
+      .where(eq(votings.id, voting.id));
+
     await approveZavierka({
       entityId: dom.id,
       year: prevYear,

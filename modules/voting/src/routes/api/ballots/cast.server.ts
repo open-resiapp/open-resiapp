@@ -18,7 +18,7 @@ import "server-only";
 // withdraw a ballot the board recorded from a signed paper ballot, and the
 // owner path never deletes ballot photos.
 import { createHash } from "node:crypto";
-import { and, eq, sql } from "drizzle-orm";
+import { and, eq, inArray, sql } from "drizzle-orm";
 
 import { db } from "@/db";
 import { entities, memberships } from "@/db/schema";
@@ -36,6 +36,7 @@ import {
 } from "@modules/voting/src/engine";
 import { isElectronicVotingBlocked } from "@modules/voting/src/rules";
 import { ownershipSnapshot } from "@modules/voting/src/ballot-snapshot.server";
+import { VOTING_ROLES } from "@modules/voting/src/voting-roles";
 import { getCommunityRoot } from "@/lib/legacy-compat";
 import {
   revokeTokensIssuedBefore,
@@ -163,7 +164,7 @@ export async function validateCast(input: {
         eq(memberships.userId, voterId),
         eq(memberships.entityId, flatId),
         eq(memberships.status, "active"),
-        eq(memberships.role, "owner")
+        inArray(memberships.role, [...VOTING_ROLES])
       )
     )
     .limit(1);

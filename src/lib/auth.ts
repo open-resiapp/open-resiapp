@@ -133,6 +133,20 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         };
       },
     }),
+    // Claim a prepared owner account by an e-mailed link (no password).
+    // consumeClaimLinkToken verifies the signed token (invitation + shell +
+    // e-mail + ≤30 min), consumes it once and activates the account.
+    Credentials({
+      id: "claim-link",
+      name: "Claim link",
+      credentials: { token: { label: "Token", type: "text" } },
+      async authorize(credentials) {
+        const raw = credentials?.token;
+        if (typeof raw !== "string" || raw.length > 4096) return null;
+        const { consumeClaimLinkToken } = await import("@/lib/claim-link.server");
+        return consumeClaimLinkToken(raw);
+      },
+    }),
   ],
   callbacks: {
     async jwt({ token, user, trigger }) {

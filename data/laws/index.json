@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-11-18T08:20:40.688Z",
+  "generatedAt": "2026-11-18T12:50:32.704Z",
   "laws": [
     {
       "id": "sk-182-1993",
@@ -134,6 +134,19 @@
       "provisionCount": 44
     },
     {
+      "id": "sk-513-1991",
+      "jurisdiction": "sk",
+      "number": "513/1991 Zb.",
+      "title": "Obchodný zákonník",
+      "effectiveFrom": "2026-08-17",
+      "effectiveTo": null,
+      "sourceUrl": "https://www.slov-lex.sk/ezbierky/pravne-predpisy/SK/ZZ/1991/513/20260817",
+      "fetchedAt": "2026-11-18T12:50:28.793Z",
+      "contentHash": "36ef1170fa1d5b545780636e476a2caf5922766755f27c38097e46bc48b261d4",
+      "scope": "§ 221 – § 260 (družstvo)",
+      "provisionCount": 39
+    },
+    {
       "id": "cz-89-2012",
       "jurisdiction": "cz",
       "number": "89/2012 Sb.",
@@ -193,6 +206,19 @@
       "fetchedAt": "2026-11-18T08:19:19.692Z",
       "contentHash": "b5a264ebebab170f86307b90b7f9e3d11bc18f998f7c94b3cd399d65751422f6",
       "provisionCount": 15
+    },
+    {
+      "id": "cz-90-2012",
+      "jurisdiction": "cz",
+      "number": "90/2012 Sb.",
+      "title": "Zákon o obchodních společnostech a družstvech (zákon o obchodních korporacích)",
+      "effectiveFrom": "2024-07-19",
+      "effectiveTo": null,
+      "sourceUrl": "https://e-sbirka.gov.cz/sb/2012/90/2024-07-19",
+      "fetchedAt": "2026-11-18T12:50:32.704Z",
+      "contentHash": "3fcc1205512a78a47e31aafdf35bf3803f5fb81e75f446ea7fe3f702f6a642e4",
+      "scope": "§ 552 – § 757 (družstvo, bytové družstvo)",
+      "provisionCount": 209
     }
   ]
 }

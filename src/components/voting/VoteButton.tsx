@@ -57,7 +57,7 @@ export default function VoteButton({
   const label = t(choiceKeys[choice]);
 
   const baseClasses =
-    "group flex w-full flex-col items-center justify-center gap-2 rounded-2xl px-3 py-4 text-sm font-semibold transition-colors sm:text-base";
+    "group flex w-full flex-col items-center justify-center gap-2 rounded-2xl px-3 py-4 text-base font-semibold transition-colors";
 
   let stateClasses: string;
   if (disabled) {

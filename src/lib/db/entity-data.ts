@@ -21,6 +21,8 @@ export function rootDataPatch(input: {
   governanceModel?: unknown;
   legalNotice?: unknown;
   communityCrossEntranceVisible?: unknown;
+  /** BYT-20261118-020: stanovy notice lead time (null = statutory floor only). */
+  noticeLeadDays?: unknown;
 }): Record<string, unknown> {
   const out: Record<string, unknown> = {};
   if (input.address !== undefined) out.address = input.address;
@@ -33,6 +35,7 @@ export function rootDataPatch(input: {
   if (input.communityCrossEntranceVisible !== undefined) {
     out.community_cross_entrance_visible = input.communityCrossEntranceVisible;
   }
+  if (input.noticeLeadDays !== undefined) out.notice_lead_days = input.noticeLeadDays;
   return out;
 }
 

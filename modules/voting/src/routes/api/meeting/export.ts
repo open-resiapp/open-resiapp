@@ -58,6 +58,7 @@ export async function GET(request: NextRequest, { params }: Ctx) {
   }
 
   const t = await getTranslations({ locale, namespace: "MeetingAttendance.export" });
+  const tRoot = await getTranslations({ locale });
   const tz = timeZoneForCountry(data.voting.country);
   const time = (iso: string | null) =>
     iso
@@ -106,7 +107,7 @@ export async function GET(request: NextRequest, { params }: Ctx) {
   const ws = XLSX.utils.aoa_to_sheet(aoa);
   ws["!cols"] = columns.map((c) => ({ wch: c === "owner" || c === "signature" ? 32 : 16 }));
   const wb = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb, ws, t(document === "blank" ? "sheetBlank" : "sheetFilled").slice(0, 31));
+  XLSX.utils.book_append_sheet(wb, ws, tRoot(document === "blank" ? data.headingKeys.blank : data.headingKeys.filled).slice(0, 31));
   const buf = XLSX.write(wb, { type: "array", bookType: "xlsx" }) as ArrayBuffer;
   const filename = `${document === "blank" ? "harok-na-podpis" : "prezencna-listina"}.xlsx`;
   return new NextResponse(new Uint8Array(buf), {

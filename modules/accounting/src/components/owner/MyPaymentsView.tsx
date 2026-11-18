@@ -71,8 +71,8 @@ export async function MyPaymentsView({
               amount: money(s.overdue.totalOpenCents),
               months: s.overdue.months,
             })}
-            {s.preplatokCents > 0 && s.overdue.totalOpenCents > s.balanceCents
-              ? ` ${t("overdueCreditNote", { amount: money(s.preplatokCents) })}`
+            {s.overdue.creditAppliedCents > 0
+              ? ` ${t("overdueCreditNote", { amount: money(s.overdue.creditAppliedCents) })}`
               : null}
           </p>
         ) : null}

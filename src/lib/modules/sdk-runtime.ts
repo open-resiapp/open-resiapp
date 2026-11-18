@@ -216,8 +216,11 @@ function makeSDK(mod: LoadedModule, community: SdkCommunity): ModuleSDK {
                        CASE m.role
                          WHEN 'admin' THEN 4
                          WHEN 'owner' THEN 3
+                         WHEN 'member' THEN 3
                          WHEN 'vote_counter' THEN 2
+                         WHEN 'spravca' THEN 2
                          WHEN 'caretaker' THEN 1
+                         WHEN 'accountant' THEN 1
                          ELSE 0
                        END DESC
                      LIMIT 1),

@@ -124,7 +124,7 @@ export default function DocumentAttachmentPicker({
 
   return (
     <div className="space-y-2">
-      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+      <label className="block text-base font-medium text-gray-700 dark:text-gray-300">
         {t("attachments.label")}
       </label>
 
@@ -133,7 +133,7 @@ export default function DocumentAttachmentPicker({
           {value.map((d) => (
             <li
               key={d.id}
-              className="flex items-center justify-between gap-2 text-sm bg-gray-50 rounded-lg px-3 py-2 dark:bg-gray-900"
+              className="flex items-center justify-between gap-2 text-base bg-gray-50 rounded-lg px-3 py-2 dark:bg-gray-900"
             >
               <span className="truncate dark:text-gray-100">📄 {d.name}</span>
               <button
@@ -156,7 +156,7 @@ export default function DocumentAttachmentPicker({
               const d = available.find((a) => a.id === e.target.value);
               if (d) add(d);
             }}
-            className="text-sm px-3 py-2 border border-gray-300 rounded-lg dark:bg-gray-900 dark:border-gray-700 dark:text-gray-100"
+            className="text-base px-3 py-2 border border-gray-300 rounded-lg dark:bg-gray-900 dark:border-gray-700 dark:text-gray-100"
           >
             <option value="">{t("attachments.fromLibrary")}</option>
             {available.map((d) => (
@@ -166,7 +166,7 @@ export default function DocumentAttachmentPicker({
             ))}
           </select>
         )}
-        <label className="text-sm px-3 py-2 border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50 dark:border-gray-700 dark:hover:bg-gray-800 dark:text-gray-200">
+        <label className="text-base px-3 py-2 border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-50 dark:border-gray-700 dark:hover:bg-gray-800 dark:text-gray-200">
           {uploading ? t("attachments.uploading") : t("attachments.uploadNew")}
           <input
             type="file"
@@ -178,7 +178,7 @@ export default function DocumentAttachmentPicker({
         </label>
       </div>
 
-      {error && <p className="text-sm text-red-600 dark:text-red-400">{error}</p>}
+      {error && <p className="text-base text-red-600 dark:text-red-400">{error}</p>}
     </div>
   );
 }

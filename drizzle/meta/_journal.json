@@ -624,6 +624,13 @@
       "when": 1795005483445,
       "tag": "0088_bank_app_credentials",
       "breakpoints": true
+    },
+    {
+      "idx": 89,
+      "version": "7",
+      "when": 1795008413264,
+      "tag": "0089_wave_fixes",
+      "breakpoints": true
     }
   ]
 }

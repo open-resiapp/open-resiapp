@@ -40,6 +40,11 @@ export interface NavItem {
    * operator bypass in modules/accounting/src/lib/authz.ts).
    */
   boardRole?: readonly BoardMemberRole[];
+  /**
+   * Global-role permission that unlocks the item without a board seat
+   * (BYT-20261118-020: accountant / spravca reach Financie by role).
+   */
+  boardRoleBypass?: Permission;
   /** Hidden unless the named module is enabled (core_modules.status). */
   requiresModule?: string;
   /** Hidden unless the user holds an active membership at a unit. */
@@ -106,6 +111,7 @@ export const NAV_ITEMS: readonly NavItem[] = [
     audience: ["board"],
     requiresModule: "accounting",
     boardRole: ACCOUNTING_READ_BOARD_ROLES,
+    boardRoleBypass: "readAccounting",
   },
   {
     id: "owners",
@@ -147,12 +153,16 @@ export const NAV_ITEMS: readonly NavItem[] = [
 
 /**
  * Board nav for the operator role (admin), staff roles that manage the
- * community (caretaker — `viewSettings`), and anyone who sits on a board
+ * community (caretaker — `viewSettings`; spravca, accountant), and anyone who sits on a board
  * (board_members). Everyone else — owners, tenants, vote counters — gets
  * the 4-item owner nav.
  */
 export function getNavAudience(user: Pick<NavUser, "role" | "boardRoles">): NavAudience {
   if (hasPermission(user.role, "viewSettings")) return "board";
+  // BYT-20261118-020: management company (createVoting) and accountant
+  // (readAccounting) work in the board shell without a board seat.
+  if (hasPermission(user.role, "createVoting")) return "board";
+  if (hasPermission(user.role, "readAccounting")) return "board";
   if (user.boardRoles.length > 0) return "board";
   return "owner";
 }
@@ -166,7 +176,8 @@ export function getVisibleNavItems(user: NavUser, ctx: NavContext): NavItem[] {
     if (!item.audience.includes(audience)) return false;
     if (item.permission && !hasPermission(user.role, item.permission)) return false;
     if (item.boardRole && user.role !== "admin") {
-      if (!item.boardRole.some((r) => user.boardRoles.includes(r))) return false;
+      const byRole = item.boardRoleBypass ? hasPermission(user.role, item.boardRoleBypass) : false;
+      if (!byRole && !item.boardRole.some((r) => user.boardRoles.includes(r))) return false;
     }
     if (item.requiresModule && !enabled.has(item.requiresModule)) return false;
     if (item.requiresOwnUnit && user.unitIds.length === 0) return false;

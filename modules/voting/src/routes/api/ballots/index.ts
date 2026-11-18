@@ -33,6 +33,7 @@ import {
   type OverviewInput,
 } from "@modules/voting/src/workflow/overview";
 import { getCommunityRoot } from "@/lib/legacy-compat";
+import { VOTING_ROLES } from "@modules/voting/src/voting-roles";
 import type { Country, QuorumType } from "@/types";
 import { castConfirmed, withdrawConfirmed } from "./confirm.server";
 
@@ -188,8 +189,9 @@ export async function GET(request: NextRequest) {
       and(
         eq(memberships.userId, session.user.id),
         eq(memberships.status, "active"),
-        // Only an owner membership votes (validateCast) — a tenant gets no cast form.
-        eq(memberships.role, "owner"),
+        // Only a voting membership (owner / družstvo member, voting-roles.ts)
+        // votes (validateCast) — a tenant gets no cast form.
+        inArray(memberships.role, [...VOTING_ROLES]),
         eq(entities.kind, "unit"),
         isNull(entities.archivedAt)
       )

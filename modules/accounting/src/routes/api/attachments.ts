@@ -5,9 +5,10 @@ import { auth } from "@/lib/auth";
 import { getCommunityRoot, type CommunityRootRow } from "@/lib/legacy-compat";
 import { getStorage } from "@/lib/storage";
 import { db } from "@/db";
-import { and, eq } from "drizzle-orm";
+import { and, eq, inArray } from "drizzle-orm";
 import { entities, memberships } from "@/db/schema";
-import { canWriteAccounting } from "@modules/accounting/src/lib/authz";
+import { canReadAccounting, canWriteAccounting } from "@modules/accounting/src/lib/authz";
+import { UNIT_HOLDER_ROLES } from "@/lib/role-options";
 import { domUnitsWhere } from "@modules/accounting/src/lib/dom-units";
 import {
   listAttachments,
@@ -42,7 +43,8 @@ async function isDomMember(
   userRole: string,
   entityId: string
 ): Promise<boolean> {
-  if (userRole === "admin") return true;
+  // BYT-20261118-020: admin / accountant / spravca / treasurer / chairman.
+  if (await canReadAccounting(userId, userRole, entityId)) return true;
   const [row] = await db
     .select({ id: memberships.id })
     .from(memberships)
@@ -50,7 +52,7 @@ async function isDomMember(
     .where(
       and(
         eq(memberships.userId, userId),
-        eq(memberships.role, "owner"),
+        inArray(memberships.role, UNIT_HOLDER_ROLES),
         eq(memberships.status, "active"),
         domUnitsWhere(entityId)
       )

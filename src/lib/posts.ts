@@ -1,10 +1,20 @@
 import "server-only";
 
-import { aliasedTable, and, desc, eq, sql, type SQL } from "drizzle-orm";
+import { aliasedTable, and, desc, eq, inArray, isNotNull, ne, sql, type SQL } from "drizzle-orm";
 
 import { db } from "@/db";
-import { entities, memberships, posts, users } from "@/db/schema";
-import { sendPushToAll } from "@/lib/push";
+import {
+  communityNotificationsSent,
+  entities,
+  memberships,
+  notificationPreferences,
+  posts,
+  pushSubscriptions,
+  users,
+} from "@/db/schema";
+import { isConfigured as isPushConfigured, sendPushToAll } from "@/lib/push";
+import { isSmtpConfigured, sendBoardPostNotice } from "@/lib/email";
+import { routing } from "@/i18n/routing";
 import { dispatchHook } from "@/lib/modules/dispatch";
 import { linkDocumentToTarget } from "@/lib/documents.server";
 import { getCommunityRoot } from "@/lib/legacy-compat";
@@ -105,6 +115,127 @@ export async function getPostScopeEntity(
   return { id: row.id, name: row.name };
 }
 
+/**
+ * Latest posts the viewer may see for the printed notice board (/nastenka
+ * print view): pinned first, newest first, capped at `limit`.
+ */
+export async function listPostsForPrint(viewer: Viewer, limit = 15) {
+  const { query } = postSelect();
+  const filter = visibleToViewer(viewer);
+  const q = filter ? query.where(filter) : query;
+  return q.orderBy(desc(posts.isPinned), desc(posts.createdAt)).limit(limit);
+}
+
+/**
+ * Of `userIds`, those who receive push (≥ 1 subscription and push is
+ * configured). Everyone else needs the e-mail fallback. Shared by the board
+ * post and the voting announcement fallbacks.
+ */
+export async function pushSubscriberIds(userIds: string[]): Promise<Set<string>> {
+  if (!isPushConfigured() || userIds.length === 0) return new Set();
+  const subs = await db
+    .selectDistinct({ userId: pushSubscriptions.userId })
+    .from(pushSubscriptions)
+    .where(inArray(pushSubscriptions.userId, userIds));
+  return new Set(subs.map((r) => r.userId));
+}
+
+/**
+ * Owners who get no push (no subscription, or push not configured) receive the
+ * post by e-mail instead — otherwise owners without a smartphone never learn
+ * of the notice. Respects the per-user `newPost` preference (default on).
+ * Dedupe: one row per (board post, recipient) in community_notifications_sent
+ * (kind post_notice), claimed with ON CONFLICT DO NOTHING so replicas / retries
+ * never double-send; the claim is released when the send fails.
+ * Returns counts so callers can log / surface them.
+ */
+export async function sendPostEmailFallback(post: {
+  id: string;
+  title: string;
+  content: string;
+  entityId: string | null;
+  authorId: string | null;
+}): Promise<{ sent: number; failed: number; skippedNoSmtp: boolean }> {
+  if (!post.entityId) return { sent: 0, failed: 0, skippedNoSmtp: false };
+  if (!isSmtpConfigured()) return { sent: 0, failed: 0, skippedNoSmtp: true };
+
+  const pe = aliasedTable(entities, "pe");
+  const me = aliasedTable(entities, "me");
+  const candidates = await db
+    .selectDistinct({ id: users.id, name: users.name, email: users.email })
+    .from(memberships)
+    .innerJoin(users, eq(users.id, memberships.userId))
+    .innerJoin(me, eq(me.id, memberships.entityId))
+    .innerJoin(pe, eq(pe.id, post.entityId))
+    .leftJoin(
+      notificationPreferences,
+      eq(notificationPreferences.userId, users.id)
+    )
+    .where(
+      and(
+        eq(memberships.status, "active"),
+        eq(users.isActive, true),
+        eq(users.status, "active"),
+        // Paper-only owners get printed letters from the board, not e-mail.
+        eq(users.paperOnly, false),
+        isNotNull(users.email),
+        post.authorId ? ne(users.id, post.authorId) : undefined,
+        sql`(${notificationPreferences.newPost} IS NULL OR ${notificationPreferences.newPost} = true)`,
+        sql`(${pe.path} LIKE ${me.path} || '%' OR ${me.path} LIKE ${pe.path} || '%')`
+      )
+    );
+  if (candidates.length === 0) return { sent: 0, failed: 0, skippedNoSmtp: false };
+
+  // Users with at least one push subscription get push, not e-mail.
+  const pushUsers = await pushSubscriberIds(candidates.map((c) => c.id));
+
+  const [anchor] = await db
+    .select({ rootId: entities.rootId })
+    .from(entities)
+    .where(eq(entities.id, post.entityId))
+    .limit(1);
+  const [root] = anchor
+    ? await db
+        .select({ name: entities.name })
+        .from(entities)
+        .where(eq(entities.id, anchor.rootId))
+        .limit(1)
+    : [];
+  const base = (process.env.NEXTAUTH_URL || "http://localhost:3000").replace(/\/$/, "");
+
+  let sent = 0;
+  let failed = 0;
+  for (const c of candidates) {
+    if (!c.email || pushUsers.has(c.id)) continue;
+    const [claim] = await db
+      .insert(communityNotificationsSent)
+      .values({ boardPostId: post.id, recipientId: c.id, kind: "post_notice" })
+      .onConflictDoNothing()
+      .returning({ id: communityNotificationsSent.id });
+    if (!claim) continue; // already sent (other replica / earlier run)
+
+    // TODO(decision): users have no stored locale — instance default language.
+    const status = await sendBoardPostNotice({
+      recipientEmail: c.email,
+      recipientName: c.name,
+      postTitle: post.title,
+      postContent: post.content,
+      postUrl: `${base}/${routing.defaultLocale}/board`,
+      buildingName: root?.name ?? null,
+      locale: routing.defaultLocale,
+    });
+    if (status === "sent") {
+      sent += 1;
+    } else {
+      failed += 1;
+      await db
+        .delete(communityNotificationsSent)
+        .where(eq(communityNotificationsSent.id, claim.id));
+    }
+  }
+  return { sent, failed, skippedNoSmtp: false };
+}
+
 export interface CreatePostInput {
   title: string;
   content: string;
@@ -158,6 +289,11 @@ export async function createPost(principal: Principal, input: CreatePostInput) {
     { title: "Nový príspevok", body: input.title, url: "/board" },
     "newPost"
   ).catch(() => {});
+
+  // Owners without push (no smartphone / not subscribed) get an e-mail.
+  sendPostEmailFallback(post).catch((err) =>
+    console.error("[posts] e-mail fallback failed:", err)
+  );
 
   dispatchHook("onPostCreate", {
     id: post.id,

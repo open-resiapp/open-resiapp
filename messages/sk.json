@@ -473,7 +473,13 @@
       "submit": "Odoslať",
       "sent": "E-mail bol odoslaný.",
       "boardOnly": "Dokument je „Len výbor“, vlastník ho nevidí. Najprv mu ho sprístupnite.",
-      "makeVisible": "Najprv sprístupniť vlastníkovi"
+      "makeVisible": "Najprv sprístupniť vlastníkovi",
+      "allButton": "Poslať všetkým s e-mailom ({count})",
+      "allConfirmText": "Dokument sa odošle e-mailom {count} vlastníkom, ktorí majú e-mail a môžu ho vidieť. Pokračovať?",
+      "allConfirm": "Áno, poslať ({count})",
+      "allDone": "Odoslané: {sent} z {total}.",
+      "allNotSent": "Neodoslané: {count}. Pri opakovaní sa už odoslaným nepošle nič (ochrana proti duplicite 10 minút).",
+      "allNoEmail": "Bez e-mailu (vynechaní): {count}. Dokument im doručte v tlačenej podobe."
     },
     "folder": {
       "title": "Dokumenty vlastníka",
@@ -494,7 +500,9 @@
       "document_send_no_recipient": "Tomuto človeku sa dokument poslať nedá.",
       "document_send_throttled": "Tento dokument ste tomuto vlastníkovi práve poslali. Skúste to znova o 10 minút.",
       "document_send_failed": "E-mail sa nepodarilo odoslať. Skúste to znova neskôr.",
-      "generic": "Niečo sa nepodarilo. Skúste to znova."
+      "generic": "Niečo sa nepodarilo. Skúste to znova.",
+      "document_send_smtp_missing": "E-maily sa neodosielajú, lebo nie je nastavený SMTP.",
+      "document_send_count_changed": "Počet príjemcov sa zmenil. Skontrolujte nový počet a potvrďte znova."
     }
   },
   "UnitNotes": {
@@ -733,7 +741,24 @@
       "posts": {
         "title": "Prvé oznámenie",
         "body": "Uverejnite prvé oznámenie pre vašu komunitu na nástenke."
+      },
+      "template": {
+        "title": "Typ komunity",
+        "body": "Vyberte šablónu (napr. bytový dom / SVB, bytové družstvo, garáže). Určuje štruktúru domu pri importe a predvolený spôsob hlasovania."
       }
+    },
+    "template": {
+      "pickLabel": "Šablóna",
+      "nameLabel": "Názov komunity",
+      "addressLabel": "Adresa",
+      "create": "Založiť komunitu",
+      "save": "Uložiť šablónu",
+      "saved": "Uložené.",
+      "saveFailed": "Uloženie sa nepodarilo. Skúste to znova.",
+      "lockedError": "Šablónu už nie je možné zmeniť — komunita má priestory.",
+      "lockedInfo": "Šablóna: {template}. Po importe priestorov sa už nemení.",
+      "nameAddressRequired": "Vyplňte názov a adresu komunity.",
+      "legalReview": "Predvolené pravidlá tejto šablóny vychádzajú zo zákona; pred ostrým používaním ich skontrolujte."
     }
   },
   "ShareSumInvariant": {
@@ -749,7 +774,7 @@
     "templateTitle": "Šablóna komunity",
     "templateSubtitle": "Vyberte šablónu, ktorá najlepšie zodpovedá vašej komunite. Šablóna určuje hierarchiu uzlov a predvolený spôsob hlasovania.",
     "templateNonHoaTitle": "Tip:",
-    "templateNonHoaBody": "Pre šablónu {levels} seeder zapíše správne typy uzlov. CSV stále vyžaduje stĺpce share_numerator / share_denominator — pre šablóny bez podielov použite 1/1.",
+    "templateNonHoaBody": "Pre túto šablónu sa vytvorí strom {levels}. Ak sa v nej nehlasuje podľa podielov, zadajte podiel priestoru 1/1 — súčet podielov sa potom nekontroluje.",
     "step1Title": "1. Štruktúra bytovky",
     "structureCommunityUnit": "Komunita → byt",
     "structureCommunityUnitDesc": "Malá budova bez vchodov a blokov.",
@@ -760,7 +785,7 @@
     "communityTitle": "Údaje o komunite",
     "communitySubtitle": "Vyplňte raz — uložia sa pri každom byte rovnako. Nemusíte tieto polia opakovať v tabuľke.",
     "appendModeTitle": "Pridávate byty do existujúcej komunity.",
-    "appendModeBody": "Údaje o komunite sa načítali z nastavení a sú uzamknuté. Import pridá nové byty pod existujúci bytový dom (existujúce byty zostanú nedotknuté).",
+    "appendModeBody": "Údaje o komunite sú načítané z nastavení a uzamknuté. Import pridá nové priestory a ich vlastníkov; priestory, ktoré už vlastníkov majú, sa preskočia.",
     "step2Title": "2. Zdroj údajov",
     "downloadXlsx": "Stiahnuť XLSX šablónu",
     "downloadCsv": "Stiahnuť CSV šablónu",
@@ -784,20 +809,204 @@
     "resizeHelp": "Potiahnite pre zmenu šírky stĺpca. Dvojklik vráti pôvodnú šírku.",
     "validate": "Skontrolovať",
     "validating": "Kontrola...",
-    "gridEmpty": "Tabuľka je prázdna. Stiahnite šablónu, nahrajte LV (PDF) alebo pridajte riadok ručne.",
+    "gridEmpty": "Tabuľka je prázdna. Stiahnite šablónu, nahrajte LV (PDF), vložte text LV alebo pridajte riadok ručne.",
     "step4Title": "4. Súhrn a import",
     "summaryCommunity": "Komunita",
     "summaryBlocks": "Bloky",
     "summaryEntrances": "Vchody",
-    "summaryUnits": "Byty",
-    "summaryOwners": "Vlastníci",
-    "summaryTotalShare": "Súčet podielov",
+    "summaryUnits": "Priestory",
+    "summaryOwners": "Noví vlastníci (účty)",
+    "summaryTotalShare": "Súčet podielov z importu",
     "commit": "Spustiť import",
     "committing": "Importujem...",
     "fixErrorsFirst": "Najprv opravte chyby v tabuľke.",
     "errorsCount": "chýb",
-    "pasteUnrecognised": "Nepodarilo sa rozpoznať žiadneho vlastníka.",
-    "pdfScannedHint": "Tento PDF sa zdá byť skenovaný — z textu sa nedá nič vyčítať. Vyplňte riadky ručne alebo nahrajte digitálnu verziu LV."
+    "pasteUnrecognised": "Nepodarilo sa rozpoznať žiadneho vlastníka. Skontrolujte, či ide o celý text listu vlastníctva (časť B).",
+    "pdfScannedHint": "Tento PDF sa zdá byť skenovaný — z textu sa nedá nič vyčítať. Vyplňte riadky ručne alebo nahrajte digitálnu verziu LV.",
+    "templateLocked": "Šablóna komunity je už nastavená a pri doplňovaní údajov sa nemení.",
+    "editInSettings": "Upraviť v Nastaveniach",
+    "addressMissingHint": "Adresa komunity v nastaveniach chýba. Import môžete spustiť aj tak; adresu doplňte v Nastaveniach.",
+    "pasteLabel": "Vložiť text listu vlastníctva",
+    "pasteHelp": "Skopírujte text LV z katastrálneho portálu alebo z PDF (Ctrl+A, Ctrl+C) a vložte ho sem.",
+    "pasteParse": "Rozpoznať vlastníkov z textu",
+    "replaceRowsTitle": "Nahradiť riadky v tabuľke?",
+    "replaceRowsConfirm": "Tabuľka už obsahuje {count, plural, one {# riadok} few {# riadky} other {# riadkov}}. Nový list vlastníctva ich nahradí (nepridá sa k nim, aby sa vlastníci nezdvojili).",
+    "replaceRows": "Nahradiť",
+    "modeTitle": "Čo má import urobiť",
+    "modeAppend": "Pridať nové priestory a vlastníkov",
+    "modeUpdateContacts": "Len doplniť e-maily a telefóny",
+    "modeAppendHelp": "Priestory, ktoré už v komunite majú vlastníkov, sa preskočia — nič sa nezdvojí.",
+    "modeUpdateContactsHelp": "Nič sa nevytvorí. Každý riadok sa spáruje s existujúcim vlastníkom podľa priestoru a mena; doplní sa e-mail (ak ho vlastník ešte nemá) a telefón.",
+    "summaryOwnersMatched": "Existujúce účty (podľa e-mailu)",
+    "summaryUnitsSkipped": "Preskočené priestory (už majú vlastníkov)",
+    "summaryShareWithExisting": "Súčet podielov vrátane existujúcich priestorov",
+    "skippedUnitsList": "Preskočia sa (už majú vlastníkov): {units}",
+    "errorAt": "Riadok {row}:",
+    "errorAtColumn": "Riadok {row}, {column}:",
+    "commitContacts": "Uložiť kontakty",
+    "errorsCountN": "{count, plural, one {# chyba} few {# chyby} other {# chýb}}",
+    "warningsTitle": "Skontrolujte pred importom",
+    "warningAcknowledge": "Beriem na vedomie, pokračovať",
+    "lvReport": {
+      "summary": "Rozpoznaných vlastníkov: {owners} v {units, plural, one {# priestore} other {# priestoroch}}. Preskočených riadkov LV: {skipped}.",
+      "noUnitSections": "List vlastníctva neobsahuje časti s bytmi a nebytovými priestormi (vchod, číslo bytu) — dom je zapísaný ako celok. Priestory a ich užívateľov (napr. členov družstva) zadajte do tabuľky ručne alebo zo súboru XLSX.",
+      "lvRow": "Por. č. {n}",
+      "reasons": {
+        "no_share": "chýba spoluvlastnícky podiel na konci riadku",
+        "share_invalid": "podiel je nulový alebo väčší ako 1",
+        "unreadable": "vlastníka sa nepodarilo oddeliť od poznámky na LV",
+        "no_unit_sections": "LV neobsahuje priestory",
+        "building_owner": "vlastník celej stavby — nemá priestor, ku ktorému by sa priradil"
+      }
+    },
+    "ownerGroups": {
+      "title": "Jedna osoba vlastní viac priestorov",
+      "body": "Rovnaké meno a adresa (alebo e-mail, IČO) — vytvorí sa jeden účet s viacerými priestormi. Ak ide o rôznych ľudí, zvoľte „Rôzne osoby“.",
+      "units": "— priestory: {units} (riadky {rows})",
+      "samePerson": "Jedna osoba",
+      "differentPeople": "Rôzne osoby"
+    },
+    "contacts": {
+      "planSummary": "Zmení sa vlastníkov: {changes}. Riadkov na kontrolu: {issues}.",
+      "setEmail": "e-mail {email}",
+      "setPhone": "telefón {phone}",
+      "issueLine": "Riadok {row} ({unit}, {name}):",
+      "issues": {
+        "unit_not_found": "priestor v komunite neexistuje.",
+        "owner_not_found": "v priestore nie je vlastník s týmto menom.",
+        "email_taken": "e-mail už patrí inému účtu — nezmení sa.",
+        "email_differs": "vlastník už má iný e-mail (prihlasovací) — neprepíše sa; zmeňte ho na karte vlastníka.",
+        "nothing_to_update": "riadok neobsahuje e-mail ani telefón."
+      }
+    },
+    "done": {
+      "title": "Import je hotový",
+      "contactsUpdated": "Aktualizovaní vlastníci: {count}",
+      "unitsCreated": "Vytvorené priestory: {count}",
+      "unitsReused": "Doplnené existujúce priestory: {count}",
+      "unitsSkipped": "Preskočené priestory (už mali vlastníkov): {count}",
+      "ownersCreated": "Vytvorení vlastníci: {count}",
+      "ownersLinked": "Prepojené existujúce účty: {count}",
+      "membershipsCreated": "Vytvorené vlastnícke väzby: {count}",
+      "membershipsSkipped": "Preskočené väzby (už existovali): {count}",
+      "skippedList": "Preskočené priestory: {units}",
+      "goOwners": "Prejsť na vlastníkov",
+      "goOnboarding": "Späť na sprievodcu nastavením",
+      "startOver": "Importovať ďalší súbor"
+    },
+    "claim": {
+      "question": "Ste to vy — {name}?",
+      "body": "Import vytvoril vlastníka s vaším menom (priestory: {units}). Ak ste to vy, priestory sa pripoja k vášmu účtu a duplicitný vlastník sa zruší.",
+      "yes": "Áno, to som ja",
+      "no": "Nie, je to iná osoba",
+      "done": "Priestory sú pripojené k vášmu účtu.",
+      "errors": {
+        "shell_missing": "Vlastník sa nenašiel.",
+        "name_mismatch": "Meno vlastníka sa nezhoduje s vaším menom.",
+        "not_shell": "Tento vlastník už má vlastný účet.",
+        "not_pending": "Tento vlastník už nie je čakajúci.",
+        "target_missing": "Váš účet sa nenašiel.",
+        "target_shell": "Váš účet nemá heslo — nastavte si ho v profile a skúste to znova.",
+        "merge_conflict_open_ballot": "Oba účty hlasovali za ten istý priestor v otvorenom hlasovaní — zlúčte ich po jeho skončení.",
+        "same_user": "Ide o ten istý účet.",
+        "state_changed": "Údaje sa medzitým zmenili. Obnovte stránku.",
+        "failed": "Pripojenie sa nepodarilo."
+      }
+    },
+    "columns": {
+      "community_name": "Názov komunity",
+      "community_address": "Adresa domu",
+      "community_ico": "IČO",
+      "community_dic": "DIČ",
+      "country": "Krajina",
+      "voting_method": "Spôsob hlasovania",
+      "supisne_cislo": "Súpisné číslo",
+      "block_name": "Blok",
+      "entrance_label": "Vchod",
+      "unit_number": "Číslo priestoru",
+      "unit_floor": "Poschodie",
+      "unit_area_m2": "Výmera (m²)",
+      "unit_share_numerator": "Podiel priestoru – čitateľ",
+      "unit_share_denominator": "Podiel priestoru – menovateľ",
+      "unit_type": "Typ priestoru",
+      "owner_name": "Meno vlastníka",
+      "owner_birth_name": "Rodné priezvisko",
+      "owner_ico": "IČO vlastníka",
+      "owner_address": "Adresa vlastníka",
+      "owner_email": "E-mail",
+      "owner_phone": "Telefón",
+      "owner_unit_share_numerator": "Podiel vlastníka – čitateľ",
+      "owner_unit_share_denominator": "Podiel vlastníka – menovateľ",
+      "lv_ordinal": "Poradové číslo na LV",
+      "ownership_form": "Forma vlastníctva"
+    },
+    "columnHelp": {
+      "community_name": "Napr. Bytový dom Hlavná 1",
+      "community_address": "Ulica a obec, napr. Hlavná 1, 058 01 Poprad",
+      "community_ico": "IČO spoločenstva, ak je pridelené",
+      "community_dic": "DIČ spoločenstva, ak je pridelené",
+      "country": "Slovensko alebo Česko",
+      "voting_method": "Podľa podielu, podľa priestoru, podľa plochy alebo jeden člen jeden hlas",
+      "supisne_cislo": "Súpisné číslo stavby z LV",
+      "block_name": "Napr. Blok A",
+      "entrance_label": "Napr. 1 alebo Štúrova 12",
+      "unit_number": "Číslo bytu alebo nebytového priestoru z LV",
+      "unit_floor": "prízemie = 0, suterén alebo 1. PP = -1; pri garáži a nebytovom priestore nepovinné",
+      "unit_area_m2": "Na LV nie je — nepovinné",
+      "unit_share_numerator": "Podiel na spoločných častiach z LV; môžete zadať aj celý zlomok, napr. 6543/123456",
+      "unit_share_denominator": "Menovateľ podielu, napr. 123456",
+      "unit_type": "Byt, nebytový priestor, garáž alebo iné",
+      "owner_name": "Meno a priezvisko alebo názov právnickej osoby",
+      "owner_birth_name": "Z LV (r. …) — nepovinné",
+      "owner_ico": "Pri právnickej osobe (družstvo, obec, s.r.o.)",
+      "owner_address": "Trvalý pobyt alebo sídlo z LV — nepovinné",
+      "owner_email": "Ak chýba, vlastník sa založí bez prihlásenia",
+      "owner_phone": "Nepovinné",
+      "owner_unit_share_numerator": "Spoluvlastnícky podiel z LV, napr. 1/2; jediný vlastník = 1/1 (môžete nechať prázdne)",
+      "owner_unit_share_denominator": "Menovateľ spoluvlastníckeho podielu",
+      "lv_ordinal": "Z časti B listu vlastníctva — nepovinné",
+      "ownership_form": "BSM pri manželoch, inak prázdne"
+    },
+    "votingMethodOptions": {
+      "per_share": "Podľa spoluvlastníckeho podielu",
+      "per_flat": "Jeden priestor – jeden hlas",
+      "per_area": "Podľa podlahovej plochy",
+      "one_per_member": "Jeden člen – jeden hlas",
+      "custom_weight": "Vlastná váha"
+    },
+    "countryOptions": {
+      "sk": "Slovensko",
+      "cz": "Česko"
+    },
+    "ownershipFormOptions": {
+      "bsm": "BSM (manželia)"
+    },
+    "errors": {
+      "community_field_missing": "Vyplňte pole „{column}“ v časti Údaje o komunite.",
+      "no_rows": "Tabuľka je prázdna — pridajte aspoň jeden priestor.",
+      "required": "Pole „{column}“ je povinné.",
+      "invalid_email": "„{value}“ nie je platný e-mail.",
+      "floor_invalid": "Poschodie „{value}“ nepoznáme — zadajte číslo od {min} do {max} (prízemie = 0, suterén = -1).",
+      "floor_required": "Pri byte zadajte poschodie (prízemie = 0, suterén = -1).",
+      "share_invalid": "Podiel „{value}“ musí byť kladné celé číslo alebo zlomok, napr. 1/2.",
+      "share_above_one": "Podiel je väčší ako 1 (čitateľ je väčší ako menovateľ).",
+      "country_invalid": "Krajina „{value}“ — zadajte Slovensko alebo Česko.",
+      "voting_method_invalid": "Spôsob hlasovania „{value}“ nepoznáme.",
+      "unit_type_invalid": "Typ priestoru „{value}“ — zadajte byt, nebytový priestor, garáž alebo iné.",
+      "ownership_form_invalid": "Forma vlastníctva „{value}“ — zadajte BSM alebo nechajte prázdne.",
+      "number_invalid": "„{value}“ nie je číslo.",
+      "invalid_value": "Neplatná hodnota v poli „{column}“.",
+      "community_field_mismatch": "Pole „{column}“ musí byť na všetkých riadkoch rovnaké (väčšina má „{expected}“, tento riadok „{actual}“).",
+      "unit_field_mismatch": "Priestor {unit}: pole „{column}“ sa líši na riadkoch {firstRow} a {row}.",
+      "owner_share_sum_not_one": "Priestor {unit}: podiely vlastníkov dávajú spolu {sum}, majú dať 1/1.",
+      "community_share_sum_not_one": "Podiely priestorov dávajú spolu {sum}, nie 1/1 (rozdiel {diff}). Pri neúplnom LV alebo nepresných podieloch to môže byť v poriadku — skontrolujte to.",
+      "community_share_sum_with_existing_not_one": "Existujúce priestory ({existing}) a import ({imported}) dávajú spolu {sum}, nie 1/1 (rozdiel {diff}).",
+      "duplicate_community": "Komunita „{name}“ ({address}) už existuje. Zmeňte názov alebo adresu, prípadne najprv archivujte existujúcu komunitu.",
+      "warnings_not_acknowledged": "Najprv potvrďte upozornenia v súhrne.",
+      "unauthorized": "Nie ste prihlásený.",
+      "forbidden": "Na import nemáte oprávnenie.",
+      "unexpected": "Nastala neočakávaná chyba. Skúste to znova."
+    }
   },
   "CommunityInfo": {
     "pendingHeading": "Vaša registrácia čaká na schválenie",
@@ -941,6 +1150,34 @@
       "expiryNote": "Odkaz platí {minutes} minút a dá sa použiť iba raz. Po vypršaní ho nie je možné poslať znova — začnite odznova.",
       "ignoreNote": "Ak ste o to nežiadali, tento email ignorujte. Bez vášho potvrdenia sa žiadny hlas neodovzdá.",
       "fallback": "Ak tlačidlo nefunguje, skopírujte tento odkaz do prehliadača:"
+    },
+    "postNotice": {
+      "subject": "Nový oznam: {title}",
+      "intro": "Na nástenke {building} bol zverejnený nový oznam:",
+      "footer": "Tento e-mail dostávate, pretože nemáte zapnuté oznámenia v aplikácii. Oznamy si môžete pozrieť aj priamo v aplikácii."
+    },
+    "claimLoginLink": {
+      "subject": "Odkaz na aktiváciu vášho účtu",
+      "heading": "Aktivácia účtu vlastníka",
+      "intro": "Na stránke na prevzatie účtu ste zadali túto e-mailovú adresu. Tlačidlom nižšie si účet aktivujete a prihlásite sa — heslo nepotrebujete.",
+      "button": "Aktivovať účet a prihlásiť sa",
+      "expiryNote": "Odkaz platí {minutes} minút a dá sa použiť iba raz.",
+      "notYou": "Ak ste o odkaz nežiadali, tento e-mail ignorujte — bez kliknutia sa nič nezmení.",
+      "fallback": "Ak tlačidlo nefunguje, skopírujte tento odkaz do prehliadača:"
+    },
+    "claimLinkAddressInUse": {
+      "subject": "Táto e-mailová adresa už má účet",
+      "heading": "Účet s touto adresou už existuje",
+      "intro": "Niekto zadal túto e-mailovú adresu pri prevzatí pripraveného účtu vlastníka. S touto adresou už však účet máte, preto sme odkaz na prevzatie neposlali. Prihláste sa do svojho účtu; ak potrebujete pripojiť ďalší byt, obráťte sa na výbor alebo správcu.",
+      "button": "Prihlásiť sa",
+      "notYou": "Ak ste to neboli vy, tento e-mail ignorujte."
+    },
+    "votingStarted": {
+      "subject": "Nové hlasovanie: {title}",
+      "intro": "V spoločenstve {building} bolo vyhlásené nové hlasovanie. Hlasovať môžete v aplikácii alebo na listinnom hlasovacom lístku.",
+      "endsAt": "Hlasovanie sa končí {date}.",
+      "button": "Zobraziť hlasovanie",
+      "footer": "Tento e-mail dostávate, pretože nemáte zapnuté oznámenia v aplikácii. Upozornenia na hlasovania si môžete vypnúť v nastaveniach oznámení."
     }
   },
   "Header": {
@@ -1058,7 +1295,8 @@
     "withdrawBallot": "Stiahnuť hlas",
     "withdrawConfirm": "Naozaj stiahnuť váš hlasovací lístok?",
     "ballotHashLabel": "Kontrolný odtlačok lístka",
-    "signSubmitFailed": "Nepodarilo sa odovzdať hlasovací lístok"
+    "signSubmitFailed": "Nepodarilo sa odovzdať hlasovací lístok",
+    "pushNewVotingTitle": "Nové hlasovanie"
   },
   "VotingNew": {
     "projectLabel": "Dokumentový projekt",
@@ -1140,7 +1378,8 @@
       "result_published": "Výsledok zverejnený",
       "ballot_superseded": "Elektronický hlas nahradený listinným",
       "document_generated": "Vytvorený dokument",
-      "minutes_finalised": "Zápisnica dokončená"
+      "minutes_finalised": "Zápisnica dokončená",
+      "mandate_revoked": "Splnomocnenie zrušené"
     },
     "officialsHeading": "Osoby",
     "officialsHint": "Predseda, zapisovateľ a aspoň dvaja overovatelia sa uvedú v dokumentoch.",
@@ -1239,7 +1478,8 @@
       "notice": "Oznámenie (PDF)",
       "ballotsAll": "Všetky hlasovacie listiny ({count})",
       "ballotBlank": "Prázdna hlasovacia listina",
-      "noticeLink": "Oznámenie o hlasovaní (PDF)"
+      "noticeLink": "Oznámenie o hlasovaní (PDF)",
+      "pendingLegalSignoff": "Dokument pre tento typ spoločenstva čaká na právne schválenie textu. Zatiaľ ho nie je možné vytvoriť."
     },
     "notice": {
       "title": "Oznámenie o písomnom hlasovaní",
@@ -1267,7 +1507,13 @@
       "verifier": "Overovateľ",
       "unmarkedNote": "Otázka bez vyznačenej odpovede sa považuje za neplatný hlas."
     },
-    "minutesSuperseded": "Zápisnica v{version} — nahradená"
+    "minutesSuperseded": "Zápisnica v{version} — nahradená",
+    "saveOfficials": "Uložiť osoby",
+    "officialRefused": "Odmietol podpísať zápisnicu",
+    "officialRefusedLabel": "Overovateľ odmietol podpísať zápisnicu",
+    "officialRefusalStatementLabel": "Vyjadrenie overovateľa",
+    "officialRefusalStatementHint": "Meno, priezvisko a vyjadrenie overovateľa sú prílohou zápisnice (§ 14a ods. 8).",
+    "officialsLockedAfterPublish": "Výsledok je zverejnený – osoby v zápisnici sa už nedajú meniť."
   },
   "VotingWizard": {
     "stepsLabel": "Kroky",
@@ -1441,6 +1687,41 @@
     "codes": {
       "ATTENDANCE_MISSING": "Prezenčná listina nie je vyplnená – výsledok počítaný z odovzdaných hlasov.",
       "MEETING_QUORUM_NOT_REACHED": "Uznášaniaschopnosť nebola dosiahnutá – rozhodnutie nie je prijaté."
+    },
+    "basis": {
+      "forOf": {
+        "all": "ZA: {pct} % všetkých hlasov",
+        "present": "ZA: {pct} % hlasov prítomných",
+        "cast": "ZA: {pct} % hlasov vlastníkov, ktorí hlasovali"
+      },
+      "threshold": {
+        "more_than_half": {
+          "all": "Potrebné na prijatie: viac ako {pct} % všetkých hlasov (viac ako {weight}).",
+          "present": "Potrebné na prijatie: viac ako {pct} % hlasov prítomných (viac ako {weight}).",
+          "cast": "Potrebné na prijatie: viac ako {pct} % hlasov vlastníkov, ktorí hlasovali (viac ako {weight})."
+        },
+        "at_least_two_thirds": {
+          "all": "Potrebné na prijatie: aspoň dve tretiny ({pct} %) všetkých hlasov (aspoň {weight})."
+        },
+        "at_least_four_fifths": {
+          "all": "Potrebné na prijatie: aspoň štyri pätiny ({pct} %) všetkých hlasov (aspoň {weight})."
+        },
+        "all": {
+          "all": "Potrebný je súhlas všetkých vlastníkov ({pct} %, {weight})."
+        }
+      },
+      "tableCaption": "Váha hlasov podľa voľby",
+      "colChoice": "Voľba",
+      "colWeight": "Váha hlasov",
+      "colOfCounted": "Zo započítaných",
+      "colOf": {
+        "all": "Zo všetkých",
+        "present": "Z prítomných"
+      },
+      "counted": "Započítané hlasy (váha)",
+      "present": "Prítomní (váha)",
+      "totalPossible": "Všetky hlasy v rozsahu hlasovania (váha)",
+      "distributionHeading": "Rozdelenie započítaných hlasov"
     }
   },
   "VoteButton": {
@@ -1479,12 +1760,43 @@
     "fromFlatLabel": "Byt (delegujúci)",
     "fromFlatPlaceholder": "Vyberte byt",
     "fromOwnerLabel": "Vlastník bytu",
-    "delegateToLabel": "Delegovať na",
+    "delegateToLabel": "Splnomocnenec",
     "ownerPlaceholder": "Vyberte vlastníka",
     "paperDocumentLabel": "Potvrdenie listinného splnomocnenia s úradne osvedčeným podpisom",
     "verificationNoteLabel": "Poznámka k overeniu (voliteľné)",
     "submitFailed": "Nepodarilo sa vytvoriť splnomocnenie",
-    "flat": "byt {number}"
+    "flat": "byt {number}",
+    "proxyKindOwner": "Vlastník v dome",
+    "proxyKindExternal": "Iná osoba (bez účtu)",
+    "proxyOwnerLabel": "Vlastník, ktorý bude zastupovať",
+    "proxyExternalHint": "Údaje prepíšte z listinného plnomocenstva. Osoba nepotrebuje účet v aplikácii; v prezenčnej listine a zápisnici sa uvedie ako „v zastúpení“.",
+    "proxyNameLabel": "Meno a priezvisko splnomocnenca",
+    "proxyBirthDateLabel": "Dátum narodenia (nepovinné)",
+    "proxyAddressLabel": "Adresa (nepovinné)",
+    "proxyNoteLabel": "Poznámka k splnomocnencovi (nepovinné)",
+    "errors": {
+      "UNAUTHORIZED": "Nie ste prihlásený.",
+      "FORBIDDEN": "Splnomocnenia môže zapisovať iba administrátor.",
+      "MANDATE_FIELDS_REQUIRED": "Vyplňte byt, vlastníka a splnomocnenca.",
+      "MANDATE_PROXY_INVALID": "Dátum narodenia splnomocnenca nie je platný.",
+      "MANDATE_SELF": "Vlastník nemôže splnomocniť sám seba.",
+      "MANDATE_PAPER_REQUIRED": "Splnomocnenie vyžaduje potvrdenie listinného dokumentu s úradne osvedčeným podpisom.",
+      "MANDATE_VOTING_NOT_ACTIVE": "Hlasovanie nie je aktívne.",
+      "MANDATE_EXISTS": "Pre tento byt už v tomto hlasovaní existuje aktívne splnomocnenie.",
+      "MANDATE_CHAIN": "Zvolený vlastník už sám delegoval svoj hlas – reťazenie splnomocnení nie je povolené.",
+      "MANDATE_NOT_FOUND": "Splnomocnenie neexistuje alebo už bolo zrušené.",
+      "MANDATE_VOTING_CLOSED": "Hlasovanie je ukončené – splnomocnenie už nie je možné zrušiť.",
+      "MANDATE_IN_USE": "Splnomocnenec už na základe tohto splnomocnenia hlasoval alebo bol zapísaný do prezenčnej listiny. Najprv odstráňte tento hlas alebo záznam o prítomnosti."
+    },
+    "list": {
+      "heading": "Splnomocnenia v tomto hlasovaní",
+      "row": "{from} (byt {flat}) → {to}",
+      "externalProxy": "Splnomocnenec bez účtu v aplikácii",
+      "revoke": "Zrušiť splnomocnenie",
+      "revokeConfirmTitle": "Zrušiť splnomocnenie?",
+      "revokeConfirmText": "Splnomocnenie od {from} pre {to} sa odstráni. Zrušenie sa zapíše do histórie hlasovania.",
+      "revokeFailed": "Splnomocnenie sa nepodarilo zrušiť."
+    }
   },
   "PendingRegistrations": {
     "title": "Čakajúce registrácie",
@@ -1636,7 +1948,8 @@
       "confirmDeleteTitle": "Natrvalo zmazať?",
       "confirmDeleteBody": "{name} bude odstránený zo systému aj s priradením k bytom. Nedá sa to vrátiť späť.",
       "accountStatus": "Stav účtu",
-      "detailActions": "Ďalšie akcie pre {name}"
+      "detailActions": "Ďalšie akcie pre {name}",
+      "paperOnly": "Len papierová komunikácia"
     },
     "title": "Vlastníci a užívatelia",
     "pendingRegistrationsLink": "Čakajúce žiadosti",
@@ -1674,7 +1987,9 @@
       "mergeNoCandidates": "Žiadni vhodní kandidáti (registrovaní používatelia bez priradenia).",
       "merge": "Zlúčiť",
       "merging": "Zlučujem...",
-      "confirmMerge": "Naozaj zlúčiť kartu vlastníka {shellName} s vybraným účtom? Operácia je nevratná."
+      "confirmMerge": "Naozaj zlúčiť kartu vlastníka {shellName} s vybraným účtom? Operácia je nevratná.",
+      "emailNotConfigured": "E-mail sa neodoslal, lebo na tomto serveri nie je nastavený SMTP. Odkaz odovzdajte vlastníkovi iným spôsobom.",
+      "emailFailed": "E-mail sa nepodarilo odoslať. Odkaz odovzdajte vlastníkovi iným spôsobom."
     },
     "pendingRegistrations": {
       "title": "Žiadosti o registráciu",
@@ -1749,7 +2064,10 @@
       "cannot_delete_self": "Vlastný účet nemôžete zmazať.",
       "user_has_history": "Osoba má históriu, ktorú treba zachovať. Odoberte ju z budovy alebo anonymizujte.",
       "plan_stale": "Údaje sa medzitým zmenili. Skontrolujte súhrn a potvrďte znova."
-    }
+    },
+    "roleMember": "Člen družstva",
+    "roleAccountant": "Účtovník",
+    "roleSpravca": "Správca"
   },
   "Claim": {
     "loading": "Načítavam...",
@@ -1778,8 +2096,35 @@
       "not_found": "Odkaz neexistuje.",
       "used": "Odkaz už bol použitý.",
       "expired": "Platnosť odkazu vypršala.",
-      "unknown": "Niečo sa pokazilo. Skúste to znova."
-    }
+      "unknown": "Niečo sa pokazilo. Skúste to znova.",
+      "rateLimited": "Príliš veľa pokusov. Skúste to o niekoľko minút.",
+      "email_unavailable": "Odosielanie e-mailov teraz nie je k dispozícii. Nastavte si heslo alebo to skúste neskôr.",
+      "email_failed": "E-mail sa nepodarilo odoslať. Skúste to znova o chvíľu."
+    },
+    "codeTitle": "Zadajte kód z listu",
+    "codeHint": "Krátky kód je vytlačený pod QR kódom na liste od výboru.",
+    "codeLabel": "Krátky kód",
+    "codeSubmit": "Pokračovať",
+    "codeInvalid": "Kód neplatí alebo jeho platnosť vypršala. Skontrolujte ho alebo kontaktujte výbor.",
+    "codeRateLimited": "Príliš veľa pokusov. Skúste to o niekoľko minút.",
+    "noEmailButton": "Nemám e-mail alebo smartfón",
+    "noEmailBody": "Požiadajte výbor o papierovú komunikáciu. Oznamy a dokumenty vám budú doručované v tlačenej podobe.",
+    "requestPaper": "Požiadať výbor o papierovú komunikáciu",
+    "paperRequested": "Ďakujeme. Výbor uvidí vašu žiadosť o papierovú komunikáciu.",
+    "methodLabel": "Ako chcete účet prevziať",
+    "methodPassword": "Nastaviť si heslo",
+    "methodLink": "Prihlásiť sa odkazom v e-maile, bez hesla",
+    "linkHint": "Zadajte svoj e-mail. Pošleme vám naň odkaz, ktorým si účet aktivujete a prihlásite sa — bez hesla. Odkaz platí 30 minút a dá sa použiť iba raz.",
+    "linkSubmit": "Poslať odkaz",
+    "linkSentTitle": "Pozrite si e-mailovú schránku",
+    "linkSentBody": "Ak je to možné, poslali sme na adresu {email} e-mail s ďalším krokom. Odkaz platí 30 minút. Ak e-mail nevidíte, pozrite sa aj do priečinka nevyžiadanej pošty.",
+    "linkSendAgain": "Poslať znova alebo na inú adresu",
+    "linkActivateTitle": "Aktivácia účtu",
+    "linkActivateBody": "Stlačením tlačidla si aktivujete pripravený účet s e-mailom, na ktorý prišiel tento odkaz, a prihlásite sa.",
+    "linkActivateButton": "Aktivovať účet a prihlásiť sa",
+    "linkInvalidTitle": "Odkaz už neplatí",
+    "linkInvalidBody": "Odkaz vypršal, už bol použitý alebo účet medzičasom niekto prevzal. Požiadajte o nový odkaz, prípadne sa prihláste, ak už účet máte.",
+    "linkRequestNew": "Požiadať o nový odkaz"
   },
   "Register": {
     "loading": "Načítavam...",
@@ -1809,7 +2154,10 @@
     "dataProcessingConsent": "Súhlasím so spracovaním osobných údajov podľa zásad ochrany súkromia",
     "communicationConsent": "Súhlasím so zasielaním prevádzkových oznámení (voliteľné)",
     "privacyPolicyLink": "Zásady ochrany súkromia",
-    "consentRequired": "Pre registráciu je potrebný súhlas so spracovaním osobných údajov."
+    "consentRequired": "Pre registráciu je potrebný súhlas so spracovaním osobných údajov.",
+    "roleMember": "Člen družstva",
+    "roleAccountant": "Účtovník",
+    "roleSpravca": "Správca"
   },
   "Invitations": {
     "title": "Pozvánka",
@@ -1831,7 +2179,11 @@
     "copied": "Skopírované!",
     "qrCode": "QR kód",
     "close": "Zavrieť",
-    "error": "Nepodarilo sa vygenerovať pozvánku"
+    "error": "Nepodarilo sa vygenerovať pozvánku",
+    "roleAdmin": "Administrátor",
+    "roleMember": "Člen družstva",
+    "roleAccountant": "Účtovník",
+    "roleSpravca": "Správca"
   },
   "Settings": {
     "title": "Nastavenia",
@@ -1955,7 +2307,22 @@
     "governanceModel": "Model správy",
     "governanceChairmanCouncil": "Predseda + rada",
     "governanceCommittee": "Výbor",
-    "governanceChairmanOnly": "Len predseda"
+    "governanceChairmanOnly": "Len predseda",
+    "governanceBoardSupervisory": "Predstavenstvo + kontrolná komisia",
+    "votingMethodPerMember": "Jeden člen = jeden hlas",
+    "votingMethodPerMemberDesc": "Každý člen družstva má jeden hlas bez ohľadu na počet bytov (zákonné pravidlo, ak stanovy neurčujú inak).",
+    "votingMethodCustomWeight": "Počet hlasov podľa stanov",
+    "votingMethodCustomWeightDesc": "Členovia majú rôzny počet hlasov podľa stanov. Váhy sa nastavujú pri jednotlivých členoch; kým nie sú nastavené, má každý člen jeden hlas. Pri rozhodnutiach, kde zákon vyžaduje jeden hlas na člena, použite „Jeden člen = jeden hlas“.",
+    "votingMethodNotAllowed": "Pre tento typ spoločenstva nie je prípustné",
+    "votingMethodNotAllowedHint": "Uložený spôsob hlasovania nezodpovedá zákonu pre tento typ spoločenstva. Vyberte jeden z ponúkaných spôsobov a uložte ho.",
+    "noticeLeadLabel": "Lehota na oznámenie schôdze (dni)",
+    "noticeLeadHintStanovy": "Zákon lehotu neurčuje — zadajte lehotu zo stanov. Prázdne pole znamená, že aplikácia lehotu nekontroluje.",
+    "noticeLeadHintStatutory": "Zákonné minimum je {days} dní. Stanovy môžu lehotu predĺžiť, nie skrátiť. Prázdne pole = zákonné minimum.",
+    "noticeLeadErrorInvalid": "Zadajte celé číslo od 0 do 90.",
+    "noticeLeadErrorBelowStatutory": "Lehota nesmie byť kratšia ako zákonných {days} dní.",
+    "noticeLeadSaved": "Lehota na oznámenie bola uložená.",
+    "noticeLeadSaveFailed": "Nepodarilo sa uložiť lehotu na oznámenie.",
+    "votingMethodNotAllowedError": "Tento spôsob hlasovania nie je pre tento typ spoločenstva podľa zákona prípustný."
   },
   "VotingMinutes": {
     "downloadButton": "Stiahnuť zápisnicu",
@@ -1965,7 +2332,8 @@
       "passkey": "Potvrdené prístupovým kľúčom {date}",
       "email": "Potvrdené odkazom v e-maile {date}",
       "legacy": "Bez potvrdenia (pred zavedením)"
-    }
+    },
+    "pendingLegalSignoff": "Zápisnica pre tento typ spoločenstva čaká na právne schválenie textu. Zatiaľ ju nie je možné vytvoriť."
   },
   "Profile": {
     "title": "Profil",
@@ -1992,7 +2360,10 @@
     "notifications": "Notifikácie",
     "appearance": "Vzhľad",
     "theme": "Téma",
-    "language": "Jazyk"
+    "language": "Jazyk",
+    "roleMember": "Člen družstva",
+    "roleAccountant": "Účtovník",
+    "roleSpravca": "Správca"
   },
   "Notifications": {
     "pushNotifications": "Push notifikácie",
@@ -2060,7 +2431,11 @@
     "role_council_member": "Člen rady",
     "role_committee_member": "Člen výboru",
     "role_committee_chairman": "Predseda výboru",
-    "role_treasurer": "Pokladník"
+    "role_treasurer": "Pokladník",
+    "model_board_supervisory": "Predstavenstvo a kontrolná komisia družstva (§ 243 a § 244 Obchodného zákonníka)",
+    "role_board_member": "Člen predstavenstva",
+    "role_supervisory_chairman": "Predseda kontrolnej komisie",
+    "role_supervisory_member": "Člen kontrolnej komisie"
   },
   "PrivacyPolicy": {
     "title": "Zásady ochrany súkromia",
@@ -2388,7 +2763,8 @@
       "removeConsequence": "{name} zmizne z adresára. Kontakt môže znova zdieľať len on sám.",
       "removeOwnConsequence": "Váš kontakt zmizne z adresára. Kedykoľvek ho môžete znova zdieľať.",
       "failed": "Zmenu sa nepodarilo uložiť. Skúste to znova."
-    }
+    },
+    "printLink": "Verzia na tlač (nástenka)"
   },
   "Readonly": {
     "bannerTitle": "Skúšobné obdobie skončilo.",
@@ -2589,6 +2965,11 @@
       "name": "Vlastná štruktúra",
       "description": "Prázdny strom — admin si nakonfiguruje vlastné typy uzlov a hierarchiu cez UI po inštalácii.",
       "sampleCommunityName": "Naše spoločenstvo"
+    },
+    "bytove_druzstvo": {
+      "name": "Bytové družstvo",
+      "description": "Bytové družstvo a jeho členovia. Na členskej schôdzi má každý člen jeden hlas, ak stanovy neurčujú inak (§ 240 Obchodného zákonníka; ČR § 755 zákona o obchodních korporacích).",
+      "sampleCommunityName": "Bytové družstvo"
     }
   },
   "InstallPrompt": {
@@ -2629,7 +3010,9 @@
       "more": "Ďalšie údaje z faktúry",
       "moreErrors": "{count, plural, one {# údaj chýba} few {# údaje chýbajú} other {# údajov chýba}}",
       "moreHint": "IČO, DIČ, IBAN, číslo faktúry, suma bez DPH a DPH sú povinné pri každom účtovnom doklade.",
-      "fundHint": "Z ktorého fondu sa faktúra platí. Keď vyberiete službu, nastaví sa sám."
+      "fundHint": "Z ktorého fondu sa faktúra platí. Keď vyberiete službu, nastaví sa sám.",
+      "invoiceYearLocked": "Rok faktúry {year} je uzavretý — náklad pôjde do vyúčtovania roka {target}.",
+      "invoiceYearNoPeriod": "Pre rok faktúry {year} nie je otvorené účtovné obdobie — náklad pôjde do vyúčtovania roka {target}."
     },
     "annual": {
       "title": "Ročné úlohy",
@@ -2691,16 +3074,16 @@
       "step3": "Kontrola",
       "banka": "Zostatok na bankovom účte (€)",
       "pokladnica": "Zostatok v pokladnici (€)",
-      "unitsHint": "Zadajte zostatok fondu opráv a záloh na služby za každý byt k 1.1. Prázdne pole znamená nulu.",
+      "unitsHint": "Za každý byt zadajte štyri samostatné hodnoty k 1.1. Prázdne pole znamená nulu.",
       "unit": "Byt",
       "fpuoBalance": "Fond opráv (€)",
       "zalohyBalance": "Zálohy na služby (€)",
-      "negativeHint": "Záporná hodnota znamená, že byt mal k 1.1. nedoplatok (dlh voči spoločenstvu).",
+      "negativeHint": "Dlh vlastníka zadajte do stĺpca Nedoplatok, nie ako zápornú zálohu — úspory vo fonde a dlh sa tak navzájom nevynulujú.",
       "assetsTotal": "Banka + pokladnica",
       "fpuoTotal": "Súčet fondu opráv",
       "zalohyTotal": "Súčet záloh na služby",
       "rozdiel": "Rozdiel",
-      "korekciaExplain": "Rozdiel medzi majetkom a zostatkami bytov sa zaúčtuje ako výsledok hospodárenia minulých rokov. Skontrolujte, či ste zadali všetky zostatky správne — po potvrdení sa otváracia súvaha už nedá zmeniť.",
+      "korekciaExplain": "Rozdiel medzi majetkom (banka + pokladnica + nedoplatky) a záväzkami voči vlastníkom (fond, zálohy, preplatky) sa zaúčtuje ako výsledok hospodárenia minulých rokov. Skontrolujte zostatky — neskoršia oprava je možná len stornom a novým zápisom.",
       "korekciaConfirm": "Potvrdzujem zaúčtovanie rozdielu {amount} ako výsledok hospodárenia minulých rokov.",
       "next": "Ďalej",
       "back": "Späť",
@@ -2708,11 +3091,11 @@
       "submitting": "Účtuje sa…",
       "submitError": "Zaúčtovanie zlyhalo",
       "loadError": "Nepodarilo sa načítať údaje.",
-      "alreadyPosted": "Počiatočné zostatky sú už zaúčtované a nedajú sa zadať znova. Opravy sa účtujú ako opravné zápisy v aktuálnom období.",
+      "alreadyPosted": "Počiatočné zostatky sú zaúčtované. Nedajú sa prepísať, ale dajú sa opraviť stornom a novým zápisom.",
       "amountPlaceholder": "0,00",
       "import": {
         "panelTitle": "Hromadný import zostatkov (CSV)",
-        "panelHint": "Stiahnite si šablónu so zoznamom bytov, doplňte zostatky v Exceli a nahrajte súbor späť. Tabuľku nižšie môžete potom ešte upraviť.",
+        "panelHint": "Stiahnite si šablónu so zoznamom bytov, doplňte zostatky v Exceli (stĺpce nedoplatok a preplatok sú nepovinné) a nahrajte súbor späť. Tabuľku nižšie môžete potom ešte upraviť.",
         "downloadTemplate": "Stiahnuť šablónu",
         "uploadCsv": "Nahrať vyplnené CSV",
         "resultMatched": "Priradených bytov: {count}.",
@@ -2740,7 +3123,40 @@
         "pdfErrMismatch": "súčty vo vyúčtovaní si neodpovedajú (poškodený alebo upravený súbor)",
         "pdfErrUnknownVs": "variabilný symbol sa nezhoduje so žiadnym bytom domu",
         "pdfErrAmbiguousVs": "variabilný symbol má viac bytov",
-        "pdfErrDuplicate": "pre tento byt už bol nahraný iný PDF"
+        "pdfErrDuplicate": "pre tento byt už bol nahraný iný PDF",
+        "errBadNedoplatok": "neplatná suma nedoplatku (musí byť kladná)",
+        "errBadPreplatok": "neplatná suma preplatku (musí byť kladná)"
+      },
+      "nedoplatokBalance": "Nedoplatok vlastníka (€)",
+      "preplatokBalance": "Preplatok vlastníka (€)",
+      "nedoplatokTotal": "Súčet nedoplatkov vlastníkov",
+      "preplatokTotal": "Súčet preplatkov vlastníkov",
+      "unitsSum": "Spolu",
+      "fieldHelp": {
+        "fpuo": "koľko peňazí z fondu prevádzky, údržby a opráv pripadá na byt k 1.1. Záporné číslo = neuhradené príspevky do fondu.",
+        "zalohy": "zálohy na služby (teplo, voda…), ktoré spoločenstvo za byt drží a ešte ich nevyúčtovalo.",
+        "nedoplatok": "koľko vlastník k 1.1. dlhoval (neuhradené platby). Zadajte kladné číslo.",
+        "preplatok": "koľko mal vlastník k 1.1. zaplatené navyše. Zaeviduje sa ako jeho preplatok, ktorý sa môže použiť na ďalšie platby. Zadajte kladné číslo."
+      },
+      "correct": {
+        "title": "Oprava počiatočných zostatkov",
+        "intro": "Ak ste sa pomýlili, môžete počiatočné zostatky opraviť. Pôvodný zápis sa nezmaže — zaúčtuje sa jeho storno a nový, opravený zápis. Obe operácie zostanú v denníku a v audite.",
+        "button": "Opraviť počiatočné zostatky",
+        "locked": "Obdobie s počiatočnými zostatkami je už uzavreté, preto ich nemožno opraviť stornom. Rozdiel zaúčtujte ako opravný zápis v aktuálnom období.",
+        "postedSummary": "Zaúčtované k 1.1.{year}: banka + pokladnica {assets}, zostatky za {units} bytov.",
+        "modeBanner": "Opravujete zaúčtované počiatočné zostatky. Hodnoty sú predvyplnené z pôvodného zápisu — upravte, čo treba. Po potvrdení sa pôvodný zápis stornuje a zaúčtuje sa nový.",
+        "reasonLabel": "Dôvod opravy (povinné, zapíše sa do auditu)",
+        "reasonPlaceholder": "napr. preklep v zostatku bytu 12",
+        "submit": "Stornovať a zaúčtovať opravu"
+      },
+      "errors": {
+        "already_posted": "počiatočné zostatky sú už zaúčtované (možno ich medzitým zadal niekto iný). Obnovte stránku.",
+        "not_posted": "nie sú zaúčtované žiadne počiatočné zostatky, ktoré by sa dali opraviť.",
+        "opening_period_locked": "obdobie s počiatočnými zostatkami je uzavreté — oprava stornom nie je možná.",
+        "invalid_amounts": "niektorá suma je neplatná (banka, pokladnica, nedoplatok a preplatok nesmú byť záporné).",
+        "unknown_unit": "niektorý byt už nepatrí do spoločenstva. Obnovte stránku.",
+        "reason_required": "zadajte dôvod opravy.",
+        "invalid_year": "neplatný rok."
       }
     },
     "predpis": {
@@ -2792,7 +3208,17 @@
       "publish": "Publikovať predpis",
       "publishing": "Publikuje sa…",
       "effectiveFromLabel": "Platný od",
-      "amountsVaryNote": "Sumy sa v priebehu roka menia (zmena počtu osôb). Náhľad zobrazuje prvý mesiac; mesačné súčty:"
+      "amountsVaryNote": "Sumy sa v priebehu roka menia (zmena počtu osôb). Náhľad zobrazuje prvý mesiac; mesačné súčty:",
+      "perM2": "€/m² mesačne",
+      "perPerson": "€/osoba mesačne",
+      "rateLabel": "Sadzba",
+      "rateModeLabel": "Čo znamená zadaná suma",
+      "rateModeTotal": "Spolu za dom / mesiac",
+      "rateModePerM2": "€ za m² / mesiac",
+      "rateModePerPerson": "€ za osobu / mesiac",
+      "domTotalLine": "Spolu za dom mesačne: {amount}",
+      "domTotalInPreview": "Súčet za celý dom uvidíte po uložení v náhľade nižšie.",
+      "rateModeKeyUnsupported": "Sadzbu za m² alebo za osobu možno použiť len pri kľúči podľa plochy alebo podľa počtu osôb."
     },
     "allocationKeys": {
       "share": "Spoluvlastnícky podiel",
@@ -2863,7 +3289,19 @@
       "method": "Spôsob",
       "methodBank": "Bankový prevod",
       "methodCash": "Hotovosť (pokladnica)",
-      "vsLabel": "VS {vs}"
+      "vsLabel": "VS {vs}",
+      "filterFrom": "Od dátumu",
+      "filterTo": "Do dátumu",
+      "filterApply": "Zobraziť",
+      "filterClear": "Zrušiť filter",
+      "totalReceived": "Prijaté spolu ({count} platieb)",
+      "totalAllocated": "Priradené k predpisu",
+      "totalCredit": "Ostalo ako preplatok",
+      "totalVoidedNote": "Stornované platby ({count}) nie sú v súčtoch.",
+      "pagingLabel": "Stránkovanie platieb",
+      "pagePrev": "Predchádzajúce",
+      "pageNext": "Ďalšie",
+      "pageOf": "Strana {page} z {pages}"
     },
     "karta": {
       "title": "Karta bytu",
@@ -2900,8 +3338,11 @@
       "overdueColRate": "Sadzba p.a.",
       "overdueColInterest": "Úrok",
       "overdueTotal": "Spolu",
-      "overdueDisclaimer": "Sadzby: ECB + 5 p.b. (nar. vlády 87/1995 Z.z.). Overte aktuálnosť sadzieb pred uplatnením.",
-      "recordPayment": "Zaevidovať úhradu"
+      "overdueDisclaimer": "Sadzba: zákonný úrok z omeškania platný k prvému dňu omeškania (SK: sadzba ECB + 5 p. b., nar. vlády č. 87/1995 Z. z.; CZ: repo sadzba ČNB + 8 p. b., nař. vlády č. 351/2013 Sb.).",
+      "recordPayment": "Zaevidovať úhradu",
+      "overdueCreditApplied": "Preplatok {amount} je už odpočítaný od najstarších dlžných mesiacov.",
+      "overdueRatesStale": "Pozor: tabuľka sadzieb bola naposledy overená {date}. Pred uplatnením úrokov overte aktuálnu sadzbu centrálnej banky.",
+      "overdueRatesMissing": "Pozor: sadzby centrálnej banky ešte neboli automaticky overené. Pred uplatnením úrokov overte aktuálnu sadzbu."
     },
     "home": {
       "numbersLabel": "Hlavné čísla",
@@ -3223,7 +3664,7 @@
     },
     "vyuctovanie": {
       "title": "Ročné vyúčtovanie",
-      "subtitle": "Vyúčtovanie záloh na služby — skutočné náklady vs. prijaté zálohy (fond opráv sa nevyúčtováva)",
+      "subtitle": "Vyúčtovanie záloh na služby — skutočné náklady vs. predpísané zálohy (fond opráv sa nevyúčtováva)",
       "backToAccounting": "Späť na účtovníctvo",
       "loadError": "Nepodarilo sa načítať vyúčtovanie.",
       "ownerNotReady": "Vyúčtovanie za {year} ešte nie je pripravené.",
@@ -3231,7 +3672,7 @@
       "ownerOpenKarta": "Otvoriť kartu bytu",
       "gatesTitle": "Kontroly pred vyúčtovaním",
       "gateUnmatched": "{count, plural, =0 {Všetky bankové platby sú spárované} one {# nespárovaná platba} few {# nespárované platby} other {# nespárovaných platieb}}",
-      "gateUncategorized": "{count, plural, =0 {Všetky faktúry sú zaradené} one {# nezaradená faktúra} few {# nezaradené faktúry} other {# nezaradených faktúr}}",
+      "gateUncategorized": "{count, plural, =0 {Všetky faktúry zaúčtované do roka sú zaradené} one {# nezaradená faktúra zaúčtovaná do roka} few {# nezaradené faktúry zaúčtované do roka} other {# nezaradených faktúr zaúčtovaných do roka}}",
       "gateReadings": "{count, plural, =0 {Všetky byty majú odpočty} one {# byt bez odpočtu} few {# byty bez odpočtu} other {# bytov bez odpočtu}} (informatívne)",
       "resolve": "vyriešiť →",
       "alreadyPublished": "Toto obdobie je už publikované.",
@@ -3249,7 +3690,49 @@
       "publishError": "Publikovanie zlyhalo",
       "unprescribedWarning": "⚠️ Náklady bez predpisu: {categories}. Rovnaké rozdelenie nemá právny základ — doplňte službu do predpisu alebo preradťe výdavok. Publikovanie je zablokované.",
       "draftScheduleWarning": "{count, plural, one {Existuje # nepublikovaný návrh predpisu} few {Existujú # nepublikované návrhy predpisu} other {Existuje # nepublikovaných návrhov predpisu}} pre tento rok — po uzamknutí obdobia sa už nebude dať publikovať.",
-      "gateSingleReadingBlocking": "{count, plural, one {# byt má} few {# byty majú} other {# bytov má}} v roku len jeden odpočet tepla alebo teplej vody. Stav merača by sa rozúčtoval ako spotreba — doplňte počiatočný odpočet, inak vyúčtovanie nemožno zverejniť."
+      "gateSingleReadingBlocking": "{count, plural, one {# byt má} few {# byty majú} other {# bytov má}} v roku len jeden odpočet tepla alebo teplej vody. Stav merača by sa rozúčtoval ako spotreba — doplňte počiatočný odpočet, inak vyúčtovanie nemožno zverejniť.",
+      "yearLabel": "Rok vyúčtovania",
+      "basisHint": "Výsledok vyúčtovania = podiel na skutočných nákladoch − predpísané zálohy. Neuhradené zálohy sú uvedené zvlášť a nie sú súčasťou výsledku — zostávajú ako dlh z mesačných predpisov.",
+      "colCost": "Náklady",
+      "colPrescribed": "Predpísané zálohy",
+      "colUnpaid": "Z toho neuhradené",
+      "colResult": "Výsledok vyúčtovania",
+      "byService": "Podľa služieb",
+      "serviceLine": "náklady {cost} − predpis {prescribed} = {result}",
+      "ledgerOk": "✅ Vyúčtovanie sa zhoduje s účtovníctvom na cent.",
+      "blockers": {
+        "METER_SINGLE_READING": "Rozúčtovanie podľa meračov stojí na jedinom odpočte v roku — doplňte počiatočný odpočet.",
+        "METER_READINGS_MISSING": "{service}: odpočty chýbajú pre byty {units}. Bez nich nemožno rozúčtovať podľa meračov a náhradný spôsob rozúčtovania aplikácia nepodporuje — doplňte odpočty.",
+        "METER_AREA_MISSING": "{service}: byty {units} nemajú zadanú podlahovú plochu potrebnú na rozúčtovanie podľa meračov.",
+        "SPLIT_KEY_NO_DATA": "{service}: pre kľúč „{key}“ nie sú za rok žiadne údaje z predpisu.",
+        "SPLIT_KEY_NO_WEIGHT": "{service}: kľúč „{key}“ dáva za rok nulový súčet (napr. žiadne osobomesiace) — náklad nie je podľa čoho rozdeliť.",
+        "PERSON_MONTHS_UNRESOLVED": "{service}: v zbere odpočtov sú neskontrolované osobomesiace. Označte ich ako vyriešené, až potom sa použijú na rozúčtovanie.",
+        "LEDGER_COST_UNCATEGORIZED": "V účtovníctve sú náklady na služby bez zaradenia do služby. Zaraďte ich (alebo stornujte a zadajte znova).",
+        "LEDGER_COST_NEGATIVE": "Čistý náklad služieb {services} je za obdobie záporný (storno prevyšuje faktúry) — skontrolujte zápisy.",
+        "LEDGER_MISMATCH": "Vyúčtovanie sa nezhoduje s účtovníctvom — publikovanie je zablokované."
+      },
+      "ledgerViolation": {
+        "COST_MISMATCH": "Náklady {ref}: v účtovníctve {expected}, vo vyúčtovaní {actual}.",
+        "PRESCRIBED_MISMATCH": "Predpis bytu {ref}: zaúčtovaný {expected}, vo vyúčtovaní {actual}.",
+        "DIFFERENCE_MISMATCH": "Výsledok {ref}: očakávaný {expected}, zistený {actual}."
+      },
+      "errors": {
+        "METER_SINGLE_READING": "Rozúčtovanie podľa meračov stojí na jedinom odpočte v roku. Doplňte počiatočný odpočet.",
+        "METER_READINGS_MISSING": "Niektorým bytom chýbajú odpočty tepla alebo teplej vody. Doplňte ich — náhradný spôsob rozúčtovania aplikácia nepodporuje.",
+        "METER_AREA_MISSING": "Niektoré byty nemajú podlahovú plochu potrebnú na rozúčtovanie podľa meračov.",
+        "SPLIT_KEY_NO_DATA": "Pre kľúč rozúčtovania niektorej služby nie sú za rok údaje.",
+        "SPLIT_KEY_NO_WEIGHT": "Kľúč rozúčtovania niektorej služby dáva nulový súčet — náklad nie je podľa čoho rozdeliť.",
+        "PERSON_MONTHS_UNRESOLVED": "V zbere odpočtov sú neskontrolované osobomesiace.",
+        "LEDGER_COST_UNCATEGORIZED": "V účtovníctve sú náklady na služby bez zaradenia do služby.",
+        "LEDGER_COST_NEGATIVE": "Čistý náklad niektorej služby je za obdobie záporný.",
+        "LEDGER_MISMATCH": "Vyúčtovanie sa nezhoduje s účtovníctvom na cent — nič nebolo publikované.",
+        "PERIOD_NOT_FOUND": "Účtovné obdobie pre tento rok neexistuje.",
+        "PERIOD_NOT_OPEN": "Obdobie už nie je otvorené — vyúčtovanie bolo zrejme publikované.",
+        "GATES_NOT_PASSED": "Kontroly nie sú splnené: rok musí byť ukončený, bankové platby spárované a faktúry zaradené.",
+        "UNPRESCRIBED_COSTS": "Niektoré náklady nemajú predpis. Doplňte službu do predpisu alebo preraďte výdavok.",
+        "NOTHING_TO_SETTLE": "Za tento rok nie je čo vyúčtovať.",
+        "UNKNOWN": "Publikovanie zlyhalo pre neočakávanú chybu. Nič nebolo zmenené."
+      }
     },
     "vyuctovaniePdf": {
       "download": "Vyúčtovanie {year} (PDF)",
@@ -3275,7 +3758,12 @@
       "allocationKey_meters": "podľa meračov",
       "qrTitle": "Úhrada nedoplatku cez PAY by square",
       "iban": "IBAN",
-      "footer": "Vygenerované systémom OpenResiApp."
+      "footer": "Vygenerované systémom OpenResiApp.",
+      "prescribedAdvances": "Predpísané zálohy",
+      "unpaid": "Z toho neuhradené",
+      "result": "Výsledok vyúčtovania",
+      "arrearsTitle": "Neuhradené zálohy k dátumu vyúčtovania",
+      "arrearsNote": "Neuhradené zálohy nie sú súčasťou výsledku vyúčtovania. Evidujú sa ako dlh z mesačných predpisov a uhrádzajú sa samostatne."
     },
     "upomienkaPdf": {
       "download": "Vygenerovať upomienku (PDF)",
@@ -3294,7 +3782,12 @@
       "demand": "NA ÚHRADU SPOLU (istina + úrok)",
       "qrTitle": "Úhrada cez PAY by square",
       "iban": "IBAN",
-      "footer": "Vygenerované systémom OpenResiApp."
+      "footer": "Vygenerované systémom OpenResiApp.",
+      "addressee": "Adresát",
+      "flat": "Byt č.",
+      "signatureRole": "predseda spoločenstva / správca",
+      "downloadAll": "Upomienky pre všetkých dlžníkov (PDF)",
+      "noneToSend": "Žiadny byt nemá po splatnosti nedoplatok — nie je komu poslať upomienku."
     },
     "journal": {
       "title": "Pre účtovníka / audit",
@@ -3322,22 +3815,62 @@
       "verifyHint": "Overenie exportu: nahrajte skôr stiahnutý súbor — systém potvrdí, že nebol zmenený.",
       "verifyValid": "Súbor je pravý a nezmenený (vygenerovaný {generatedAt}).",
       "verifyInvalid": "Súbor NESEDÍ — bol zmenený alebo nepochádza z tohto systému.",
-      "verifyError": "Overenie zlyhalo. Skúste znova."
+      "verifyError": "Overenie zlyhalo. Skúste znova.",
+      "yearLabel": "Účtovný rok",
+      "trialBalanceYearTitle": "Obratová predvaha {year}",
+      "trialBalanceYearHint": "Počiatočný stav (k 1. 1.), obraty roka a konečný stav každého účtu. Súčty strany MD a D sa musia rovnať.",
+      "colOpening": "Počiatočný stav",
+      "colTurnoverDr": "Obrat MD",
+      "colTurnoverCr": "Obrat D",
+      "colClosing": "Konečný stav",
+      "sideDr": "MD",
+      "sideCr": "D",
+      "totalsOpening": "Počiatočné stavy spolu",
+      "totalsTurnover": "Obraty spolu",
+      "totalsClosing": "Konečné stavy spolu",
+      "totalsUnbalanced": "Pozor: súčty strany MD a D sa nerovnajú. Kontaktujte podporu — účtovníctvo nie je v rovnováhe.",
+      "fpuoTitle": "Fond opráv po bytoch {year}",
+      "fpuoHint": "Stav fondu prevádzky, údržby a opráv pre každý byt. Čerpanie a iné príjmy fondu sa rozdeľujú podľa spoluvlastníckeho podielu (§ 10 ods. 1 zák. č. 182/1993 Z. z.). Súčet za byty sa musí rovnať zostatku účtu 472.",
+      "fpuoShareMissing": "chýba spoluvlastnícky podiel — čerpanie nepridelené",
+      "fpuoColOpening": "Počiatočný stav",
+      "fpuoColPredpis": "Predpis",
+      "fpuoColPaid": "Uhradené z predpisu",
+      "fpuoColUses": "Čerpanie",
+      "fpuoColIncome": "Iné príjmy",
+      "fpuoColOther": "Opravy",
+      "fpuoColClosing": "Konečný stav",
+      "fpuoReconciled": "Súčet za byty sa zhoduje so zostatkom účtu 472: {amount}.",
+      "fpuoDifference": "Pozor: zostatok účtu 472 je {ledger}, súčet za byty sa líši o {difference}.",
+      "fpuoUnallocated": "Nepridelené na byty (žiadny byt nemá zadaný podiel): {amount}."
     },
     "zavierka": {
       "title": "Účtovná závierka",
       "hint": "Ročnú účtovnú závierku schvaľuje zhromaždenie vlastníkov (§7c ods. 9 zák. 182/1993). Schválenie tu iba zaznamenáva rozhodnutie — neúčtuje sa žiaden zápis.",
       "yearLabel": "Rok",
       "approved": "Účtovná závierka za rok {year} bola schválená zhromaždením.",
-      "votePlaceholder": "ID bodu hlasovania zhromaždenia",
-      "voteHint": "Vložte ID uzavretého bodu hlasovania, ktorým zhromaždenie schválilo závierku (nájdete ho v detaile hlasovania).",
+      "votePlaceholder": "— Vyberte schválený bod hlasovania —",
+      "voteHint": "Zobrazujú sa len body, ktoré boli schválené v uzavretom hlasovaní so zverejneným výsledkom.",
       "approve": "Schváliť závierku",
       "approving": "Schvaľuje sa…",
       "chairmanOnly": "Závierku schvaľuje predseda (oddelenie právomocí).",
       "blockedNotPublished": "Najprv publikujte ročné vyúčtovanie — až potom je možné závierku schváliť.",
       "approveError": "Schválenie zlyhalo.",
       "loading": "Načítava sa…",
-      "loadError": "Stav závierky sa nepodarilo načítať."
+      "loadError": "Stav závierky sa nepodarilo načítať.",
+      "voteLabel": "Rozhodnutie zhromaždenia",
+      "voteOption": "{voting} — bod {idx}: {item} ({date})",
+      "noEligibleVotes": "Zatiaľ nie je žiadny schválený bod hlasovania so zverejneným výsledkom. Najprv dajte závierku schváliť zhromaždením a zverejnite výsledok hlasovania.",
+      "errors": {
+        "VOTE_REQUIRED": "Vyberte bod hlasovania, ktorým zhromaždenie schválilo závierku.",
+        "PERIOD_NOT_FOUND": "Účtovné obdobie pre tento rok neexistuje.",
+        "ALREADY_APPROVED": "Závierka za tento rok je už schválená.",
+        "NOT_PUBLISHED": "Najprv publikujte ročné vyúčtovanie.",
+        "VOTE_NOT_FOUND": "Hlasovanie sa nenašlo alebo nepatrí tomuto spoločenstvu.",
+        "VOTE_NOT_CLOSED": "Hlasovanie ešte nie je uzavreté.",
+        "RESULT_NOT_PUBLISHED": "Výsledok hlasovania ešte nebol zverejnený.",
+        "ITEM_NOT_PASSED": "Vybraný bod nebol schválený.",
+        "UNKNOWN": "Schválenie zlyhalo pre neočakávanú chybu."
+      }
     },
     "attachments": {
       "gdprWarning": "Doklad môže obsahovať osobné údaje. Pri práve na nahliadnutie ho uvidia vlastníci — ak treba, označte redakciu alebo obmedzenie.",
@@ -3407,7 +3940,9 @@
       "boardSubtitle": "Všetky byty s nedoplatkom vrátane mien vlastníkov — interný prehľad výboru (predseda, pokladník, správca).",
       "boardNone": "Žiadny byt nemá nedoplatok.",
       "boardNote": "Interný zoznam pre výbor. Nezverejňujte ho vlastníkom — na zverejnenie platí § 11 zák. 182/1993 Z.z. a hranica nastavená výborom.",
-      "boardNoOwner": "— (bez aktívneho vlastníka)"
+      "boardNoOwner": "— (bez aktívneho vlastníka)",
+      "boardNetNote": "Suma je nedoplatok po započítaní preplatkov — rovnaké číslo ako zostatok na karte bytu.",
+      "totalRow": "Spolu ({count})"
     },
     "votingImpacts": {
       "title": "Finančné dopady",
@@ -3580,6 +4115,89 @@
       "credentialsFromEnv": "Aplikácia {appId} je nastavená v prostredí servera. Zmeniť ju môže len ten, kto spravuje server.",
       "envAlternative": "Alternatíva: premenné prostredia",
       "envAlternativeBody": "Ak spravujete server, môžete údaje namiesto formulára nastaviť v docker-compose alebo .env a aplikáciu reštartovať. Premenné prostredia majú prednosť pred údajmi z formulára."
+    },
+    "reports": {
+      "exportXlsx": "Stiahnuť Excel (XLSX)",
+      "exportCsv": "Stiahnuť CSV",
+      "generatedAt": "Vygenerované {date}",
+      "total": "Spolu",
+      "totalExclVoided": "Spolu ({count} platieb, bez stornovaných)",
+      "totalCount": "Spolu ({count})",
+      "tb": {
+        "sheet": "Predvaha {year}",
+        "title": "Obratová predvaha za rok {year}",
+        "colCode": "Účet",
+        "colName": "Názov účtu",
+        "colOpeningDr": "Počiatočný stav MD",
+        "colOpeningCr": "Počiatočný stav D",
+        "colTurnoverDr": "Obrat MD",
+        "colTurnoverCr": "Obrat D",
+        "colClosingDr": "Konečný stav MD",
+        "colClosingCr": "Konečný stav D",
+        "note": "Rok podľa účtovného obdobia zápisu. Počiatočný stav = všetky zápisy predchádzajúcich období."
+      },
+      "fpuo": {
+        "sheet": "FPUO {year}",
+        "title": "Fond prevádzky, údržby a opráv po bytoch za rok {year}",
+        "colUnit": "Byt",
+        "colOpening": "Počiatočný stav",
+        "colPredpis": "Predpis",
+        "colPaid": "Uhradené z predpisu",
+        "colUses": "Čerpanie (podľa podielu)",
+        "colIncome": "Iné príjmy (podľa podielu)",
+        "colOther": "Opravy",
+        "colClosing": "Konečný stav",
+        "shareMissing": "chýba podiel",
+        "note": "Konečný stav = počiatočný stav + predpis − čerpanie + iné príjmy + opravy. Čerpanie a iné príjmy sú rozdelené podľa spoluvlastníckeho podielu (§ 10 ods. 1 zák. č. 182/1993 Z. z.). Stĺpec „Uhradené“ je informatívny.",
+        "reconcile": "Kontrola: zostatok účtu 472 = {ledger} €, rozdiel = {difference} €.",
+        "unallocated": "Nepridelené na byty (chýbajú podiely): {amount} €."
+      },
+      "payments": {
+        "sheet": "Platby",
+        "title": "Prijaté platby od {from} do {to}",
+        "colDate": "Dátum",
+        "colUnit": "Byt",
+        "colVs": "VS",
+        "colAmount": "Suma",
+        "colAllocated": "Priradené k predpisu",
+        "colCredit": "Preplatok",
+        "colSource": "Zdroj",
+        "colNote": "Poznámka",
+        "voided": "Stornované"
+      },
+      "debtors": {
+        "sheet": "Dlžníci",
+        "title": "Byty s nedoplatkom (po započítaní preplatkov)",
+        "colUnit": "Byt",
+        "colOwners": "Vlastníci",
+        "colBalance": "Nedoplatok"
+      },
+      "card": {
+        "sheet": "Karta {unit}",
+        "title": "Karta bytu {unit}",
+        "vs": "Variabilný symbol: {vs}",
+        "colDate": "Dátum",
+        "colDescription": "Popis",
+        "colPredpis": "Predpis",
+        "colPaid": "Úhrada",
+        "colBalance": "Zostatok",
+        "noteOwes": "Kladný zostatok = nedoplatok vlastníka.",
+        "noteCredit": "Záporný zostatok = preplatok vlastníka.",
+        "noteSettled": "Zostatok je vyrovnaný."
+      }
+    },
+    "bankBalance": {
+      "match": "Zostatok na výpise k {date} sa zhoduje s účtom 221 v účtovníctve.",
+      "mismatch": "Zostatok na výpise k {date} sa nezhoduje s účtom 221 v účtovníctve.",
+      "statement": "Konečný zostatok podľa banky",
+      "ledger": "Účet 221 v účtovníctve",
+      "difference": "Rozdiel (banka − účtovníctvo)",
+      "causesIntro": "Najčastejšie príčiny rozdielu:",
+      "pendingCredits": "{count, plural, one {# prijatá platba čaká} few {# prijaté platby čakajú} other {# prijatých platieb čaká}} na priradenie k bytu ({amount}) — do účtovníctva sa zapíše až po potvrdení.",
+      "debitsIntro": "Import nezapisuje odchádzajúce platby. Na výpise je {count, plural, one {# odchádzajúca platba} few {# odchádzajúce platby} other {# odchádzajúcich platieb}} spolu {amount} — každú zaevidujte ako úhradu výdavku (faktúry, poplatku banke):",
+      "noDebits": "Na výpise nie sú žiadne odchádzajúce platby.",
+      "unknownCounterparty": "Neznámy príjemca",
+      "otherCauses": "Ďalšie možné príčiny: chýbajúci starší výpis, nesprávny počiatočný stav banky v otváracej súvahe alebo platba zaevidovaná ručne aj z banky."
     }
   },
   "Home": {
@@ -3933,7 +4551,12 @@
       "revokeHint": "Prístup môžete kedykoľvek zrušiť v Profile → Pripojené AI aplikácie.",
       "errorTitle": "Požiadavku nie je možné spracovať",
       "errorInvalidClient": "Aplikáciu sa nepodarilo overiť. Skúste ju v AI aplikácii pripojiť znova.",
-      "errorInvalidRedirect": "Adresa návratu nepatrí tejto aplikácii. Z bezpečnostných dôvodov sme požiadavku zastavili."
+      "errorInvalidRedirect": "Adresa návratu nepatrí tejto aplikácii. Z bezpečnostných dôvodov sme požiadavku zastavili.",
+      "registeredHost": "Aplikácia sa pripája cez {host}.",
+      "registeredLocal": "Aplikácia beží vo vašom počítači (napr. Claude Desktop).",
+      "registeredExplain": "Takto sa pripája väčšina AI aplikácií: zaregistrovala sa automaticky, preto jej doménu nevieme overiť. Povoľte prístup, len ak ste pripojenie práve spustili vy.",
+      "redirectMismatch": "Pozor: aplikácia z {app} posiela prístup na inú doménu ({host}).",
+      "redirectMismatchExplain": "To býva znak podvrhu. Ak si nie ste istí, prístup zamietnite."
     },
     "scopes": {
       "read": "čítať vaše údaje v spoločenstve: profil, oznamy, hlasovania a dokumenty, ktoré vidíte",
@@ -4005,7 +4628,10 @@
         "Zmeny sa vykonajú až po vašom kliknutí na potvrdenie.",
         "Hlasovanie potvrdzujete e-mailom alebo v aplikácii.",
         "Zrušením prístupu nižšie AI okamžite stratí prístup."
-      ]
+      ],
+      "claudeDesktopNote": "Claude Desktop (Windows, Mac) používa konektory z vášho účtu na claude.ai — stačí ich pridať raz. Po pridaní aplikáciu reštartujte.",
+      "mobileNote": "V mobilnej aplikácii sa konektor pridať nedá; pridajte ho na webe a v mobile ho potom zapnete v rozhovore.",
+      "confirmInBrowser": "Niektoré AI aplikácie nezobrazia tlačidlá na potvrdenie priamo v rozhovore. Vtedy dostanete odkaz — zmenu potvrdíte v prehliadači v tejto aplikácii."
     },
     "actions": {
       "match_payment": {
@@ -4080,6 +4706,23 @@
         "summary": "Prepojiť záznam vlastníka {owner} s účtom {name}",
         "summaryApprove": "Prepojiť záznam vlastníka {owner} s registráciou {name} a schváliť ju",
         "done": "Záznam vlastníka bol prepojený s účtom."
+      },
+      "match_payments": {
+        "title": "Priradiť viac platieb z banky",
+        "summary": "Priradiť {count, plural, one {# platbu} few {# platby} other {# platieb}} spolu {amount} k bytom",
+        "done": "Platby boli priradené.",
+        "donePartial": "Priradených {matched} z {total} platieb. Ostatné sa medzitým zmenili — skontrolujte ich v párovaní platieb."
+      },
+      "link_owner_accounts": {
+        "title": "Prepojiť viac vlastníkov s účtami",
+        "summary": "Prepojiť {count, plural, one {# záznam vlastníka} few {# záznamy vlastníkov} other {# záznamov vlastníkov}} s účtami",
+        "done": "Záznamy vlastníkov boli prepojené s účtami.",
+        "donePartial": "Prepojených {linked} z {total} záznamov. Ostatné sa medzitým zmenili — skontrolujte ich vo Vlastníkoch."
+      },
+      "transfer_unit_ownership": {
+        "title": "Zmena vlastníka bytu",
+        "summary": "Zmeniť vlastníka bytu {unit} k {date}",
+        "done": "Vlastník bytu bol zmenený."
       }
     },
     "preview": {
@@ -4179,7 +4822,34 @@
       "account": "Účet",
       "accountStatus": "Stav účtu",
       "accountStatus_active": "Aktívny",
-      "accountStatus_pending": "Čaká na schválenie"
+      "accountStatus_pending": "Čaká na schválenie",
+      "paymentCount": "Počet platieb",
+      "amountTotal": "Suma spolu",
+      "unitCount": "Počet bytov",
+      "paymentN": "Platba {n}",
+      "paymentLine": "{amount} · {date} · VS {vs} · {counterparty} → {unit}",
+      "unitBalanceOf": "Saldo bytu {unit}",
+      "linkCount": "Počet prepojení",
+      "linkN": "Prepojenie {n}",
+      "linkLine": "{owner} ({units}) → {name}",
+      "linkLineApprove": "{owner} ({units}) → {name} (registrácia sa schváli)",
+      "transferFrom": "Odchádzajúci vlastníci",
+      "transferTo": "Noví vlastníci (podiel)",
+      "transferDate": "Dátum zmeny",
+      "transferKind": "Dôvod",
+      "unitsExisting": "Byty už v aplikácii",
+      "unitShareSumWithExisting": "Súčet podielov bytov (existujúce + import)",
+      "unitShareSumGap": "{sum} (do 1/1 chýba {diff})",
+      "lvRecognised": "Rozpoznané z LV",
+      "lvRecognisedValue": "{owners, plural, one {# vlastník} few {# vlastníci} other {# vlastníkov}}, {units, plural, one {# byt} few {# byty} other {# bytov}}",
+      "lvSkippedCount": "Nerozpoznané riadky LV",
+      "lvRowN": "LV, poradové číslo {n}",
+      "lvRow": "LV",
+      "lvSkip_no_share": "chýba podiel",
+      "lvSkip_share_invalid": "neplatný podiel",
+      "lvSkip_unreadable": "nečitateľný riadok",
+      "lvSkip_no_unit_sections": "LV neobsahuje byty (vchody) — zapisuje dom ako celok",
+      "lvSkip_building_owner": "vlastník celého domu, nie bytu"
     },
     "consequences": {
       "allocatePayment": "Platba sa započíta na najstaršie predpisy bytu a zmení jeho saldo.",
@@ -4205,7 +4875,12 @@
       "accessGranted": "Osoba dostane prístup do aplikácie s rolou vlastník.",
       "noEmailSent": "Osobe sa neposiela e-mail s oznámením.",
       "rejectBlocksLogin": "Registrácia sa zamietne a osoba sa do aplikácie neprihlási.",
-      "rejectEmailBlocked": "Tento e-mail už nebude možné použiť na novú registráciu."
+      "rejectEmailBlocked": "Tento e-mail už nebude možné použiť na novú registráciu.",
+      "batchPerItem": "Každá položka sa zapíše samostatne. Ak sa niektorá medzitým zmení, preskočí sa a ostatné sa zapíšu.",
+      "mergeOwnerRecords": "{count, plural, one {# záznam vlastníka sa zlúči} few {# záznamy vlastníkov sa zlúčia} other {# záznamov vlastníkov sa zlúči}} do účtov; byty, podiely a história prejdú na účty.",
+      "accessGrantedCount": "{count, plural, one {# čakajúca registrácia sa schváli} few {# čakajúce registrácie sa schvália} other {# čakajúcich registrácií sa schváli}} a získa prístup do aplikácie.",
+      "importOwnerGroups": "{count, plural, one {# osoba vlastní} few {# osoby vlastnia} other {# osôb vlastní}} viac bytov — každá vznikne iba raz.",
+      "transferHistoryKept": "História ostáva zachovaná: doterajšie hlasovania a predpisy ostávajú pôvodnému vlastníkovi."
     },
     "warnings": {
       "ocrAmountMismatch": "Suma sa líši od sumy rozpoznanej na skene ({ocr}).",
@@ -4217,7 +4892,14 @@
       "emailNotVerified": "Osoba ešte nepotvrdila svoj e-mail.",
       "namesDiffer": "Mená sa líšia — skontrolujte, že ide o tú istú osobu.",
       "suggestedOwnerRecord": "Aplikácia navrhuje spojenie so záznamom vlastníka {name}. Schválením bez spojenia vznikne druhý záznam tej istej osoby.",
-      "approveWithoutUnit": "Osoba nebude mať priradený žiadny byt — priradiť ho môžete neskôr v aplikácii."
+      "approveWithoutUnit": "Osoba nebude mať priradený žiadny byt — priradiť ho môžete neskôr v aplikácii.",
+      "matchDiffersFromSuggestion": "Platba {n}: aplikácia navrhuje byt {suggested}, nie {unit}.",
+      "namesDifferItem": "Prepojenie {n}: mená {owner} a {name} sa líšia — skontrolujte, že ide o tú istú osobu.",
+      "emailNotVerifiedItem": "Prepojenie {n}: {name} ešte nepotvrdil/a svoj e-mail.",
+      "importShareSum": "Súčet podielov bytov je {sum}, nie 1/1 (rozdiel {diff}). Skontrolujte, či import obsahuje všetky byty.",
+      "importShareSumWithExisting": "Existujúce byty ({existing}) a tento import ({imported}) dávajú spolu {sum}, nie 1/1 (rozdiel {diff}). Pri importe po častiach je to v poriadku, kým nepridáte zvyšok.",
+      "importWarning": "Riadok {row}: upozornenie importu ({code}).",
+      "lvRowsSkipped": "{count, plural, one {# riadok LV sa nepodarilo} few {# riadky LV sa nepodarilo} other {# riadkov LV sa nepodarilo}} prečítať — nebude naimportovaný. Doplňte ho ručne."
     },
     "view": {
       "confirm": "Potvrdiť",
@@ -4231,8 +4913,9 @@
       "fallbackHint": "Nevidíte tlačidlá?",
       "confirmedTitle": "Potvrdené.",
       "cancelledMessage": "Zmena bola zrušená. Nič sa nezapísalo.",
-      "pendingText": "Čaká na tvoje potvrdenie: {summary}. Nič sa zatiaľ nezapísalo.",
-      "fallbackText": "Potvrď alebo zruš v okne nižšie, alebo v aplikácii: {url} (platí do {time})."
+      "pendingText": "Čaká na vaše potvrdenie: {summary}. Nič sa zatiaľ nezapísalo.",
+      "fallbackText": "Potvrďte alebo zrušte to v okne nižšie, alebo v aplikácii: {url} (platí do {time}).",
+      "fallbackTextLinkOnly": "Potvrďte alebo zrušte to v aplikácii na tomto odkaze: {url} (platí do {time}). Bez vášho kliknutia sa nič nezapíše."
     },
     "errors": {
       "action_expired": "Platnosť žiadosti vypršala alebo už bola vybavená. Požiadajte AI asistenta o nový návrh.",
@@ -5015,6 +5698,106 @@
       "MEETING_PLACE_REQUIRED": "Zadajte, kde sa schôdza koná.",
       "MEETING_NOTICE_TOO_SHORT": "Nový termín musí byť aspoň 7 celých dní od dnešného dňa.",
       "MEETING_EXPORT_UNAVAILABLE": "Export prezenčnej listiny je dostupný len pre spoločenstvo vlastníkov bytov."
+    },
+    "invitationPdf": {
+      "heading": "Pozvánka na tlač",
+      "hint": "Pre vlastníkov bez e-mailu vytlačte pozvánku – jedna strana na vlastníka s jeho bytmi a podielom. Pozvánku doručte najneskôr 7 dní pred schôdzou.",
+      "generic": "Pozvánka (bez adresáta)",
+      "noEmail": "Vlastníci bez e-mailu ({count})",
+      "all": "Všetci vlastníci ({count})",
+      "title": "Pozvánka na schôdzu vlastníkov",
+      "addressee": "Adresát",
+      "units": "Byty / priestory",
+      "share": "Podiel na hlasoch",
+      "when": "Termín schôdze",
+      "place": "Miesto schôdze",
+      "agenda": "Program schôdze",
+      "rsvpHint": "Svoju účasť môžete potvrdiť v aplikácii alebo u predsedu či správcu.",
+      "convenedBy": "Zvoláva",
+      "issuedOn": "Dátum vyhotovenia",
+      "ico": "IČO"
+    }
+  },
+  "BoardPrint": {
+    "title": "Nástenka",
+    "print": "Vytlačiť",
+    "back": "Späť na oznamy",
+    "hint": "Posledné oznamy na vytlačenie na formát A4 (počet: {count}).",
+    "empty": "Zatiaľ nie sú žiadne oznamy."
+  },
+  "ClaimLetters": {
+    "openButton": "Listy pre vlastníkov bez účtu",
+    "title": "Listy pre vlastníkov bez účtu",
+    "intro": "Vytvorí jeden PDF súbor, na každého vlastníka jednu stranu A4 s QR kódom, krátkym kódom a jednoduchým postupom. Platnosť listu je 60 dní.",
+    "note": "Každé vygenerovanie vystaví nové odkazy; staršie nepoužité odkazy zostávajú platné do vypršania alebo použitia.",
+    "loadFailed": "Zoznam vlastníkov sa nepodarilo načítať.",
+    "paperFailed": "Príznak sa nepodarilo uložiť.",
+    "nothingToPrint": "Nie je čo tlačiť. Vyberte aspoň jedného vlastníka.",
+    "generateFailed": "PDF sa nepodarilo vytvoriť. Skúste to znova.",
+    "done": "PDF bolo stiahnuté. Počet listov: {count}.",
+    "empty": "Všetci vlastníci už majú účet alebo nie sú žiadni čakajúci.",
+    "selectAll": "Všetci ({count})",
+    "selectNoEmail": "Len bez e-mailu ({count})",
+    "selectNone": "Zrušiť výber",
+    "flats": "byt {flats}",
+    "noEmail": "Bez e-mailu",
+    "paperOnly": "Len papierová komunikácia",
+    "generate": "Vytvoriť PDF ({count})",
+    "pdf": {
+      "title": "Prístup do aplikácie pre vlastníkov",
+      "to": "Pre: {name} (byt {flats})",
+      "step1": "1. Ak máte smartfón, odfoťte kamerou QR kód nižšie a otvorí sa stránka.",
+      "step2": "2. Alebo na počítači otvorte stránku {url} a zadajte krátky kód z tohto listu.",
+      "step3": "3. Zadajte svoj e-mail a zvoľte si heslo. Potom sa môžete prihlásiť.",
+      "codeLabel": "Krátky kód:",
+      "valid": "Tento list platí do {date}. Kód a QR kód môže použiť len jedna osoba, jedenkrát.",
+      "help": "Nemáte e-mail ani smartfón? Nevadí. Kontaktujte výbor a požiadajte o papierovú komunikáciu. Oznamy a dokumenty vám budeme doručovať v tlačenej podobe."
+    }
+  },
+  "SmtpStatus": {
+    "title": "E-maily sa neodosielajú",
+    "body": "Nie je nastavený SMTP server (premenná SMTP_HOST). Pozvánky, oznamy, dokumenty a pozvánky na schôdzu sa vlastníkom e-mailom nedoručia. Požiadajte správcu servera o nastavenie."
+  },
+  "LegalCopy": {
+    "hoa": {
+      "minutesHeading": "ZÁPISNICA Z HLASOVANIA",
+      "memberLabel": "Vlastník",
+      "memberLabelPlural": "vlastníkov",
+      "assemblyName": "schôdza vlastníkov"
+    },
+    "cooperative": {
+      "sk": {
+        "noticeTitle": "Pozvánka na členskú schôdzu",
+        "noticeLegalBasis": "Podľa § 239 Obchodného zákonníka (zákon č. 513/1991 Zb.) a stanov družstva",
+        "ballotHeading": "Hlasovací lístok člena družstva",
+        "attendanceHeading": "Listina prítomných členov",
+        "attendanceBlankHeading": "Listina prítomných členov (na podpis)",
+        "minutesHeading": "ZÁPISNICA ZO ČLENSKEJ SCHÔDZE",
+        "memberLabel": "Člen",
+        "memberLabelPlural": "členov",
+        "assemblyName": "členská schôdza"
+      },
+      "cz": {
+        "noticeTitle": "Pozvánka na členskú schôdzu",
+        "noticeLegalBasis": "Podľa § 636 zákona č. 90/2012 Sb., o obchodných korporáciách (Česko), a stanov družstva",
+        "ballotHeading": "Hlasovací lístok člena družstva",
+        "attendanceHeading": "Listina prítomných členov",
+        "attendanceBlankHeading": "Listina prítomných členov (na podpis)",
+        "minutesHeading": "ZÁPISNICA ZO ČLENSKEJ SCHÔDZE",
+        "memberLabel": "Člen",
+        "memberLabelPlural": "členov",
+        "assemblyName": "členská schôdza"
+      }
+    },
+    "topics": {
+      "votes": "Počítanie hlasov",
+      "notice": "Zvolanie a lehota oznámenia",
+      "majorities": "Potrebné väčšiny",
+      "quorum": "Uznášaniaschopnosť",
+      "minutes": "Zápisnica",
+      "board": "Predstavenstvo",
+      "supervisory": "Kontrolná komisia",
+      "perRollam": "Rozhodovanie mimo schôdze (per rollam)"
     }
   }
 }

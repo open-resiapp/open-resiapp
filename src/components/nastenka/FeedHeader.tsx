@@ -4,7 +4,7 @@ import type { ReactNode } from "react";
 import { useTranslations } from "next-intl";
 
 import { useShell } from "@/components/layout/ShellContext";
-import { PageHeader } from "@/components/ui";
+import { ButtonLink, PageHeader } from "@/components/ui";
 
 // Owners reach the feed from "Dom" (it is not in their nav) → back link.
 export default function FeedHeader({ actions }: { actions?: ReactNode }) {
@@ -17,7 +17,14 @@ export default function FeedHeader({ actions }: { actions?: ReactNode }) {
       description={t("subtitle")}
       backHref={owner ? "/dom" : undefined}
       backLabel={owner ? t("backToHouse") : undefined}
-      actions={actions}
+      actions={
+        <>
+          {actions}
+          <ButtonLink variant="ghost" href="/board-print">
+            {t("printLink")}
+          </ButtonLink>
+        </>
+      }
     />
   );
 }

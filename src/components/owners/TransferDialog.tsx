@@ -11,6 +11,7 @@ import {
   type TransferActionInput,
 } from "@/app/[locale]/(dashboard)/owners/lifecycle-actions";
 import { add, isOne, rational, type Rational } from "@/lib/rational";
+import { isUnitHolderRole } from "@/lib/role-options";
 import {
   TRANSFER_KINDS,
   todayIso,
@@ -52,7 +53,7 @@ function toInt(s: string): number {
 export default function TransferDialog({ unitId, unitLabel, currentOwners, people, onClose }: Props) {
   const t = useTranslations("OwnerLifecycle");
   const router = useRouter();
-  const owners = currentOwners.filter((o) => o.role === "owner" && o.validTo === null);
+  const owners = currentOwners.filter((o) => isUnitHolderRole(o.role) && o.validTo === null);
 
   const [step, setStep] = useState<1 | 2 | 3>(1);
   const [sellers, setSellers] = useState<string[]>(owners.length === 1 ? [owners[0].userId] : []);

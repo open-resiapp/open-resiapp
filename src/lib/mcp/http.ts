@@ -3,6 +3,7 @@ import "server-only";
 import type { NextRequest } from "next/server";
 
 import { authenticateBearer, unauthorizedResponse } from "./bearer";
+import { recordInitialize } from "./client-capabilities";
 import { buildToolContext } from "./context";
 import { isMcpError } from "./errors";
 import { isMcpEnabled } from "./module-state";
@@ -47,6 +48,13 @@ export async function handleMcpPost(req: NextRequest): Promise<Response> {
     parsedBody && typeof parsedBody === "object" && !Array.isArray(parsedBody)
       ? (parsedBody as { method?: unknown }).method
       : undefined;
+  // 2025-era clients declare their capabilities only here; stateless
+  // serving forgets them before tools/call, so remember the MCP Apps UI
+  // flag on the OAuth client (src/lib/mcp/client-capabilities.ts).
+  if (method === "initialize") {
+    await recordInitialize(auth.token, (parsedBody as { params?: unknown }).params);
+  }
+
   if (typeof method === "string" && REFUSED_METHODS.has(method)) {
     const id = (parsedBody as { id?: unknown }).id ?? null;
     return Response.json(

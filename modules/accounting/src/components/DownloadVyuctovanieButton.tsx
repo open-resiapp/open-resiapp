@@ -16,12 +16,16 @@ interface PdfData {
     categorySlug: string;
     prescribedCents: number;
     advancesCents: number;
+    unpaidCents: number;
     costShareCents: number;
     differenceCents: number;
     allocationKey: string | null;
   }[];
+  basis: "prescribed" | "paid";
   totalCostCents: number;
+  totalPrescribedCents: number;
   totalAdvancesCents: number;
+  totalUnpaidCents: number;
   totalDifferenceCents: number;
   iban: string | null;
   payBySquare: string | null;
@@ -85,7 +89,13 @@ export default function DownloadVyuctovanieButton({
             qrTitle: t("qrTitle"),
             iban: t("iban"),
             footer: t("footer"),
+            prescribedAdvances: t("prescribedAdvances"),
+            unpaid: t("unpaid"),
+            result: t("result"),
+            arrearsTitle: t("arrearsTitle"),
+            arrearsNote: t("arrearsNote"),
           }}
+          basis={data.basis}
           year={data.year}
           unitLabel={data.unitLabel}
           vs={data.vs}
@@ -95,11 +105,14 @@ export default function DownloadVyuctovanieButton({
               : tCat(l.categorySlug as Parameters<typeof tCat>[0]),
             prescribed: formatEur(l.prescribedCents),
             advances: formatEur(l.advancesCents),
+            unpaid: formatEur(l.unpaidCents),
             cost: formatEur(l.costShareCents),
             difference: formatEur(l.differenceCents),
           }))}
           totals={{
             advances: formatEur(data.totalAdvancesCents),
+            prescribed: formatEur(data.totalPrescribedCents),
+            unpaid: formatEur(data.totalUnpaidCents),
             cost: formatEur(data.totalCostCents),
             difference: formatEur(data.totalDifferenceCents),
           }}
@@ -127,12 +140,12 @@ export default function DownloadVyuctovanieButton({
       <button
         onClick={handleDownload}
         disabled={generating}
-        className="text-sm text-blue-600 dark:text-blue-400 hover:underline disabled:opacity-50"
+        className="text-base text-blue-600 dark:text-blue-400 hover:underline disabled:opacity-50"
       >
         {generating ? t("generating") : t("download", { year })}
       </button>
       {error && (
-        <span className="text-red-600 dark:text-red-400 text-xs ml-2">
+        <span className="text-red-600 dark:text-red-400 text-base ml-2">
           {t("error")}
         </span>
       )}

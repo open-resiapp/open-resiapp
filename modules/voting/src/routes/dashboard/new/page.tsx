@@ -13,7 +13,12 @@ import {
   getVotingRules,
   type Country,
 } from "@modules/voting/src/rules";
-import { civilDate, minStartDate } from "@modules/voting/src/workflow/notice";
+import {
+  civilDate,
+  minStartDate,
+  noticeRulesFor,
+  type NoticeRules,
+} from "@modules/voting/src/workflow/notice";
 import { timeZoneForCountry } from "@/lib/time-zone";
 
 import { VOTING_WORKFLOW_ERRORS as WORKFLOW_ERRORS } from "@modules/voting/src/workflow/error-codes";
@@ -89,6 +94,8 @@ export default function NovaHlasovaniePage({
   const [votingType, setVotingType] = useState("written");
   const [initiatedBy, setInitiatedBy] = useState("board");
   const [country, setCountry] = useState<Country>("sk");
+  // BYT-20261118-020: regime (template) + stanovy lead time from the root.
+  const [noticeRules, setNoticeRules] = useState<NoticeRules>({});
   const [entrances, setEntrances] = useState<Entrance[]>([]);
   const [projects, setProjects] = useState<{ id: string; title: string }[]>([]);
   const [selectedProjectId, setSelectedProjectId] = useState("");
@@ -122,7 +129,7 @@ export default function NovaHlasovaniePage({
   const repeatableQuorumTypes = getRepeatableQuorumTypes(country, votingType);
   // SK §14a ods. 2: announcing today ⇒ earliest start day (null = no rule, CZ).
   const tz = timeZoneForCountry(country);
-  const leadMin = minStartDate(country, new Date(), tz);
+  const leadMin = minStartDate(country, new Date(), tz, noticeRules);
 
   // Country: single existing fetch (ShellCommunity does not carry it).
   useEffect(() => {
@@ -130,6 +137,7 @@ export default function NovaHlasovaniePage({
       .then((r) => (r.ok ? r.json() : null))
       .then((b) => {
         if (b?.country === "cz" || b?.country === "sk") setCountry(b.country);
+        if (b) setNoticeRules(noticeRulesFor(b));
       })
       .catch(() => {});
   }, []);
@@ -137,7 +145,7 @@ export default function NovaHlasovaniePage({
   // Country changes the statutory minimum — move the default end date unless
   // the chairman already picked one.
   useEffect(() => {
-    const lead = minStartDate(country, new Date(), timeZoneForCountry(country));
+    const lead = minStartDate(country, new Date(), timeZoneForCountry(country), noticeRules);
     if (lead && !startTouched.current) {
       // SK: the vote cannot start "now" — default to the earliest legal day.
       const start = new Date(`${lead}T08:00`);
@@ -151,7 +159,7 @@ export default function NovaHlasovaniePage({
       return;
     }
     if (!endTouched.current) setEndsAt(toLocalInput(defaultEnd(country)));
-  }, [country]);
+  }, [country, noticeRules]);
 
   // Re-validate item quorum types after a country / voting type change.
   useEffect(() => {
@@ -388,7 +396,7 @@ export default function NovaHlasovaniePage({
             key={label}
             aria-current={step === i + 1 ? "step" : undefined}
             className={cn(
-              "flex-1 border-t-4 pt-2 text-sm font-medium",
+              "flex-1 border-t-4 pt-2 text-base font-medium",
               step === i + 1
                 ? "border-ui-primary text-ui-text"
                 : step > i + 1

@@ -4,6 +4,7 @@ import { auth } from "@/lib/auth";
 import { db } from "@/db";
 import { invitations } from "@/db/schema";
 import { hasPermission } from "@/lib/permissions";
+import { ASSIGNABLE_ROLES } from "@/lib/role-options";
 import type { UserRole } from "@/types";
 
 export async function POST(request: NextRequest) {
@@ -22,7 +23,9 @@ export async function POST(request: NextRequest) {
   const body = await request.json();
   const { role, flatId, expiresInDays = 7 } = body;
 
-  if (!role || !["owner", "tenant", "admin", "vote_counter", "caretaker"].includes(role)) {
+  // BYT-20261118-020: + member / accountant / spravca. manageUsers is
+  // admin-only, so spravca can never mint an admin invitation.
+  if (!role || !ASSIGNABLE_ROLES.includes(role)) {
     return NextResponse.json(
       { error: "Neplatná rola" },
       { status: 400 }

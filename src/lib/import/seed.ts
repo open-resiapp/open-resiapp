@@ -1,6 +1,7 @@
 import "server-only";
 
 import { and, count, eq, inArray, isNotNull, isNull, sql } from "drizzle-orm";
+import { getTranslations } from "next-intl/server";
 
 import { db } from "@/db";
 import {
@@ -11,21 +12,24 @@ import {
 } from "@/db/schema";
 import { buildPath } from "@/lib/entity-tree";
 import { getTemplate } from "@/lib/templates/loader";
+import { routing } from "@/i18n/routing";
+import { isUnitType } from "@/lib/unit-type";
 
+import { importUnitLabel, ownerKeysForRows } from "./owner-groups";
 import type { ImportRow } from "./types";
 import { ownerCommunityShare } from "./validate";
 
 // BYT-20260515-001 Phase 6b: the kind slugs the seeder emits at each
 // tree level. Falls back to the HOA chain when the template is missing
 // or doesn't declare 4 levels — matches pre-2026-05 behaviour.
-interface KindChain {
+export interface KindChain {
   root: string;
   block: string | null;
   entrance: string | null;
   leaf: string;
 }
 
-async function resolveKindChain(templateSlug: string | undefined): Promise<KindChain> {
+export async function resolveKindChain(templateSlug: string | undefined): Promise<KindChain> {
   const fallback: KindChain = {
     root: "community",
     block: "building",
@@ -56,6 +60,18 @@ async function resolveKindChain(templateSlug: string | undefined): Promise<KindC
   }
 }
 
+/** Roles that hold a unit (owner in an SVB, member in a družstvo). */
+const UNIT_HOLDER_ROLES: ("owner" | "member")[] = ["owner", "member"];
+
+/** Template's `member_role` (BYT-20261118-020); `owner` when absent. */
+async function resolveHolderRole(
+  templateSlug: string | undefined
+): Promise<"owner" | "member"> {
+  if (!templateSlug) return "owner";
+  const tpl = await getTemplate(templateSlug);
+  return tpl?.member_role ?? "owner";
+}
+
 export class DuplicateCommunityError extends Error {
   constructor(
     public existingId: string,
@@ -68,6 +84,35 @@ export class DuplicateCommunityError extends Error {
     this.name = "DuplicateCommunityError";
   }
 }
+
+type UnitNamer = (r: ImportRow) => string;
+
+/**
+ * Display name of a seeded leaf, by unit type (HOA `unit` leaves: "Byt 12",
+ * "Garáž 3", "Nebytový priestor 4") or by the template's leaf kind for
+ * non-HOA templates ("Záhradka / parcela 7"). The LV parser numbers non-flat
+ * units "NP 3" so they never collide with byt č. 3 in the same entrance —
+ * that number stays in data.flat_number (the re-import key); the display
+ * name drops the prefix. Language: the importing admin's locale.
+ */
+async function unitNamer(leafKind: string, locale: string | undefined): Promise<UnitNamer> {
+  const loc = locale ?? routing.defaultLocale;
+  const tType = await getTranslations({ locale: loc, namespace: "UnitType" });
+  const tKind = await getTranslations({ locale: loc, namespace: "Kinds" });
+  return (r) => {
+    const num = String(r.unit_number).trim();
+    if (leafKind !== "unit") {
+      const label = tKind.has(leafKind) ? tKind(leafKind as never) : leafKind;
+      return `${label} ${num}`;
+    }
+    const type = isUnitType(r.unit_type) ? r.unit_type : "flat";
+    const shortNum = type === "flat" ? num : num.replace(/^NP\s*/i, "");
+    return `${tType(type)} ${shortNum}`;
+  };
+}
+
+/** Legacy seeded name of every leaf (pre-2026-11): "Byt <N>". */
+const legacyLeafName = (unitNumber: string) => `Byt ${unitNumber}`;
 
 /**
  * Lookup any active housing_community with a name OR address matching the
@@ -132,14 +177,34 @@ export interface SeedInput {
    * field is plumbed now so the API contract stabilizes early.
    */
   templateSlug?: string;
+  /**
+   * Owner-group keys (owner-groups.ts ownerIdentityKey) the admin split into
+   * separate people in the preview. Every other group = ONE user.
+   */
+  splitOwnerGroups?: string[];
+  /** Locale for the seeded unit names ("Byt 12" / "Flat 12"). */
+  locale?: string;
+}
+
+export interface SeededOwner {
+  userId: string;
+  name: string;
+  /** Unit labels the owner was linked to in this import. */
+  units: string[];
 }
 
 export interface SeedResult {
   communityEntityId: string;
   unitsCreated: number;
+  /** Existing units the import attached owners to (append mode). */
+  unitsReused: number;
   ownersCreated: number;
   ownersReused: number;
   membershipsCreated: number;
+  /** Owner links skipped because the (user, unit) membership already exists. */
+  membershipsSkipped: number;
+  /** Users CREATED by this import (shell owners) — for "is this you?". */
+  createdOwners: SeededOwner[];
 }
 
 /**
@@ -159,6 +224,10 @@ export async function seedImport(input: SeedInput): Promise<SeedResult> {
   // Phase 6b: kind slugs come from the template's `import_levels`.
   // HOA fallback keeps existing imports byte-identical.
   const kinds = await resolveKindChain(input.templateSlug);
+  const nameUnit = await unitNamer(kinds.leaf, input.locale);
+  // BYT-20261118-020: a unit's holder is `owner` in an SVB but `member`
+  // (člen družstva, §240 Obch. zák. / §755 ZOK) in a bytové družstvo.
+  const holderRole = await resolveHolderRole(input.templateSlug);
 
   // Duplicate guard only applies when CREATING a community — skip when the
   // caller is intentionally attaching to an existing one.
@@ -246,6 +315,7 @@ export async function seedImport(input: SeedInput): Promise<SeedResult> {
             name: entities.name,
             path: entities.path,
             depth: entities.depth,
+            flatNumber: sql<string | null>`${entities.data}->>'flat_number'`,
           })
           .from(entities)
           .where(
@@ -259,18 +329,18 @@ export async function seedImport(input: SeedInput): Promise<SeedResult> {
     // Key formats:
     //   block:   "block|<name>"
     //   entrance:"entrance|<parentId>|<name>"
-    //   unit:    "unit|<parentId>|<flatNumber>"
-    // Unit names follow the seeder's "Byt <N>" convention; the lookup
-    // matches on the template's level slugs so non-HOA imports
-    // (kinds.block = "garage_block", kinds.leaf = "plot", …) reuse the
-    // same idempotent-attach path.
+    //   unit:    "unit|<parentId>|<flatNumber>" (data.flat_number), plus
+    //            "unitname|<parentId>|<name>" for legacy rows without it.
+    // The unit is matched by its NUMBER, not its display name, so renaming a
+    // unit or changing its type never breaks the re-import match.
     for (const e of existingChildren) {
       if (kinds.block && e.kind === kinds.block) {
         existingByKindAndKey.set(`block|${e.name}`, e);
       } else if (kinds.entrance && e.kind === kinds.entrance && e.parentId) {
         existingByKindAndKey.set(`entrance|${e.parentId}|${e.name}`, e);
       } else if (e.kind === kinds.leaf && e.parentId) {
-        existingByKindAndKey.set(`unit|${e.parentId}|${e.name}`, e);
+        if (e.flatNumber) existingByKindAndKey.set(`unit|${e.parentId}|${e.flatNumber}`, e);
+        existingByKindAndKey.set(`unitname|${e.parentId}|${e.name}`, e);
       }
     }
 
@@ -374,6 +444,7 @@ export async function seedImport(input: SeedInput): Promise<SeedResult> {
     }
     const unitCtxByKey = new Map<string, UnitCtx>();
     let unitsCreated = 0;
+    let unitsReused = 0;
     for (const r of input.rows) {
       const k = unitKey(r);
       if (unitCtxByKey.has(k)) continue;
@@ -395,28 +466,23 @@ export async function seedImport(input: SeedInput): Promise<SeedResult> {
         parentDepth = 1;
       }
 
-      // The seeder always names the leaf "Byt <N>" for HOA back-compat;
-      // for non-HOA templates this is still the friendliest default
-      // because the row schema uses `unit_number` as the leaf
-      // identifier. Operators can rename via the UI afterwards.
-      // Kept as "Byt <N>" for every unit type: the name is the re-import
-      // idempotency key (matchExistingUnits), so it must not depend on the
-      // editable unit_type column. Non-flat units carry their own number
-      // ("NP 1") from the LV parser.
-      const leafName = `Byt ${r.unit_number}`;
+      // Display name by unit type / template leaf kind ("Byt 12",
+      // "Garáž 3"). The re-import key is data.flat_number, not this name.
+      const leafName = nameUnit(r);
 
-      // Skip if a leaf with the same parent + label is already in the
-      // tree (re-import is idempotent — adds new entries, leaves
-      // existing ones untouched).
-      const existingUnit = existingByKindAndKey.get(
-        `unit|${parentId}|${leafName}`
-      );
+      // Reuse a leaf with the same parent + number already in the tree
+      // (re-import is idempotent — adds new entries, leaves existing ones
+      // untouched).
+      const existingUnit =
+        existingByKindAndKey.get(`unit|${parentId}|${r.unit_number}`) ??
+        existingByKindAndKey.get(`unitname|${parentId}|${legacyLeafName(r.unit_number)}`);
       if (existingUnit) {
         unitCtxByKey.set(k, {
           id: existingUnit.id,
           path: existingUnit.path,
           depth: existingUnit.depth,
         });
+        unitsReused += 1;
         continue;
       }
 
@@ -439,7 +505,7 @@ export async function seedImport(input: SeedInput): Promise<SeedResult> {
         rootId: communityId,
         data: {
           flat_number: r.unit_number,
-          floor: r.unit_floor,
+          floor: r.unit_floor ?? null,
           share_numerator: r.unit_share_numerator,
           share_denominator: r.unit_share_denominator,
           area_m2: r.unit_area_m2 ?? null,
@@ -461,7 +527,7 @@ export async function seedImport(input: SeedInput): Promise<SeedResult> {
         afterJson: JSON.stringify({
           kind: kinds.leaf,
           flatNumber: r.unit_number,
-          floor: r.unit_floor,
+          floor: r.unit_floor ?? null,
         }),
       });
 
@@ -477,6 +543,7 @@ export async function seedImport(input: SeedInput): Promise<SeedResult> {
     let ownersCreated = 0;
     let ownersReused = 0;
     let membershipsCreated = 0;
+    let membershipsSkipped = 0;
 
     // Pre-fetch any matching real users by lowercased email.
     const emailLookup = new Map<string, string>(); // lowercased email → userId
@@ -488,26 +555,39 @@ export async function seedImport(input: SeedInput): Promise<SeedResult> {
       )
     );
     if (inputEmails.length > 0) {
-      // Drizzle: build OR via inArray would be nice but emails are exact.
-      // Use the partial unique index — query non-null emails only.
       const existing = await tx
         .select({ id: users.id, email: users.email })
         .from(users)
-        .where(isNotNull(users.email));
+        .where(
+          and(isNotNull(users.email), inArray(sql<string>`lower(${users.email})`, inputEmails))
+        );
       for (const u of existing) {
         if (u.email) emailLookup.set(u.email.toLowerCase(), u.id);
       }
     }
 
-    for (const r of input.rows) {
+    // ONE user per owner group (same e-mail / IČO / name + address), so a
+    // person owning a flat and a garage is one account with two
+    // memberships. The preview counted the same groups (validate.ts).
+    const ownerKeys = ownerKeysForRows(input.rows, input.splitOwnerGroups);
+    const userIdByOwnerKey = new Map<string, string>();
+    const reusedUserIds = new Set<string>();
+    const createdOwners = new Map<string, SeededOwner>();
+
+    for (const [rowIdx, r] of input.rows.entries()) {
       const ctx = unitCtxByKey.get(unitKey(r))!;
       const emailKey = r.owner_email?.trim().toLowerCase();
+      const ownerKey = ownerKeys[rowIdx];
 
-      let userId: string;
-      if (emailKey && emailLookup.has(emailKey)) {
+      let userId = userIdByOwnerKey.get(ownerKey);
+      if (!userId && emailKey && emailLookup.has(emailKey)) {
         userId = emailLookup.get(emailKey)!;
-        ownersReused += 1;
-      } else {
+        if (!reusedUserIds.has(userId)) {
+          reusedUserIds.add(userId);
+          ownersReused += 1;
+        }
+      }
+      if (!userId) {
         userId = crypto.randomUUID();
         await tx.insert(users).values({
           id: userId,
@@ -515,14 +595,17 @@ export async function seedImport(input: SeedInput): Promise<SeedResult> {
           passwordHash: null,
           name: r.owner_name,
           phone: r.owner_phone ?? null,
-          role: "owner",
+          role: holderRole,
           platformRole: "member",
           isActive: true,
           status: "pending",
         });
         if (emailKey) emailLookup.set(emailKey, userId);
+        createdOwners.set(userId, { userId, name: r.owner_name, units: [] });
         ownersCreated += 1;
       }
+      userIdByOwnerKey.set(ownerKey, userId);
+      createdOwners.get(userId)?.units.push(importUnitLabel(r));
 
       // Skip membership creation if (user, unit) already exists — re-imports
       // on a unit that already has owners shouldn't duplicate the link.
@@ -539,7 +622,10 @@ export async function seedImport(input: SeedInput): Promise<SeedResult> {
             )
           )
           .limit(1);
-        if (dup) continue;
+        if (dup) {
+          membershipsSkipped += 1;
+          continue;
+        }
       }
 
       const shareOfCommunity = ownerCommunityShare(r);
@@ -550,7 +636,7 @@ export async function seedImport(input: SeedInput): Promise<SeedResult> {
       await tx.insert(memberships).values({
         userId,
         entityId: ctx.id,
-        role: "owner",
+        role: holderRole,
         weight,
         ownerUnitShareNumerator: r.owner_unit_share_numerator,
         ownerUnitShareDenominator: r.owner_unit_share_denominator,
@@ -566,7 +652,7 @@ export async function seedImport(input: SeedInput): Promise<SeedResult> {
         entityId: ctx.id,
         afterJson: JSON.stringify({
           userId,
-          role: "owner",
+          role: holderRole,
           ownerUnitShare: `${r.owner_unit_share_numerator}/${r.owner_unit_share_denominator}`,
         }),
       });
@@ -576,9 +662,12 @@ export async function seedImport(input: SeedInput): Promise<SeedResult> {
     return {
       communityEntityId: communityId,
       unitsCreated,
+      unitsReused,
       ownersCreated,
       ownersReused,
       membershipsCreated,
+      membershipsSkipped,
+      createdOwners: [...createdOwners.values()],
     };
   });
 }
@@ -592,7 +681,7 @@ export interface ExistingUnitMatch {
 /**
  * Read-only dry run of the seeder's append matching: which import rows
  * point at a unit that already exists under `communityId` (same parent +
- * "Byt <N>" lookup as seedImport with existingCommunityId), keyed by
+ * unit-number lookup as seedImport with existingCommunityId), keyed by
  * importUnitKey. A row whose block / entrance does not exist yet cannot
  * match — the seeder would create it, and the unit with it.
  */
@@ -608,6 +697,7 @@ export async function matchExistingUnits(input: {
       parentId: entities.parentId,
       kind: entities.kind,
       name: entities.name,
+      flatNumber: sql<string | null>`${entities.data}->>'flat_number'`,
     })
     .from(entities)
     .where(and(eq(entities.rootId, input.communityId), isNull(entities.archivedAt)));
@@ -617,7 +707,9 @@ export async function matchExistingUnits(input: {
     else if (kinds.entrance && e.kind === kinds.entrance && e.parentId) {
       byKey.set(`entrance|${e.parentId}|${e.name}`, e.id);
     } else if (e.kind === kinds.leaf && e.parentId) {
-      byKey.set(`unit|${e.parentId}|${e.name}`, e.id);
+      // Same match as seedImport: data.flat_number, legacy name fallback.
+      if (e.flatNumber) byKey.set(`unit|${e.parentId}|${e.flatNumber}`, e.id);
+      byKey.set(`unitname|${e.parentId}|${e.name}`, e.id);
     }
   }
 
@@ -638,7 +730,9 @@ export async function matchExistingUnits(input: {
     } else if (blockId) {
       parentId = blockId;
     }
-    const unitId = byKey.get(`unit|${parentId}|Byt ${r.unit_number}`);
+    const unitId =
+      byKey.get(`unit|${parentId}|${r.unit_number}`) ??
+      byKey.get(`unitname|${parentId}|${legacyLeafName(r.unit_number)}`);
     if (unitId) unitIdByKey.set(k, unitId);
   }
 
@@ -650,7 +744,7 @@ export async function matchExistingUnits(input: {
         .where(
           and(
             inArray(memberships.entityId, ids),
-            eq(memberships.role, "owner"),
+            inArray(memberships.role, UNIT_HOLDER_ROLES),
             eq(memberships.status, "active")
           )
         )

@@ -1,4 +1,5 @@
 import "server-only";
+import { isUnitHolderRole } from "@/lib/role-options";
 
 import { cache } from "react";
 import { and, eq, notInArray, sql } from "drizzle-orm";
@@ -95,7 +96,7 @@ async function compute(rootId: string, now: Date): Promise<OwnerHealthData> {
   const unitLabel = new Map(raw.unitRows.map((u) => [u.id, u.flatNumber ?? ""]));
   const nameById = new Map(raw.userRows.map((u) => [u.id, u.name]));
   const ownerMemberships: CheckMembership[] = raw.membershipRows
-    .filter((m) => m.role === "owner")
+    .filter((m) => isUnitHolderRole(m.role))
     .map((m) => ({
       userId: m.userId,
       unitId: m.unitId,

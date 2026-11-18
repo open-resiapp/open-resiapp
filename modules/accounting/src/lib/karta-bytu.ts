@@ -20,7 +20,8 @@ import { openReceivablesForUnit } from "./payments";
 import { applyPaymentCredit } from "../engine/booking";
 import { getCurrentOpenPeriod } from "./periods";
 import { domUnitsWhere, listDomUnits } from "./dom-units";
-import { hasBoardRole } from "./authz";
+import { canReadAccounting } from "./authz";
+import { UNIT_HOLDER_ROLES } from "@/lib/role-options";
 import { postAllDueMonths } from "./fee-schedule-publish";
 
 // Karta bytu (spec §Per-unit ledger) — the unit's running-balance ledger.
@@ -55,10 +56,9 @@ export async function canReadUnitLedger(
   entityId: string,
   unitEntityId: string
 ): Promise<boolean> {
-  if (userRole === "admin") return true;
-  if (await hasBoardRole(userId, entityId, ["treasurer", "chairman"])) {
-    return true;
-  }
+  // BYT-20261118-020: readAccounting (admin / accountant / spravca) or a
+  // treasurer / chairman board seat — authz.ts canReadAccounting.
+  if (await canReadAccounting(userId, userRole, entityId)) return true;
   const [row] = await db
     .select({ id: memberships.id })
     .from(memberships)
@@ -66,7 +66,8 @@ export async function canReadUnitLedger(
       and(
         eq(memberships.userId, userId),
         eq(memberships.entityId, unitEntityId),
-        eq(memberships.role, "owner"),
+        // owner (SVB) or člen družstva — the unit's holder.
+        inArray(memberships.role, UNIT_HOLDER_ROLES),
         eq(memberships.status, "active")
       )
     )
@@ -80,9 +81,7 @@ export async function listAccessibleUnits(
   userRole: string,
   entityId: string
 ): Promise<{ id: string; name: string; flatNumber: string | null }[]> {
-  const wholeDom =
-    userRole === "admin" ||
-    (await hasBoardRole(userId, entityId, ["treasurer", "chairman"]));
+  const wholeDom = await canReadAccounting(userId, userRole, entityId);
   if (wholeDom) return listDomUnits(entityId);
 
   return db
@@ -97,7 +96,8 @@ export async function listAccessibleUnits(
       and(
         domUnitsWhere(entityId),
         eq(memberships.userId, userId),
-        eq(memberships.role, "owner"),
+        // owner (SVB) or člen družstva — the unit's holder.
+        inArray(memberships.role, UNIT_HOLDER_ROLES),
         eq(memberships.status, "active")
       )
     )

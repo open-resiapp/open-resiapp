@@ -30,6 +30,7 @@
 
 import { parseCents } from "./money";
 import { VS_RE } from "./constants";
+import { normalizeSymbol } from "./payment-symbols";
 
 // ── public shapes ──────────────────────────────────────
 
@@ -230,8 +231,10 @@ export function matchVyuctovaniePdfsToUnits(
   // VS → unitId, with ambiguity detection (two units sharing a VS).
   const byVs = new Map<string, string | "AMBIGUOUS">();
   for (const u of units) {
-    if (!u.vs) continue;
-    byVs.set(u.vs, byVs.has(u.vs) ? "AMBIGUOUS" : u.id);
+    // Compare through normalizeSymbol: "0012" in unit settings == "12" on the PDF.
+    const key = normalizeSymbol(u.vs);
+    if (!key) continue;
+    byVs.set(key, byVs.has(key) ? "AMBIGUOUS" : u.id);
   }
   const labelById = new Map(units.map((u) => [u.id, u.label]));
 
@@ -244,8 +247,11 @@ export function matchVyuctovaniePdfsToUnits(
     let unitId: string | null = null;
     let matchError: VyuctovaniePdfFileResult["matchError"] = null;
 
-    if (!parsed.error && parsed.vs) {
-      const hit = byVs.get(parsed.vs);
+    const parsedKey = parsed.error ? null : normalizeSymbol(parsed.vs);
+    // An all-zero VS ("000") normalises to nothing — no unit can carry it.
+    if (!parsed.error && parsed.vs && !parsedKey) matchError = "unknown_vs";
+    if (parsedKey) {
+      const hit = byVs.get(parsedKey);
       if (hit === undefined) matchError = "unknown_vs";
       else if (hit === "AMBIGUOUS") matchError = "ambiguous_vs";
       else if (seenUnits.has(hit)) matchError = "duplicate_unit";

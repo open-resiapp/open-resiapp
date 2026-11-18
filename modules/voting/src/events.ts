@@ -15,7 +15,8 @@ export type VotingEventKind =
   | "result_published"
   | "ballot_superseded"
   | "document_generated"
-  | "minutes_finalised";
+  | "minutes_finalised"
+  | "mandate_revoked";
 
 type Tx = Parameters<Parameters<typeof db.transaction>[0]>[0];
 

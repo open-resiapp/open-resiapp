@@ -45,7 +45,7 @@ export default function KartaListPage() {
     <div className="max-w-2xl">
       <Link
         href="/accounting"
-        className="text-sm text-blue-600 dark:text-blue-400 hover:underline"
+        className="text-base text-blue-600 dark:text-blue-400 hover:underline"
       >
         ← {t("backToAccounting")}
       </Link>
@@ -83,7 +83,7 @@ export default function KartaListPage() {
           ))}
         </ul>
       )}
-      <p className="text-xs text-gray-500 dark:text-gray-400 mt-4">
+      <p className="text-base text-gray-500 dark:text-gray-400 mt-4">
         {t("signHint")}
       </p>
     </div>

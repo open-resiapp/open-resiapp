@@ -5,6 +5,7 @@
 
 const CATALOG_TEMPLATE_SLUGS = new Set<string>([
   "hoa",
+  "bytove_druzstvo",
   "garden",
   "garage",
   "street",

@@ -116,7 +116,7 @@ export default function VotingCard({
 
       <p className="text-base text-ui-text-muted">{deadline}</p>
       {audience === "board" && createdByName && (
-        <p className="text-sm text-ui-text-muted">{tv("createdBy", { name: createdByName })}</p>
+        <p className="text-base text-ui-text-muted">{tv("createdBy", { name: createdByName })}</p>
       )}
 
       {audience === "owner" && open && !hasVoted && hasVoted !== undefined && (

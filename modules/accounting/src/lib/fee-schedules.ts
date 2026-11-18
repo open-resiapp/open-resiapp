@@ -5,6 +5,7 @@ import { db } from "@/db";
 import { entities } from "@/db/schema";
 import {
   accountingPeriods,
+  feeAssessments,
   feeSchedules,
   feeScheduleServices,
   serviceCategories,
@@ -13,7 +14,14 @@ import {
 } from "../db/schema";
 import { getOrCreateOpenPeriod } from "./periods";
 import { domUnitsWhere } from "./dom-units";
-import { VS_RE, type AllocationKey } from "./constants";
+import {
+  ERR_RATE_MODE_KEY,
+  PER_UNIT_RATE_KEYS,
+  VS_RE,
+  type AllocationKey,
+  type RateMode,
+} from "./constants";
+import { normalizeSymbol } from "./payment-symbols";
 
 // Predpis editor server logic (spec §Predpis). Draft lifecycle only —
 // publish (assessment generation + posting) is a separate slice. Domain
@@ -98,7 +106,15 @@ export interface FeeScheduleServiceRow {
   okruh: "fpuo" | "svc" | "mgmt";
   allocationKey: AllocationKey;
   rateCents: number | null;
+  /** How rateCents reads — dom total ("total") or €/m², €/person ("per_unit"). */
+  rateMode: RateMode;
   fixedAmountCents: number | null;
+  /**
+   * PUBLISHED schedules only: the stored dom-wide total of this service
+   * for the schedule's first month (Σ assessments). Null for drafts — the
+   * editor shows the computed preview total instead.
+   */
+  monthlyTotalCents: number | null;
 }
 
 export interface FeeScheduleDetail {
@@ -146,6 +162,7 @@ export async function getFeeSchedule(
       okruh: serviceCategories.okruh,
       allocationKey: feeScheduleServices.allocationKey,
       rateCents: feeScheduleServices.rateCents,
+      rateMode: feeScheduleServices.rateMode,
       fixedAmountCents: feeScheduleServices.fixedAmountCents,
     })
     .from(feeScheduleServices)
@@ -156,12 +173,42 @@ export async function getFeeSchedule(
     .where(eq(feeScheduleServices.scheduleId, scheduleId))
     .orderBy(asc(serviceCategories.sortOrder));
 
+  // Published: dom-wide total per service from the stored (legally
+  // binding) assessments of the first effective month — the editor shows
+  // it next to the rate so a €/m² rate and its building total are both
+  // visible. One aggregate over the schedule's own rows.
+  const totalByCategory = new Map<string, number>();
+  if (header.status === "published") {
+    const firstMonth = header.effectiveFrom.getUTCMonth() + 1;
+    const totals = await db
+      .select({
+        serviceCategoryId: feeAssessments.serviceCategoryId,
+        total: sql<number>`coalesce(sum(${feeAssessments.amountCents}), 0)::int`,
+      })
+      .from(feeAssessments)
+      .where(
+        and(
+          eq(feeAssessments.scheduleId, scheduleId),
+          eq(feeAssessments.month, firstMonth)
+        )
+      )
+      .groupBy(feeAssessments.serviceCategoryId);
+    for (const r of totals) totalByCategory.set(r.serviceCategoryId, r.total);
+  }
+
   return {
     ...header,
     effectiveFrom: header.effectiveFrom.toISOString(),
     effectiveTo: header.effectiveTo?.toISOString() ?? null,
     publishedAt: header.publishedAt?.toISOString() ?? null,
-    services,
+    services: services.map((row) => ({
+      ...row,
+      rateMode: row.rateMode === "per_unit" ? "per_unit" : "total",
+      monthlyTotalCents:
+        header.status === "published"
+          ? totalByCategory.get(row.serviceCategoryId) ?? null
+          : null,
+    })),
   };
 }
 
@@ -233,6 +280,8 @@ export interface ServiceRowInput {
   serviceCategoryId: string;
   allocationKey: AllocationKey;
   rateCents: number | null;
+  /** Defaults to "total"; "per_unit" only for area_m2 / persons keys. */
+  rateMode?: RateMode;
   fixedAmountCents: number | null;
 }
 
@@ -291,6 +340,13 @@ export async function updateFeeScheduleDraft(input: {
     } else if (s.rateCents === null || s.rateCents <= 0) {
       throw new Error("accounting: row requires rateCents > 0");
     }
+    if (
+      s.rateMode === "per_unit" &&
+      !PER_UNIT_RATE_KEYS.includes(s.allocationKey)
+    ) {
+      // Stable code — the editor maps it to an i18n message.
+      throw new Error(ERR_RATE_MODE_KEY);
+    }
   }
   const categoryIds = input.services.map((s) => s.serviceCategoryId);
   if (new Set(categoryIds).size !== categoryIds.length) {
@@ -337,6 +393,10 @@ export async function updateFeeScheduleDraft(input: {
           serviceCategoryId: s.serviceCategoryId,
           allocationKey: s.allocationKey,
           rateCents: s.allocationKey === "fixed" ? null : s.rateCents,
+          rateMode:
+            s.allocationKey !== "fixed" && s.rateMode === "per_unit"
+              ? "per_unit"
+              : "total",
           fixedAmountCents:
             s.allocationKey === "fixed" ? s.fixedAmountCents : null,
         }))
@@ -437,13 +497,18 @@ export async function assignUnitVs(input: {
   assignments: { unitEntityId: string; vs: string }[];
 }): Promise<void> {
   for (const a of input.assignments) {
-    if (a.vs !== "" && !VS_RE.test(a.vs)) {
+    // "000" passes the digit regex but is no symbol at all once the bank
+    // strips the padding — reject it like any malformed VS.
+    if (a.vs !== "" && (!VS_RE.test(a.vs) || normalizeSymbol(a.vs) === null)) {
       throw new Error(`accounting: invalid VS "${a.vs}" — 1-10 digits`);
     }
   }
   const nonEmpty = input.assignments.filter((a) => a.vs !== "");
   const vsValues = nonEmpty.map((a) => a.vs);
-  if (new Set(vsValues).size !== vsValues.length) {
+  // Uniqueness on the NORMALISED symbol — "0012" and "12" are the same VS
+  // for bank matching (payment-symbols.ts), so they must not coexist.
+  const normalized = vsValues.map((v) => normalizeSymbol(v));
+  if (new Set(normalized).size !== normalized.length) {
     throw new Error("accounting: duplicate VS in submission");
   }
   if (input.assignments.length === 0) return;
@@ -470,7 +535,10 @@ export async function assignUnitVs(input: {
           .where(
             and(
               eq(unitSettings.entityId, input.entityId),
-              inArray(unitSettings.vs, vsValues),
+              inArray(
+                sql`nullif(ltrim(${unitSettings.vs}, '0'), '')`,
+                normalized.filter((v): v is string => v !== null)
+              ),
               notInArray(unitSettings.unitEntityId, unitIds)
             )
           )

@@ -15,6 +15,7 @@
 // no float math on money.
 
 import { XMLParser } from "fast-xml-parser";
+import { normalizeSymbol } from "@modules/accounting/src/lib/payment-symbols";
 
 export class Camt053ParseError extends Error {}
 
@@ -74,9 +75,7 @@ interface Symbols {
 
 /** Strips leading zeros the banks pad symbols with; "" and "000" → null. */
 function cleanSymbol(raw: string | undefined): string | null {
-  if (!raw) return null;
-  const stripped = raw.replace(/^0+/, "");
-  return stripped === "" ? null : stripped;
+  return normalizeSymbol(raw);
 }
 
 export function extractSymbols(text: string | null | undefined): Symbols {

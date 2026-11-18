@@ -3,6 +3,8 @@ import "server-only";
 import { and, eq, inArray } from "drizzle-orm";
 import { db } from "@/db";
 import { boardMembers } from "@/db/schema";
+import { hasPermission } from "@/lib/permissions";
+import type { UserRole } from "@/types";
 
 // Accounting authorization (docs/domain/accounting.md scope rule):
 // treasurer/chairman authority comes from the community's BOARD role
@@ -12,6 +14,11 @@ import { boardMembers } from "@/db/schema";
 //   - read + approvals (závierka, expense authorisation): + chairman
 // Every server action / API route under the module calls one of these
 // BEFORE any DB read; under-privileged requests get 403 from the caller.
+//
+// BYT-20261118-020: staff roles without a board seat get accounting by their
+// GLOBAL role (src/lib/permissions.ts `readAccounting` / `writeAccounting`):
+// `accountant` (účtovník) and `spravca` (management company) read + write.
+// Neither approves — approvals stay with the chairman (statutory body).
 
 type AccountingBoardRole = "treasurer" | "chairman";
 
@@ -26,12 +33,17 @@ function holdsAny(boardRoles: readonly string[], roles: readonly string[]) {
   return boardRoles.some((r) => roles.includes(r));
 }
 
+/** Global-role grant (admin / accountant / spravca). Unknown roles → false. */
+function roleGrants(userRole: string, permission: "readAccounting" | "writeAccounting"): boolean {
+  return hasPermission(userRole as UserRole, permission);
+}
+
 export function isAccountingWriter(userRole: string, boardRoles: readonly string[]): boolean {
-  return userRole === "admin" || holdsAny(boardRoles, WRITE_ROLES);
+  return roleGrants(userRole, "writeAccounting") || holdsAny(boardRoles, WRITE_ROLES);
 }
 
 export function isAccountingReader(userRole: string, boardRoles: readonly string[]): boolean {
-  return userRole === "admin" || holdsAny(boardRoles, READ_ROLES);
+  return roleGrants(userRole, "readAccounting") || holdsAny(boardRoles, READ_ROLES);
 }
 
 export function isAccountingApprover(userRole: string, boardRoles: readonly string[]): boolean {
@@ -63,7 +75,7 @@ export async function canWriteAccounting(
   userRole: string,
   entityId: string
 ): Promise<boolean> {
-  if (userRole === "admin") return true;
+  if (roleGrants(userRole, "writeAccounting")) return true;
   return hasBoardRole(userId, entityId, [...WRITE_ROLES]);
 }
 
@@ -72,7 +84,7 @@ export async function canReadAccounting(
   userRole: string,
   entityId: string
 ): Promise<boolean> {
-  if (userRole === "admin") return true;
+  if (roleGrants(userRole, "readAccounting")) return true;
   return hasBoardRole(userId, entityId, [...READ_ROLES]);
 }
 

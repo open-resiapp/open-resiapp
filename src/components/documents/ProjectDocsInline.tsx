@@ -46,7 +46,7 @@ export default function ProjectDocsInline({
         📁 {data.project.title}
       </h3>
       {data.documents.length === 0 ? (
-        <p className="text-sm text-gray-500 dark:text-gray-400">{t("empty")}</p>
+        <p className="text-base text-gray-500 dark:text-gray-400">{t("empty")}</p>
       ) : (
         data.documents.map((d) => (
           <DocumentCard

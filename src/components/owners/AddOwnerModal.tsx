@@ -8,8 +8,9 @@ import { createOwnerAction } from "@/app/[locale]/(dashboard)/owners/actions";
 import type { CreateOwnerErrorCode, UnitOption } from "@/lib/owners-board";
 import { add, gt, ONE, rational, sub, type Rational } from "@/lib/rational";
 import type { UserRole } from "@/types";
+import { useOptionalShell } from "@/components/layout/ShellContext";
+import { isUnitHolderRole, roleOptionsFor, unitHolderRoleFor } from "@/lib/role-options";
 
-const ROLE_OPTIONS: UserRole[] = ["owner", "tenant", "vote_counter", "caretaker", "admin"];
 
 export interface CreatedOwner {
   id: string;
@@ -60,7 +61,10 @@ export default function AddOwnerModal({
   const [shareNum, setShareNum] = useState("1");
   const [shareDen, setShareDen] = useState("1");
   const [email, setEmail] = useState("");
-  const [role, setRole] = useState<UserRole>("owner");
+  // BYT-20261118-020: the unit holder is `member` in a bytové družstvo.
+  const templateSlug = useOptionalShell()?.community?.templateSlug;
+  const roleOptions = roleOptionsFor(templateSlug, { includeAdmin: true });
+  const [role, setRole] = useState<UserRole>(() => unitHolderRoleFor(templateSlug));
   const [showMore, setShowMore] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<CreateOwnerErrorCode | null>(null);
@@ -89,9 +93,9 @@ export default function AddOwnerModal({
     const n = Number(shareNum);
     const d = Number(shareDen);
     if (!name.trim()) return setError("name_required");
-    if (role === "owner" && !unitId) return setError("unit_required");
+    if (isUnitHolderRole(role) && !unitId) return setError("unit_required");
     // The ownership share applies to owners only; other roles get none.
-    const sendsShare = role === "owner" && !!unitId;
+    const sendsShare = isUnitHolderRole(role) && !!unitId;
     if (sendsShare && (!Number.isInteger(n) || !Number.isInteger(d) || n <= 0 || d <= 0 || n > d)) {
       return setError("invalid_share");
     }
@@ -119,6 +123,9 @@ export default function AddOwnerModal({
     tenant: tOwners("roleTenant"),
     vote_counter: tOwners("roleVoteCounter"),
     caretaker: tOwners("roleCaretaker"),
+    member: tOwners("roleMember"),
+    accountant: tOwners("roleAccountant"),
+    spravca: tOwners("roleSpravca"),
   };
 
   if (created) {
@@ -194,7 +201,7 @@ export default function AddOwnerModal({
 
         <Field
           label={t("flatLabel")}
-          required={role === "owner"}
+          required={isUnitHolderRole(role)}
           error={error === "unit_required" || error === "unit_not_found" ? errorText : undefined}
           hint={
             unit && unit.owners.length > 0
@@ -207,7 +214,7 @@ export default function AddOwnerModal({
           }
         >
           <Select value={unitId} onChange={(e) => chooseUnit(e.target.value)}>
-            <option value="">{role === "owner" ? t("flatPlaceholder") : t("flatNone")}</option>
+            <option value="">{isUnitHolderRole(role) ? t("flatPlaceholder") : t("flatNone")}</option>
             {units.map((u) => (
               <option key={u.id} value={u.id}>
                 {u.flatNumber}
@@ -217,7 +224,7 @@ export default function AddOwnerModal({
           </Select>
         </Field>
 
-        {unitId && role === "owner" ? (
+        {unitId && isUnitHolderRole(role) ? (
           <fieldset className="space-y-1.5">
             <legend className="text-base font-medium text-ui-text">{t("shareLabel")}</legend>
             <p className="text-ui-text-muted">{t("shareHint")}</p>
@@ -284,7 +291,7 @@ export default function AddOwnerModal({
             <div id="add-owner-more" className="mt-2 space-y-4">
               <Field label={t("roleLabel")} hint={t("roleHint")}>
                 <Select value={role} onChange={(e) => setRole(e.target.value as UserRole)}>
-                  {ROLE_OPTIONS.map((r) => (
+                  {roleOptions.map((r) => (
                     <option key={r} value={r}>
                       {roleLabels[r]}
                     </option>

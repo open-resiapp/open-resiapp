@@ -3,11 +3,11 @@
 //
 // Phase A (this file): the assembly that lived inside DownloadMinutesButton
 // moved here UNCHANGED, plus a `MinutesProtocol` object (place, officials,
-// e-voter name list, reopen statements, publication date) that is passed to
-// VotingMinutesPDF but NOT rendered.
-// TODO(legal-signoff): Phase B — the PDF sections for `protocol` (§14a ods. 8
-// písm. a), f)) and their Slovak wording are blocked on a recorded legal
-// sign-off (spec Decisions 4). VotingMinutesPDF legal text is untouched.
+// e-voter name list, reopen statements, publication date, attendance).
+// 2026-11-18: VotingMinutesPDF now PRINTS the protocol (§14a ods. 8 / ods. 9
+// zák. 182/1993 Z.z.) for the SK HOA template only (`statutory` prop).
+// TODO(legal-copy sign-off): the wording lives in MINUTES_LEGAL_COPY_SK and is
+// not signed off yet.
 import type { QuorumType, VotingResults } from "@/types";
 
 export interface MinutesBallotIn {
@@ -46,15 +46,15 @@ export interface MinutesProtocol {
   resultPublishedAt: string | null;
   /**
    * BYT-20261118-001 §10: attendance (prezenčná listina) of a meeting voting —
-   * from getMeetingAttendanceSummary. Data only, NOT rendered.
+   * from getMeetingAttendanceSummary (frozen at close). Printed in the
+   * minutes' attendance section (SK HOA only).
    */
   attendance?: MinutesAttendance | null;
   /**
    * 2026-11-18: who counted as "present" in the tally of a meeting voting
    * (SK §14b ods. 4 denominator, CZ §1206 ods. 2 quorum) — taken from the
    * engine result, so the minutes state exactly what the result used.
-   * Data only. TODO(legal): printing it in VotingMinutesPDF (wording of the
-   * attendance / quorum paragraph) needs the legal-copy sign-off.
+   * Printed next to the attendance figures. TODO(legal-copy sign-off): wording.
    */
   presence?: MinutesPresence | null;
 }

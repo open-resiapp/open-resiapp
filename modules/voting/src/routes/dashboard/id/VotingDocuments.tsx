@@ -1,22 +1,30 @@
 "use client";
 
 // BYT-20261118-002 §4 — step "Oznámenie": announcement PDF + ballot lists
-// (all owners, one page each; blank). SK HOA template ONLY: for CZ and for
-// non-HOA kinds the step shows a "not available" state (legally regulated
-// content is never parametrized across templates). Documents are
+// (all owners, one page each; blank). Gated per regime + country by
+// src/lib/legal-copy (signedOff.notice / .ballot — today SK HOA only); a
+// pair whose wording is not signed off shows a "waiting for legal sign-off"
+// state and NEVER falls back to the HOA statute text. Documents are
 // regenerated from frozen data, not stored. Each board download records a
 // `document_generated` event with the SHA-256 of the canonical input.
 import { useState } from "react";
 import { useFormatter, useTranslations } from "next-intl";
 import { Button, Card } from "@/components/ui";
 import type { BallotData, BuildingInfo, VotingDetail } from "./types";
-import { getDisplayTemplateSlug } from "@/lib/templates/display-slug";
+import { getLegalCopy } from "@/lib/legal-copy";
 
-/** SK HOA only (country sk + template hoa / pre-template installs). */
+/** Per document: may it render for this community (legal-copy sign-off)? */
+function documentGates(building: BuildingInfo | null, voting: VotingDetail) {
+  if (!building || voting.votingType !== "written") {
+    return { written: false, notice: false, ballot: false };
+  }
+  const lc = getLegalCopy(building.templateSlug, building.country);
+  return { written: true, notice: lc.signedOff.notice, ballot: lc.signedOff.ballot };
+}
+
+/** Owner view: whether the announcement PDF may be offered. */
 export function documentsAvailable(building: BuildingInfo | null, voting: VotingDetail): boolean {
-  if (!building) return false;
-  if (voting.votingType !== "written") return false;
-  return building.country === "sk" && (getDisplayTemplateSlug(building.templateSlug) ?? "hoa") === "hoa";
+  return documentGates(building, voting).notice;
 }
 
 async function sha256Hex(text: string): Promise<string> {
@@ -52,6 +60,9 @@ function saveBlob(blob: Blob, filename: string) {
 
 function useNoticeBuilder(voting: VotingDetail, building: BuildingInfo) {
   const t = useTranslations("VotingWorkflow");
+  // Root translator for the regime keys (src/lib/legal-copy LegalCopyKeys).
+  const tRoot = useTranslations();
+  const lc = getLegalCopy(building.templateSlug, building.country);
   const format = useFormatter();
   const dateFmt = (d: string) =>
     format.dateTime(new Date(d), { day: "numeric", month: "long", year: "numeric" });
@@ -73,7 +84,7 @@ function useNoticeBuilder(voting: VotingDetail, building: BuildingInfo) {
     items,
   };
   const noticeLabels = {
-    title: t("notice.title"),
+    title: tRoot(lc.keys.noticeTitle),
     announcedBy: t("notice.announcedBy"),
     term: t("notice.term"),
     place: t("notice.place"),
@@ -83,13 +94,13 @@ function useNoticeBuilder(voting: VotingDetail, building: BuildingInfo) {
     verifiers: t("notice.verifiers"),
     announcedOn: t("notice.announcedOn"),
     icoLabel: t("notice.ico"),
-    legalBasis: t("notice.legalBasis"),
+    legalBasis: tRoot(lc.keys.noticeLegalBasis),
   };
   const ballotData = { communityName: building.name, votingTitle: voting.title, term, items, verifiers };
   const ballotLabels = {
-    title: t("ballotSheet.title"),
+    title: tRoot(lc.keys.ballotHeading),
     term: t("ballotSheet.term"),
-    owner: t("ballotSheet.owner"),
+    owner: tRoot(lc.keys.ballotMemberLabel),
     units: t("ballotSheet.units"),
     for: t("ballotSheet.for"),
     against: t("ballotSheet.against"),
@@ -143,11 +154,14 @@ export default function VotingDocuments({
   const [busy, setBusy] = useState<null | "notice" | "ballots" | "blank">(null);
   const [error, setError] = useState<string | null>(null);
 
-  if (!documentsAvailable(building, voting)) {
+  const gates = documentGates(building, voting);
+  if (!gates.notice && !gates.ballot) {
     return (
       <Card as="section" className="mb-6">
         <h3 className="mb-2 text-lg font-bold text-ui-text">{t("docs.heading")}</h3>
-        <p className="text-base text-ui-text-muted">{t("docs.notAvailable")}</p>
+        <p className="text-base text-ui-text-muted">
+          {gates.written ? t("docs.pendingLegalSignoff") : t("docs.notAvailable")}
+        </p>
       </Card>
     );
   }
@@ -213,26 +227,35 @@ export default function VotingDocuments({
       </h3>
       <p className="text-base text-ui-text-muted">{t("docs.signoffNote")}</p>
       <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap">
-        <Button onClick={() => download("notice")} loading={busy === "notice"} disabled={busy !== null}>
-          {t("docs.notice")}
-        </Button>
-        <Button
-          variant="secondary"
-          onClick={() => download("ballots")}
-          loading={busy === "ballots"}
-          disabled={busy !== null || ownerPages.length === 0}
-        >
-          {t("docs.ballotsAll", { count: ownerPages.length })}
-        </Button>
-        <Button
-          variant="secondary"
-          onClick={() => download("blank")}
-          loading={busy === "blank"}
-          disabled={busy !== null}
-        >
-          {t("docs.ballotBlank")}
-        </Button>
+        {gates.notice && (
+          <Button onClick={() => download("notice")} loading={busy === "notice"} disabled={busy !== null}>
+            {t("docs.notice")}
+          </Button>
+        )}
+        {gates.ballot && (
+          <>
+            <Button
+              variant="secondary"
+              onClick={() => download("ballots")}
+              loading={busy === "ballots"}
+              disabled={busy !== null || ownerPages.length === 0}
+            >
+              {t("docs.ballotsAll", { count: ownerPages.length })}
+            </Button>
+            <Button
+              variant="secondary"
+              onClick={() => download("blank")}
+              loading={busy === "blank"}
+              disabled={busy !== null}
+            >
+              {t("docs.ballotBlank")}
+            </Button>
+          </>
+        )}
       </div>
+      {(!gates.notice || !gates.ballot) && (
+        <p className="text-base text-ui-text-muted">{t("docs.pendingLegalSignoff")}</p>
+      )}
       {error && (
         <p role="alert" className="text-base text-ui-danger">
           {error}

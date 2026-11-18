@@ -13,10 +13,11 @@ import { votings, votingItems } from "./db/schema";
 import { validatePerRollamDuration } from "./rules";
 import { applyRepeatEscalation, normalizeItems } from "./items";
 import { findDisallowedQuorum } from "./quorum-guard.server";
-import { validateNotice } from "./workflow/notice";
+import { noticeRulesFor, validateNotice } from "./workflow/notice";
 import { recordVotingEvent } from "./events";
 import { timeZoneForCountry } from "@/lib/time-zone";
 import { createMeetingPost } from "./attendance";
+import { notifyVotingStarted } from "./voting-notify.server";
 
 // Votings list / detail / create — shared by /api/votings(/[id]) and the
 // MCP voting tools (BYT-20261117-001 §3).
@@ -236,6 +237,7 @@ export async function createVoting(
       startsAt: start,
       endsAt: end,
       timeZone: timeZoneForCountry(country),
+      rules: noticeRulesFor(root),
     });
     if (noticeError) throw validationError("startsAt", { notice: noticeError });
   }
@@ -296,6 +298,10 @@ export async function createVoting(
 
     return created;
   });
+
+  // Created already announced: same push + e-mail fallback as the
+  // "announce" transition (fire-and-forget, never throws).
+  if (voting.status === "active") void notifyVotingStarted(voting);
 
   const items = await db
     .select()

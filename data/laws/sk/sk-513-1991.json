@@ -1,0 +1,1276 @@
+{
+ "id": "sk-513-1991",
+ "jurisdiction": "sk",
+ "number": "513/1991 Zb.",
+ "title": "Obchodný zákonník",
+ "effectiveFrom": "2026-08-17",
+ "effectiveTo": null,
+ "sourceUrl": "https://www.slov-lex.sk/ezbierky/pravne-predpisy/SK/ZZ/1991/513/20260817",
+ "fetchedAt": "2026-11-18T12:50:28.793Z",
+ "contentHash": "36ef1170fa1d5b545780636e476a2caf5922766755f27c38097e46bc48b261d4",
+ "scope": "§ 221 – § 260 (družstvo)",
+ "provisionCount": 39,
+ "parts": [
+  {
+   "type": "section",
+   "anchor": "s-cast-druha",
+   "kind": "cast",
+   "label": "DRUHÁ ČASŤ",
+   "heading": "OBCHODNÉ SPOLOČNOSTI A DRUŽSTVO",
+   "children": [
+    {
+     "type": "section",
+     "anchor": "s-cast-druha-hlava-2",
+     "kind": "hlava",
+     "label": "Hlava II",
+     "heading": "DRUŽSTVO",
+     "children": [
+      {
+       "type": "section",
+       "anchor": "s-cast-druha-hlava-2-diel-1",
+       "kind": "diel",
+       "label": "Diel I",
+       "heading": "Základné ustanovenia",
+       "children": [
+        {
+         "type": "provision",
+         "anchor": "p221",
+         "label": "§ 221",
+         "paragraphs": [
+          {
+           "anchor": "p221-1",
+           "text": "Družstvo je spoločenstvom neuzavretého počtu osôb založeným za účelom podnikania alebo zabezpečovania hospodárskych, sociálnych alebo iných potrieb svojich členov.",
+           "n": "1"
+          },
+          {
+           "anchor": "p221-2",
+           "text": "Obchodné meno družstva musí obsahovať označenie „družstvo“.",
+           "n": "2"
+          },
+          {
+           "anchor": "p221-3",
+           "text": "Družstvo musí mať najmenej päť členov; to neplatí, ak sú jeho členmi aspoň dve právnické osoby. Na trvanie družstva nemá vplyv pristúpenie ďalších členov alebo zánik členstva doterajších členov, ak družstvo spĺňa podmienky predchádzajúcej vety.",
+           "n": "3"
+          }
+         ]
+        },
+        {
+         "type": "provision",
+         "anchor": "p222",
+         "label": "§ 222",
+         "paragraphs": [
+          {
+           "anchor": "p222-1",
+           "text": "Družstvo je právnickou osobou. Za porušenie svojich záväzkov zodpovedá celým svojím majetkom.",
+           "n": "1"
+          },
+          {
+           "anchor": "p222-2",
+           "text": "Členovia neručia za záväzky družstva. Stanovy môžu určiť, že členovia družstva alebo niektorí z nich majú na základe rozhodnutia členskej schôdze voči družstvu do určitej výšky uhradzovacie povinnosti presahujúce členský vklad na krytie strát družstva.",
+           "n": "2"
+          }
+         ]
+        },
+        {
+         "type": "provision",
+         "anchor": "p223",
+         "label": "§ 223",
+         "paragraphs": [
+          {
+           "anchor": "p223-1",
+           "text": "Základné imanie družstva tvorí súhrn členských vkladov, na ktorých splatenie sa zaviazali členovia družstva.",
+           "n": "1"
+          },
+          {
+           "anchor": "p223-2",
+           "text": "Členský podiel predstavuje mieru účasti člena na družstve. Jeho výška sa určuje podľa pomeru členského vkladu k základnému imaniu družstva, ak stanovy neurčujú inak. Každý člen môže mať v družstve len jeden členský podiel. Výška členského vkladu sa môže pre jednotlivých členov určiť rozdielne, musí však byť vyjadrená kladným celým číslom, ak zákon neustanovuje inak. Celkový súčet menovitých hodnôt členských vkladov do družstva sa musí rovnať menovitej hodnote základného imania družstva.",
+           "n": "2"
+          },
+          {
+           "anchor": "p223-3",
+           "text": "Stanovy určujú výšku základného imania družstva, ktoré sa zapisuje do obchodného registra (zapisované základné imanie). Zapisované základné imanie musí byť najmenej 1 250 eur.",
+           "n": "3"
+          },
+          {
+           "anchor": "p223-4",
+           "text": "Podmienkou vzniku členstva je splatenie členského vkladu určeného stanovami (základný členský vklad) alebo v stanovách určenej časti základného členského vkladu (vstupný vklad). Stanovy môžu určiť odlišnú výšku základného členského vkladu alebo vstupného vkladu pre fyzické osoby a pre právnické osoby.",
+           "n": "4"
+          },
+          {
+           "anchor": "p223-5",
+           "text": "Členovia družstva sa môžu zaviazať, pokiaľ to stanovy pripúšťajú, k ďalšiemu členskému vkladu a k ďalšej majetkovej účasti na podnikaní družstva za podmienok určených stanovami.",
+           "n": "5"
+          },
+          {
+           "anchor": "p223-6",
+           "text": "Nepeňažné vklady sa ocenia spôsobom určeným stanovami alebo pri založení družstva dohodnutým všetkými členmi. Ak sú predmetom nepeňažného vkladu podielnické listy vydané družstvom podľa osobitného zákona, započítajú sa členovi na vklad v ich menovitej hodnote. Ustanovenie § 59 ods. 3 druhá veta sa v tom prípade neuplatní.",
+           "n": "6"
+          },
+          {
+           "anchor": "p223-7",
+           "text": "Člen je povinný splatiť členský vklad presahujúci vstupný vklad do troch rokov, ak stanovy neurčia kratšiu lehotu. Stanovy môžu určiť, že členovia sú povinní, ak to vyžaduje strata družstva, splatiť na základe rozhodnutia členskej schôdze nesplatenú časť členského vkladu ešte pred dobou jej splatnosti.",
+           "n": "7"
+          },
+          {
+           "anchor": "p223-8",
+           "text": "Družstvo nesmie vrátiť svojim členom členské vklady ani vyplácať úroky z členských vkladov, ak zákon neustanovuje inak.",
+           "n": "8"
+          },
+          {
+           "anchor": "p223-9",
+           "text": "Stanovy družstva alebo členská schôdza môže poveriť predstavenstvo, aby rozhodlo o zvýšení základného imania družstva do určitej výšky z čistého zisku alebo z iných zdrojov vlastného imania družstva, ktoré nie sú účelovo viazané v nedeliteľnom fonde alebo v iných fondoch družstva. Na zvýšení sa podieľajú členovia družstva podľa výšky ich doterajších vkladov, ak stanovy neurčujú iný spôsob zvýšenia podielu členov na základnom imaní družstva. Ak je to nevyhnutné na krytie straty družstva, ktorú nemožno kryť z iných zdrojov vlastného imania, členská schôdza môže rozhodnúť o znížení základného imania a o pomernom znížení členských vkladov členov družstva.",
+           "n": "9"
+          },
+          {
+           "anchor": "p223-10",
+           "text": "V prípade smrti fyzickej osoby, ktorá je členom družstva, družstvo zníži základné imanie o vklad tohto člena, ak členstvo neprešlo na dediča, prípadne na inú právnickú osobu alebo fyzickú osobu. Pri zániku právnickej osoby, ktorá je členom družstva, družstvo zníži základné imanie o vklad tohto člena, ak členstvo neprešlo na inú fyzickú osobu alebo právnickú osobu.",
+           "n": "10"
+          },
+          {
+           "anchor": "p223-11",
+           "text": "Družstvo zníži základné imanie o členské vklady, ktoré spočívali v majetkových právach alebo v iných peniazmi oceniteľných hodnotách, ak člen na požiadanie družstva nepreukázal, že ich nadobudol v súlade s právnym poriadkom.",
+           "n": "11"
+          }
+         ]
+        },
+        {
+         "type": "provision",
+         "anchor": "p224",
+         "label": "§ 224",
+         "paragraphs": [
+          {
+           "anchor": "p224-1",
+           "text": "Na založenie družstva sa vyžaduje konanie ustanovujúcej schôdze družstva.",
+           "n": "1"
+          },
+          {
+           "anchor": "p224-2",
+           "text": "Ustanovujúca schôdza družstva:",
+           "n": "2",
+           "items": [
+            {
+             "anchor": "p224-2-a",
+             "label": "a)",
+             "letter": "a",
+             "text": "určuje zapisované základné imanie,"
+            },
+            {
+             "anchor": "p224-2-b",
+             "label": "b)",
+             "letter": "b",
+             "text": "schvaľuje stanovy,"
+            },
+            {
+             "anchor": "p224-2-c",
+             "label": "c)",
+             "letter": "c",
+             "text": "volí predstavenstvo a kontrolnú komisiu."
+            }
+           ]
+          },
+          {
+           "anchor": "p224-3",
+           "text": "Na ustanovujúcej schôdzi družstva sú oprávnené hlasovať osoby, ktoré podali prihlášku do družstva. Pred rozhodovaním o veciach uvedených v odseku 2 zvolí ustanovujúca členská schôdza svojho predsedajúceho. Do jeho zvolenia vedie schôdzu zvolávateľ.",
+           "n": "3"
+          },
+          {
+           "anchor": "p224-4",
+           "text": "Ustanovujúca schôdza družstva volí a prijíma uznesenie väčšinou prítomných. Uchádzač o členstvo môže vziať svoju prihlášku späť ihneď po hlasovaní o stanovách, ak hlasoval proti ich prijatiu.",
+           "n": "4"
+          },
+          {
+           "anchor": "p224-5",
+           "text": "Ustanovujúca schôdza družstva vedie k jeho založeniu, ak sa na nej uchádzači o členstvo zaviazali k členským vkladom dosahujúcim určenú sumu zapisovaného základného imania. Základný členský alebo vstupný vklad sa musí splatiť do 15 dní od konania ustanovujúcej schôdze družstva určenému členovi predstavenstva spôsobom určeným členskou schôdzou.",
+           "n": "5"
+          },
+          {
+           "anchor": "p224-6",
+           "text": "Priebeh ustanovujúcej schôdze družstva sa osvedčuje notárskou zápisnicou, ktorá obsahuje aj zoznam členov a výšku jednotlivých členských vkladov, ku ktorým sa na schôdzi družstva zaviazali. Prílohu zápisnice tvoria stanovy v schválenom znení.",
+           "n": "6"
+          }
+         ],
+         "heading": "Založenie družstva"
+        },
+        {
+         "type": "provision",
+         "anchor": "p225",
+         "label": "§ 225",
+         "paragraphs": [
+          {
+           "anchor": "p225-x1",
+           "text": "Družstvo vzniká dňom zápisu do obchodného registra. Pred podaním návrhu na tento zápis musí byť splatená aspoň polovica zapisovaného základného imania."
+          }
+         ]
+        },
+        {
+         "type": "provision",
+         "anchor": "p226",
+         "label": "§ 226",
+         "paragraphs": [
+          {
+           "anchor": "p226-1",
+           "text": "Stanovy družstva musia obsahovať:",
+           "n": "1",
+           "items": [
+            {
+             "anchor": "p226-1-a",
+             "label": "a)",
+             "letter": "a",
+             "text": "obchodné meno a sídlo družstva,"
+            },
+            {
+             "anchor": "p226-1-b",
+             "label": "b)",
+             "letter": "b",
+             "text": "predmet podnikania (činnosti),"
+            },
+            {
+             "anchor": "p226-1-c",
+             "label": "c)",
+             "letter": "c",
+             "text": "vznik a zánik členstva, práva a povinnosti členov k družstvu a družstva k členom,"
+            },
+            {
+             "anchor": "p226-1-d",
+             "label": "d)",
+             "letter": "d",
+             "text": "výšku základného členského vkladu, prípadne aj výšku vstupného vkladu, spôsob splácania členských vkladov a vyporiadanie členského podielu pri zániku členstva,"
+            },
+            {
+             "anchor": "p226-1-e",
+             "label": "e)",
+             "letter": "e",
+             "text": "orgány družstva a počet ich členov, dĺžku ich funkčného obdobia, spôsob ustanovovania, pôsobnosť a spôsob ich zvolávania a rokovania,"
+            },
+            {
+             "anchor": "p226-1-f",
+             "label": "f)",
+             "letter": "f",
+             "text": "spôsob použitia zisku a úhrady prípadnej straty,"
+            },
+            {
+             "anchor": "p226-1-g",
+             "label": "g)",
+             "letter": "g",
+             "text": "tvorbu a použitie nedeliteľného fondu,"
+            },
+            {
+             "anchor": "p226-1-h",
+             "label": "h)",
+             "letter": "h",
+             "text": "ďalšie ustanovenia, ak to vyplýva z tohto zákona."
+            }
+           ]
+          },
+          {
+           "anchor": "p226-2",
+           "text": "Ak podľa stanov je podmienkou členstva tiež pracovný vzťah člena k družstvu, môžu stanovy obsahovať úpravu tohto vzťahu. Táto úprava nesmie odporovať pracovnoprávnym predpisom, ibaže úprava je pre člena výhodnejšia. Ak nie je osobitná úprava v stanovách, platia pracovnoprávne predpisy.",
+           "n": "2"
+          },
+          {
+           "anchor": "p226-3",
+           "text": "O zmene stanov rozhoduje členská schôdza, ak zákon neustanovuje inak.",
+           "n": "3"
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "type": "section",
+       "anchor": "s-cast-druha-hlava-2-diel-2",
+       "kind": "diel",
+       "label": "Diel II",
+       "heading": "Vznik a zánik členstva",
+       "children": [
+        {
+         "type": "provision",
+         "anchor": "p227",
+         "label": "§ 227",
+         "paragraphs": [
+          {
+           "anchor": "p227-1",
+           "text": "Členmi družstva môžu byť fyzické i právnické osoby. Ak podľa stanov je členstvo podmienené pracovným vzťahom k družstvu, môže sa členom stať fyzická osoba, ktorá skončila povinnú školskú dochádzku a dosiahla 15 rokov svojho veku.",
+           "n": "1"
+          },
+          {
+           "anchor": "p227-2",
+           "text": "Po splnení podmienok vyplývajúcich zo zákona a stanov vzniká členstvo:",
+           "n": "2",
+           "items": [
+            {
+             "anchor": "p227-2-a",
+             "label": "a)",
+             "letter": "a",
+             "text": "pri založení družstva dňom vzniku družstva,"
+            },
+            {
+             "anchor": "p227-2-b",
+             "label": "b)",
+             "letter": "b",
+             "text": "za trvania družstva prijatím za člena na základe písomnej členskej prihlášky,"
+            },
+            {
+             "anchor": "p227-2-c",
+             "label": "c)",
+             "letter": "c",
+             "text": "prevodom členstva alebo"
+            },
+            {
+             "anchor": "p227-2-d",
+             "label": "d)",
+             "letter": "d",
+             "text": "iným spôsobom ustanoveným zákonom."
+            }
+           ]
+          },
+          {
+           "anchor": "p227-3",
+           "text": "Ak podľa stanov je podmienkou členstva pracovný vzťah člena k družstvu a ak zo stanov nevyplýva niečo iné, vzniká členstvo dňom, ktorý sa dojednal ako deň vzniku pracovného vzťahu, a zaniká dňom zániku pracovného vzťahu člena k družstvu.",
+           "n": "3"
+          },
+          {
+           "anchor": "p227-4",
+           "text": "Členstvo nevzniká pred zaplatením vstupného vkladu.",
+           "n": "4"
+          },
+          {
+           "anchor": "p227-5",
+           "text": "Podrobnejšiu úpravu členstva, jeho vzniku a zániku upravujú stanovy.",
+           "n": "5"
+          }
+         ]
+        },
+        {
+         "type": "provision",
+         "anchor": "p228",
+         "label": "§ 228",
+         "paragraphs": [
+          {
+           "anchor": "p228-x1",
+           "text": "Družstvo vedie zoznam všetkých svojich členov. Do zoznamu sa zapisuje okrem názvu a sídla právnickej osoby alebo mena a bydliska fyzickej osoby ako člena aj výška jej členského vkladu a výška, v ktorej bol splatený. Do zoznamu sa bez zbytočného odkladu vyznačia všetky zmeny evidovaných skutočností. Predstavenstvo umožní každému, kto osvedčí právny záujem, aby do zoznamu nahliadol. Člen družstva má právo do zoznamu nahliadať a družstvo je povinné na žiadosť člena vydať mu osvedčenie o členstve a o obsahu jeho zápisu v zozname."
+          }
+         ]
+        },
+        {
+         "type": "provision",
+         "anchor": "p229",
+         "label": "§ 229",
+         "paragraphs": [
+          {
+           "anchor": "p229-1",
+           "text": "Členské práva a povinnosti môže člen previesť na iného člena družstva, pokiaľ to stanovy nevylučujú. Dohoda o prevode členských práv a povinností na inú osobu podlieha súhlasu predstavenstva. Stanovy môžu určiť dôvody, ktoré prevod vylučujú. Proti zamietavému rozhodnutiu sa môže člen odvolať na členskú schôdzu. Rozhodnutím predstavenstva alebo členskej schôdze o schválení dohody o prevode členských práv a povinností sa stáva nadobúdateľ členských práv a povinností členom družstva v rozsahu práv a povinností prevádzajúceho člena.",
+           "n": "1"
+          },
+          {
+           "anchor": "p229-2",
+           "text": "Stanovy môžu určiť prípady, keď predstavenstvo nesmie odmietnuť súhlas s prevodom členských práv a povinností alebo sa nevyžaduje súhlas predstavenstva.",
+           "n": "2"
+          }
+         ]
+        },
+        {
+         "type": "provision",
+         "anchor": "p230",
+         "label": "§ 230",
+         "paragraphs": [
+          {
+           "anchor": "p230-x1",
+           "text": "Prevod práv a povinností spojených s členstvom v bytovom družstve na základe dohody nepodlieha súhlasu predstavenstva. Členské práva a povinnosti spojené s členstvom prechádzajú na nadobúdateľa vo vzťahu k družstvu predložením zmluvy o prevode členstva príslušnému družstvu alebo neskorším dňom uvedeným v tejto zmluve. Tie isté účinky ako predloženie zmluvy o prevode členstva nastávajú, len čo príslušné družstvo dostane písomné oznámenie doterajšieho člena o prevode členstva a písomný súhlas nadobúdateľa členstva."
+          }
+         ]
+        },
+        {
+         "type": "provision",
+         "anchor": "p231",
+         "label": "§ 231",
+         "paragraphs": [
+          {
+           "anchor": "p231-1",
+           "text": "Členstvo zaniká písomnou dohodou, vystúpením, vylúčením, vyhlásením konkurzu na majetok člena, zamietnutím návrhu na vyhlásenie konkurzu pre nedostatok majetku člena alebo zánikom družstva.",
+           "n": "1"
+          },
+          {
+           "anchor": "p231-2",
+           "text": "Vystúpením zaniká členstvo v čase určenom stanovami, najdlhšie však uplynutím šiestich mesiacov odo dňa, keď člen písomne oznámil vystúpenie predstavenstvu družstva.",
+           "n": "2"
+          },
+          {
+           "anchor": "p231-3",
+           "text": "Člen môže byť vylúčený, ak opätovne a napriek výstrahe porušuje členské povinnosti, alebo z iných dôležitých dôvodov uvedených v stanovách. Fyzická osoba môže byť vylúčená tiež, ak bola právoplatne odsúdená pre úmyselný trestný čin, ktorý spáchala proti družstvu alebo členovi družstva. O vylúčení, ktoré sa musí členovi písomne oznámiť, rozhoduje, pokiaľ stanovy neurčujú inak, predstavenstvo. Proti rozhodnutiu o vylúčení má právo podať člen odvolanie na členskú schôdzu.",
+           "n": "3"
+          },
+          {
+           "anchor": "p231-4",
+           "text": "Súd na návrh člena, ktorého sa rozhodnutie týka, vyhlási rozhodnutie členskej schôdze o vylúčení za neplatné, ak je v rozpore s právnymi predpismi alebo stanovami.",
+           "n": "4"
+          }
+         ]
+        },
+        {
+         "type": "provision",
+         "anchor": "p232",
+         "label": "§ 232",
+         "paragraphs": [
+          {
+           "anchor": "p232-1",
+           "text": "Členstvo fyzickej osoby zaniká smrťou. Dedič členských práv a povinností poručiteľa môže požiadať družstvo o členstvo. Zákon alebo stanovy môžu určiť, kedy predstavenstvo nesmie dedičovo členstvo odmietnuť alebo kedy sa nevyžaduje súhlas predstavenstva s nadobudnutím členských práv a povinností dedičom.",
+           "n": "1"
+          },
+          {
+           "anchor": "p232-2",
+           "text": "Súhlas predstavenstva sa nevyžaduje, ak dedič nadobudol práva a povinnosti spojené s členstvom v bytovom družstve.",
+           "n": "2"
+          },
+          {
+           "anchor": "p232-3",
+           "text": "Dedič, ktorý sa nestal členom, má nárok na vyrovnací podiel člena, ktorého členstvo zaniklo.",
+           "n": "3"
+          },
+          {
+           "anchor": "p232-4",
+           "text": "Členstvo právnickej osoby v družstve zaniká jej vstupom do likvidácie alebo vyhlásením konkurzu, prípadne jej zánikom. Ak má právnická osoba právneho nástupcu, vstupuje nástupca do všetkých doterajších jej členských práv a povinností.",
+           "n": "4"
+          },
+          {
+           "anchor": "p232-5",
+           "text": "Ak bol konkurz na majetok člena, ktorého účasť v družstve zanikla podľa odseku 4, právoplatným rozhodnutím súdu zrušený z iných dôvodov ako po splnení rozvrhového uznesenia alebo pre nedostatok majetku, účasť člena v družstve sa obnovuje; ak družstvo už vyplatilo vyrovnací podiel, má nárok na jeho vrátenie. To platí primerane aj vtedy, ak bola právoplatným rozhodnutím súdu zastavená exekúcia podľa osobitného zákona.",
+           "n": "5"
+          }
+         ]
+        },
+        {
+         "type": "provision",
+         "anchor": "p233",
+         "label": "§ 233",
+         "paragraphs": [
+          {
+           "anchor": "p233-1",
+           "text": "Pri zániku členstva za trvania družstva má doterajší člen nárok na vyrovnací podiel.",
+           "n": "1"
+          },
+          {
+           "anchor": "p233-2",
+           "text": "Vyrovnací podiel sa určí pomerom splateného členského vkladu doterajšieho člena násobeného počtom ukončených rokov jeho členstva k súhrnu splatených členských vkladov všetkých členov násobených ukončenými rokmi ich členstva.",
+           "n": "2"
+          },
+          {
+           "anchor": "p233-3",
+           "text": "Pre určenie vyrovnacieho podielu je rozhodný stav čistého obchodného imania družstva podľa riadnej individuálnej účtovnej závierky za účtovné obdobie, ktoré predchádza účtovnému obdobiu, v ktorom členstvo zaniklo. Pri určovaní výšky vyrovnacieho podielu sa neprihliada na imanie, ktoré je v nedeliteľnom fonde, a ak to vyplýva zo stanov, aj v iných zabezpečovacích fondoch. Takisto sa neprihliada na vklady členov s kratším ako ročným členstvom predo dňom, ku ktorému sa ročná účtovná závierka zostavuje.",
+           "n": "3"
+          },
+          {
+           "anchor": "p233-4",
+           "text": "Právo na vyplatenie vyrovnacieho podielu je splatné uplynutím troch mesiacov od schválenia riadnej individuálnej účtovnej závierky za účtovné obdobie predchádzajúce účtovnému obdobiu, v ktorom zanikla účasť spoločníka v spoločnosti, alebo ak takáto riadna účtovná závierka schválená nebola, tak uplynutím troch mesiacov odo dňa, keď mala byť schválená. Nárok na podiel na zisku vzniká len za obdobie trvania členstva.",
+           "n": "4"
+          },
+          {
+           "anchor": "p233-5",
+           "text": "Ustanovenia odsekov 2 až 4 sa použijú, len pokiaľ stanovy neurčujú inak.",
+           "n": "5"
+          }
+         ]
+        },
+        {
+         "type": "provision",
+         "anchor": "p234",
+         "label": "§ 234",
+         "paragraphs": [
+          {
+           "anchor": "p234-1",
+           "text": "Vyrovnací podiel sa uhrádza v peniazoch, ak zákon alebo stanovy neurčujú iný spôsob vyrovnania. Stanovy môžu určiť, že v prípadoch, keď členský vklad spočíval úplne alebo sčasti v prevode vlastníckeho práva k nehnuteľnosti na družstvo, môže člen žiadať vyporiadanie vrátením tejto nehnuteľnosti, a to v hodnote, ktorá je evidovaná v majetku družstva v čase zániku jeho členstva. Ak je výška vyrovnacieho podielu menšia, než je hodnota vrátenej nehnuteľnosti, je nadobúdajúci člen povinný uhradiť družstvu rozdiel v peniazoch. Stanovy môžu určiť, že obdobne sa postupuje aj v prípade, keď spočíval členský vklad v poskytnutí iného vecného plnenia. Družstvo zodpovedá členovi, ak nakladá s majetkom družstva spôsobom, ktorý by toto vrátenie znemožňoval.",
+           "n": "1"
+          },
+          {
+           "anchor": "p234-2",
+           "text": "Nárok podľa odseku 1 na vrátenie poľnohospodárskej pôdy vloženej do družstva má člen aj v prípade, že tento nárok stanovy neurčujú.",
+           "n": "2"
+          }
+         ]
+        },
+        {
+         "type": "provision",
+         "anchor": "p235",
+         "label": "§ 235",
+         "paragraphs": [
+          {
+           "anchor": "p235-1",
+           "text": "Družstvo je povinné pri svojom vzniku zriadiť nedeliteľný fond najmenej vo výške 10 % zapisovaného základného imania. Tento fond družstvo dopĺňa najmenej o 10 % ročného čistého zisku, a to až do doby, než výška nedeliteľného fondu dosiahne sumu rovnajúcu sa polovici zapisovaného základného imania družstva. Stanovy môžu určiť, že sa vytvára vyšší nedeliteľný fond alebo ďalšie zabezpečovacie fondy.",
+           "n": "1"
+          },
+          {
+           "anchor": "p235-2",
+           "text": "Nedeliteľný fond sa nesmie použiť za trvania družstva na rozdelenie medzi členov. Nedeliteľný fond možno použiť v rozsahu, v ktorom sa podľa tohto zákona vytvára povinne, iba na hospodárske účely určené stanovami družstva, na prekonanie nepriaznivého priebehu hospodárenia družstva alebo na krytie strát družstva, ak osobitný zákon neustanovuje inak. O použití nedeliteľného fondu rozhoduje predstavenstvo družstva.",
+           "n": "2"
+          }
+         ],
+         "heading": "Nedeliteľný fond"
+        },
+        {
+         "type": "provision",
+         "anchor": "p236",
+         "label": "§ 236",
+         "paragraphs": [
+          {
+           "anchor": "p236-1",
+           "text": "Na určení zisku, ktorý sa má rozdeliť medzi členov, sa uznáša členská schôdza pri prerokovaní individuálnej účtovnej závierky.",
+           "n": "1"
+          },
+          {
+           "anchor": "p236-2",
+           "text": "Ak zo stanov nevyplýva niečo iné, určí sa podiel člena na zisku určenom na rozdelenie medzi členov pomerom výšky jeho splateného vkladu k splateným vkladom všetkých členov; u členov, ktorých členstvo v rozhodnom roku trvalo len časť roka, sa tento podiel pomerne kráti.",
+           "n": "2"
+          },
+          {
+           "anchor": "p236-3",
+           "text": "Stanovy družstva alebo uznesenie členskej schôdze, ak to stanovy pripúšťajú, môžu určiť iný spôsob vymedzenia podielu člena na zisku, ktorý sa má rozdeliť medzi členov.",
+           "n": "3"
+          }
+         ],
+         "heading": "Rozdelenie zisku"
+        }
+       ]
+      },
+      {
+       "type": "section",
+       "anchor": "s-cast-druha-hlava-2-diel-3",
+       "kind": "diel",
+       "label": "Diel III",
+       "heading": "Orgány družstva",
+       "children": [
+        {
+         "type": "provision",
+         "anchor": "p237",
+         "label": "§ 237",
+         "paragraphs": [
+          {
+           "anchor": "p237-x1",
+           "text": "Orgánmi družstva sú:",
+           "items": [
+            {
+             "anchor": "p237-x1-a",
+             "label": "a)",
+             "letter": "a",
+             "text": "členská schôdza,"
+            },
+            {
+             "anchor": "p237-x1-b",
+             "label": "b)",
+             "letter": "b",
+             "text": "predstavenstvo,"
+            },
+            {
+             "anchor": "p237-x1-c",
+             "label": "c)",
+             "letter": "c",
+             "text": "kontrolná komisia,"
+            },
+            {
+             "anchor": "p237-x1-d",
+             "label": "d)",
+             "letter": "d",
+             "text": "ďalšie orgány družstva podľa stanov."
+            }
+           ]
+          }
+         ]
+        },
+        {
+         "type": "provision",
+         "anchor": "p238",
+         "label": "§ 238",
+         "paragraphs": [
+          {
+           "anchor": "p238-1",
+           "text": "Do orgánov družstva môžu byť volení len členovia družstva starší ako 18 rokov a zástupcovia právnických osôb, ktoré sú členmi družstva.",
+           "n": "1"
+          },
+          {
+           "anchor": "p238-2",
+           "text": "Ak je členom družstva právnická osoba, je povinná splnomocniť fyzickú osobu konať za ňu v orgáne družstva.",
+           "n": "2"
+          },
+          {
+           "anchor": "p238-3",
+           "text": "Pokiaľ tento zákon neustanovuje inak, vyžaduje sa na platnosť uznesenia členskej schôdze, predstavenstva a kontrolnej komisie ich riadne zvolanie, prítomnosť nadpolovičnej väčšiny členov a súhlas väčšiny hlasov prítomných členov. Tento zákon alebo stanovy určujú, pre ktoré uznesenia je potrebný súhlas kvalifikovanej väčšiny.",
+           "n": "3"
+          }
+         ]
+        },
+        {
+         "type": "section",
+         "anchor": "s-cast-druha-hlava-2-diel-3-g-clenska-schodza",
+         "kind": "group",
+         "heading": "Členská schôdza",
+         "children": [
+          {
+           "type": "provision",
+           "anchor": "p239",
+           "label": "§ 239",
+           "paragraphs": [
+            {
+             "anchor": "p239-1",
+             "text": "Najvyšším orgánom družstva je schôdza členov družstva (ďalej len „členská schôdza“).",
+             "n": "1"
+            },
+            {
+             "anchor": "p239-2",
+             "text": "Členská schôdza sa schádza v lehotách určených stanovami, najmenej raz za rok. Zvolanie členskej schôdze sa musí členom oznámiť spôsobom určeným stanovami.",
+             "n": "2"
+            },
+            {
+             "anchor": "p239-3",
+             "text": "Členská schôdza sa musí zvolať, ak o to požiada písomne aspoň jedna tretina všetkých členov družstva, kontrolná komisia, ako aj v ďalších prípadoch, ak tak určujú stanovy.",
+             "n": "3"
+            },
+            {
+             "anchor": "p239-4",
+             "text": "Do pôsobnosti členskej schôdze patrí:",
+             "n": "4",
+             "items": [
+              {
+               "anchor": "p239-4-a",
+               "label": "a)",
+               "letter": "a",
+               "text": "zmena stanov, ak zákon neustanovuje inak,"
+              },
+              {
+               "anchor": "p239-4-b",
+               "label": "b)",
+               "letter": "b",
+               "text": "voliť a odvolávať členov predstavenstva a kontrolnej komisie,"
+              },
+              {
+               "anchor": "p239-4-c",
+               "label": "c)",
+               "letter": "c",
+               "text": "schvaľovať riadnu individuálnu účtovnú závierku a mimoriadnu individuálnu účtovnú závierku,"
+              },
+              {
+               "anchor": "p239-4-d",
+               "label": "d)",
+               "letter": "d",
+               "text": "rozhodovať o rozdelení a použití zisku, prípadne spôsobe úhrady straty,"
+              },
+              {
+               "anchor": "p239-4-e",
+               "label": "e)",
+               "letter": "e",
+               "text": "rozhodovať o zvýšení alebo znížení zapisovaného základného imania,"
+              },
+              {
+               "anchor": "p239-4-f",
+               "label": "f)",
+               "letter": "f",
+               "text": "rozhodovať o základných otázkach koncepcie rozvoja družstva,"
+              },
+              {
+               "anchor": "p239-4-g",
+               "label": "g)",
+               "letter": "g",
+               "text": "rozhodovať o splynutí, zlúčení, rozdelení a o inom zrušení družstva alebo zmene právnej formy."
+              }
+             ]
+            },
+            {
+             "anchor": "p239-5",
+             "text": "Členská schôdza rozhoduje o ďalších záležitostiach týkajúcich sa družstva a jeho činnosti, pokiaľ tak ustanovuje tento zákon, stanovy, prípadne pokiaľ si rozhodovanie o niektorej veci vyhradila.",
+             "n": "5"
+            },
+            {
+             "anchor": "p239-6",
+             "text": "Stanovy družstva môžu určiť, že členské schôdze sa budú konať formou čiastkových schôdzí. Pri rozhodovaní sa sčítajú hlasy odovzdané na všetkých čiastkových členských schôdzach. Čiastkové členské schôdze nemôžu rozhodovať o zrušení družstva, zmene právnej formy družstva a v ďalších prípadoch, ak tak určujú stanovy.",
+             "n": "6"
+            },
+            {
+             "anchor": "p239-7",
+             "text": "Ak s ohľadom na rozsah družstva nie je dobre možné zvolávať členskú schôdzu, môžu stanovy určiť, že v rozsahu nimi určenom plní pôsobnosť členskej schôdze zhromaždenie delegátov. Každý z delegátov sa volí rovnakým počtom hlasov. Stanovy môžu určiť odchýlky, pokiaľ sú potrebné vzhľadom na organizačné usporiadanie družstva.",
+             "n": "7"
+            },
+            {
+             "anchor": "p239-8",
+             "text": "Ak členská schôdza nie je schopná uznášať sa, zvolá predstavenstvo náhradnú členskú schôdzu tak, aby sa konala do troch týždňov odo dňa, keď sa mala konať členská schôdza pôvodne zvolaná. Náhradná členská schôdza musí mať nezmenený program rokovania a je schopná uznášať sa bez ohľadu na ustanovenie § 238 ods. 3. Obdobne sa postupuje pri čiastkových členských schôdzach a pri schôdzach delegátov.",
+             "n": "8"
+            }
+           ]
+          },
+          {
+           "type": "provision",
+           "anchor": "p240",
+           "label": "§ 240",
+           "paragraphs": [
+            {
+             "anchor": "p240-1",
+             "text": "Pri hlasovaní má každý člen jeden hlas, pokiaľ stanovy neurčujú inak. Stanovy nemôžu určiť inak, ak ide o rozhodovanie podľa § 239 ods. 4 písm. g) alebo rozhodovanie o zrušení družstva s likvidáciou.",
+             "n": "1"
+            },
+            {
+             "anchor": "p240-2",
+             "text": "Ak to stanovy pripúšťajú, môže člen družstva splnomocniť iného člena družstva, aby ho na členskej schôdzi zastupoval. Tým nie sú dotknuté predpisy o zastúpení zo zákona alebo na základe súdneho rozhodnutia.",
+             "n": "2"
+            }
+           ]
+          },
+          {
+           "type": "provision",
+           "anchor": "p241",
+           "label": "§ 241",
+           "paragraphs": [
+            {
+             "anchor": "p241-1",
+             "text": "O každej členskej schôdzi sa vyhotovuje zápisnica, ktorá musí obsahovať:",
+             "n": "1",
+             "items": [
+              {
+               "anchor": "p241-1-a",
+               "label": "a)",
+               "letter": "a",
+               "text": "dátum a miesto konania schôdze,"
+              },
+              {
+               "anchor": "p241-1-b",
+               "label": "b)",
+               "letter": "b",
+               "text": "prijaté uznesenia,"
+              },
+              {
+               "anchor": "p241-1-c",
+               "label": "c)",
+               "letter": "c",
+               "text": "výsledky hlasovania,"
+              },
+              {
+               "anchor": "p241-1-d",
+               "label": "d)",
+               "letter": "d",
+               "text": "neprijaté námietky členov, ktorí požiadali o ich zaprotokolovanie."
+              }
+             ]
+            },
+            {
+             "anchor": "p241-2",
+             "text": "Prílohu zápisnice tvorí zoznam účastníkov schôdze, pozvánka na ňu a podklady, ktoré boli predložené k prerokúvaným bodom.",
+             "n": "2"
+            },
+            {
+             "anchor": "p241-3",
+             "text": "Každý člen má právo vyžiadať si zápisnicu a jej prílohy na nahliadnutie.",
+             "n": "3"
+            }
+           ]
+          },
+          {
+           "type": "provision",
+           "anchor": "p242",
+           "label": "§ 242",
+           "paragraphs": [
+            {
+             "anchor": "p242-x1",
+             "text": "Na návrh člena vysloví súd neplatnosť uznesenia členskej schôdze, pokiaľ uznesenie je v rozpore s právnymi predpismi alebo stanovami družstva. Návrh súdu môže člen podať, ak požiadal o zaprotokolovanie námietky na členskej schôdzi, ktorá uznesenie prijala, alebo ak námietku oznámil predstavenstvu do jedného mesiaca od konania tejto schôdze. Návrh možno na súd podať len do jedného mesiaca odo dňa, keď člen požiadal o zaprotokolovanie námietky, alebo od oznámenia námietky predstavenstvu."
+            }
+           ]
+          },
+          {
+           "type": "provision",
+           "anchor": "p243",
+           "label": "§ 243",
+           "paragraphs": [
+            {
+             "anchor": "p243-1",
+             "text": "Predstavenstvo riadi činnosť družstva a rozhoduje o všetkých záležitostiach družstva, ktoré tento zákon alebo stanovy nevyhradili inému orgánu.",
+             "n": "1"
+            },
+            {
+             "anchor": "p243-2",
+             "text": "Predstavenstvo je štatutárnym orgánom družstva.",
+             "n": "2"
+            },
+            {
+             "anchor": "p243-3",
+             "text": "Predstavenstvo plní uznesenia členskej schôdze a zodpovedá jej za svoju činnosť. Ak zo stanov nevyplýva niečo iné, za predstavenstvo koná navonok predseda alebo podpredseda. Ak je však pre právny úkon, ktorý robí predstavenstvo, predpísaná písomná forma, je potrebný podpis aspoň dvoch členov predstavenstva.",
+             "n": "3"
+            },
+            {
+             "anchor": "p243-4",
+             "text": "Predstavenstvo sa schádza podľa potreby. Musí sa zísť do 10 dní od doručenia podnetu kontrolnej komisie, ak na jej výzvu nedošlo k náprave nedostatkov.",
+             "n": "4"
+            },
+            {
+             "anchor": "p243-5",
+             "text": "Predstavenstvo volí zo svojich členov predsedu družstva (predstavenstva), prípadne podpredsedu, pokiaľ stanovy neurčujú, že ich volí členská schôdza. Podpredseda zastupuje predsedu v čase jeho neprítomnosti. Zastupovaním môžu byť poverení aj ďalší členovia predstavenstva v určitom poradí určenom predstavenstvom.",
+             "n": "5"
+            },
+            {
+             "anchor": "p243-6",
+             "text": "Predseda družstva organizuje a riadi rokovanie predstavenstva. Ak tak stanovy určujú, organizuje a riadi aj bežnú činnosť družstva.",
+             "n": "6"
+            },
+            {
+             "anchor": "p243-7",
+             "text": "Stanovy môžu určiť, že bežnú činnosť družstva organizuje a riadi riaditeľ vymenúvaný a odvolávaný predstavenstvom.",
+             "n": "7"
+            }
+           ],
+           "heading": "Predstavenstvo"
+          },
+          {
+           "type": "provision",
+           "anchor": "p243a",
+           "label": "§ 243a",
+           "paragraphs": [
+            {
+             "anchor": "p243a-1",
+             "text": "Členovia predstavenstva sú povinní vykonávať svoju funkciu s odbornou starostlivosťou a v súlade so záujmami družstva a všetkých jej členov. Najmä sú povinní zaobstarať si a pri rozhodovaní zohľadniť všetky dostupné informácie týkajúce sa predmetu rozhodnutia, zachovávať mlčanlivosť o dôverných informáciách a skutočnostiach, ktorých prezradenie tretím osobám by mohlo družstvu spôsobiť škodu alebo ohroziť jeho záujmy, alebo záujmy jeho členov, a pri výkone svojej pôsobnosti nesmú uprednostňovať svoje záujmy, záujmy len niektorých členov alebo záujmy tretích osôb pred záujmom družstva.",
+             "n": "1"
+            },
+            {
+             "anchor": "p243a-2",
+             "text": "Členovia predstavenstva, ktorí porušili svoje povinnosti pri výkone svojej funkcie, sú zodpovední spoločne a nerozdielne za škodu, ktorú tým družstvu spôsobili. Člen predstavenstva nezodpovedá za škodu, ak preukáže, že pri výkone svojej funkcie postupoval s odbornou starostlivosťou a v dobrej viere, že koná v záujme družstva a všetkých jeho členov. Členovia predstavenstva nezodpovedajú za škodu spôsobenú družstvu konaním, ktorým vykonávali uznesenie členskej schôdze; to neplatí, ak je uznesenie členskej schôdze v rozpore s právnymi predpismi alebo so stanovami družstva alebo ak ide o povinnosť podať návrh na vyhlásenie konkurzu. Členov predstavenstva nezbavuje zodpovednosti, ak ich konanie kontrolná komisia schválila.",
+             "n": "2"
+            },
+            {
+             "anchor": "p243a-3",
+             "text": "Dohody medzi družstvom a členom predstavenstva obmedzujúce alebo vylučujúce zodpovednosť člena predstavenstva sú zakázané; stanovy družstva nemôžu obmedziť alebo vylúčiť zodpovednosť člena predstavenstva. Družstvo sa môže vzdať nárokov na náhradu škody voči členom predstavenstva alebo uzatvoriť s nimi dohodu o urovnaní najskôr po troch rokoch od ich vzniku, a to len ak s tým vysloví súhlas členská schôdza.",
+             "n": "3"
+            },
+            {
+             "anchor": "p243a-4",
+             "text": "Nároky družstva na náhradu škody voči členom predstavenstva môže uplatniť vo svojom mene a na vlastný účet veriteľ družstva, ak nemôže uspokojiť svoju pohľadávku z majetku družstva. Ustanovenia odsekov 1 až 3 sa použijú primerane. Nároky veriteľov družstva voči členom predstavenstva nezanikajú, ak sa družstvo vzdá nárokov na náhradu škody alebo s nimi uzatvorí dohodu o urovnaní. Ak je na majetok družstva vyhlásený konkurz, nároky veriteľov družstva voči členom predstavenstva uplatňuje správca konkurznej podstaty.",
+             "n": "4"
+            }
+           ]
+          },
+          {
+           "type": "provision",
+           "anchor": "p244",
+           "label": "§ 244",
+           "paragraphs": [
+            {
+             "anchor": "p244-1",
+             "text": "Kontrolná komisia je oprávnená kontrolovať všetku činnosť družstva a prerokúva sťažnosti jeho členov. Zodpovedá iba členskej schôdzi a je nezávislá od ostatných orgánov družstva. Kontrolná komisia má najmenej troch členov.",
+             "n": "1"
+            },
+            {
+             "anchor": "p244-2",
+             "text": "Kontrolná komisia sa vyjadruje k účtovným závierkam, ktoré je družstvo povinné vyhotovovať podľa osobitného predpisu a k návrhu na rozdelenie zisku alebo k návrhu úhrady straty družstva.",
+             "n": "2"
+            },
+            {
+             "anchor": "p244-3",
+             "text": "Na zistené nedostatky upozorňuje kontrolná komisia predstavenstvo a vyžaduje zaistenie nápravy.",
+             "n": "3"
+            },
+            {
+             "anchor": "p244-4",
+             "text": "Kontrolná komisia sa schádza podľa potreby, najmenej raz za tri mesiace.",
+             "n": "4"
+            },
+            {
+             "anchor": "p244-5",
+             "text": "Kontrolná komisia volí zo svojich členov predsedu, prípadne podpredsedu, pokiaľ stanovy neurčujú, že ich volí členská schôdza.",
+             "n": "5"
+            },
+            {
+             "anchor": "p244-6",
+             "text": "Kontrolná komisia je oprávnená vyžadovať si u predstavenstva akékoľvek informácie o hospodárení družstva. Predstavenstvo je povinné bez zbytočného odkladu oznámiť kontrolnej komisii všetky skutočnosti, ktoré môžu mať závažné dôsledky v hospodárení alebo postavení družstva a jeho členov. To isté platí aj vo vzťahu k riaditeľovi.",
+             "n": "6"
+            },
+            {
+             "anchor": "p244-7",
+             "text": "Na jednotlivé úkony môže kontrolná komisia poveriť jedného alebo viacerých členov, ktorí v tejto veci majú oprávnenie žiadať informácie v rozsahu oprávnení kontrolnej komisie.",
+             "n": "7"
+            },
+            {
+             "anchor": "p244-8",
+             "text": "Na povinnosti členov kontrolnej komisie a na ich zodpovednosť platia primerane ustanovenia § 243a.",
+             "n": "8"
+            }
+           ],
+           "heading": "Kontrolná komisia"
+          },
+          {
+           "type": "provision",
+           "anchor": "p245",
+           "label": "§ 245",
+           "paragraphs": [
+            {
+             "anchor": "p245-1",
+             "text": "V družstve, ktoré má menej ako 50 členov, môžu stanovy určiť, že pôsobnosť predstavenstva a kontrolnej komisie plní členská schôdza.",
+             "n": "1"
+            },
+            {
+             "anchor": "p245-2",
+             "text": "Štatutárnym orgánom je predseda, prípadne ďalší člen poverený členskou schôdzou. Ustanovenia § 243a platia primerane.",
+             "n": "2"
+            },
+            {
+             "anchor": "p245-3",
+             "text": "V družstvách s členstvom právnických osôb, ktoré majú menej ako päť členov, určia spôsob rozhodovania a štatutárny orgán stanovy.",
+             "n": "3"
+            },
+            {
+             "anchor": "p245-4",
+             "text": "Na štatutárne orgány podľa odsekov 2 a 3 sa ustanovenie § 243 ods. 3 nepoužije.",
+             "n": "4"
+            }
+           ],
+           "heading": "Orgány malého družstva"
+          }
+         ]
+        },
+        {
+         "type": "section",
+         "anchor": "s-cast-druha-hlava-2-diel-3-g-spolocne-ustanovenia-o-clenstve-v-organoch-druzstva",
+         "kind": "group",
+         "heading": "Spoločné ustanovenia o členstve v orgánoch družstva",
+         "children": [
+          {
+           "type": "provision",
+           "anchor": "p246",
+           "label": "§ 246",
+           "paragraphs": [
+            {
+             "anchor": "p246-1",
+             "text": "Funkčné obdobie členov orgánov družstva určujú stanovy, nesmie však presiahnuť päť rokov.",
+             "n": "1"
+            },
+            {
+             "anchor": "p246-2",
+             "text": "Členovia prvých orgánov po založení družstva môžu byť volení len na obdobie najviac troch rokov.",
+             "n": "2"
+            },
+            {
+             "anchor": "p246-3",
+             "text": "Ak stanovy neurčujú inak, môžu byť členovia orgánov družstva volení opätovne.",
+             "n": "3"
+            },
+            {
+             "anchor": "p246-4",
+             "text": "Zástupcovia právnických osôb, ktorí sú členmi orgánov družstva, majú rovnakú zodpovednosť, akoby boli členmi týchto orgánov osobne. Za ich záväzky z tejto zodpovednosti ručí právnická osoba, ktorá ich splnomocnila.",
+             "n": "4"
+            }
+           ]
+          },
+          {
+           "type": "provision",
+           "anchor": "p247",
+           "label": "§ 247",
+           "paragraphs": [
+            {
+             "anchor": "p247-1",
+             "text": "Funkcie člena predstavenstva a člena kontrolnej komisie sú navzájom nezlučiteľné.",
+             "n": "1"
+            },
+            {
+             "anchor": "p247-2",
+             "text": "Stanovy môžu určiť ďalšie prípady nezlučiteľnosti funkcií alebo okolnosti, pre ktoré člen družstva nemôže byť členom niektorého voleného orgánu družstva.",
+             "n": "2"
+            }
+           ]
+          },
+          {
+           "type": "provision",
+           "anchor": "p248",
+           "label": "§ 248",
+           "paragraphs": [
+            {
+             "anchor": "p248-1",
+             "text": "Člen družstva, ktorý je do svojej funkcie zvolený, môže z funkcie odstúpiť, je však povinný oznámiť to orgánu, ktorého je členom. Jeho funkcia sa skončí dňom, keď odstúpenie prerokoval orgán oprávnený na to podľa stanov. Ak stanovy neurčujú inak, prerokuje odstúpenie orgán, ktorý ho zvolil. Príslušný orgán musí prerokovať odstúpenie na svojom najbližšom zasadaní po tom, čo sa o odstúpení dozvedel, najdlhšie však do troch mesiacov. Po márnom uplynutí tejto lehoty sa odstúpenie pokladá za prerokované.",
+             "n": "1"
+            },
+            {
+             "anchor": "p248-2",
+             "text": "Ak stanovy určujú, že sa volia náhradníci členov orgánov družstva, nastupuje namiesto odstupivšieho člena dňom účinnosti odstúpenia náhradník podľa určeného poradia.",
+             "n": "2"
+            },
+            {
+             "anchor": "p248-3",
+             "text": "Ak náhradník nie je zvolený, môže orgán povolať zastupujúceho člena až do doby, keď sa môže vykonať riadna voľba nového člena. Zastupujúci člen má práva a povinnosti riadneho člena.",
+             "n": "3"
+            },
+            {
+             "anchor": "p248-4",
+             "text": "Ustanovenia odsekov 2 a 3 platia aj v prípade, že členstvo v orgáne zanikne smrťou.",
+             "n": "4"
+            }
+           ]
+          },
+          {
+           "type": "provision",
+           "anchor": "p249",
+           "label": "§ 249",
+           "paragraphs": [
+            {
+             "anchor": "p249-x1",
+             "text": "Členovia predstavenstva a kontrolnej komisie družstva, prokuristi a riaditeľ nesmú byť podnikateľmi ani členmi štatutárnych a dozorných orgánov právnických osôb s obdobným predmetom činnosti. Stanovy môžu upraviť rozsah zákazu konkurencie inak."
+            }
+           ],
+           "heading": "Zákaz konkurencie"
+          },
+          {
+           "type": "provision",
+           "anchor": "p250",
+           "label": "§ 250",
+           "paragraphs": [
+            {
+             "anchor": "p250-1",
+             "text": "Každému členovi predstavenstva a kontrolnej komisie družstva patrí jeden hlas. Hlasuje sa verejne, ak stanovy neurčujú, že o určitých otázkach sa hlasuje tajne. Na tajnom hlasovaní sa môže v jednotlivých prípadoch uzniesť rokujúci orgán.",
+             "n": "1"
+            },
+            {
+             "anchor": "p250-2",
+             "text": "Ak tak stanovy pripúšťajú, možno uznesenie prijať hlasovaním uskutočneným písomne alebo pomocou prostriedkov oznamovacej techniky, ak s týmto spôsobom hlasovania prejavia súhlas všetci členovia orgánu. Pre tento prípad sa hlasujúci pokladajú za prítomných (§ 238 ods. 3).",
+             "n": "2"
+            }
+           ],
+           "heading": "Hlasovanie v predstavenstve a kontrolnej komisii"
+          },
+          {
+           "type": "provision",
+           "anchor": "p251",
+           "label": "§ 251",
+           "paragraphs": [
+            {
+             "anchor": "p251-1",
+             "text": "Nároky družstva zo zodpovednosti členov orgánov družstva za škodu uplatňuje predstavenstvo. Voči členom predstavenstva uplatňuje nároky družstva kontrolná komisia prostredníctvom ňou určeného člena.",
+             "n": "1"
+            },
+            {
+             "anchor": "p251-2",
+             "text": "Každý člen družstva je oprávnený podať v mene družstva žalobu o náhradu škody proti členovi predstavenstva, ktorý zodpovedá družstvu za ním spôsobenú škodu, a žalobu o splatenie vkladu proti členovi družstva, ktorý je v omeškaní so splatením vkladu, ak členská schôdza nerozhodla o jeho vylúčení. Iná osoba ako člen družstva, ktorý žalobu podal, alebo ním splnomocnená osoba nemôže v súdnom konaní robiť úkony za družstvo alebo v jeho mene.",
+             "n": "2"
+            },
+            {
+             "anchor": "p251-3",
+             "text": "Členovia družstva, ktorí uplatnia v mene družstva nároky podľa odseku 2, sú povinní znášať trovy súdneho konania za družstvo. Ak je družstvu priznaná náhrada trov konania, ten, ktorému bola uložená náhrada týchto trov, je povinný uhradiť ju členovi družstva, ktorý uplatňoval nároky za družstvo.",
+             "n": "3"
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "type": "section",
+       "anchor": "s-cast-druha-hlava-2-diel-4",
+       "kind": "diel",
+       "label": "Diel IV",
+       "heading": "Ročná účtovná závierka a výročná správa o hospodárení",
+       "children": [
+        {
+         "type": "provision",
+         "anchor": "p252",
+         "label": "§ 252",
+         "paragraphs": [
+          {
+           "anchor": "p252-1",
+           "text": "Družstvo je povinné zostaviť individuálnu účtovnú závierku.",
+           "n": "1"
+          },
+          {
+           "anchor": "p252-2",
+           "text": "Predstavenstvo predkladá členskej schôdzi na schválenie riadnu individuálnu účtovnú závierku, mimoriadnu individuálnu účtovnú závierku a návrh na rozdelenie zisku alebo úhradu strát v súlade so stanovami.",
+           "n": "2"
+          },
+          {
+           "anchor": "p252-3",
+           "text": "Členovia družstva si môžu vyžiadať riadnu individuálnu účtovnú závierku a mimoriadnu individuálnu účtovnú závierku a návrh na rozdelenie zisku a úhrady strát na nahliadnutie.",
+           "n": "3"
+          }
+         ]
+        },
+        {
+         "type": "provision",
+         "anchor": "p253",
+         "label": "§ 253",
+         "paragraphs": [
+          {
+           "anchor": "p253-x1",
+           "text": "Ak osobitný zákon ukladá družstvu povinnosť vyhotoviť výročnú správu, predstavenstvo predkladá členskej schôdzi na prerokovanie spolu s riadnou individuálnou účtovnou závierkou alebo mimoriadnou individuálnou účtovnou závierkou výročnú správu. Ak tak určujú stanovy, predstavenstvo zabezpečí vypracovanie výročnej správy o hospodárení družstva, ktorá obsahuje prehľad obchodnej činnosti v uplynulom roku a predpoklady jeho ďalšieho podnikania, ako aj ďalšie skutočnosti určené stanovami. Výročnú správu o hospodárení družstva predkladá predstavenstvo spolu s riadnou individuálnou účtovnou závierkou alebo mimoriadnou individuálnou účtovnou závierkou na prerokovanie členskej schôdzi. Výročnú správu predkladá predstavenstvo spolu s ročnou účtovnou závierkou na prerokovanie členskej schôdzi."
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "type": "section",
+       "anchor": "s-cast-druha-hlava-2-diel-5",
+       "kind": "diel",
+       "label": "Diel V",
+       "heading": "Zrušenie a likvidácia družstva",
+       "children": [
+        {
+         "type": "provision",
+         "anchor": "p254",
+         "label": "§ 254",
+         "paragraphs": [
+          {
+           "anchor": "p254-1",
+           "text": "Družstvo zaniká výmazom z obchodného registra.",
+           "n": "1"
+          },
+          {
+           "anchor": "p254-2",
+           "text": "Družstvo sa zrušuje:",
+           "n": "2",
+           "items": [
+            {
+             "anchor": "p254-2-a",
+             "label": "a)",
+             "letter": "a",
+             "text": "uznesením členskej schôdze, ak ide o zrušenie družstva s likvidáciou alebo o zrušenie družstva bez likvidácie s právnym nástupcom,"
+            },
+            {
+             "anchor": "p254-2-b",
+             "label": "b)",
+             "letter": "b",
+             "text": "ukončením konkurzného konania z dôvodu nedostatku majetku alebo ukončením konkurzu, okrem zrušenia konkurzu z dôvodu, že tu nie sú predpoklady pre konkurz,"
+            },
+            {
+             "anchor": "p254-2-c",
+             "label": "c)",
+             "letter": "c",
+             "text": "rozhodnutím súdu,"
+            },
+            {
+             "anchor": "p254-2-d",
+             "label": "d)",
+             "letter": "d",
+             "text": "uplynutím doby, na ktorú bolo družstvo zriadené,"
+            },
+            {
+             "anchor": "p254-2-e",
+             "label": "e)",
+             "letter": "e",
+             "text": "dosiahnutím účelu, na ktorý bolo družstvo zriadené."
+            }
+           ]
+          },
+          {
+           "anchor": "p254-3",
+           "text": "Rozhodnutie členskej schôdze o zrušení sa osvedčuje notárskou zápisnicou.",
+           "n": "3"
+          }
+         ]
+        },
+        {
+         "type": "provision",
+         "anchor": "p257",
+         "label": "§ 257",
+         "paragraphs": [
+          {
+           "anchor": "p257-x1",
+           "text": "Súd na návrh štátneho orgánu, orgánu alebo člena družstva, alebo na návrh osoby, ktorá osvedčí právny záujem, alebo aj z vlastného podnetu rozhodne o zrušení družstva, ak",
+           "items": [
+            {
+             "anchor": "p257-x1-a",
+             "label": "a)",
+             "letter": "a",
+             "text": "počet členov družstva klesol pod počet určený v § 221 ods. 3,"
+            },
+            {
+             "anchor": "p257-x1-b",
+             "label": "b)",
+             "letter": "b",
+             "text": "súhrn členských vkladov klesol pod sumu ustanovenú v § 223 ods. 2,"
+            },
+            {
+             "anchor": "p257-x1-c",
+             "label": "c)",
+             "letter": "c",
+             "text": "sa v príslušnom kalendárnom roku nekonala členská schôdza družstva alebo orgány družstva nie sú ustanovené v súlade so stanovami alebo týmto zákonom viac ako tri mesiace,"
+            },
+            {
+             "anchor": "p257-x1-d",
+             "label": "d)",
+             "letter": "d",
+             "text": "družstvo porušilo povinnosť vytvárať nedeliteľný fond,"
+            },
+            {
+             "anchor": "p257-x1-e",
+             "label": "e)",
+             "letter": "e",
+             "text": "z iného dôvodu, ak tak ustanoví tento zákon alebo osobitný zákon,"
+            },
+            {
+             "anchor": "p257-x1-f",
+             "label": "f)",
+             "letter": "f",
+             "text": "založením, splynutím alebo zlúčením družstva sa porušil zákon,"
+            },
+            {
+             "anchor": "p257-x1-g",
+             "label": "g)",
+             "letter": "g",
+             "text": "je v omeškaní s plnením povinnosti podľa § 40 ods. 2 viac ako šesť mesiacov."
+            }
+           ]
+          }
+         ]
+        },
+        {
+         "type": "provision",
+         "anchor": "p258",
+         "label": "§ 258",
+         "paragraphs": [
+          {
+           "anchor": "p258-1",
+           "text": "Členská schôdza môže rozhodnúť, že družstvo zriadené na dobu určitú bude v činnosti pokračovať aj po skončení tejto doby.",
+           "n": "1"
+          },
+          {
+           "anchor": "p258-2",
+           "text": "Toto rozhodnutie sa však musí urobiť skôr, ako družstvo vstúpilo do likvidácie.",
+           "n": "2"
+          }
+         ]
+        },
+        {
+         "type": "provision",
+         "anchor": "p259",
+         "label": "§ 259",
+         "paragraphs": [
+          {
+           "anchor": "p259-1",
+           "text": "Ak stanovy družstva neurčia inak, likvidátora ustanoví členská schôdza.",
+           "n": "1"
+          },
+          {
+           "anchor": "p259-2",
+           "text": "Návrh na rozdelenie likvidačného zostatku schvaľuje členská schôdza.",
+           "n": "2"
+          },
+          {
+           "anchor": "p259-3",
+           "text": "Likvidačný zostatok sa rozdelí medzi členov spôsobom určeným v stanovách. Ak stanovy neurčia inak, vyplatí sa členom splatená časť ich členského vkladu. Zvyšok likvidačného zostatku sa rozdelí medzi členov, ktorých členstvo ku dňu zrušenia družstva trvalo aspoň jeden rok. Ak stanovy neurčujú inak, rozdelí sa zvyšok likvidačného zostatku medzi týchto členov podľa rozsahu, v akom sa podieľajú na základnom imaní družstva. Na vracanie nepeňažných vkladov sa použije primerane ustanovenie § 234 ods. 1.",
+           "n": "3"
+          },
+          {
+           "anchor": "p259-4",
+           "text": "Každý člen družstva alebo iná oprávnená osoba môže do troch mesiacov odo dňa konania členskej schôdze navrhnúť, aby súd vyhlásil uznesenie členskej schôdze o rozdelení likvidačného zostatku za neplatné pre rozpor s právnymi predpismi alebo stanovami. Ak súd návrhu vyhovie, rozhodne zároveň o rozdelení likvidačného zostatku. Do uplynutia lehoty troch mesiacov alebo do právoplatného rozhodnutia súdu nesmie sa likvidačný zostatok rozdeliť.",
+           "n": "4"
+          }
+         ]
+        },
+        {
+         "type": "provision",
+         "anchor": "p260",
+         "label": "§ 260",
+         "paragraphs": [
+          {
+           "anchor": "p260-x1",
+           "text": "Ak sa v tejto hlave neustanovuje inak, použijú sa na družstvo primerane ustanovenia prvej hlavy prvého dielu tejto časti zákona."
+          }
+         ],
+         "heading": "Použitie predpisov o obchodných spoločnostiach"
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  }
+ ],
+ "footnotes": []
+}

@@ -31,6 +31,9 @@ const ROLE_LABELS_BY_MODEL: Record<GovernanceModel, BoardMemberRole[]> = {
   chairman_council: ["chairman", "council_member"],
   committee: ["committee_chairman", "committee_member"],
   chairman_only: ["chairman"],
+  // BYT-20261118-020: bytové družstvo — predstavenstvo (§243 Obch. zák.)
+  // + kontrolná komisia (§244). `chairman` = predseda predstavenstva.
+  board_supervisory: ["chairman", "board_member", "supervisory_chairman", "supervisory_member"],
 };
 
 export default function BoardMembersTab({ canEdit }: BoardMembersTabProps) {

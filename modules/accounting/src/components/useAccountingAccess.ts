@@ -1,13 +1,14 @@
 "use client";
 
 import { useOptionalShell } from "@/components/layout/ShellContext";
+import { hasPermission } from "@/lib/permissions";
 
 // Client mirror of modules/accounting/src/lib/authz.ts, derived from the
 // shell the dashboard layout already resolved (no fetch). UI hint only —
 // every API route still enforces the real check server-side (403).
-//   read    → admin, treasurer, chairman
-//   write   → admin, treasurer
-//   approve → admin, chairman
+//   read    → readAccounting (admin, accountant, spravca), treasurer, chairman
+//   write   → writeAccounting (admin, accountant, spravca), treasurer
+//   approve → admin, chairman (never accountant / spravca — separation of duties)
 export interface AccountingAccess {
   canRead: boolean;
   canWrite: boolean;
@@ -17,13 +18,14 @@ export interface AccountingAccess {
 export function useAccountingAccess(): AccountingAccess {
   const shell = useOptionalShell();
   if (!shell) return { canRead: false, canWrite: false, canApprove: false };
-  const admin = shell.user.role === "admin";
+  const role = shell.user.role;
+  const admin = role === "admin";
   const roles = shell.user.boardRoles;
   const treasurer = roles.includes("treasurer");
   const chairman = roles.includes("chairman");
   return {
-    canRead: admin || treasurer || chairman,
-    canWrite: admin || treasurer,
+    canRead: hasPermission(role, "readAccounting") || treasurer || chairman,
+    canWrite: hasPermission(role, "writeAccounting") || treasurer,
     canApprove: admin || chairman,
   };
 }

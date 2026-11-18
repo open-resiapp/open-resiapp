@@ -6,6 +6,8 @@ import { useTranslations } from "next-intl";
 import { Button, Field, Input, Select } from "@/components/ui";
 import type { OwnerRow, UnitOption } from "@/lib/owners-board";
 import type { UserRole } from "@/types";
+import { useOptionalShell } from "@/components/layout/ShellContext";
+import { roleOptionsFor } from "@/lib/role-options";
 
 export interface ShareWarning {
   flatId: string;
@@ -19,7 +21,6 @@ interface ShareInput {
   den: string;
 }
 
-const ROLE_OPTIONS: UserRole[] = ["owner", "tenant", "admin", "vote_counter", "caretaker"];
 
 /**
  * Edit name, contact, role, flats and per-flat owner share. Request unchanged:
@@ -44,6 +45,11 @@ export default function OwnerEditForm({
   const [email, setEmail] = useState(owner.email ?? "");
   const [phone, setPhone] = useState(owner.phone ?? "");
   const [role, setRole] = useState<UserRole>(owner.role);
+  // BYT-20261118-020: template-aware list; the stored role stays selectable.
+  const roleOptions = roleOptionsFor(useOptionalShell()?.community?.templateSlug, {
+    includeAdmin: true,
+    current: owner.role,
+  });
   const [flatIds, setFlatIds] = useState<string[]>(owner.flats.map((f) => f.unitId));
   const [shares, setShares] = useState<Record<string, ShareInput>>(
     Object.fromEntries(owner.flats.map((f) => [f.unitId, { num: String(f.shareNum), den: String(f.shareDen) }]))
@@ -117,6 +123,9 @@ export default function OwnerEditForm({
     tenant: t("roleTenant"),
     vote_counter: t("roleVoteCounter"),
     caretaker: t("roleCaretaker"),
+    member: t("roleMember"),
+    accountant: t("roleAccountant"),
+    spravca: t("roleSpravca"),
   };
 
   return (
@@ -139,7 +148,7 @@ export default function OwnerEditForm({
         </Field>
         <Field label={t("roleLabel")}>
           <Select value={role} onChange={(e) => setRole(e.target.value as UserRole)}>
-            {ROLE_OPTIONS.map((r) => (
+            {roleOptions.map((r) => (
               <option key={r} value={r}>
                 {roleLabels[r]}
               </option>

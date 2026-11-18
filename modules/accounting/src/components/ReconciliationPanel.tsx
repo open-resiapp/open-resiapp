@@ -10,6 +10,9 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useFormatter, useTranslations } from "next-intl";
+import BankBalanceCheckBanner, {
+  type BankBalanceCheck,
+} from "@modules/accounting/src/components/BankBalanceCheckBanner";
 import {
   Badge,
   Button,
@@ -58,6 +61,8 @@ interface ImportSummary {
   needsReview: number;
   debitsSkipped: number;
   possibleDuplicates?: number;
+  /** camt.053 only: statement closing balance vs ledger 221. */
+  balanceChecks?: BankBalanceCheck[];
 }
 
 interface FioState {
@@ -297,6 +302,9 @@ export default function ReconciliationPanel({ onChanged }: { onChanged?: () => v
                 })}
               </p>
             )}
+            {summary.balanceChecks?.map((check, i) => (
+              <BankBalanceCheckBanner key={check.statementId ?? i} check={check} />
+            ))}
           </div>
         )}
         {error && error !== "load" && (

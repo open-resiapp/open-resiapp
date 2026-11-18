@@ -4,12 +4,19 @@
  *
  * Guards the vyúčtovanie math (SK §7b / CZ §7 statement contents):
  *   - per service: Σ unit cost shares = actual cost, exactly
- *   - rozdiel = cost share − advances; signs per the domain convention
- *     (positive = nedoplatok, owner pays)
- *   - dom-wide: Σ differences = Σ actual costs − Σ advances
+ *   - result = cost share − PRESCRIBED advances (the ledger basis);
+ *     unpaid = prescribed − paid is reported apart, never in the result;
+ *     signs per the domain convention (positive = nedoplatok, owner pays)
+ *   - dom-wide: Σ results = Σ actual costs − Σ prescriptions
+ *   - weightsByUnit (the service's real key) drives the split
  *   - zero-prescription service falls back to an equal split
+ *   - statement ↔ ledger invariant flags any cent of drift
  */
-import { computeSettlement } from "@modules/accounting/src/engine/settlement";
+import {
+  checkSettlementAgainstLedger,
+  checkSettlementEntry,
+  computeSettlement,
+} from "@modules/accounting/src/engine/settlement";
 
 let failures = 0;
 function check(name: string, cond: boolean, detail?: string) {
@@ -63,9 +70,11 @@ console.log("worked example");
 
   const u2 = result.units.find((u) => u.unitEntityId === "u2")!;
   check(
-    "u2 heat rozdiel = 330−250 = +80",
-    u2.services[0].differenceCents === 8000
+    "u2 heat result = 330−300 (prescribed) = +30",
+    u2.services[0].differenceCents === 3000
   );
+  check("u2 heat unpaid = 300−250 = 50", u2.services[0].unpaidCents === 5000);
+  check("u2 total unpaid 50", u2.totalUnpaidCents === 5000);
 
   for (const service of ["heat", "cleaning"]) {
     const sum = result.units.reduce(
@@ -81,14 +90,95 @@ console.log("worked example");
     check(`Σ ${service} shares = actual cost`, sum === actual);
   }
 
-  // Dom-wide identity: Σ rozdiely = Σ costs − Σ advances.
+  // Dom-wide identity: Σ results = Σ costs − Σ prescriptions.
   const totalCosts = 110000 + 30000;
-  const totalAdvances = 60000 + 25000 + 10000 + 36000;
+  const totalPrescribed = 100000 + 36000;
   check(
-    "Σ differences = costs − advances",
-    result.totalDifferenceCents === totalCosts - totalAdvances,
+    "Σ results = costs − prescriptions",
+    result.totalDifferenceCents === totalCosts - totalPrescribed,
     String(result.totalDifferenceCents)
   );
+
+  // Ledger invariant: matching ledger → no violations; one cent off → flagged.
+  const ledgerOk = {
+    costByCategory: { heat: 110000, cleaning: 30000 },
+    prescribedByUnit: { u1: 72000, u2: 42000, u3: 22000 },
+  };
+  check(
+    "invariant holds when the ledger ties out",
+    checkSettlementAgainstLedger(result, ledgerOk).length === 0
+  );
+  const off = checkSettlementAgainstLedger(result, {
+    ...ledgerOk,
+    costByCategory: { heat: 110001, cleaning: 30000 },
+  });
+  check("invariant flags a 1-cent cost drift", off.some((v) => v.code === "COST_MISMATCH"));
+  const offP = checkSettlementAgainstLedger(result, {
+    ...ledgerOk,
+    prescribedByUnit: { u1: 72000, u2: 42000, u3: 21999 },
+  });
+  check("invariant flags a prescription drift", offP.some((v) => v.code === "PRESCRIBED_MISMATCH"));
+  const entryOk = checkSettlementEntry(result, {
+    unitNetByUnit: Object.fromEntries(
+      result.units.map((u) => [u.unitEntityId, u.totalDifferenceCents])
+    ),
+    costCreditByCategory: { heat: 110000, cleaning: 30000 },
+  });
+  check("entry check passes on a faithful posting", entryOk.length === 0);
+}
+
+console.log("cost split by the service's key (weightsByUnit)");
+{
+  // Lift by area: 50/30/20 m² — prescriptions deliberately skewed so the
+  // test proves the key, not the predpis, drives the split.
+  const result = computeSettlement({
+    unitIds,
+    services: [
+      {
+        serviceCategoryId: "lift",
+        actualCostCents: 100000,
+        prescribedByUnit: { u1: 10000, u2: 10000, u3: 10000 },
+        advancesByUnit: {},
+        weightsByUnit: { u1: 50, u2: 30, u3: 20 },
+        allocationKey: "area_m2",
+      },
+    ],
+  });
+  const shares = result.units.map((u) => u.services[0].costShareCents);
+  check("area split 500/300/200 €", shares.join() === "50000,30000,20000", shares.join());
+  check(
+    "awkward weights still sum to the cost",
+    computeSettlement({
+      unitIds,
+      services: [
+        {
+          serviceCategoryId: "w",
+          actualCostCents: 10001,
+          prescribedByUnit: {},
+          advancesByUnit: {},
+          weightsByUnit: { u1: 1 / 3, u2: 1 / 3, u3: 1 / 3 },
+        },
+      ],
+    }).units.reduce((s, u) => s + u.services[0].costShareCents, 0) === 10001
+  );
+  let threw = false;
+  try {
+    computeSettlement({
+      unitIds,
+      services: [
+        {
+          serviceCategoryId: "nobody",
+          actualCostCents: 100,
+          prescribedByUnit: {},
+          advancesByUnit: {},
+          weightsByUnit: { u1: 0, u2: 0, u3: 0 },
+        },
+      ],
+    });
+  } catch {
+    threw = true;
+  }
+  check("zero key weights are rejected", threw);
 }
 
 console.log("sum preservation under awkward splits");

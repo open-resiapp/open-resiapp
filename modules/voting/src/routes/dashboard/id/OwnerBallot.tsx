@@ -583,7 +583,7 @@ export default function OwnerBallot({
             </div>
             <div>
               <dt className="text-ui-text-muted">{tVoting("ballotHashLabel")}</dt>
-              <dd className="break-all font-mono text-sm text-ui-text">{existing.ballotHash}</dd>
+              <dd className="break-all font-mono text-base text-ui-text">{existing.ballotHash}</dd>
             </div>
           </dl>
         </details>

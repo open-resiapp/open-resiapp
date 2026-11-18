@@ -20,7 +20,7 @@ const ACCEPT = Object.keys(ALLOWED_DOCUMENT_MIME).join(",");
 const inputCls =
   "w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-base dark:bg-gray-900 dark:border-gray-700 dark:text-gray-100";
 const labelCls =
-  "block text-sm font-medium text-gray-700 mb-1 dark:text-gray-300";
+  "block text-base font-medium text-gray-700 mb-1 dark:text-gray-300";
 
 interface SubjectCandidate {
   userId: string;
@@ -173,7 +173,7 @@ export default function DocumentUploadForm({
           type="file"
           accept={ACCEPT}
           onChange={handleFile}
-          className="block text-sm dark:text-gray-300"
+          className="block text-base dark:text-gray-300"
         />
       </div>
 
@@ -280,7 +280,7 @@ export default function DocumentUploadForm({
           onChange={(e) => setRetainUntil(e.target.value)}
           className={inputCls}
         />
-        <p className="text-xs text-gray-400 mt-1 dark:text-gray-500">
+        <p className="text-base text-gray-400 mt-1 dark:text-gray-500">
           {t("form.retainHint")}
         </p>
       </div>
@@ -303,7 +303,7 @@ export default function DocumentUploadForm({
         </div>
       )}
 
-      {error && <p className="text-sm text-red-600 dark:text-red-400">{error}</p>}
+      {error && <p className="text-base text-red-600 dark:text-red-400">{error}</p>}
 
       <div className="flex gap-3">
         <button

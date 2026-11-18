@@ -35,7 +35,17 @@ const userSchema = z.object({
   name: z.string().min(1),
   passwordHash: z.string().min(20), // bcrypt $2[aby]$... is ~60 chars; lower bound permissive
   role: z
-    .enum(["admin", "owner", "tenant", "vote_counter", "caretaker"])
+    // BYT-20261118-020: + member / accountant / spravca.
+    .enum([
+      "admin",
+      "owner",
+      "tenant",
+      "vote_counter",
+      "caretaker",
+      "member",
+      "accountant",
+      "spravca",
+    ])
     .default("owner"),
   phone: z.string().optional(),
 });

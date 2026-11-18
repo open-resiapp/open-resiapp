@@ -1,5 +1,6 @@
 import "server-only";
 
+import { and, eq } from "drizzle-orm";
 import { db } from "@/db";
 import { interestRateHistory } from "../db/schema";
 import {
@@ -50,6 +51,20 @@ export async function syncRates(opts?: {
         })
         .onConflictDoNothing()
         .returning({ id: interestRateHistory.id });
+      if (inserted.length === 0) {
+        // Unchanged rate — record that it was re-confirmed today, so the
+        // overdue calculator's freshness check (overdue.ts) knows the table
+        // is current even when the central bank has not moved the rate.
+        await db
+          .update(interestRateHistory)
+          .set({ fetchedAt: new Date() })
+          .where(
+            and(
+              eq(interestRateHistory.series, src.series),
+              eq(interestRateHistory.validFrom, rate.validFrom)
+            )
+          );
+      }
       out.push({
         series: src.series,
         ok: true,

@@ -3,6 +3,7 @@ import { createHmac, timingSafeEqual } from "node:crypto";
 import { db } from "@/db";
 import { ssoConsumedTokens, users } from "@/db/schema";
 import { eq, sql } from "drizzle-orm";
+import type { UserRole } from "@/types";
 
 export type SsoErrorCode =
   | "sso_unsupported"
@@ -155,7 +156,7 @@ type SsoUser = {
   id: string;
   email: string;
   name: string;
-  role: "admin" | "owner" | "tenant" | "vote_counter" | "caretaker";
+  role: UserRole;
   status: "pending" | "active" | "rejected";
 };
 

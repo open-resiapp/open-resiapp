@@ -50,10 +50,27 @@ export type ExternalConnection = InferSelectModel<typeof externalConnections>;
 export type PairingRequest = InferSelectModel<typeof pairingRequests>;
 export type ConsentRecord = InferSelectModel<typeof consentRecords>;
 export type BoardMember = InferSelectModel<typeof boardMembers>;
-export type GovernanceModel = "chairman_council" | "committee" | "chairman_only";
-export type BoardMemberRole = "chairman" | "council_member" | "committee_member" | "committee_chairman" | "treasurer";
+export type GovernanceModel = "chairman_council" | "committee" | "chairman_only" | "board_supervisory";
+export type BoardMemberRole =
+  | "chairman"
+  | "council_member"
+  | "committee_member"
+  | "committee_chairman"
+  | "treasurer"
+  | "board_member"
+  | "supervisory_chairman"
+  | "supervisory_member";
 
-export type UserRole = "admin" | "owner" | "tenant" | "vote_counter" | "caretaker";
+export type UserRole =
+  | "admin"
+  | "owner"
+  | "tenant"
+  | "vote_counter"
+  | "caretaker"
+  // BYT-20261118-020 (bytové družstvo)
+  | "member"
+  | "accountant"
+  | "spravca";
 export type UserStatus = "pending" | "active" | "rejected";
 export type ApiKeyPermission = "read" | "read_write" | "full";
 export type PairingStatus = "pending" | "completed" | "expired" | "revoked" | "locked";

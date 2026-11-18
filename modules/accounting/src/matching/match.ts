@@ -12,6 +12,8 @@
 // Confidence is 0–100; callers auto-apply at >= AUTO_APPLY_THRESHOLD and
 // otherwise queue the line for the reconciliation UI.
 
+import { normalizeSymbol } from "../lib/payment-symbols";
+
 export const AUTO_APPLY_THRESHOLD = 90;
 
 export interface MatchableUnit {
@@ -86,8 +88,11 @@ export function suggestMatch(
 ): MatchSuggestion {
   // 1. VS exact — the primary key. A VS collision cannot happen (unique
   // per dom), so a hit is near-certain; amount only tunes the score.
-  if (line.vs) {
-    const unit = units.find((u) => u.vs === line.vs);
+  // Both sides normalised: banks strip leading zeros, the unit settings
+  // keep the VS as typed ("0012") — compare "0012" ≡ "12".
+  const lineVs = normalizeSymbol(line.vs);
+  if (lineVs) {
+    const unit = units.find((u) => normalizeSymbol(u.vs) === lineVs);
     if (unit) {
       const confidence = Math.min(100, 93 + amountBonus(line, unit) + (line.ss ? 2 : 0));
       return {

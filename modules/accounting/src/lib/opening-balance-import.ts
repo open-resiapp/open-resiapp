@@ -31,7 +31,9 @@ export type OpeningRowErrorCode =
   | "ambiguous_unit"
   | "duplicate_unit"
   | "bad_fpuo"
-  | "bad_zalohy";
+  | "bad_zalohy"
+  | "bad_nedoplatok"
+  | "bad_preplatok";
 
 export type OpeningFileErrorCode =
   | "empty_file"
@@ -47,14 +49,24 @@ export interface ParsedOpeningRow {
   unitId: string | null;
   fpuoCents: number | null;
   zalohyCents: number | null;
+  /** Optional columns (owner's own arrears / credit, >= 0). */
+  nedoplatokCents: number | null;
+  preplatokCents: number | null;
   errors: OpeningRowErrorCode[];
+}
+
+export interface OpeningMatchedValues {
+  fpuoCents: number;
+  zalohyCents: number;
+  nedoplatokCents: number;
+  preplatokCents: number;
 }
 
 export interface OpeningImportResult {
   fileError: OpeningFileErrorCode | null;
   rows: ParsedOpeningRow[];
   /** Only rows that matched a unit AND parsed cleanly. */
-  matched: Record<string, { fpuoCents: number; zalohyCents: number }>;
+  matched: Record<string, OpeningMatchedValues>;
   matchedCount: number;
   errorCount: number;
   /** Labels of dom units no clean row covered — still need a value. */
@@ -87,6 +99,13 @@ const FPUO_ALIASES = new Set([
 const ZALOHY_ALIASES = new Set([
   "zalohy", "zaloha", "zalohynasluzby", "preddavky", "sluzby",
   "serviceadvances", "advances", "services", "zalohybalance",
+]);
+// Optional owner-position columns (separate from the fund balances).
+const NEDOPLATOK_ALIASES = new Set([
+  "nedoplatok", "nedoplatky", "dlh", "arrears", "debt", "dluh",
+]);
+const PREPLATOK_ALIASES = new Set([
+  "preplatok", "preplatky", "preplatek", "credit", "overpayment",
 ]);
 
 // ── CSV tokenizer (RFC-4180-ish: quotes + doubled-quote escapes) ───────
@@ -182,17 +201,21 @@ export function parseOpeningBalanceCsv(
   let idxFlat = -1;
   let idxFpuo = -1;
   let idxZalohy = -1;
+  let idxNedoplatok = -1;
+  let idxPreplatok = -1;
   header.forEach((h, i) => {
     if (idxFlat < 0 && FLAT_ALIASES.has(h)) idxFlat = i;
     else if (idxFpuo < 0 && FPUO_ALIASES.has(h)) idxFpuo = i;
     else if (idxZalohy < 0 && ZALOHY_ALIASES.has(h)) idxZalohy = i;
+    else if (idxNedoplatok < 0 && NEDOPLATOK_ALIASES.has(h)) idxNedoplatok = i;
+    else if (idxPreplatok < 0 && PREPLATOK_ALIASES.has(h)) idxPreplatok = i;
   });
 
   if (idxFlat < 0 && idxFpuo < 0 && idxZalohy < 0) {
     return { ...empty, fileError: "no_header" };
   }
   if (idxFlat < 0) return { ...empty, fileError: "missing_flat_column" };
-  if (idxFpuo < 0 && idxZalohy < 0) {
+  if (idxFpuo < 0 && idxZalohy < 0 && idxNedoplatok < 0 && idxPreplatok < 0) {
     return { ...empty, fileError: "missing_amount_column" };
   }
 
@@ -205,7 +228,7 @@ export function parseOpeningBalanceCsv(
   }
 
   const rows: ParsedOpeningRow[] = [];
-  const matched: Record<string, { fpuoCents: number; zalohyCents: number }> = {};
+  const matched: Record<string, OpeningMatchedValues> = {};
   const seenUnits = new Set<string>();
 
   for (let li = 1; li < allLines.length; li++) {
@@ -237,12 +260,35 @@ export function parseOpeningBalanceCsv(
     const zalohyCents = parseAmt(idxZalohy);
     if (fpuoCents === null) errors.push("bad_fpuo");
     if (zalohyCents === null) errors.push("bad_zalohy");
+    // Owner arrears / credit are magnitudes — negatives are rejected.
+    const parseNonNeg = (idx: number): number | null =>
+      idx < 0
+        ? 0
+        : parseCents((cells[idx] ?? "").trim(), { emptyAsZero: true });
+    const nedoplatokCents = parseNonNeg(idxNedoplatok);
+    const preplatokCents = parseNonNeg(idxPreplatok);
+    if (nedoplatokCents === null || nedoplatokCents < 0) errors.push("bad_nedoplatok");
+    if (preplatokCents === null || preplatokCents < 0) errors.push("bad_preplatok");
 
-    rows.push({ rowNumber: li + 1, rawLabel, unitId, fpuoCents, zalohyCents, errors });
+    rows.push({
+      rowNumber: li + 1,
+      rawLabel,
+      unitId,
+      fpuoCents,
+      zalohyCents,
+      nedoplatokCents,
+      preplatokCents,
+      errors,
+    });
 
     if (unitId && errors.length === 0) {
       seenUnits.add(unitId);
-      matched[unitId] = { fpuoCents: fpuoCents!, zalohyCents: zalohyCents! };
+      matched[unitId] = {
+        fpuoCents: fpuoCents!,
+        zalohyCents: zalohyCents!,
+        nedoplatokCents: nedoplatokCents!,
+        preplatokCents: preplatokCents!,
+      };
     }
   }
 
@@ -282,11 +328,11 @@ export function buildOpeningBalanceTemplate(
   units: { label: string }[],
   delim = ";"
 ): string {
-  const header = ["byt", "fond_oprav", "zalohy"]
+  const header = ["byt", "fond_oprav", "zalohy", "nedoplatok", "preplatok"]
     .map((h) => csvField(h, delim))
     .join(delim);
   const body = units.map(
-    (u) => `${csvField(u.label, delim)}${delim}${delim}`
+    (u) => `${csvField(u.label, delim)}${delim}${delim}${delim}${delim}`
   );
   return "﻿" + [header, ...body].join("\r\n") + "\r\n";
 }

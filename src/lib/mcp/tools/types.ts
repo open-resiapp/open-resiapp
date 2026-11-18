@@ -31,6 +31,12 @@ export interface ToolContext {
    * confirm_action itself.
    */
   appsUi?: boolean;
+  /**
+   * MCP Apps UI flag the OAuth client declared at its last `initialize`
+   * (null = never recorded). Fallback for 2025-era clients whose tools/call
+   * carries no capabilities (src/lib/mcp/client-capabilities.ts).
+   */
+  clientAppsUi?: boolean | null;
 }
 
 export interface ToolOutput {

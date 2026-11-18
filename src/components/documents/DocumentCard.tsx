@@ -95,7 +95,7 @@ export default function DocumentCard({
       </div>
       <div className="min-w-0 flex-1">
         <div className="flex items-center gap-2 flex-wrap">
-          <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 dark:bg-blue-900/40 dark:text-blue-200">
+          <span className="text-base font-medium px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 dark:bg-blue-900/40 dark:text-blue-200">
             {t(`type.${doc.type}`)}
           </span>
           {doc.audience === "admin" ? (
@@ -106,7 +106,7 @@ export default function DocumentCard({
             </Badge>
           ) : (
             <span
-              className={`text-xs font-medium px-2 py-0.5 rounded-full ${AUDIENCE_STYLES[doc.audience]}`}
+              className={`text-base font-medium px-2 py-0.5 rounded-full ${AUDIENCE_STYLES[doc.audience]}`}
             >
               {t(`audience.${doc.audience}`)}
             </span>
@@ -129,9 +129,9 @@ export default function DocumentCard({
         <h3 className="text-base font-semibold text-gray-900 mt-2 truncate dark:text-gray-100">
           {doc.name}
         </h3>
-        <p className="text-sm text-gray-500 mt-1 dark:text-gray-400">{meta}</p>
+        <p className="text-base text-gray-500 mt-1 dark:text-gray-400">{meta}</p>
         {doc.retainUntil && (
-          <p className="text-xs text-gray-400 mt-1 dark:text-gray-500">
+          <p className="text-base text-gray-400 mt-1 dark:text-gray-500">
             {t("retainUntilLabel", { date: doc.retainUntil })}
           </p>
         )}
@@ -140,14 +140,14 @@ export default function DocumentCard({
         {/* Plain <a> (not next-intl Link): API route, must not be locale-prefixed. */}
         <a
           href={`/api/documents/${doc.id}`}
-          className="px-3 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg text-center"
+          className="px-3 py-2 text-base font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg text-center"
         >
           {t("download")}
         </a>
         {canDelete && (
           <button
             onClick={() => onDelete(doc.id)}
-            className="px-3 py-2 text-sm font-medium text-red-600 hover:bg-red-50 rounded-lg dark:text-red-400 dark:hover:bg-red-900/30"
+            className="px-3 py-2 text-base font-medium text-red-600 hover:bg-red-50 rounded-lg dark:text-red-400 dark:hover:bg-red-900/30"
           >
             {t("delete")}
           </button>
@@ -156,7 +156,7 @@ export default function DocumentCard({
           <select
             value={doc.projectId ?? ""}
             onChange={(e) => onAssignProject(doc.id, e.target.value || null)}
-            className="px-2 py-1 text-xs border border-gray-300 rounded-lg dark:bg-gray-900 dark:border-gray-700 dark:text-gray-100"
+            className="px-2 py-1 text-base border border-gray-300 rounded-lg dark:bg-gray-900 dark:border-gray-700 dark:text-gray-100"
             title={t("assignProject")}
           >
             <option value="">{t("noProject")}</option>

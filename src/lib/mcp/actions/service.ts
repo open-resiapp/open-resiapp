@@ -15,6 +15,7 @@ import { BALLOT_ACTIONS } from "./ballot";
 import { GOVERNANCE_ACTIONS } from "./governance";
 import { OWNER_ACTIONS } from "./owners";
 import { REGISTRATION_ACTIONS } from "./registrations";
+import { TRANSFER_ACTIONS } from "./transfer";
 import {
   isActionKind,
   type ActionContext,
@@ -56,8 +57,13 @@ import {
 // bounded request-time sweep in proposeAction.
 
 export const PENDING_ACTION_TTL_MS = 10 * 60 * 1000;
-/** Max proposals per user per TTL window (§7). */
-export const PENDING_ACTION_RATE_LIMIT = 10;
+/**
+ * Max proposals per user per TTL window (§7). 30 leaves room for a real
+ * session (a bulk import fixed and re-proposed a few times, a run of
+ * matches); bulk work should use the batch tools (match_payments,
+ * link_owner_accounts) — one proposal, one confirm.
+ */
+export const PENDING_ACTION_RATE_LIMIT = 30;
 
 /** Stored in place of `payload` once a row is decided (column is NOT NULL). */
 const SCRUBBED_PAYLOAD: Record<string, unknown> = {};
@@ -73,6 +79,7 @@ const ACTIONS: ReadonlyMap<ActionKind, ActionDef> = new Map(
     ...BALLOT_ACTIONS,
     ...OWNER_ACTIONS,
     ...REGISTRATION_ACTIONS,
+    ...TRANSFER_ACTIONS,
   ].map((a) => [a.kind, a])
 );
 
@@ -414,7 +421,7 @@ export async function confirmAction(
     status: "confirmed",
     resultCode: "ok",
     locale,
-    message: t(`Mcp.actions.${def.kind}.done`),
+    message: t(committed.doneKey ?? `Mcp.actions.${def.kind}.done`, committed.doneValues),
     url: committed.path ? appLink(ctx, locale, committed.path) : null,
     data: committed.data,
   };

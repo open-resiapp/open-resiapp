@@ -62,6 +62,113 @@ export async function getTrialBalance(
   }));
 }
 
+// ── Year-scoped trial balance (obratová predvaha za rok) ─
+
+export interface TrialBalanceYearRow {
+  code: string;
+  name: string;
+  kind: string;
+  /** Počiatočný stav: Dr − Cr of every posting in EARLIER accounting years. */
+  openingCents: number;
+  /** Obraty MD / D within the selected accounting year. */
+  debitCents: number;
+  creditCents: number;
+  /** Konečný stav = opening + debit − credit (Dr − Cr sign convention). */
+  closingCents: number;
+}
+
+export interface TrialBalanceYear {
+  year: number;
+  rows: TrialBalanceYearRow[];
+  totals: {
+    openingDebitCents: number;
+    openingCreditCents: number;
+    debitCents: number;
+    creditCents: number;
+    closingDebitCents: number;
+    closingCreditCents: number;
+  };
+}
+
+/** Accounting years (periods) of the dom, newest first. */
+export async function listAccountingYears(entityId: string): Promise<number[]> {
+  const rows = await db
+    .select({ year: accountingPeriods.year })
+    .from(accountingPeriods)
+    .where(eq(accountingPeriods.entityId, entityId))
+    .orderBy(desc(accountingPeriods.year));
+  return [...new Set(rows.map((r) => r.year))];
+}
+
+/**
+ * Trial balance for ONE accounting year: opening (cumulative Dr − Cr of all
+ * earlier years), turnover of the year, closing. Years key on the posting's
+ * accounting PERIOD (not the calendar date), so a correction posted into an
+ * open period lands in that period's year.
+ *
+ * Opening is carried for every account, P&L included: in this chart the
+ * services costs (5xx) are cleared against 478 by the annual vyúčtovanie,
+ * so an unsettled cost legitimately carries forward. Because each entry
+ * balances, Σ opening Dr = Σ opening Cr and the closing column reconciles
+ * — the totals row proves it.
+ */
+export async function getTrialBalanceForYear(
+  entityId: string,
+  country: Country,
+  year: number
+): Promise<TrialBalanceYear> {
+  const rows = await db
+    .select({
+      code: accounts.code,
+      name: accounts.name,
+      kind: accounts.kind,
+      openingCents: sql<number>`coalesce(sum(case when ${accountingPeriods.year} < ${year} then ${journalLines.debitCents} - ${journalLines.creditCents} else 0 end), 0)::int`,
+      debitCents: sql<number>`coalesce(sum(case when ${accountingPeriods.year} = ${year} then ${journalLines.debitCents} else 0 end), 0)::int`,
+      creditCents: sql<number>`coalesce(sum(case when ${accountingPeriods.year} = ${year} then ${journalLines.creditCents} else 0 end), 0)::int`,
+    })
+    .from(accounts)
+    // Lines restricted IN the join condition (this dom, periods up to the
+    // year) so accounts without postings still appear with zeros.
+    .leftJoin(
+      journalLines,
+      and(
+        eq(journalLines.accountId, accounts.id),
+        sql`${journalLines.journalEntryId} in (
+          select je.id from ${journalEntries} je
+          join ${accountingPeriods} ap on ap.id = je.period_id
+          where je.entity_id = ${entityId} and ap.year <= ${year}
+        )`
+      )
+    )
+    .leftJoin(journalEntries, eq(journalLines.journalEntryId, journalEntries.id))
+    .leftJoin(
+      accountingPeriods,
+      eq(journalEntries.periodId, accountingPeriods.id)
+    )
+    .where(eq(accounts.country, country))
+    .groupBy(accounts.id, accounts.code, accounts.name, accounts.kind)
+    .orderBy(accounts.code);
+
+  const out: TrialBalanceYearRow[] = rows.map((r) => ({
+    ...r,
+    closingCents: r.openingCents + r.debitCents - r.creditCents,
+  }));
+  const pos = (v: number) => (v > 0 ? v : 0);
+  const neg = (v: number) => (v < 0 ? -v : 0);
+  return {
+    year,
+    rows: out,
+    totals: {
+      openingDebitCents: out.reduce((s, r) => s + pos(r.openingCents), 0),
+      openingCreditCents: out.reduce((s, r) => s + neg(r.openingCents), 0),
+      debitCents: out.reduce((s, r) => s + r.debitCents, 0),
+      creditCents: out.reduce((s, r) => s + r.creditCents, 0),
+      closingDebitCents: out.reduce((s, r) => s + pos(r.closingCents), 0),
+      closingCreditCents: out.reduce((s, r) => s + neg(r.closingCents), 0),
+    },
+  };
+}
+
 export interface JournalLineView {
   accountCode: string;
   accountName: string;

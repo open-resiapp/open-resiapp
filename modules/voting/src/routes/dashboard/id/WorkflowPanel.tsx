@@ -13,7 +13,7 @@ import { useFormatter, useTranslations } from "next-intl";
 import { Button, Card, Field, Input, Select, Textarea, useConfirm } from "@/components/ui";
 import { cn } from "@/components/ui/cn";
 import { timeZoneForCountry } from "@/lib/time-zone";
-import { minStartDate, civilDate } from "@modules/voting/src/workflow/notice";
+import { minStartDate, civilDate, type NoticeRules } from "@modules/voting/src/workflow/notice";
 import {
   REOPEN_NOTE_MIN,
   publicationDeadline,
@@ -35,11 +35,14 @@ function currentStep(v: VotingDetail): StepKey {
 export default function WorkflowPanel({
   voting,
   country,
+  noticeRules,
   onEdit,
   onChanged,
 }: {
   voting: VotingDetail;
   country: "sk" | "cz";
+  /** BYT-20261118-020: regime + stanovy lead time (workflow/notice.ts noticeRulesFor). */
+  noticeRules?: NoticeRules;
   onEdit: () => void;
   /** Called after a successful change; the page refetches the voting once. */
   onChanged: () => void;
@@ -111,7 +114,7 @@ export default function WorkflowPanel({
   }
 
   // SK lead time (§14a ods. 2): earliest start if announced today.
-  const minStart = voting.status === "draft" ? minStartDate(country, new Date(), tz) : null;
+  const minStart = voting.status === "draft" ? minStartDate(country, new Date(), tz, noticeRules) : null;
   const startTooEarly = minStart !== null && civilDate(new Date(voting.startsAt), tz) < minStart;
   const deadline = publicationDeadline(new Date(voting.endsAt));
   const deadlinePassed = deadline.getTime() < Date.now();
@@ -161,7 +164,7 @@ export default function WorkflowPanel({
               {t("leadTimeHint", { date: dateFmt(`${minStart}T12:00:00`) })}
             </p>
           )}
-          <OfficialsEditor voting={voting} onSaved={onChanged} />
+          <OfficialsEditor voting={voting} editPlace onSaved={onChanged} />
           <div className="flex flex-wrap gap-3 border-t border-ui-border pt-4">
             <Button variant="secondary" onClick={onEdit}>
               {tCommon("edit")}
@@ -173,7 +176,13 @@ export default function WorkflowPanel({
         </div>
       )}
 
-      {/* 3. Progress → close */}
+      {/* 3. Progress → close. Officials stay editable until the result is
+          published (a meeting elects its chair / recorder / verifiers). */}
+      {voting.status === "active" && (
+        <div className="border-t border-ui-border pt-4">
+          <OfficialsEditor voting={voting} editPlace={false} onSaved={onChanged} />
+        </div>
+      )}
       {voting.status === "active" && (
         <div className="flex flex-wrap gap-3 border-t border-ui-border pt-4">
           <Button variant="danger" onClick={close} loading={busy === "close"} disabled={busy !== null}>
@@ -185,6 +194,8 @@ export default function WorkflowPanel({
       {/* 4. Closed, result not yet published: publish (primary) or reopen */}
       {voting.status === "closed" && !voting.resultPublishedAt && (
         <div className="space-y-4 border-t border-ui-border pt-4">
+          {/* Minutes step: officials + a verifier's refusal to sign (§14a ods. 8). */}
+          <OfficialsEditor voting={voting} editPlace={false} showRefusal onSaved={onChanged} />
           <p className={cn("text-base", deadlinePassed ? "text-ui-danger" : "text-ui-text")}>
             {t("publishDeadline", { date: dateFmt(deadline) })}
           </p>
@@ -247,9 +258,10 @@ export default function WorkflowPanel({
         </div>
       )}
 
-      {/* 5. Published */}
+      {/* 5. Published — officials read-only */}
       {voting.status === "closed" && voting.resultPublishedAt && (
         <div className="space-y-2 border-t border-ui-border pt-4">
+          <OfficialsReadOnly officials={voting.officials ?? []} />
           <p className="text-base text-ui-text">
             {t("publishedOn", { date: dateFmt(voting.resultPublishedAt) })}
           </p>
@@ -294,8 +306,45 @@ export default function WorkflowPanel({
   );
 }
 
-// ── Place + officials (draft only) ───────────────────────
-function OfficialsEditor({ voting, onSaved }: { voting: VotingDetail; onSaved: () => void }) {
+// ── Officials, read-only after publication ───────────────
+function OfficialsReadOnly({ officials }: { officials: VotingOfficial[] }) {
+  const t = useTranslations("VotingWorkflow");
+  if (officials.length === 0) return null;
+  return (
+    <div className="space-y-1">
+      <p className="text-base font-medium text-ui-text">{t("officialsHeading")}</p>
+      <ul className="space-y-1">
+        {officials.map((o, i) => (
+          <li key={o.id ?? i} className="text-base text-ui-text">
+            {t(`roles.${o.role}`)}: {o.name}
+            {o.refusedToSign ? (
+              <span className="block text-ui-text-muted">
+                {t("officialRefused")}
+                {o.refusalStatement ? ` — ${o.refusalStatement}` : ""}
+              </span>
+            ) : null}
+          </li>
+        ))}
+      </ul>
+      <p className="text-base text-ui-text-muted">{t("officialsLockedAfterPublish")}</p>
+    </div>
+  );
+}
+
+// ── Place (draft only) + officials (until the result is published) ──
+function OfficialsEditor({
+  voting,
+  editPlace,
+  showRefusal = false,
+  onSaved,
+}: {
+  voting: VotingDetail;
+  /** Place is announced content (§14a ods. 2) — editable in the draft only. */
+  editPlace: boolean;
+  /** Minutes step: record a verifier's refusal to sign (§14a ods. 8). */
+  showRefusal?: boolean;
+  onSaved: () => void;
+}) {
   const t = useTranslations("VotingWorkflow");
   const tCommon = useTranslations("Common");
   const [place, setPlace] = useState(voting.place ?? "");
@@ -313,23 +362,32 @@ function OfficialsEditor({ voting, onSaved }: { voting: VotingDetail; onSaved: (
     setSaving(true);
     setError(null);
     setSaved(false);
-    const cleaned = officials.filter((o) => o.name.trim());
-    // Two small requests: officials list, then place (a field edit).
+    const cleaned = officials
+      .filter((o) => o.name.trim())
+      .map((o) =>
+        o.role === "verifier" && o.refusedToSign
+          ? o
+          : { ...o, refusedToSign: false, refusalStatement: null }
+      );
+    // Two small requests: officials list, then (draft only) place.
     const r1 = await fetch(`/api/votings/${voting.id}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ officials: cleaned }),
     });
-    const r2 = r1.ok
-      ? await fetch(`/api/votings/${voting.id}`, {
-          method: "PATCH",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ place: place.trim() || null }),
-        })
-      : null;
+    const r2 =
+      r1.ok && editPlace
+        ? await fetch(`/api/votings/${voting.id}`, {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ place: place.trim() || null }),
+          })
+        : null;
     setSaving(false);
-    if (!r1.ok || !r2?.ok) {
-      setError(t("errors.generic"));
+    if (!r1.ok || (editPlace && !r2?.ok)) {
+      const data = await (r1.ok ? r2 : r1)?.json().catch(() => ({}));
+      const code = String((data as { error?: unknown } | undefined)?.error ?? "");
+      setError(VOTING_WORKFLOW_ERRORS.has(code) ? t(`errors.${code}`, { minDate: "" }) : t("errors.generic"));
       return;
     }
     setSaved(true);
@@ -338,9 +396,11 @@ function OfficialsEditor({ voting, onSaved }: { voting: VotingDetail; onSaved: (
 
   return (
     <div className="space-y-3">
-      <Field label={t("placeLabel")} hint={t("placeHint")}>
-        <Input value={place} onChange={(e) => setPlace(e.target.value)} maxLength={500} />
-      </Field>
+      {editPlace && (
+        <Field label={t("placeLabel")} hint={t("placeHint")}>
+          <Input value={place} onChange={(e) => setPlace(e.target.value)} maxLength={500} />
+        </Field>
+      )}
       <fieldset className="space-y-3">
         <legend className="text-base font-medium text-ui-text">{t("officialsHeading")}</legend>
         <p className="text-base text-ui-text-muted">{t("officialsHint")}</p>
@@ -365,6 +425,34 @@ function OfficialsEditor({ voting, onSaved }: { voting: VotingDetail; onSaved: (
             >
               {t("removeOfficial")}
             </Button>
+            {showRefusal && o.role === "verifier" && (
+              <div className="space-y-2 sm:col-span-3">
+                <label className="flex min-h-11 items-start gap-3 text-base text-ui-text">
+                  <input
+                    type="checkbox"
+                    className="mt-0.5 h-5 w-5 shrink-0"
+                    checked={o.refusedToSign}
+                    onChange={(e) =>
+                      update(i, {
+                        refusedToSign: e.target.checked,
+                        refusalStatement: e.target.checked ? o.refusalStatement : null,
+                      })
+                    }
+                  />
+                  <span>{t("officialRefusedLabel")}</span>
+                </label>
+                {o.refusedToSign && (
+                  <Field label={t("officialRefusalStatementLabel")} hint={t("officialRefusalStatementHint")}>
+                    <Textarea
+                      value={o.refusalStatement ?? ""}
+                      onChange={(e) => update(i, { refusalStatement: e.target.value })}
+                      rows={3}
+                      maxLength={4000}
+                    />
+                  </Field>
+                )}
+              </div>
+            )}
           </div>
         ))}
         <Button
@@ -381,7 +469,7 @@ function OfficialsEditor({ voting, onSaved }: { voting: VotingDetail; onSaved: (
       </fieldset>
       <div className="flex flex-wrap items-center gap-3">
         <Button variant="secondary" onClick={save} loading={saving}>
-          {saving ? tCommon("saving") : t("savePreparation")}
+          {saving ? tCommon("saving") : t(editPlace ? "savePreparation" : "saveOfficials")}
         </Button>
         {saved && <span className="text-base text-ui-text-muted">{t("saved")}</span>}
       </div>

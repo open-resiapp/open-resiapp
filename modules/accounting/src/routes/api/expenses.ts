@@ -11,6 +11,7 @@ import { uploadAttachment } from "@modules/accounting/src/lib/attachments";
 import { listServiceCategories } from "@modules/accounting/src/lib/fee-schedules";
 import { validateExpenseInput } from "@modules/accounting/src/lib/input-validators";
 import { inputErrorResponse } from "@modules/accounting/src/lib/input-errors.server";
+import { getPeriodBookingInfo } from "@modules/accounting/src/lib/periods";
 
 // Expense ledger API — list: treasurer/chairman/admin; mutations:
 // treasurer/admin only.
@@ -18,11 +19,14 @@ import { inputErrorResponse } from "@modules/accounting/src/lib/input-errors.ser
 export async function handleList(): Promise<NextResponse> {
   const ctx = await requireReader();
   if (!ctx.ok) return ctx.error;
-  const [rows, categories] = await Promise.all([
+  const [rows, categories, periodBooking] = await Promise.all([
     listExpenses(ctx.root.id),
     listServiceCategories(ctx.root.country),
+    // Expense form: warn when the invoice year is locked (cost settles in
+    // the fallback year's vyúčtovanie).
+    getPeriodBookingInfo(ctx.root.id),
   ]);
-  return NextResponse.json({ expenses: rows, categories });
+  return NextResponse.json({ expenses: rows, categories, periodBooking });
 }
 
 export async function handleCreate(req: NextRequest): Promise<NextResponse> {

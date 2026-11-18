@@ -45,6 +45,13 @@ export default function MandateModal({
   const [flatOwnerName, setFlatOwnerName] = useState("");
   const [flatOwnerId, setFlatOwnerId] = useState("");
   const [selectedToOwner, setSelectedToOwner] = useState("");
+  // §14 ods. 4: the proxy may be any person — an owner account or someone
+  // without an account (external proxy, stored on the mandate).
+  const [proxyKind, setProxyKind] = useState<"owner" | "external">("owner");
+  const [proxyName, setProxyName] = useState("");
+  const [proxyBirthDate, setProxyBirthDate] = useState("");
+  const [proxyAddress, setProxyAddress] = useState("");
+  const [proxyNote, setProxyNote] = useState("");
   const [paperConfirmed, setPaperConfirmed] = useState(false);
   const [verificationNote, setVerificationNote] = useState("");
   const [loading, setLoading] = useState(false);
@@ -92,9 +99,16 @@ export default function MandateModal({
 
   if (!isOpen) return null;
 
+  const proxyReady = proxyKind === "owner" ? Boolean(selectedToOwner) : Boolean(proxyName.trim());
+
+  function errorText(code: unknown): string {
+    const key = `errors.${String(code ?? "")}`;
+    return typeof code === "string" && t.has(key) ? t(key as never) : t("submitFailed");
+  }
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!selectedFlat || !flatOwnerId || !selectedToOwner || !paperConfirmed) return;
+    if (!selectedFlat || !flatOwnerId || !proxyReady || !paperConfirmed) return;
 
     setLoading(true);
     setError("");
@@ -106,15 +120,24 @@ export default function MandateModal({
         votingId,
         fromFlatId: selectedFlat,
         fromOwnerId: flatOwnerId,
-        toOwnerId: selectedToOwner,
+        ...(proxyKind === "owner"
+          ? { toOwnerId: selectedToOwner }
+          : {
+              proxy: {
+                name: proxyName.trim(),
+                birthDate: proxyBirthDate || null,
+                address: proxyAddress.trim() || null,
+                note: proxyNote.trim() || null,
+              },
+            }),
         paperDocumentConfirmed: true,
         verificationNote: verificationNote || null,
       }),
     });
 
     if (!res.ok) {
-      const data = await res.json();
-      setError(data.error || t("submitFailed"));
+      const data = await res.json().catch(() => ({}));
+      setError(errorText(data.error));
       setLoading(false);
       return;
     }
@@ -122,6 +145,11 @@ export default function MandateModal({
     setLoading(false);
     setSelectedFlat("");
     setSelectedToOwner("");
+    setProxyKind("owner");
+    setProxyName("");
+    setProxyBirthDate("");
+    setProxyAddress("");
+    setProxyNote("");
     setPaperConfirmed(false);
     setVerificationNote("");
     onCreated();
@@ -185,27 +213,124 @@ export default function MandateModal({
             </div>
           )}
 
-          {/* Select recipient */}
-          <div>
-            <label className="block text-base font-medium text-gray-700 mb-1 dark:text-gray-200">
+          {/* Proxy kind — explicit per-state buttons */}
+          <fieldset>
+            <legend className="block text-base font-medium text-gray-700 mb-1 dark:text-gray-200">
               {t("delegateToLabel")}
-            </label>
-            <select
-              value={selectedToOwner}
-              onChange={(e) => setSelectedToOwner(e.target.value)}
-              required
-              className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none dark:bg-gray-900 dark:border-gray-700 dark:text-gray-100"
-            >
-              <option value="">{t("ownerPlaceholder")}</option>
-              {owners
-                .filter((o) => o.id !== flatOwnerId)
-                .map((o) => (
-                  <option key={o.id} value={o.id}>
-                    {o.name} ({t("flat", { number: o.flatNumber })})
-                  </option>
-                ))}
-            </select>
-          </div>
+            </legend>
+            <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+              {(["owner", "external"] as const).map((k) => (
+                <button
+                  key={k}
+                  type="button"
+                  aria-pressed={proxyKind === k}
+                  onClick={() => setProxyKind(k)}
+                  className={`min-h-11 rounded-lg border px-4 py-2 text-base font-medium transition-colors ${
+                    proxyKind === k
+                      ? "border-blue-600 bg-blue-50 text-blue-800 ring-2 ring-blue-600 dark:bg-blue-900/40 dark:text-blue-100"
+                      : "border-gray-300 text-gray-700 hover:bg-gray-50 dark:border-gray-700 dark:text-gray-200 dark:hover:bg-gray-700/50"
+                  }`}
+                >
+                  {t(k === "owner" ? "proxyKindOwner" : "proxyKindExternal")}
+                </button>
+              ))}
+            </div>
+          </fieldset>
+
+          {proxyKind === "owner" ? (
+            <div>
+              <label
+                htmlFor="mandate-to-owner"
+                className="block text-base font-medium text-gray-700 mb-1 dark:text-gray-200"
+              >
+                {t("proxyOwnerLabel")}
+              </label>
+              <select
+                id="mandate-to-owner"
+                value={selectedToOwner}
+                onChange={(e) => setSelectedToOwner(e.target.value)}
+                required
+                className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none dark:bg-gray-900 dark:border-gray-700 dark:text-gray-100"
+              >
+                <option value="">{t("ownerPlaceholder")}</option>
+                {owners
+                  .filter((o) => o.id !== flatOwnerId)
+                  .map((o) => (
+                    <option key={o.id} value={o.id}>
+                      {o.name} ({t("flat", { number: o.flatNumber })})
+                    </option>
+                  ))}
+              </select>
+            </div>
+          ) : (
+            <div className="space-y-4">
+              <p className="text-base text-gray-600 dark:text-gray-300">{t("proxyExternalHint")}</p>
+              <div>
+                <label
+                  htmlFor="mandate-proxy-name"
+                  className="block text-base font-medium text-gray-700 mb-1 dark:text-gray-200"
+                >
+                  {t("proxyNameLabel")}
+                </label>
+                <input
+                  id="mandate-proxy-name"
+                  value={proxyName}
+                  onChange={(e) => setProxyName(e.target.value)}
+                  required
+                  maxLength={255}
+                  autoComplete="off"
+                  className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none dark:bg-gray-900 dark:border-gray-700 dark:text-gray-100"
+                />
+              </div>
+              <div>
+                <label
+                  htmlFor="mandate-proxy-birth"
+                  className="block text-base font-medium text-gray-700 mb-1 dark:text-gray-200"
+                >
+                  {t("proxyBirthDateLabel")}
+                </label>
+                <input
+                  id="mandate-proxy-birth"
+                  type="date"
+                  value={proxyBirthDate}
+                  onChange={(e) => setProxyBirthDate(e.target.value)}
+                  className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none dark:bg-gray-900 dark:border-gray-700 dark:text-gray-100"
+                />
+              </div>
+              <div>
+                <label
+                  htmlFor="mandate-proxy-address"
+                  className="block text-base font-medium text-gray-700 mb-1 dark:text-gray-200"
+                >
+                  {t("proxyAddressLabel")}
+                </label>
+                <input
+                  id="mandate-proxy-address"
+                  value={proxyAddress}
+                  onChange={(e) => setProxyAddress(e.target.value)}
+                  maxLength={500}
+                  autoComplete="off"
+                  className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none dark:bg-gray-900 dark:border-gray-700 dark:text-gray-100"
+                />
+              </div>
+              <div>
+                <label
+                  htmlFor="mandate-proxy-note"
+                  className="block text-base font-medium text-gray-700 mb-1 dark:text-gray-200"
+                >
+                  {t("proxyNoteLabel")}
+                </label>
+                <textarea
+                  id="mandate-proxy-note"
+                  value={proxyNote}
+                  onChange={(e) => setProxyNote(e.target.value)}
+                  rows={2}
+                  maxLength={2000}
+                  className="w-full px-4 py-3 text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none resize-vertical dark:bg-gray-900 dark:border-gray-700 dark:text-gray-100"
+                />
+              </div>
+            </div>
+          )}
 
           {/* Paper document confirmation */}
           <label className="flex items-start gap-3 p-3 border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50 dark:border-gray-700 dark:hover:bg-gray-700/50">
@@ -244,7 +369,7 @@ export default function MandateModal({
             </button>
             <button
               type="submit"
-              disabled={loading || !selectedFlat || !selectedToOwner || !paperConfirmed}
+              disabled={loading || !selectedFlat || !proxyReady || !paperConfirmed}
               className="flex-1 py-3 px-4 text-base font-medium text-white bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 rounded-lg transition-colors"
             >
               {loading ? tCommon("saving") : tCommon("confirm")}

@@ -1,39 +1,57 @@
 import type { UserRole, UserStatus } from "@/types";
 
+// BYT-20261118-020 (bytové družstvo) roles:
+//   member     — člen družstva. Same member-facing rights as `owner`,
+//                including `vote` (§240 Obch. zák. 513/1991: each member
+//                has one vote unless stanovy say otherwise; CZ §755 ZOK).
+//   accountant — účtovník. Accounting read/write only; no board
+//                publication (posts), no settings, no users, never votes.
+//   spravca    — management company (správca §8a zák. 182/1993 / družstvo
+//                as správca). Board-like operational rights; NOT settings,
+//                API keys, user/role management or document deletion
+//                (those stay with the community's own `admin`).
 const permissions = {
-  createPost: ["admin", "caretaker"],
-  viewPosts: ["admin", "owner", "tenant", "vote_counter", "caretaker"],
-  createVoting: ["admin"],
-  vote: ["admin", "owner"],
-  recordPaperVote: ["admin", "vote_counter"],
-  viewVotingResults: ["admin", "owner", "caretaker"],
-  assignVoteCounter: ["admin"],
+  createPost: ["admin", "caretaker", "spravca"],
+  viewPosts: ["admin", "owner", "tenant", "vote_counter", "caretaker", "member", "spravca"],
+  createVoting: ["admin", "spravca"],
+  vote: ["admin", "owner", "member"],
+  recordPaperVote: ["admin", "vote_counter", "spravca"],
+  viewVotingResults: ["admin", "owner", "caretaker", "member", "spravca"],
+  assignVoteCounter: ["admin", "spravca"],
   grantMandate: ["admin"],
   manageUsers: ["admin"],
   viewSettings: ["admin", "caretaker"],
   manageSettings: ["admin"],
   manageApiKeys: ["admin"],
-  viewCommunity: ["admin", "owner", "tenant"],
-  createCommunityPost: ["admin", "owner", "tenant"],
-  respondToCommunityPost: ["admin", "owner", "tenant"],
-  resolveOwnCommunityPost: ["admin", "owner", "tenant"],
-  deleteOwnCommunityPost: ["admin", "owner", "tenant"],
+  viewCommunity: ["admin", "owner", "tenant", "member"],
+  createCommunityPost: ["admin", "owner", "tenant", "member"],
+  respondToCommunityPost: ["admin", "owner", "tenant", "member"],
+  resolveOwnCommunityPost: ["admin", "owner", "tenant", "member"],
+  deleteOwnCommunityPost: ["admin", "owner", "tenant", "member"],
   moderateCommunityResponse: ["admin"],
-  uploadCommunityPhoto: ["admin", "owner", "tenant"],
+  uploadCommunityPhoto: ["admin", "owner", "tenant", "member"],
   changeCrossEntranceVisibility: ["admin"],
-  editOwnDirectory: ["admin", "owner", "tenant"],
-  viewDirectory: ["admin", "owner", "tenant"],
+  editOwnDirectory: ["admin", "owner", "tenant", "member"],
+  viewDirectory: ["admin", "owner", "tenant", "member"],
   // Document library (BYT-20260512-006). Viewing is additionally filtered per
   // document by audience+entity via canSeeDocPath; this gate only governs the
   // management surface + nav visibility.
-  viewDocuments: ["admin", "owner", "tenant", "vote_counter", "caretaker"],
-  uploadDocument: ["admin", "caretaker"],
+  viewDocuments: ["admin", "owner", "tenant", "vote_counter", "caretaker", "member", "spravca"],
+  uploadDocument: ["admin", "caretaker", "spravca"],
   deleteDocument: ["admin"],
   // Fault reports module (BYT-20261118-004). Board members without flat
   // admin also manage faults via board_members (modules/faults authz).
   // TODO(decision): tenants cannot report yet (spec Decisions 10).
-  reportFault: ["admin", "owner"],
-  manageFaults: ["admin", "caretaker"],
+  reportFault: ["admin", "owner", "member"],
+  manageFaults: ["admin", "caretaker", "spravca"],
+  // Accounting by GLOBAL role (BYT-20261118-020). Board roles (treasurer /
+  // chairman) keep their own path in modules/accounting/src/lib/authz.ts;
+  // these grant the same rights to staff roles that hold no board seat.
+  // Approve (účtovná závierka, expense authorisation) is deliberately NOT
+  // granted to accountant / spravca — separation of duties: the statutory
+  // body approves, the bookkeeper / manager prepares.
+  readAccounting: ["admin", "accountant", "spravca"],
+  writeAccounting: ["admin", "accountant", "spravca"],
 } as const;
 
 export type Permission = keyof typeof permissions;

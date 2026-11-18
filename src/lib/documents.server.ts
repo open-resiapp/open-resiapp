@@ -1,6 +1,7 @@
 import "server-only";
 import { and, asc, desc, eq, inArray, isNull, or, sql } from "drizzle-orm";
 import { alias } from "drizzle-orm/pg-core";
+import { UNIT_HOLDER_ROLES } from "@/lib/role-options";
 
 import { db } from "@/db";
 import {
@@ -231,8 +232,9 @@ export async function isBoardForPath(
   return isBoardOnDocPath(await loadUserMemberships(userId), path);
 }
 
-/** True iff `userId` holds an ACTIVE owner membership on the doc's line —
- *  the only people a document may be filed under (owner folder). */
+/** True iff `userId` holds an ACTIVE owner (or, in a bytové družstvo,
+ *  member) membership on the doc's line — the only people a document may
+ *  be filed under (owner folder). */
 export async function isOwnerOnPath(
   userId: string,
   path: string
@@ -240,7 +242,7 @@ export async function isOwnerOnPath(
   const mems = await loadUserMemberships(userId);
   return mems.some(
     (m) =>
-      m.role === "owner" &&
+      (m.role === "owner" || m.role === "member") &&
       (m.entityPath === path ||
         m.entityPath.startsWith(path) ||
         path.startsWith(m.entityPath))
@@ -356,7 +358,7 @@ export async function listOwnerFolderDocuments(
       and(
         eq(memberships.userId, ownerUserId),
         eq(memberships.status, "active"),
-        eq(memberships.role, "owner")
+        inArray(memberships.role, UNIT_HOLDER_ROLES)
       )
     );
   const unitIds = unitRows.map((u) => u.entityId);
@@ -425,7 +427,7 @@ export async function listSubjectCandidates(
     .innerJoin(users, eq(memberships.userId, users.id))
     .where(
       and(
-        eq(memberships.role, "owner"),
+        inArray(memberships.role, UNIT_HOLDER_ROLES),
         eq(memberships.status, "active"),
         sql`${entities.path} LIKE ${scope.path + "%"}`
       )
