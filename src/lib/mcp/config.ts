@@ -38,6 +38,12 @@ function configuredOrigin(): string | null {
 export function getPublicOrigin(fallbackRequestUrl?: string): string {
   const configured = configuredOrigin();
   if (configured) return configured;
+  // Production never derives the issuer / token audience from Host or
+  // X-Forwarded-Host (client-controlled) — same rule as WebAuthn. Set
+  // MCP_PUBLIC_URL, NEXTAUTH_URL, AUTH_URL or APP_URL.
+  if (process.env.NODE_ENV === "production") {
+    throw new Error("MCP public URL is not configured (MCP_PUBLIC_URL / NEXTAUTH_URL / APP_URL)");
+  }
   if (fallbackRequestUrl) return new URL(fallbackRequestUrl).origin;
   return "http://localhost:3000";
 }

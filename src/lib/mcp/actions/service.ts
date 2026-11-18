@@ -177,7 +177,10 @@ export async function proposeAction(
     })
     .returning({ id: mcpPendingActions.id });
 
-  await sweepPendingActions(ctx.principal.userId);
+  // Fire-and-forget (like the audit-log prune): the proposal never waits for
+  // the sweep. The ON DELETE SET NULL FKs onto this table have no index yet,
+  // so a delete scans mcp_audit_log / mod_voting_pending_ballots.
+  void sweepPendingActions(ctx.principal.userId);
 
   return { actionId: row.id, confirmToken, preview, expiresAt, locale };
 }
