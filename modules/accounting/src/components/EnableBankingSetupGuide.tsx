@@ -2,32 +2,33 @@
 
 // Step-by-step setup of the instance's own Enable Banking application
 // (BYT-20261118-001) — self-host path, restricted mode (free for the HOA's
-// own account). Shown on Pokročilé → Prepojenie s bankou. When the instance
-// is already configured (self-host done, or cloud-injected credentials) the
-// guide collapses to a short status line.
+// own account). Shown on Pokročilé → Prepojenie s bankou. The admin enters
+// the application id + private key right here (step 4, stored encrypted in
+// the DB); env vars remain an alternative and win when set (cloud). When the
+// instance is configured the guide collapses to a short status line.
 
 import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { Badge, Button, Card } from "@/components/ui";
+import EnableBankingCredentialsForm, {
+  type CredentialsInfo,
+} from "./EnableBankingCredentialsForm";
 
-const STEP_KEYS = ["account", "app", "key", "env", "link", "connect"] as const;
+const STEP_KEYS = ["account", "app", "key", "credentials", "link", "connect"] as const;
 
 const KEYGEN_COMMAND =
   'openssl req -new -newkey rsa:2048 -nodes -x509 -days 3650 -keyout enable-banking.pem -out enable-banking.crt -subj "/CN=open-resiapp"';
 
 export default function EnableBankingSetupGuide({
-  configured,
-  appIdMasked,
-  redirectUrl,
+  info,
   isAdmin = true,
 }: {
-  /** Self-host steps (openssl, env vars) are for the administrator only. */
+  info: CredentialsInfo & { redirectUrl: string | null };
+  /** Setup steps (application, key) are for the administrator only. */
   isAdmin?: boolean;
-  configured: boolean;
-  appIdMasked: string | null;
-  redirectUrl: string | null;
 }) {
   const t = useTranslations("Accounting.bankConnection");
+  const { configured, appIdMasked, redirectUrl } = info;
   const [open, setOpen] = useState(!configured);
 
   if (!isAdmin) {
@@ -80,6 +81,13 @@ export default function EnableBankingSetupGuide({
         </Button>
       )}
 
+      {/* Collapsed but configured: keep replace / remove within reach. */}
+      {!open && info.source === "db" && (
+        <div className="mt-4">
+          <EnableBankingCredentialsForm info={info} />
+        </div>
+      )}
+
       {open && (
         <ol className="mt-4 space-y-5">
           {STEP_KEYS.map((key, i) => (
@@ -117,13 +125,24 @@ export default function EnableBankingSetupGuide({
                 {key === "key" && (
                   <CopyValue label={t("keygenLabel")} value={KEYGEN_COMMAND} />
                 )}
-                {key === "env" && (
-                  <pre className="overflow-x-auto rounded-lg bg-ui-surface-muted p-3 font-mono text-sm text-ui-text">
-                    {`ENABLE_BANKING_APP_ID=<application id>
+                {key === "credentials" && (
+                  <>
+                    <EnableBankingCredentialsForm info={info} />
+                    {info.source !== "env" && (
+                      <details className="text-base text-ui-text-muted">
+                        <summary className="min-h-11 cursor-pointer py-2 font-medium text-ui-text">
+                          {t("envAlternative")}
+                        </summary>
+                        <p className="mb-2">{t("envAlternativeBody")}</p>
+                        <pre className="overflow-x-auto rounded-lg bg-ui-surface-muted p-3 font-mono text-sm text-ui-text">
+                          {`ENABLE_BANKING_APP_ID=<application id>
 ENABLE_BANKING_PRIVATE_KEY_FILE=/run/secrets/enable-banking.pem
 # ${t("envOrInline")}
 # ENABLE_BANKING_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\\n…"`}
-                  </pre>
+                        </pre>
+                      </details>
+                    )}
+                  </>
                 )}
               </div>
             </li>

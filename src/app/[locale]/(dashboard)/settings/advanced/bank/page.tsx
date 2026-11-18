@@ -43,7 +43,7 @@ export default async function BankConnectionSettingsPage({
     return null;
   }
 
-  const info = getEnableBankingAppInfo();
+  const info = await getEnableBankingAppInfo();
   const isAdmin = hasPermission(session.user.role as UserRole, "manageSettings");
 
   return (
@@ -54,7 +54,7 @@ export default async function BankConnectionSettingsPage({
         backHref={isAdmin ? "/settings/advanced" : "/accounting/payments"}
         backLabel={isAdmin ? th("backToAdvanced") : t("backToPayments")}
       />
-      <EnableBankingSetupGuide {...info} isAdmin={isAdmin} />
+      <EnableBankingSetupGuide info={info} isAdmin={isAdmin} />
       {info.configured && (
         <Card as="section" aria-label={t("connectionTitle")}>
           <EnableBankingConnection variant="settings" />

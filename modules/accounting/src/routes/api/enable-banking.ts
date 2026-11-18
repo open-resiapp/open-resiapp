@@ -5,10 +5,12 @@ import { requireWriter } from "@modules/accounting/src/lib/api-guard";
 import {
   ENABLE_BANKING_CALLBACK_PATH,
   completeEnableBankingAuth,
+  deleteEnableBankingCredentials,
   disconnectEnableBanking,
   enableBankingRedirectUrl,
   getEnableBankingConnection,
   listEnableBankingAspsps,
+  saveEnableBankingCredentials,
   selectEnableBankingAccount,
   startEnableBankingAuth,
   syncEnableBanking,
@@ -18,6 +20,8 @@ import {
   type EnableBankingErrorCode,
 } from "@modules/accounting/src/lib/enable-banking-format";
 import { routing } from "@/i18n/routing";
+import { hasPermission } from "@/lib/permissions";
+import type { UserRole } from "@/types";
 
 // Enable Banking connector API (BYT-20261118-001) — treasurer/admin only.
 // Errors are returned as { error: <EB_* code> }; the UI translates them.
@@ -245,6 +249,83 @@ export async function handleDisconnect(): Promise<NextResponse> {
   if (!ctx.ok) return ctx.error;
   try {
     await disconnectEnableBanking({
+      entityId: ctx.root.id,
+      actorId: ctx.session.user.id,
+    });
+    return NextResponse.json({ ok: true });
+  } catch (err) {
+    return errorResponse(err);
+  }
+}
+
+// ── app credentials (admin only) ───────────────────────
+
+/**
+ * App credentials are an instance secret: accounting writer AND
+ * manageSettings (admin). A treasurer connects the bank, but only the admin
+ * enters / replaces / removes the Enable Banking application key.
+ */
+async function requireCredentialAdmin() {
+  const ctx = await requireWriter();
+  if (!ctx.ok) return ctx;
+  if (!hasPermission(ctx.session.user.role as UserRole, "manageSettings")) {
+    return {
+      ok: false as const,
+      error: NextResponse.json(
+        { error: "EB_FORBIDDEN" satisfies EnableBankingErrorCode },
+        { status: 403 }
+      ),
+    };
+  }
+  return ctx;
+}
+
+const MAX_KEY_CHARS = 16_384;
+
+export async function handleSaveCredentials(
+  req: NextRequest
+): Promise<NextResponse> {
+  const ctx = await requireCredentialAdmin();
+  if (!ctx.ok) return ctx.error;
+  let body: { appId?: unknown; privateKey?: unknown };
+  try {
+    body = await req.json();
+  } catch {
+    return NextResponse.json({ error: "invalid json" }, { status: 400 });
+  }
+  if (typeof body.appId !== "string" || body.appId.length > 100) {
+    return NextResponse.json(
+      { error: "EB_INVALID_APP_ID" satisfies EnableBankingErrorCode },
+      { status: 400 }
+    );
+  }
+  if (
+    typeof body.privateKey !== "string" ||
+    body.privateKey.length > MAX_KEY_CHARS
+  ) {
+    return NextResponse.json(
+      { error: "EB_INVALID_KEY" satisfies EnableBankingErrorCode },
+      { status: 400 }
+    );
+  }
+  try {
+    const check = await saveEnableBankingCredentials({
+      entityId: ctx.root.id,
+      actorId: ctx.session.user.id,
+      appId: body.appId,
+      privateKey: body.privateKey,
+    });
+    return NextResponse.json({ ok: true, check });
+  } catch (err) {
+    return errorResponse(err);
+  }
+}
+
+export async function handleDeleteCredentials(): Promise<NextResponse> {
+  const ctx = await requireCredentialAdmin();
+  if (!ctx.ok) return ctx.error;
+  try {
+    await deleteEnableBankingCredentials({
       entityId: ctx.root.id,
       actorId: ctx.session.user.id,
     });

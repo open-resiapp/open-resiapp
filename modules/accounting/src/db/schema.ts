@@ -806,6 +806,36 @@ export const bankConnections = pgTable(
   })
 );
 
+// Instance-level application credentials for a bank aggregator
+// (BYT-20261118-001: Enable Banking). One app per instance — the redirect
+// URL registered with the provider is the instance origin — so the row is
+// keyed by provider, not by dom. Entered by the admin in Pokročilé →
+// Prepojenie s bankou; env vars (cloud-injected) take precedence and are
+// never written here. The private key is encrypted with AES-256-GCM under a
+// key derived from AUTH_SECRET / NEXTAUTH_SECRET (src/lib/secret-box.ts) and
+// never leaves the server; only its fingerprint is shown.
+export const bankAppCredentials = pgTable(
+  "mod_accounting_bank_app_credentials",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    provider: bankProviderEnum("provider").notNull(),
+    appId: varchar("app_id", { length: 100 }).notNull(),
+    privateKeyEnc: text("private_key_enc").notNull(),
+    /** sha256 of the public key (SPKI DER), first 16 hex — display only. */
+    keyFingerprint: varchar("key_fingerprint", { length: 64 }).notNull(),
+    updatedById: uuid("updated_by_id").references(() => users.id, {
+      onDelete: "set null",
+    }),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at").defaultNow().notNull(),
+  },
+  (table) => ({
+    providerUnique: uniqueIndex(
+      "mod_accounting_bank_app_credentials_provider_idx"
+    ).on(table.provider),
+  })
+);
+
 // ── Published settlements (vyúčtovanie, Phase 4) ───────
 
 // One row per published year — IMMUTABLE (10-year retention; corrections
