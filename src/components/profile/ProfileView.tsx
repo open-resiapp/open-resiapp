@@ -32,9 +32,11 @@ export interface ProfileFlat {
 interface ProfileViewProps {
   flats: ProfileFlat[];
   prefs: NotificationPrefs;
+  /** Public MCP endpoint, resolved on the server. */
+  mcpUrl: string | null;
 }
 
-export default function ProfileView({ flats, prefs }: ProfileViewProps) {
+export default function ProfileView({ flats, prefs, mcpUrl }: ProfileViewProps) {
   const t = useTranslations("Profile");
   const tp = useTranslations("ProfileHub");
   const { user, enabledModules } = useShell();
@@ -144,7 +146,7 @@ export default function ProfileView({ flats, prefs }: ProfileViewProps) {
       <PasskeysCard />
 
       {/* Connected AI apps (MCP / OAuth grants) — only while MCP is enabled */}
-      {enabledModules.includes("mcp") ? <ConnectedAiApps /> : null}
+      {enabledModules.includes("mcp") ? <ConnectedAiApps mcpUrl={mcpUrl} /> : null}
 
       {/* Notifications */}
       <Card as="section" padding="lg" aria-labelledby="notifications-heading" className="space-y-5">

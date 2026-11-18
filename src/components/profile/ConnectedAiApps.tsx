@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import { useFormatter, useTranslations } from "next-intl";
 
 import { Button, Card, ConfirmDialog, LoadingBlock } from "@/components/ui";
+import AiConnectGuide from "@/components/profile/AiConnectGuide";
 
 // Profile → "Pripojené AI aplikácie" (BYT-20261117-001 §2). Renders nothing
 // while the `mcp` module is disabled (the API answers 404); ProfileView
@@ -27,7 +28,7 @@ const SCOPE_KEYS: Record<string, string> = {
   vote: "vote",
 };
 
-export default function ConnectedAiApps() {
+export default function ConnectedAiApps({ mcpUrl }: { mcpUrl: string | null }) {
   const t = useTranslations("Mcp.profile");
   const tScopes = useTranslations("Mcp.scopeNames");
   const format = useFormatter();
@@ -139,6 +140,12 @@ export default function ConnectedAiApps() {
           ))}
         </ul>
       )}
+
+      {grants !== null ? (
+        <div className={grants.length === 0 ? "mt-4" : "mt-2"}>
+          <AiConnectGuide mcpUrl={mcpUrl} collapsible={grants.length > 0} />
+        </div>
+      ) : null}
 
       <ConfirmDialog
         open={toRevoke !== null}
