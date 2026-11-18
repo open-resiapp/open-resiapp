@@ -3221,7 +3221,7 @@
     "guide": {
       "title": "Connect an AI assistant",
       "toggle": "How to connect another AI",
-      "intro": "An AI assistant can answer questions about your community (notices, votes, payments, laws) and prepare actions. Nothing changes until you click confirm yourself. You can disconnect any time in the list of connected apps below.",
+      "intro": "An AI assistant can answer questions about your community (notices, votes, payments, laws) and prepare actions. Nothing changes until you click confirm yourself. You can disconnect any time here in your profile.",
       "addressLabel": "Your community address for AI",
       "copy": "Copy",
       "copied": "Copied",

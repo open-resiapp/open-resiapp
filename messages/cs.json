@@ -3221,7 +3221,7 @@
     "guide": {
       "title": "Připojte si AI asistenta",
       "toggle": "Jak připojit další AI",
-      "intro": "AI asistent vám umí odpovědět na otázky o vašem společenství (oznámení, hlasování, platby, zákony) a připravit akce. Nic se nezmění, dokud sami nekliknete na potvrzení. Přístup můžete kdykoli zrušit níže v seznamu připojených aplikací.",
+      "intro": "AI asistent vám umí odpovědět na otázky o vašem společenství (oznámení, hlasování, platby, zákony) a připravit akce. Nic se nezmění, dokud sami nekliknete na potvrzení. Přístup můžete kdykoli zrušit tady v profilu.",
       "addressLabel": "Adresa vašeho společenství pro AI",
       "copy": "Kopírovat",
       "copied": "Zkopírováno",
