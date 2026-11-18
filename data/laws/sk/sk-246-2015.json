@@ -1,0 +1,1415 @@
+{
+ "id": "sk-246-2015",
+ "jurisdiction": "sk",
+ "number": "246/2015 Z. z.",
+ "title": "Zákon o správcoch bytových domov a o zmene a doplnení zákona Národnej rady Slovenskej republiky č. 182/1993 Z. z. o vlastníctve bytov a nebytových priestorov v znení neskorších predpisov",
+ "effectiveFrom": "2018-09-01",
+ "effectiveTo": "2026-12-31",
+ "sourceUrl": "https://www.slov-lex.sk/ezbierky/pravne-predpisy/SK/ZZ/2015/246/20180901",
+ "fetchedAt": "2026-11-18T08:20:05.560Z",
+ "contentHash": "61812bbda28d2f9a5b57b589bdd411194ac432a66a8feff7209e91a797fd95e0",
+ "provisionCount": 31,
+ "parts": [
+  {
+   "type": "text",
+   "text": "Národná rada Slovenskej republiky sa uzniesla na tomto zákone:"
+  },
+  {
+   "type": "section",
+   "anchor": "s-clanok-1",
+   "kind": "clanok",
+   "label": "Čl. I",
+   "children": [
+    {
+     "type": "provision",
+     "anchor": "p1",
+     "label": "§ 1",
+     "paragraphs": [
+      {
+       "anchor": "p1-x1",
+       "text": "Tento zákon ustanovuje",
+       "items": [
+        {
+         "anchor": "p1-x1-a",
+         "label": "a)",
+         "letter": "a",
+         "text": "podmienky výkonu činnosti správcov,¹) ktorí spravujú bytové domy²) (ďalej len \"správca\"),"
+        },
+        {
+         "anchor": "p1-x1-b",
+         "label": "b)",
+         "letter": "b",
+         "text": "štátnu správu na úseku podmienok výkonu činnosti správcov."
+        }
+       ]
+      }
+     ],
+     "heading": "Predmet úpravy"
+    },
+    {
+     "type": "provision",
+     "anchor": "p2",
+     "label": "§ 2",
+     "paragraphs": [
+      {
+       "anchor": "p2-x1",
+       "text": "Správca musí byť zapísaný v zozname správcov (ďalej len \"zoznam\") a spĺňať podmienky na výkon tejto činnosti podľa tohto zákona."
+      }
+     ],
+     "heading": "Správca"
+    },
+    {
+     "type": "section",
+     "anchor": "s-clanok-1-g-odborna-sposobilost",
+     "kind": "group",
+     "heading": "Odborná spôsobilosť",
+     "children": [
+      {
+       "type": "provision",
+       "anchor": "p3",
+       "label": "§ 3",
+       "paragraphs": [
+        {
+         "anchor": "p3-1",
+         "text": "Odborná spôsobilosť sa získava absolvovaním ďalšieho odborného vzdelávania v akreditovanom vzdelávacom programe podľa osobitného predpisu³) (ďalej len \"ďalšie odborné vzdelávanie\").",
+         "n": "1"
+        },
+        {
+         "anchor": "p3-2",
+         "text": "Ďalšie odborné vzdelávanie je zamerané na",
+         "n": "2",
+         "items": [
+          {
+           "anchor": "p3-2-a",
+           "label": "a)",
+           "letter": "a",
+           "text": "základné právne predpisy týkajúce sa výkonu správy bytových domov (ďalej len \"výkon správy\"),"
+          },
+          {
+           "anchor": "p3-2-b",
+           "label": "b)",
+           "letter": "b",
+           "text": "administratívne zabezpečenie výkonu správy,"
+          },
+          {
+           "anchor": "p3-2-c",
+           "label": "c)",
+           "letter": "c",
+           "text": "odborné a technické zabezpečenie správy a prevádzky budov,"
+          },
+          {
+           "anchor": "p3-2-d",
+           "label": "d)",
+           "letter": "d",
+           "text": "finančný manažment a hospodárenie."
+          }
+         ]
+        },
+        {
+         "anchor": "p3-3",
+         "text": "Minimálny rozsah ďalšieho odborného vzdelávania podľa odseku 2 je 90 hodín a je rozdelené do štyroch oblastí, pričom na každú oblasť musí byť vyhradených najmenej 15 hodín.",
+         "n": "3"
+        },
+        {
+         "anchor": "p3-4",
+         "text": "Ministerstvo dopravy, výstavby a regionálneho rozvoja Slovenskej republiky (ďalej len \"ministerstvo\") môže nariadiť opätovné ďalšie odborné vzdelávanie správcov a ich zodpovedných zástupcov, ak nastanú zásadné zmeny právnej úpravy týkajúcej sa výkonu správy. Oznámenie o nariadení opätovného ďalšieho odborného vzdelávania obsahuje najmä podrobnosti o obsahovom zameraní, rozsahu vzdelávania a stanovenie termínu, do ktorého je potrebné opätovné ďalšie odborné vzdelávanie vykonať, a ministerstvo ho zverejní na svojom webovom sídle.",
+         "n": "4"
+        },
+        {
+         "anchor": "p3-5",
+         "text": "Správca alebo jeho zodpovední zástupcovia v prípade, že odborná spôsobilosť správcu je zabezpečovaná prostredníctvom nich, sú povinní zúčastniť sa nariadeného opätovného ďalšieho odborného vzdelávania podľa odseku 4 a do 30 dní po jeho absolvovaní predložiť ministerstvu osvedčenie o absolvovaní akreditovaného vzdelávacieho programu.⁴)",
+         "n": "5"
+        },
+        {
+         "anchor": "p3-6",
+         "text": "Ministerstvo nariadi opätovné ďalšie odborné vzdelávanie správcu alebo jeho zodpovedného zástupcu, ak správcovi bola orgánom podľa osobitného predpisu⁵) počas posledných 24 mesiacov viac ako dvakrát právoplatne uložená pokuta vyššia ako 1 660 eur za porušenie povinnosti podľa osobitného predpisu,⁵) ktorá súvisí s výkonom správy. Na pokutu uloženú správcovi v dôsledku porušenia povinnosti vlastníkov bytov alebo nebytových priestorov v domoch, ktoré spravuje (ďalej len \"vlastníci\"), sa neprihliada.",
+         "n": "6"
+        },
+        {
+         "anchor": "p3-7",
+         "text": "Sankcie uložené podľa odseku 6 oznamuje príslušný orgán ministerstvu. Ministerstvo ich zapíše do zoznamu na obdobie 24 mesiacov.",
+         "n": "7"
+        }
+       ]
+      },
+      {
+       "type": "provision",
+       "anchor": "p4",
+       "label": "§ 4",
+       "paragraphs": [
+        {
+         "anchor": "p4-1",
+         "text": "Správca musí mať odbornú spôsobilosť alebo musí mať aspoň jedného zodpovedného zástupcu s odbornou spôsobilosťou, ktorý spĺňa aj ďalšie predpoklady podľa tohto zákona bez ohľadu na počet zriadených kancelárií správcu (ďalej len \"kancelária\").",
+         "n": "1"
+        },
+        {
+         "anchor": "p4-2",
+         "text": "Fyzická osoba môže zabezpečovať odbornú spôsobilosť iba pre jednu fyzickú osobu - podnikateľa alebo právnickú osobu.",
+         "n": "2"
+        }
+       ]
+      },
+      {
+       "type": "provision",
+       "anchor": "p5",
+       "label": "§ 5",
+       "paragraphs": [
+        {
+         "anchor": "p5-1",
+         "text": "Správca je povinný na účely uplatňovania práv vlastníkov podľa osobitného predpisu⁶) mať zriadenú kanceláriu, riadne ju označiť obchodným menom a označením \"Správca bytových domov\".",
+         "n": "1"
+        },
+        {
+         "anchor": "p5-2",
+         "text": "Kancelária musí byť otvorená pre vlastníkov najmenej dva pracovné dni v týždni minimálne štyri za sebou idúce hodiny.",
+         "n": "2"
+        },
+        {
+         "anchor": "p5-3",
+         "text": "Kancelária sa zriaďuje vo verejne dostupnej budove. Verejne dostupnou budovou sa na účely tohto zákona rozumie budova so vstupom prístupným verejnosti aspoň v úradných hodinách kancelárie.",
+         "n": "3"
+        }
+       ],
+       "heading": "Kancelária"
+      },
+      {
+       "type": "provision",
+       "anchor": "p6",
+       "label": "§ 6",
+       "paragraphs": [
+        {
+         "anchor": "p6-x1",
+         "text": "Správca je povinný mať uzavreté poistenie zodpovednosti za škodu, za vznik ktorej zodpovedá pri výkone správy podľa osobitného predpisu,⁶) v rozsahu primeranom počtu spravovaných bytových domov a miere rizika spojeného s výkonom správy (ďalej len \"poistenie\")."
+        }
+       ],
+       "heading": "Poistenie správcu"
+      },
+      {
+       "type": "provision",
+       "anchor": "p7",
+       "label": "§ 7",
+       "paragraphs": [
+        {
+         "anchor": "p7-1",
+         "text": "Zoznam je ministerstvom vedený verejne prístupný zoznam ustanovených údajov o správcoch, ktoré ministerstvo zverejňuje na svojom webovom sídle.",
+         "n": "1"
+        },
+        {
+         "anchor": "p7-2",
+         "text": "Zoznam obsahuje",
+         "n": "2",
+         "items": [
+          {
+           "anchor": "p7-2-a",
+           "label": "a)",
+           "letter": "a",
+           "text": "obchodné meno fyzickej osoby - podnikateľa alebo právnickej osoby, miesto podnikania alebo sídlo,"
+          },
+          {
+           "anchor": "p7-2-b",
+           "label": "b)",
+           "letter": "b",
+           "text": "identifikačné číslo osoby, ak je pridelené,"
+          },
+          {
+           "anchor": "p7-2-c",
+           "label": "c)",
+           "letter": "c",
+           "text": "meno, priezvisko a adresu trvalého pobytu členov štatutárneho orgánu v prípade právnickej osoby spolu s uvedením dňa vzniku, prípadne zániku ich funkcie,"
+          },
+          {
+           "anchor": "p7-2-d",
+           "label": "d)",
+           "letter": "d",
+           "text": "meno, priezvisko a adresu zodpovedných zástupcov spolu s uvedením dňa vzniku, prípadne zániku ich funkcie,"
+          },
+          {
+           "anchor": "p7-2-e",
+           "label": "e)",
+           "letter": "e",
+           "text": "adresy kancelárií, ich úradné hodiny, telefónne číslo, e-mailovú adresu a číslo faxu,"
+          },
+          {
+           "anchor": "p7-2-f",
+           "label": "f)",
+           "letter": "f",
+           "text": "deň zápisu do zoznamu,"
+          },
+          {
+           "anchor": "p7-2-g",
+           "label": "g)",
+           "letter": "g",
+           "text": "deň vyčiarknutia zo zoznamu,"
+          },
+          {
+           "anchor": "p7-2-h",
+           "label": "h)",
+           "letter": "h",
+           "text": "sankcie uložené podľa § 3 ods. 6."
+          }
+         ]
+        },
+        {
+         "anchor": "p7-3",
+         "text": "Na požiadanie ministerstvo do siedmich dní od doručenia písomnej žiadosti vydá žiadateľovi informatívny výpis zo zoznamu, ktorý obsahuje informácie o správcovi podľa odseku 2. Výpis sa poskytuje písomne a nie je použiteľný na právne úkony.",
+         "n": "3"
+        }
+       ],
+       "heading": "Zoznam"
+      }
+     ]
+    },
+    {
+     "type": "section",
+     "anchor": "s-clanok-1-g-predpoklady-na-zapis-do-zoznamu",
+     "kind": "group",
+     "heading": "Predpoklady na zápis do zoznamu",
+     "children": [
+      {
+       "type": "provision",
+       "anchor": "p8",
+       "label": "§ 8",
+       "paragraphs": [
+        {
+         "anchor": "p8-1",
+         "text": "Do zoznamu možno zapísať fyzickú osobu - podnikateľa, ktorá",
+         "n": "1",
+         "items": [
+          {
+           "anchor": "p8-1-a",
+           "label": "a)",
+           "letter": "a",
+           "text": "má vydané živnostenské oprávnenie v predmete podnikania správa a údržba bytového fondu,⁷)"
+          },
+          {
+           "anchor": "p8-1-b",
+           "label": "b)",
+           "letter": "b",
+           "text": "je dôveryhodná,"
+          },
+          {
+           "anchor": "p8-1-c",
+           "label": "c)",
+           "letter": "c",
+           "text": "má odbornú spôsobilosť podľa § 3 alebo ju zabezpečuje prostredníctvom zodpovedného zástupcu, ktorý",
+           "items": [
+            {
+             "anchor": "p8-1-c-1",
+             "label": "1.",
+             "letter": "1",
+             "text": "je dôveryhodný,"
+            },
+            {
+             "anchor": "p8-1-c-2",
+             "label": "2.",
+             "letter": "2",
+             "text": "je v pracovnom pomere založenom pracovnou zmluvou na ustanovený týždenný pracovný čas a"
+            },
+            {
+             "anchor": "p8-1-c-3",
+             "label": "3.",
+             "letter": "3",
+             "text": "má odbornú spôsobilosť podľa § 3,"
+            }
+           ]
+          },
+          {
+           "anchor": "p8-1-d",
+           "label": "d)",
+           "letter": "d",
+           "text": "má zriadenú kanceláriu podľa § 5."
+          }
+         ]
+        },
+        {
+         "anchor": "p8-2",
+         "text": "Dôveryhodná na účely tohto zákona je fyzická osoba, ktorá",
+         "n": "2",
+         "items": [
+          {
+           "anchor": "p8-2-a",
+           "label": "a)",
+           "letter": "a",
+           "text": "v posledných piatich rokoch nebola vyčiarknutá zo zoznamu podľa § 12 ods. 1 písm. b) až g),"
+          },
+          {
+           "anchor": "p8-2-b",
+           "label": "b)",
+           "letter": "b",
+           "text": "v posledných piatich rokoch nebola členom štatutárneho orgánu právnickej osoby vyčiarknutej zo zoznamu podľa § 12 ods. 2 písm. b) až h) v čase jej vyčiarknutia zo zoznamu,"
+          },
+          {
+           "anchor": "p8-2-c",
+           "label": "c)",
+           "letter": "c",
+           "text": "v čestnom vyhlásení podľa tohto zákona vedome neuviedla nepravdivé údaje."
+          }
+         ]
+        },
+        {
+         "anchor": "p8-3",
+         "text": "Do zoznamu nemožno zapísať fyzickú osobu - podnikateľa,",
+         "n": "3",
+         "items": [
+          {
+           "anchor": "p8-3-a",
+           "label": "a)",
+           "letter": "a",
+           "text": "ktorej bola v posledných 24 mesiacoch uložená pokuta podľa § 3 ods. 6 alebo ktorá bola v čase jej uloženia členom štatutárneho orgánu alebo zodpovedným zástupcom osoby, ktorej bola v posledných 24 mesiacoch takáto pokuta uložená alebo"
+          },
+          {
+           "anchor": "p8-3-b",
+           "label": "b)",
+           "letter": "b",
+           "text": "ktorá zabezpečuje odbornú spôsobilosť prostredníctvom osoby uvedenej v písmene a)."
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "type": "provision",
+       "anchor": "p9",
+       "label": "§ 9",
+       "paragraphs": [
+        {
+         "anchor": "p9-1",
+         "text": "Do zoznamu možno zapísať právnickú osobu, ak",
+         "n": "1",
+         "items": [
+          {
+           "anchor": "p9-1-a",
+           "label": "a)",
+           "letter": "a",
+           "text": "aspoň jeden člen jej štatutárneho orgánu alebo zodpovedný zástupca, ktorý je v pracovnom pomere založenom pracovnou zmluvou na ustanovený týždenný pracovný čas podľa Zákonníka práce, spĺňa podmienky podľa § 8 ods. 1 písm. b) a c),"
+          },
+          {
+           "anchor": "p9-1-b",
+           "label": "b)",
+           "letter": "b",
+           "text": "má vydané živnostenské oprávnenie v predmete činnosti správa a údržba bytového fondu podľa osobitného predpisu,⁷)"
+          },
+          {
+           "anchor": "p9-1-c",
+           "label": "c)",
+           "letter": "c",
+           "text": "má sídlo na území Slovenskej republiky alebo iného členského štátu Európskej únie, alebo iného zmluvného štátu Dohody o Európskom hospodárskom priestore (ďalej len \"členský štát\"),"
+          },
+          {
+           "anchor": "p9-1-d",
+           "label": "d)",
+           "letter": "d",
+           "text": "členovia jej štatutárneho orgánu sú dôveryhodní,"
+          },
+          {
+           "anchor": "p9-1-e",
+           "label": "e)",
+           "letter": "e",
+           "text": "má zriadenú kanceláriu podľa § 5."
+          }
+         ]
+        },
+        {
+         "anchor": "p9-2",
+         "text": "Do zoznamu nemožno zapísať právnickú osobu,",
+         "n": "2",
+         "items": [
+          {
+           "anchor": "p9-2-a",
+           "label": "a)",
+           "letter": "a",
+           "text": "ktorej bola v posledných 24 mesiacoch uložená pokuta podľa § 3 ods. 6,"
+          },
+          {
+           "anchor": "p9-2-b",
+           "label": "b)",
+           "letter": "b",
+           "text": "ktorá zabezpečuje odbornú spôsobilosť prostredníctvom osoby uvedenej v § 8 ods. 3 písm. a)."
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "type": "provision",
+       "anchor": "p10",
+       "label": "§ 10",
+       "paragraphs": [
+        {
+         "anchor": "p10-1",
+         "text": "Zápis do zoznamu vykoná ministerstvo na základe písomnej žiadosti osoby, ktorej sa zápis do zoznamu týka.",
+         "n": "1"
+        },
+        {
+         "anchor": "p10-2",
+         "text": "Žiadosť fyzickej osoby - podnikateľa obsahuje",
+         "n": "2",
+         "items": [
+          {
+           "anchor": "p10-2-a",
+           "label": "a)",
+           "letter": "a",
+           "text": "obchodné meno,"
+          },
+          {
+           "anchor": "p10-2-b",
+           "label": "b)",
+           "letter": "b",
+           "text": "miesto podnikania,"
+          },
+          {
+           "anchor": "p10-2-c",
+           "label": "c)",
+           "letter": "c",
+           "text": "identifikačné číslo osoby, ak je pridelené,"
+          },
+          {
+           "anchor": "p10-2-d",
+           "label": "d)",
+           "letter": "d",
+           "text": "adresu kancelárie,"
+          },
+          {
+           "anchor": "p10-2-e",
+           "label": "e)",
+           "letter": "e",
+           "text": "úradne osvedčený odpis osvedčenia o absolvovaní akreditovaného vzdelávacieho programu⁴) fyzickej osoby - podnikateľa alebo zodpovedného zástupcu, ktorého prostredníctvom sa zabezpečuje odborná spôsobilosť,"
+          },
+          {
+           "anchor": "p10-2-f",
+           "label": "f)",
+           "letter": "f",
+           "text": "čestné vyhlásenie o splnení predpokladov podľa § 8 ods. 2,"
+          },
+          {
+           "anchor": "p10-2-g",
+           "label": "g)",
+           "letter": "g",
+           "text": "čestné vyhlásenie zodpovedného zástupcu o splnení predpokladov podľa § 8 ods. 2,"
+          },
+          {
+           "anchor": "p10-2-h",
+           "label": "h)",
+           "letter": "h",
+           "text": "doklad preukazujúci poistenie podľa § 6,"
+          },
+          {
+           "anchor": "p10-2-i",
+           "label": "i)",
+           "letter": "i",
+           "text": "potvrdenie oprávňujúce zriadiť v nehnuteľnosti kanceláriu."
+          }
+         ]
+        },
+        {
+         "anchor": "p10-3",
+         "text": "Žiadosť právnickej osoby obsahuje",
+         "n": "3",
+         "items": [
+          {
+           "anchor": "p10-3-a",
+           "label": "a)",
+           "letter": "a",
+           "text": "obchodné meno,"
+          },
+          {
+           "anchor": "p10-3-b",
+           "label": "b)",
+           "letter": "b",
+           "text": "sídlo,"
+          },
+          {
+           "anchor": "p10-3-c",
+           "label": "c)",
+           "letter": "c",
+           "text": "identifikačné číslo osoby; ak ide o zahraničnú právnickú osobu, identifikačné číslo osoby sa neuvádza,⁶)"
+          },
+          {
+           "anchor": "p10-3-d",
+           "label": "d)",
+           "letter": "d",
+           "text": "adresu kancelárie,"
+          },
+          {
+           "anchor": "p10-3-e",
+           "label": "e)",
+           "letter": "e",
+           "text": "úradne osvedčený odpis osvedčenia o absolvovaní akreditovaného vzdelávacieho programu⁴) osoby, prostredníctvom ktorej sa zabezpečuje odborná spôsobilosť,"
+          },
+          {
+           "anchor": "p10-3-f",
+           "label": "f)",
+           "letter": "f",
+           "text": "čestné vyhlásenia všetkých členov štatutárneho orgánu o splnení predpokladov podľa § 8 ods. 2,"
+          },
+          {
+           "anchor": "p10-3-g",
+           "label": "g)",
+           "letter": "g",
+           "text": "čestné vyhlásenie osoby, ktorej prostredníctvom sa zabezpečuje odborná spôsobilosť o splnení predpokladov podľa § 8 ods. 2,"
+          },
+          {
+           "anchor": "p10-3-h",
+           "label": "h)",
+           "letter": "h",
+           "text": "doklad preukazujúci poistenie podľa § 6,"
+          },
+          {
+           "anchor": "p10-3-i",
+           "label": "i)",
+           "letter": "i",
+           "text": "potvrdenie oprávňujúce zriadiť v nehnuteľnosti kanceláriu."
+          }
+         ]
+        },
+        {
+         "anchor": "p10-4",
+         "text": "Ak žiadosť o zápis do zoznamu nemá predpísané náležitosti, ministerstvo vyzve žiadateľa, aby žiadosť v určenej lehote nie kratšej ako 15 dní opravil alebo doplnil a súčasne žiadateľa poučí, ako treba opravu alebo doplnenie urobiť; ministerstvo ďalej poučí žiadateľa, že ministerstvo jeho žiadosť zamietne, ak napriek výzve žiadosť v určenej lehote neopraví alebo nedoplní.",
+         "n": "4"
+        },
+        {
+         "anchor": "p10-5",
+         "text": "Ak žiadateľ spĺňa predpoklady na zápis do zoznamu, ministerstvo do 15 dní od doručenia úplnej žiadosti zapíše žiadateľa do zoznamu a vydá osvedčenie o zápise do zoznamu, ktoré obsahuje údaje podľa § 7 ods. 2 písm. a) (ďalej len \"osvedčenie\"). O zápise žiadateľa do zoznamu ministerstvo nevydáva rozhodnutie.",
+         "n": "5"
+        },
+        {
+         "anchor": "p10-6",
+         "text": "Ak žiadateľ nespĺňa predpoklady na zápis do zoznamu, ministerstvo žiadosť v lehote podľa odseku 5 rozhodnutím zamietne.",
+         "n": "6"
+        }
+       ],
+       "heading": "Zápis do zoznamu"
+      },
+      {
+       "type": "provision",
+       "anchor": "p11",
+       "label": "§ 11",
+       "paragraphs": [
+        {
+         "anchor": "p11-1",
+         "text": "Správca je povinný písomne informovať ministerstvo do 30 dní o",
+         "n": "1",
+         "items": [
+          {
+           "anchor": "p11-1-a",
+           "label": "a)",
+           "letter": "a",
+           "text": "zmene v osobe, ktorej prostredníctvom sa zabezpečuje odborná spôsobilosť,"
+          },
+          {
+           "anchor": "p11-1-b",
+           "label": "b)",
+           "letter": "b",
+           "text": "zriadení alebo zrušení kancelárie, pričom v oznámení uvedie adresu kancelárie, úradné hodiny, telefónne číslo, e-mailovú adresu a číslo faxu,"
+          },
+          {
+           "anchor": "p11-1-c",
+           "label": "c)",
+           "letter": "c",
+           "text": "zmene adresy kancelárie, úradných hodín, telefónneho čísla, e-mailovej adresy alebo čísla faxu,"
+          },
+          {
+           "anchor": "p11-1-d",
+           "label": "d)",
+           "letter": "d",
+           "text": "vzniku a zániku poistenia,"
+          },
+          {
+           "anchor": "p11-1-e",
+           "label": "e)",
+           "letter": "e",
+           "text": "vzniku, zmene alebo zániku skutočností zapisovaných do zoznamu."
+          }
+         ]
+        },
+        {
+         "anchor": "p11-2",
+         "text": "Správca je povinný písomne informovať ministerstvo o každej skutočnosti, ktorá je dôvodom na vyčiarknutie správcu zo zoznamu podľa § 12 do 14 dní od jej vzniku alebo odkedy sa správca mohol s prihliadnutím na všetky okolnosti o tejto skutočnosti dozvedieť.",
+         "n": "2"
+        },
+        {
+         "anchor": "p11-3",
+         "text": "Súčasťou oznámenia podľa odsekov 1 a 2 je aj obchodné meno a identifikačné číslo osoby.",
+         "n": "3"
+        },
+        {
+         "anchor": "p11-4",
+         "text": "Ministerstvo uloží správcovi za porušenie povinnosti podľa odseku 1 alebo 2 pokutu do 1 000 eur. V prípade opakovaného porušenia povinnosti v období 24 mesiacov uloží ministerstvo správcovi pokutu do 5 000 eur.",
+         "n": "4"
+        },
+        {
+         "anchor": "p11-5",
+         "text": "Pri určení výšky pokuty sa prihliada najmä na charakter protiprávneho konania, závažnosť porušenia povinnosti, spôsob a následky porušenia povinnosti.",
+         "n": "5"
+        },
+        {
+         "anchor": "p11-6",
+         "text": "Výnosy pokút uložených podľa odseku 4 sú príjmom štátneho rozpočtu.",
+         "n": "6"
+        },
+        {
+         "anchor": "p11-7",
+         "text": "Konanie o uložení pokuty možno začať do 12 mesiacov odo dňa, keď ministerstvo zistilo porušenie povinnosti podľa tohto zákona, najneskôr do troch rokov odo dňa, keď k porušeniu povinnosti došlo.",
+         "n": "7"
+        }
+       ]
+      },
+      {
+       "type": "provision",
+       "anchor": "p12",
+       "label": "§ 12",
+       "paragraphs": [
+        {
+         "anchor": "p12-1",
+         "text": "Ministerstvo vyčiarkne zo zoznamu správcu, ktorý je fyzickou osobou - podnikateľom, ak",
+         "n": "1",
+         "items": [
+          {
+           "anchor": "p12-1-a",
+           "label": "a)",
+           "letter": "a",
+           "text": "o to písomne požiada,"
+          },
+          {
+           "anchor": "p12-1-b",
+           "label": "b)",
+           "letter": "b",
+           "text": "mu zanikne alebo je zrušené živnostenské oprávnenie⁸) podľa § 8 ods. 1 písm. a),"
+          },
+          {
+           "anchor": "p12-1-c",
+           "label": "c)",
+           "letter": "c",
+           "text": "viac ako dva po sebe nasledujúce mesiace nemá poistenie,"
+          },
+          {
+           "anchor": "p12-1-d",
+           "label": "d)",
+           "letter": "d",
+           "text": "nevyhovel pri opätovnom ďalšom odbornom vzdelávaní alebo ho v určenom termíne nevykonal,"
+          },
+          {
+           "anchor": "p12-1-e",
+           "label": "e)",
+           "letter": "e",
+           "text": "viac ako tri po sebe nasledujúce mesiace nespĺňa predpoklady na zápis do zoznamu podľa § 8 ods. 1 písm. c) a d),"
+          },
+          {
+           "anchor": "p12-1-f",
+           "label": "f)",
+           "letter": "f",
+           "text": "nie je dôveryhodný,"
+          },
+          {
+           "anchor": "p12-1-g",
+           "label": "g)",
+           "letter": "g",
+           "text": "mu za posledných 24 mesiacov bola viac ako trikrát právoplatne uložená pokuta za porušenie povinnosti podľa § 11 ods. 4."
+          }
+         ]
+        },
+        {
+         "anchor": "p12-2",
+         "text": "Ministerstvo vyčiarkne zo zoznamu správcu, ktorý je právnickou osobou, ak",
+         "n": "2",
+         "items": [
+          {
+           "anchor": "p12-2-a",
+           "label": "a)",
+           "letter": "a",
+           "text": "o to písomne požiada,"
+          },
+          {
+           "anchor": "p12-2-b",
+           "label": "b)",
+           "letter": "b",
+           "text": "viac ako tri po sebe nasledujúce mesiace nespĺňa predpoklady na zápis do zoznamu podľa § 9 ods. 1 písm. a),"
+          },
+          {
+           "anchor": "p12-2-c",
+           "label": "c)",
+           "letter": "c",
+           "text": "mu zanikne alebo je zrušené živnostenské oprávnenie podľa § 9 ods. 1 písm. b),"
+          },
+          {
+           "anchor": "p12-2-d",
+           "label": "d)",
+           "letter": "d",
+           "text": "zanikol, bol zrušený alebo súd rozhodol o jeho neplatnosti podľa osobitného predpisu,⁹)"
+          },
+          {
+           "anchor": "p12-2-e",
+           "label": "e)",
+           "letter": "e",
+           "text": "viac ako dva po sebe nasledujúce mesiace nespĺňa predpoklady na zápis do zoznamu podľa § 9 ods. 1 písm. e),"
+          },
+          {
+           "anchor": "p12-2-f",
+           "label": "f)",
+           "letter": "f",
+           "text": "viac ako dva po sebe nasledujúce mesiace nemá poistenie,"
+          },
+          {
+           "anchor": "p12-2-g",
+           "label": "g)",
+           "letter": "g",
+           "text": "ktorýkoľvek z členov jej štatutárneho orgánu nie je dôveryhodný,"
+          },
+          {
+           "anchor": "p12-2-h",
+           "label": "h)",
+           "letter": "h",
+           "text": "mu za posledných 24 mesiacov bola viac ako trikrát právoplatne uložená pokuta za porušenie povinnosti podľa § 11 ods. 4."
+          }
+         ]
+        },
+        {
+         "anchor": "p12-3",
+         "text": "O vyčiarknutí správcu zo zoznamu rozhodne ministerstvo do 30 dní od začatia konania o vyčiarknutí zo zoznamu.",
+         "n": "3"
+        },
+        {
+         "anchor": "p12-4",
+         "text": "Osvedčenie o zápise podľa § 10 ods. 5 stráca platnosť dňom vyčiarknutia správcu zo zoznamu.",
+         "n": "4"
+        },
+        {
+         "anchor": "p12-5",
+         "text": "Ministerstvo nevyčiarkne správcu zo zoznamu na jeho žiadosť, ak je proti nemu vedené konanie o uložení pokuty podľa osobitného predpisu¹⁰) alebo konanie o vyčiarknutí zo zoznamu až do právoplatného skončenia konania; na túto dobu sa konanie o vyčiarknutí zo zoznamu na žiadosť správcu preruší.",
+         "n": "5"
+        }
+       ],
+       "heading": "Vyčiarknutie správcu zo zoznamu"
+      },
+      {
+       "type": "provision",
+       "anchor": "p13",
+       "label": "§ 13",
+       "paragraphs": [
+        {
+         "anchor": "p13-1",
+         "text": "Orgánom štátnej správy pre výkon činnosti správcu je ministerstvo.",
+         "n": "1"
+        },
+        {
+         "anchor": "p13-2",
+         "text": "Ministerstvo",
+         "n": "2",
+         "items": [
+          {
+           "anchor": "p13-2-a",
+           "label": "a)",
+           "letter": "a",
+           "text": "vedie zoznam a zverejňuje údaje zapísané v zozname,"
+          },
+          {
+           "anchor": "p13-2-b",
+           "label": "b)",
+           "letter": "b",
+           "text": "rozhoduje o zápise správcu do zoznamu,"
+          },
+          {
+           "anchor": "p13-2-c",
+           "label": "c)",
+           "letter": "c",
+           "text": "rozhoduje o vyčiarknutí správcu zo zoznamu,"
+          },
+          {
+           "anchor": "p13-2-d",
+           "label": "d)",
+           "letter": "d",
+           "text": "vykonáva dohľad nad dodržiavaním podmienok pre výkon činnosti správcov (ďalej len \"dohľad\"),"
+          },
+          {
+           "anchor": "p13-2-e",
+           "label": "e)",
+           "letter": "e",
+           "text": "vykonáva ďalšie činnosti podľa tohto zákona."
+          }
+         ]
+        }
+       ],
+       "heading": "Pôsobnosť ministerstva"
+      },
+      {
+       "type": "provision",
+       "anchor": "p14",
+       "label": "§ 14",
+       "paragraphs": [
+        {
+         "anchor": "p14-1",
+         "text": "Dohľad nad dodržiavaním podmienok pre výkon činnosti správcov v rozsahu ustanovenom týmto zákonom vykonáva ministerstvo; tým nie sú dotknuté osobitné predpisy.¹⁰)",
+         "n": "1"
+        },
+        {
+         "anchor": "p14-2",
+         "text": "Dohľad sa vykonáva",
+         "n": "2",
+         "items": [
+          {
+           "anchor": "p14-2-a",
+           "label": "a)",
+           "letter": "a",
+           "text": "kontrolou dodržiavania povinností ustanovených v tomto zákone a ukladaním opatrení na odstránenie zistených nedostatkov,"
+          },
+          {
+           "anchor": "p14-2-b",
+           "label": "b)",
+           "letter": "b",
+           "text": "získavaním a vyhodnocovaním informácií o správcoch a ich činnosti na základe podnetov alebo vlastných zistení ministerstva."
+          }
+         ]
+        },
+        {
+         "anchor": "p14-3",
+         "text": "Pri výkone dohľadu ministerstvo zisťuje objektívny stav a ďalšie dôležité skutočnosti o správcoch, najmä nedostatky v ich činnosti, príčiny zistených nedostatkov, škodlivé dôsledky zistených nedostatkov a osoby zodpovedné za zistené nedostatky.",
+         "n": "3"
+        }
+       ],
+       "heading": "Dohľad"
+      },
+      {
+       "type": "provision",
+       "anchor": "p15",
+       "label": "§ 15",
+       "paragraphs": [
+        {
+         "anchor": "p15-1",
+         "text": "Dohľad vykonáva ministerstvom poverená osoba v štátnozamestnaneckom pomere (ďalej len \"poverená osoba\").",
+         "n": "1"
+        },
+        {
+         "anchor": "p15-2",
+         "text": "Poverenie ministerstva na vykonanie dohľadu má písomnú formu a obsahuje označenie správcu, meno a priezvisko poverenej osoby, predmet dohľadu, deň začatia dohľadu, dátum a miesto vyhotovenia poverenia a meno, priezvisko, funkciu a podpis zamestnanca ministerstva oprávneného na udelenie poverenia.",
+         "n": "2"
+        }
+       ],
+       "heading": "Poverená osoba"
+      },
+      {
+       "type": "provision",
+       "anchor": "p16",
+       "label": "§ 16",
+       "paragraphs": [
+        {
+         "anchor": "p16-1",
+         "text": "Poverená osoba je pri výkone dohľadu oprávnená",
+         "n": "1",
+         "items": [
+          {
+           "anchor": "p16-1-a",
+           "label": "a)",
+           "letter": "a",
+           "text": "vstupovať do kancelárie,"
+          },
+          {
+           "anchor": "p16-1-b",
+           "label": "b)",
+           "letter": "b",
+           "text": "nahliadať do spisu, účtovníctva a iných záznamov správcu a robiť z nich kópie a odpisy v rozsahu nevyhnutnom na výkon dohľadu,"
+          },
+          {
+           "anchor": "p16-1-c",
+           "label": "c)",
+           "letter": "c",
+           "text": "v odôvodnených prípadoch odoberať písomnosti a iné záznamy správcu,"
+          },
+          {
+           "anchor": "p16-1-d",
+           "label": "d)",
+           "letter": "d",
+           "text": "vyžadovať od správcu, jeho zamestnancov, štatutárnych orgánov a zodpovedných zástupcov všetky informácie týkajúce sa výkonu činnosti správcu,"
+          },
+          {
+           "anchor": "p16-1-e",
+           "label": "e)",
+           "letter": "e",
+           "text": "vyžadovať od správcu, jeho zamestnancov, štatutárnych orgánov a zodpovedných zástupcov aj inú súčinnosť potrebnú na zabezpečenie riadneho výkonu dohľadu a vykonať ďalšie opatrenia potrebné na zabezpečenie účinného a objektívneho výkonu dohľadu."
+          }
+         ]
+        },
+        {
+         "anchor": "p16-2",
+         "text": "Poverená osoba je pri výkone dohľadu povinná",
+         "n": "2",
+         "items": [
+          {
+           "anchor": "p16-2-a",
+           "label": "a)",
+           "letter": "a",
+           "text": "preukázať sa správcovi pri začatí dohľadu písomným poverením ministerstva na vykonanie dohľadu spolu so služobným preukazom, prípadne občianskym preukazom,"
+          },
+          {
+           "anchor": "p16-2-b",
+           "label": "b)",
+           "letter": "b",
+           "text": "vydať správcovi potvrdenie o prevzatí písomností a iných záznamov premiestňovaných mimo kancelárie a zabezpečiť ich ochranu pred stratou, zničením, poškodením a zneužitím; ak odobraté písomnosti alebo záznamy už nie sú potrebné na ďalší výkon dohľadu, je povinná ich bez zbytočného odkladu vrátiť správcovi,"
+          },
+          {
+           "anchor": "p16-2-c",
+           "label": "c)",
+           "letter": "c",
+           "text": "zachovávať mlčanlivosť o skutočnostiach súvisiacich s dohľadom; povinnosť mlčanlivosti trvá aj po skončení výkonu funkcie alebo zamestnania alebo iného právneho vzťahu s ministerstvom."
+          }
+         ]
+        }
+       ],
+       "heading": "Práva a povinnosti poverenej osoby"
+      },
+      {
+       "type": "provision",
+       "anchor": "p17",
+       "label": "§ 17",
+       "paragraphs": [
+        {
+         "anchor": "p17-1",
+         "text": "Správca, jeho zamestnanci, štatutárny orgán, zodpovední zástupcovia a spoločníci sú pri výkone dohľadu povinní poskytovať poverenej osobe súčinnosť a vytvárať vhodné materiálne a technické podmienky potrebné na riadny výkon dohľadu, najmä zabezpečiť vhodné miesto na vykonanie dohľadu, ako aj zdržať sa konania, ktoré môže mariť výkon dohľadu.",
+         "n": "1"
+        },
+        {
+         "anchor": "p17-2",
+         "text": "Správca, jeho zamestnanci, štatutárny orgán, zodpovední zástupcovia a spoločníci majú právo odmietnuť poskytnutie súčinnosti vyžadovanej poverenou osobou, ak by tým bolo dotknuté ich právo na nedotknuteľnosť obydlia alebo by tým porušili zákonom ustanovenú povinnosť mlčanlivosti.",
+         "n": "2"
+        }
+       ],
+       "heading": "Práva a povinnosti správcu pri výkone dohľadu"
+      },
+      {
+       "type": "provision",
+       "anchor": "p18",
+       "label": "§ 18",
+       "paragraphs": [
+        {
+         "anchor": "p18-1",
+         "text": "Poverená osoba je z výkonu dohľadu vylúčená, ak so zreteľom na jej pomer k veci, k správcovi alebo k zamestnancom správcu možno mať pochybnosti o jej nezaujatosti.",
+         "n": "1"
+        },
+        {
+         "anchor": "p18-2",
+         "text": "Ak sa poverená osoba dozvie skutočnosti nasvedčujúce, že je zaujatá, je povinná bezodkladne oznámiť tieto skutočnosti osobe, ktorá ju vykonaním dohľadu poverila. Pri výkone dohľadu môže zatiaľ urobiť len úkony, ktoré nepripúšťajú odklad.",
+         "n": "2"
+        },
+        {
+         "anchor": "p18-3",
+         "text": "Ak má správca pochybnosti o nezaujatosti poverenej osoby, môže podať ministerstvu odôvodnené písomné námietky do troch dní od zistenia týchto skutočností; námietky nemajú odkladný účinok.",
+         "n": "3"
+        },
+        {
+         "anchor": "p18-4",
+         "text": "O vylúčení poverenej osoby z výkonu dohľadu rozhodne do troch dní od oznámenia alebo podania námietok osoba, ktorá poverenú osobu vykonaním dohľadu poverila; ak rozhodne, že poverená osoba je z výkonu dohľadu vylúčená, urobí aj príslušné opatrenie na zabezpečenie ďalšieho výkonu dohľadu.",
+         "n": "4"
+        }
+       ],
+       "heading": "Vylúčenie z výkonu dohľadu"
+      },
+      {
+       "type": "provision",
+       "anchor": "p19",
+       "label": "§ 19",
+       "paragraphs": [
+        {
+         "anchor": "p19-x1",
+         "text": "Trovy ministerstva spojené s dohľadom hradí ministerstvo a trovy správcu spojené s dohľadom hradí správca."
+        }
+       ],
+       "heading": "Trovy dohľadu"
+      },
+      {
+       "type": "provision",
+       "anchor": "p20",
+       "label": "§ 20",
+       "paragraphs": [
+        {
+         "anchor": "p20-1",
+         "text": "Na konania podľa tohto zákona, s výnimkou konania podľa § 10 ods. 5, sa vzťahuje všeobecný predpis o správnom konaní.¹¹)",
+         "n": "1"
+        },
+        {
+         "anchor": "p20-2",
+         "text": "Na výkon činnosti správcov podľa § 2, na postup podávania žiadostí o zápis do zoznamu, na rozhodovanie o zápise do zoznamu a na výkon dohľadu nad dodržiavaním podmienok pre výkon činnosti správcov podľa tohto zákona sa použijú ustanovenia osobitného predpisu,¹²) ak tento zákon neustanovuje inak.",
+         "n": "2"
+        },
+        {
+         "anchor": "p20-3",
+         "text": "Na uznanie odbornej spôsobilosti podľa právnych predpisov iného členského štátu sa použijú ustanovenia osobitného predpisu,¹³) ak tento zákon neustanovuje inak.",
+         "n": "3"
+        }
+       ],
+       "heading": "Vzťah k iným právnym predpisom"
+      },
+      {
+       "type": "provision",
+       "anchor": "p21",
+       "label": "§ 21",
+       "paragraphs": [
+        {
+         "anchor": "p21-x1",
+         "text": "Ministerstvo ustanoví všeobecne záväzným právnym predpisom",
+         "items": [
+          {
+           "anchor": "p21-x1-a",
+           "label": "a)",
+           "letter": "a",
+           "text": "minimálny obsah a podrobnosti ďalšieho odborného vzdelávania,"
+          },
+          {
+           "anchor": "p21-x1-b",
+           "label": "b)",
+           "letter": "b",
+           "text": "vzory žiadostí o zápis do zoznamu."
+          }
+         ]
+        }
+       ],
+       "heading": "Splnomocňovacie ustanovenia"
+      },
+      {
+       "type": "provision",
+       "anchor": "p22",
+       "label": "§ 22",
+       "paragraphs": [
+        {
+         "anchor": "p22-1",
+         "text": "Za odborne spôsobilé sa považujú aj osoby, ktoré absolvovali odbornú prípravu ukončenú skúškou v akreditovanom vzdelávacom programe najmenej v rozsahu a obsahu podľa § 3 nie viac ako päť rokov pred nadobudnutím účinnosti tohto zákona, čo ministerstvu preukážu osvedčením o absolvovaní akreditovaného vzdelávacieho programu.⁴) Toto ustanovenie sa nevzťahuje na osoby, ktorých absolvované ďalšie odborné vzdelávanie pokrylo iba časť požadovaného rozsahu a obsahu.",
+         "n": "1"
+        },
+        {
+         "anchor": "p22-2",
+         "text": "Správca, ktorý spravuje bytové domy, musí splniť podmienky tohto zákona pre výkon činnosti najneskôr do 31. decembra 2017.",
+         "n": "2"
+        }
+       ],
+       "heading": "Prechodné a záverečné ustanovenia"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "type": "section",
+   "anchor": "s-clanok-2",
+   "kind": "clanok",
+   "label": "Čl. II",
+   "children": [
+    {
+     "type": "provision",
+     "anchor": "predpis-clanok-2-odsek-1",
+     "label": "",
+     "paragraphs": [
+      {
+       "anchor": "predpis-clanok-2-odsek-1-x1",
+       "text": "Zákon Národnej rady Slovenskej republiky č. 182/1993 Z. z. o vlastníctve bytov a nebytových priestorov v znení zákona Národnej rady Slovenskej republiky č. 151/1995 Z. z., zákona č. 158/1998 Z. z., zákona č. 173/1999 Z. z., zákona č. 252/1999 Z. z., zákona č. 400/2002 Z. z., zákona č. 512/2003 Z. z., zákona č. 367/2004 Z. z., zákona č. 469/2005 Z. z., zákona č. 268/2007 Z. z., zákona č. 325/2007 Z. z., zákona č. 595/2009 Z. z., zákona č. 70/2010 Z. z., zákona č. 69/2012 Z. z. a zákona č. 205/2014 Z. z. sa mení a dopĺňa takto:"
+      }
+     ]
+    },
+    {
+     "type": "provision",
+     "anchor": "predpis-clanok-2-bod-1",
+     "label": "",
+     "paragraphs": [
+      {
+       "anchor": "predpis-clanok-2-bod-1-x1",
+       "text": "",
+       "items": [
+        {
+         "anchor": "predpis-clanok-2-bod-1-x1-1",
+         "label": "1.",
+         "letter": "1",
+         "text": "V § 7c ods. 2 sa za slová \"na právne úkony\" vkladá čiarka a tieto slová: \"je vlastníkom alebo spoluvlastníkom bytu alebo nebytového priestoru v dome\"."
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "type": "provision",
+     "anchor": "predpis-clanok-2-bod-2",
+     "label": "",
+     "paragraphs": [
+      {
+       "anchor": "predpis-clanok-2-bod-2-x1",
+       "text": "",
+       "items": [
+        {
+         "anchor": "predpis-clanok-2-bod-2-x1-2",
+         "label": "2.",
+         "letter": "2",
+         "text": "V § 7c ods. 3 sa za prvú vetu vkladá nová druhá veta, ktorá znie: \"Funkčné obdobie predsedu sa skončí dňom, keď zanikne vlastnícke právo predsedu k bytu alebo k nebytovému priestoru v dome.\" a v tretej vete sa za slová \"je predseda odvolaný\" vkladajú slová \"alebo sa skončilo funkčné obdobie predsedu z dôvodu zániku jeho vlastníckeho práva k bytu alebo k nebytovému priestoru v dome\"."
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "type": "provision",
+     "anchor": "predpis-clanok-2-bod-3",
+     "label": "",
+     "paragraphs": [
+      {
+       "anchor": "predpis-clanok-2-bod-3-x1",
+       "text": "",
+       "items": [
+        {
+         "anchor": "predpis-clanok-2-bod-3-x1-3",
+         "label": "3.",
+         "letter": "3",
+         "text": "V § 8 ods. 1 sa v prvej vete na konci bodka nahrádza bodkočiarkou a pripájajú sa tieto slová: \"správca, ktorý spravuje bytové domy, musí spĺňať aj podmienky podľa osobitného predpisu.¹²ᶜᵃ)\".",
+         "items": [
+          {
+           "anchor": "predpis-clanok-2-bod-3-x1-3-i1",
+           "label": "",
+           "letter": "i1",
+           "text": "Poznámka pod čiarou k odkazu 12ca znie:",
+           "items": [
+            {
+             "anchor": "predpis-clanok-2-bod-3-x1-3-i1-i1",
+             "label": "„12ca)",
+             "letter": "i1",
+             "text": "Zákon č. 246/2015 Z. z. o správcoch bytových domov a o zmene a doplnení zákona Národnej rady Slovenskej republiky č. 182/1993 Z. z. o vlastníctve bytov a nebytových priestorov v znení neskorších predpisov.“."
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "type": "provision",
+     "anchor": "predpis-clanok-2-bod-4",
+     "label": "",
+     "paragraphs": [
+      {
+       "anchor": "predpis-clanok-2-bod-4-x1",
+       "text": "",
+       "items": [
+        {
+         "anchor": "predpis-clanok-2-bod-4-x1-4",
+         "label": "4.",
+         "letter": "4",
+         "text": "§ 8a sa dopĺňa odsekmi 9 až 11, ktoré znejú:",
+         "items": [
+          {
+           "anchor": "predpis-clanok-2-bod-4-x1-4-i1",
+           "label": "„(9)",
+           "letter": "i1",
+           "text": "Ak bol správca vyčiarknutý zo zoznamu správcov,¹²ᶜᵃ) zmluva o výkone správy bytového domu zaniká dňom účinnosti zmluvy o výkone správy uzavretej s novým správcom alebo dňom vzniku spoločenstva, najneskôr však uplynutím šiestich mesiacov od vyčiarknutia zo zoznamu správcov."
+          },
+          {
+           "anchor": "predpis-clanok-2-bod-4-x1-4-10",
+           "label": "(10)",
+           "letter": "10",
+           "text": "Po vyčiarknutí zo zoznamu správcov je doterajší správca povinný",
+           "items": [
+            {
+             "anchor": "predpis-clanok-2-bod-4-x1-4-10-a",
+             "label": "a)",
+             "letter": "a",
+             "text": "o tejto skutočnosti informovať vlastníkov do siedmich dní od nadobudnutia právoplatnosti rozhodnutia o vyčiarknutí zo zoznamu správcov,"
+            },
+            {
+             "anchor": "predpis-clanok-2-bod-4-x1-4-10-b",
+             "label": "b)",
+             "letter": "b",
+             "text": "vykonať nevyhnutné činnosti smerujúce k ukončeniu výkonu správy a jej odovzdaniu novému správcovi bez zbytočného odkladu po tom, ako bol správca vlastníkmi zvolený alebo vzniknutému spoločenstvu; ak správca nie je zvolený alebo spoločenstvo nevzniklo do šiestich mesiacov od nadobudnutia právoplatnosti rozhodnutia o vyčiarknutí zo zoznamu správcov, vzniká spoločenstvo zo zákona a doterajší správca je povinný použiť primerane postup podľa odseku 8,"
+            },
+            {
+             "anchor": "predpis-clanok-2-bod-4-x1-4-10-c",
+             "label": "c)",
+             "letter": "c",
+             "text": "do uzavretia zmluvy o výkone správy s novým správcom alebo vzniku spoločenstva zabezpečovať prevádzku bytového domu podľa § 2 ods. 8 a zabezpečiť odstránenie chyby alebo poruchy technického zariadenia podľa § 9 ods. 4, najviac po dobu šesť mesiacov od nadobudnutia právoplatnosti rozhodnutia o vyčiarknutí zo zoznamu správcov."
+            }
+           ]
+          },
+          {
+           "anchor": "predpis-clanok-2-bod-4-x1-4-11",
+           "label": "(11)",
+           "letter": "11",
+           "text": "Ustanovenia odsekov 9 a 10 sa nevzťahujú na zmluvy o výkone správy budov, ktoré nemajú charakter bytového domu podľa § 24 ods. 1.“."
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "type": "provision",
+     "anchor": "predpis-clanok-2-bod-5",
+     "label": "",
+     "paragraphs": [
+      {
+       "anchor": "predpis-clanok-2-bod-5-x1",
+       "text": "",
+       "items": [
+        {
+         "anchor": "predpis-clanok-2-bod-5-x1-5",
+         "label": "5.",
+         "letter": "5",
+         "text": "V § 8b ods. 1 sa na konci pripája táto veta: \"Správca zastupuje v konaní na súde vlastníkov bytov a nebytových priestorov v dome, proti ktorým smeruje návrh na začatie konania podaný prehlasovaným vlastníkom bytu a nebytového priestoru v dome, návrh na začatie konania o určenie platnosti zmluvy o výkone správy podaný iným vlastníkom bytu a nebytového priestoru v dome alebo návrh na začatie konania o zdržanie sa výkonu záložného práva alebo zákaz výkonu záložného práva podaný iným vlastníkom bytu a nebytového priestoru v dome; toto zastupovanie trvá, kým sa v konaní pred súdom nepreukáže rozpor záujmov správcu so záujmom zastupovaných vlastníkov bytov a nebytových priestorov v dome.\"."
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "type": "provision",
+     "anchor": "predpis-clanok-2-bod-6",
+     "label": "",
+     "paragraphs": [
+      {
+       "anchor": "predpis-clanok-2-bod-6-x1",
+       "text": "",
+       "items": [
+        {
+         "anchor": "predpis-clanok-2-bod-6-x1-6",
+         "label": "6.",
+         "letter": "6",
+         "text": "V § 24 ods. 1 sa na konci bodka nahrádza bodkočiarkou a pripájajú sa tieto slová: \"na správcu týchto budov sa nevzťahuje osobitný predpis.¹²ᶜᵃ)\"."
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "type": "provision",
+     "anchor": "predpis-clanok-2-bod-7",
+     "label": "",
+     "paragraphs": [
+      {
+       "anchor": "predpis-clanok-2-bod-7-x1",
+       "text": "",
+       "items": [
+        {
+         "anchor": "predpis-clanok-2-bod-7-x1-7",
+         "label": "7.",
+         "letter": "7",
+         "text": "Za § 32d sa vkladá § 32e, ktorý vrátane nadpisu znie:",
+         "items": [
+          {
+           "anchor": "predpis-clanok-2-bod-7-x1-7-i1",
+           "label": "„§ 32e",
+           "letter": "i1",
+           "text": "",
+           "items": [
+            {
+             "anchor": "predpis-clanok-2-bod-7-x1-7-i1-1",
+             "label": "(1)",
+             "letter": "1",
+             "text": "Funkčné obdobie predsedu zvoleného do 31. decembra 2015, ktorý nespĺňa podmienky na výkon funkcie podľa tohto zákona v znení účinnom od 1. januára 2016, sa skončí uplynutím jeho funkčného obdobia, najneskôr do troch rokov od jeho zápisu do registra."
+            },
+            {
+             "anchor": "predpis-clanok-2-bod-7-x1-7-i1-2",
+             "label": "(2)",
+             "letter": "2",
+             "text": "Zmluvy o výkone správy bytového domu účinné pred 1. januárom 2018 uzatvorené s fyzickou osobou alebo právnickou osobou vykonávajúcou správu bytových domov, ktorá k 31. decembru 2017 nespĺňa podmienky podľa osobitného predpisu,¹²ᶜᵃ) zanikajú najneskôr k 30. júnu 2018; o tomto je fyzická osoba alebo právnická osoba povinná písomne informovať vlastníkov najneskôr 60 dní pred zánikom zmlúv, pričom na vzťah tejto osoby a vlastníkov po 31. decembri 2017 sa uplatní postup podľa § 8a ods. 9 a 10."
+            },
+            {
+             "anchor": "predpis-clanok-2-bod-7-x1-7-i1-3",
+             "label": "(3)",
+             "letter": "3",
+             "text": "Povinnosť ustanovená v § 29 ods. 2 a 8 a v § 29a sa vzťahuje na vlastníkov domov alebo bytov len vtedy, ak nájomca bytu požiadal o prevod vlastníctva bytu do 31. decembra 2016; táto povinnosť nezaniká, ak je vlastníkom domu alebo bytu bytové družstvo a o prevod vlastníctva bytu požiada aj po 31. decembri 2016 nájomca družstevného bytu, ktorý je členom tohto bytového družstva."
+            },
+            {
+             "anchor": "predpis-clanok-2-bod-7-x1-7-i1-4",
+             "label": "(4)",
+             "letter": "4",
+             "text": "Vlastník domu alebo bytu uvedený v § 17 ods. 3 a § 29 ods. 7 je povinný uzavrieť s nájomcom bytu, ktorý požiadal o prevod vlastníctva bytu do 31. decembra 2016, zmluvu o prevode vlastníctva bytu; cenu bytu, pozemku zastavaného domom a priľahlého pozemku je povinný vypočítať podľa § 18, § 18a ods. 1 a § 18b. Ak vlastník domu alebo bytu zmluvu o prevode vlastníctva bytu do dvoch rokov od doručenia žiadosti neuzavrie, nájomca bytu môže po uplynutí tejto lehoty podať návrh na súd, aby uložil splnenie tejto povinnosti."
+            },
+            {
+             "anchor": "predpis-clanok-2-bod-7-x1-7-i1-5",
+             "label": "(5)",
+             "letter": "5",
+             "text": "Ak nájomca požiada o prevod vlastníctva bytu po 31. decembri 2016, na výpočet ceny bytu sa vzťahuje § 17 ods. 1; to neplatí, ak ide o nájomcu družstevného bytu, ktorý je členom bytového družstva.“."
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "type": "provision",
+   "anchor": "cl3",
+   "label": "Čl. III",
+   "paragraphs": [
+    {
+     "anchor": "cl3-x1",
+     "text": "Tento zákon nadobúda účinnosť 1. januára 2016."
+    }
+   ]
+  }
+ ],
+ "footnotes": [
+  {
+   "anchor": "fn-1",
+   "label": "1)",
+   "text": "§ 8 ods. 1 zákona Národnej rady Slovenskej republiky č. 182/1993 Z. z. o vlastníctve bytov a nebytových priestorov v znení neskorších predpisov."
+  },
+  {
+   "anchor": "fn-2",
+   "label": "2)",
+   "text": "§ 2 ods. 2 zákona Národnej rady Slovenskej republiky č. 182/1993 Z. z."
+  },
+  {
+   "anchor": "fn-3",
+   "label": "3)",
+   "text": "§ 4 ods. 1 písm. a) zákona č. 568/2009 Z. z. o celoživotnom vzdelávaní a o zmene a doplnení niektorých zákonov."
+  },
+  {
+   "anchor": "fn-4",
+   "label": "4)",
+   "text": "§ 14 ods. 9 zákona č. zákona č. 568/2009 Z. z."
+  },
+  {
+   "anchor": "fn-5",
+   "label": "5)",
+   "text": "Napríklad zákon č. 455/1991 Zb. o živnostenskom podnikaní (živnostenský zákon) v znení neskorších predpisov, zákon č. 128/2002 Z. z. o štátnej kontrole vnútorného trhu vo veciach ochrany spotrebiteľa a o zmene a doplnení niektorých zákonov v znení neskorších predpisov, zákon č. 250/2007 Z. z. o ochrane spotrebiteľa a o zmene zákona Slovenskej národnej rady č. 372/1990 Zb. o priestupkoch v znení neskorších predpisov v znení neskorších predpisov a zákon č. 122/2013 Z. z. o ochrane osobných údajov a zmene a doplnení niektorých zákonov v znení zákona č. 84/2014 Z. z."
+  },
+  {
+   "anchor": "fn-6",
+   "label": "6)",
+   "text": "Zákon Národnej rady Slovenskej republiky č. 182/1993 Z. z."
+  },
+  {
+   "anchor": "fn-7",
+   "label": "7)",
+   "text": "Zákon č. 455/1991 Zb."
+  },
+  {
+   "anchor": "fn-8",
+   "label": "8)",
+   "text": "§ 66a písm. a) zákona č. 455/1991 Zb."
+  },
+  {
+   "anchor": "fn-9",
+   "label": "9)",
+   "text": "§ 68 až 69 Obchodný zákonník v znení neskorších predpisov."
+  },
+  {
+   "anchor": "fn-10",
+   "label": "10)",
+   "text": "Napríklad zákon č. 455/1991 Zb., zákon č. 128/2002 Z. z., zákon č. 250/2007 Z. z. a zákon č. 122/2013 Z. z."
+  },
+  {
+   "anchor": "fn-11",
+   "label": "11)",
+   "text": "Zákon č. 71/1967 Zb. o správnom konaní (Správny poriadok) v znení neskorších predpisov."
+  },
+  {
+   "anchor": "fn-12",
+   "label": "12)",
+   "text": "§ 3 až 8 a § 10 až 16 zákona č. 136/2010 Z. z. o službách na vnútornom trhu a o zmene a doplnení niektorých zákonov v znení neskorších predpisov."
+  },
+  {
+   "anchor": "fn-13",
+   "label": "13)",
+   "text": "Zákon č. 293/2007 Z. z. o uznávaní odborných kvalifikácií v znení neskorších predpisov."
+  }
+ ]
+}

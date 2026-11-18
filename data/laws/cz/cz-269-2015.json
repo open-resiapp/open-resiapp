@@ -1,0 +1,966 @@
+{
+ "id": "cz-269-2015",
+ "jurisdiction": "cz",
+ "number": "269/2015 Sb.",
+ "title": "Vyhláška o rozúčtování nákladů na vytápění a společnou přípravu teplé vody pro dům",
+ "effectiveFrom": "2024-01-01",
+ "effectiveTo": null,
+ "sourceUrl": "https://e-sbirka.gov.cz/sb/2015/269/2024-01-01",
+ "fetchedAt": "2026-11-18T08:19:19.692Z",
+ "contentHash": "b5a264ebebab170f86307b90b7f9e3d11bc18f998f7c94b3cd399d65751422f6",
+ "provisionCount": 15,
+ "parts": [
+  {
+   "type": "text",
+   "text": "Ministerstvo pro místní rozvoj stanoví podle § 14a zákona č. 67/2013 Sb., kterým se upravují některé otázky související s poskytováním plnění spojených s užíváním bytů a nebytových prostorů v domě s byty, ve znění zákona č. 104/2015 Sb.:"
+  },
+  {
+   "type": "provision",
+   "anchor": "p1",
+   "label": "§ 1",
+   "paragraphs": [
+    {
+     "anchor": "p1-x1",
+     "text": "Tato vyhláška zapracovává příslušné předpisy Evropské unie¹) a upravuje",
+     "items": [
+      {
+       "anchor": "p1-x1-a",
+       "label": "a)",
+       "letter": "a",
+       "text": "rozsah výše základní a spotřební složky u rozúčtování nákladů na vytápění a nákladů na společnou přípravu teplé vody pro dům, jejich rozdělení mezi příjemce služeb, hodnoty určené jako spodní a horní hranice oproti průměru zúčtovací jednotky v daném zúčtovacím období, vymezení pojmů a další náležitosti k rozúčtování nákladů,"
+      },
+      {
+       "anchor": "p1-x1-b",
+       "label": "b)",
+       "letter": "b",
+       "text": "některé další náležitosti, které musí poskytovatel služeb uvést ve vyúčtování nákladů na vytápění a nákladů na společnou přípravu teplé vody pro dům."
+      }
+     ]
+    }
+   ],
+   "heading": "Předmět úpravy"
+  },
+  {
+   "type": "provision",
+   "anchor": "p2",
+   "label": "§ 2",
+   "paragraphs": [
+    {
+     "anchor": "p2-x1",
+     "text": "Pro účely této vyhlášky se rozumí",
+     "items": [
+      {
+       "anchor": "p2-x1-a",
+       "label": "a)",
+       "letter": "a",
+       "text": "zúčtovací jednotkou dům nebo jeho část, popřípadě domy nebo jejich části, které mají jedno společné, technologicky propojené odběrné tepelné zařízení a společné měření nebo stanovení množství tepla, nákladů na teplo na vytápění a nákladů na poskytování teplé vody,"
+      },
+      {
+       "anchor": "p2-x1-b",
+       "label": "b)",
+       "letter": "b",
+       "text": "vytápěním ústřední vytápění pomocí otopné soustavy ovlivňující zúčtovací jednotku, kterou prochází, napojené na společný zdroj tepla; vytápěním není vytápění bytů a nebytových prostorů prostřednictvím samostatných etážových okruhů zásobovaných teplem z vlastních zdrojů tepla, používajících různé druhy paliv nebo elektřinu, ani vytápění prostřednictvím uzavřených okruhů, do nichž se dodává a měří teplo na základě smlouvy dodavatele přímo s příjemcem služeb,"
+      },
+      {
+       "anchor": "p2-x1-c",
+       "label": "c)",
+       "letter": "c",
+       "text": "společnou přípravou teplé vody pro dům ohřev a poskytování centrálně připravované teplé vody příjemcům služeb,"
+      },
+      {
+       "anchor": "p2-x1-d",
+       "label": "d)",
+       "letter": "d",
+       "text": "podlahovou plochou podlahová plocha místností bytu a nebytového prostoru kromě teras, balkónů a lodžií a vedlejších prostorů, které jsou umístěny mimo byt; do podlahové plochy se započítává i plocha zastavěná kuchyňskou linkou, vestavěným nábytkem, kamny nebo jiným topným tělesem; nezapočítává se plocha okenních a dveřních ústupků,"
+      },
+      {
+       "anchor": "p2-x1-e",
+       "label": "e)",
+       "letter": "e",
+       "text": "započitatelnou podlahovou plochou podlahová plocha vynásobená koeficienty uvedenými v příloze č. 1 části A k této vyhlášce; mají-li některé místnosti v zúčtovací jednotce rozdílnou výšku stropů nebo stropy zkosené, započitatelná podlahová plocha těchto místností se vynásobí koeficientem podílu objemu vytápěného prostoru k objemu vypočtenému z podlahové plochy a výšky stropu převládajících místností v zúčtovací jednotce,"
+      },
+      {
+       "anchor": "p2-x1-f",
+       "label": "f)",
+       "letter": "f",
+       "text": "podlahovou plochou nebytových prostorů pro účely poskytování teplé vody podlahová plocha vynásobená koeficienty stanovenými podle přílohy č. 1 části B k této vyhlášce,"
+      },
+      {
+       "anchor": "p2-x1-g",
+       "label": "g)",
+       "letter": "g",
+       "text": "náměrem hodnota zjištěná jako rozdíl odečtu naměřených hodnot na instalovaných měřidlech podle zákona o metrologii nebo zařízení pro rozdělování nákladů na vytápění nebo vodoměrech na teplou vodu na konci a na začátku daného zúčtovacího období,"
+      },
+      {
+       "anchor": "p2-x1-h",
+       "label": "h)",
+       "letter": "h",
+       "text": "nákladem na vytápění a na poskytování teplé vody pro dům náklady skutečně vynaložené v příslušném zúčtovacím období na pořízení služeb, tj. náklady na teplo na vytápění, náklady na teplo spotřebované na přípravu teplé vody, náklady na pitnou vodu spotřebovanou na přípravu teplé vody, a to v cenách podle cenových předpisů,"
+      },
+      {
+       "anchor": "p2-x1-i",
+       "label": "i)",
+       "letter": "i",
+       "text": "referenčním příjemcem služeb příjemce služeb, jehož náklady na vytápění připadající na 1 m²započitatelné podlahové plochy se rovnají průměrným nákladům na vytápění připadajícím na 1 m² započitatelné podlahové plochy zúčtovací jednotky v daném zúčtovacím období a jehož spotřeba společně připravované teplé vody v m³se rovná průměrné spotřebě teplé vody na jednoho příjemce služeb v zúčtovací jednotce v daném zúčtovacím období,"
+      },
+      {
+       "anchor": "p2-x1-j",
+       "label": "j)",
+       "letter": "j",
+       "text": "srovnáním s referenčním příjemcem služeb uvedení nákladů na vytápění referenčního příjemce služeb na 1 m² započitatelné podlahové plochy, uvedení součinu těchto nákladů a započitatelné podlahové plochy příjemce služeb a uvedení spotřeby společně připravované teplé vody referenčním příjemcem služeb."
+      }
+     ]
+    }
+   ],
+   "heading": "Vymezení pojmů"
+  },
+  {
+   "type": "provision",
+   "anchor": "p3",
+   "label": "§ 3",
+   "paragraphs": [
+    {
+     "anchor": "p3-1",
+     "text": "Základní složka nákladů na vytápění v zúčtovací jednotce činí 40 % až 60 % a zbytek nákladů tvoří spotřební složku. Výši základní složky určí poskytovatel služeb podle klasifikační třídy ukazatele energetické náročnosti budovy podle průměrného součinitele prostupu tepla podle přílohy č. 6 k této vyhlášce; takto určenou základní složku může následně snížit či zvýšit až o 10 procentních bodů. Rozdělení nákladů na základní a spotřební složku se v zúčtovací jednotce provede pro dané zúčtovací období pouze jednou. U všech příjemců služeb je vždy v základní složce rozúčtována na 1 m² započitatelné podlahové plochy stejná částka.",
+     "n": "1"
+    },
+    {
+     "anchor": "p3-2",
+     "text": "Při rozdělení spotřební složky nákladů na vytápění v zúčtovací jednotce mezi příjemce služeb se vychází z náměrů měřidel podle zákona o metrologii nebo zařízení pro rozdělování nákladů na vytápění. Přitom se použijí korekce a výpočtové metody zohledňující i rozdílnou náročnost vytápěných místností na dodávku tepla danou jejich polohou. Rozdíly v nákladech na vytápění připadající na 1 m² započitatelné podlahové plochy však nesmí u příjemců služeb, u kterých jsou instalována měřidla podle zákona o metrologii nebo zařízení pro rozdělování nákladů na vytápění, překročit v zúčtovací jednotce hodnotu o 30 % nižší a hodnotu o 100 % vyšší oproti průměru zúčtovací jednotky v daném zúčtovacím období (dále jen „limitní hodnota“). Pokud dojde k překročení přípustných rozdílů, provede poskytovatel služeb úpravu výpočtové metody takto:",
+     "n": "2",
+     "items": [
+      {
+       "anchor": "p3-2-a",
+       "label": "a)",
+       "letter": "a",
+       "text": "hodnota spotřební složky se u příjemce služeb, jehož náklady na vytápění připadající na 1 m²započitatelné podlahové plochy překročily limitní hodnotu, upraví tak, aby se náklady příjemce služeb na vytápění připadající na 1 m²započitatelné podlahové plochy rovnaly limitní hodnotě, tedy 70 % průměrné hodnoty za zúčtovací jednotku v případě, že nebyla dodržena spodní hranice alespoň 70 % průměrné hodnoty za zúčtovací jednotku, nebo 200 % průměrné hodnoty za zúčtovací jednotku v případě, že nebyla dodržena horní hranice nejvýše 200 % průměrné hodnoty za zúčtovací jednotku,"
+      },
+      {
+       "anchor": "p3-2-b",
+       "label": "b)",
+       "letter": "b",
+       "text": "hodnota spotřební složky upravená podle písmene a) se odečte od spotřební složky nákladů na vytápění zúčtovací jednotky a zůstatek se rozdělí mezi ostatní příjemce služeb úměrně výši náměrů měřidel podle zákona o metrologii nebo zařízení pro rozdělování nákladů na vytápění s použitím korekcí a výpočtových metod zohledňujících i rozdílnou náročnost vytápěných místností na dodávku tepla danou jejich polohou, a"
+      },
+      {
+       "anchor": "p3-2-c",
+       "label": "c)",
+       "letter": "c",
+       "text": "pokud po rozdělení zůstatku podle písmene b) překračuje u některého z ostatních příjemců služeb hodnota nákladů na vytápění připadajících na 1 m² limitní hodnotu, upraví poskytovatel služeb výpočtovou metodu obdobně podle písmen a) a b), a to i opakovaně, dokud všichni příjemci služeb nevyhoví stanovené přípustné odchylce rozdílu v nákladech na vytápění připadajících na 1 m² započitatelné podlahové plochy v zúčtovací jednotce v daném zúčtovacím období."
+      }
+     ]
+    },
+    {
+     "anchor": "p3-3",
+     "text": "V zúčtovací jednotce, ve které u příjemců služeb nejsou instalována měřidla podle zákona o metrologii nebo zařízení pro rozdělování nákladů na vytápění, poskytovatel služeb spotřební složku rozdělí mezi příjemce služeb stejným způsobem jako složku základní.",
+     "n": "3"
+    },
+    {
+     "anchor": "p3-4",
+     "text": "Odečty měřidel podle zákona o metrologii nebo zařízení pro rozdělování nákladů na vytápění u příjemců služeb provádí poskytovatel služeb nejméně jednou ročně, vždy však ke konci zúčtovacího období.",
+     "n": "4"
+    },
+    {
+     "anchor": "p3-5",
+     "text": "Neumožní-li příjemce služeb instalaci stanovených měřidel podle zákona o metrologii s platným ověřením nebo zařízení pro rozdělování nákladů na vytápění, nebo přes opakované prokazatelné upozornění neumožní jejich odečet, nebo je neoprávněně ovlivní, určí se v daném zúčtovacím období u tohoto příjemce služeb spotřební složka nákladů podle přílohy č. 2 k této vyhlášce.",
+     "n": "5"
+    },
+    {
+     "anchor": "p3-6",
+     "text": "Pokud měřidla podle zákona o metrologii nebo zařízení pro rozdělování nákladů na vytápění nemohla být u příjemce služeb instalována z prokazatelných technických důvodů, poskytovatel služeb u tohoto příjemce služeb v daném zúčtovacím období stanoví spotřební složku ve výši průměrné hodnoty spotřební složky nákladů připadající na 1 m² započitatelné podlahové plochy zúčtovací jednotky. Spotřební složka nákladů u tohoto příjemce služeb je pak násobkem průměrné hodnoty spotřební složky a započitatelné podlahové plochy.",
+     "n": "6"
+    },
+    {
+     "anchor": "p3-7",
+     "text": "Úhrady příjemců služeb stanovené podle odstavce 5 jsou součástí úhrady spotřební složky nákladů na teplo na vytápění v zúčtovací jednotce, které se rozúčtovávají mezi příjemce služeb v daném zúčtovacím období.",
+     "n": "7"
+    },
+    {
+     "anchor": "p3-8",
+     "text": "Při obnovení odečtu měřidel podle zákona o metrologii nebo zařízení pro rozdělování nákladů na vytápění se pro odečítané zúčtovací období odečte od stavu měřidla podle zákona o metrologii nebo zařízení pro rozdělování nákladů na vytápění spotřeba odpovídající průměrné hodnotě spotřební složky nákladů za neměřené zúčtovací období připadající na 1 m² započitatelné podlahové plochy zúčtovací jednotky bez zvýšení uvedeného v odstavci 5. U těch měřidel podle zákona o metrologii nebo zařízení pro rozdělování nákladů na vytápění, u kterých nelze zpětný odečet zjistit, se při obnovení odečtu pro odečítané zúčtovací období použije průměrná hodnota spotřební složky nákladů připadající na 1 m² započitatelné podlahové plochy zúčtovací jednotky v daném zúčtovacím období.",
+     "n": "8"
+    }
+   ],
+   "heading": "Rozúčtování nákladů na vytápění v zúčtovací jednotce"
+  },
+  {
+   "type": "provision",
+   "anchor": "p4",
+   "label": "§ 4",
+   "paragraphs": [
+    {
+     "anchor": "p4-1",
+     "text": "Základní složka nákladů na teplo spotřebované na poskytování teplé vody činí 30 % a spotřební složka 70 % nákladů. Základní složka nákladů na vodu spotřebovanou na poskytování teplé vody činí 0 % a spotřební složka 100 % nákladů.",
+     "n": "1"
+    },
+    {
+     "anchor": "p4-2",
+     "text": "Odečty instalovaných vodoměrů u příjemců služeb provádí poskytovatel služeb nejméně jednou ročně, vždy však ke konci zúčtovacího období.",
+     "n": "2"
+    },
+    {
+     "anchor": "p4-3",
+     "text": "V zúčtovací jednotce, ve které u příjemců služeb nejsou instalovány vodoměry a nedošlo k dohodě všech příjemců služeb, rozdělí poskytovatel služeb spotřební složku podle průměrného počtu osob rozhodných pro rozúčtování služeb v zúčtovacím období nebo podle poměru velikosti podlahové plochy bytu nebo nebytového prostoru k celkové podlahové ploše bytů a nebytových prostorů v zúčtovací jednotce. Rozdíly v rozsahu vybavení jednotlivých bytů v zúčtovací jednotce mající vliv na odběr teplé vody zohlední poskytovatel služeb přepočtem spotřební složky na základě odborného posouzení. V nebytových prostorech stanoví poskytovatel služeb průměrný počet osob nebo odpovídající velikost podlahové plochy na základě odborného posouzení podle způsobu odběru a rozsahu využívání teplé vody.",
+     "n": "3"
+    },
+    {
+     "anchor": "p4-4",
+     "text": "Neumožní-li příjemce služeb instalaci vodoměrů na teplou vodu s platným ověřením nebo přes opakované prokazatelné upozornění neumožní jejich odečet, nebo je neoprávněně ovlivní, určí se v daném zúčtovacím období u tohoto příjemce služeb spotřební složka nákladů podle přílohy č. 2 k této vyhlášce.",
+     "n": "4"
+    },
+    {
+     "anchor": "p4-5",
+     "text": "Úhrady příjemců služeb stanovené podle odstavce 4 jsou součástí úhrady spotřební složky nákladů na poskytování teplé vody v zúčtovací jednotce, které se rozúčtovávají mezi příjemce služeb v daném zúčtovacím období.",
+     "n": "5"
+    },
+    {
+     "anchor": "p4-6",
+     "text": "Při obnovení odečtu na instalovaném vodoměru se pro odečítané zúčtovací období odečte od stavu vodoměru průměrná spotřeba stanovená ze spotřeby zúčtovací jednotky připadající na 1 m²podlahové plochy za neměřené zúčtovací období bez zvýšení uvedeného v odstavci 4.",
+     "n": "6"
+    },
+    {
+     "anchor": "p4-7",
+     "text": "Náklady na spotřebovanou vodu použitou k poskytování teplé vody rozdělí poskytovatel služeb mezi příjemce služeb poměrně podle náměrů instalovaných vodoměrů u příjemců služeb. Ustanovení odstavců 3 až 6 platí obdobně.",
+     "n": "7"
+    }
+   ],
+   "heading": "Rozúčtování nákladů na poskytování teplé vody v zúčtovací jednotce"
+  },
+  {
+   "type": "provision",
+   "anchor": "p5",
+   "label": "§ 5",
+   "paragraphs": [
+    {
+     "anchor": "p5-1",
+     "text": "Není-li možné v zúčtovací jednotce s vlastním zdrojem tepla nebo s vlastní předávací stanicí určit odděleně náklady na teplo na vytápění a náklady na teplo spotřebované na poskytování teplé vody, stanoví se tyto náklady podle množství spotřebovaného tepla pro přípravu teplé vody v zúčtovací jednotce zjištěného podle množství paliva na její přípravu, zejména podle spotřeby mimo otopné období, případně, není-li to možné, použitím vzájemného podílu spotřeby tepla na přípravu teplé vody ve výši 40 % a na vytápění ve výši 60 %.",
+     "n": "1"
+    },
+    {
+     "anchor": "p5-2",
+     "text": "Na byty a nebytové prostory odpojené od vnitřního rozvodu vytápění rozúčtovává poskytovatel služeb základní složku nákladů na vytápění podle poměru velikosti započitatelné podlahové plochy bytu nebo nebytového prostoru k celkové započitatelné podlahové ploše bytů a nebytových prostorů v zúčtovací jednotce; započitatelná podlahová plocha bytu nebo nebytového prostoru se přepočte na nepřímo vytápěnou započitatelnou podlahovou plochu podle přílohy č. 1 části A bodu 2 k této vyhlášce. Na byty a nebytové prostory odpojené od vnitřního rozvodu teplé vody rozúčtovává poskytovatel služeb základní složku nákladů podle poměru velikosti podlahové plochy bytu nebo nebytového prostoru k celkové podlahové ploše bytů a nebytových prostorů v zúčtovací jednotce.",
+     "n": "2"
+    },
+    {
+     "anchor": "p5-3",
+     "text": "Náklady na poskytování teplé vody odebrané přímo jednotlivými příjemci služeb ve společných prostorách zúčtovací jednotky, kde jsou instalovány vodoměry, rozúčtuje poskytovatel služeb na tyto příjemce služeb podle evidence spotřeb; pokud nejsou ve společných prostorách zúčtovací jednotky instalovány vodoměry, rozúčtují se náklady těmto příjemcům služeb způsobem, který stanoví poskytovatel služeb.",
+     "n": "3"
+    },
+    {
+     "anchor": "p5-4",
+     "text": "Při poruše měřidla podle zákona o metrologii, zařízení pro rozdělování nákladů na vytápění nebo instalovaného vodoměru stanoví poskytovatel služeb spotřební složku za dobu poruchy podle údajů dvou z klimatického hlediska srovnatelných zúčtovacích období.",
+     "n": "4"
+    },
+    {
+     "anchor": "p5-5",
+     "text": "Dojde-li ke změně příjemce služeb v průběhu zúčtovacího období a nejsou-li známy odečty naměřených hodnot měřidla podle zákona o metrologii, zařízení pro rozdělování nákladů na vytápění nebo instalovaného vodoměru k termínu změny, poskytovatel služeb rozdělí",
+     "n": "5",
+     "items": [
+      {
+       "anchor": "p5-5-a",
+       "label": "a)",
+       "letter": "a",
+       "text": "spotřební složku nákladů na vytápění podle skutečné klimatické náročnosti příslušných částí zúčtovacího období před a po termínu změny; nejsou-li tyto údaje známy, podle přílohy č. 3 k této vyhlášce,"
+      },
+      {
+       "anchor": "p5-5-b",
+       "label": "b)",
+       "letter": "b",
+       "text": "základní složku nákladů na vytápění v poměru počtu dnů vytápění bytu nebo nebytového prostoru před a po termínu změny příjemce služeb, a nejsou-li tyto údaje známy, podle přílohy č. 3 k této vyhlášce,"
+      },
+      {
+       "anchor": "p5-5-c",
+       "label": "c)",
+       "letter": "c",
+       "text": "spotřební složku nákladů na poskytování teplé vody včetně nákladů na spotřebovanou vodu podle průměrného počtu osob rozhodných pro rozúčtování služeb a počtu dnů zúčtovacího období, v případě rozúčtování podle podlahové plochy jen podle počtu dnů zúčtovacího období, které připadají na původního a nového příjemce služeb, nedohodnou-li se původní a nový příjemce služeb jinak,"
+      },
+      {
+       "anchor": "p5-5-d",
+       "label": "d)",
+       "letter": "d",
+       "text": "základní složku nákladů na poskytování teplé vody podle počtu dnů zúčtovacího období, které připadají na původního a nového příjemce služeb."
+      }
+     ]
+    },
+    {
+     "anchor": "p5-6",
+     "text": "Dojde-li ke změně příjemce služeb v průběhu zúčtovacího období a jsou-li provedeny odečty měřidla podle zákona o metrologii, zařízení pro rozdělování nákladů na vytápění nebo instalovaného vodoměru k termínu změny příjemce služeb, poskytovatel služeb rozdělí",
+     "n": "6",
+     "items": [
+      {
+       "anchor": "p5-6-a",
+       "label": "a)",
+       "letter": "a",
+       "text": "základní složku nákladů na vytápění v poměru počtu dnů vytápění bytu nebo nebytového prostoru před a po termínu změny příjemce služeb, a nejsou-li tyto údaje známy, podle přílohy č. 3 k této vyhlášce,"
+      },
+      {
+       "anchor": "p5-6-b",
+       "label": "b)",
+       "letter": "b",
+       "text": "spotřební složku nákladů na vytápění v poměru součtů zjištěných přepočtených náměrů instalovaných měřidel podle zákona o metrologii nebo zařízení pro rozdělování nákladů na vytápění,"
+      },
+      {
+       "anchor": "p5-6-c",
+       "label": "c)",
+       "letter": "c",
+       "text": "základní složku nákladů na teplo na poskytování teplé vody podle počtu dnů zúčtovacího období, které připadají na původního a nového příjemce služeb,"
+      },
+      {
+       "anchor": "p5-6-d",
+       "label": "d)",
+       "letter": "d",
+       "text": "spotřební složku nákladů na teplo na poskytování teplé vody a náklady na spotřebovanou vodu v poměru součtu náměrů bytových vodoměrů na teplou vodu, které připadají na původního a nového příjemce služeb."
+      }
+     ]
+    },
+    {
+     "anchor": "p5-7",
+     "text": "Nemá-li zúčtovací jednotka, byt či nebytový prostor svého příjemce služeb, rozumí se příjemcem služeb vlastník zúčtovací jednotky.",
+     "n": "7"
+    }
+   ],
+   "heading": "Další zvláštní způsoby rozúčtování nákladů na vytápění a nákladů na poskytování teplé vody v zúčtovací jednotce"
+  },
+  {
+   "type": "provision",
+   "anchor": "p6",
+   "label": "§ 6",
+   "paragraphs": [
+    {
+     "anchor": "p6-x1",
+     "text": "Ve vyúčtování poskytovatel služeb, kromě náležitostí stanovených zákonem, uvede",
+     "items": [
+      {
+       "anchor": "p6-x1-a",
+       "label": "a)",
+       "letter": "a",
+       "text": "za zúčtovací jednotku odděleně spotřebu tepla na vytápění, spotřebu tepla na ohřev vody v GJ nebo MWh a množství vody v m³ spotřebované na poskytování teplé vody,"
+      },
+      {
+       "anchor": "p6-x1-b",
+       "label": "b)",
+       "letter": "b",
+       "text": "za zúčtovací jednotku odděleně jednotkové ceny tepla na vytápění a tepla spotřebovaného na ohřev vody v Kč/GJ nebo Kč/MWh a vody spotřebované na poskytování teplé vody v Kč/m³,"
+      },
+      {
+       "anchor": "p6-x1-c",
+       "label": "c)",
+       "letter": "c",
+       "text": "za zúčtovací jednotku celkové náklady v Kč odděleně na vytápění a na teplo spotřebované na ohřev vody a na vodu spotřebovanou na poskytování teplé vody, podíly základních a spotřebních složek nákladů na vytápění a nákladů na teplo spotřebované na ohřev vody v % a v Kč,"
+      },
+      {
+       "anchor": "p6-x1-d",
+       "label": "d)",
+       "letter": "d",
+       "text": "podlahovou plochu a započitatelnou podlahovou plochu zúčtovací jednotky a bytu či nebytového prostoru příjemce služeb v m², v případě poskytování teplé vody průměrný počet osob rozhodných pro rozúčtování služeb a za celou zúčtovací jednotku v zúčtovacím období, součet skutečných a přepočtených náměrů instalovaných měřidel podle zákona o metrologii nebo zařízení pro rozdělování nákladů na vytápění zúčtovací jednotky a bytu či nebytového prostoru příjemce služeb, součet náměrů instalovaných vodoměrů za zúčtovací jednotku a náměr instalovaných vodoměrů teplé vody v bytě či nebytovém prostoru příjemce služeb a ve společných prostorách zúčtovací jednotky rozúčtovávaných přímo mezi jednotlivé příjemce služeb podle evidence spotřeb v m³, hodnoty podílu nákladu příjemce služeb na vytápění, teplo na ohřev vody a na vodu v teplé vodě,"
+      },
+      {
+       "anchor": "p6-x1-e",
+       "label": "e)",
+       "letter": "e",
+       "text": "měrnou spotřebu tepla na vytápění za zúčtovací jednotku v zúčtovacím období vyjádřenou v GJ nebo MWh na m² započitatelné podlahové plochy,"
+      },
+      {
+       "anchor": "p6-x1-f",
+       "label": "f)",
+       "letter": "f",
+       "text": "podíly nákladů připadající na příjemce služeb s uvedením základních složek, spotřebních složek a celkových nákladů v Kč, a to zvlášť na vytápění, na teplo na ohřev vody a na vodu spotřebovanou na poskytování teplé vody,"
+      },
+      {
+       "anchor": "p6-x1-g",
+       "label": "g)",
+       "letter": "g",
+       "text": "koeficienty a součinitele použité pro přepočty podlahové plochy nebo započitatelné podlahové plochy konkrétního bytu či nebytového prostoru a pro přepočty odečtů měřidel podle zákona o metrologii nebo zařízení pro rozdělování nákladů na vytápění u příjemce služeb,"
+      },
+      {
+       "anchor": "p6-x1-h",
+       "label": "h)",
+       "letter": "h",
+       "text": "informace o použité skladbě zdrojů energie a o souvisejících ročních emisích skleníkových plynů za zúčtovací jednotku za poslední kalendářní rok, za který jsou dostupné, pokud byla poskytovateli služeb dodána tepelná energie ze soustav dálkového vytápění a pokud tyto informace uvedl dodavatel tepelné energie ve vyúčtování podle právního předpisu upravujícího vyúčtování dodávek a souvisejících služeb v energetických odvětvích,"
+      },
+      {
+       "anchor": "p6-x1-i",
+       "label": "i)",
+       "letter": "i",
+       "text": "informace o energetické náročnosti a o podílu energie z obnovitelných zdrojů v soustavě zásobování tepelnou energií, pokud dodavatel tepelné energie uvedl tyto informace ve vyúčtování podle právního předpisu upravujícího vyúčtování dodávek a souvisejících služeb v energetických odvětvích,"
+      },
+      {
+       "anchor": "p6-x1-j",
+       "label": "j)",
+       "letter": "j",
+       "text": "popis jednotlivých daní, poplatků a jiných obdobných peněžitých plnění, které jsou zahrnuty v ceně tepelné energie dodané poskytovateli služeb ze soustav dálkového vytápění a které se přímo vztahují k množství dodané tepelné energie, pokud tento popis uvedl dodavatel tepelné energie ve vyúčtování podle právního předpisu upravujícího vyúčtování dodávek a souvisejících služeb v energetických odvětvích,"
+      },
+      {
+       "anchor": "p6-x1-k",
+       "label": "k)",
+       "letter": "k",
+       "text": "v grafické podobě vyhotovené srovnání zjištěné spotřeby tepla na vytápění příjemcem služeb za dané zúčtovací období a za stejné období předchozího roku, upravené s ohledem na klimatické podmínky v těchto obdobích postupem podle přílohy č. 4 k této vyhlášce,"
+      },
+      {
+       "anchor": "p6-x1-l",
+       "label": "l)",
+       "letter": "l",
+       "text": "kontaktní údaje pro veřejnost nejméně jednoho energetického konzultačního a informačního střediska sídlícího ve vyšším územním samosprávném celku, v němž se nachází zúčtovací jednotka, a není-li takového energetického konzultačního a informačního střediska, kontaktní údaje pro veřejnost jiného energetického konzultačního a informačního střediska,"
+      },
+      {
+       "anchor": "p6-x1-m",
+       "label": "m)",
+       "letter": "m",
+       "text": "další informace o energetických konzultačních a informačních střediscích alespoň v rozsahu textu podle části A přílohy č. 5 k této vyhlášce,"
+      },
+      {
+       "anchor": "p6-x1-n",
+       "label": "n)",
+       "letter": "n",
+       "text": "odkazy na internetové stránky s informacemi o zvyšování energetické účinnosti, a to alespoň v rozsahu textu podle části B přílohy č. 5 k této vyhlášce,"
+      },
+      {
+       "anchor": "p6-x1-o",
+       "label": "o)",
+       "letter": "o",
+       "text": "informace o mediačních službách a mechanismech alternativního řešení sporů, a to alespoň v rozsahu textu podle části C přílohy č. 5 k této vyhlášce,"
+      },
+      {
+       "anchor": "p6-x1-p",
+       "label": "p)",
+       "letter": "p",
+       "text": "srovnání s referenčním příjemcem služeb, přičemž v případě elektronického vyúčtování postačí toto srovnání nahradit odkazem na internetové stránky, kde je toto srovnání zpřístupněno."
+      }
+     ]
+    }
+   ],
+   "heading": "Vyúčtování nákladů na vytápění a nákladů na poskytování teplé vody příjemcům služeb"
+  },
+  {
+   "type": "provision",
+   "anchor": "p7",
+   "label": "§ 7",
+   "paragraphs": [
+    {
+     "anchor": "p7-1",
+     "text": "Vznik právních vztahů a nároky z nich vzniklé přede dnem nabytí účinnosti této vyhlášky se posuzují podle vyhlášky č. 372/2001 Sb., ve znění účinném přede dnem nabytí účinnosti této vyhlášky.",
+     "n": "1"
+    },
+    {
+     "anchor": "p7-2",
+     "text": "Rozúčtování a vyúčtování nákladů na vytápění a nákladů na poskytování teplé vody mezi příjemce služeb za zúčtovací období, které započalo přede dnem nabytí účinnosti této vyhlášky, se provede podle vyhlášky č. 372/2001 Sb., ve znění účinném přede dnem nabytí účinnosti této vyhlášky, a to i v případě, že zúčtovací období skončí po nabytí účinnosti této vyhlášky.",
+     "n": "2"
+    }
+   ],
+   "heading": "Přechodná ustanovení"
+  },
+  {
+   "type": "provision",
+   "anchor": "p8",
+   "label": "§ 8",
+   "paragraphs": [
+    {
+     "anchor": "p8-x1",
+     "text": "Vyhláška č. 372/2001 Sb., kterou se stanoví pravidla pro rozúčtování nákladů na tepelnou energii na vytápění a nákladů na poskytování teplé užitkové vody mezi konečné spotřebitele, se zrušuje."
+    }
+   ],
+   "heading": "Zrušovací ustanovení"
+  },
+  {
+   "type": "provision",
+   "anchor": "p9",
+   "label": "§ 9",
+   "paragraphs": [
+    {
+     "anchor": "p9-x1",
+     "text": "Tato vyhláška nabývá účinnosti dnem 1. ledna 2016."
+    }
+   ],
+   "heading": "Účinnost"
+  },
+  {
+   "type": "provision",
+   "anchor": "priloha1",
+   "label": "Příloha č. 1 k vyhlášce č. 269/2015 Sb.",
+   "paragraphs": [
+    {
+     "anchor": "priloha1-x1",
+     "text": "",
+     "items": [
+      {
+       "anchor": "priloha1-x1-a",
+       "label": "A.",
+       "letter": "a",
+       "text": "",
+       "items": [
+        {
+         "anchor": "priloha1-x1-a-i1",
+         "label": "",
+         "letter": "i1",
+         "text": "Koeficienty pro stanovení započitatelné podlahové plochy"
+        },
+        {
+         "anchor": "priloha1-x1-a-1",
+         "label": "1.",
+         "letter": "1",
+         "text": "místností bytů a nebytových prostorů, v nichž je otopné těleso a které se liší způsobem jejich využívání",
+         "items": [
+          {
+           "anchor": "priloha1-x1-a-1-i1",
+           "label": "",
+           "letter": "i1",
+           "text": "| Druh místnosti | Koeficient [ - ] |\n| v bytě | 1,0 |\n| ve skladě | 1,0 |\n| v kanceláři | 1,2 |\n| ve zdravotním středisku | 1,2 |\n| v mateřské škole | 1,2 |\n| ve výstavním sále | 1,2 |\n| v prodejně | 1,3 |\n| v obchodním domě | 1,3 |\n| v učebně | 1,3 |\n| v tělocvičně | 1,3 |\n| v dílně | 1,3 |\n| v restauraci, kavárně, vinárně | 1,4 |"
+          },
+          {
+           "anchor": "priloha1-x1-a-1-a",
+           "label": "a)",
+           "letter": "a",
+           "text": "Koeficienty podle tabulky se použijí i pro místnosti s obdobným způsobem využívání."
+          },
+          {
+           "anchor": "priloha1-x1-a-1-b",
+           "label": "b)",
+           "letter": "b",
+           "text": "Pro místnosti s nižší výpočtovou vnitřní teplotou t_i (garáže apod.) se zohledňující součinitel s, kterým se vynásobí příslušný koeficient této místnosti, stanoví podle vzorce:",
+           "items": [
+            {
+             "anchor": "priloha1-x1-a-1-b-i1",
+             "label": "",
+             "letter": "i1",
+             "text": "s=(t_i-t_es)/(t_is-t_es) -,"
+            },
+            {
+             "anchor": "priloha1-x1-a-1-b-i2",
+             "label": "",
+             "letter": "i2",
+             "text": "kde je",
+             "items": [
+              {
+               "anchor": "priloha1-x1-a-1-b-i2-i1",
+               "label": "",
+               "letter": "i1",
+               "text": "s - součinitel [ - ]"
+              },
+              {
+               "anchor": "priloha1-x1-a-1-b-i2-i2",
+               "label": "",
+               "letter": "i2",
+               "text": "t_i - teplota [°C], na kterou má být podle projektu vytápěna předmětná místnost; není-li údaj k dispozici, pak podle platných technických norem"
+              },
+              {
+               "anchor": "priloha1-x1-a-1-b-i2-i3",
+               "label": "",
+               "letter": "i3",
+               "text": "t_es - průměrná teplota venkovního vzduchu [°C] v otopném období podle dlouhodobého průměru"
+              },
+              {
+               "anchor": "priloha1-x1-a-1-b-i2-i4",
+               "label": "",
+               "letter": "i4",
+               "text": "t_is - průměrná vnitřní výpočtová teplota [°C] ústředně vytápěných obytných místností v otopném období (zpravidla +20 °C)"
+              }
+             ]
+            }
+           ]
+          }
+         ]
+        },
+        {
+         "anchor": "priloha1-x1-a-2",
+         "label": "2.",
+         "letter": "2",
+         "text": "místností bytů a nebytových prostorů, v nichž není umístěno otopné těleso a které jsou začleněné v objektu tak, že s místnostmi s otopným tělesem přímo sousedí (nepřímo vytápěné místnosti a prostory)",
+         "items": [
+          {
+           "anchor": "priloha1-x1-a-2-i1",
+           "label": "",
+           "letter": "i1",
+           "text": "| | Koeficient [ - ] |\n| jednou stěnou | 0,1 |\n| dvěma stěnami | 0,2 |\n| třemi stěnami | 0,35 |\n| čtyřmi stěnami | 0,5 |\n| pěti a více stěnami | 0,75 - 1,0 |"
+          },
+          {
+           "anchor": "priloha1-x1-a-2-a",
+           "label": "a)",
+           "letter": "a",
+           "text": "Stěnou se rozumí boční stěna, strop a podlaha. Má-li místnost velké rozdíly v délkách stěn nebo sousedící místnosti nejsou podél celých délek stěn, zvolí se koeficient úměrný hodnotám z tabulky. Za sousedící vytápěné místnosti se nepovažují chodby a schodiště společných částí objektu, i když je v nich umístěno otopné těleso."
+          },
+          {
+           "anchor": "priloha1-x1-a-2-b",
+           "label": "b)",
+           "letter": "b",
+           "text": "Je-li v místnosti bytu či nebytového prostoru bez otopného tělesa neizolované potrubí vnitřního rozvodu tepla (vertikální rozvody přívodní i zpětné, horizontální rozvody přívodní i zpětné, přípojky k otopným tělesům delší jak 0,5 m), zvýší se koeficienty stanovené dle počtu stěn o hodnotu navýšení stanovenou podle vzorce",
+           "items": [
+            {
+             "anchor": "priloha1-x1-a-2-b-i1",
+             "label": "",
+             "letter": "i1",
+             "text": "n=(5.S)/(A) -,"
+            },
+            {
+             "anchor": "priloha1-x1-a-2-b-i2",
+             "label": "",
+             "letter": "i2",
+             "text": "kde je",
+             "items": [
+              {
+               "anchor": "priloha1-x1-a-2-b-i2-i1",
+               "label": "",
+               "letter": "i1",
+               "text": "n - navýšení [-]"
+              },
+              {
+               "anchor": "priloha1-x1-a-2-b-i2-i2",
+               "label": "",
+               "letter": "i2",
+               "text": "S - povrch potrubí [m²]"
+              },
+              {
+               "anchor": "priloha1-x1-a-2-b-i2-i3",
+               "label": "",
+               "letter": "i3",
+               "text": "A - podlahová plocha místnosti vynásobená koeficientem podle tabulky v úvodní části tohoto bodu [m²], přičemž výsledný koeficient včetně navýšení činí nejvýše 1,0 (k + n ≤ 1)."
+              }
+             ]
+            }
+           ]
+          },
+          {
+           "anchor": "priloha1-x1-a-2-c",
+           "label": "c)",
+           "letter": "c",
+           "text": "V zúčtovací jednotce, ve které mají byty srovnatelný počet místností, velikost, uspořádání a podíl nevytápěných prostor, je možné pro rozúčtování základní složky nákladů na vytápění uplatnit jejich podlahovou plochu."
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "anchor": "priloha1-x1-b",
+       "label": "B.",
+       "letter": "b",
+       "text": "",
+       "items": [
+        {
+         "anchor": "priloha1-x1-b-i1",
+         "label": "",
+         "letter": "i1",
+         "text": "Koeficienty pro stanovení podlahové plochy nebytových prostorů pro rozdělení základní složky nákladů na teplo spotřebované na ohřev vody"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "anchor": "priloha1-x2",
+     "text": "Koeficienty pro výpočet podlahové plochy nebytových prostorů pro rozdělení základní složky nákladů na teplou vodu se stanovují odborným posouzením podle rozsahu odběru a způsobu užití teplé vody."
+    }
+   ]
+  },
+  {
+   "type": "provision",
+   "anchor": "priloha2",
+   "label": "Příloha č. 2 k vyhlášce č. 269/2015 Sb.",
+   "paragraphs": [
+    {
+     "anchor": "priloha2-x1",
+     "text": "Výpočet spotřební složky nákladů na vytápění podle § 3 odst. 5 a spotřební složky na poskytování teplé vody podle § 4 odst. 4 se provede podle vzorce",
+     "items": [
+      {
+       "anchor": "priloha2-x1-i1",
+       "label": "",
+       "letter": "i1",
+       "text": "S_ni=X.S_c.P_ni/P_c+X-1.P_n,Kč"
+      },
+      {
+       "anchor": "priloha2-x1-i2",
+       "label": "",
+       "letter": "i2",
+       "text": "kde je",
+       "items": [
+        {
+         "anchor": "priloha2-x1-i2-i1",
+         "label": "",
+         "letter": "i1",
+         "text": "P_c - celková plocha v zúčtovací jednotce [m²]"
+        },
+        {
+         "anchor": "priloha2-x1-i2-i2",
+         "label": "",
+         "letter": "i2",
+         "text": "P_ni - plocha konkrétního bytu nebo nebytového prostoru, u něhož není znám údaj z měření, [m²]"
+        },
+        {
+         "anchor": "priloha2-x1-i2-i3",
+         "label": "",
+         "letter": "i3",
+         "text": "P_n - součet P_ni"
+        },
+        {
+         "anchor": "priloha2-x1-i2-i4",
+         "label": "",
+         "letter": "i4",
+         "text": "S_c - celková spotřební složka nákladů za zúčtovací jednotku [Kč]"
+        },
+        {
+         "anchor": "priloha2-x1-i2-i5",
+         "label": "",
+         "letter": "i5",
+         "text": "S_ni - spotřební složka nákladů připadající na konkrétní byt nebo nebytový prostor, u něhož není znám údaj z měření, [Kč]"
+        },
+        {
+         "anchor": "priloha2-x1-i2-i6",
+         "label": "",
+         "letter": "i6",
+         "text": "X - násobek zvýšení (podle § 3 odst. 5 hodnota 3, podle § 4 odst. 4 hodnota 3)"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "anchor": "priloha2-x2",
+     "text": "",
+     "items": [
+      {
+       "anchor": "priloha2-x2-i1",
+       "label": "",
+       "letter": "i1",
+       "text": "Poznámka:"
+      }
+     ]
+    },
+    {
+     "anchor": "priloha2-x3",
+     "text": "Při stanovení nákladů na vytápění podle § 3 odst. 5 se za Pc a Pni dosazuje započitatelná podlahová plocha."
+    },
+    {
+     "anchor": "priloha2-x4",
+     "text": "Při stanovení nákladů na poskytování teplé vody podle § 4 odst. 4 se za Pc a Pni dosazuje podlahová plocha."
+    }
+   ],
+   "heading": "Výpočet spotřební složky nákladů na vytápění a spotřební složky na poskytování teplé vody"
+  },
+  {
+   "type": "provision",
+   "anchor": "priloha3",
+   "label": "Příloha č. 3 k vyhlášce č. 269/2015 Sb.",
+   "paragraphs": [
+    {
+     "anchor": "priloha3-x1",
+     "text": "Dlouhodobé měsíční průměry klimatické náročnosti se stanoví denostupňovým výpočtem. Pokud nejsou potřebné výpočtové údaje k dispozici, použijí se hodnoty podle této tabulky:"
+    },
+    {
+     "anchor": "priloha3-x2",
+     "text": "",
+     "items": [
+      {
+       "anchor": "priloha3-x2-i1",
+       "label": "",
+       "letter": "i1",
+       "text": "| Měsíc | % | Měsíc | % |\n| leden | 19 | červenec | 0 |\n| únor | 16 | srpen | 0 |\n| březen | 14 | září | 1 |\n| duben | 9 | říjen | 8 |\n| květen | 2 | listopad | 14 |\n| červen | 0 | prosinec | 17 |"
+      }
+     ]
+    }
+   ],
+   "heading": "Dlouhodobé měsíční průměry klimatické náročnosti"
+  },
+  {
+   "type": "provision",
+   "anchor": "priloha4",
+   "label": "Příloha č. 4 k vyhlášce č. 269/2015 Sb.",
+   "paragraphs": [
+    {
+     "anchor": "priloha4-x1",
+     "text": "Ve srovnání podle § 6 písm. k) se zjištěná spotřeba tepla za aktuální zúčtovací období porovná se zjištěnou spotřebou tepla za stejné období předchozího roku, která je upravena podle vzorce",
+     "items": [
+      {
+       "anchor": "priloha4-x1-i1",
+       "label": "",
+       "letter": "i1",
+       "text": "S_upr = (D_akt / D_před) . S_před,"
+      }
+     ]
+    },
+    {
+     "anchor": "priloha4-x2",
+     "text": "kde je"
+    },
+    {
+     "anchor": "priloha4-x3",
+     "text": "S_upr – zjištěná spotřeba tepla za stejné období předchozího roku upravená s ohledem na klimatické podmínky,"
+    },
+    {
+     "anchor": "priloha4-x4",
+     "text": "D_akt – počet denostupňů v otopném období za aktuální zúčtovací období,"
+    },
+    {
+     "anchor": "priloha4-x5",
+     "text": "D_před – počet denostupňů v otopném období za stejné období předchozího roku,"
+    },
+    {
+     "anchor": "priloha4-x6",
+     "text": "S_před – zjištěná spotřeba tepla za stejné období předchozího roku."
+    },
+    {
+     "anchor": "priloha4-x7",
+     "text": "Počet denostupňů zjistí poskytovatel služeb podle údajů z hydrometeorologických stanic v dané lokalitě nebo postupem podle vyhlášky č. 194/2007 Sb., kterou se stanoví pravidla pro vytápění a dodávku teplé vody, měrné ukazatele spotřeby tepelné energie pro vytápění a pro přípravu teplé vody a požadavky na vybavení vnitřních tepelných zařízení budov přístroji regulujícími dodávku tepelné energie konečným spotřebitelům."
+    }
+   ],
+   "heading": "Postup pro zohlednění klimatických podmínek při srovnání zjištěné spotřeby tepla"
+  },
+  {
+   "type": "provision",
+   "anchor": "priloha5",
+   "label": "Příloha č. 5 k vyhlášce č. 269/2015 Sb.",
+   "paragraphs": [
+    {
+     "anchor": "priloha5-x1",
+     "text": "",
+     "items": [
+      {
+       "anchor": "priloha5-x1-a",
+       "label": "A.",
+       "letter": "a",
+       "text": "",
+       "items": [
+        {
+         "anchor": "priloha5-x1-a-i1",
+         "label": "",
+         "letter": "i1",
+         "text": "Text další informace o energetických konzultačních a informačních střediscích:",
+         "items": [
+          {
+           "anchor": "priloha5-x1-a-i1-i1",
+           "label": "",
+           "letter": "i1",
+           "text": "„Další informace o energetických konzultačních a informačních střediscích"
+          }
+         ]
+        },
+        {
+         "anchor": "priloha5-x1-a-i2",
+         "label": "",
+         "letter": "i2",
+         "text": "Energetická konzultační a informační střediska (EKIS) poskytují veřejnosti bezplatné energetické poradenství. Jejich seznam a kontaktní údaje jsou dostupné na internetové adrese:"
+        },
+        {
+         "anchor": "priloha5-x1-a-i3",
+         "label": "",
+         "letter": "i3",
+         "text": "https://www.mpo-efekt.cz/cz/ekis/strediska-EKIS“."
+        }
+       ]
+      },
+      {
+       "anchor": "priloha5-x1-b",
+       "label": "B.",
+       "letter": "b",
+       "text": "",
+       "items": [
+        {
+         "anchor": "priloha5-x1-b-i1",
+         "label": "",
+         "letter": "i1",
+         "text": "Text odkazů na internetové stránky s informacemi o zvyšování energetické účinnosti:",
+         "items": [
+          {
+           "anchor": "priloha5-x1-b-i1-i1",
+           "label": "",
+           "letter": "i1",
+           "text": "„Odkazy na internetové stránky s informacemi o zvyšování energetické účinnosti"
+          }
+         ]
+        },
+        {
+         "anchor": "priloha5-x1-b-i2",
+         "label": "",
+         "letter": "i2",
+         "text": "https://www.mpo-efekt.cz/"
+        },
+        {
+         "anchor": "priloha5-x1-b-i3",
+         "label": "",
+         "letter": "i3",
+         "text": "https://chytra-volba.cz/“."
+        }
+       ]
+      },
+      {
+       "anchor": "priloha5-x1-c",
+       "label": "C.",
+       "letter": "c",
+       "text": "",
+       "items": [
+        {
+         "anchor": "priloha5-x1-c-i1",
+         "label": "",
+         "letter": "i1",
+         "text": "Text informace o mediačních službách a mechanismech alternativního řešení sporů:",
+         "items": [
+          {
+           "anchor": "priloha5-x1-c-i1-i1",
+           "label": "",
+           "letter": "i1",
+           "text": "„Informace o mediačních službách a mechanismech alternativního řešení sporů"
+          }
+         ]
+        },
+        {
+         "anchor": "priloha5-x1-c-i2",
+         "label": "",
+         "letter": "i2",
+         "text": "Příjemce služeb a poskytovatel služeb, kteří jsou ve sporu, se po dohodě mohou podle zákona o mediaci obrátit na zapsaného mediátora a v rámci mediace uzavřít mediační dohodu. Tu mohou následně předložit soudu ke schválení."
+        },
+        {
+         "anchor": "priloha5-x1-c-i3",
+         "label": "",
+         "letter": "i3",
+         "text": "Jsou-li poskytovatel služeb a příjemce služeb vzájemně ve vztahu podnikatele a spotřebitele, může spotřebitel zahájit mimosoudní řešení sporu podle zákona o ochraně spotřebitele podáním návrhu České obchodní inspekci nebo jinému subjektu pověřenému Ministerstvem průmyslu a obchodu."
+        },
+        {
+         "anchor": "priloha5-x1-c-i4",
+         "label": "",
+         "letter": "i4",
+         "text": "Jde-li o majetkový spor, může strana sporu na základě rozhodčí smlouvy (smlouvy o rozhodci nebo rozhodčí doložky) uzavřené mezi příjemcem služeb a poskytovatelem služeb zahájit u rozhodce nebo stálého rozhodčího soudu rozhodčí řízení a domáhat se vydání rozhodčího nálezu podle zákona o rozhodčím řízení a o výkonu rozhodčích nálezů. Tento postup však nelze využít, pokud jde o spor ze smlouvy mezi příjemcem služeb a poskytovatelem služeb, kteří jsou vzájemně ve vztahu spotřebitele a podnikatele, a zároveň byla rozhodčí smlouva (smlouva o rozhodci nebo rozhodčí doložka) uzavřena po 30. listopadu 2016.\""
+        }
+       ]
+      }
+     ]
+    }
+   ],
+   "heading": "Další informace obsažené v rozúčtování"
+  },
+  {
+   "type": "provision",
+   "anchor": "priloha6",
+   "label": "Příloha č. 6 k vyhlášce č. 269/2015 Sb.",
+   "paragraphs": [
+    {
+     "anchor": "priloha6-x1",
+     "text": "Procentní hodnota základní složky se určí podle průměrného součinitele prostupu tepla U_em podle § 3 odst. 1 písm. d) vyhlášky č. 264/2020 Sb., o energetické náročnosti budov, určeného podle přílohy č. 2 k vyhlášce č. 264/2020 Sb., o energetické náročnosti budov, a to tak, že bude",
+     "items": [
+      {
+       "anchor": "priloha6-x1-a",
+       "label": "a)",
+       "letter": "a",
+       "text": "pro hodnotu U_em nižší nebo rovnou limitní hodnotě pro klasifikační třídu C energetické náročnosti budovy ve výši 60 %,"
+      },
+      {
+       "anchor": "priloha6-x1-b",
+       "label": "b)",
+       "letter": "b",
+       "text": "pro hodnotu U_em vyšší než limitní hodnota pro klasifikační třídu C energetické náročnosti budovy a současně nižší nebo rovnou hodnotě pro klasifikační třídu E tohoto ukazatele ve výši 50 %,"
+      },
+      {
+       "anchor": "priloha6-x1-c",
+       "label": "c)",
+       "letter": "c",
+       "text": "pro ostatní budovy a budovy, kde není hodnota U_em známa, nebo ji zjistit nelze, ve výši 40 %."
+      }
+     ]
+    }
+   ],
+   "heading": "Procentní hodnota základní složky"
+  }
+ ],
+ "footnotes": [
+  {
+   "anchor": "fn-1",
+   "label": "1)",
+   "text": "Čl. 13 směrnice Evropského parlamentu a Rady 2012/27/EU ze dne 25. října 2012 o energetické účinnosti, o změně směrnic 2009/125/ES a 2010/30/EU a o zrušení směrnic 2004/8/ES a 2006/32/ES.\nČl. 1 body 6, 8 a 10 a Příloha bod 4 směrnice Evropského parlamentu a Rady (EU) 2018/2002 ze dne 11. prosince 2018, kterou se mění směrnice 2012/27/EU o energetické účinnosti.\nČl. 24 odst. 1 směrnice Evropského parlamentu a Rady (EU) 2018/2001 ze dne 11. prosince 2018 o podpoře využívání energie z obnovitelných zdrojů."
+  }
+ ]
+}

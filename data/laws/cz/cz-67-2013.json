@@ -1,0 +1,551 @@
+{
+ "id": "cz-67-2013",
+ "jurisdiction": "cz",
+ "number": "67/2013 Sb.",
+ "title": "Zákon, kterým se upravují některé otázky související s poskytováním plnění spojených s užíváním bytů a nebytových prostorů v domě s byty",
+ "effectiveFrom": "2026-01-01",
+ "effectiveTo": "2026-12-31",
+ "sourceUrl": "https://e-sbirka.gov.cz/sb/2013/67/2026-01-01",
+ "fetchedAt": "2026-11-18T08:19:18.146Z",
+ "contentHash": "27102c60e8d747fb930cbe07f9d646f44925cc3d231f2721c1d077431040c1b9",
+ "provisionCount": 19,
+ "parts": [
+  {
+   "type": "text",
+   "text": "Parlament se usnesl na tomto zákoně České republiky:"
+  },
+  {
+   "type": "provision",
+   "anchor": "p1",
+   "label": "§ 1",
+   "paragraphs": [
+    {
+     "anchor": "p1-1",
+     "text": "Tento zákon zapracovává příslušné předpisy Evropské unie²) a upravuje některé otázky související s poskytováním plnění spojených s užíváním bytů a nebytových prostorů v domě s byty (dále jen „služby“) a postup při určování záloh za služby, rozúčtování, vyúčtování a vypořádání nákladů na služby.",
+     "n": "1"
+    },
+    {
+     "anchor": "p1-2",
+     "text": "Je-li v domě s byty nebytový prostor, vztahují se ustanovení tohoto zákona týkající se bytů přiměřeně i na tento nebytový prostor.",
+     "n": "2"
+    },
+    {
+     "anchor": "p1-3",
+     "text": "Tento zákon se nevztahuje na služby, které si příjemce služeb zajišťuje bez účasti poskytovatele služeb.",
+     "n": "3"
+    },
+    {
+     "anchor": "p1-4",
+     "text": "Veškerá ujednání podle tohoto zákona musí mít písemnou formu.",
+     "n": "4"
+    }
+   ],
+   "heading": "Úvodní ustanovení"
+  },
+  {
+   "type": "provision",
+   "anchor": "p2",
+   "label": "§ 2",
+   "paragraphs": [
+    {
+     "anchor": "p2-1",
+     "text": "Pro účely tohoto zákona se rozumí",
+     "n": "1",
+     "items": [
+      {
+       "anchor": "p2-1-a",
+       "label": "a)",
+       "letter": "a",
+       "text": "poskytovatelem služeb",
+       "items": [
+        {
+         "anchor": "p2-1-a-1",
+         "label": "1.",
+         "letter": "1",
+         "text": "vlastník nemovitosti nebo vlastník jednotky v domě rozděleném na jednotky v případě, že je byt užíván na základě nájemní smlouvy, nebo"
+        },
+        {
+         "anchor": "p2-1-a-2",
+         "label": "2.",
+         "letter": "2",
+         "text": "společenství vlastníků jednotek (dále jen „společenství“) podle zákona upravujícího bytové spoluvlastnictví,"
+        }
+       ]
+      },
+      {
+       "anchor": "p2-1-b",
+       "label": "b)",
+       "letter": "b",
+       "text": "příjemcem služeb",
+       "items": [
+        {
+         "anchor": "p2-1-b-1",
+         "label": "1.",
+         "letter": "1",
+         "text": "nájemce bytu, nebo"
+        },
+        {
+         "anchor": "p2-1-b-2",
+         "label": "2.",
+         "letter": "2",
+         "text": "vlastník jednotky podle zákona upravujícího bytové spoluvlastnictví,"
+        }
+       ]
+      },
+      {
+       "anchor": "p2-1-c",
+       "label": "c)",
+       "letter": "c",
+       "text": "zúčtovacím obdobím období, za které poskytovatel služeb provede rozúčtování a následné vyúčtování nákladů; zúčtovací období je nejvýše dvanáctiměsíční a jeho počátek určí poskytovatel služeb,"
+      },
+      {
+       "anchor": "p2-1-d",
+       "label": "d)",
+       "letter": "d",
+       "text": "náklady na služby cena služeb ujednaná s dodavatelem nebo celkové náklady na poskytování služeb; nákladem na služby podle tohoto zákona nejsou revize zařízení a součástí domu a odpisy domu, popřípadě další podobné položky,"
+      },
+      {
+       "anchor": "p2-1-e",
+       "label": "e)",
+       "letter": "e",
+       "text": "rozúčtováním vyčíslení výše nákladů za poskytované služby v daném zúčtovacím období pro jednotlivé příjemce služeb a způsob rozdělení nákladů na služby,"
+      },
+      {
+       "anchor": "p2-1-f",
+       "label": "f)",
+       "letter": "f",
+       "text": "vyúčtováním vyčíslení skutečné výše nákladů na služby a záloh za jednotlivé služby v daném zúčtovacím období,"
+      },
+      {
+       "anchor": "p2-1-g",
+       "label": "g)",
+       "letter": "g",
+       "text": "osobami rozhodnými pro rozúčtování služeb",
+       "items": [
+        {
+         "anchor": "p2-1-g-1",
+         "label": "1.",
+         "letter": "1",
+         "text": "nájemce bytu a osoby, u kterých lze mít za to, že s ním budou žít v bytě po dobu delší než 2 měsíce v průběhu zúčtovacího období,"
+        },
+        {
+         "anchor": "p2-1-g-2",
+         "label": "2.",
+         "letter": "2",
+         "text": "vlastník jednotky, pokud jednotku nepřenechal do užívání a osoby, u kterých lze mít za to, že s ním budou žít v jednotce po dobu delší než 2 měsíce v průběhu zúčtovacího období, nebo"
+        },
+        {
+         "anchor": "p2-1-g-3",
+         "label": "3.",
+         "letter": "3",
+         "text": "osoby, u nichž lze mít za to, že mohou užívat byt, je-li užíván k jinému účelu než k zajištění bytových potřeb, po dobu v souhrnu přesahující 2 měsíce v průběhu zúčtovacího období,"
+        }
+       ]
+      },
+      {
+       "anchor": "p2-1-h",
+       "label": "h)",
+       "letter": "h",
+       "text": "zjištěnou spotřebou tepla hodnota zjištěná jako rozdíl odečtu naměřených hodnot na instalovaných měřidlech podle zákona o metrologii nebo na instalovaných zařízeních pro rozdělování nákladů na vytápění na konci a na začátku období, za které se informace o zjištěné spotřebě tepla příjemci služeb poskytuje, upravená za použití korekcí a výpočtových metod, které zohledňují i rozdílnou náročnost vytápěných místností na dodávku tepla danou jejich polohou a které se používají při rozúčtování."
+      }
+     ]
+    },
+    {
+     "anchor": "p2-2",
+     "text": "Dálkově odečitatelným měřidlem se pro účely tohoto zákona rozumí takové měřidlo podle zákona o metrologii, které samo nebo prostřednictvím jiného již nainstalovaného zařízení umožňuje provedení odečtu na vzdálenost větší než 250 metrů, s výjimkou takového měřidla podle zákona o metrologii, které bylo instalováno před 1. lednem 2022 a není nastaveno na dálkový odečet minimálně v měsíčním intervalu.",
+     "n": "2"
+    },
+    {
+     "anchor": "p2-3",
+     "text": "Dálkově odečitatelným zařízením pro rozdělování nákladů na vytápění se pro účely tohoto zákona rozumí takové zařízení pro rozdělování nákladů na vytápění, které samo nebo prostřednictvím jiného již nainstalovaného zařízení umožňuje provedení odečtu na vzdálenost větší než 250 metrů, s výjimkou takového zařízení pro rozdělování nákladů na vytápění, které bylo instalováno před 1. lednem 2022 a není nastaveno na dálkový odečet minimálně v měsíčním intervalu.",
+     "n": "3"
+    },
+    {
+     "anchor": "p2-4",
+     "text": "Skutečnost, že měřidlo podle zákona o metrologii, které bylo instalováno před 1. lednem 2022, nebo zařízení pro rozdělování nákladů na vytápění, které bylo instalováno před 1. lednem 2022, není nastaveno na dálkový odečet v minimálně měsíčních intervalech, se prokazuje jeho technickou dokumentací.",
+     "n": "4"
+    }
+   ],
+   "heading": "Vymezení pojmů"
+  },
+  {
+   "type": "provision",
+   "anchor": "p3",
+   "label": "§ 3",
+   "paragraphs": [
+    {
+     "anchor": "p3-1",
+     "text": "Službami jsou zejména dodávka tepla a centralizované poskytování teplé vody, dodávka vody a odvádění odpadních vod, provoz výtahu, osvětlení společných prostor v domě, úklid společných prostor v domě, odvoz odpadních vod a čištění jímek, umožnění příjmu rozhlasového a televizního signálu, provoz a čištění komínů a odvoz komunálního odpadu.",
+     "n": "1"
+    },
+    {
+     "anchor": "p3-2",
+     "text": "Rozsah poskytovaných služeb si poskytovatel služeb a příjemce služeb ujednají nebo o něm rozhodne družstvo nebo společenství.",
+     "n": "2"
+    }
+   ],
+   "heading": "Vymezení a rozsah služeb"
+  },
+  {
+   "type": "provision",
+   "anchor": "p4",
+   "label": "§ 4",
+   "paragraphs": [
+    {
+     "anchor": "p4-1",
+     "text": "Poskytovatel služeb má právo požadovat na příjemci služeb placení záloh na úhradu nákladů na služby poskytované s užíváním bytu. Výši záloh si poskytovatel služeb s příjemcem služeb ujednají, nebo o ní rozhodne družstvo, nebo společenství.",
+     "n": "1"
+    },
+    {
+     "anchor": "p4-2",
+     "text": "Nedojde-li k ujednání, nebo není-li přijato rozhodnutí družstva, nebo společenství, určí poskytovatel služeb příjemci služeb měsíční zálohy za jednotlivé služby jako měsíční podíl z předpokládaných ročních nákladů na služby z uplynulého roku, nebo podle posledního zúčtovacího období, anebo z nákladů odvozených z předpokládaných cen běžného roku.",
+     "n": "2"
+    },
+    {
+     "anchor": "p4-3",
+     "text": "Nedojde-li k ujednání o zálohách na dodávku vody a odvádění odpadních vod, nebo není-li přijato rozhodnutí družstva, nebo společenství, měsíční zálohy se pro každé zúčtovací období vypočítají z výše maximálně jedné dvanáctiny dodávek, a to podle skutečné spotřeby vody za předchozí roční období nebo podle směrných čísel roční potřeby vody¹) vynásobené cenami sjednanými s dodavatelem.",
+     "n": "3"
+    },
+    {
+     "anchor": "p4-4",
+     "text": "Poskytovatel služeb má právo změnit v průběhu roku měsíční zálohu v míře odpovídající změně ceny služby nebo z dalších oprávněných důvodů, zejména změny rozsahu nebo kvality služby. Změněná měsíční záloha může být požadována nejdříve od prvního dne měsíce následujícího po doručení písemného oznámení nové výše zálohy. Změna výše měsíční zálohy musí být v oznámení řádně odůvodněna, jinak ke zvýšení zálohy nedojde.",
+     "n": "4"
+    }
+   ],
+   "heading": "Výše záloh za služby a způsob změny jejich výše"
+  },
+  {
+   "type": "provision",
+   "anchor": "p5",
+   "label": "§ 5",
+   "paragraphs": [
+    {
+     "anchor": "p5-1",
+     "text": "Způsob rozúčtování poskytovatel služeb ujedná s dvoutřetinovou většinou nájemců v domě, nebo o něm rozhodne družstvo, anebo společenství. Změna způsobu rozúčtování je možná vždy až po uplynutí zúčtovacího období.",
+     "n": "1"
+    },
+    {
+     "anchor": "p5-2",
+     "text": "Nedojde-li k ujednání, nebo rozhodnutí družstva, anebo společenství, rozúčtují se náklady na služby takto",
+     "n": "2",
+     "items": [
+      {
+       "anchor": "p5-2-a",
+       "label": "a)",
+       "letter": "a",
+       "text": "dodávka vody a odvádění odpadních vod v poměru naměřených hodnot na podružných vodoměrech; není-li provedena instalace podružných vodoměrů ve všech bytech nebo nebytových prostorech v domě, rozúčtují se náklady na dodávku vody a odvádění odpadních vod podle směrných čísel roční potřeby vody¹),"
+      },
+      {
+       "anchor": "p5-2-b",
+       "label": "b)",
+       "letter": "b",
+       "text": "provoz a čištění komínů podle počtu využívaných vyústění do komínů,"
+      },
+      {
+       "anchor": "p5-2-c",
+       "label": "c)",
+       "letter": "c",
+       "text": "umožnění příjmu rozhlasového a televizního signálu podle počtu kabelových zásuvek,"
+      },
+      {
+       "anchor": "p5-2-d",
+       "label": "d)",
+       "letter": "d",
+       "text": "provoz výtahu, osvětlení společných prostor v domě, úklid společných prostor v domě, odvoz odpadních vod a čištění jímek, odvoz komunálního odpadu, popřípadě další služby sjednané mezi poskytovatelem služeb a příjemcem služeb, podle počtu osob rozhodných pro rozúčtování."
+      }
+     ]
+    }
+   ],
+   "heading": "Rozúčtování nákladů na služby"
+  },
+  {
+   "type": "provision",
+   "anchor": "p6",
+   "label": "§ 6",
+   "paragraphs": [
+    {
+     "anchor": "p6-1",
+     "text": "Náklady na vytápění v případě, že není stanovena povinnost instalace stanovených měřidel podle zákona o metrologii nebo zařízení pro rozdělování nákladů na vytápění, a náklady na společnou přípravu teplé vody pro dům z náměrů vodoměrů na teplou vodu podle jiného právního předpisu se rozúčtují na základě ujednání poskytovatele služeb se všemi nájemci v domě, u družstevních bytů na základě ujednání družstva se všemi nájemci v domě, kteří jsou zároveň členy družstva, u společenství ujednáním všech vlastníků jednotek. Pokud k dohodě nedojde, rozúčtují se náklady na vytápění a společnou přípravu teplé vody podle jiného právního předpisu upravujícího podrobnosti pro rozúčtování nákladů na dodávku tepla a společnou přípravu teplé vody v domě. Změna způsobu rozúčtování nákladů na vytápění a společnou přípravu teplé vody pro dům je možná vždy až po skončení zúčtovacího období.",
+     "n": "1"
+    },
+    {
+     "anchor": "p6-2",
+     "text": "Pokud je jiným právním předpisem stanovena povinnost instalace stanovených měřidel podle zákona o metrologii nebo zařízení pro rozdělování nákladů na vytápění a nákladů na společnou přípravu teplé vody pro dům z náměrů vodoměrů na teplou vodu, rozdělí se náklady na vytápění v zúčtovací jednotce za zúčtovací období na složku základní a spotřební. Základní složka je rozdělena mezi příjemce služeb podle poměru velikosti započitatelné podlahové plochy bytu nebo nebytového prostoru k celkové započitatelné podlahové ploše bytů a nebytových prostorů v zúčtovací jednotce. Spotřební složka je rozdělována mezi příjemce služeb úměrně výši náměrů stanovených měřidel podle zákona o metrologii nebo zařízení pro rozdělování nákladů na vytápění s použitím korekcí a výpočtových metod, zohledňujících i rozdílnou náročnost vytápěných místností na dodávku tepla danou jejich polohou.",
+     "n": "2"
+    },
+    {
+     "anchor": "p6-3",
+     "text": "Rozdíly v nákladech na vytápění připadající na 1 m² započitatelné podlahové plochy nesmí překročit u příjemce služeb s měřením nebo zařízením pro rozdělování nákladů na vytápění v zúčtovací jednotce hodnoty určené jako spodní a horní hranice oproti průměru zúčtovací jednotky v daném zúčtovacím období. V případě překročení přípustných rozdílů musí být provedena úprava výpočtové metody. Neumožní-li příjemce služeb instalaci stanovených měřidel podle zákona o metrologii s platným ověřením nebo zařízení pro rozdělování nákladů na vytápění nebo přes opakované prokazatelné upozornění neumožní jejich odečet anebo je neoprávněně ovlivní, upraví se rozúčtování nákladů na vytápění tak, že se u takového příjemce služeb určí spotřební složka nákladů jako součin započitatelné podlahové plochy bytu nebo nebytového prostoru, u něhož není znám údaj z měření, a trojnásobku průměrné hodnoty spotřební složky nákladů připadajících na 1 m² započitatelné podlahové plochy u ostatních příjemců služeb. Mezi tyto ostatní příjemce služeb se zbytek spotřební složky nákladů rozúčtuje podle odstavce 2 věty poslední, přičemž se spodní a horní hranice podle věty první odvodí od průměru nákladů připadajících na 1 m² započitatelné podlahové plochy u těchto ostatních příjemců služeb. Nebudou-li známy údaje z žádného bytu ani nebytového prostoru, rozdělí se spotřební složka nákladů mezi příjemce služeb podle započitatelné podlahové plochy jejich bytů nebo nebytových prostor. Prováděcí právní předpis stanoví vzorec pro výpočet spotřební složky nákladů podle věty třetí.",
+     "n": "3"
+    },
+    {
+     "anchor": "p6-4",
+     "text": "Náklady na společnou přípravu teplé vody pro zúčtovací jednotku za zúčtovací období tvořené náklady na tepelnou energii spotřebovanou na ohřev vody a náklady na spotřebovanou vodu se rozdělí na složku základní a spotřební. Základní složka je rozdělena mezi příjemce služeb podle poměru velikosti podlahové plochy bytu nebo nebytového prostoru k celkové podlahové ploše bytů a nebytových prostorů v zúčtovací jednotce. Spotřební složka se rozdělí mezi příjemce služeb poměrně podle náměrů vodoměrů na teplou vodu instalovaných u příjemců služeb. Neumožní-li příjemce služeb instalaci vodoměrů na teplou vodu s platným ověřením nebo přes opakované prokazatelné upozornění neumožní jejich odečet anebo je neoprávněně ovlivní, upraví se rozúčtování nákladů na společnou přípravu teplé vody tak, že se u takového příjemce služeb určí spotřební složka nákladů jako součin podlahové plochy bytu nebo nebytového prostoru, u něhož není znám údaj z měření, a trojnásobku průměrné hodnoty spotřební složky nákladů připadajících na 1 m² podlahové plochy u ostatních příjemců služeb. Mezi tyto ostatní příjemce služeb se zbytek spotřební složky nákladů rozúčtuje podle věty třetí. Nebudou-li známy údaje z žádného bytu ani nebytového prostoru, rozdělí se spotřební složka nákladů mezi příjemce služeb podle podlahové plochy jejich bytů nebo nebytových prostor. Prováděcí právní předpis stanoví vzorec pro výpočet spotřební složky nákladů podle věty čtvrté.",
+     "n": "4"
+    }
+   ],
+   "heading": "Rozúčtování nákladů na vytápění a nákladů na společnou přípravu teplé vody pro dům"
+  },
+  {
+   "type": "provision",
+   "anchor": "p7",
+   "label": "§ 7",
+   "paragraphs": [
+    {
+     "anchor": "p7-1",
+     "text": "Není-li jiným právním předpisem stanoveno jinak, skutečnou výši nákladů a záloh za jednotlivé služby vyúčtuje poskytovatel služeb příjemci služeb vždy za zúčtovací období a vyúčtování doručí příjemci služeb nejpozději do 4 měsíců od skončení zúčtovacího období.",
+     "n": "1"
+    },
+    {
+     "anchor": "p7-2",
+     "text": "Poskytovatel služeb ve vyúčtování musí uvést skutečnou výši nákladů na služby v členění podle poskytovaných služeb se všemi potřebnými náležitostmi, včetně uvedení celkové výše přijatých měsíčních záloh za služby tak, aby výše případných rozdílů ve vyúčtování byla zřejmá a kontrolovatelná z hlediska způsobů a pravidel sjednaných pro rozúčtování.",
+     "n": "2"
+    },
+    {
+     "anchor": "p7-3",
+     "text": "Finanční vyrovnání provedou poskytovatel a příjemce služeb v dohodnuté lhůtě, nejpozději však ve lhůtě 4 měsíců ode dne doručení vyúčtování příjemci služeb. Vady vyúčtování neovlivňují splatnost přeplatku. Splatnost nedoplatku neovlivňují takové vady vyúčtování, které nemají vliv na vypočtenou výši nedoplatku.",
+     "n": "3"
+    },
+    {
+     "anchor": "p7-4",
+     "text": "Náklady na vyhotovení a doručení vyúčtování podle odstavce 1 nelze zahrnout do nákladů na služby.",
+     "n": "4"
+    }
+   ],
+   "heading": "Vyúčtování a splatnost přeplatků a nedoplatků"
+  },
+  {
+   "type": "provision",
+   "anchor": "p8",
+   "label": "§ 8",
+   "paragraphs": [
+    {
+     "anchor": "p8-1",
+     "text": "Do 30 dnů od doručení vyúčtování může příjemce služeb písemně požádat poskytovatele služeb, aby příjemci služeb doložil náklady na jednotlivé služby, způsob jejich rozúčtování, způsob stanovení výše záloh za služby a provedení vyúčtování podle tohoto zákona a aby umožnil příjemci služeb pořízení kopie podkladů. Této žádosti poskytovatel služeb vyhoví do 30 dnů od jejího doručení.",
+     "n": "1"
+    },
+    {
+     "anchor": "p8-2",
+     "text": "Případné námitky ke způsobu a obsahu vyúčtování předloží příjemce služeb poskytovateli služeb do 30 dnů od doručení vyúčtování, popřípadě doložení podkladů podle odstavce 1. Nepředloží-li příjemce služeb námitky v této lhůtě, platí, že se způsobem a obsahem vyúčtování souhlasí. Včas uplatněné námitky musí poskytovatel služeb vyřídit do 30 dnů od jejich předložení.",
+     "n": "2"
+    }
+   ],
+   "heading": "Nahlížení do podkladů k vyúčtování a vypořádání námitek"
+  },
+  {
+   "type": "provision",
+   "anchor": "p8a",
+   "label": "§ 8a",
+   "paragraphs": [
+    {
+     "anchor": "p8a-1",
+     "text": "Jsou-li instalována dálkově odečitatelná měřidla měřící spotřebu tepla nebo dálkově odečitatelná zařízení pro rozdělování nákladů na vytápění, doručuje poskytovatel služeb příjemci služeb informace o jeho zjištěné spotřebě tepla. Neujedná-li poskytovatel služeb s dvoutřetinovou většinou nájemců v domě jinak, nebo nerozhodne-li jinak družstvo, nebo společenství, poskytuje se informace o zjištěné spotřebě tepla za období kalendářního měsíce a poskytovatel služeb ji doručuje příjemci služeb do konce následujícího kalendářního měsíce. Nelze však ujednat ani rozhodnout, že se informace o zjištěné spotřebě tepla bude poskytovat za období delší než 1 měsíc, s výjimkou ujednání nebo rozhodnutí, že se poskytuje za období od počátku zúčtovacího období do konce právě uplynulého kalendářního měsíce. Dále nelze ujednat ani rozhodnout, že poskytovatel služeb bude doručovat příjemci služeb informaci o jeho zjištěné spotřebě tepla později než do 25 pracovních dnů od konce období, za které se tato informace poskytuje.",
+     "n": "1"
+    },
+    {
+     "anchor": "p8a-2",
+     "text": "Jsou-li instalována dálkově odečitatelná měřidla měřící spotřebu společně připravované teplé vody, doručuje poskytovatel služeb příjemci služeb informace o jeho spotřebě společně připravované teplé vody. Neujedná-li poskytovatel služeb s dvoutřetinovou většinou nájemců v domě jinak, nebo nerozhodne-li jinak družstvo, nebo společenství, poskytuje se informace o spotřebě společně připravované teplé vody za období kalendářního měsíce a poskytovatel služeb ji doručuje příjemci služeb do konce následujícího kalendářního měsíce. Nelze však ujednat ani rozhodnout, že se informace o spotřebě společně připravované teplé vody bude poskytovat za období delší než 1 měsíc, s výjimkou ujednání nebo rozhodnutí, že se poskytuje za období od počátku zúčtovacího období do konce právě uplynulého kalendářního měsíce. Dále nelze ujednat ani rozhodnout, že poskytovatel služeb bude doručovat příjemci služeb informaci o jeho spotřebě společně připravované teplé vody později než do 25 pracovních dnů od konce období, za které se tato informace poskytuje.",
+     "n": "2"
+    },
+    {
+     "anchor": "p8a-3",
+     "text": "Poskytovatel služeb není povinen doručit příjemci služeb informaci o zjištěné spotřebě tepla, pokud v daném období nebylo teplo dodáváno.",
+     "n": "3"
+    },
+    {
+     "anchor": "p8a-4",
+     "text": "Náklady na poskytování informací podle odstavců 1 a 2 nelze zahrnout do nákladů na služby.",
+     "n": "4"
+    },
+    {
+     "anchor": "p8a-5",
+     "text": "Povinnost podle odstavce 1 nebo 2 se považuje za splněnou, pokud poskytovatel služeb zpřístupní příjemci služeb informace o jeho spotřebě způsobem umožňujícím dálkový přístup a o tomto zpřístupnění příjemce služeb prokazatelně vyrozumí. Příjemce služeb však může písemně požádat poskytovatele služeb o zasílání informací o spotřebě v listinné podobě po dobu aktuálního zúčtovacího období. V takovém případě je příjemce služeb povinen uhradit náklady s tím spojené a poskytovatel služeb může žádat zálohu na úhradu těchto nákladů.",
+     "n": "5"
+    }
+   ],
+   "heading": "Pravidelné informování o spotřebě tepla na vytápění a centralizované poskytování teplé vody"
+  },
+  {
+   "type": "provision",
+   "anchor": "p8b",
+   "label": "§ 8b",
+   "paragraphs": [
+    {
+     "anchor": "p8b-1",
+     "text": "Na základě písemné žádosti příjemce služeb poskytovatel služeb doručí poskytovateli energetických služeb podle zákona o hospodaření energií, kterého příjemce služeb ve své žádosti určí, vyúčtování příjemce služeb z posledních 3 let a informace o jeho zjištěné spotřebě tepla a spotřebě společně připravované teplé vody z posledních 3 let, jsou-li dostupné.",
+     "n": "1"
+    },
+    {
+     "anchor": "p8b-2",
+     "text": "Povinnost podle odstavce 1 se považuje za splněnou, pokud poskytovatel služeb zpřístupní poskytovateli energetických služeb podle zákona o hospodaření energií určenému příjemcem služeb tato vyúčtování a informace způsobem umožňujícím dálkový přístup a o tomto zpřístupnění poskytovatele energetických služeb podle zákona o hospodaření energií vyrozumí.",
+     "n": "2"
+    }
+   ],
+   "heading": "Informování poskytovatele energetických služeb"
+  },
+  {
+   "type": "provision",
+   "anchor": "p9",
+   "label": "§ 9",
+   "paragraphs": [
+    {
+     "anchor": "p9-1",
+     "text": "Částku nájemného a částku za služby lze sloučit do samostatné paušální částky, pokud si to strany ujednají. Jako samostatnou paušální platbu lze rovněž ujednat pouze platbu za poskytované služby. V obou případech platí, že platby za poskytované služby se nevyúčtovávají.",
+     "n": "1"
+    },
+    {
+     "anchor": "p9-2",
+     "text": "Písemná dohoda o paušální platbě nemusí být uzavřena se všemi nájemci.",
+     "n": "2"
+    },
+    {
+     "anchor": "p9-3",
+     "text": "Na žádost příjemce služeb má poskytovatel služeb povinnost vystavit pro účely sociálních dávek poskytovaných v oblasti bydlení podrobný rozpis paušální platby s vyčíslením jednotlivých položek za zúčtovatelné služby.",
+     "n": "3"
+    },
+    {
+     "anchor": "p9-4",
+     "text": "U nájmů uzavřených na dobu delší než 24 měsíců nebo na dobu neurčitou nelze do paušální platby zahrnout platbu za dodávku tepla a centralizované poskytování teplé vody a dodávku vody a odvádění odpadních vod; platby za tyto služby se musí vždy vyúčtovat.",
+     "n": "4"
+    }
+   ],
+   "heading": "Paušální platba"
+  },
+  {
+   "type": "provision",
+   "anchor": "p9a",
+   "label": "§ 9a",
+   "paragraphs": [
+    {
+     "anchor": "p9a-x1",
+     "text": "Nejvyšší orgán bytového družstva nebo společenství může rozhodnout, že služby nebo některé ze služeb nebudou poskytovány příjemci služeb, který je členem tohoto bytového družstva nebo společenství, pokud je příjemce služeb v prodlení s úhradou za poskytované služby nebo záloh za služby po dobu nejméně 3 měsíců. Dojde-li ke splnění splatného dluhu příjemce služeb, obnoví poskytovatel služeb bez zbytečného odkladu poskytování služeb v plném rozsahu."
+    }
+   ],
+   "heading": "Rozhodnutí o neposkytování služeb"
+  },
+  {
+   "type": "heading",
+   "anchor": "h-zvlastni-ustanoveni",
+   "text": "Zvláštní ustanovení"
+  },
+  {
+   "type": "provision",
+   "anchor": "p10",
+   "label": "§ 10",
+   "paragraphs": [
+    {
+     "anchor": "p10-x1",
+     "text": "Ustanovení tohoto zákona upravující postup pro společenství se použijí přiměřeně i tam, kde společenství nevzniklo a dům je rozdělen na jednotky."
+    }
+   ]
+  },
+  {
+   "type": "provision",
+   "anchor": "p11",
+   "label": "§ 11",
+   "paragraphs": [
+    {
+     "anchor": "p11-x1",
+     "text": "V domě s byty, kde užívací vztahy vznikly na základě jiných právních skutečností, než které jsou uvedeny v tomto zákoně, se řídí tyto vztahy přiměřeně ustanoveními tohoto zákona."
+    }
+   ]
+  },
+  {
+   "type": "provision",
+   "anchor": "p12",
+   "label": "§ 12",
+   "paragraphs": [
+    {
+     "anchor": "p12-x1",
+     "text": "Příjemce služeb oznámí poskytovateli služeb písemně a bez zbytečného odkladu změny v počtu osob rozhodných pro rozúčtování."
+    }
+   ]
+  },
+  {
+   "type": "provision",
+   "anchor": "p13",
+   "label": "§ 13",
+   "paragraphs": [
+    {
+     "anchor": "p13-1",
+     "text": "Jestliže poskytovatel služeb nebo příjemce služeb nesplní svoji povinnost stanovenou tímto zákonem, zejména nesplní-li příjemce služeb povinnost oznámit změnu počtu osob, nebo nedoručí-li poskytovatel služeb včas vyúčtování nebo nesplní povinnosti spojené s právem příjemce služeb nahlížet do podkladů k vyúčtování a povinnosti spojené s vypořádáním námitek, je povinen zaplatit druhé straně pokutu, ledaže by splnění povinností ve stanovené lhůtě nebylo spravedlivé požadovat nebo k nesplnění lhůty došlo zaviněním druhé strany.",
+     "n": "1"
+    },
+    {
+     "anchor": "p13-2",
+     "text": "Výši pokuty poskytovatel služeb ujedná alespoň s dvoutřetinovou většinou nájemců v domě, nebo o ní rozhodne družstvo, anebo společenství. Ujednaná výše pokuty nesmí přesáhnout 50 Kč za každý započatý den prodlení. Nedojde-li k ujednání s nájemci nebo rozhodnutí družstva anebo společenství, činí výše pokuty 50 Kč za každý započatý den prodlení.",
+     "n": "2"
+    }
+   ],
+   "heading": "Pokuta za prodlení s nepeněžitým plněním"
+  },
+  {
+   "type": "provision",
+   "anchor": "p14",
+   "label": "§ 14",
+   "paragraphs": [
+    {
+     "anchor": "p14-1",
+     "text": "Pokud tento zákon nestanoví jinak, řídí se jeho ustanoveními i právní vztahy vzniklé přede dnem nabytí jeho účinnosti. Vznik těchto právních vztahů a nároky z nich vzniklé přede dnem nabytí účinnosti tohoto zákona se však posuzují podle dosavadních právních předpisů.",
+     "n": "1"
+    },
+    {
+     "anchor": "p14-2",
+     "text": "Rozúčtování a vyúčtování nákladů na služby za zúčtovací období, které započalo přede dnem nabytí účinnosti tohoto zákona, se provede podle dosavadních právních předpisů.",
+     "n": "2"
+    }
+   ],
+   "heading": "Přechodná ustanovení"
+  },
+  {
+   "type": "provision",
+   "anchor": "p14a",
+   "label": "§ 14a",
+   "paragraphs": [
+    {
+     "anchor": "p14a-x1",
+     "text": "Ministerstvo pro místní rozvoj stanoví vyhláškou",
+     "items": [
+      {
+       "anchor": "p14a-x1-a",
+       "label": "a)",
+       "letter": "a",
+       "text": "rozsah výše základní a spotřební složky u rozúčtování nákladů na vytápění a nákladů na společnou přípravu teplé vody pro dům, jejich rozdělení mezi příjemce služeb, hodnoty určené jako spodní a horní hranice oproti průměru zúčtovací jednotky v daném zúčtovacím období, vymezení pojmů a další náležitosti k rozúčtování nákladů,"
+      },
+      {
+       "anchor": "p14a-x1-b",
+       "label": "b)",
+       "letter": "b",
+       "text": "náležitosti, které musí poskytovatel služeb uvést ve vyúčtování nákladů na vytápění a nákladů na společnou přípravu teplé vody pro dům."
+      }
+     ]
+    }
+   ],
+   "heading": "Zmocňovací ustanovení"
+  },
+  {
+   "type": "provision",
+   "anchor": "p15",
+   "label": "§ 15",
+   "paragraphs": [
+    {
+     "anchor": "p15-x1",
+     "text": "Tento zákon nabývá účinnosti dnem 1. ledna 2014."
+    }
+   ],
+   "heading": "Účinnost"
+  }
+ ],
+ "footnotes": [
+  {
+   "anchor": "fn-1",
+   "label": "1)",
+   "text": "Příloha č. 12 k vyhlášce č. 428/2001 Sb., kterou se provádí zákon č. 274/2001 Sb., o vodovodech a kanalizacích pro veřejnou potřebu a o změně některých zákonů (zákon o vodovodech a kanalizacích), ve znění pozdějších předpisů."
+  },
+  {
+   "anchor": "fn-2",
+   "label": "2)",
+   "text": "Čl. 13 směrnice Evropského parlamentu a Rady 2012/27/EU ze dne 25. října 2012 o energetické účinnosti, o změně směrnic 2009/125/ES a 2010/30/EU a o zrušení směrnic 2004/8/ES a 2006/32/ES.\nČl. 1 body 6, 8 a 10 a příloha bod 4 směrnice Evropského parlamentu a Rady (EU) 2018/2002 ze dne 11. prosince 2018, kterou se mění směrnice 2012/27/EU o energetické účinnosti."
+  }
+ ]
+}

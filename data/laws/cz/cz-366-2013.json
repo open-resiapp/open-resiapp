@@ -1,0 +1,679 @@
+{
+ "id": "cz-366-2013",
+ "jurisdiction": "cz",
+ "number": "366/2013 Sb.",
+ "title": "Nařízení vlády o úpravě některých záležitostí souvisejících s bytovým spoluvlastnictvím",
+ "effectiveFrom": "2014-01-01",
+ "effectiveTo": null,
+ "sourceUrl": "https://e-sbirka.gov.cz/sb/2013/366/2014-01-01",
+ "fetchedAt": "2026-11-18T08:20:38.247Z",
+ "contentHash": "0dec3ebd0d05bcf5827608ef23d43f7faf72164cb8f26b432302b7ed5cf41e95",
+ "provisionCount": 18,
+ "parts": [
+  {
+   "type": "text",
+   "text": "Vláda nařizuje k provedení zákona č. 89/2012 Sb., občanský zákoník:"
+  },
+  {
+   "type": "section",
+   "anchor": "s-cast-1",
+   "kind": "cast",
+   "label": "ČÁST PRVNÍ",
+   "heading": "OBECNÁ USTANOVENÍ",
+   "children": [
+    {
+     "type": "provision",
+     "anchor": "p1",
+     "label": "§ 1",
+     "paragraphs": [
+      {
+       "anchor": "p1-1",
+       "text": "Toto nařízení upravuje",
+       "n": "1",
+       "items": [
+        {
+         "anchor": "p1-1-a",
+         "label": "a)",
+         "letter": "a",
+         "text": "způsob výpočtu podlahové plochy bytu v jednotce,"
+        },
+        {
+         "anchor": "p1-1-b",
+         "label": "b)",
+         "letter": "b",
+         "text": "části nemovité věci, které jsou společné,"
+        },
+        {
+         "anchor": "p1-1-c",
+         "label": "c)",
+         "letter": "c",
+         "text": "podrobnosti o činnostech týkajících se správy domu a pozemku."
+        }
+       ]
+      },
+      {
+       "anchor": "p1-2",
+       "text": "Ustanovení tohoto nařízení týkající se bytu platí také pro nebytový prostor.",
+       "n": "2"
+      }
+     ],
+     "heading": "Předmět úpravy"
+    }
+   ]
+  },
+  {
+   "type": "section",
+   "anchor": "s-cast-2",
+   "kind": "cast",
+   "label": "ČÁST DRUHÁ",
+   "heading": "ZPŮSOB VÝPOČTU PODLAHOVÉ PLOCHY",
+   "children": [
+    {
+     "type": "provision",
+     "anchor": "p2",
+     "label": "§ 2",
+     "paragraphs": [
+      {
+       "anchor": "p2-x1",
+       "text": "Pro účely výpočtu podlahové plochy je byt, jako prostorově oddělená část domu, ohraničen vnitřními povrchy obvodových stěn této prostorově oddělené části domu, podlahou, stropem nebo konstrukcí krovu a výplněmi stavebních otvorů ve stěnách ohraničujících byt; obdobně to platí pro ohraničení místností, které jsou jako součást bytu umístěné mimo hlavní obytný prostor."
+      }
+     ],
+     "heading": "Prostorové ohraničení bytu"
+    },
+    {
+     "type": "provision",
+     "anchor": "p3",
+     "label": "§ 3",
+     "paragraphs": [
+      {
+       "anchor": "p3-1",
+       "text": "Podlahovou plochu bytu v jednotce tvoří půdorysná plocha všech místností bytu včetně půdorysné plochy všech svislých nosných i nenosných konstrukcí uvnitř bytu, jako jsou stěny, sloupy, pilíře, komíny a obdobné svislé konstrukce. Půdorysná plocha je vymezena vnitřním lícem svislých konstrukcí ohraničujících byt včetně jejich povrchových úprav. Započítává se také podlahová plocha zakrytá zabudovanými předměty, jako jsou zejména skříně ve zdech v bytě, vany a jiné zařizovací předměty ve vnitřní ploše bytu.",
+       "n": "1"
+      },
+      {
+       "anchor": "p3-2",
+       "text": "Podlahovou plochu mezonetového bytu umístěného ve dvou nebo více podlažích spojených schodištěm uvnitř bytu tvoří půdorysná plocha všech místností vypočtená způsobem stanoveným v odstavci 1 a plocha pouze dolního průmětu schodiště.",
+       "n": "2"
+      },
+      {
+       "anchor": "p3-3",
+       "text": "V případě bytu s galerií, kdy je horní prostor bytu propojen s dolním prostorem schodištěm, se podlahová plocha galerie započítává jako podlahová plocha místnosti, pokud podchodná výška tohoto prostoru dosahuje alespoň 230 cm, i když není zcela stavebně uzavřena všemi stěnami; započítává se současně plocha dolní místnosti, má-li alespoň stejnou podchodnou výšku, a plocha dolního průmětu schodiště. Pokud podmínky minimální podchodné výšky nejsou splněny, započte se pouze plocha dolní místnosti.",
+       "n": "3"
+      },
+      {
+       "anchor": "p3-4",
+       "text": "Vypočtená podlahová plocha bytu podle odstavců 1 až 3 se uvádí v m² a zaokrouhluje na jedno desetinné místo tak, že pět setin m² a více se zaokrouhluje směrem nahoru, k méně než pěti setinám m² se nepřihlíží.",
+       "n": "4"
+      }
+     ],
+     "heading": "Způsob výpočtu podlahové plochy bytu v jednotce"
+    }
+   ]
+  },
+  {
+   "type": "section",
+   "anchor": "s-cast-3",
+   "kind": "cast",
+   "label": "ČÁST TŘETÍ",
+   "heading": "SPOLEČNÉ ČÁSTI NEMOVITÉ VĚCI",
+   "children": [
+    {
+     "type": "provision",
+     "anchor": "p4",
+     "label": "§ 4",
+     "paragraphs": [
+      {
+       "anchor": "p4-x1",
+       "text": "Společnými částmi nemovité věci může být vedle pozemku, na němž je dům postaven, také pozemek funkčně související s provozem a správou domu a s užíváním jednotek, na němž jsou zejména zpevněné plochy, předzahrádky, parkovací plochy, dvory nebo na němž jsou umístěny drobné stavby, zejména čistička odpadních vod, septik, trafostanice, domovní kotelna a další stavby, které jsou nezbytné k zajištění provozu a správy domu."
+      }
+     ]
+    },
+    {
+     "type": "heading",
+     "anchor": "h-spolecne-casti-domu",
+     "text": "Společné části domu"
+    },
+    {
+     "type": "provision",
+     "anchor": "p5",
+     "label": "§ 5",
+     "paragraphs": [
+      {
+       "anchor": "p5-1",
+       "text": "Společnými částmi domu, jako částmi podstatnými pro zachování domu včetně jeho hlavních konstrukcí a jeho tvaru i vzhledu, jakož i pro zachování bytu jiného vlastníka jednotky, a zařízení sloužící i jinému vlastníku jednotky k užívání bytu podle § 1160 odst. 2 občanského zákoníku, jsou zejména",
+       "n": "1",
+       "items": [
+        {
+         "anchor": "p5-1-a",
+         "label": "a)",
+         "letter": "a",
+         "text": "vodorovné a svislé nosné konstrukce včetně základů domu, obvodové stěny domu,"
+        },
+        {
+         "anchor": "p5-1-b",
+         "label": "b)",
+         "letter": "b",
+         "text": "střecha včetně výplní výstupních otvorů, izolací, hromosvodů, lávek, dešťových žlabů a svodů venkovních či vnitřních,"
+        },
+        {
+         "anchor": "p5-1-c",
+         "label": "c)",
+         "letter": "c",
+         "text": "komíny jako stavební konstrukce v celé své stavební délce, včetně vyvložkování pořízeného spolu s komínem, mimo dodatečně instalovaných komínových vložek pořízených se souhlasem osoby odpovědné za správu domu jednotlivými vlastníky jednotek, do nichž jsou zaústěny tepelné spotřebiče těchto vlastníků a které tvoří jeden technologický celek jako spalinová cesta tepelného spotřebiče,"
+        },
+        {
+         "anchor": "p5-1-d",
+         "label": "d)",
+         "letter": "d",
+         "text": "zápraží, schody, vchody a vstupní dveře do domu, průčelí, schodiště, chodby, výplně stavebních otvorů hlavní svislé konstrukce (okna včetně okenic),"
+        },
+        {
+         "anchor": "p5-1-e",
+         "label": "e)",
+         "letter": "e",
+         "text": "výkladní skříň (výkladce) v rozsahu, v jakém se nachází v rovině obvodové stěny domu, včetně vnějšího skla a rolety výkladce, která je vždy ve výlučném užívání vlastníka jednotky, kromě částí výkladce vstupujících od vnitřního povrchu obvodové stěny do vnitřního prostoru místnosti,"
+        },
+        {
+         "anchor": "p5-1-f",
+         "label": "f)",
+         "letter": "f",
+         "text": "balkony, lodžie, terasy, atria, i v případě, že jsou přístupné pouze z bytu, dveře z balkonů, lodžií a teras; tyto společné části, jsou-li přístupné pouze z bytu, jsou vždy ve výlučném užívání vlastníka příslušné jednotky,"
+        },
+        {
+         "anchor": "p5-1-g",
+         "label": "g)",
+         "letter": "g",
+         "text": "domovní kotelny, místnosti výměníkových (předávacích) stanic, včetně všech technických zařízení a součástí, nejsou-li ve vlastnictví jiné osoby,"
+        },
+        {
+         "anchor": "p5-1-h",
+         "label": "h)",
+         "letter": "h",
+         "text": "výtahy ve společných částech, včetně evakuačních a požárních výtahů, autovýtahů a autoplošin, vnější požární schodiště,"
+        },
+        {
+         "anchor": "p5-1-i",
+         "label": "i)",
+         "letter": "i",
+         "text": "půdy, mandlovny, prádelny, sušárny, kočárkárny, kolárny, sklepní kóje a místnosti nacházející se ve společných částech domu, které nejsou vymezeny jako byt nebo součást bytu,"
+        },
+        {
+         "anchor": "p5-1-j",
+         "label": "j)",
+         "letter": "j",
+         "text": "bazény, dále prostory, v nichž jsou umístěna parkovací místa, pokud nejsou zahrnuty v jednotce."
+        }
+       ]
+      },
+      {
+       "anchor": "p5-2",
+       "text": "Společnými částmi domu jsou vždy obvodové stěny prostorově ohraničující byt i v případě, že jde o nenosné svislé konstrukce, dále všechny nosné svislé konstrukce uvnitř bytu, jako jsou zejména stěny, sloupy a pilíře, vždy s výjimkou povrchových úprav, jako jsou vnitřní omítky, malby a případné krytiny na stěnách, tapety, dřevěné či jiné obložení, kazetové stropy a podobné vnitřní obložení stěn nebo stropů, a dále konstrukce zabudovaných skříní ve stěnách.",
+       "n": "2"
+      },
+      {
+       "anchor": "p5-3",
+       "text": "Podlahy jsou společnými částmi domu, vyjma podlahových krytin v bytě a všeho, co je spojeno s položením či usazením a s funkcí příslušného druhu podlahových krytin, spolu s případnou kročejovou protihlukovou izolací a s tepelnou izolací, je-li součástí podlahové krytiny a nezasahuje do společných částí domu.",
+       "n": "3"
+      }
+     ]
+    },
+    {
+     "type": "provision",
+     "anchor": "p6",
+     "label": "§ 6",
+     "paragraphs": [
+      {
+       "anchor": "p6-x1",
+       "text": "Společnými částmi domu jsou dále",
+       "items": [
+        {
+         "anchor": "p6-x1-a",
+         "label": "a)",
+         "letter": "a",
+         "text": "přípojky od hlavního řadu nebo od hlavního vedení pro dodávky energií, vody, pro odvádění odpadních vod, pokud nejsou ve vlastnictví dodavatelů, domovní potrubí odpadních vod až po výpusť (zařízení) pro napojení potrubí odpadních vod z bytu, domovní potrubí pro odvádění dešťových vod,"
+        },
+        {
+         "anchor": "p6-x1-b",
+         "label": "b)",
+         "letter": "b",
+         "text": "rozvody elektrické energie až k bytovému jističi za elektroměrem,"
+        },
+        {
+         "anchor": "p6-x1-c",
+         "label": "c)",
+         "letter": "c",
+         "text": "rozvody plynu až k uzávěru pro byt,"
+        },
+        {
+         "anchor": "p6-x1-d",
+         "label": "d)",
+         "letter": "d",
+         "text": "rozvody vody teplé i studené včetně stoupacích šachet, ať jde o hlavní svislé rozvody, nebo odbočky od nich až k poměrovým měřidlům pro byt, nebo k uzávěrům pro byt, nejsou-li instalována měřidla pro jednotlivé byty, včetně těchto měřidel nebo uzávěrů; to se netýká rozvodů uvnitř bytu, včetně vodovodních baterií,"
+        },
+        {
+         "anchor": "p6-x1-e",
+         "label": "e)",
+         "letter": "e",
+         "text": "jde-li o centrální vytápění, celá soustava rozvodů tepla, včetně rozvodů v bytě, radiátorů a jiných otopných těles, včetně termostatických ventilů a zařízení sloužícího k rozúčtování nákladů na topení; části rozvodů umístěné v bytě, radiátory a termostatické ventily jsou ve výlučném užívání vlastníka jednotky jako společné části,"
+        },
+        {
+         "anchor": "p6-x1-f",
+         "label": "f)",
+         "letter": "f",
+         "text": "protipožární zařízení, nouzové osvětlení včetně záložních zdrojů, osvětlení společných částí,"
+        },
+        {
+         "anchor": "p6-x1-g",
+         "label": "g)",
+         "letter": "g",
+         "text": "veškerá zařízení vzduchotechniky až k zapojení do bytu, pokud byla pořízena jako společná; to se netýká zařízení vzduchotechniky, pořídí-li je vlastník jednotky; obdobně to platí pro veškeré druhy ventilací,"
+        },
+        {
+         "anchor": "p6-x1-h",
+         "label": "h)",
+         "letter": "h",
+         "text": "systémy rozvodu a příjmu televizního signálu a datových sítí až k zapojení do bytu,"
+        },
+        {
+         "anchor": "p6-x1-i",
+         "label": "i)",
+         "letter": "i",
+         "text": "rozvody telefonu, domácí zvonek, vnitřní vybavení a umělecká výzdoba společných částí domu, vjezdové závory, brány, vrata a jiné příslušenství domu, které je nezbytně nutné k provozu domu a k užívání jednotek a z hlediska své povahy je k tomuto účelu určeno."
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "type": "section",
+   "anchor": "s-cast-4",
+   "kind": "cast",
+   "label": "ČÁST ČTVRTÁ",
+   "heading": "PODROBNOSTI O ČINNOSTECH TÝKAJÍCÍCH SE SPRÁVY DOMU A POZEMKU",
+   "children": [
+    {
+     "type": "heading",
+     "anchor": "h-cinnosti-tykajici-se-spravy-domu-a-pozemku",
+     "text": "Činnosti týkající se správy domu a pozemku"
+    },
+    {
+     "type": "provision",
+     "anchor": "p7",
+     "label": "§ 7",
+     "paragraphs": [
+      {
+       "anchor": "p7-x1",
+       "text": "Činnostmi týkajícími se správy domu a pozemku z hlediska provozního a technického se rozumí zejména",
+       "items": [
+        {
+         "anchor": "p7-x1-a",
+         "label": "a)",
+         "letter": "a",
+         "text": "provoz, údržba, opravy, stavební úpravy a jiné změny společných částí domu, včetně změn vedoucích ke změně v účelu jejich užívání; týká se to také všech technických zařízení domu, jako společných částí, dále společných částí vyhrazených k výlučnému užívání vlastníku jednotky, pokud podle prohlášení nebo stanov společenství vlastníků jednotek nejde o činnost příslušející vlastníku jednotky v rámci správy této společné části na vlastní náklady,"
+        },
+        {
+         "anchor": "p7-x1-b",
+         "label": "b)",
+         "letter": "b",
+         "text": "revize technických sítí, společných technických zařízení domu, protipožárního zařízení, hromosvodů, rozvodů energií včetně tepla, teplé vody, pitné vody a telekomunikačních zařízení, a jiných společných zařízení podle technického vybavení domu,"
+        },
+        {
+         "anchor": "p7-x1-c",
+         "label": "c)",
+         "letter": "c",
+         "text": "údržba pozemku a údržba přístupových cest na pozemku,"
+        },
+        {
+         "anchor": "p7-x1-d",
+         "label": "d)",
+         "letter": "d",
+         "text": "uplatnění práva vstupu do bytu v případě, že vlastník jednotky upravuje stavebně svůj byt, včetně možnosti požadovat v odůvodněných případech předložení stavební dokumentace, pokud je podle jiných právních předpisů vyžadována, pro ověření, zda stavební úpravy neohrožují, nepoškozují nebo nemění společné části domu."
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "type": "provision",
+     "anchor": "p8",
+     "label": "§ 8",
+     "paragraphs": [
+      {
+       "anchor": "p8-x1",
+       "text": "Činnostmi týkajícími se správy domu a pozemku z hlediska správních činností se rozumí zejména",
+       "items": [
+        {
+         "anchor": "p8-x1-a",
+         "label": "a)",
+         "letter": "a",
+         "text": "zajišťování veškeré správní, administrativní a operativně technické činnosti, včetně vedení příslušné technické a provozní dokumentace domu, uchovávání dokumentace stavby odpovídající jejímu skutečnému provedení podle jiných právních předpisů¹) a zajišťování dalších činností, které vyplývají pro osobu odpovědnou za správu domu a pozemku z jiných právních předpisů,"
+        },
+        {
+         "anchor": "p8-x1-b",
+         "label": "b)",
+         "letter": "b",
+         "text": "stanovení a vybírání předem určených finančních prostředků od vlastníků jednotek jako záloh na příspěvky na správu domu a pozemku, stanovení záloh na úhrady cen služeb a jejich vyúčtování a vypořádání,"
+        },
+        {
+         "anchor": "p8-x1-c",
+         "label": "c)",
+         "letter": "c",
+         "text": "vedení účetnictví, zpracování a předložení daňových přiznání, řádné hospodaření s finančními prostředky, vedení seznamu členů společenství vlastníků jednotek,"
+        },
+        {
+         "anchor": "p8-x1-d",
+         "label": "d)",
+         "letter": "d",
+         "text": "uplatňování a vymáhání plnění povinností vůči jednotlivým vlastníkům jednotek, které jim ukládají jiné právní předpisy nebo vyplývají ze stanov společenství vlastníků jednotek a z usnesení shromáždění vlastníků jednotek přijatých v souladu s jinými právními předpisy a se stanovami společenství vlastníků jednotek,"
+        },
+        {
+         "anchor": "p8-x1-e",
+         "label": "e)",
+         "letter": "e",
+         "text": "činnosti spojené s provozováním společných částí a technických zařízení, která slouží i jiným osobám než vlastníkům jednotek v domě, včetně sjednávání s tím souvisejících smluv,"
+        },
+        {
+         "anchor": "p8-x1-f",
+         "label": "f)",
+         "letter": "f",
+         "text": "výkon činností vztahujících se k uplatňování ochrany práv vlastníků jednotek."
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "type": "provision",
+     "anchor": "p9",
+     "label": "§ 9",
+     "paragraphs": [
+      {
+       "anchor": "p9-x1",
+       "text": "Neplní-li vlastník jednotky povinnost udržovat byt tak, jak to vyžaduje nezávadný stav domu, a přímo hrozí nebezpečí, že dojde k poškození jiného bytu, je osoba odpovědná za správu domu oprávněna činit opatření ke zjednání nápravy i v případě, že nejde o ohrožení nezávadného stavu domu jako celku. Právo vlastníka jednotky činit opatření k nápravě tím není dotčeno."
+      }
+     ]
+    },
+    {
+     "type": "provision",
+     "anchor": "p10",
+     "label": "§ 10",
+     "paragraphs": [
+      {
+       "anchor": "p10-1",
+       "text": "Pro účely správy domu a pozemku je osoba odpovědná za správu domu a pozemku oprávněna sjednávat smlouvy týkající se zejména",
+       "n": "1",
+       "items": [
+        {
+         "anchor": "p10-1-a",
+         "label": "a)",
+         "letter": "a",
+         "text": "zajištění činností spojených se správou domu a pozemku,"
+        },
+        {
+         "anchor": "p10-1-b",
+         "label": "b)",
+         "letter": "b",
+         "text": "zajištění dodávek služeb spojených s užíváním společných částí a spojených s užíváním jednotek, nejde-li o služby, jejichž dodávky si vlastníci jednotek zajišťují u dodavatele přímo,"
+        },
+        {
+         "anchor": "p10-1-c",
+         "label": "c)",
+         "letter": "c",
+         "text": "pojištění domu,"
+        },
+        {
+         "anchor": "p10-1-d",
+         "label": "d)",
+         "letter": "d",
+         "text": "nájmu společných částí domu a"
+        },
+        {
+         "anchor": "p10-1-e",
+         "label": "e)",
+         "letter": "e",
+         "text": "zajištění provozu vybraných technických zařízení spojených s užíváním společných částí domu a s užíváním jednotek, ke kterým nemá osoba odpovědná za správu domu a pozemku oprávnění je provozovat, jako jsou domovní kotelny, výměníkové (předávací) stanice, dieselagregáty a podobná vyhrazená technická zařízení."
+        }
+       ]
+      },
+      {
+       "anchor": "p10-2",
+       "text": "Osoba odpovědná za správu domu a pozemku dohlíží na plnění uzavřených smluv a vymáhá nároky z porušení povinností druhé smluvní strany.",
+       "n": "2"
+      }
+     ]
+    },
+    {
+     "type": "provision",
+     "anchor": "p11",
+     "label": "§ 11",
+     "paragraphs": [
+      {
+       "anchor": "p11-x1",
+       "text": "Osoba odpovědná za správu domu a pozemku je oprávněna, určí-li tak shromáždění vlastníků jednotek, uzavřít nebo měnit smlouvu s osobou, která má zajišťovat některé činnosti správy domu a pozemku."
+      }
+     ]
+    },
+    {
+     "type": "provision",
+     "anchor": "p12",
+     "label": "§ 12",
+     "paragraphs": [
+      {
+       "anchor": "p12-x1",
+       "text": "Pro účely rozvržení příspěvků ve stejné výši na každou jednotku podle § 1180 odst. 2 občanského zákoníku se odměnami osoby, která dům spravuje, rozumí odměna správce v domě, kde nevzniklo společenství vlastníků jednotek; odměnami členů orgánů osoby, která dům spravuje, se rozumí odměny členů volených orgánů společenství vlastníků jednotek."
+      }
+     ]
+    },
+    {
+     "type": "heading",
+     "anchor": "h-nektere-dalsi-cinnosti-spolecenstvi-vlastniku-jednotek-pri-s",
+     "text": "Některé další činnosti společenství vlastníků jednotek při správě domu a pozemku"
+    },
+    {
+     "type": "provision",
+     "anchor": "p13",
+     "label": "§ 13",
+     "paragraphs": [
+      {
+       "anchor": "p13-1",
+       "text": "V působnosti statutárního orgánu společenství vlastníků jednotek je rozhodování o nabytí, zcizení nebo zatížení movitých věcí, jejichž pořizovací cena nedosáhne v kalendářním roce souhrnné částky 10 000 Kč, dále rozhodování o zcizení nebo zatížení movitých věcí, jejichž zůstatková cena v kalendářním roce nepřesahuje v souhrnu 10 000 Kč; to neplatí, pokud stanovy společenství vlastníků jednotek určí něco jiného.",
+       "n": "1"
+      },
+      {
+       "anchor": "p13-2",
+       "text": "V působnosti statutárního orgánu společenství vlastníků jednotek je rozhodování o opravě nebo stavební úpravě společných částí nemovité věci, nepřevyšují-li náklady v jednotlivých případech částku 1 000 Kč v průměru na každou jednotku; tento limit neplatí, pokud se jedná o opravy způsobené havárií na společných částech, nebo pokud stanovy společenství vlastníků jednotek určí něco jiného.",
+       "n": "2"
+      }
+     ]
+    },
+    {
+     "type": "provision",
+     "anchor": "p14",
+     "label": "§ 14",
+     "paragraphs": [
+      {
+       "anchor": "p14-1",
+       "text": "K nabytí, zcizení nebo zatížení nemovitých věcí ve vlastnictví společenství vlastníků jednotek nebo k jinému nakládání s nimi může shromáždění vlastníků jednotek dát předchozí souhlas jen v případě, jde-li o nabytí nemovité věci pro účely správy domu a pozemku; rozhodování v této záležitosti statutárnímu orgánu společenství vlastníků jednotek nepřísluší.",
+       "n": "1"
+      },
+      {
+       "anchor": "p14-2",
+       "text": "Ke sjednání úvěru a k uzavření smlouvy o zřízení zástavního práva k jednotce, pokud dotčený vlastník jednotky v písemné formě s uzavřením zástavní smlouvy souhlasil, je oprávněno shromáždění vlastníků jednotek dát souhlas jen pro účely správy domu a pozemku, především pro opravy, úpravy společných částí nebo změny stavby, jejichž realizace byla schválena usnesením shromáždění vlastníků jednotek.",
+       "n": "2"
+      }
+     ]
+    },
+    {
+     "type": "heading",
+     "anchor": "h-hospodareni-spolecenstvi-vlastniku-jednotek-pri-sprave-domu-",
+     "text": "Hospodaření společenství vlastníků jednotek při správě domu a pozemku"
+    },
+    {
+     "type": "provision",
+     "anchor": "p15",
+     "label": "§ 15",
+     "paragraphs": [
+      {
+       "anchor": "p15-x1",
+       "text": "Rozpočet na kalendářní rok, sestavený podle pravidel určených ve stanovách, schvaluje shromáždění vlastníků jednotek, které také schvaluje výsledky jeho plnění v rámci schválení zprávy o hospodaření společenství vlastníků jednotek."
+      }
+     ]
+    },
+    {
+     "type": "provision",
+     "anchor": "p16",
+     "label": "§ 16",
+     "paragraphs": [
+      {
+       "anchor": "p16-1",
+       "text": "Příjmem společenství vlastníků jednotek jsou zejména",
+       "n": "1",
+       "items": [
+        {
+         "anchor": "p16-1-a",
+         "label": "a)",
+         "letter": "a",
+         "text": "příspěvky vlastníků jednotek na správu domu a pozemku podle § 1180 občanského zákoníku,"
+        },
+        {
+         "anchor": "p16-1-b",
+         "label": "b)",
+         "letter": "b",
+         "text": "úroky z prodlení přijaté od vlastníků jednotek z důvodu prodlení s platbami příspěvků na správu domu a pozemku podle § 1180 občanského zákoníku,"
+        },
+        {
+         "anchor": "p16-1-c",
+         "label": "c)",
+         "letter": "c",
+         "text": "úroky z prodlení přijaté od vlastníků jednotek z důvodu prodlení s platbami za plnění spojená nebo související s užíváním jednotky podle § 1181 občanského zákoníku, včetně nedoplatků z jejich vyúčtování, a pokuty za nesplnění povinnosti vlastníka jednotky podle § 13 odst. 1 zákona č. 67/2013 Sb., kterým se upravují některé otázky související s poskytováním plnění spojených s užíváním bytů a nebytových prostorů v domě s byty,"
+        },
+        {
+         "anchor": "p16-1-d",
+         "label": "d)",
+         "letter": "d",
+         "text": "úroky z vkladů na bankovních účtech společenství vlastníků jednotek,"
+        },
+        {
+         "anchor": "p16-1-e",
+         "label": "e)",
+         "letter": "e",
+         "text": "penále, úroky z prodlení a smluvní pokuty zaplacené třetími osobami za porušení povinností ze smluv sjednaných společenstvím vlastníků jednotek,"
+        },
+        {
+         "anchor": "p16-1-f",
+         "label": "f)",
+         "letter": "f",
+         "text": "pojistné plnění z pojistných smluv sjednaných společenstvím vlastníků jednotek týkající se společných částí a bonifikace za příznivý škodní průběh a"
+        },
+        {
+         "anchor": "p16-1-g",
+         "label": "g)",
+         "letter": "g",
+         "text": "příjmy plynoucí z nakládání s majetkem společenství vlastníků jednotek."
+        }
+       ]
+      },
+      {
+       "anchor": "p16-2",
+       "text": "Příjmem společenství vlastníků jednotek nejsou příjmy plynoucí z nakládání se společnými částmi, a to i v případě, že jsou hrazeny na bankovní účet společenství vlastníků jednotek; jde zejména o tyto příjmy",
+       "n": "2",
+       "items": [
+        {
+         "anchor": "p16-2-a",
+         "label": "a)",
+         "letter": "a",
+         "text": "nájemné z pronájmu společných částí domu,"
+        },
+        {
+         "anchor": "p16-2-b",
+         "label": "b)",
+         "letter": "b",
+         "text": "úroky z prodlení placené z důvodu prodlení nájemců těchto společných částí s platbami nájemného a s úhradami za plnění spojená s užíváním těchto společných částí včetně nedoplatků z jejich vyúčtování a"
+        },
+        {
+         "anchor": "p16-2-c",
+         "label": "c)",
+         "letter": "c",
+         "text": "příjmy od třetích osob plynoucí z provozování technických zařízení v domě pro tyto osoby."
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "type": "provision",
+     "anchor": "p17",
+     "label": "§ 17",
+     "paragraphs": [
+      {
+       "anchor": "p17-x1",
+       "text": "Podobnými náklady vlastní správní činnosti uvedenými v § 1180 odst. 2 občanského zákoníku se rozumí zejména",
+       "items": [
+        {
+         "anchor": "p17-x1-a",
+         "label": "a)",
+         "letter": "a",
+         "text": "náklady na zřízení, vedení a zrušení bankovních účtů společenství vlastníků jednotek,"
+        },
+        {
+         "anchor": "p17-x1-b",
+         "label": "b)",
+         "letter": "b",
+         "text": "náklady na rozúčtování a vyúčtování plnění spojených s užíváním jednotek, včetně provedení odečtů hodnot z poměrových měřidel spotřeby vody a ze zařízení sloužících k rozúčtování nákladů na teplo,"
+        },
+        {
+         "anchor": "p17-x1-c",
+         "label": "c)",
+         "letter": "c",
+         "text": "náklady na pořízení majetku sloužícího pro vlastní správní činnost, například počítač včetně softwarového vybavení a jeho odpisy,"
+        },
+        {
+         "anchor": "p17-x1-d",
+         "label": "d)",
+         "letter": "d",
+         "text": "náklady kanceláře osoby odpovědné za správu domu a pozemku, například vybavení, kancelářské potřeby, spotřeba elektřiny, je-li samostatně měřena, poštovné, a"
+        },
+        {
+         "anchor": "p17-x1-e",
+         "label": "e)",
+         "letter": "e",
+         "text": "náklady spojené s poskytováním právních služeb týkajících se správy domu a pozemku."
+        }
+       ]
+      }
+     ],
+     "heading": "Vymezení některých nákladů vlastní správní činnosti"
+    }
+   ]
+  },
+  {
+   "type": "section",
+   "anchor": "s-cast-5",
+   "kind": "cast",
+   "label": "ČÁST PÁTÁ",
+   "heading": "ÚČINNOST",
+   "children": [
+    {
+     "type": "provision",
+     "anchor": "p18",
+     "label": "§ 18",
+     "paragraphs": [
+      {
+       "anchor": "p18-x1",
+       "text": "Toto nařízení nabývá účinnosti dnem 1. ledna 2014."
+      }
+     ]
+    }
+   ]
+  }
+ ],
+ "footnotes": [
+  {
+   "anchor": "fn-1",
+   "label": "1)",
+   "text": "Například vyhláška č. 499/2006 Sb., o dokumentaci staveb, ve znění vyhlášky č. 62/2013 Sb., vyhláška č. 268/2009 Sb., o technických požadavcích na stavby, ve znění vyhlášky č. 20/2012 Sb."
+  }
+ ]
+}

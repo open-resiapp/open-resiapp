@@ -1,0 +1,4114 @@
+{
+ "id": "sk-657-2004",
+ "jurisdiction": "sk",
+ "number": "657/2004 Z. z.",
+ "title": "Zákon o tepelnej energetike",
+ "effectiveFrom": "2026-07-01",
+ "effectiveTo": null,
+ "sourceUrl": "https://www.slov-lex.sk/ezbierky/pravne-predpisy/SK/ZZ/2004/657/20260701",
+ "fetchedAt": "2026-11-18T08:20:17.388Z",
+ "contentHash": "370727934e66e72ecad8a2ff865ba7d08777a2759972f8926cee30798c19edbf",
+ "provisionCount": 53,
+ "parts": [
+  {
+   "type": "text",
+   "text": "Národná rada Slovenskej republiky sa uzniesla na tomto zákone:"
+  },
+  {
+   "type": "section",
+   "anchor": "s-cast-prva",
+   "kind": "cast",
+   "label": "PRVÁ ČASŤ",
+   "heading": "ZÁKLADNÉ USTANOVENIA",
+   "children": [
+    {
+     "type": "provision",
+     "anchor": "p1",
+     "label": "§ 1",
+     "paragraphs": [
+      {
+       "anchor": "p1-1",
+       "text": "Tento zákon upravuje",
+       "n": "1",
+       "items": [
+        {
+         "anchor": "p1-1-a",
+         "label": "a)",
+         "letter": "a",
+         "text": "podmienky podnikania v tepelnej energetike,"
+        },
+        {
+         "anchor": "p1-1-b",
+         "label": "b)",
+         "letter": "b",
+         "text": "práva a povinnosti účastníkov trhu s teplom,"
+        },
+        {
+         "anchor": "p1-1-c",
+         "label": "c)",
+         "letter": "c",
+         "text": "hospodárnosť prevádzky sústavy tepelných zariadení,"
+        },
+        {
+         "anchor": "p1-1-d",
+         "label": "d)",
+         "letter": "d",
+         "text": "obmedzujúce opatrenia súvisiace so stavom núdze v tepelnej energetike,"
+        },
+        {
+         "anchor": "p1-1-e",
+         "label": "e)",
+         "letter": "e",
+         "text": "pôsobnosť orgánov štátnej správy a obcí a výkon štátneho dozoru v tepelnej energetike,"
+        },
+        {
+         "anchor": "p1-1-f",
+         "label": "f)",
+         "letter": "f",
+         "text": "práva a povinnosti fyzických osôb a právnických osôb, ktorých práva, právom chránené záujmy alebo povinnosti môžu byť dotknuté výkonom práv a povinností účastníkov trhu s teplom,"
+        },
+        {
+         "anchor": "p1-1-g",
+         "label": "g)",
+         "letter": "g",
+         "text": "práva a povinnosti fyzických osôb a právnických osôb pri výrobe tepla v decentralizovanom zdroji tepla."
+        }
+       ]
+      },
+      {
+       "anchor": "p1-2",
+       "text": "Predmetom podnikania podľa tohto zákona je výroba tepla, výroba a rozvod tepla alebo rozvod tepla.",
+       "n": "2"
+      },
+      {
+       "anchor": "p1-3",
+       "text": "Predmetom podnikania podľa tohto zákona nie je",
+       "n": "3",
+       "items": [
+        {
+         "anchor": "p1-3-a",
+         "label": "a)",
+         "letter": "a",
+         "text": "výroba tepla, výroba tepla a rozvod tepla alebo rozvod tepla pre vlastné využitie,"
+        },
+        {
+         "anchor": "p1-3-b",
+         "label": "b)",
+         "letter": "b",
+         "text": "výroba tepla, výroba tepla a rozvod tepla alebo rozvod tepla vykonávané právnickými osobami, ktoré vznikli podľa osobitného predpisu,¹)"
+        },
+        {
+         "anchor": "p1-3-c",
+         "label": "c)",
+         "letter": "c",
+         "text": "výroba tepla v decentralizovanom zdroji tepla v objekte spotreby tepla, v ktorom fyzická osoba alebo právnická osoba vykonávajúca správu bytového domu¹ᵃ) rozpočítava množstvo vyrobeného tepla konečným spotrebiteľom a vlastníci bytov a nebytových priestorov neprenechali decentralizovaný zdroj tepla do užívania inej osobe,"
+        },
+        {
+         "anchor": "p1-3-d",
+         "label": "d)",
+         "letter": "d",
+         "text": "výroba tepla, výroba tepla a rozvod tepla alebo rozvod tepla pre iné osoby za nákupné ceny paliva na výrobu tepla alebo za cenu nakupovaného tepla."
+        }
+       ]
+      }
+     ],
+     "heading": "Predmet úpravy"
+    },
+    {
+     "type": "provision",
+     "anchor": "p2",
+     "label": "§ 2",
+     "paragraphs": [
+      {
+       "anchor": "p2-x1",
+       "text": "Na účely tohto zákona sa rozumie:",
+       "items": [
+        {
+         "anchor": "p2-x1-a",
+         "label": "a)",
+         "letter": "a",
+         "text": "výrobou tepla fyzikálne a chemické procesy v zariadeniach na výrobu tepla, ktorých výsledkom je získanie tepla na vykurovanie, chladenie alebo na prípravu teplej vody, alebo na iné tepelnoenergetické využitie,"
+        },
+        {
+         "anchor": "p2-x1-b",
+         "label": "b)",
+         "letter": "b",
+         "text": "výrobcom tepla fyzická osoba alebo právnická osoba, ktorá vyrába teplo na účel jeho predaja a ktorá je držiteľom povolenia na výrobu tepla podľa tohto zákona,"
+        },
+        {
+         "anchor": "p2-x1-c",
+         "label": "c)",
+         "letter": "c",
+         "text": "zariadením na výrobu tepla zariadenie, ktoré slúži na premenu rôznych foriem energie na teplo alebo na zachytenie odpadového tepla alebo energie z okolia¹ᵇ) okrem zariadenia na zachytenie energie z odvetrávaného vzduchu; zahŕňa stavebnú časť a technologické zariadenie,"
+        },
+        {
+         "anchor": "p2-x1-d",
+         "label": "d)",
+         "letter": "d",
+         "text": "dodávateľom fyzická osoba alebo právnická osoba, ktorá je držiteľom povolenia na výrobu tepla, výrobu tepla a rozvod tepla alebo rozvod tepla alebo sa na ňu vzťahuje oznamovacia povinnosť podľa § 11 a ktorá dodáva teplo odberateľovi,"
+        },
+        {
+         "anchor": "p2-x1-e",
+         "label": "e)",
+         "letter": "e",
+         "text": "odberateľom koncový odberateľ alebo fyzická osoba alebo právnická osoba, ktorá dodané teplo využíva na rozvod tepla,"
+        },
+        {
+         "anchor": "p2-x1-f",
+         "label": "f)",
+         "letter": "f",
+         "text": "konečným spotrebiteľom fyzická osoba alebo právnická osoba, ktorá teplo rozpočítané koncovým odberateľom alebo fyzickou osobou alebo právnickou osobou, ktorá vykonáva činnosť podľa § 1 ods. 3 písm. c) využíva výlučne na vlastnú spotrebu,"
+        },
+        {
+         "anchor": "p2-x1-g",
+         "label": "g)",
+         "letter": "g",
+         "text": "povolením oprávnenie na podnikanie na výrobu tepla alebo na výrobu a rozvod tepla, alebo na rozvod tepla,"
+        },
+        {
+         "anchor": "p2-x1-h",
+         "label": "h)",
+         "letter": "h",
+         "text": "pomerovým rozdeľovačom vykurovacích nákladov prístroj na registráciu časovej integrácie priebehu teploty a indikovanie pomerného množstva tepla odovzdávaného vykurovacími telesami v miestnosti u konečného spotrebiteľa, na ktorých sú namontované rozdeľovače vykurovacích nákladov alebo ich snímače,"
+        },
+        {
+         "anchor": "p2-x1-i",
+         "label": "i)",
+         "letter": "i",
+         "text": "dodávkou tepla predaj tepla na vykurovanie, predaj tepla na prípravu teplej vody, predaj tepla v teplej vode, predaj tepla na výrobu chladu alebo predaj tepla na iné využitie,"
+        },
+        {
+         "anchor": "p2-x1-j",
+         "label": "j)",
+         "letter": "j",
+         "text": "distribúciou tepla preprava tepla verejným rozvodom k odberateľovi,"
+        },
+        {
+         "anchor": "p2-x1-k",
+         "label": "k)",
+         "letter": "k",
+         "text": "rozvodom tepla distribúcia tepla a dodávka tepla odberateľovi,"
+        },
+        {
+         "anchor": "p2-x1-l",
+         "label": "l)",
+         "letter": "l",
+         "text": "sústavou tepelných zariadení zariadenia na výrobu, rozvod alebo spotrebu tepla,"
+        },
+        {
+         "anchor": "p2-x1-m",
+         "label": "m)",
+         "letter": "m",
+         "text": "verejným rozvodom tepla časť sústavy tepelných zariadení držiteľa povolenia na rozvod tepla určená na dodávku tepla viacerým odberateľom,"
+        },
+        {
+         "anchor": "p2-x1-n",
+         "label": "n)",
+         "letter": "n",
+         "text": "tepelnou prípojkou časť sústavy tepelných zariadení od verejného rozvodu tepla po odberné miesto na dodávku tepla koncovému odberateľovi; súčasťou tepelnej prípojky nie je odovzdávacia stanica tepla, a to ani ak je umiestnená v objekte spotreby tepla,"
+        },
+        {
+         "anchor": "p2-x1-o",
+         "label": "o)",
+         "letter": "o",
+         "text": "odberným miestom zmluvne dohodnuté miesto, na ktorom je umiestnené určené meradlo²) na meranie množstva dodaného tepla pre jedného odberateľa, alebo zmluvne dohodnuté miesto na dodávku teplej vody pre jedného odberateľa,"
+        },
+        {
+         "anchor": "p2-x1-p",
+         "label": "p)",
+         "letter": "p",
+         "text": "objektom spotreby tepla jedna budova, prípadne viac budov alebo iná stavba so zariadením na spotrebu tepla, pričom zariadením na spotrebu tepla sa rozumie zariadenie na konečné využitie tepla,"
+        },
+        {
+         "anchor": "p2-x1-q",
+         "label": "q)",
+         "letter": "q",
+         "text": "vymedzeným územím územie, na ktorom sa dodávateľovi ukladá povinnosť distribúcie a dodávky tepla,"
+        },
+        {
+         "anchor": "p2-x1-r",
+         "label": "r)",
+         "letter": "r",
+         "text": "teplom v teplej vode spotrebované teplo na prípravu teplej vody v mieste jej prípravy,"
+        },
+        {
+         "anchor": "p2-x1-s",
+         "label": "s)",
+         "letter": "s",
+         "text": "koncovým odberateľom odberateľ, ktorý dodané teplo využíva na vlastnú spotrebu alebo dodané teplo rozpočítava konečným spotrebiteľom alebo dodávateľ, ktorý dodané teplo rozpočítava konečným spotrebiteľom,"
+        },
+        {
+         "anchor": "p2-x1-t",
+         "label": "t)",
+         "letter": "t",
+         "text": "inštalovaným výkonom zariadenia na výrobu tepla súčet menovitých výkonov technologických zariadení na výrobu tepla, z ktorých sa teplo dodáva do spoločného rozvodu tepla,"
+        },
+        {
+         "anchor": "p2-x1-u",
+         "label": "u)",
+         "letter": "u",
+         "text": "budovou bytová budova a nebytová budova podľa osobitného predpisu,²ᵃ)"
+        },
+        {
+         "anchor": "p2-x1-v",
+         "label": "v)",
+         "letter": "v",
+         "text": "decentralizovaným zdrojom tepla zariadenie na výrobu tepla určené na vykurovanie, chladenie, spoločnú prípravu teplej vody alebo iné využitie výlučne pre objekt spotreby tepla, v ktorom je umiestnené,"
+        },
+        {
+         "anchor": "p2-x1-w",
+         "label": "w)",
+         "letter": "w",
+         "text": "zariadením na spotrebu tepla vnútorné zariadenie objektu spotreby tepla určené na odber tepla pre jedného koncového odberateľa; zariadením na spotrebu tepla nie je odovzdávacia stanica tepla, a to ani ak je umiestnená v objekte spotreby tepla,"
+        },
+        {
+         "anchor": "p2-x1-x",
+         "label": "x)",
+         "letter": "x",
+         "text": "zdrojom tepla v centralizovanom zásobovaní teplom zariadenie na výrobu tepla, ktoré slúži pre centralizované zásobovanie teplom,"
+        },
+        {
+         "anchor": "p2-x1-y",
+         "label": "y)",
+         "letter": "y",
+         "text": "centralizovaným zásobovaním teplom rozvod tepla prostredníctvom verejného rozvodu tepla z jedného alebo viacerých zariadení na výrobu tepla,"
+        },
+        {
+         "anchor": "p2-x1-z",
+         "label": "z)",
+         "letter": "z",
+         "text": "účinným centralizovaným zásobovaním teplom centralizované zásobovanie teplom, ktorým sa zabezpečuje rozvod aspoň 50 % tepla vyrobeného z obnoviteľných zdrojov energie, 50 % odpadového tepla, 75 % využiteľného tepla vyrobeného kombinovanou výrobou elektriny a tepla alebo 50 % tepla vyrobeného ich kombináciou,"
+        },
+        {
+         "anchor": "p2-x1-aa",
+         "label": "aa)",
+         "letter": "aa",
+         "text": "účinným centralizovaným zásobovaním teplom z obnoviteľných zdrojov centralizované zásobovanie teplom, ktorým sa zabezpečuje rozvod aspoň 75 % tepla vyrobeného z obnoviteľných zdrojov energie,"
+        },
+        {
+         "anchor": "p2-x1-ab",
+         "label": "ab)",
+         "letter": "ab",
+         "text": "celkovou podlahovou plochou podlahová plocha budovy určená z vonkajších rozmerov budovy podľa technickej normy²ᵇ) bez zohľadnenia miestnych vystupujúcich konštrukcií,"
+        },
+        {
+         "anchor": "p2-x1-ac",
+         "label": "ac)",
+         "letter": "ac",
+         "text": "zariadením na rozvod tepla súbor zariadení určený na rozvod tepla, ktorý tvorí potrubie s príslušenstvom pozostávajúcim najmä z meracích, ochranných, riadiacich a informačných zariadení, a pokiaľ sú vybudované, aj odovzdávacie stanice tepla,"
+        },
+        {
+         "anchor": "p2-x1-ad",
+         "label": "ad)",
+         "letter": "ad",
+         "text": "primárnym rozvodom tepla časť zariadenia na rozvod tepla, ktorá slúži na prepravu tepla zo zariadenia na výrobu tepla alebo z odovzdávacej stanice tepla, ktorá nie je umiestnená v objekte spotreby tepla alebo je určená pre viacero objektov spotreby tepla, do odovzdávacej stanice tepla,"
+        },
+        {
+         "anchor": "p2-x1-ae",
+         "label": "ae)",
+         "letter": "ae",
+         "text": "sekundárnym rozvodom tepla časť zariadenia na rozvod tepla, ktorá slúži na prepravu tepla z odovzdávacej stanice tepla, ktorá nie je umiestnená v objekte spotreby tepla alebo je určená pre viacero objektov spotreby tepla, do zariadenia na spotrebu tepla,"
+        },
+        {
+         "anchor": "p2-x1-af",
+         "label": "af)",
+         "letter": "af",
+         "text": "odpadovým teplom teplo, ktoré nevyhnutne vzniká ako vedľajší produkt v priemyselných zariadeniach, energetických zariadeniach alebo v terciárnom sektore, a ktoré by sa bez prístupu k centralizovanému zásobovaniu teplom nevyužité rozptýlilo do ovzdušia alebo do vody, ak sa používa alebo bude používať proces kombinovanej výroby elektriny a tepla, alebo ak použitie tohto procesu nie je možné,"
+        },
+        {
+         "anchor": "p2-x1-ag",
+         "label": "ag)",
+         "letter": "ag",
+         "text": "bytovou odovzdávacou stanicou tepla časť zariadení na spotrebu tepla v objekte spotreby tepla, ktorá slúži na úpravu parametrov teplonosnej látky odovzdanej z centralizovaného zásobovania teplom alebo decentralizovaného zdroja tepla na vykurovanie alebo prípravu teplej vody u konečného spotrebiteľa."
+        }
+       ]
+      }
+     ],
+     "heading": "Základné pojmy"
+    },
+    {
+     "type": "provision",
+     "anchor": "p3",
+     "label": "§ 3",
+     "paragraphs": [
+      {
+       "anchor": "p3-1",
+       "text": "Zodpovedným zástupcom podľa tohto zákona je fyzická osoba ustanovená žiadateľom o povolenie alebo držiteľom povolenia, ktorá zodpovedá za odborné vykonávanie povolených činností podľa tohto zákona, najmä za kvalitné, včasné a správne plnenie povinností výrobcu a dodávateľa tepla uvedených v § 15, § 16 ods. 1, § 17 ods. 1, § 18 ods. 1 a 2, a ktorá s určením do funkcie zodpovedného zástupcu vyslovila písomný súhlas, ak zodpovedným zástupcom nie je sám žiadateľ o povolenie. Zodpovedný zástupca musí byť v pracovnoprávnom alebo inom právnom vzťahu so žiadateľom o povolenie alebo s držiteľom povolenia, v ktorom je upravená jeho osobná zodpovednosť za odborné vykonávanie povolenej činnosti voči žiadateľovi o povolenie alebo držiteľovi povolenia.",
+       "n": "1"
+      },
+      {
+       "anchor": "p3-2",
+       "text": "Zodpovedný zástupca musí spĺňať predpoklad odbornej spôsobilosti a predpoklad bezúhonnosti.",
+       "n": "2"
+      },
+      {
+       "anchor": "p3-3",
+       "text": "Funkciu zodpovedného zástupcu možno vykonávať len pre jedného držiteľa povolenia.",
+       "n": "3"
+      },
+      {
+       "anchor": "p3-4",
+       "text": "Zodpovedným zástupcom právnickej osoby nemôže byť člen dozornej rady alebo iného kontrolného orgánu tejto právnickej osoby.",
+       "n": "4"
+      },
+      {
+       "anchor": "p3-5",
+       "text": "Ak zodpovedný zástupca skončil výkon svojej funkcie alebo prestal spĺňať podmienky podľa odsekov 2 až 4, držiteľ povolenia je povinný do 60 dní ustanoviť nového zodpovedného zástupcu a bezodkladne to oznámiť Úradu pre reguláciu sieťových odvetví (ďalej len „úrad“).³)",
+       "n": "5"
+      },
+      {
+       "anchor": "p3-6",
+       "text": "Práva a povinnosti fyzických osôb konajúcich v mene právnickej osoby podľa všeobecných predpisov o podnikaní⁴) ustanovením zodpovedného zástupcu nie sú dotknuté.",
+       "n": "6"
+      }
+     ],
+     "heading": "Zodpovedný zástupca"
+    },
+    {
+     "type": "provision",
+     "anchor": "p4",
+     "label": "§ 4",
+     "paragraphs": [
+      {
+       "anchor": "p4-1",
+       "text": "Odborná spôsobilosť je preukázanie požadovaného vzdelania, odbornej praxe a úspešné vykonanie skúšky.",
+       "n": "1"
+      },
+      {
+       "anchor": "p4-2",
+       "text": "Vzdelanie a prax sa preukazujú kópiou dokladov",
+       "n": "2",
+       "items": [
+        {
+         "anchor": "p4-2-a",
+         "label": "a)",
+         "letter": "a",
+         "text": "o ukončení stredného odborného vzdelania technického zamerania a o vykonaní sedemročnej odbornej praxe v oblasti výroby a rozvodu tepla,"
+        },
+        {
+         "anchor": "p4-2-b",
+         "label": "b)",
+         "letter": "b",
+         "text": "o ukončení úplného stredného odborného vzdelania technického alebo ekonomického zamerania alebo úplného stredného všeobecného vzdelania so zameraním na prírodné vedy a o vykonaní šesťročnej odbornej praxe v oblasti výroby a rozvodu tepla,"
+        },
+        {
+         "anchor": "p4-2-c",
+         "label": "c)",
+         "letter": "c",
+         "text": "o ukončení úplného stredného odborného vzdelania s pomaturitným štúdiom technického alebo ekonomického zamerania a o vykonaní päťročnej odbornej praxe v oblasti výroby a rozvodu tepla,"
+        },
+        {
+         "anchor": "p4-2-d",
+         "label": "d)",
+         "letter": "d",
+         "text": "o ukončení vysokoškolského vzdelania⁵) prvého stupňa technického alebo ekonomického zamerania a o vykonaní štvorročnej odbornej praxe v oblasti výroby a rozvodu tepla, alebo"
+        },
+        {
+         "anchor": "p4-2-e",
+         "label": "e)",
+         "letter": "e",
+         "text": "o ukončení vysokoškolského vzdelania⁵) druhého stupňa technického alebo ekonomického zamerania a o vykonaní trojročnej odbornej praxe v oblasti výroby a rozvodu tepla."
+        }
+       ]
+      },
+      {
+       "anchor": "p4-3",
+       "text": "Skúška podľa odseku 1 sa vykonáva pred skúšobnou komisiou zriadenou Ministerstvom hospodárstva Slovenskej republiky (ďalej len „ministerstvo“).",
+       "n": "3"
+      },
+      {
+       "anchor": "p4-4",
+       "text": "Odbornú spôsobilosť preukazuje žiadateľ o povolenie osvedčením o odbornej spôsobilosti, ktoré vydáva ministerstvo po preukázaní kópiou dokladov podľa odseku 2 a po úspešnom vykonaní skúšky podľa odseku 3.",
+       "n": "4"
+      },
+      {
+       "anchor": "p4-5",
+       "text": "Držiteľ osvedčenia o odbornej spôsobilosti je povinný zúčastniť sa aktualizačnej odbornej prípravy najneskôr v piatom kalendárnom roku odo dňa",
+       "n": "5",
+       "items": [
+        {
+         "anchor": "p4-5-a",
+         "label": "a)",
+         "letter": "a",
+         "text": "vydania osvedčenia o odbornej spôsobilosti,"
+        },
+        {
+         "anchor": "p4-5-b",
+         "label": "b)",
+         "letter": "b",
+         "text": "absolvovania predchádzajúcej aktualizačnej odbornej prípravy."
+        }
+       ]
+      },
+      {
+       "anchor": "p4-6",
+       "text": "Aktualizačnú odbornú prípravu vykonáva ministerstvo alebo právnická osoba určená ministerstvom. O účasti na aktualizačnej odbornej príprave vydá ministerstvo alebo právnická osoba určená ministerstvom potvrdenie. Po uplynutí piatich rokov od vydania osvedčenia o odbornej spôsobilosti je držiteľ osvedčenia o odbornej spôsobilosti povinný preukazovať spolu s osvedčením o odbornej spôsobilosti aj potvrdenie o účasti na aktualizačnej odbornej príprave.",
+       "n": "6"
+      },
+      {
+       "anchor": "p4-7",
+       "text": "Rozsah odbornej prípravy a požadovaných vedomostí pre skúšky odbornej spôsobilosti, podrobnosti o aktualizačnej odbornej príprave, podrobnosti o zriaďovaní a činnosti skúšobných komisií a obsah osvedčenia o odbornej spôsobilosti ustanoví všeobecne záväzný právny predpis, ktorý vydá ministerstvo.",
+       "n": "7"
+      }
+     ],
+     "heading": "Odborná spôsobilosť"
+    }
+   ]
+  },
+  {
+   "type": "section",
+   "anchor": "s-cast-druha",
+   "kind": "cast",
+   "label": "DRUHÁ ČASŤ",
+   "heading": "PODNIKANIE V TEPELNEJ ENERGETIKE A VÝSTAVBA SÚSTAVY TEPELNÝCH ZARIADENÍ",
+   "children": [
+    {
+     "type": "section",
+     "anchor": "s-cast-druha-g-povolenie",
+     "kind": "group",
+     "heading": "Povolenie",
+     "children": [
+      {
+       "type": "provision",
+       "anchor": "p5",
+       "label": "§ 5",
+       "paragraphs": [
+        {
+         "anchor": "p5-1",
+         "text": "Podnikať v tepelnej energetike možno len na základe povolenia a v súlade s povolením alebo na základe rozhodnutia úradu podľa § 9 ods. 4 alebo ods. 5 alebo podľa osobitného predpisu.⁵ᵃᵃ)",
+         "n": "1"
+        },
+        {
+         "anchor": "p5-2",
+         "text": "Fyzickej osobe alebo právnickej osobe vydá rozhodnutie o povolení úrad na základe písomnej žiadosti a po splnení podmienok uvedených v § 6 ods. 1. Úrad po prijatí písomnej žiadosti bezodkladne vydá žiadateľovi potvrdenie o prijatí písomnej žiadosti.⁵ᵃ)",
+         "n": "2"
+        },
+        {
+         "anchor": "p5-3",
+         "text": "Fyzická osoba v žiadosti podľa odseku 2 uvedie",
+         "n": "3",
+         "items": [
+          {
+           "anchor": "p5-3-a",
+           "label": "a)",
+           "letter": "a",
+           "text": "meno a priezvisko, obchodné meno a identifikačné číslo, ak jej bolo pridelené, miesto trvalého pobytu⁶) na území Slovenskej republiky alebo miesto pobytu⁷) na území Slovenskej republiky a miesto trvalého prevádzkovania činnosti v tepelnej energetike, o povolenie ktorej žiada; ak je podnikateľom v oblasti tepelnej energetiky zahraničná fyzická osoba, musí mať pobyt na území štátu, ktorý je zmluvnou stranou Dohody o Európskom hospodárskom priestore,"
+          },
+          {
+           "anchor": "p5-3-b",
+           "label": "b)",
+           "letter": "b",
+           "text": "rozsah a miesto predmetu podnikania v tepelnej energetike,"
+          },
+          {
+           "anchor": "p5-3-c",
+           "label": "c)",
+           "letter": "c",
+           "text": "technický popis zariadenia na výrobu alebo rozvod tepla, na ktorom bude vykonávať predmet podnikania, a jeho celkový inštalovaný výkon alebo prepravný výkon, ak ide o zariadenie na rozvod tepla,"
+          },
+          {
+           "anchor": "p5-3-d",
+           "label": "d)",
+           "letter": "d",
+           "text": "dobu, na ktorú sa požaduje vydanie povolenia,"
+          },
+          {
+           "anchor": "p5-3-e",
+           "label": "e)",
+           "letter": "e",
+           "text": "údaje o zodpovednom zástupcovi v rozsahu podľa písmena a), ak sám žiadateľ nie je zodpovedným zástupcom,"
+          },
+          {
+           "anchor": "p5-3-f",
+           "label": "f)",
+           "letter": "f",
+           "text": "návrh na vymedzené územie s jeho vyznačením na katastrálnej mape,"
+          },
+          {
+           "anchor": "p5-3-g",
+           "label": "g)",
+           "letter": "g",
+           "text": "údaje o vlastníkovi sústavy tepelných zariadení alebo jej časti."
+          }
+         ]
+        },
+        {
+         "anchor": "p5-4",
+         "text": "K žiadosti o vydanie povolenia fyzická osoba dokladá",
+         "n": "4",
+         "items": [
+          {
+           "anchor": "p5-4-a",
+           "label": "a)",
+           "letter": "a",
+           "text": "doklad o trvalom pobyte alebo o pobyte na území Slovenskej republiky, ak je podnikateľom v oblasti tepelnej energetiky zahraničná fyzická osoba, doklad o trvalom pobyte na území štátu, ktorý je zmluvnou stranou Dohody o Európskom hospodárskom priestore,"
+          },
+          {
+           "anchor": "p5-4-b",
+           "label": "b)",
+           "letter": "b",
+           "text": "údaje potrebné na vyžiadanie výpisu z registra trestov⁷ᵃ) žiadateľa a zodpovedného zástupcu, ak sám žiadateľ nie je zodpovedným zástupcom,"
+          },
+          {
+           "anchor": "p5-4-c",
+           "label": "c)",
+           "letter": "c",
+           "text": "osvedčenie o odbornej spôsobilosti fyzickej osoby alebo jej zodpovedného zástupcu."
+          }
+         ]
+        },
+        {
+         "anchor": "p5-5",
+         "text": "Právnická osoba v žiadosti podľa odseku 2 uvedie",
+         "n": "5",
+         "items": [
+          {
+           "anchor": "p5-5-a",
+           "label": "a)",
+           "letter": "a",
+           "text": "obchodné meno, právnu formu, sídlo právnickej osoby, a ak ide o právnickú osobu so sídlom v zahraničí, sídlo jej organizačnej zložky umiestnenej na území Slovenskej republiky a identifikačné číslo, ak jej bolo pridelené,"
+          },
+          {
+           "anchor": "p5-5-b",
+           "label": "b)",
+           "letter": "b",
+           "text": "rozsah a miesto predmetu podnikania v tepelnej energetike,"
+          },
+          {
+           "anchor": "p5-5-c",
+           "label": "c)",
+           "letter": "c",
+           "text": "technický popis zariadenia na výrobu a rozvod tepla, na ktorom bude vykonávať predmet podnikania, a jeho celkový inštalovaný výkon alebo prepravný výkon, ak ide o zariadenie na rozvod tepla,"
+          },
+          {
+           "anchor": "p5-5-d",
+           "label": "d)",
+           "letter": "d",
+           "text": "meno, priezvisko, trvalý pobyt štatutárneho orgánu alebo členov štatutárneho orgánu právnickej osoby, a ak je podnikateľom v oblasti tepelnej energetiky zahraničná právnická osoba, musí mať sídlo alebo organizačnú jednotku, na území štátu, ktorý je zmluvnou stranou Dohody o Európskom hospodárskom priestore,"
+          },
+          {
+           "anchor": "p5-5-e",
+           "label": "e)",
+           "letter": "e",
+           "text": "dobu, na ktorú sa požaduje vydanie povolenia,"
+          },
+          {
+           "anchor": "p5-5-f",
+           "label": "f)",
+           "letter": "f",
+           "text": "údaje o zodpovednom zástupcovi v rozsahu podľa odseku 3 písm. a),"
+          },
+          {
+           "anchor": "p5-5-g",
+           "label": "g)",
+           "letter": "g",
+           "text": "návrh na vymedzené územie,"
+          },
+          {
+           "anchor": "p5-5-h",
+           "label": "h)",
+           "letter": "h",
+           "text": "údaje o vlastníkovi sústavy tepelných zariadení alebo jej časti."
+          }
+         ]
+        },
+        {
+         "anchor": "p5-6",
+         "text": "K žiadosti o vydanie povolenia právnická osoba dokladá",
+         "n": "6",
+         "items": [
+          {
+           "anchor": "p5-6-a",
+           "label": "a)",
+           "letter": "a",
+           "text": "údaje tejto právnickej osoby, štatutárneho orgánu alebo členov štatutárneho orgánu a zodpovedného zástupcu potrebné na vyžiadanie výpisu z registra trestov; ak je štatutárnym orgánom alebo členom štatutárneho orgánu, alebo zodpovedným zástupcom zahraničná fyzická osoba, zodpovedajúci doklad alebo osvedčenie nahrádzajúce výpis z registra trestov nie staršie ako tri mesiace,"
+          },
+          {
+           "anchor": "p5-6-b",
+           "label": "b)",
+           "letter": "b",
+           "text": "doklad podľa osobitného predpisu,⁹) ak je štatutárnym orgánom alebo členom štatutárneho orgánu, alebo zodpovedným zástupcom zahraničná osoba,"
+          },
+          {
+           "anchor": "p5-6-c",
+           "label": "c)",
+           "letter": "c",
+           "text": "osvedčenie o odbornej spôsobilosti zodpovedného zástupcu."
+          }
+         ]
+        },
+        {
+         "anchor": "p5-7",
+         "text": "Fyzická osoba podnikateľ a právnická osoba doloží k žiadosti podľa odseku 2 okrem dokladov uvedených v odsekoch 4 a 6 aj",
+         "n": "7",
+         "items": [
+          {
+           "anchor": "p5-7-a",
+           "label": "a)",
+           "letter": "a",
+           "text": "u existujúcich tepelných zariadení doklad o vlastníckom vzťahu alebo inom obdobnom právnom vzťahu k sústave tepelných zariadení, na ktorých chce podnikať,"
+          },
+          {
+           "anchor": "p5-7-b",
+           "label": "b)",
+           "letter": "b",
+           "text": "u plánovaných tepelných zariadení osvedčenie na výstavbu sústavy tepelných zariadení alebo jej časti podľa § 12 ods. 1."
+          }
+         ]
+        },
+        {
+         "anchor": "p5-8",
+         "text": "Vzor žiadosti o vydanie povolenia a návrhu na vymedzené územie ustanoví všeobecne záväzný právny predpis, ktorý vydá úrad.",
+         "n": "8"
+        },
+        {
+         "anchor": "p5-9",
+         "text": "Žiadosť podľa odseku 2 možno podať aj prostredníctvom okresného úradu, ktorý plní úlohy jednotného kontaktného miesta⁹ᵃ) (ďalej len „jednotné kontaktné miesto“). Úrad bez zbytočného odkladu informuje jednotné kontaktné miesto o vydaní povolenia alebo o zamietnutí žiadosti, ak bola žiadosť podaná na jednotnom kontaktnom mieste.",
+         "n": "9"
+        }
+       ]
+      },
+      {
+       "type": "provision",
+       "anchor": "p6",
+       "label": "§ 6",
+       "paragraphs": [
+        {
+         "anchor": "p6-1",
+         "text": "Úrad vydá povolenie do 30 dní od doručenia žiadosti o povolenie, ak žiadosť obsahuje všetky náležitosti podľa § 5 a žiadateľ, štatutárny zástupca žiadateľa a jeho zodpovedný zástupca spĺňajú tieto podmienky:",
+         "n": "1",
+         "items": [
+          {
+           "anchor": "p6-1-a",
+           "label": "a)",
+           "letter": "a",
+           "text": "majú plnú spôsobilosť na právne úkony,"
+          },
+          {
+           "anchor": "p6-1-b",
+           "label": "b)",
+           "letter": "b",
+           "text": "sú bezúhonní."
+          }
+         ]
+        },
+        {
+         "anchor": "p6-2",
+         "text": "Na účely tohto zákona sa za bezúhonnú osobu považuje ten, kto nebol právoplatne odsúdený za trestný čin hospodárskej povahy, trestný čin proti majetku alebo za iný trestný čin, ktorého skutková podstata súvisí s predmetom podnikania podľa tohto zákona, alebo ak sa naňho hľadí, akoby nebol odsúdený.¹⁰) Bezúhonnosť sa preukazuje výpisom z registra trestov. Na účely preukázania bezúhonnosti poskytne osoba údaje podľa § 5 ods. 4 písm. b) a ods. 6 písm. a). Údaje podľa tretej vety úrad bezodkladne zašle v elektronickej podobe prostredníctvom elektronickej komunikácie Generálnej prokuratúre Slovenskej republiky na vydanie výpisu z registra trestov.",
+         "n": "2"
+        }
+       ]
+      },
+      {
+       "type": "provision",
+       "anchor": "p7",
+       "label": "§ 7",
+       "paragraphs": [
+        {
+         "anchor": "p7-1",
+         "text": "V povolení vydanom fyzickej osobe sa uvedie",
+         "n": "1",
+         "items": [
+          {
+           "anchor": "p7-1-a",
+           "label": "a)",
+           "letter": "a",
+           "text": "meno, priezvisko, trvalý pobyt alebo pobyt a miesto trvalej prevádzky sústavy tepelných zariadení alebo jej časti a číslo osvedčenia o odbornej spôsobilosti na predmet podnikania zodpovedného zástupcu,"
+          },
+          {
+           "anchor": "p7-1-b",
+           "label": "b)",
+           "letter": "b",
+           "text": "obchodné meno a miesto podnikania,"
+          },
+          {
+           "anchor": "p7-1-c",
+           "label": "c)",
+           "letter": "c",
+           "text": "identifikačné číslo, ak bolo pridelené,"
+          },
+          {
+           "anchor": "p7-1-d",
+           "label": "d)",
+           "letter": "d",
+           "text": "rozsah a miesto predmetu podnikania, na ktorý sa vydáva povolenie,"
+          },
+          {
+           "anchor": "p7-1-e",
+           "label": "e)",
+           "letter": "e",
+           "text": "doba začatia výkonu predmetu podnikania a doba platnosti povolenia,"
+          },
+          {
+           "anchor": "p7-1-f",
+           "label": "f)",
+           "letter": "f",
+           "text": "meno a priezvisko zodpovedného zástupcu, jeho trvalý pobyt alebo pobyt a číslo osvedčenia o odbornej spôsobilosti, ak fyzická osoba, ktorej sa povolenie vydáva, sama nie je odborne spôsobilá,"
+          },
+          {
+           "anchor": "p7-1-g",
+           "label": "g)",
+           "letter": "g",
+           "text": "stručný technický popis sústavy tepelných zariadení, na ktorých môže podnikať, a ich výkonové hodnoty,"
+          },
+          {
+           "anchor": "p7-1-h",
+           "label": "h)",
+           "letter": "h",
+           "text": "vymedzené územie na podnikanie,"
+          },
+          {
+           "anchor": "p7-1-i",
+           "label": "i)",
+           "letter": "i",
+           "text": "informácia o rozhodnutí podľa § 9 ods. 4 alebo ods. 5, ak bolo vydané,"
+          },
+          {
+           "anchor": "p7-1-j",
+           "label": "j)",
+           "letter": "j",
+           "text": "údaje o vlastníkovi sústavy tepelných zariadení alebo jej časti."
+          }
+         ]
+        },
+        {
+         "anchor": "p7-2",
+         "text": "V povolení vydanom právnickej osobe sa uvedie",
+         "n": "2",
+         "items": [
+          {
+           "anchor": "p7-2-a",
+           "label": "a)",
+           "letter": "a",
+           "text": "obchodné meno,"
+          },
+          {
+           "anchor": "p7-2-b",
+           "label": "b)",
+           "letter": "b",
+           "text": "identifikačné číslo,"
+          },
+          {
+           "anchor": "p7-2-c",
+           "label": "c)",
+           "letter": "c",
+           "text": "sídlo,"
+          },
+          {
+           "anchor": "p7-2-d",
+           "label": "d)",
+           "letter": "d",
+           "text": "meno a priezvisko zodpovedného zástupcu, jeho trvalý pobyt alebo pobyt a číslo osvedčenia o odbornej spôsobilosti,"
+          },
+          {
+           "anchor": "p7-2-e",
+           "label": "e)",
+           "letter": "e",
+           "text": "sídlo organizačnej zložky zahraničnej právnickej osoby na území Slovenskej republiky, ak sa povolenie vydáva takejto osobe,"
+          },
+          {
+           "anchor": "p7-2-f",
+           "label": "f)",
+           "letter": "f",
+           "text": "rozsah predmetu podnikania, na ktoré sa vydáva povolenie,"
+          },
+          {
+           "anchor": "p7-2-g",
+           "label": "g)",
+           "letter": "g",
+           "text": "doba začatia výkonu predmetu podnikania a doba platnosti povolenia,"
+          },
+          {
+           "anchor": "p7-2-h",
+           "label": "h)",
+           "letter": "h",
+           "text": "miesto výkonu predmetu podnikania,"
+          },
+          {
+           "anchor": "p7-2-i",
+           "label": "i)",
+           "letter": "i",
+           "text": "stručný technický popis sústavy tepelných zariadení, na ktorých môže podnikať, a ich výkonové hodnoty,"
+          },
+          {
+           "anchor": "p7-2-j",
+           "label": "j)",
+           "letter": "j",
+           "text": "vymedzené územie,"
+          },
+          {
+           "anchor": "p7-2-k",
+           "label": "k)",
+           "letter": "k",
+           "text": "informácia o rozhodnutí podľa § 9 ods. 4 alebo ods. 5, ak bolo vydané,"
+          },
+          {
+           "anchor": "p7-2-l",
+           "label": "l)",
+           "letter": "l",
+           "text": "údaje o vlastníkovi sústavy tepelných zariadení alebo jej časti."
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "type": "provision",
+       "anchor": "p8",
+       "label": "§ 8",
+       "paragraphs": [
+        {
+         "anchor": "p8-1",
+         "text": "Žiadateľ, ktorému bolo vydané povolenie (ďalej len „držiteľ povolenia“), pri zmene údajov uvedených v povolení je povinný písomne požiadať úrad o vykonanie zmeny do 30 dní od vzniku zmeny.",
+         "n": "1"
+        },
+        {
+         "anchor": "p8-2",
+         "text": "Držiteľ povolenia k písomnej žiadosti podľa odseku 1 je povinný priložiť doklady, ktoré zmenu odôvodňujú.",
+         "n": "2"
+        },
+        {
+         "anchor": "p8-3",
+         "text": "Úrad vykoná zmeny v povolení do 30 dní od doručenia žiadosti.",
+         "n": "3"
+        },
+        {
+         "anchor": "p8-4",
+         "text": "Úrad môže vykonať zmeny v povolení aj z vlastného podnetu, ak sa zmenili podmienky alebo skutočnosti, na základe ktorých bolo povolenie vydané.",
+         "n": "4"
+        }
+       ],
+       "heading": "Zmeny v povolení"
+      },
+      {
+       "type": "provision",
+       "anchor": "p9",
+       "label": "§ 9",
+       "paragraphs": [
+        {
+         "anchor": "p9-1",
+         "text": "Povolenie zanikne",
+         "n": "1",
+         "items": [
+          {
+           "anchor": "p9-1-a",
+           "label": "a)",
+           "letter": "a",
+           "text": "uplynutím doby, na ktorú bolo vydané,"
+          },
+          {
+           "anchor": "p9-1-b",
+           "label": "b)",
+           "letter": "b",
+           "text": "smrťou fyzickej osoby, ktorá bola držiteľom povolenia alebo vyhlásením tejto osoby za mŕtvu,¹¹)"
+          },
+          {
+           "anchor": "p9-1-c",
+           "label": "c)",
+           "letter": "c",
+           "text": "výmazom z obchodného registra alebo výmazom z iného príslušného registra."
+          }
+         ]
+        },
+        {
+         "anchor": "p9-2",
+         "text": "Úrad rozhodne o zrušení povolenia, ak držiteľ povolenia",
+         "n": "2",
+         "items": [
+          {
+           "anchor": "p9-2-a",
+           "label": "a)",
+           "letter": "a",
+           "text": "prestal spĺňať podmienky na vydanie povolenia podľa § 6,"
+          },
+          {
+           "anchor": "p9-2-b",
+           "label": "b)",
+           "letter": "b",
+           "text": "porušil závažným spôsobom alebo opakovane povinnosti ustanovené týmto zákonom alebo osobitným predpisom,¹¹ᵃ)"
+          },
+          {
+           "anchor": "p9-2-c",
+           "label": "c)",
+           "letter": "c",
+           "text": "písomne požiada o zrušenie povolenia najmenej dvanásť mesiacov pred požadovaným termínom zrušenia,"
+          },
+          {
+           "anchor": "p9-2-d",
+           "label": "d)",
+           "letter": "d",
+           "text": "nevykonáva počas troch rokov žiadnu z činností, na ktoré má povolenie,"
+          },
+          {
+           "anchor": "p9-2-e",
+           "label": "e)",
+           "letter": "e",
+           "text": "porušil povinnosť ustanovenú v § 3 ods. 5,"
+          },
+          {
+           "anchor": "p9-2-f",
+           "label": "f)",
+           "letter": "f",
+           "text": "nemá vlastnícky vzťah alebo iný právny vzťah k sústave tepelných zariadení, na ktorých podniká,"
+          },
+          {
+           "anchor": "p9-2-g",
+           "label": "g)",
+           "letter": "g",
+           "text": "nevykonal opatrenia uložené úradom na odstránenie nedostatkov zistených kontrolou."
+          }
+         ]
+        },
+        {
+         "anchor": "p9-3",
+         "text": "Ak povolenie zanikne alebo ak úrad rozhodol o zrušení povolenia, držiteľ povolenia alebo jeho právny nástupca je povinný v lehote 15 dní od zániku alebo zrušenia povolenia vrátiť povolenie úradu.",
+         "n": "3"
+        },
+        {
+         "anchor": "p9-4",
+         "text": "Pri zániku povolenia alebo zrušení povolenia môže úrad rozhodnúť o tom, že vlastník sústavy tepelných zariadení alebo jej časti je povinný za náhradu poskytnúť na prevádzkovanie a zabezpečenie zásobovania teplom na vymedzenom území, uvedenom v zaniknutom alebo zrušenom povolení, svoju sústavu tepelných zariadení alebo jej časť inému, v rozhodnutí určenému, držiteľovi povolenia. Vlastník sústavy tepelných zariadení alebo jej časti je povinný informovať úrad o zmene vlastníckeho práva k sústave tepelných zariadení alebo jej časti uvedenej v rozhodnutí podľa prvej vety do piatich dní od vzniku zmeny.",
+         "n": "4"
+        },
+        {
+         "anchor": "p9-5",
+         "text": "Úrad môže vydať predbežné opatrenie podľa § 43 Správneho poriadku, ktorým uloží vlastníkovi sústavy tepelných zariadení alebo jej časti povinnosť poskytnúť svoju sústavu tepelných zariadení alebo jej časť inému, úradom určenému, držiteľovi povolenia na účel prevádzkovania a zabezpečenia zásobovania teplom na vymedzenom území, ak hrozí prerušenie alebo obmedzenie dodávky tepla na vymedzenom území alebo stav núdze v tepelnej energetike a úrad začal konanie o zrušení povolenia. Vlastník sústavy tepelných zariadení alebo jej časti je povinný informovať úrad o zmene vlastníckeho práva k sústave tepelných zariadení alebo jej časti uvedenej v predbežnom opatrení do piatich dní od vzniku zmeny. Ak v rozhodnutí nie je ustanovené inak, predbežné opatrenie stráca účinnosť najneskôr dňom právoplatnosti rozhodnutia úradu podľa odseku 4. Predbežné opatrenie sa doručuje verejnou vyhláškou tak, že sa vyvesí po dobu piatich dní na úradnej tabuli úradu. Posledný deň tejto lehoty je dňom doručenia. Úrad zverejňuje predbežné opatrenie súčasne na svojom webovom sídle. Informácia o zverejnení predbežného opatrenia sa zasiela vlastníkovi sústavy tepelných zariadení alebo jej časti a držiteľovi povolenia, ktorému vznikla povinnosť prevádzkovania a zabezpečenia zásobovania teplom.",
+         "n": "5"
+        },
+        {
+         "anchor": "p9-6",
+         "text": "Ak úrad zrušil povolenie podľa odseku 2 písm. b) alebo písm. g), tej istej osobe nie je možné vydať povolenie po dobu piatich rokov od nadobudnutia právoplatnosti rozhodnutia, ktorým bolo povolenie zrušené. Povolenie nie je možné vydať ani osobe zriadenej alebo ovládanej osobou, ktorej bolo v posledných piatich rokoch zrušené povolenie podľa odseku 2 písm. b) alebo písm. g) a osobe, ktorej štatutárny orgán alebo člen štatutárneho orgánu bol alebo je v čase podania žiadosti o vydanie povolenia štatutárnym orgánom alebo členom štatutárneho orgánu osoby, ktorej bolo v posledných piatich rokoch zrušené povolenie podľa odseku 2 písm. b) alebo písm. g).",
+         "n": "6"
+        },
+        {
+         "anchor": "p9-7",
+         "text": "Vlastník sústavy tepelných zariadení alebo jej časti potrebnej na zabezpečenie zásobovania teplom na vymedzenom území je povinný poskytnúť inému, v rozhodnutí určenému, držiteľovi povolenia, ktorému vznikla povinnosť prevádzkovania a zabezpečenia zásobovania teplom, súčinnosť na zabezpečenie činností podľa odseku 4 alebo odseku 5.",
+         "n": "7"
+        },
+        {
+         "anchor": "p9-8",
+         "text": "Držiteľ povolenia, ktorému vznikla povinnosť prevádzkovania a zabezpečenia zásobovania teplom, je povinný pri výkone činností uvedených v rozhodnutí vydanom podľa odseku 4 alebo odseku 5 dodržiavať povinnosti držiteľa povolenia podľa tohto zákona a podľa osobitného predpisu.¹²)",
+         "n": "8"
+        },
+        {
+         "anchor": "p9-9",
+         "text": "Pri výkone činností podľa rozhodnutia vydaného podľa odseku 4 alebo odseku 5 prechádza právo na úhradu za výkon regulovanej činnosti na toho držiteľa povolenia, ktorému vznikla povinnosť prevádzkovania a zabezpečenia zásobovania teplom. Držiteľ povolenia, ktorému vznikla povinnosť prevádzkovania a zabezpečenia zásobovania teplom, uplatňuje ceny za výkon regulovanej činnosti podľa cenového rozhodnutia vydaného pôvodnému držiteľovi povolenia do času, kým mu je úradom schválená alebo určená cena za výkon tejto regulovanej činnosti.",
+         "n": "9"
+        },
+        {
+         "anchor": "p9-10",
+         "text": "Pôvodný držiteľ povolenia je povinný do troch dní od oznámenia rozhodnutia podľa odseku 4 alebo odseku 5 poskytnúť úradom určenému držiteľovi povolenia, ktorému vznikla povinnosť prevádzkovania a zabezpečenia zásobovania teplom, zoznam odberateľov, zoznam dodávateľov energií, tovarov a služieb potrebných na prevádzkovanie a zabezpečenie zásobovania teplom, kompletnú dokumentáciu k sústave tepelných zariadení alebo jej časti potrebnú na výkon regulovanej činnosti a údaje na účely merania a fakturácie tepla.",
+         "n": "10"
+        },
+        {
+         "anchor": "p9-11",
+         "text": "Odberateľ, ktorému dodáva teplo úradom určený držiteľ povolenia, ktorému na základe rozhodnutia podľa odseku 4 alebo odseku 5 vznikla povinnosť prevádzkovania a zabezpečenia zásobovania teplom, je povinný tomuto držiteľovi povolenia uhradiť cenu za dodávku a rozvod tepla.",
+         "n": "11"
+        },
+        {
+         "anchor": "p9-12",
+         "text": "Ak pred vyhlásením konkurzu na majetok vlastníka sústavy tepelných zariadení alebo jej časti bolo vo vzťahu k sústave tepelných zariadení alebo jej časti vydané predbežné opatrenie podľa odseku 5, dotknutá sústava tepelných zariadení alebo jej časť začne podliehať konkurzu až okamihom zrušenia tohto predbežného opatrenia.",
+         "n": "12"
+        },
+        {
+         "anchor": "p9-13",
+         "text": "Držiteľ povolenia, ktorému vznikla povinnosť prevádzkovania a zabezpečenia zásobovania teplom, je povinný do troch dní od poskytnutia informácií podľa odseku 10 informovať dodávateľov energií, tovarov a služieb potrebných na prevádzkovanie a zabezpečenie zásobovania teplom o povinnosti prevádzkovania a zabezpečenia zásobovania teplom podľa odseku 4 alebo odseku 5.",
+         "n": "13"
+        }
+       ],
+       "heading": "Zánik a zrušenie povolenia"
+      },
+      {
+       "type": "provision",
+       "anchor": "p10",
+       "label": "§ 10",
+       "paragraphs": [
+        {
+         "anchor": "p10-1",
+         "text": "Držiteľ povolenia alebo ním poverená osoba môže v nevyhnutnom rozsahu a vo verejnom záujme",
+         "n": "1",
+         "items": [
+          {
+           "anchor": "p10-1-a",
+           "label": "a)",
+           "letter": "a",
+           "text": "vstupovať na cudzie pozemky a do cudzích objektov a zariadení v rozsahu a spôsobom nevyhnutným na výkon povolenej činnosti,"
+          },
+          {
+           "anchor": "p10-1-b",
+           "label": "b)",
+           "letter": "b",
+           "text": "pri dodržaní podmienok ochrany životného prostredia odstraňovať a okliesňovať na cudzích pozemkoch stromy a iné porasty, ktoré ohrozujú bezpečnosť alebo spoľahlivosť prevádzky sústavy tepelných zariadení, ak tak po predchádzajúcej výzve neurobil ich vlastník; výzva musí byť vlastníkovi doručená podľa odseku 3,"
+          },
+          {
+           "anchor": "p10-1-c",
+           "label": "c)",
+           "letter": "c",
+           "text": "pri dodržaní podmienok ochrany životného prostredia upravovať na cudzích pozemkoch trávnaté porasty,"
+          },
+          {
+           "anchor": "p10-1-d",
+           "label": "d)",
+           "letter": "d",
+           "text": "zriaďovať na cudzích pozemkoch mimo zastavaného územia obce¹²ᵃ) verejný rozvod tepla, stavby vodovodných potrubí, technológií a iných objektov umožňujúcich využívanie energetického potenciálu vôd¹²ᵇ) alebo geotermálnej energie v zariadeniach na výrobu tepla využívajúcich obnoviteľné zdroje energie a zariadenia určené na ich ochranu, zabránenie ich porúch alebo havárií, alebo na zmiernenie dôsledkov porúch alebo havárií na ochranu života, zdravia a majetku osôb; pri povoľovaní takej stavby stavebný úrad rozhodne o podmienkach, za akých možno stavbu uskutočniť a prevádzkovať na cudzom pozemku; oprávnenia stavebníka na uskutočnenie stavby vznikajú nadobudnutím právoplatnosti takého rozhodnutia,"
+          },
+          {
+           "anchor": "p10-1-e",
+           "label": "e)",
+           "letter": "e",
+           "text": "vykonávať na cudzích nehnuteľnostiach povolenú činnosť na sústave tepelných zariadení alebo na jej časti, ak jej výstavba bola povolená podľa stavebných predpisov."
+          }
+         ]
+        },
+        {
+         "anchor": "p10-2",
+         "text": "Činnosti podľa odseku 1 písm. a) až c) je držiteľ povolenia alebo ním poverená osoba povinná vopred písomne oznámiť vlastníkovi; to neplatí, ak ide o",
+         "n": "2",
+         "items": [
+          {
+           "anchor": "p10-2-a",
+           "label": "a)",
+           "letter": "a",
+           "text": "bezprostredné ohrozenie života, zdravia alebo majetku osôb a pri likvidácii týchto stavov,"
+          },
+          {
+           "anchor": "p10-2-b",
+           "label": "b)",
+           "letter": "b",
+           "text": "stav núdze v tepelnej energetike alebo predchádzanie jeho vzniku,"
+          },
+          {
+           "anchor": "p10-2-c",
+           "label": "c)",
+           "letter": "c",
+           "text": "poruchy, údržbu alebo havárie na sústave tepelných zariadení a počas ich odstraňovania."
+          }
+         ]
+        },
+        {
+         "anchor": "p10-3",
+         "text": "Výzvu podľa odseku 1 písm. b) alebo oznámenie podľa odseku 2 doručí držiteľ povolenia alebo ním poverená osoba vlastníkovi najmenej 15 dní pred plánovaným začatím činnosti. Doručenie verejnou vyhláškou sa použije v prípade veľkého počtu vlastníkov alebo ak pobyt vlastníka nie je známy. Doručenie verejnou vyhláškou sa vykoná tak, že sa oznámenie vyvesí počas najmenej 30 dní na úradnej tabuli obce, ktorej katastrálne územie bude činnosťou priamo dotknuté. V tom prípade sa oznámenie zverejní aj spôsobom v mieste obvyklým.",
+         "n": "3"
+        },
+        {
+         "anchor": "p10-4",
+         "text": "Vlastníkovi nehnuteľnosti patrí po vykonaní činností na základe výzvy podľa odseku 1 písm. b) náhrada nákladov, ktorú uhrádza držiteľ povolenia, ak boli rozsah a spôsob vykonania činností a predpokladaná výška nákladov na vykonanie týchto činností vopred písomne odsúhlasené držiteľom povolenia.",
+         "n": "4"
+        },
+        {
+         "anchor": "p10-5",
+         "text": "Ak vznikne vlastníkovi nehnuteľnosti v dôsledku výkonu práv držiteľa povolenia alebo ním poverenej osoby podľa odseku 1 škoda, má nárok na jej náhradu podľa Občianskeho zákonníka. Ak je vlastník nehnuteľnosti obmedzený pri obvyklom užívaní nehnuteľnosti, má nárok na primeranú náhradu za nútené obmedzenie užívania nehnuteľnosti, ak sa neposkytuje jednorazová náhrada podľa odseku 9 alebo odseku 12. Nárok na primeranú náhradu za nútené obmedzenie užívania nehnuteľnosti možno uplatniť u držiteľa povolenia alebo ním poverenej osoby do šiestich mesiacov odo dňa, keď sa o tom vlastník dozvedel, najneskôr však do jedného roka od vzniku núteného obmedzenia užívania nehnuteľnosti, inak právo vlastníka na primeranú náhradu za nútené obmedzenie užívania nehnuteľnosti zaniká. Ak sa držiteľ povolenia a vlastník nehnuteľnosti na výške primeranej náhrady nedohodnú, každý z nich môže podať súdu návrh na rozhodnutie o výške primeranej náhrady do šiestich mesiacov odo dňa uplatnenia si nároku u držiteľa povolenia.",
+         "n": "5"
+        },
+        {
+         "anchor": "p10-6",
+         "text": "Držiteľ povolenia alebo ním poverená osoba je povinný konať tak, aby nespôsobil ujmu na právach vlastníkov dotknutých nehnuteľností, a ak sa jej nedá vyhnúť, obmedziť ujmu na najmenšiu možnú mieru. Po skončení nevyhnutných pozemných prác je držiteľ povolenia alebo ním poverená osoba povinný uviesť pozemky do pôvodného stavu, alebo, ak to nie je možné, je povinný uhradiť vlastníkovi pozemku spôsobenú škodu.",
+         "n": "6"
+        },
+        {
+         "anchor": "p10-7",
+         "text": "Na účely odsekov 1 až 6 sa vlastníkom rozumie vlastník, správca alebo nájomca nehnuteľnosti.",
+         "n": "7"
+        },
+        {
+         "anchor": "p10-8",
+         "text": "Povinnosti zodpovedajúce oprávneniam podľa odseku 1 sú vecnými bremenami¹²ᵃᵃ) spojenými s vlastníctvom nehnuteľnosti. Návrh na vykonanie záznamu do katastra nehnuteľností je oprávnený podať držiteľ povolenia.¹²ᵃᵇ)",
+         "n": "8"
+        },
+        {
+         "anchor": "p10-9",
+         "text": "Vlastník nehnuteľnosti má za zriadenie vecného bremena nárok na primeranú náhradu; náhrada sa poskytne za výmeru, v ktorej je vlastník obmedzený pri užívaní nehnuteľnosti v dôsledku uplatnenia zákonného vecného bremena držiteľom povolenia, okrem výmery, za ktorú vlastníkovi patrí primeraná náhrada podľa odseku 12.",
+         "n": "9"
+        },
+        {
+         "anchor": "p10-10",
+         "text": "Nárok na primeranú náhradu za uplatnenie zákonného vecného bremena možno uplatniť u držiteľa povolenia do šiestich mesiacov odo dňa, keď sa vlastník nehnuteľnosti o uplatnení zákonného vecného bremena držiteľom povolenia dozvedel, najneskôr však do jedného roka odo dňa uplatnenia zákonného vecného bremena držiteľom povolenia a pri zákonných vecných bremenách podľa odseku 1 písm. d) a e) odo dňa vykonania zápisu vecného bremena do katastra nehnuteľností, inak právo na primeranú náhradu za uplatnenie zákonného vecného bremena držiteľom povolenia zaniká. Držiteľ povolenia je povinný písomne oznámiť vlastníkovi nehnuteľnosti vykonanie zápisu vecného bremena do katastra nehnuteľností. Ak sa držiteľ povolenia a vlastník nehnuteľnosti na výške primeranej náhrady nedohodnú, každý z nich môže podať súdu návrh na rozhodnutie o výške primeranej náhrady do šiestich mesiacov odo dňa uplatnenia si nároku u držiteľa povolenia.",
+         "n": "10"
+        },
+        {
+         "anchor": "p10-11",
+         "text": "Práva zodpovedajúce vecným bremenám patria držiteľovi povolenia. Ak dôjde k zmene osoby držiteľa povolenia, práva zodpovedajúce vecným bremenám prechádzajú na nového držiteľa povolenia.",
+         "n": "11"
+        },
+        {
+         "anchor": "p10-12",
+         "text": "Za nútené obmedzenie vlastníka pozemku v užívaní pozemku v ochrannom pásme podľa § 36 zriadenom po 1. máji 2014 je držiteľ povolenia povinný vyplatiť vlastníkovi pozemku primeranú náhradu zodpovedajúcu miere obmedzenia obvyklého užívania pozemku. Nárok na primeranú náhradu si musí vlastník pozemku uplatniť u držiteľa povolenia do šiestich mesiacov odo dňa, keď sa o nútenom obmedzení užívania pozemku dozvedel, najneskôr však do jedného roka odo dňa núteného obmedzenia užívania pozemku, inak právo na primeranú náhradu zanikne. Držiteľ povolenia je povinný písomne oznámiť vlastníkovi pozemku vykonanie zápisu vecného bremena do katastra nehnuteľností. Ak sa držiteľ povolenia a vlastník pozemku na výške primeranej náhrady nedohodnú, každý z nich môže podať súdu návrh na rozhodnutie o výške primeranej náhrady do šiestich mesiacov odo dňa uplatnenia si nároku u držiteľa povolenia.",
+         "n": "12"
+        },
+        {
+         "anchor": "p10-13",
+         "text": "Vlastník nehnuteľnosti je oprávnený požiadať úrad o vydanie rozhodnutia o zániku oprávnení podľa odseku 1 a podľa doterajších predpisov a povinností zodpovedajúcich týmto oprávneniam týkajúcich sa sústavy tepelných zariadení alebo jej časti umiestnenej na jeho nehnuteľnosti. K žiadosti o vydanie rozhodnutia podľa prvej vety je vlastník nehnuteľnosti povinný pripojiť stanovisko príslušného držiteľa povolenia na rozvod tepla k žiadosti vlastníka nehnuteľnosti.",
+         "n": "13"
+        },
+        {
+         "anchor": "p10-14",
+         "text": "Úrad vydá rozhodnutie podľa odseku 13, ak príslušný držiteľ povolenia na rozvod tepla v stanovisku nepreukáže úradu opodstatnenosť zachovania sústavy tepelných zariadení alebo jej časti z pohľadu preukázateľných súčasných alebo budúcich potrieb držiteľa povolenia na rozvod tepla a sústava tepelných zariadení alebo jej časť umiestnená na nehnuteľnosti dotknutého vlastníka nie je najmenej päť rokov využívaná na rozvod tepla do odberných miest odberateľov pripojených k verejnému rozvodu tepla prostredníctvom takej sústavy tepelných zariadení alebo jej časti a súčasne dotknutí odberatelia v lehote určenej vo výzve úradu na vyjadrenie nepreukážu úradu opodstatnenosť pripojenia ich odberných miest; úrad je povinný vyzvať dotknutých odberateľov na vyjadrenie v upovedomení o začatí konania.",
+         "n": "14"
+        },
+        {
+         "anchor": "p10-15",
+         "text": "Oprávnenia podľa odseku 1 a podľa doterajších predpisov a povinnosti zodpovedajúce týmto oprávneniam týkajúce sa sústavy tepelných zariadení alebo jej časti umiestnenej na nehnuteľnosti dotknutého vlastníka zanikajú dňom právoplatnosti rozhodnutia úradu. Dňom právoplatnosti rozhodnutia úradu zanikajú aj zmluvy o dodávke a odbere tepla alebo iné práva na pripojenie k verejnému rozvodu tepla odberateľov pripojených k verejnému rozvodu tepla prostredníctvom sústavy tepelných zariadení alebo jej časti na nehnuteľnosti dotknutého vlastníka.",
+         "n": "15"
+        },
+        {
+         "anchor": "p10-16",
+         "text": "Držiteľ povolenia je povinný",
+         "n": "16",
+         "items": [
+          {
+           "anchor": "p10-16-a",
+           "label": "a)",
+           "letter": "a",
+           "text": "poskytovať orgánom vykonávajúcim štátnu správu alebo štátny dozor podľa § 29 až 32 na ich požiadanie informácie nevyhnutné na výkon štátnej správy alebo štátneho dozoru,"
+          },
+          {
+           "anchor": "p10-16-b",
+           "label": "b)",
+           "letter": "b",
+           "text": "umožniť úradu pri výkone kontroly alebo štátneho dozoru vstup do objektov, v ktorých sa vykonáva povolená činnosť,"
+          },
+          {
+           "anchor": "p10-16-c",
+           "label": "c)",
+           "letter": "c",
+           "text": "plniť opatrenia a povinnosti súvisiace s vyhlásením stavu núdze v tepelnej energetike."
+          }
+         ]
+        }
+       ],
+       "heading": "Práva a povinnosti držiteľa povolenia"
+      },
+      {
+       "type": "provision",
+       "anchor": "p11",
+       "label": "§ 11",
+       "paragraphs": [
+        {
+         "anchor": "p11-1",
+         "text": "Právnická osoba, ktorá vyrába teplo alebo vykonáva rozvod tepla podľa § 1 ods. 3 písm. b) a fyzická osoba alebo právnická osoba, ktoré vykonávajú činnosť podľa § 1 ods. 3 písm. c) a d) sú povinné túto skutočnosť oznámiť úradu najneskôr do 30 dní od začatia výkonu týchto činností; oznamovacia povinnosť sa nevzťahuje na osobitné objekty a zariadenia v pôsobnosti a užívaní Ministerstva obrany Slovenskej republiky, ozbrojených síl Slovenskej republiky, Ministerstva vnútra Slovenskej republiky, Slovenskej informačnej služby a Zboru väzenskej a justičnej stráže.",
+         "n": "1"
+        },
+        {
+         "anchor": "p11-2",
+         "text": "Právnická osoba v oznámení uvedie",
+         "n": "2",
+         "items": [
+          {
+           "anchor": "p11-2-a",
+           "label": "a)",
+           "letter": "a",
+           "text": "obchodné meno, sídlo a právnu formu,"
+          },
+          {
+           "anchor": "p11-2-b",
+           "label": "b)",
+           "letter": "b",
+           "text": "meno, priezvisko a pobyt štatutárneho zástupcu,"
+          },
+          {
+           "anchor": "p11-2-c",
+           "label": "c)",
+           "letter": "c",
+           "text": "identifikačné číslo,"
+          },
+          {
+           "anchor": "p11-2-d",
+           "label": "d)",
+           "letter": "d",
+           "text": "miesto výkonu činnosti podľa odseku 1 a jej rozsah,"
+          },
+          {
+           "anchor": "p11-2-e",
+           "label": "e)",
+           "letter": "e",
+           "text": "druh a výkon sústavy tepelných zariadení, na ktorej vykonáva alebo bude vykonávať činnosti podľa odseku 1."
+          }
+         ]
+        },
+        {
+         "anchor": "p11-3",
+         "text": "Právnická osoba podľa odseku 1 oznámi úradu skončenie činnosti podľa odseku 1 najmenej šesť mesiacov pred jej skončením.",
+         "n": "3"
+        },
+        {
+         "anchor": "p11-4",
+         "text": "Fyzická osoba v oznámení uvedie",
+         "n": "4",
+         "items": [
+          {
+           "anchor": "p11-4-a",
+           "label": "a)",
+           "letter": "a",
+           "text": "meno a priezvisko, obchodné meno a identifikačné číslo, ak jej bolo pridelené, miesto trvalého pobytu na území Slovenskej republiky alebo miesto pobytu na území Slovenskej republiky,"
+          },
+          {
+           "anchor": "p11-4-b",
+           "label": "b)",
+           "letter": "b",
+           "text": "miesto výkonu činnosti podľa § 1 ods. 3 písm. c),"
+          },
+          {
+           "anchor": "p11-4-c",
+           "label": "c)",
+           "letter": "c",
+           "text": "druh a výkon decentralizovaného zdroja tepla, prostredníctvom ktorého vykonáva činnosti podľa odseku 1."
+          }
+         ]
+        },
+        {
+         "anchor": "p11-5",
+         "text": "Fyzická osoba podľa odseku 1 oznámi úradu skončenie činnosti podľa odseku 1 najmenej šesť mesiacov pred jej skončením.",
+         "n": "5"
+        }
+       ],
+       "heading": "Oznamovacia povinnosť"
+      }
+     ]
+    },
+    {
+     "type": "section",
+     "anchor": "s-cast-druha-g-vystavba-sustavy-tepelnych-zariadeni",
+     "kind": "group",
+     "heading": "Výstavba sústavy tepelných zariadení",
+     "children": [
+      {
+       "type": "provision",
+       "anchor": "p12",
+       "label": "§ 12",
+       "paragraphs": [
+        {
+         "anchor": "p12-1",
+         "text": "Výstavbu sústavy tepelných zariadení alebo jej časti možno uskutočniť len na základe osvedčenia na výstavbu sústavy tepelných zariadení alebo jej časti (ďalej len „osvedčenie“), ktoré vydáva ministerstvo alebo obec. O vydanie osvedčenia môže písomne požiadať fyzická osoba alebo právnická osoba.",
+         "n": "1"
+        },
+        {
+         "anchor": "p12-2",
+         "text": "Osvedčenie sa nevyžaduje pri výstavbe",
+         "n": "2",
+         "items": [
+          {
+           "anchor": "p12-2-a",
+           "label": "a)",
+           "letter": "a",
+           "text": "decentralizovaného zdroja tepla využívajúceho výlučne obnoviteľné zdroje energie alebo odpadové teplo,"
+          },
+          {
+           "anchor": "p12-2-b",
+           "label": "b)",
+           "letter": "b",
+           "text": "decentralizovaného zdroja tepla s inštalovaným výkonom do 100 kW, ktorý využíva aj iné energetické zdroje ako obnoviteľné zdroje energie alebo odpadové teplo, ak objekt spotreby tepla nie je pripojený do sústavy tepelných zariadení držiteľa povolenia na rozvod tepla, ktorý zabezpečuje centralizované zásobovanie teplom; zvýšiť inštalovaný výkon nad 100 kW možno len na základe osvedčenia,"
+          },
+          {
+           "anchor": "p12-2-c",
+           "label": "c)",
+           "letter": "c",
+           "text": "zariadenia na rozvod tepla, ktoré predstavuje rozšírenie, rekonštrukciu alebo modernizáciu existujúceho zariadenia na rozvod tepla v časti vymedzeného územia držiteľa povolenia na rozvod tepla alebo v území bezprostredne nadväzujúcom na vymedzené územie."
+          }
+         ]
+        },
+        {
+         "anchor": "p12-3",
+         "text": "Ministerstvo vydáva osvedčenie pri výstavbe zariadenia na výrobu tepla s inštalovaným výkonom vyšším ako 10 MW a pri výstavbe zariadenia na rozvod tepla, ktorá sa má uskutočniť na území viac ako jednej obce; ministerstvo v konaní o vydanie osvedčenia posudzuje súlad žiadosti o vydanie osvedčenia s energetickou politikou Slovenskej republiky. Ak nie sú splnené podmienky podľa prvej vety, vydáva osvedčenie obec podľa § 31 písm. c).",
+         "n": "3"
+        },
+        {
+         "anchor": "p12-4",
+         "text": "O vydaní osvedčenia rozhodne ministerstvo alebo obec na základe písomnej žiadosti podľa odseku 1 do 30 dní od jej doručenia a po vyhodnotení",
+         "n": "4",
+         "items": [
+          {
+           "anchor": "p12-4-a",
+           "label": "a)",
+           "letter": "a",
+           "text": "potreby nových zdrojov tepla a rozvodov tepla na území, ktoré má byť zásobované teplom z výstavby sústavy tepelných zariadení, na ktorú sa žiada vydať osvedčenie,"
+          },
+          {
+           "anchor": "p12-4-b",
+           "label": "b)",
+           "letter": "b",
+           "text": "využitia domácich obnoviteľných zdrojov energie,"
+          },
+          {
+           "anchor": "p12-4-c",
+           "label": "c)",
+           "letter": "c",
+           "text": "možnosti získavania tepelnej energie na území, na ktorom má byť výstavba uskutočnená, z kombinovanej výroby elektriny a tepla,¹²ᶜ)"
+          },
+          {
+           "anchor": "p12-4-d",
+           "label": "d)",
+           "letter": "d",
+           "text": "plnenia požiadaviek na ochranu životného prostredia,"
+          },
+          {
+           "anchor": "p12-4-e",
+           "label": "e)",
+           "letter": "e",
+           "text": "hospodárnosti a energetickej účinnosti sústavy tepelných zariadení, na ktorej výstavbu sa osvedčenie požaduje,"
+          },
+          {
+           "anchor": "p12-4-f",
+           "label": "f)",
+           "letter": "f",
+           "text": "využitia vysoko účinnej kombinovanej výroby elektriny a tepla¹²ᵈ) alebo obnoviteľných zdrojov energie v systémoch centralizovaného zásobovania teplom,"
+          },
+          {
+           "anchor": "p12-4-g",
+           "label": "g)",
+           "letter": "g",
+           "text": "vplyvov na hospodárnosť a energetickú efektívnosť iných dotknutých sústav tepelných zariadení najmä systémov centralizovaného zásobovania teplom a dopadov na koncových odberateľov, ktorým sa dodáva teplo z iných dotknutých sústav tepelných zariadení."
+          }
+         ]
+        },
+        {
+         "anchor": "p12-5",
+         "text": "Ministerstvo alebo obec osvedčenie podľa odseku 1 nevydá, ak sa výstavbou sústavy tepelných zariadení zníži odber tepla z existujúceho účinného centralizovaného zásobovania teplom a v porovnaní s týmto existujúcim zásobovaním tepla sa preukázateľne na základe energetického auditu podľa osobitného predpisu¹²ᵉ)",
+         "n": "5",
+         "items": [
+          {
+           "anchor": "p12-5-a",
+           "label": "a)",
+           "letter": "a",
+           "text": "zhorší vplyv na životné prostredie najmä zvýšením emisií znečisťujúcich látok do ovzdušia alebo zvýšením emisií skleníkových plynov alebo"
+          },
+          {
+           "anchor": "p12-5-b",
+           "label": "b)",
+           "letter": "b",
+           "text": "zníži podiel tepla z obnoviteľných zdrojov energie alebo odpadového tepla v dodávke tepla."
+          }
+         ]
+        },
+        {
+         "anchor": "p12-6",
+         "text": "Pri žiadosti o vydanie osvedčenia je účastníkom konania osoba, ktorá podala žiadosť o vydanie osvedčenia a držiteľ povolenia na rozvod tepla v dotknutých sústavách tepelných zariadení.",
+         "n": "6"
+        },
+        {
+         "anchor": "p12-7",
+         "text": "Na účely prerokúvania územnoplánovacej dokumentácie a v rozsahu skutočností, ktoré sa vyhodnocujú podľa odseku 4, je ministerstvo dotknutým orgánom štátnej správy a obec je dotknutým orgánom územnej samosprávy. Ministerstvo a obce sú dotknutým orgánom pri prerokovaní stavebného zámeru, v konaní o stavebnom zámere alebo pri nariaďovaní stavebných prác, ak si to vyhradia aj pri overovaní projektu stavby, pri kolaudácii stavby, pri zmene v užívaní stavby, pri predčasnom užívaní stavby, pri dočasnom užívaní stavby alebo pri odstránení stavby v rozsahu podmienok uvedených v platnom osvedčení. Osvedčenie je dokladom k žiadosti o pripojenie zariadenia na výrobu tepla do distribučnej siete.",
+         "n": "7"
+        },
+        {
+         "anchor": "p12-8",
+         "text": "Osvedčenie sa vydáva na dobu uvedenú v žiadosti, najdlhšie však na tri roky odo dňa jej vydania. Platnosť osvedčenia sa môže predĺžiť o ďalšie dva roky na základe písomnej žiadosti. Písomnú žiadosť o predĺženie platnosti osvedčenia musí jeho držiteľ predložiť ministerstvu najneskôr tri mesiace pred skončením jeho platnosti. Ak žiadateľ o vydanie osvedčenia ani v týchto lehotách výstavbu sústavy tepelných zariadení neskončí a stavbu neuvedie do trvalej prevádzky, ďalšia výstavba sa môže uskutočniť len na základe nového osvedčenia.",
+         "n": "8"
+        },
+        {
+         "anchor": "p12-9",
+         "text": "Vydaním osvedčenia nie je dotknutý Stavebný zákon.",
+         "n": "9"
+        },
+        {
+         "anchor": "p12-10",
+         "text": "Pri výstavbe sústavy tepelných zariadení na vymedzenom území držiteľa povolenia na rozvod tepla, ktorý zabezpečuje centralizované zásobovania teplom, je tento držiteľ povolenia v konaní podľa Stavebného zákona účastníkom konania.",
+         "n": "10"
+        },
+        {
+         "anchor": "p12-11",
+         "text": "Ustanovenia odsekov 1 až 10 sa primerane vzťahujú aj na zmeny a úpravy v existujúcich sústavách tepelných zariadení, pre ktoré sa vyžaduje rozhodnutie o stavebnom zámere.¹³ᶜ)",
+         "n": "11"
+        },
+        {
+         "anchor": "p12-12",
+         "text": "Osvedčenie podľa odseku 1 možno vydať iba v prípade, ak sú splnené podmienky skončenia odberu tepla podľa § 20.",
+         "n": "12"
+        }
+       ]
+      },
+      {
+       "type": "provision",
+       "anchor": "p13",
+       "label": "§ 13",
+       "paragraphs": [
+        {
+         "anchor": "p13-1",
+         "text": "V písomnej žiadosti o vydanie osvedčenia podľa § 12 ods. 1 fyzická osoba alebo právnická osoba uvedie:",
+         "n": "1",
+         "items": [
+          {
+           "anchor": "p13-1-a",
+           "label": "a)",
+           "letter": "a",
+           "text": "fyzická osoba",
+           "items": [
+            {
+             "anchor": "p13-1-a-1",
+             "label": "1.",
+             "letter": "1",
+             "text": "meno, priezvisko, trvalý pobyt alebo pobyt,"
+            },
+            {
+             "anchor": "p13-1-a-2",
+             "label": "2.",
+             "letter": "2",
+             "text": "umiestnenie sústavy tepelných zariadení alebo jej časti, jej technický popis a celkový inštalovaný výkon sústavy tepelných zariadení, zdroj energie a orientačný návrh priestoru výstavby sústavy tepelných zariadení alebo jej časti,"
+            },
+            {
+             "anchor": "p13-1-a-3",
+             "label": "3.",
+             "letter": "3",
+             "text": "dobu, na ktorú požaduje vydať osvedčenie,"
+            },
+            {
+             "anchor": "p13-1-a-4",
+             "label": "4.",
+             "letter": "4",
+             "text": "podnikateľský zámer, predpoklady hospodárnosti a energetickej účinnosti sústavy tepelných zariadení alebo jej časti, na ktoré žiada vydať osvedčenie, a doklady potrebné na vyhodnotenie skutočností podľa § 12 ods. 4 a 5,"
+            },
+            {
+             "anchor": "p13-1-a-5",
+             "label": "5.",
+             "letter": "5",
+             "text": "písomnú správu o energetickom audite,¹²ᶠ) ak sa výstavbou sústavy tepelných zariadení alebo jej časti zníži odber tepla z existujúceho účinného centralizovaného zásobovania teplom,"
+            }
+           ]
+          },
+          {
+           "anchor": "p13-1-b",
+           "label": "b)",
+           "letter": "b",
+           "text": "právnická osoba",
+           "items": [
+            {
+             "anchor": "p13-1-b-1",
+             "label": "1.",
+             "letter": "1",
+             "text": "obchodné meno, sídlo, identifikačné číslo, ak jej bolo pridelené, právnu formu, meno a priezvisko, trvalý pobyt alebo pobyt členov štatutárneho orgánu,"
+            },
+            {
+             "anchor": "p13-1-b-2",
+             "label": "2.",
+             "letter": "2",
+             "text": "umiestnenie sústavy tepelných zariadení alebo jej časti, jej technický popis a celkový inštalovaný výkon sústavy tepelných zariadení, zdroj energie a orientačný návrh priestoru výstavby sústavy tepelných zariadení alebo jej časti,"
+            },
+            {
+             "anchor": "p13-1-b-3",
+             "label": "3.",
+             "letter": "3",
+             "text": "dobu, na ktorú sa požaduje vydať osvedčenie,"
+            },
+            {
+             "anchor": "p13-1-b-4",
+             "label": "4.",
+             "letter": "4",
+             "text": "podnikateľský zámer, predpoklady hospodárnosti a energetickej účinnosti sústavy tepelných zariadení alebo jej časti, na ktoré žiada vydať osvedčenie, a doklady potrebné na vyhodnotenie skutočností podľa § 12 ods. 4 a 5,"
+            },
+            {
+             "anchor": "p13-1-b-5",
+             "label": "5.",
+             "letter": "5",
+             "text": "písomnú správu o energetickom audite,¹²ᶠ) ak sa výstavbou sústavy tepelných zariadení alebo jej časti zníži odber tepla z existujúceho účinného centralizovaného zásobovania teplom."
+            }
+           ]
+          }
+         ]
+        },
+        {
+         "anchor": "p13-2",
+         "text": "Ak žiadosť o vydanie osvedčenia podľa odseku 1 nie je úplná, ministerstvo alebo obec vyzve žiadateľa, aby v určenej lehote žiadosť doplnil, inak konanie zastaví.",
+         "n": "2"
+        },
+        {
+         "anchor": "p13-3",
+         "text": "Ministerstvo alebo obec v rozhodnutí o vydaní osvedčenia uvedie",
+         "n": "3",
+         "items": [
+          {
+           "anchor": "p13-3-a",
+           "label": "a)",
+           "letter": "a",
+           "text": "údaje o fyzickej osobe alebo právnickej osobe, ktorej sa osvedčenie vydáva podľa odseku 1 písm. a) prvého bodu, ak ide o osvedčenie, ktoré sa vydáva fyzickej osobe, a podľa odseku 1 písm. b) prvého bodu, ak sa osvedčenie vydáva právnickej osobe,"
+          },
+          {
+           "anchor": "p13-3-b",
+           "label": "b)",
+           "letter": "b",
+           "text": "technický popis sústavy tepelných zariadení, na ktoré sa osvedčenie vydáva, jej celkový inštalovaný výkon, ako aj podmienky jej hospodárnosti a energetickej účinnosti a požiadavky na prevádzku sústavy tepelných zariadení z hľadiska životného prostredia,"
+          },
+          {
+           "anchor": "p13-3-c",
+           "label": "c)",
+           "letter": "c",
+           "text": "umiestnenie sústavy tepelných zariadení alebo jej časti, jej technický popis a celkový inštalovaný výkon sústavy tepelných zariadení, zdroj energie a orientačný návrh priestoru výstavby sústavy tepelných zariadení alebo jej časti,"
+          },
+          {
+           "anchor": "p13-3-d",
+           "label": "d)",
+           "letter": "d",
+           "text": "dobu platnosti osvedčenia."
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "type": "section",
+   "anchor": "s-cast-tretia",
+   "kind": "cast",
+   "label": "TRETIA ČASŤ",
+   "heading": "PRÁVA A POVINNOSTI ÚČASTNÍKOV TRHU S TEPLOM",
+   "children": [
+    {
+     "type": "provision",
+     "anchor": "p14",
+     "label": "§ 14",
+     "paragraphs": [
+      {
+       "anchor": "p14-x1",
+       "text": "Účastníci trhu s teplom sú:",
+       "items": [
+        {
+         "anchor": "p14-x1-a",
+         "label": "a)",
+         "letter": "a",
+         "text": "výrobca,"
+        },
+        {
+         "anchor": "p14-x1-b",
+         "label": "b)",
+         "letter": "b",
+         "text": "dodávateľ,"
+        },
+        {
+         "anchor": "p14-x1-c",
+         "label": "c)",
+         "letter": "c",
+         "text": "odberateľ,"
+        },
+        {
+         "anchor": "p14-x1-d",
+         "label": "d)",
+         "letter": "d",
+         "text": "konečný spotrebiteľ."
+        }
+       ]
+      }
+     ],
+     "heading": "Účastníci trhu s teplom"
+    },
+    {
+     "type": "section",
+     "anchor": "s-cast-tretia-g-prava-a-povinnosti-ucastnikov-trhu-s-teplom",
+     "kind": "group",
+     "heading": "Práva a povinnosti účastníkov trhu s teplom",
+     "children": [
+      {
+       "type": "provision",
+       "anchor": "p15",
+       "label": "§ 15",
+       "paragraphs": [
+        {
+         "anchor": "p15-1",
+         "text": "Výrobca a dodávateľ sú povinní",
+         "n": "1",
+         "items": [
+          {
+           "anchor": "p15-1-a",
+           "label": "a)",
+           "letter": "a",
+           "text": "vyrábať a dodávať teplo v určenom čase, v určenej kvalite a prevádzkovať sústavu tepelných zariadení, ktoré slúžia na výrobu a distribúciu tepla hospodárne; dodávateľ môže po dohode s odberateľom dodávať teplo za dohodnutú odplatu aj mimo určeného času a v inej ako určenej kvalite,"
+          },
+          {
+           "anchor": "p15-1-b",
+           "label": "b)",
+           "letter": "b",
+           "text": "predložiť na požiadanie úradu alebo obce informácie o stave a možnosti rozvoja ním prevádzkovanej sústavy tepelných zariadení,"
+          },
+          {
+           "anchor": "p15-1-c",
+           "label": "c)",
+           "letter": "c",
+           "text": "dodržiavať určený spôsob cenovej regulácie a uskutočňovať dodávky tovaru a služieb v súlade so schválenými alebo určenými cenami¹⁴) okrem dodávateľa z účinného centralizovaného zásobovania teplom pri dodávke tepla do objektu spotrebu tepla koncového odberateľa, ktorý skončil odber tepla dohodou alebo na základe zákona z dôvodov podľa § 20 ods. 2 písm. d) a fyzickej osoby alebo právnickej osoby, ktorá vykonáva činnosť podľa § 1 ods. 3 písm. c) a d),"
+          },
+          {
+           "anchor": "p15-1-d",
+           "label": "d)",
+           "letter": "d",
+           "text": "sprístupniť a pri významnej zmene aktualizovať na svojom webovom sídle informácie o energetickej hospodárnosti a podiele obnoviteľných zdrojov energie vo vykurovaní a chladení; údaje o podiele energie z obnoviteľných zdrojov energie sa vyjadrujú aspoň ako percentuálny podiel hrubej konečnej spotreby na vykurovanie a chladenie odberateľom v príslušnom centralizovanom zásobovaní teplom vrátane údajov o tom, koľko energie sa spotrebovalo na dodanie jednotky tepla odberateľovi."
+          }
+         ]
+        },
+        {
+         "anchor": "p15-2",
+         "text": "Držiteľ povolenia na výrobu tepla a rozvod tepla, ktorý vyrába teplo z obnoviteľných zdrojov energie alebo kombinovanou výrobou elektrinu a teplo,¹²ᶜ) okrem povinností uvedených v odseku 1 je povinný dodržiavať povinnosti ustanovené osobitným predpisom.¹⁴ᵃ)",
+         "n": "2"
+        },
+        {
+         "anchor": "p15-3",
+         "text": "Pravidlá na výrobu tepla a elektriny kombinovanou výrobou tepla a elektriny ustanoví všeobecne záväzný právny predpis, ktorý vydá ministerstvo.",
+         "n": "3"
+        }
+       ]
+      },
+      {
+       "type": "provision",
+       "anchor": "p16",
+       "label": "§ 16",
+       "paragraphs": [
+        {
+         "anchor": "p16-1",
+         "text": "Koncový odberateľ, ktorý rozpočítava množstvo dodaného tepla konečnému spotrebiteľovi je povinný zabezpečiť teplo v určenom čase, v určenej kvalite a v súlade so schválenou alebo určenou cenou.¹⁴) Fyzická osoba alebo právnická osoba, ktorá vykonáva činnosť podľa § 1 ods. 3 písm. c) je povinná zabezpečiť teplo v určenom čase a v určenej kvalite.",
+         "n": "1"
+        },
+        {
+         "anchor": "p16-2",
+         "text": "Určený čas a určenú kvalitu tepla pre konečného spotrebiteľa ustanoví všeobecne záväzný právny predpis, ktorý vydá ministerstvo.",
+         "n": "2"
+        }
+       ]
+      },
+      {
+       "type": "provision",
+       "anchor": "p17",
+       "label": "§ 17",
+       "paragraphs": [
+        {
+         "anchor": "p17-1",
+         "text": "Dodávateľ, ktorý dodáva teplo v teplej vode, je povinný",
+         "n": "1",
+         "items": [
+          {
+           "anchor": "p17-1-a",
+           "label": "a)",
+           "letter": "a",
+           "text": "merať množstvo spotrebovaného tepla na prípravu teplej vody určeným meradlom²) v mieste jej prípravy,"
+          },
+          {
+           "anchor": "p17-1-b",
+           "label": "b)",
+           "letter": "b",
+           "text": "merať množstvo dodanej teplej vody na odbernom mieste určeným meradlom²) ak o to požiadajú všetci odberatelia, ktorým dodávateľ dodáva teplú vodu z jedného spoločného miesta jej prípravy do jedného roka od doručenia žiadosti,"
+          },
+          {
+           "anchor": "p17-1-c",
+           "label": "c)",
+           "letter": "c",
+           "text": "dodržiavať určenú teplotu teplej vody na odbernom mieste,"
+          },
+          {
+           "anchor": "p17-1-d",
+           "label": "d)",
+           "letter": "d",
+           "text": "na vstupe do ohrievača teplej vody merať určeným meradlom²) množstvo dodanej studenej vody,"
+          },
+          {
+           "anchor": "p17-1-e",
+           "label": "e)",
+           "letter": "e",
+           "text": "umožniť koncovému odberateľovi alebo zástupcovi konečného spotrebiteľa vykonať kontrolu množstva dodanej studenej vody na prípravu teplej vody a množstva dodaného tepla na prípravu teplej vody,"
+          },
+          {
+           "anchor": "p17-1-f",
+           "label": "f)",
+           "letter": "f",
+           "text": "rozpočítavať náklady na množstvo dodaného tepla v teplej vode podľa pravidiel rozpočítavania; náklady na množstvo tepla dodaného v teplej vode sa rozdelia na základnú zložku a spotrebnú zložku."
+          }
+         ]
+        },
+        {
+         "anchor": "p17-2",
+         "text": "Ak nie je pri dodávke teplej vody dodržaná hospodárnosť podľa § 25 ods. 1 ustanovená normatívnymi ukazovateľmi spotreby tepla podľa § 25 ods. 5 z dôvodu nízkej spotreby teplej vody na strane odberateľa, môžu sa dodávateľ na jednej strane a odberateľ na druhej strane dohodnúť na obmedzení dodávky teplej vody len na určité dohodnuté dni v týždni alebo len na dohodnutú dennú dobu celoročne alebo počas dohodnutého obdobia v roku, prípadne sa môžu dohodnúť na zrušení dodávky teplej vody počas dohodnutého obdobia v roku; ak k tejto dohode o obmedzení alebo zrušení dodávky teplej vody nedôjde, dodávateľ je povinný zabezpečiť dodávku teplej vody podľa zmluvy o dodávke a odbere tepla a teplej vody a odberateľ je povinný uhrádzať zvýšené náklady na dodávku teplej vody.",
+         "n": "2"
+        },
+        {
+         "anchor": "p17-3",
+         "text": "Ak nie je pri dodávke teplej vody dodržaná hospodárnosť podľa § 25 ods. 1 ustanovená normatívnymi ukazovateľmi spotreby tepla podľa § 25 ods. 5 z dôvodov na strane dodávateľa, je dodávateľ povinný znášať zvýšené náklady na dodávku teplej vody.",
+         "n": "3"
+        },
+        {
+         "anchor": "p17-4",
+         "text": "Koncový odberateľ, ktorý rozpočítava množstvo tepla dodaného v teplej vode konečnému spotrebiteľovi a fyzická osoba alebo právnická osoba, ktorá vykonáva činnosť podľa § 1 ods. 3 písm. c), sú povinní",
+         "n": "4",
+         "items": [
+          {
+           "anchor": "p17-4-a",
+           "label": "a)",
+           "letter": "a",
+           "text": "dodržiavať určenú teplotu teplej vody u konečného spotrebiteľa,"
+          },
+          {
+           "anchor": "p17-4-b",
+           "label": "b)",
+           "letter": "b",
+           "text": "zabezpečiť obstaranie, zapojenie, udržiavanie a overovanie určených meradiel s diaľkovým odpočtom na meranie množstva teplej vody spotrebovanej konečným spotrebiteľom v súlade s osobitným predpisom;²) to neplatí, ak vlastník budovy preukáže, že inštalácia funkcie diaľkového odpočtu nie je nákladovo primeraná alebo technicky možná,"
+          },
+          {
+           "anchor": "p17-4-c",
+           "label": "c)",
+           "letter": "c",
+           "text": "oznámiť konečnému spotrebiteľovi najmenej sedem dní pred uskutočnením odčítania údajov na určenom meradle na meranie množstva teplej vody termín odčítania spotreby, ak určené meradlo nie je vybavené funkciou diaľkového odpočtu,"
+          },
+          {
+           "anchor": "p17-4-d",
+           "label": "d)",
+           "letter": "d",
+           "text": "využívať na rozpočítavanie množstva tepla v teplej vode určené meradlá na meranie množstva teplej vody spotrebovanej konečným spotrebiteľom,"
+          },
+          {
+           "anchor": "p17-4-e",
+           "label": "e)",
+           "letter": "e",
+           "text": "rozpočítavať náklady na množstvo dodaného tepla v teplej vode podľa pravidiel rozpočítavania; náklady na množstvo dodaného tepla v teplej vode sa rozdelia na základnú zložku a spotrebnú zložku."
+          }
+         ]
+        },
+        {
+         "anchor": "p17-5",
+         "text": "Konečný spotrebiteľ je povinný umožniť koncovému odberateľovi, ktorý rozpočítava množstvo tepla v teplej vode konečnému spotrebiteľovi a fyzickej osobe alebo právnickej osobe, ktorá vykonáva činnosť podľa § 1 ods. 3 písm. c)",
+         "n": "5",
+         "items": [
+          {
+           "anchor": "p17-5-a",
+           "label": "a)",
+           "letter": "a",
+           "text": "vykonávanie jeho povinností uvedených v odseku 4 písm. a) a b), odseku 9 a § 25 ods. 3,"
+          },
+          {
+           "anchor": "p17-5-b",
+           "label": "b)",
+           "letter": "b",
+           "text": "odčítanie údajov z určených meradiel množstva teplej vody v čase oznámeného termínu,"
+          },
+          {
+           "anchor": "p17-5-c",
+           "label": "c)",
+           "letter": "c",
+           "text": "chrániť určené meradlo množstva teplej vody pred neoprávneným zásahom,"
+          },
+          {
+           "anchor": "p17-5-d",
+           "label": "d)",
+           "letter": "d",
+           "text": "prístup k určenému meradlu množstva teplej vody s cieľom jeho kontroly na nevyhnutnú dobu v termíne dohodnutom s dodávateľom alebo s odberateľom."
+          }
+         ]
+        },
+        {
+         "anchor": "p17-6",
+         "text": "Teplotu teplej vody na odbernom mieste a pravidlá rozpočítavania množstva tepla dodaného v teplej vode vrátane pomeru základnej zložky a spotrebnej zložky nákladov na množstvo tepla dodaného v teplej vode ustanoví všeobecne záväzný právny predpis, ktorý vydá ministerstvo.",
+         "n": "6"
+        },
+        {
+         "anchor": "p17-7",
+         "text": "Dodávateľ, ktorý dodáva teplo v teplej vode poskytne odberateľovi určené meradlo²) podľa odseku 1, ktoré okrem skutočnej spotreby tepla zaznamenáva aj časový priebeh spotreby tepla, ak sa teplo v teplej vode dodáva do",
+         "n": "7",
+         "items": [
+          {
+           "anchor": "p17-7-a",
+           "label": "a)",
+           "letter": "a",
+           "text": "budovy, pre ktorú je potrebné nahradiť existujúce určené meradlo,²) ak je to technicky možné, nákladovo primerané a vzhľadom na dlhodobý potenciál úspory tepla efektívne,"
+          },
+          {
+           "anchor": "p17-7-b",
+           "label": "b)",
+           "letter": "b",
+           "text": "novej budovy."
+          }
+         ]
+        },
+        {
+         "anchor": "p17-8",
+         "text": "Ak odberateľ písomne oznámi dodávateľovi, ktorý dodáva teplo v teplej vode, že existujúca budova bola významne obnovená¹⁴ᵇ) a súčasťou obnovy boli aj opatrenia na zníženie spotreby tepla na prípravu teplej vody, poskytne dodávateľ, ktorý dodáva teplo v teplej vode odberateľovi určené meradlo²) podľa odseku 1, ktoré okrem skutočnej spotreby tepla zaznamenáva aj časový priebeh spotreby tepla, najneskôr do jedného roka od doručenia písomného oznámenia o významnej obnove budovy.¹⁴ᵇ)",
+         "n": "8"
+        },
+        {
+         "anchor": "p17-9",
+         "text": "Fyzická osoba alebo právnická osoba, ktorá vykonáva činnosť podľa § 1 ods. 3 písm. c), je povinná",
+         "n": "9",
+         "items": [
+          {
+           "anchor": "p17-9-a",
+           "label": "a)",
+           "letter": "a",
+           "text": "merať množstvo spotrebovaného tepla na prípravu teplej vody určeným meradlom v mieste jej prípravy,"
+          },
+          {
+           "anchor": "p17-9-b",
+           "label": "b)",
+           "letter": "b",
+           "text": "merať na vstupe do decentralizovaného zdroja tepla určeným meradlom množstvo dodanej studenej vody."
+          }
+         ]
+        },
+        {
+         "anchor": "p17-10",
+         "text": "Ustanovenia odseku 4 písm. b) a d) a odseku 9 sa nepoužijú, ak koneční spotrebitelia v objekte spotreby tepla používajú bytové odovzdávacie stanice tepla.",
+         "n": "10"
+        }
+       ]
+      },
+      {
+       "type": "provision",
+       "anchor": "p18",
+       "label": "§ 18",
+       "paragraphs": [
+        {
+         "anchor": "p18-1",
+         "text": "Dodávateľ je povinný",
+         "n": "1",
+         "items": [
+          {
+           "anchor": "p18-1-a",
+           "label": "a)",
+           "letter": "a",
+           "text": "merať množstvo dodaného tepla určeným meradlom spotreby tepla na každom dohodnutom odbernom mieste; ak dodávateľ rozpočítava teplo konečnému spotrebiteľovi, merať množstvo dodaného tepla určeným meradlom na mieste, ktoré pre rozpočítavanie slúži ako odberné miesto,"
+          },
+          {
+           "anchor": "p18-1-b",
+           "label": "b)",
+           "letter": "b",
+           "text": "zabezpečiť overovanie určeného meradla podľa osobitného predpisu²) a zabezpečiť určené meradlo proti neoprávnenému zásahu,"
+          },
+          {
+           "anchor": "p18-1-c",
+           "label": "c)",
+           "letter": "c",
+           "text": "oznámiť písomne odberateľovi termín výmeny určeného meradla a zaznamenať údaje o vymieňanom meradle za účasti zástupcu odberateľa,"
+          },
+          {
+           "anchor": "p18-1-d",
+           "label": "d)",
+           "letter": "d",
+           "text": "vykonávať mesačné odpočty určeného meradla,"
+          },
+          {
+           "anchor": "p18-1-e",
+           "label": "e)",
+           "letter": "e",
+           "text": "vykonávať mesačné bilancie výroby tepla a dodávky tepla,"
+          },
+          {
+           "anchor": "p18-1-f",
+           "label": "f)",
+           "letter": "f",
+           "text": "predložiť úradu každoročne 30. septembra, do 30 dní odo dňa oznámenia zmeny podľa § 18 ods. 7 písm. f) a vždy na požiadanie úradu aktuálne informácie o objektoch spotreby tepla v rozsahu údajov podľa § 30 písm. f), ak ide o dodávateľa pre koncového odberateľa, ktorý rozpočítava množstvo dodaného tepla konečnému spotrebiteľovi alebo pre koncového odberateľa využívajúceho dodané teplo na vlastnú spotrebu."
+          }
+         ]
+        },
+        {
+         "anchor": "p18-2",
+         "text": "Ak má odberateľ pochybnosti o správnosti merania údajov určeným meradlom alebo zistí na určenom meradle chybu, požiada dodávateľa o preskúšanie. Ten je povinný do 30 dní od doručenia žiadosti zabezpečiť preskúšanie meradla. V prípade zistenia chyby na určenom meradle uhrádza náklady spojené s preskúšaním a s výmenou meradla dodávateľ; ak neboli na určenom meradle zistené chyby, hradí náklady spojené s preskúšaním a výmenou meradla ten, kto požiadal o preskúšanie určeného meradla.",
+         "n": "2"
+        },
+        {
+         "anchor": "p18-3",
+         "text": "Dodávateľ tepla, ktorý dodáva teplo vyrobené kombinovanou výrobou elektriny a tepla,¹²ᶜ) je povinný dodržiavať podmienky ustanovené osobitným predpisom.¹⁴ᵃ)",
+         "n": "3"
+        },
+        {
+         "anchor": "p18-4",
+         "text": "Koncový odberateľ, ktorý rozpočítava množstvo dodaného tepla konečnému spotrebiteľovi a fyzická osoba alebo právnická osoba, ktorá vykonáva činnosť podľa § 1 ods. 3 písm. c), sú povinní",
+         "n": "4",
+         "items": [
+          {
+           "anchor": "p18-4-a",
+           "label": "a)",
+           "letter": "a",
+           "text": "zabezpečiť u konečného spotrebiteľa na náklady vlastníka budovy",
+           "items": [
+            {
+             "anchor": "p18-4-a-1",
+             "label": "1.",
+             "letter": "1",
+             "text": "obstaranie, zapojenie, udržiavanie a overovanie určených meradiel,¹⁴ᶜ)"
+            },
+            {
+             "anchor": "p18-4-a-2",
+             "label": "2.",
+             "letter": "2",
+             "text": "obstaranie zapojenie a udržiavanie pomerových rozdeľovačov vykurovacích nákladov,¹⁴ᵈ) ak obstaranie, zapojenie, udržiavanie a overovanie určených meradiel¹⁴ᶜ) podľa prvého bodu nie je technicky možné alebo nákladovo efektívne,"
+            },
+            {
+             "anchor": "p18-4-a-3",
+             "label": "3.",
+             "letter": "3",
+             "text": "alternatívny nákladovo efektívny spôsob merania spotreby tepla, ak obstaranie určených meradiel podľa prvého bodu alebo pomerových rozdeľovačov vykurovacích nákladov podľa druhého bodu nie je nákladovo efektívne,"
+            }
+           ]
+          },
+          {
+           "anchor": "p18-4-b",
+           "label": "b)",
+           "letter": "b",
+           "text": "oznámiť konečnému spotrebiteľovi najmenej sedem dní pred uskutočnením odčítania údajov na určenom meradle spotreby tepla alebo pomerovom rozdeľovači vykurovacích nákladov termín odčítania spotreby, ak určené meradlo spotreby tepla alebo pomerový rozdeľovač vykurovacích nákladov nie sú vybavené funkciou diaľkového odpočtu,"
+          },
+          {
+           "anchor": "p18-4-c",
+           "label": "c)",
+           "letter": "c",
+           "text": "využívať na rozpočítavanie množstva dodaného tepla určené meradlá tepla alebo pomerové rozdeľovače vykurovacích nákladov na vykurovanie u konečného spotrebiteľa,"
+          },
+          {
+           "anchor": "p18-4-d",
+           "label": "d)",
+           "letter": "d",
+           "text": "rozpočítavať náklady na množstvo dodaného tepla podľa pravidiel rozpočítavania; náklady na množstvo dodaného tepla na vykurovanie sa rozdelia na základnú zložku a spotrebnú zložku."
+          }
+         ]
+        },
+        {
+         "anchor": "p18-5",
+         "text": "Povinnosť podľa odseku 4 písm. a) až c) nevzniká, ak celková podlahová plocha budovy je menšia ako 500 m².",
+         "n": "5"
+        },
+        {
+         "anchor": "p18-6",
+         "text": "Fyzická osoba alebo právnická osoba, ktorá vykonáva činnosť podľa § 1 ods. 3 písm. c), je povinná každoročne do 30. apríla oznámiť prevádzkovateľovi monitorovacieho systému energetickej efektívnosti¹⁴ᵉ) za predchádzajúci kalendárny rok",
+         "n": "6",
+         "items": [
+          {
+           "anchor": "p18-6-a",
+           "label": "a)",
+           "letter": "a",
+           "text": "druh a množstvo energie na výrobu tepla,"
+          },
+          {
+           "anchor": "p18-6-b",
+           "label": "b)",
+           "letter": "b",
+           "text": "množstvo tepla na vykurovanie a prípravu teplej vody,"
+          },
+          {
+           "anchor": "p18-6-c",
+           "label": "c)",
+           "letter": "c",
+           "text": "skutočné náklady na výrobu tepla,"
+          },
+          {
+           "anchor": "p18-6-d",
+           "label": "d)",
+           "letter": "d",
+           "text": "celkovú podlahovú plochu budovy."
+          }
+         ]
+        },
+        {
+         "anchor": "p18-7",
+         "text": "Odberateľ je povinný",
+         "n": "7",
+         "items": [
+          {
+           "anchor": "p18-7-a",
+           "label": "a)",
+           "letter": "a",
+           "text": "umožniť dodávateľovi zapojenie, údržbu a odpojenie určeného meradla v objekte odberateľa,"
+          },
+          {
+           "anchor": "p18-7-b",
+           "label": "b)",
+           "letter": "b",
+           "text": "umožniť dodávateľovi odčítať údaje na určenom meradle,"
+          },
+          {
+           "anchor": "p18-7-c",
+           "label": "c)",
+           "letter": "c",
+           "text": "umožniť dodávateľovi zabezpečiť určené meradlo proti neoprávnenému zásahu,"
+          },
+          {
+           "anchor": "p18-7-d",
+           "label": "d)",
+           "letter": "d",
+           "text": "oznámiť bezodkladne dodávateľovi neoprávnené zásahy do určeného meradla,"
+          },
+          {
+           "anchor": "p18-7-e",
+           "label": "e)",
+           "letter": "e",
+           "text": "oznámiť najmenej sedem dní pred termínom odčítania údajov na určenom meradle alebo na pomerových rozdeľovačoch vykurovacích nákladov konečnému spotrebiteľovi termín odčítania, ak určené meradlo alebo pomerový rozdeľovač vykurovacích nákladov nie sú vybavené funkciou diaľkového odpočtu,"
+          },
+          {
+           "anchor": "p18-7-f",
+           "label": "f)",
+           "letter": "f",
+           "text": "poskytnúť dodávateľovi na žiadosť informácie o objektoch spotreby tepla v rozsahu údajov podľa § 30 písm. f), ako aj informáciu o každej ich zmene, a to do 30 dní odo dňa, kedy k zmene došlo, ak ide o koncového odberateľa, ktorý rozpočítava množstvo dodaného tepla konečnému spotrebiteľovi, alebo o koncového odberateľa využívajúceho teplo na vlastnú spotrebu."
+          }
+         ]
+        },
+        {
+         "anchor": "p18-8",
+         "text": "Konečný spotrebiteľ je povinný",
+         "n": "8",
+         "items": [
+          {
+           "anchor": "p18-8-a",
+           "label": "a)",
+           "letter": "a",
+           "text": "umožniť plnenie povinností dodávateľa alebo odberateľa, ktorý rozpočítava množstvo dodaného tepla konečnému spotrebiteľovi, uvedených v odseku 4,"
+          },
+          {
+           "anchor": "p18-8-b",
+           "label": "b)",
+           "letter": "b",
+           "text": "umožniť dodávateľovi, ktorý rozpočítava množstvo dodaného tepla, a odberateľovi, ktorý rozpočítava množstvo dodaného tepla v čase oznámeného termínu, odčítanie údajov z určeného meradla alebo z pomerových rozdeľovačov vykurovacích nákladov,"
+          },
+          {
+           "anchor": "p18-8-c",
+           "label": "c)",
+           "letter": "c",
+           "text": "chrániť určené meradlo alebo pomerový rozdeľovač vykurovacích nákladov pred neoprávneným zásahom,"
+          },
+          {
+           "anchor": "p18-8-d",
+           "label": "d)",
+           "letter": "d",
+           "text": "oznámiť bezodkladne poruchu alebo znehodnotenie určeného meradla alebo pomerového rozdeľovača vykurovacích nákladov dodávateľovi, ktorý rozpočítava množstvo dodaného tepla, a odberateľovi, ktorý rozpočítava množstvo dodaného tepla konečnému spotrebiteľovi."
+          }
+         ]
+        },
+        {
+         "anchor": "p18-9",
+         "text": "Dodávateľ poskytne odberateľovi určené meradlo²) podľa odseku 1, ktoré okrem skutočnej spotreby tepla zaznamenáva aj časový priebeh spotreby tepla, ak sa teplo dodáva do",
+         "n": "9",
+         "items": [
+          {
+           "anchor": "p18-9-a",
+           "label": "a)",
+           "letter": "a",
+           "text": "budovy, pre ktorú je potrebné nahradiť existujúce určené meradlo,²) ak je to technicky možné, nákladovo primerané a vzhľadom na dlhodobý potenciál úspory tepla efektívne,"
+          },
+          {
+           "anchor": "p18-9-b",
+           "label": "b)",
+           "letter": "b",
+           "text": "novej budovy."
+          }
+         ]
+        },
+        {
+         "anchor": "p18-10",
+         "text": "Ak odberateľ písomne oznámi dodávateľovi, že existujúca budova bola významne obnovená,¹⁴ᵇ) poskytne dodávateľ odberateľovi určené meradlo²) podľa odseku 1, ktoré okrem skutočnej spotreby tepla zaznamenáva aj časový priebeh spotreby tepla, najneskôr do jedného roka od doručenia písomného oznámenia o významnej obnove budovy.¹⁴ᵇ)",
+         "n": "10"
+        },
+        {
+         "anchor": "p18-11",
+         "text": "Pravidlá rozpočítavania nákladov na množstvo dodaného tepla alebo množstvo tepla vyrobeného v decentralizovanom zdroji tepla vrátane pomeru základnej zložky a spotrebnej zložky a ekonomicky oprávnených nákladov na teplo vyrobené v decentralizovanom zdroji tepla ustanoví všeobecne záväzný právny predpis, ktorý vydá ministerstvo.",
+         "n": "11"
+        },
+        {
+         "anchor": "p18-12",
+         "text": "Fyzická osoba alebo právnická osoba, ktorá vykonáva činnosť podľa § 1 ods. 3 písm. c), je povinná",
+         "n": "12",
+         "items": [
+          {
+           "anchor": "p18-12-a",
+           "label": "a)",
+           "letter": "a",
+           "text": "merať množstvo vyrobeného tepla v decentralizovanom zdroji tepla v budove určeným meradlom podľa osobitného predpisu,²)"
+          },
+          {
+           "anchor": "p18-12-b",
+           "label": "b)",
+           "letter": "b",
+           "text": "zabezpečiť overovanie určeného meradla podľa osobitného predpisu²) a zabezpečiť určené meradlo proti neoprávnenému zásahu na náklady vlastníka budovy,"
+          },
+          {
+           "anchor": "p18-12-c",
+           "label": "c)",
+           "letter": "c",
+           "text": "umožniť vlastníkmi na tento účel poverenej osobe v dohodnutom termíne vykonávať kontrolu množstva vyrobeného tepla v decentralizovanom zdroji tepla,"
+          },
+          {
+           "anchor": "p18-12-d",
+           "label": "d)",
+           "letter": "d",
+           "text": "vykonať mesačné odpočty určených meradiel na decentralizovanom zdroji tepla,"
+          },
+          {
+           "anchor": "p18-12-e",
+           "label": "e)",
+           "letter": "e",
+           "text": "oznámiť obvyklým spôsobom termín výmeny určeného meradla na decentralizovanom zdroji tepla a zaznamenať údaje o tomto meradle."
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "type": "provision",
+       "anchor": "p18a",
+       "label": "§ 18a",
+       "paragraphs": [
+        {
+         "anchor": "p18a-1",
+         "text": "Držiteľ povolenia na rozvod tepla v centralizovanom zásobovaní teplom má právo predložiť ministerstvu na schválenie návrh plánu prechodu na účinné centralizované zásobovanie teplom (ďalej len „plán prechodu“).",
+         "n": "1"
+        },
+        {
+         "anchor": "p18a-2",
+         "text": "Náležitosti návrhu plánu prechodu sú uvedené v prílohe č. 2. Ak návrh plánu prechodu neobsahuje náležitosti podľa prvej vety, ministerstvo vyzve držiteľa povolenia na rozvod tepla na doplnenie návrhu v určenej lehote. Ak držiteľa povolenia na rozvod tepla návrh plánu prechodu v určenej lehote nedoplní, ministerstvo návrh plánu prechodu odmietne. Plán prechodu sa považuje za schválený, ak ministerstvo nevyzve držiteľa povolenia na rozvod tepla na jeho doplnenie v lehote 30 dní od predloženia návrhu plánu prechodu ministerstvu alebo od doplnenia návrhu plánu prechodu, ak ministerstvo vyzvalo držiteľa povolenia na rozvod tepla na doplnenie podľa druhej vety.",
+         "n": "2"
+        },
+        {
+         "anchor": "p18a-3",
+         "text": "Ministerstvo zverejňuje na svojom webovom sídle zoznam schválených plánov prechodu.",
+         "n": "3"
+        },
+        {
+         "anchor": "p18a-4",
+         "text": "Držiteľ povolenia na rozvod tepla v centralizovanom zásobovaní teplom so schváleným plánom prechodu je povinný každoročne do 30. septembra oznámiť ministerstvu plnenie plánu prechodu.",
+         "n": "4"
+        }
+       ],
+       "heading": "Prechod na účinné centralizované zásobovanie teplom"
+      },
+      {
+       "type": "provision",
+       "anchor": "p19",
+       "label": "§ 19",
+       "paragraphs": [
+        {
+         "anchor": "p19-1",
+         "text": "Dodávka tepla sa uskutočňuje na základe písomnej zmluvy o dodávke a odbere tepla medzi dodávateľom a odberateľom.",
+         "n": "1"
+        },
+        {
+         "anchor": "p19-2",
+         "text": "Zmluva o dodávke a odbere tepla musí obsahovať",
+         "n": "2",
+         "items": [
+          {
+           "anchor": "p19-2-a",
+           "label": "a)",
+           "letter": "a",
+           "text": "dohodnuté odberné miesto alebo odberné miesta a zoznam objektov spotreby tepla, ktorým je dodávané teplo z odberného miesta alebo odberných miest, ak je odberateľom tepla koncový odberateľ, ktorý rozpočítava množstvo dodaného tepla konečnému spotrebiteľovi alebo koncový odberateľ využívajúci dodané teplo na vlastnú spotrebu,"
+          },
+          {
+           "anchor": "p19-2-b",
+           "label": "b)",
+           "letter": "b",
+           "text": "požadovaný maximálny tepelný príkon na odbernom mieste, a ak ide o dodávku tepla koncovému odberateľovi, aj technické parametre zariadenia na spotrebu tepla,"
+          },
+          {
+           "anchor": "p19-2-c",
+           "label": "c)",
+           "letter": "c",
+           "text": "objednané množstvo tepla na príslušný kalendárny rok alebo spôsob jeho určenia,"
+          },
+          {
+           "anchor": "p19-2-d",
+           "label": "d)",
+           "letter": "d",
+           "text": "technické parametre teplonosnej látky,"
+          },
+          {
+           "anchor": "p19-2-e",
+           "label": "e)",
+           "letter": "e",
+           "text": "vykurovaciu krivku, odberový diagram alebo spôsob ich určenia,"
+          },
+          {
+           "anchor": "p19-2-f",
+           "label": "f)",
+           "letter": "f",
+           "text": "cenu tepla alebo spôsob jej určenia a spôsob platby za dodané teplo vrátane výšky a termínu zálohových platieb, ak sa zálohové platby dohodli,"
+          },
+          {
+           "anchor": "p19-2-g",
+           "label": "g)",
+           "letter": "g",
+           "text": "náhradný spôsob určenia množstva dodaného tepla, ak dôjde k poruche určeného meradla,"
+          },
+          {
+           "anchor": "p19-2-h",
+           "label": "h)",
+           "letter": "h",
+           "text": "povinnosť odberateľa oznámiť dodávateľovi najneskôr do 31. augusta kalendárneho roka množstvo objednaného tepla na príslušný kalendárny rok podľa jednotlivých odberných miest na vykurovanie alebo prípravu teplej vody, ak sa nedohodol iný spôsob určovania množstva objednaného tepla."
+          }
+         ]
+        },
+        {
+         "anchor": "p19-3",
+         "text": "Dodávateľ je povinný",
+         "n": "3",
+         "items": [
+          {
+           "anchor": "p19-3-a",
+           "label": "a)",
+           "letter": "a",
+           "text": "dodávať teplo z verejného rozvodu tepla na vymedzenom území každému, kto o dodávku tepla písomne požiada, má vybudovanú tepelnú prípojku, ktorá spĺňa technické podmienky pripojenia určené dodávateľom, a podpísal zmluvu o dodávke a odbere tepla, pokiaľ nie je už zásobovaný z verejného rozvodu tepla,"
+          },
+          {
+           "anchor": "p19-3-b",
+           "label": "b)",
+           "letter": "b",
+           "text": "dodávať teplo na vymedzenom území odberateľovi podľa písmena a), s ktorým sa rokuje o uzatvorení zmluvy o dodávke a odbere tepla v lehote 90 dní od uplynutia dohodnutého termínu dodávky tepla; v takom prípade je odberateľ povinný uhradiť platby za dodané teplo, aj keď nedošlo k podpisu zmluvy."
+          }
+         ]
+        },
+        {
+         "anchor": "p19-4",
+         "text": "Odberateľ môže vypovedať zmluvu o dodávke a odbere tepla, ak výpoveď písomne oznámi dodávateľovi najmenej šesť mesiacov pred požadovaným skončením dodávky tepla a spĺňa niektorú z podmienok skončenia odberu tepla podľa § 20 tohto zákona.",
+         "n": "4"
+        }
+       ],
+       "heading": "Zmluva o dodávke a odbere tepla"
+      },
+      {
+       "type": "provision",
+       "anchor": "p20",
+       "label": "§ 20",
+       "paragraphs": [
+        {
+         "anchor": "p20-1",
+         "text": "Odberateľ môže skončiť odber tepla na základe zákona alebo dohodou.",
+         "n": "1"
+        },
+        {
+         "anchor": "p20-2",
+         "text": "Skončiť odber tepla na základe zákona možno, ak",
+         "n": "2",
+         "items": [
+          {
+           "anchor": "p20-2-a",
+           "label": "a)",
+           "letter": "a",
+           "text": "dodávateľ tepla bez predchádzajúcej dohody s odberateľom a konečným spotrebiteľom zmení teplonosnú látku,"
+          },
+          {
+           "anchor": "p20-2-b",
+           "label": "b)",
+           "letter": "b",
+           "text": "dodávateľ tepla ani po predchádzajúcej písomnej výzve odberateľa alebo konečného spotrebiteľa neodstráni nedostatky v kvalite, množstve a v spoľahlivosti dodávok tepla alebo neplní podstatné náležitosti zmluvy o dodávke a odbere tepla, najmä parametre teplonosnej látky a hospodárnosť dodávky tepla,"
+          },
+          {
+           "anchor": "p20-2-c",
+           "label": "c)",
+           "letter": "c",
+           "text": "objekt spotreby tepla nie je pripojený do sústavy tepelných zariadení dodávateľa z účinného centralizovaného zásobovania teplom a koncový odberateľ splní podmienky podľa odseku 4,"
+          },
+          {
+           "anchor": "p20-2-d",
+           "label": "d)",
+           "letter": "d",
+           "text": "objekt spotreby tepla je pripojený do sústavy tepelných zariadení dodávateľa z účinného centralizovaného zásobovania teplom okrem účinného centralizovaného zásobovania teplom z obnoviteľných zdrojov a koncový odberateľ si zabezpečí teplo vyrobené výlučne z obnoviteľných zdrojov energie alebo odpadového tepla v decentralizovanom zdroji tepla, ak so skončením odberu tepla nie je spojené odpojenie objektu spotreby tepla od sústavy tepelných zariadení dodávateľa z účinného centralizovaného zásobovania teplom."
+          }
+         ]
+        },
+        {
+         "anchor": "p20-3",
+         "text": "Ak je so skončením odberu tepla spojené odpojenie objektu spotreby tepla od sústavy tepelných zariadení dodávateľa, odberateľ môže skončiť odber tepla len vtedy, ak uhradí dodávateľovi ekonomicky oprávnené náklady vyvolané odpojením odberateľa od sústavy tepelných zariadení dodávateľa.",
+         "n": "3"
+        },
+        {
+         "anchor": "p20-4",
+         "text": "Ak dodávateľ tepla vo svojej dodávke tepla dodáva menej ako 50 % tepla vyrobeného z obnoviteľných zdrojov energie, odberateľ tepla môže skončiť odber tepla len vtedy, ak zabezpečí dodávku tepla vyrobeného z obnoviteľných zdrojov energie v podiele o 20 % vyššom ako má súčasný dodávateľ tepla.",
+         "n": "4"
+        },
+        {
+         "anchor": "p20-5",
+         "text": "Rozsah ekonomicky oprávnených nákladov vyvolaných odpojením sa odberateľa alebo konečného spotrebiteľa od sústavy tepelných zariadení dodávateľa a spôsob ich výpočtu ustanoví všeobecne záväzný právny predpis, ktorý vydá úrad.³) Ekonomicky oprávnené náklady vyvolané odpojením odberateľa od sústavy tepelných zariadení dodávateľa zahŕňajú náklady, ktoré vznikli priamo v dôsledku fyzického odpojenia objektu spotreby tepla od sústavy tepelných zariadení dodávateľa, a náhradu neamortizovanej časti prostriedkov potrebných na výrobu a rozvod tepla odberateľovi, ktorý sa odpája od sústavy tepelných zariadení dodávateľa.",
+         "n": "5"
+        },
+        {
+         "anchor": "p20-6",
+         "text": "Koncový odberateľ môže skončiť odber tepla len na úrovni celého objektu spotreby tepla.",
+         "n": "6"
+        }
+       ],
+       "heading": "Podmienky skončenia odberu tepla"
+      },
+      {
+       "type": "provision",
+       "anchor": "p21",
+       "label": "§ 21",
+       "paragraphs": [
+        {
+         "anchor": "p21-1",
+         "text": "Držiteľ povolenia na rozvod tepla, ktorý zabezpečuje centralizované zásobovanie teplom, je povinný na zabezpečenie svojich zmluvne dohodnutých dodávok tepla na vymedzenom území odoberať za schválenú cenu¹⁴) teplo vyrobené z obnoviteľných zdrojov energie alebo odpadové teplo od držiteľa povolenia na výrobu tepla, ktorý teplo takto vyrába, ak",
+         "n": "1",
+         "items": [
+          {
+           "anchor": "p21-1-a",
+           "label": "a)",
+           "letter": "a",
+           "text": "držiteľ povolenia na výrobu tepla splní technické podmienky pripojenia¹⁵ᵃ) určené v prevádzkovom predpise držiteľa povolenia na rozvod tepla (ďalej len „technické podmienky“),"
+          },
+          {
+           "anchor": "p21-1-b",
+           "label": "b)",
+           "letter": "b",
+           "text": "sa tým nezvýši cena tepla pre odberateľov držiteľa povolenia na rozvod tepla."
+          }
+         ]
+        },
+        {
+         "anchor": "p21-2",
+         "text": "Držiteľ povolenia na rozvod tepla je povinný na zabezpečenie svojich zmluvne dohodnutých dodávok tepla na vymedzenom území odoberať za schválenú cenu¹⁴) teplo od držiteľa povolenia na výrobu tepla, ktorý teplo vyrába vysoko účinnou kombinovanou výrobou elektriny a tepla,¹²ᵈ) ak",
+         "n": "2",
+         "items": [
+          {
+           "anchor": "p21-2-a",
+           "label": "a)",
+           "letter": "a",
+           "text": "držiteľ povolenia na výrobu tepla splní technické podmienky,"
+          },
+          {
+           "anchor": "p21-2-b",
+           "label": "b)",
+           "letter": "b",
+           "text": "sa dodávkou tepla od držiteľa povolenia na výrobu tepla do sústavy tepelných zariadení držiteľa povolenia na rozvod tepla nezhorší energetická účinnosť jej prevádzky a neobmedzí existujúca dodávka tepla z obnoviteľných zdrojov energie, z odpadového tepla alebo zo zariadení na výrobu tepla vysoko účinnou kombinovanou výrobou elektriny a tepla,"
+          },
+          {
+           "anchor": "p21-2-c",
+           "label": "c)",
+           "letter": "c",
+           "text": "sa tým nezvýši cena tepla pre odberateľov držiteľa povolenia na rozvod tepla,"
+          },
+          {
+           "anchor": "p21-2-d",
+           "label": "d)",
+           "letter": "d",
+           "text": "je dodávka tepla od držiteľa povolenia na výrobu tepla, ktorý teplo vyrába vysoko účinnou kombinovanou výrobou elektriny a tepla, pre držiteľa povolenia na rozvod tepla rovnako ekonomicky efektívna ako odber tepla z iných zariadení na výrobu tepla."
+          }
+         ]
+        },
+        {
+         "anchor": "p21-3",
+         "text": "Držiteľ povolenia na rozvod tepla môže odmietnuť odoberať teplo, len ak",
+         "n": "3",
+         "items": [
+          {
+           "anchor": "p21-3-a",
+           "label": "a)",
+           "letter": "a",
+           "text": "systém centralizovaného zásobovania teplom nemá dostatočnú kapacitu z dôvodu iných dodávok tepla z obnoviteľných zdrojov energie alebo odpadového tepla,"
+          },
+          {
+           "anchor": "p21-3-b",
+           "label": "b)",
+           "letter": "b",
+           "text": "držiteľ povolenia na výrobu tepla nesplní technické podmienky,"
+          },
+          {
+           "anchor": "p21-3-c",
+           "label": "c)",
+           "letter": "c",
+           "text": "držiteľ povolenia na rozvod tepla preukáže, že odoberanie tepla by viedlo k nadmernému zvýšeniu nákladov na teplo alebo"
+          },
+          {
+           "anchor": "p21-3-d",
+           "label": "d)",
+           "letter": "d",
+           "text": "ide o účinné centralizované zásobovanie teplom."
+          }
+         ]
+        },
+        {
+         "anchor": "p21-4",
+         "text": "Ak je to technicky možné, je prevádzkovateľ systému centralizovaného zásobovania teplom s prepravným výkonom systému vyšším ako 25 MW povinný pripojiť do systému centralizovaného zásobovania teplom držiteľa povolenia na výrobu tepla, ktorý vyrába teplo z obnoviteľných zdrojov energie alebo odpadové teplo a odoberať teplo od takéhoto držiteľa povolenia, ak",
+         "n": "4",
+         "items": [
+          {
+           "anchor": "p21-4-a",
+           "label": "a)",
+           "letter": "a",
+           "text": "je nevyhnutné uspokojiť dopyt po teple nových odberateľov tepla,"
+          },
+          {
+           "anchor": "p21-4-b",
+           "label": "b)",
+           "letter": "b",
+           "text": "má dôjsť k nahradeniu doterajšieho zdroja tepla v centralizovanom zásobovaní teplom alebo,"
+          },
+          {
+           "anchor": "p21-4-c",
+           "label": "c)",
+           "letter": "c",
+           "text": "ak by na uspokojenie dopytu po teple bolo nevyhnutné inštalovať ďalší zdroj tepla v centralizovanom zásobovaní teplom."
+          }
+         ]
+        },
+        {
+         "anchor": "p21-5",
+         "text": "Ak držiteľ povolenia na rozvod tepla odmietne odoberať teplo podľa odseku 1 alebo odseku 2, je povinný o tom do 30 dní písomne informovať ministerstvo a oznámiť mu dôvody tohto odmietnutia spolu s informáciou o podmienkach, za ktorých je možný odber tepla, a opatreniach, ktoré je potrebné prijať na umožnenie odberu tepla. Povinnosť podľa odseku 1 sa nevzťahuje na držiteľa povolenia na rozvod tepla, ktorý prevádzkuje účinné centralizované zásobovanie teplom. Povinnosť podľa odseku 2 sa nevzťahuje na držiteľa povolenia na rozvod tepla, ktorý je držiteľom povolenia na výrobu tepla a na vymedzenom území vyrába teplo z obnoviteľných zdrojov energie, odpadového tepla alebo vysoko účinnou kombinovanou výrobou elektriny a tepla.",
+         "n": "5"
+        },
+        {
+         "anchor": "p21-6",
+         "text": "Ak sa na vymedzenom území alebo na území bezprostredne nadväzujúcom na vymedzené územie plánuje vybudovať nový objekt spotreby tepla s projektovanou ročnou potrebou tepla vyššou ako 30 MWh a dodávateľ na tomto vymedzenom území dodáva teplo z účinného centralizovaného zásobovania teplom, musí sa nový objekt spotreby tepla pripojiť k účinnému centralizovanému zásobovaniu teplom a potreba tepla sa musí prednostne pokryť od dodávateľa z účinného centralizovaného zásobovania teplom. To neplatí, ak to nie je technicky možné alebo nákladovo efektívne.",
+         "n": "6"
+        },
+        {
+         "anchor": "p21-7",
+         "text": "Ak sa na vymedzenom území alebo na území bezprostredne nadväzujúcom na vymedzené územie uskutočňuje hĺbková obnova¹⁵ᵇ) existujúceho objektu spotreby tepla s ročnou spotrebou tepla vyššou ako 30 MWh a dodávateľ na tomto vymedzenom území dodáva teplo z účinného centralizovaného zásobovania teplom z obnoviteľných zdrojov energie, musí sa takýto objekt spotreby tepla pripojiť k účinnému centralizovanému zásobovaniu teplom z obnoviteľných zdrojov energie a potreba tepla sa musí prednostne pokryť od dodávateľa z účinného centralizovaného zásobovania teplom z obnoviteľných zdrojov energie. To neplatí, ak to nie je technicky možné alebo nákladovo efektívne alebo ak iné technické riešenie pokrytia potreby tepla zabezpečí vyššiu mieru plnenia požiadaviek na energetickú hospodárnosť objektu spotreby tepla.¹⁵ᶜ)",
+         "n": "7"
+        },
+        {
+         "anchor": "p21-8",
+         "text": "Technické podmienky obsahujú najmä podmienky",
+         "n": "8",
+         "items": [
+          {
+           "anchor": "p21-8-a",
+           "label": "a)",
+           "letter": "a",
+           "text": "pripojenia do sústavy tepelných zariadení držiteľa povolenia na rozvod tepla,"
+          },
+          {
+           "anchor": "p21-8-b",
+           "label": "b)",
+           "letter": "b",
+           "text": "technickej súčinnosti zariadenia na výrobu tepla a sústavy tepelných zariadení držiteľa povolenia na rozvod tepla,"
+          },
+          {
+           "anchor": "p21-8-c",
+           "label": "c)",
+           "letter": "c",
+           "text": "odpojenia zariadenia na výrobu tepla zo sústavy tepelných zariadení držiteľa povolenia na rozvod tepla,"
+          },
+          {
+           "anchor": "p21-8-d",
+           "label": "d)",
+           "letter": "d",
+           "text": "riadenia sústavy tepelných zariadení držiteľa povolenia na rozvod tepla,"
+          },
+          {
+           "anchor": "p21-8-e",
+           "label": "e)",
+           "letter": "e",
+           "text": "technickej bezpečnosti sústavy tepelných zariadení, spôsob vypracovania a zverejnenia minimálnych technicko-konštrukčných a prevádzkových požiadaviek na pripojenie do sústavy tepelných zariadení držiteľa povolenia na rozvod tepla."
+          }
+         ]
+        },
+        {
+         "anchor": "p21-9",
+         "text": "Technické podmienky vypracované držiteľom povolenia na rozvod tepla musia byť primerané a nediskriminačné. Technické podmienky zverejní držiteľ povolenia na rozvod tepla na svojom webovom sídle tak, aby boli prístupné všetkým účastníkom trhu s teplom aspoň jeden mesiac pred nadobudnutím ich účinnosti, a súčasne ich predloží ministerstvu. Technické podmienky sú záväzné pre účastníkov trhu s teplom.",
+         "n": "9"
+        },
+        {
+         "anchor": "p21-10",
+         "text": "Ministerstvo môže požiadať držiteľa povolenia na rozvod tepla o zmenu technických podmienok, ak sú technické podmienky v rozpore s týmto zákonom alebo osobitnými predpismi. Držiteľ povolenia na rozvod tepla je povinný predložiť ministerstvu do 30 dní odo dňa doručenia odôvodnenej žiadosti ministerstva podľa prvej vety návrh zmeny technických podmienok v rozsahu požadovanom ministerstvom. Ak ministerstvo nepožiada držiteľa povolenia na rozvod tepla o zmenu návrhu zmeny technických podmienok do 30 dní od jeho predloženia ministerstvu, držiteľ povolenia na rozvod tepla je povinný zmeniť technické podmienky v súlade s návrhom predloženým ministerstvu.",
+         "n": "10"
+        }
+       ],
+       "heading": "Povinný odber tepla"
+      },
+      {
+       "type": "provision",
+       "anchor": "p22",
+       "label": "§ 22",
+       "paragraphs": [
+        {
+         "anchor": "p22-1",
+         "text": "Neoprávneným odberom tepla je odber tepla bez uzavretej písomnej zmluvy o dodávke a odbere tepla s výnimkou uvedenou v § 19 ods. 3 písm. b) alebo v rozpore s uzavretou zmluvou alebo odber tepla z verejného rozvodu tepla alebo z tepelnej prípojky sa uskutočňuje bez vedomia a súhlasu dodávateľa.",
+         "n": "1"
+        },
+        {
+         "anchor": "p22-2",
+         "text": "Za škodu¹⁶) spôsobenú dodávateľovi neoprávneným odberom tepla zodpovedá osoba, ktorá neoprávnene teplo odobrala.",
+         "n": "2"
+        },
+        {
+         "anchor": "p22-3",
+         "text": "Zásah do sústavy tepelných zariadení je možné vykonať len so súhlasom jej prevádzkovateľa alebo dodávateľa tepla.",
+         "n": "3"
+        }
+       ],
+       "heading": "Neoprávnený odber tepla a zásah do sústavy tepelných zariadení"
+      },
+      {
+       "type": "provision",
+       "anchor": "p23",
+       "label": "§ 23",
+       "paragraphs": [
+        {
+         "anchor": "p23-1",
+         "text": "Dodávateľ môže zmeniť teplonosnú látku alebo spôsob distribúcie tepla len v súlade s koncepciou obce v oblasti tepelnej energetiky, pričom je povinný takúto zmenu oznámiť odberateľovi najmenej 1 rok pred jej uskutočnením.",
+         "n": "1"
+        },
+        {
+         "anchor": "p23-2",
+         "text": "Ak sa uskutoční zmena podľa odseku 1, dodávateľ je povinný na svoje náklady upraviť sústavu tepelných zariadení určených na spotrebu tepla, ak sa s odberateľom nedohodnú inak.",
+         "n": "2"
+        }
+       ],
+       "heading": "Zmena teplonosnej látky alebo spôsobu distribúcie tepla"
+      },
+      {
+       "type": "provision",
+       "anchor": "p24",
+       "label": "§ 24",
+       "paragraphs": [
+        {
+         "anchor": "p24-1",
+         "text": "Preložkou verejného rozvodu tepla je zmena jeho trasy alebo premiestnenie niektorého súboru alebo časti tohto rozvodu.",
+         "n": "1"
+        },
+        {
+         "anchor": "p24-2",
+         "text": "Preložku verejného rozvodu tepla zabezpečuje jeho vlastník alebo prevádzkovateľ na náklady toho, kto potrebu preložky vyvolal, ak sa nedohodnú inak. Vlastníctvo verejného rozvodu tepla sa po vykonaní preložky nemení. Oprávnenia k cudzím nehnuteľnostiam a obmedzenia ich užívania zostávajú preložkou nedotknuté.",
+         "n": "2"
+        },
+        {
+         "anchor": "p24-3",
+         "text": "Zriadenie tepelnej prípojky a odovzdávacej stanice tepla v objekte spotreby tepla, ich opravu a údržbu zabezpečuje alebo vykonáva za úhradu dodávateľ, ak sa dodávateľ s odberateľom nedohodnú inak. Ak sa dodávateľ s odberateľom nedohodnú inak, vlastníkom zariadenia na výrobu tepla v objekte spotreby tepla, odovzdávacej stanice tepla v objekte spotreby tepla a tepelnej prípojky je ten, kto uhradil náklady na ich zriadenie.",
+         "n": "3"
+        }
+       ],
+       "heading": "Preložka verejného rozvodu tepla a zriadenie, opravy a údržba tepelnej prípojky"
+      },
+      {
+       "type": "provision",
+       "anchor": "p25",
+       "label": "§ 25",
+       "paragraphs": [
+        {
+         "anchor": "p25-1",
+         "text": "Výrobca tepla, dodávateľ a odberateľ sú povinní dodržiavať zásady hospodárnosti prevádzky sústavy tepelných zariadení. Hospodárnosťou prevádzky sústavy tepelných zariadení na účely tohto zákona sa rozumie také jej prevádzkovanie, ktoré spĺňa ukazovatele energetickej účinnosti zariadení na výrobu tepla a distribúciu tepla a normatívne ukazovatele spotreby tepla; normatívnym ukazovateľom spotreby tepla sa rozumie maximálna spotreba tepla na dosiahnutie optimálnej energetickej účinnosti tepelného zariadenia.",
+         "n": "1"
+        },
+        {
+         "anchor": "p25-2",
+         "text": "Dodávateľ je povinný",
+         "n": "2",
+         "items": [
+          {
+           "anchor": "p25-2-a",
+           "label": "a)",
+           "letter": "a",
+           "text": "zabezpečiť automatickú reguláciu teploty teplonosnej látky na vykurovanie v závislosti od klimatických podmienok,"
+          },
+          {
+           "anchor": "p25-2-b",
+           "label": "b)",
+           "letter": "b",
+           "text": "trvale dodržiavať technické parametre teplonosnej látky na dohodnutom odbernom mieste dohodnutom v zmluve o dodávke a odbere tepla,"
+          },
+          {
+           "anchor": "p25-2-c",
+           "label": "c)",
+           "letter": "c",
+           "text": "zabezpečiť jedenkrát za tri roky overenie hospodárnosti prevádzky sústavy tepelných zariadení po odberné miesto; overenie hospodárnosti prevádzky zariadenia na výrobu tepla, ktoré využíva tuhé alebo kvapalné fosílne palivá, zabezpečiť jedenkrát za dva roky; ak dôjde k podstatnej zmene technických parametrov, inštalovaného výkonu, skutočného odberu alebo organizácie prevádzky sústavy tepelných zariadení po odberné miesto, je dodávateľ povinný zabezpečiť overenie hospodárnosti prevádzky sústavy tepelných zariadení po odberné miesto najneskôr do 12 mesiacov od vykonanej zmeny,"
+          },
+          {
+           "anchor": "p25-2-d",
+           "label": "d)",
+           "letter": "d",
+           "text": "zabezpečiť jedenkrát ročne preukázanie splnenia podmienky účinného centralizovaného zásobovania teplom alebo účinného centralizovaného zásobovania teplom z obnoviteľných zdrojov energie."
+          }
+         ]
+        },
+        {
+         "anchor": "p25-3",
+         "text": "Dodávateľ, ktorý rozpočítava množstvo dodaného tepla konečnému spotrebiteľovi, a odberateľ, ktorý rozpočítava množstvo dodaného tepla konečnému spotrebiteľovi, sú povinní trvale zabezpečovať určenú kvalitu dodávky tepla pre konečného spotrebiteľa podľa § 16 ods. 2.",
+         "n": "3"
+        },
+        {
+         "anchor": "p25-4",
+         "text": "Overovanie hospodárnosti prevádzky sústavy tepelných zariadení podľa odseku 2 písm. c) a preukázanie splnenia podmienky účinného centralizovaného zásobovania teplom alebo účinného centralizovaného zásobovania teplom z obnoviteľných zdrojov energie podľa odseku 2 písm. d) vykonáva za úhradu vo výške ekonomicky oprávnených nákladov príspevková organizácia zriadená ministerstvom.",
+         "n": "4"
+        },
+        {
+         "anchor": "p25-5",
+         "text": "Výrobca tepla a dodávateľ sú povinní na vyžiadanie osoby odborne spôsobilej na vypracovanie energetického certifikátu¹⁶ᵃ) určiť faktor primárnej energie systému centralizovaného zásobovania teplom na účel zatriedenia budov do energetických tried podľa osobitného predpisu¹⁶ᵇ) a oznámiť ho žiadateľovi do 15 dní od doručenia žiadosti.",
+         "n": "5"
+        },
+        {
+         "anchor": "p25-6",
+         "text": "Spôsob overovania hospodárnosti prevádzky sústavy tepelných zariadení, ukazovatele energetickej účinnosti zariadení na výrobu tepla, distribúcie tepla, normatívne ukazovatele spotreby tepla a rozsah ekonomicky oprávnených nákladov na overenie hospodárnosti prevádzky sústavy tepelných zariadení, ako aj spôsob úhrady týchto nákladov ustanoví všeobecne záväzný právny predpis, ktorý vydá úrad.",
+         "n": "6"
+        },
+        {
+         "anchor": "p25-7",
+         "text": "Postup pri výpočte faktora primárnej energie systému centralizovaného zásobovania teplom ustanoví všeobecne záväzný právny predpis, ktorý vydá ministerstvo.",
+         "n": "7"
+        },
+        {
+         "anchor": "p25-8",
+         "text": "Povinnosti podľa odseku 2 písm. c) sa nevzťahujú na dodávateľa, ktorý je povinný zabezpečiť vykonanie energetického auditu podľa osobitného predpisu.¹⁶ᶜ)",
+         "n": "8"
+        },
+        {
+         "anchor": "p25-9",
+         "text": "Postup pri výpočte preukazujúcom splnenie podmienky účinného centralizovaného zásobovania teplom a účinného centralizovaného zásobovania teplom z obnoviteľných zdrojov energie ustanoví všeobecne záväzný právny predpis, ktorý vydá ministerstvo.",
+         "n": "9"
+        }
+       ],
+       "heading": "Hospodárnosť prevádzky sústavy tepelných zariadení"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "type": "section",
+   "anchor": "s-cast-stvrta",
+   "kind": "cast",
+   "label": "ŠTVRTÁ ČASŤ",
+   "heading": "OBMEDZUJÚCE OPATRENIA V TEPELNEJ ENERGETIKE",
+   "children": [
+    {
+     "type": "provision",
+     "anchor": "p26",
+     "label": "§ 26",
+     "paragraphs": [
+      {
+       "anchor": "p26-1",
+       "text": "Dodávateľ môže obmedziť alebo prerušiť dodávku tepelnej energie v nevyhnutnom rozsahu, ak",
+       "n": "1",
+       "items": [
+        {
+         "anchor": "p26-1-a",
+         "label": "a)",
+         "letter": "a",
+         "text": "vykonáva plánovanú rekonštrukciu, opravu, údržbu a revíziu sústavy tepelných zariadení,"
+        },
+        {
+         "anchor": "p26-1-b",
+         "label": "b)",
+         "letter": "b",
+         "text": "vznikla havária alebo sa odstraňuje jej následok na sústave tepelných zariadení,"
+        },
+        {
+         "anchor": "p26-1-c",
+         "label": "c)",
+         "letter": "c",
+         "text": "sa teplo odoberá sústavou tepelných zariadení, ktoré ohrozujú život a zdravie osôb alebo ich majetok,"
+        },
+        {
+         "anchor": "p26-1-d",
+         "label": "d)",
+         "letter": "d",
+         "text": "výrobu tepla nemôže zabezpečiť z dôvodu obmedzenia alebo prerušenia distribúcie plynu podľa osobitného predpisu¹⁷) alebo ak bola prerušená dodávka elektriny alebo dodávka vody na výrobu tepla,"
+        },
+        {
+         "anchor": "p26-1-e",
+         "label": "e)",
+         "letter": "e",
+         "text": "odberateľ je v omeškaní s platbou za dodané teplo, so zaplatením zmluvne dohodnutej zálohovej platby alebo so zaplatením nedoplatku vyplývajúceho zo zúčtovania za dodávku tepla a ak odberateľ platbu alebo zálohovú platbu, alebo nedoplatok neuhradí ani po uplynutí lehoty, ktorú mu vo výzve určil dodávateľ. Táto lehota nemôže byť kratšia ako 15 dní odo dňa doručenia výzvy; túto výzvu odberateľovi dodávateľ oznámi miestne obvyklým spôsobom aj konečným spotrebiteľom,"
+        },
+        {
+         "anchor": "p26-1-f",
+         "label": "f)",
+         "letter": "f",
+         "text": "odber tepla je neoprávnený."
+        }
+       ]
+      },
+      {
+       "anchor": "p26-2",
+       "text": "Pri obmedzení alebo prerušení dodávky tepla z dôvodov uvedených v odseku 1 písm. a) a e) je dodávateľ povinný oznámiť odberateľovi začiatok a skončenie tohto obmedzenia alebo prerušenia najmenej 15 dní pred obmedzením alebo prerušením písomne alebo miestne obvyklým spôsobom.",
+       "n": "2"
+      },
+      {
+       "anchor": "p26-3",
+       "text": "Po odstránení príčin obmedzenia alebo prerušenia dodávok tepla uvedených v odseku 1 je dodávateľ povinný neodkladne obnoviť dodávku tepla.",
+       "n": "3"
+      },
+      {
+       "anchor": "p26-4",
+       "text": "Ak vznikla odberateľovi škoda pri obmedzení alebo prerušení dodávky tepla z dôvodov uvedených v odseku 1 písm. a), odberateľ môže uplatňovať náhradu ušlého zisku a náhradu škody¹⁸) voči dodávateľovi len vtedy, ak si tento nesplnil oznamovaciu povinnosť podľa odseku 2 alebo ak nedodržal termín skončenia tohto obmedzenia alebo prerušenia.",
+       "n": "4"
+      },
+      {
+       "anchor": "p26-5",
+       "text": "Ak vznikla odberateľovi škoda pri obmedzení alebo prerušení dodávok tepla z dôvodov, ktoré zavinil dodávateľ, má odberateľ právo uplatniť si náhradu škody a ušlého zisku voči dodávateľovi v lehote šiestich mesiacov odo dňa, keď sa o jej vzniku dozvedel, najneskoršie však do jedného roka odo dňa, keď škoda alebo ušlý zisk vznikol.",
+       "n": "5"
+      }
+     ],
+     "heading": "Obmedzenie a prerušenie dodávky tepla"
+    },
+    {
+     "type": "section",
+     "anchor": "s-cast-stvrta-g-stav-nudze-v-tepelnej-energetike",
+     "kind": "group",
+     "heading": "Stav núdze v tepelnej energetike",
+     "children": [
+      {
+       "type": "provision",
+       "anchor": "p27",
+       "label": "§ 27",
+       "paragraphs": [
+        {
+         "anchor": "p27-x1",
+         "text": "Stav núdze v tepelnej energetike je zníženie alebo prerušenie dodávok tepla alebo vyradenie sústavy tepelných zariadení z činnosti, ktoré môže spôsobiť ohrozenie života a zdravia ľudí na vymedzenom území alebo na časti vymedzeného územia v dôsledku",
+         "items": [
+          {
+           "anchor": "p27-x1-a",
+           "label": "a)",
+           "letter": "a",
+           "text": "mimoriadnej udalosti alebo krízovej situácie,\n¹⁹)"
+          },
+          {
+           "anchor": "p27-x1-b",
+           "label": "b)",
+           "letter": "b",
+           "text": "havárie alebo poruchy tepelných zariadení,"
+          },
+          {
+           "anchor": "p27-x1-c",
+           "label": "c)",
+           "letter": "c",
+           "text": "dlhodobého nedostatku zdrojov tepelnej energie, ktorými sú palivá, nakupované teplo, elektrina a voda,"
+          },
+          {
+           "anchor": "p27-x1-d",
+           "label": "d)",
+           "letter": "d",
+           "text": "smogovej situácie podľa osobitných predpisov,"
+          },
+          {
+           "anchor": "p27-x1-e",
+           "label": "e)",
+           "letter": "e",
+           "text": "teroristického činu,"
+          },
+          {
+           "anchor": "p27-x1-f",
+           "label": "f)",
+           "letter": "f",
+           "text": "opatrení štátnych orgánov za stavu ohrozenia štátu alebo vyhlásenia vojnového stavu,"
+          },
+          {
+           "anchor": "p27-x1-g",
+           "label": "g)",
+           "letter": "g",
+           "text": "opatrení hospodárskej mobilizácie.¹⁹ᵃ)"
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "type": "provision",
+       "anchor": "p28",
+       "label": "§ 28",
+       "paragraphs": [
+        {
+         "anchor": "p28-1",
+         "text": "Stav núdze v tepelnej energetike vyhlasuje a odvoláva pre územie kraja okresný úrad v sídle kraja, pre územie okresu okresný úrad a pre územie obce obec. Pri vyhlasovaní a odvolávaní mimoriadnej situácie alebo núdzového stavu sa postupuje podľa osobitného predpisu.¹⁹ᵃᵃ)",
+         "n": "1"
+        },
+        {
+         "anchor": "p28-2",
+         "text": "Ak dôjde k ohrozeniu zdravia alebo života veľkej skupiny odberateľov tepla alebo hrozbe značných hospodárskych škôd u koncových odberateľov tepla na vymedzenom území, stav núdze v tepelnej energetike vyhlasuje a odvoláva vláda na návrh ministerstva. Vyhlásenie stavu núdze v tepelnej energetike podľa prvej vety sa oznamuje vo verejnoprávnych hromadných oznamovacích prostriedkoch.",
+         "n": "2"
+        },
+        {
+         "anchor": "p28-3",
+         "text": "Súčasťou vyhlásenia stavu núdze v tepelnej energetike je aj vyhlásenie rozsahu obmedzujúcich opatrení na spotrebu tepla a rozsahu povinností držiteľov povolení a ostatných fyzických osôb a právnických osôb na odstránenie stavu núdze. Držiteľ povolenia na rozvod tepla pri tepelných sieťach zásobovaných viac ako 50 % z jedného zdroja je povinný zistiť účinky výpadu tohto zdroja a podľa výsledku zabezpečiť vstupy do tepelnej siete na pripojenie náhradných zdrojov.",
+         "n": "3"
+        },
+        {
+         "anchor": "p28-4",
+         "text": "Koordináciu obmedzujúcich opatrení a povinností podľa odseku 3 zabezpečuje",
+         "n": "4",
+         "items": [
+          {
+           "anchor": "p28-4-a",
+           "label": "a)",
+           "letter": "a",
+           "text": "okresný úrad v sídle kraja, ak stav núdze v tepelnej energetike bol vyhlásený na území kraja,"
+          },
+          {
+           "anchor": "p28-4-b",
+           "label": "b)",
+           "letter": "b",
+           "text": "okresný úrad, ak stav núdze v tepelnej energetike bol vyhlásený na území okresu,"
+          },
+          {
+           "anchor": "p28-4-c",
+           "label": "c)",
+           "letter": "c",
+           "text": "obec, ak stav núdze v tepelnej energetike bol vyhlásený na území obce."
+          }
+         ]
+        },
+        {
+         "anchor": "p28-5",
+         "text": "Orgán, ktorý vyhlásil stav núdze podľa odseku 1, je povinný informovať ministerstvo, úrad, Ministerstvo vnútra Slovenskej republiky, príslušné hasičské záchranné zbory, Ministerstvo zdravotníctva Slovenskej republiky a príslušné zdravotnícke orgány o predpokladanom trvaní obmedzenia dodávok tepelnej energie.",
+         "n": "5"
+        },
+        {
+         "anchor": "p28-6",
+         "text": "Postup pri predchádzaní vzniku a odstraňovaní následkov stavu núdze ustanovuje všeobecne záväzný právny predpis, ktorý vydá ministerstvo po dohode s Ministerstvom vnútra Slovenskej republiky.",
+         "n": "6"
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "type": "section",
+   "anchor": "s-cast-piata",
+   "kind": "cast",
+   "label": "PIATA ČASŤ",
+   "heading": "PÔSOBNOSŤ ORGÁNOV ŠTÁTNEJ SPRÁVY A OBCE A VÝKON ŠTÁTNEHO DOZORU",
+   "children": [
+    {
+     "type": "provision",
+     "anchor": "p29",
+     "label": "§ 29",
+     "paragraphs": [
+      {
+       "anchor": "p29-1",
+       "text": "Ministerstvo",
+       "n": "1",
+       "items": [
+        {
+         "anchor": "p29-1-a",
+         "label": "a)",
+         "letter": "a",
+         "text": "zabezpečuje plnenie záväzkov vyplývajúcich z medzinárodných zmlúv a záväzkov vyplývajúcich z členstva v medzinárodných organizáciách v rozsahu poverenia vládou,"
+        },
+        {
+         "anchor": "p29-1-b",
+         "label": "b)",
+         "letter": "b",
+         "text": "vypracúva Energetickú politiku Slovenskej republiky, ktorej súčasťou je aj rozvoj tepelnej energetiky; metodicky usmerňuje tvorbu koncepcie rozvoja obcí v oblasti tepelnej energetiky,"
+        },
+        {
+         "anchor": "p29-1-c",
+         "label": "c)",
+         "letter": "c",
+         "text": "uplatňuje opatrenia na zvýšenie energetickej efektívnosti nových tepelných zariadení a na zvýšenie hospodárnosti jestvujúcich sústav tepelných zariadení,"
+        },
+        {
+         "anchor": "p29-1-d",
+         "label": "d)",
+         "letter": "d",
+         "text": "vydáva všeobecne záväzné právne predpisy na vykonanie ustanovení § 4 ods. 7, § 15 ods. 3, § 16 ods. 2, § 25 ods. 9 a § 28 ods. 6 tohto zákona,"
+        },
+        {
+         "anchor": "p29-1-e",
+         "label": "e)",
+         "letter": "e",
+         "text": "zabezpečuje aktualizačnú odbornú prípravu podľa § 4 ods. 5."
+        }
+       ]
+      },
+      {
+       "anchor": "p29-2",
+       "text": "Ministerstvo rozhoduje",
+       "n": "2",
+       "items": [
+        {
+         "anchor": "p29-2-a",
+         "label": "a)",
+         "letter": "a",
+         "text": "o vydaní osvedčenia na výstavbu sústavy tepelných zariadení podľa § 12 ods. 3,"
+        },
+        {
+         "anchor": "p29-2-b",
+         "label": "b)",
+         "letter": "b",
+         "text": "o vydaní osvedčenia o odbornej spôsobilosti podľa § 4 ods. 4,"
+        },
+        {
+         "anchor": "p29-2-c",
+         "label": "c)",
+         "letter": "c",
+         "text": "o schválení plánu prechodu podľa § 18a ods. 2."
+        }
+       ]
+      },
+      {
+       "anchor": "p29-3",
+       "text": "Na konanie podľa odseku 2 písm. b) a c) sa nevzťahuje všeobecný predpis o správnom konaní.",
+       "n": "3"
+      }
+     ],
+     "heading": "Ministerstvo"
+    },
+    {
+     "type": "provision",
+     "anchor": "p30",
+     "label": "§ 30",
+     "paragraphs": [
+      {
+       "anchor": "p30-x1",
+       "text": "Úrad",
+       "items": [
+        {
+         "anchor": "p30-x1-a",
+         "label": "a)",
+         "letter": "a",
+         "text": "vydáva, mení a zrušuje povolenia na podnikanie v tepelnej energetike podľa § 5 až 9,"
+        },
+        {
+         "anchor": "p30-x1-b",
+         "label": "b)",
+         "letter": "b",
+         "text": "vykonáva cenovú reguláciu vo výrobe, distribúcii a dodávke tepla podľa osobitného predpisu,¹⁴)"
+        },
+        {
+         "anchor": "p30-x1-c",
+         "label": "c)",
+         "letter": "c",
+         "text": "poskytuje ministerstvu jedenkrát za štvrť roka informácie o povoleniach,"
+        },
+        {
+         "anchor": "p30-x1-d",
+         "label": "d)",
+         "letter": "d",
+         "text": "rieši prevádzkovanie a zabezpečenie zásobovania teplom, ak dôjde k zániku povolenia alebo zrušeniu povolenia podľa § 9 ods. 4,"
+        },
+        {
+         "anchor": "p30-x1-e",
+         "label": "e)",
+         "letter": "e",
+         "text": "vydáva predbežné opatrenia podľa § 9 ods. 5,"
+        },
+        {
+         "anchor": "p30-x1-f",
+         "label": "f)",
+         "letter": "f",
+         "text": "vedie register objektov spotreby tepla, v ktorom ku každému objektu spotreby tepla eviduje adresu v rozsahu kraj, okres, obec, časť obce, ulica, súpisné číslo, orientačné číslo, katastrálne územie a číslo listu vlastníctva, na ktorom je objekt spotreby tepla evidovaný."
+        }
+       ]
+      }
+     ],
+     "heading": "Úrad"
+    },
+    {
+     "type": "provision",
+     "anchor": "p31",
+     "label": "§ 31",
+     "paragraphs": [
+      {
+       "anchor": "p31-x1",
+       "text": "Obec s počtom obyvateľov nad 2 500 obyvateľov",
+       "items": [
+        {
+         "anchor": "p31-x1-a",
+         "label": "a)",
+         "letter": "a",
+         "text": "zabezpečí do 31. decembra 2007 vypracovanie koncepcie rozvoja obce v oblasti tepelnej energetiky v súlade s energetickou politikou Slovenskej republiky a v rozsahu metodického usmernenia ministerstva, ak na jej území pôsobí dodávateľ alebo odberateľ, ktorý rozpočítava množstvo dodaného tepla konečnému spotrebiteľovi; koncepcia rozvoja obce v oblasti tepelnej energetiky sa po schválení obecným zastupiteľstvom stáva odvetvovou koncepciou¹⁹ᵇ) obce a použije sa pri spracovaní územnoplánovacej dokumentácie obce postupom podľa osobitného zákona,¹³) ak vznikne nová obec s počtom obyvateľov väčším ako 2 500 obyvateľov, zabezpečí vypracovanie koncepcie do dvoch rokov odo dňa jej vzniku,"
+        },
+        {
+         "anchor": "p31-x1-b",
+         "label": "b)",
+         "letter": "b",
+         "text": "aktualizuje aspoň raz za päť rokov koncepciu rozvoja obce v oblasti tepelnej energetiky a po prerokovaní obecným zastupiteľstvom schválenú časť aktualizovanej koncepcie rozvoja obce v oblasti tepelnej energetiky doplní do územno-plánovacej dokumentácie obce postupom podľa osobitného predpisu;¹³) ak je to vhodné, najmä ak nie je dostupné účinné centralizované zásobovanie teplom, obec zahrnie do plánovania obecnej infraštruktúry vykurovanie a chladenie z obnoviteľných zdrojov energie alebo odpadového tepla a na tieto účely vedie konzultácie s prevádzkovateľmi dotknutých sústav tepelných zariadení s cieľom zohľadniť vplyv programov energetickej efektívnosti a reakcie na dopyt vrátane dopytu po decentralizovanom zdroji tepla využívajúcom obnoviteľné zdroje energie a na plány prevádzkovateľov dotknutých sústav tepelných zariadení,"
+        },
+        {
+         "anchor": "p31-x1-c",
+         "label": "c)",
+         "letter": "c",
+         "text": "rozhoduje²⁰ᵃ) o vydaní osvedčenia obce na výstavbu sústavy tepelných zariadení alebo jej časti, ak o nich nerozhoduje ministerstvo podľa § 12 ods. 3, pričom v konaní posudzuje súlad žiadosti o vydanie osvedčenia s koncepciou rozvoja obce v oblasti tepelnej energetiky; ak koncepcia rozvoja obce v oblasti tepelnej energetiky nie je súčasťou záväznej časti územnoplánovacej dokumentácie obce, obec rozhoduje²⁰ᵃ) o vydaní osvedčenia na základe individuálneho posúdenia opodstatnenosti výstavby,"
+        },
+        {
+         "anchor": "p31-x1-d",
+         "label": "d)",
+         "letter": "d",
+         "text": "je oprávnená od držiteľa povolenia požadovať informácie o stave a možnosti rozvoja sústavy tepelných zariadení,"
+        },
+        {
+         "anchor": "p31-x1-e",
+         "label": "e)",
+         "letter": "e",
+         "text": "vydáva príkaz na vecné plnenie fyzickým osobám alebo právnickým osobám a na osobné úkony fyzickým osobám v súvislosti s vyhlásením stavu núdze v tepelnej energetike; na vydávanie tohto príkazu sa nevzťahuje všeobecný predpis o správnom konaní,²¹)"
+        },
+        {
+         "anchor": "p31-x1-f",
+         "label": "f)",
+         "letter": "f",
+         "text": "uspokojuje právo na náhradu škody, ušlej mzdy alebo ušlého zisku, ako aj právo na náhradu preukázateľných nákladov, ktoré fyzickej osobe alebo právnickej osobe vznikli v súvislosti s plnením príkazu podľa písmena e), ak si ich uplatňuje; výdavky spojené s uspokojením práva si obec uplatní u osoby, ktorá stav núdze v tepelnej energetike spôsobila, ak taká osoba nie je, výdavky s uspokojením práva si obec uplatní na Ministerstve financií Slovenskej republiky."
+        }
+       ]
+      }
+     ],
+     "heading": "Obec"
+    },
+    {
+     "type": "provision",
+     "anchor": "p32",
+     "label": "§ 32",
+     "paragraphs": [
+      {
+       "anchor": "p32-x1",
+       "text": "Štátny dozor nad dodržiavaním ustanovení tohto zákona vykonáva úradpodľa osobitného predpisu.²²) Porušenie ustanovení tohto zákona je správnym deliktom, za ktorý úrad ukladá pokuty podľa § 35."
+      }
+     ],
+     "heading": "Štátny dozor"
+    }
+   ]
+  },
+  {
+   "type": "section",
+   "anchor": "s-cast-siesta",
+   "kind": "cast",
+   "label": "ŠIESTA ČASŤ",
+   "heading": "PRÁVA A POVINNOSTI FYZICKÝCH OSÔB A PRÁVNICKÝCH OSÔB, KTORÝCH PRÁVA, PRÁVOM CHRÁNENÉ ZÁUJMY ALEBO POVINNOSTI MÔŽU BYŤ DOTKNUTÉ VÝKONOM PRÁV A POVINNOSTÍ ÚČASTNÍKOV TRHU S TEPLOM",
+   "children": [
+    {
+     "type": "provision",
+     "anchor": "p33",
+     "label": "§ 33",
+     "paragraphs": [
+      {
+       "anchor": "p33-1",
+       "text": "Fyzická osoba a právnická osoba majú právo",
+       "n": "1",
+       "items": [
+        {
+         "anchor": "p33-1-a",
+         "label": "a)",
+         "letter": "a",
+         "text": "na primeranú jednorazovú náhradu za nútené obmedzenie užívania nehnuteľnosti, za zriadenie zákonného vecného bremena a za nútené obmedzenie vlastníka pozemku v užívaní pozemku v ochrannom pásme za podmienok podľa § 10 ods. 6, 9 a 12 a na primeranú jednorazovú náhradu za užívanie časti sústavy tepelných zariadení tvoriacej verejný rozvod tepla, ktorej je vlastníkom,"
+        },
+        {
+         "anchor": "p33-1-b",
+         "label": "b)",
+         "letter": "b",
+         "text": "v prípade vyhlásenia stavu núdze v tepelnej energetike na náhradu skutočnej škody, ktorá im vznikla vecným plnením, a na náhradu ušlého zisku,¹⁸) ak konala na základe príkazu."
+        }
+       ]
+      },
+      {
+       "anchor": "p33-2",
+       "text": "Fyzická osoba má právo aj na náhradu ušlej mzdy alebo ušlého zisku a podľa osobitného predpisu²³) na náhradu preukázateľných nákladov vynaložených na stravovanie a ubytovanie; právo na náhradu škody, ušlej mzdy alebo ušlého zisku, ako aj právo na náhradu preukázateľných nákladov vynaložených na stravovanie a ubytovanie si fyzická osoba alebo právnická osoba uplatňuje u orgánu, ktorý stav núdze vyhlásil.",
+       "n": "2"
+      },
+      {
+       "anchor": "p33-3",
+       "text": "Fyzická osoba alebo právnická osoba je povinná",
+       "n": "3",
+       "items": [
+        {
+         "anchor": "p33-3-a",
+         "label": "a)",
+         "letter": "a",
+         "text": "umožniť vstup na nehnuteľnosti, ktorých je vlastníkom alebo správcom, na účel vykonania rekonštrukcie, opráv a údržby sústavy tepelných zariadení,"
+        },
+        {
+         "anchor": "p33-3-b",
+         "label": "b)",
+         "letter": "b",
+         "text": "zdržať sa akýchkoľvek činností, ktoré môžu ohroziť bezpečnosť a prevádzkyschopnosť sústavy tepelných zariadení vrátane výstavby objektov a zariadení a výsadby trvalých porastov v ochrannom pásme,"
+        },
+        {
+         "anchor": "p33-3-c",
+         "label": "c)",
+         "letter": "c",
+         "text": "umožniť kontrolu štátnemu dozoru v priestoroch, o ktorých sa štátny dozor domnieva, že sa v nich vykonáva činnosť pri výrobe a dodávke tepla bez povolenia,"
+        },
+        {
+         "anchor": "p33-3-d",
+         "label": "d)",
+         "letter": "d",
+         "text": "v súvislosti s vykonávaným dozorom poskytnúť štátnemu dozoru príslušné doklady a údaje súvisiace s preverovanou činnosťou."
+        }
+       ]
+      },
+      {
+       "anchor": "p33-4",
+       "text": "Fyzická osoba alebo právnická osoba je povinná poskytnúť vecné plnenie po vyhlásení stavu núdze v tepelnej energetike na základe príkazu orgánu, ktorý stav núdze vyhlásil.",
+       "n": "4"
+      },
+      {
+       "anchor": "p33-5",
+       "text": "Fyzická osoba alebo právnická osoba, ktorá je vlastníkom časti sústavy tepelných zariadení, ktorá nie je verejným rozvodom tepla, je po vyhlásení stavu núdze povinná",
+       "n": "5",
+       "items": [
+        {
+         "anchor": "p33-5-a",
+         "label": "a)",
+         "letter": "a",
+         "text": "umožniť distribúciu tepla a teplej vody odberateľom alebo konečným spotrebiteľom prostredníctvom časti tepelnej sústavy, ktorej je vlastníkom,"
+        },
+        {
+         "anchor": "p33-5-b",
+         "label": "b)",
+         "letter": "b",
+         "text": "udržiavať sústavu tepelných zariadení v prevádzkyschopnom stave,"
+        },
+        {
+         "anchor": "p33-5-c",
+         "label": "c)",
+         "letter": "c",
+         "text": "umožniť držiteľovi povolenia na rozvod tepla dočasné pripojenie k sústave tepelných zariadení, ktorých je vlastníkom."
+        }
+       ]
+      },
+      {
+       "anchor": "p33-6",
+       "text": "Fyzická osoba alebo právnická osoba, ktorá je vlastníkom sústavy tepelných zariadení alebo jej časti, ktorú prestala používať na účel, na ktorý bola zriadená, a ani ju nepoužíva na iné účely vo výrobe a rozvode tepla, je povinná ju ponúknuť inej fyzickej osobe alebo právnickej osobe na prevádzkovanie alebo do správy, alebo na prevod vlastníctva na účel zabezpečenia dodávky tepla na vymedzenom území. Ak nedôjde k prevodu vlastníctva alebo k dohode o prevádzkovaní alebo o výkone správy sústavy tepelných zariadení alebo jej časti do jedného roka odo dňa, keď sa prestala používať na účel, na ktorý bola zriadená, je fyzická osoba alebo právnická osoba podľa prvej vety povinná ju na vlastné náklady odstrániť; pritom je povinná dodržať požiadavky na ochranu životného prostredia.",
+       "n": "6"
+      }
+     ],
+     "heading": "Práva a povinnosti fyzických osôb a právnických osôb"
+    },
+    {
+     "type": "provision",
+     "anchor": "p34",
+     "label": "§ 34",
+     "paragraphs": [
+      {
+       "anchor": "p34-1",
+       "text": "Vecným plnením sa na účely tohto zákona rozumejú vecné prostriedky poskytnuté v súvislosti s vyhlásením stavu núdze v tepelnej energetike, potrebné na odstránenie príčin a následkov, ktoré súvisia s obmedzením alebo prerušením dodávok tepla, alebo vyradením sústavy tepelných zariadení z činnosti.",
+       "n": "1"
+      },
+      {
+       "anchor": "p34-2",
+       "text": "Pri ukladaní vecného plnenia treba prihliadať na to, aby sa ich uložením neohrozili a nepoškodili životné potreby toho, kto vec poskytol (ďalej len „poskytovateľ“), jeho rodiny a riadna prevádzka jeho hospodárskych zariadení.",
+       "n": "2"
+      },
+      {
+       "anchor": "p34-3",
+       "text": "Vecné prostriedky, ktoré sa poskytli ako vecné plnenia podľa odseku 1, sa po odstránení stavu núdze vrátia poskytovateľovi v stave, v akom boli poskytnuté.",
+       "n": "3"
+      },
+      {
+       "anchor": "p34-4",
+       "text": "Ak nemožno vecný prostriedok podľa odseku 3 vrátiť, poskytne sa fyzickej osobe alebo právnickej osobe vecné plnenie rovnakého druhu a rovnakej hodnoty alebo sa mu vyplatí náhrada v peniazoch. Toto právo poskytovateľa uspokojí orgán, ktorý vecné plnenie nariadil, prípadne ten, kto škodu na poskytnutom vecnom prostriedku spôsobil.",
+       "n": "4"
+      }
+     ],
+     "heading": "Vecné plnenie"
+    }
+   ]
+  },
+  {
+   "type": "section",
+   "anchor": "s-cast-siedma",
+   "kind": "cast",
+   "label": "SIEDMA ČASŤ",
+   "heading": "SPRÁVNE DELIKTY",
+   "children": [
+    {
+     "type": "section",
+     "anchor": "s-cast-siedma-g-pokuty",
+     "kind": "group",
+     "heading": "Pokuty",
+     "children": [
+      {
+       "type": "provision",
+       "anchor": "p35",
+       "label": "§ 35",
+       "paragraphs": [
+        {
+         "anchor": "p35-1",
+         "text": "Úrad uloží pokutu",
+         "n": "1",
+         "items": [
+          {
+           "anchor": "p35-1-a",
+           "label": "a)",
+           "letter": "a",
+           "text": "od 500 eur do 100 000 eur fyzickej osobe alebo právnickej osobe, ktorá podniká v tepelnej energetike bez povolenia alebo v rozpore s vydaným povolením alebo ktorá uskutoční výstavbu sústavy tepelných zariadení alebo jej časti bez vydaného osvedčenia podľa § 12 ods. 1,"
+          },
+          {
+           "anchor": "p35-1-b",
+           "label": "b)",
+           "letter": "b",
+           "text": "od 500 eur do 50 000 eur za porušenie niektorej z povinností podľa § 10 ods. 16, § 11 ods. 1, § 15 ods. 1 písm. b) a c), § 15 ods. 2, § 16 ods. 1, § 17 ods. 1 a 2, § 18 ods. 1 až 4, § 18a ods. 4, § 19 ods. 2 a 3, § 21 a 22, § 24 ods. 3, § 25 ods. 2 a 3, § 26 ods. 3, § 33 ods. 4 a 5 a § 36 ods. 7 a 9,"
+          },
+          {
+           "anchor": "p35-1-c",
+           "label": "c)",
+           "letter": "c",
+           "text": "od 50 eur do 3 300 eur za porušenie niektorej z povinností podľa § 17 ods. 3 až 5, 7 až 9, § 18 ods. 6 až 10 a 12, § 26 ods. 2 a § 33 ods. 3,"
+          },
+          {
+           "anchor": "p35-1-d",
+           "label": "d)",
+           "letter": "d",
+           "text": "od 1 000 eur do 1 000 000 eur za porušenie povinností podľa § 38af ods. 2 a 3,"
+          },
+          {
+           "anchor": "p35-1-e",
+           "label": "e)",
+           "letter": "e",
+           "text": "od 33 000 eur do 5 000 000 eur za porušenie povinností uložených rozhodnutím úradu podľa § 9 ods. 4 alebo ods. 5, za porušenie niektorej z povinností podľa § 9 ods. 7 až 10."
+          }
+         ]
+        },
+        {
+         "anchor": "p35-2",
+         "text": "Pri určovaní výšky pokuty úrad prihliada najmä na spôsob, čas trvania a následky protiprávneho konania; úrad prihliada aj na to, či sa fyzická osoba alebo právnická osoba, ktorej sa pokuta ukladá, dopustila správneho deliktu opakovane do troch rokov odo dňa právoplatnosti rozhodnutia o uložení pokuty.",
+         "n": "2"
+        },
+        {
+         "anchor": "p35-3",
+         "text": "Konanie o uložení pokuty možno začať do jedného roka odo dňa, keď úrad zistil, že došlo k správnemu deliktu, najneskôr však do piatich rokov odo dňa, keď došlo k správnemu deliktu.",
+         "n": "3"
+        },
+        {
+         "anchor": "p35-4",
+         "text": "Výnosy z pokút sú príjmom štátneho rozpočtu; ich správu vykonáva úrad.",
+         "n": "4"
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "type": "section",
+   "anchor": "s-cast-osma",
+   "kind": "cast",
+   "label": "ÔSMA ČASŤ",
+   "heading": "OCHRANNÉ PÁSMA",
+   "children": [
+    {
+     "type": "provision",
+     "anchor": "p36",
+     "label": "§ 36",
+     "paragraphs": [
+      {
+       "anchor": "p36-1",
+       "text": "Na ochranu sústavy tepelných zariadení sa zriaďujú ochranné pásma.",
+       "n": "1"
+      },
+      {
+       "anchor": "p36-2",
+       "text": "Ochranné pásmo je priestor v bezprostrednej blízkosti tepelného zariadenia, ktorý je určený na zabezpečenie jeho spoľahlivej a plynulej prevádzky a na zabezpečenie ochrany života, zdravia osôb a majetku.",
+       "n": "2"
+      },
+      {
+       "anchor": "p36-3",
+       "text": "Ochranné pásmo zariadení na výrobu alebo rozvod tepla po odovzdávaciu stanicu tepla je vymedzené zvislými rovinami vedenými po jeho obidvoch stranách vo vodorovnej vzdialenosti meranej kolmo na toto zariadenie. Táto vzdialenosť je",
+       "n": "3",
+       "items": [
+        {
+         "anchor": "p36-3-a",
+         "label": "a)",
+         "letter": "a",
+         "text": "v zastavanom území na každú stranu 1 m,"
+        },
+        {
+         "anchor": "p36-3-b",
+         "label": "b)",
+         "letter": "b",
+         "text": "mimo zastavaného územia na jednu stranu 3 m a na druhú stranu 1 m, podľa určenia držiteľa povolenia na rozvod tepla."
+        }
+       ]
+      },
+      {
+       "anchor": "p36-4",
+       "text": "Ochranné pásmo odovzdávacej stanice tepla je vymedzené zvislými rovinami vedenými vo vodorovnej vzdialenosti 3 m kolmo na oplotenú alebo na obmurovanú hranicu objektu stanice; odovzdávacou stanicou sa rozumie časť sústavy tepelných zariadení, ktorá slúži na zmenu parametrov (najmä tlaku a teploty) odovzdanej teplonosnej látky, na hodnoty a účely potrebné na jeho ďalšie využitie (najmä distribúciu, prípravu teplej vody a na technologické účely).",
+       "n": "4"
+      },
+      {
+       "anchor": "p36-5",
+       "text": "Ochranné pásmo rozvodu tepla za odovzdávacou stanicou je vymedzené zvislými rovinami vedenými po jeho obidvoch stranách vo vodorovnej vzdialenosti meranej kolmo na toto zariadenie len v prípade, že by mohlo dôjsť k ohrozeniu plynulosti dodávky tepla a bezpečnosti prevádzky zariadenia, a to najviac",
+       "n": "5",
+       "items": [
+        {
+         "anchor": "p36-5-a",
+         "label": "a)",
+         "letter": "a",
+         "text": "v zastavanom území na každú stranu 1m,"
+        },
+        {
+         "anchor": "p36-5-b",
+         "label": "b)",
+         "letter": "b",
+         "text": "mimo zastavaného územia na jednu stranu 3 m a na druhú stranu 1 m, podľa určenia držiteľa povolenia na rozvod tepla."
+        }
+       ]
+      },
+      {
+       "anchor": "p36-6",
+       "text": "Ak sú zariadenia rozvodu tepla vedené v technickom suteréne budov alebo v kolektore inžinierskych sietí alebo ak je odovzdávacia stanica tepla umiestnená priamo v budove, ochranné pásmo sa nevymedzuje.",
+       "n": "6"
+      },
+      {
+       "anchor": "p36-7",
+       "text": "V ochranných pásmach je bez predchádzajúceho písomného súhlasu držiteľa povolenia na rozvod tepla zakázané vykonávať",
+       "n": "7",
+       "items": [
+        {
+         "anchor": "p36-7-a",
+         "label": "a)",
+         "letter": "a",
+         "text": "činnosti, ktoré by mohli ohroziť sústavu tepelných zariadení, plynulosť a bezpečnosť jej prevádzky a údržby alebo pri ktorých by mohla byť ohrozená bezpečnosť osôb, život alebo zdravie osôb a majetok (najmä práce s horľavinami a výbušninami alebo ich uskladňovanie, prejazdy ťažkých mechanizmov),"
+        },
+        {
+         "anchor": "p36-7-b",
+         "label": "b)",
+         "letter": "b",
+         "text": "stavebné práce a výsadbu trvalých porastov."
+        }
+       ]
+      },
+      {
+       "anchor": "p36-8",
+       "text": "Predchádzajúci súhlas podľa odseku 7 musí obsahovať podmienky, za akých bol udelený, a je súčasťou žiadosti o vydanie rozhodnutia o stavebnom zámere; stavebný úrad podmienky tohto súhlasu nepreskúmava.",
+       "n": "8"
+      },
+      {
+       "anchor": "p36-9",
+       "text": "V priestore bezprostredne nadväzujúcom na ochranné pásma je zakázané umiestňovať stavby, technické zariadenia alebo vykonávať činnosti, ktoré by mohli ohroziť sústavu tepelných zariadení alebo plynulosť, a bezpečnosť jej prevádzky (najmä výstavbu plynojemov stožiarov, vykonávanie trhacích a búracích prác).",
+       "n": "9"
+      },
+      {
+       "anchor": "p36-10",
+       "text": "Povinnosti a obmedzenia v ochranných pásmach a v priestore bezprostredne nadväzujúcom na ochranné pásma vznikajú dňom, keď rozhodnutie o stavebnom zámere sústavy tepelných zariadení nadobudlo právoplatnosť, a zanikajú dňom likvidácie týchto sústav tepelných zariadení alebo ich častí.",
+       "n": "10"
+      },
+      {
+       "anchor": "p36-11",
+       "text": "Predchádzajúci súhlas podľa odseku 7 a súhlas podľa § 22 ods. 3 sa na účely konania podľa Stavebného zákona považujú za záväzné stanoviská dotknutého orgánu.²⁴)",
+       "n": "11"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "type": "section",
+   "anchor": "s-cast-deviata",
+   "kind": "cast",
+   "label": "DEVIATA ČASŤ",
+   "heading": "SPOLOČNÉ A PRECHODNÉ USTANOVENIA",
+   "children": [
+    {
+     "type": "provision",
+     "anchor": "p37",
+     "label": "§ 37",
+     "paragraphs": [
+      {
+       "anchor": "p37-x1",
+       "text": "Na rozhodovanie podľa tohto zákona sa vzťahuje všeobecný predpis o správnom konaní,²¹) ak tento zákon neustanovuje inak."
+      }
+     ],
+     "heading": "Vzťah zákona k všeobecnému predpisu o správnom konaní"
+    },
+    {
+     "type": "provision",
+     "anchor": "p37a",
+     "label": "§ 37a",
+     "paragraphs": [
+      {
+       "anchor": "p37a-x1",
+       "text": "Na podnikanie v tepelnej energetike, postup podávania žiadostí o povolenie, rozhodovanie o vydaní povolenia a pre výkon dozoru nad osobami, ktorým bolo vydané povolenie, podľa tohto zákona sa použijú ustanovenia všeobecného predpisu o službách na vnútornom trhu,²¹ᵃ) ak tento zákon neustanovuje inak."
+      }
+     ],
+     "heading": "Vzťah k všeobecnému predpisu o službách na vnútornom trhu"
+    },
+    {
+     "type": "provision",
+     "anchor": "p38",
+     "label": "§ 38",
+     "paragraphs": [
+      {
+       "anchor": "p38-1",
+       "text": "Licencie alebo osvedčenia o registrácii vydané podľa doterajších predpisov sa považujú za povolenia podľa tohto zákona a ostávajú v platnosti dva roky po nadobudnutí účinnosti tohto zákona.",
+       "n": "1"
+      },
+      {
+       "anchor": "p38-2",
+       "text": "Držitelia povolenia podľa odseku 1, na ktorých sa nevzťahuje oznamovacia povinnosť podľa § 11, sú povinní najneskôr v lehote 60 dní pred uplynutím platnosti povolenia požiadať o vydanie povolenia podľa tohto zákona.",
+       "n": "2"
+      },
+      {
+       "anchor": "p38-3",
+       "text": "Osvedčenia o odbornej spôsobilosti vydané podľa doterajších predpisov zostávajú v platnosti do 31. decembra 2005.",
+       "n": "3"
+      },
+      {
+       "anchor": "p38-4",
+       "text": "Oprávnenia k cudzím nehnuteľnostiam, ako aj obmedzenia ich užívania, ktoré vznikli pred účinnosťou tohto zákona, zostávajú nedotknuté.",
+       "n": "4"
+      },
+      {
+       "anchor": "p38-5",
+       "text": "Ochranné pásma vytýčené podľa doterajších predpisov a výnimky z nich zostávajú zachované aj po nadobudnutí účinnosti tohto zákona.",
+       "n": "5"
+      },
+      {
+       "anchor": "p38-6",
+       "text": "V konaniach o uložení pokuty za porušenie povinností pri podnikaní v tepelnej energetike začatých pred nadobudnutím účinnosti tohto zákona sa postupuje podľa doterajších predpisov; tieto konania dokončí ten orgán, ktorý ich začal.",
+       "n": "6"
+      },
+      {
+       "anchor": "p38-7",
+       "text": "Zmluvy o dodávke tepla uzatvorené pred účinnosťou tohto zákona zostávajú v platnosti jeden rok od nadobudnutia jeho účinnosti. Zmluvní partneri sú povinní dať zmluvy do súladu s týmto zákonom do jedného roka od nadobudnutia jeho účinnosti, inak strácajú platnosť.",
+       "n": "7"
+      }
+     ],
+     "heading": "Prechodné ustanovenia"
+    },
+    {
+     "type": "provision",
+     "anchor": "p38a",
+     "label": "§ 38a",
+     "paragraphs": [
+      {
+       "anchor": "p38a-1",
+       "text": "Povolenia na podnikanie v tepelnej energetike vydané pred 1. májom 2014 ostávajú v platnosti v súlade s podmienkami ustanovenými podľa doterajších predpisov.",
+       "n": "1"
+      },
+      {
+       "anchor": "p38a-2",
+       "text": "Oprávnenia k cudzím nehnuteľnostiam, ako aj obmedzenia ich užívania, ktoré vznikli pred 1. májom 2014, zostávajú nedotknuté, ak tento zákon neustanovuje inak.",
+       "n": "2"
+      },
+      {
+       "anchor": "p38a-3",
+       "text": "Nárok na primeranú jednorazovú náhradu za nútené obmedzenie užívania nehnuteľnosti nemožno priznať, ak lehota na uplatnenie nároku na primeranú jednorazovú náhradu za nútené obmedzenie užívania nehnuteľnosti podľa doterajších predpisov uplynula. Lehota na uplatnenie nároku na primeranú jednorazovú náhradu pri zákonných vecných bremenách zodpovedajúcich oprávneniam podľa § 10 ods. 1 písm. d) a e) začína plynúť odo dňa vykonania zápisu vecného bremena do katastra nehnuteľností len pri zákonných vecných bremenách, ktoré vznikli po nadobudnutí účinnosti tohto zákona. Na počítanie lehôt na uplatnenie nároku na primeranú jednorazovú náhradu, ktoré začali plynúť podľa doterajších predpisov sa použijú doterajšie predpisy. Konania vo veci nároku na primeranú jednorazovú náhradu za nútené obmedzenie užívania nehnuteľnosti, nároku na primeranú jednorazovú náhradu za nútené obmedzenie užívania pozemku v ochrannom pásme a nároku na primeranú jednorazovú náhradu za zriadenie vecného bremena začaté pred 1. májom 2014 sa dokončia podľa doterajších predpisov.",
+       "n": "3"
+      },
+      {
+       "anchor": "p38a-4",
+       "text": "Právnické osoby, ktoré začali vykonávať činnosť podľa § 1 ods. 3 písm. b) a osoby, ktoré začali vykonávať činnosť podľa § 1 ods. 3 písm. c) a d) pred 1. májom 2014, sú povinné splniť oznamovaciu povinnosť podľa § 11 ods. 1 do 31. decembra 2014.",
+       "n": "4"
+      },
+      {
+       "anchor": "p38a-5",
+       "text": "Koncový odberateľ, ktorý rozpočítava množstvo dodaného tepla konečnému spotrebiteľovi a fyzická osoba alebo právnická osoba, ktorá vykonáva činnosť podľa § 1 ods. 3 písm. c), sú povinní zabezpečiť vykonanie činností podľa § 18 ods. 4 písm. a) najneskôr do 31. decembra 2016.",
+       "n": "5"
+      },
+      {
+       "anchor": "p38a-6",
+       "text": "Ak v zmluve o dodávke a odbere tepla uzatvorenej do 1. mája 2014 nie je dohodnutý termín podľa § 19 ods. 2 písm. m), dodávateľ do 31. júla 2014 písomne vyzve odberateľa, aby mu oznámil množstvo objednaného tepla na rok 2015. Neoznámenie množstva objednaného tepla na rok 2015 na písomnú výzvu dodávateľa je dôvodom na vypovedanie zmluvy o dodávke a odbere tepla.",
+       "n": "6"
+      }
+     ],
+     "heading": "Prechodné ustanovenia účinné od 1. mája 2014"
+    },
+    {
+     "type": "provision",
+     "anchor": "p38aa",
+     "label": "§ 38aa",
+     "paragraphs": [
+      {
+       "anchor": "p38aa-1",
+       "text": "Fyzická osoba alebo právnická osoba, ktorá vykonáva činnosť podľa § 1 ods. 3 písm. c) je povinná zabezpečiť obstaranie, zapojenie, udržiavanie a overovanie určených meradiel podľa § 17 ods. 4 písm. b) najneskôr do 31. decembra 2016.",
+       "n": "1"
+      },
+      {
+       "anchor": "p38aa-2",
+       "text": "Do nadobudnutia účinnosti všeobecne záväzného právneho predpisu vydaného na základe zákona účinného od 1. decembra 2014 zostáva v platnosti a účinnosti vyhláška Úradu pre reguláciu sieťových odvetví č. 630/2005 Z. z., ktorou sa ustanovuje teplota teplej vody na odbernom mieste, pravidlá rozpočítavania množstva tepla dodaného na prípravu teplej vody a rozpočítavania množstva dodaného tepla v znení vyhlášky č. 358/2009 Z. z.",
+       "n": "2"
+      }
+     ],
+     "heading": "Prechodné ustanovenie účinné od 1. decembra 2014"
+    },
+    {
+     "type": "provision",
+     "anchor": "p38ac",
+     "label": "§ 38ac",
+     "paragraphs": [
+      {
+       "anchor": "p38ac-x1",
+       "text": "V konaní začatom pred 1. júlom 2016, ktoré nebolo právoplatne skončené, sa postupuje podľa predpisov účinných do 30. júna 2016."
+      }
+     ],
+     "heading": "Prechodné ustanovenie k úpravám účinným od 1. júla 2016"
+    },
+    {
+     "type": "provision",
+     "anchor": "p38ad",
+     "label": "§ 38ad",
+     "paragraphs": [
+      {
+       "anchor": "p38ad-x1",
+       "text": "V konaní začatom pred 1. augustom 2021, ktoré nebolo právoplatne skončené a v ktorom ešte nebolo vydané osvedčenie podľa § 12 ods. 1 alebo záväzné stanovisko obce podľa § 12 ods. 8, sa postupuje podľa predpisov účinných od 1. augusta 2021."
+      }
+     ],
+     "heading": "Prechodné ustanovenie účinné od 1. augusta 2021"
+    },
+    {
+     "type": "provision",
+     "anchor": "p38ae",
+     "label": "§ 38ae",
+     "paragraphs": [
+      {
+       "anchor": "p38ae-1",
+       "text": "Za účinné centralizované zásobovanie teplom z obnoviteľných zdrojov energie sa do 31. decembra 2025 považuje centralizované zásobovanie teplom, ktorým sa zabezpečuje rozvod aspoň 65 % tepla vyrobeného z obnoviteľných zdrojov energie.",
+       "n": "1"
+      },
+      {
+       "anchor": "p38ae-2",
+       "text": "Osvedčenia ministerstva o súlade pripravovanej výstavby sústavy tepelných zariadení alebo jej časti s Energetickou politikou Slovenskej republiky a záväzné stanoviská obcí o súlade pripravovanej výstavby sústavy tepelných zariadení s koncepciou rozvoja obce v oblasti tepelnej energetiky vydané podľa tohto zákona v znení účinnom do 30. novembra 2022 zostávajú v platnosti do uplynutia doby, na ktorú boli vydané. Pri predĺžení ich trvania sa postupuje podľa tohto zákona v znení účinnom od 1. decembra 2022.",
+       "n": "2"
+      },
+      {
+       "anchor": "p38ae-3",
+       "text": "Konania o vydanie osvedčenia o súlade pripravovanej výstavby sústavy tepelných zariadení alebo jej časti s Energetickou politikou Slovenskej republiky a konania o vydanie záväzného stanoviska obce o súlade pripravovanej výstavby sústavy tepelných zariadení s koncepciou rozvoja obce v oblasti tepelnej energetiky začaté a právoplatne neukončené do 30. novembra 2022 sa dokončia podľa tohto zákona v znení účinnom do 30. novembra 2022.",
+       "n": "3"
+      },
+      {
+       "anchor": "p38ae-4",
+       "text": "Zmluvy o dodávke a odbere tepla uzatvorené podľa tohto zákona v znení účinnom do 30. novembra 2022 zostávajú v platnosti.",
+       "n": "4"
+      },
+      {
+       "anchor": "p38ae-5",
+       "text": "Koncový odberateľ, ktorý rozpočítava množstvo tepla dodané v teplej vode konečnému spotrebiteľovi, a fyzická osoba alebo právnická osoba, ktorá vykonáva činnosť podľa § 1 ods. 3 písm. c), sú povinní zabezpečiť, aby určené meradlo bolo vybavené funkciou diaľkového odpočtu podľa § 17 ods. 4 písm. b) do 1. januára 2027.",
+       "n": "5"
+      },
+      {
+       "anchor": "p38ae-6",
+       "text": "Držiteľ povolenia na rozvod tepla v centralizovanom zásobovaní teplom so schváleným plánom prechodu sa na účely tohto zákona považuje za držiteľa povolenia na rozvod tepla v účinnom centralizovanom zásobovaní teplom, najdlhšie však do 31. decembra 2025.",
+       "n": "6"
+      },
+      {
+       "anchor": "p38ae-7",
+       "text": "Fyzická osoba alebo právnická osoba, ktorá vykonáva činnosť podľa § 1 ods. 3 písm. c) je povinná merať množstvo vyrobeného tepla v decentralizovanom zdroji tepla v budove určeným meradlom podľa § 17 ods. 9 a § 18 ods. 12 písm. a) od 1. januára 2024.",
+       "n": "7"
+      },
+      {
+       "anchor": "p38ae-8",
+       "text": "Dodávateľ, ktorý dodáva teplo v teplej vode, je povinný merať množstvo dodanej teplej vody na odbernom mieste určeným meradlom²) podľa § 17 ods. 1 písm. b) od 1. januára 2025.",
+       "n": "8"
+      }
+     ],
+     "heading": "Prechodné ustanovenia k úpravám účinným od 1. decembra 2022"
+    },
+    {
+     "type": "provision",
+     "anchor": "p38af",
+     "label": "§ 38af",
+     "paragraphs": [
+      {
+       "anchor": "p38af-1",
+       "text": "Konania začaté a právoplatne neukončené pred dňom nadobudnutia účinnosti tohto zákona sa dokončia podľa doterajších predpisov.",
+       "n": "1"
+      },
+      {
+       "anchor": "p38af-2",
+       "text": "Držiteľ povolenia je povinný pri podaní prvej písomnej žiadosti o zmenu údajov uvedených v povolení po nadobudnutí účinnosti tohto zákona v žiadosti uviesť aj údaje o vlastníkovi sústavy tepelných zariadení alebo jej časti.",
+       "n": "2"
+      },
+      {
+       "anchor": "p38af-3",
+       "text": "Držiteľ povolenia je povinný do 30. júna 2025 písomne požiadať úrad o uvedenie údajov o vlastníkovi sústavy tepelných zariadení alebo jej časti v povolení.",
+       "n": "3"
+      }
+     ],
+     "heading": "Prechodné ustanovenia k úpravám účinným dňom vyhlásenia"
+    },
+    {
+     "type": "provision",
+     "anchor": "p38ag",
+     "label": "§ 38ag",
+     "paragraphs": [
+      {
+       "anchor": "p38ag-x1",
+       "text": "Konania o správnych deliktoch začaté a právoplatne neukončené Slovenskou obchodnou inšpekciou do 31. júla 2024 dokončí podľa predpisov účinných do 31. júla 2024 Slovenská obchodná inšpekcia."
+      }
+     ],
+     "heading": "Prechodné ustanovenie k úpravám účinným od 1. augusta 2024"
+    },
+    {
+     "type": "provision",
+     "anchor": "p38ah",
+     "label": "§ 38ah",
+     "paragraphs": [
+      {
+       "anchor": "p38ah-x1",
+       "text": "Konania o správnych deliktoch začaté a právoplatne neskončené do 31. decembra 2025 sa dokončia podľa tohto zákona v znení účinnom do 31. decembra 2025."
+      }
+     ],
+     "heading": "Prechodné ustanovenie k úpravám účinným od 1. januára 2026"
+    },
+    {
+     "type": "provision",
+     "anchor": "p38ai",
+     "label": "§ 38ai",
+     "paragraphs": [
+      {
+       "anchor": "p38ai-1",
+       "text": "Dodávateľ splní povinnosť predložiť úradu informácie podľa § 18 ods. 1 písm. f) prvýkrát 30. novembra 2026 a od 1. decembra 2026 plní aj ostatné povinnosti podľa § 18 ods. 1 písm. f).",
+       "n": "1"
+      },
+      {
+       "anchor": "p38ai-2",
+       "text": "Ustanovenie § 19 ods. 2 písm. a) v znení účinnom od 1. júla 2026 sa nevzťahuje na zmluvy o dodávke a odbere tepla uzatvorené do 30. júna 2026. Ak dôjde po 30. júni 2026 k zmene zmluvy podľa predchádzajúcej vety, zmluvné strany sú povinné doplniť zmluvu podľa predchádzajúcej vety aj o zoznam objektov spotreby tepla.",
+       "n": "2"
+      },
+      {
+       "anchor": "p38ai-3",
+       "text": "Úrad zriadi register podľa § 30 písm. f) do 31. októbra 2026.",
+       "n": "3"
+      }
+     ],
+     "heading": "Prechodné ustanovenia k úpravám účinným od 1. júla 2026"
+    },
+    {
+     "type": "section",
+     "anchor": "s-cast-deviata-g-zaverecne-ustanovenia",
+     "kind": "group",
+     "heading": "Záverečné ustanovenia",
+     "children": [
+      {
+       "type": "provision",
+       "anchor": "p38b",
+       "label": "§ 38b",
+       "paragraphs": [
+        {
+         "anchor": "p38b-x1",
+         "text": "Týmto zákonom sa preberajú právne záväzné akty Európskej únie uvedené v prílohe."
+        }
+       ]
+      },
+      {
+       "type": "provision",
+       "anchor": "p39",
+       "label": "§ 39",
+       "paragraphs": [
+        {
+         "anchor": "p39-x1",
+         "text": "Tento zákon nadobúda účinnosť 1. januára 2005 okrem ustanovenia § 17 ods. 1 písm. b), ktoré nadobudne účinnosť 1. januára 2007."
+        }
+       ],
+       "heading": "Účinnosť"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "type": "section",
+   "anchor": "s-prilohy",
+   "kind": "prilohy",
+   "label": "Prílohy",
+   "children": [
+    {
+     "type": "provision",
+     "anchor": "priloha1",
+     "label": "Príloha č.1 k zákonu č. 657/2004 Z. z.",
+     "paragraphs": [
+      {
+       "anchor": "priloha1-x1",
+       "text": "",
+       "items": [
+        {
+         "anchor": "priloha1-x1-i1",
+         "label": "",
+         "letter": "i1",
+         "text": "Zoznam preberaných právne záväzných aktov Európskej únie",
+         "items": [
+          {
+           "anchor": "priloha1-x1-i1-1",
+           "label": "1.",
+           "letter": "1",
+           "text": "Smernica Európskeho parlamentu a Rady 2012/27/EÚ z 25. októbra 2012 o energetickej efektívnosti, ktorou sa menia a dopĺňajú smernice 2009/125/ES a 2010/30/EÚ a ktorou sa zrušujú smernice 2004/8/ES a 2006/32/ES (Ú. v. EÚ L 315, 14. 11. 2012) v znení smernice Rady 2013/12/EÚ z 13. mája 2013 (Ú. v. EÚ L 141, 28. 5. 2013)."
+          },
+          {
+           "anchor": "priloha1-x1-i1-2",
+           "label": "2.",
+           "letter": "2",
+           "text": "Smernica Európskeho parlamentu a Rady (EÚ) 2018/2002 z 11. decembra 2018, ktorou sa mení smernica 2012/27/EÚ o energetickej efektívnosti (Ú. v. EÚ L 328, 21. 12. 2018)."
+          },
+          {
+           "anchor": "priloha1-x1-i1-3",
+           "label": "3.",
+           "letter": "3",
+           "text": "Smernica Európskeho parlamentu a Rady (EÚ) 2018/2001 z 11. decembra 2018 o podpore využívania energie z obnoviteľných zdrojov (prepracované znenie) (Ú. v. EÚ L 328, 21. 12. 2018)."
+          },
+          {
+           "anchor": "priloha1-x1-i1-4",
+           "label": "4.",
+           "letter": "4",
+           "text": "Smernica Európskeho parlamentu a Rady (EÚ) 2023/2413 z 18. októbra 2023, ktorou sa mení smernica (EÚ) 2018/2001, nariadenie (EÚ) 2018/1999 a smernica 98/70/ES, pokiaľ ide o podporu energie z obnoviteľných zdrojov, a ktorou sa zrušuje smernica Rady (EÚ) 2015/652 (Ú. v. EÚ L, 2023/2413, 31. 10. 2023)."
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "type": "provision",
+     "anchor": "priloha2",
+     "label": "Príloha č. 2 k zákonu č. 657/2004 Z. z.",
+     "paragraphs": [
+      {
+       "anchor": "priloha2-x1",
+       "text": "",
+       "items": [
+        {
+         "anchor": "priloha2-x1-i1",
+         "label": "",
+         "letter": "i1",
+         "text": "Náležitosti návrhu plánu prechodu",
+         "items": [
+          {
+           "anchor": "priloha2-x1-i1-i1",
+           "label": "",
+           "letter": "i1",
+           "text": "Návrh plánu prechodu obsahuje",
+           "items": [
+            {
+             "anchor": "priloha2-x1-i1-i1-1",
+             "label": "1.",
+             "letter": "1",
+             "text": "identifikačné údaje držiteľa povolenia na rozvod tepla v centralizovanom zásobovaní teplom,"
+            },
+            {
+             "anchor": "priloha2-x1-i1-i1-2",
+             "label": "2.",
+             "letter": "2",
+             "text": "stručný popis zariadení na výrobu tepla, z ktorých sa dodáva teplo do centralizovaného zásobovania teplom,"
+            },
+            {
+             "anchor": "priloha2-x1-i1-i1-3",
+             "label": "3.",
+             "letter": "3",
+             "text": "množstvo tepla v megawatthodinách dodané do zariadení na rozvod tepla centralizovaného zásobovania teplom za posledné tri kalendárne roky pred podaním návrhu plánu prechodu v členení na",
+             "items": [
+              {
+               "anchor": "priloha2-x1-i1-i1-3-a",
+               "label": "a)",
+               "letter": "a",
+               "text": "teplo z obnoviteľných zdrojov energie vrátane inej formy obnoviteľnej energie použitej na výrobu tepla,"
+              },
+              {
+               "anchor": "priloha2-x1-i1-i1-3-b",
+               "label": "b)",
+               "letter": "b",
+               "text": "odpadové teplo z priemyselných procesov,"
+              },
+              {
+               "anchor": "priloha2-x1-i1-i1-3-c",
+               "label": "c)",
+               "letter": "c",
+               "text": "odpadové teplo z terciálnej sféry,"
+              },
+              {
+               "anchor": "priloha2-x1-i1-i1-3-d",
+               "label": "d)",
+               "letter": "d",
+               "text": "teplo z kombinovanej výroby elektriny a tepla,"
+              },
+              {
+               "anchor": "priloha2-x1-i1-i1-3-e",
+               "label": "e)",
+               "letter": "e",
+               "text": "teplo z iných zdrojov,"
+              }
+             ]
+            },
+            {
+             "anchor": "priloha2-x1-i1-i1-4",
+             "label": "4.",
+             "letter": "4",
+             "text": "percentuálny podiel množstva tepla podľa bodu 3. písm. a) až d) k celkovému množstvu tepla dodaného do rozvodu tepla v príslušnom kalendárnom roku,"
+            },
+            {
+             "anchor": "priloha2-x1-i1-i1-5",
+             "label": "5.",
+             "letter": "5",
+             "text": "stručný popis predpokladaného postupu výstavby, modernizácie alebo rekonštrukcie zariadení na výrobu tepla, z ktorých sa dodáva teplo do zariadení na rozvod tepla centralizovaného zásobovania teplom alebo predpokladané pripojenie nových dodávateľov tepla do zariadení na rozvod centralizovaného zásobovania teplom vrátane koncových odberateľov, ktorí si zabezpečia teplo vyrobené výlučne z obnoviteľných zdrojov energie alebo odpadového tepla v decentralizovanom zdroji,"
+            },
+            {
+             "anchor": "priloha2-x1-i1-i1-6",
+             "label": "6.",
+             "letter": "6",
+             "text": "predpokladaný percentuálny podiel množstvo tepla dodaného do zariadení na rozvod tepla centralizovaného zásobovania teplom v členení podľa bodu 3 v roku podania návrhu plánu prechodu a každom nasledujúcom kalendárnom roku po podaní návrhu plánu prechodu do roku 2025 vrátane,"
+            },
+            {
+             "anchor": "priloha2-x1-i1-i1-7",
+             "label": "7.",
+             "letter": "7",
+             "text": "predpokladané zvýšené finančné náklady na prechod na účinný systém centralizovaného zásobovania teplom v členení na investičné náklady a prevádzkové náklady,"
+            },
+            {
+             "anchor": "priloha2-x1-i1-i1-8",
+             "label": "8.",
+             "letter": "8",
+             "text": "spôsob zabezpečenia financovania plánu prechodu a predpokladaný vplyv na cenu pre koncového odberateľa po roku 2025."
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  }
+ ],
+ "footnotes": [
+  {
+   "anchor": "fn-1",
+   "label": "1)",
+   "text": "§ 3 zákona č. 523/2004 Z. z. o rozpočtových pravidlách verejnej správy a o zmene a doplnení niektorých zákonov v znení neskorších predpisov a § 2 zákona č. 213/1997 Z. z. o neziskových organizáciách poskytujúcich všeobecne prospešné služby v znení neskorších predpisov."
+  },
+  {
+   "anchor": "fn-1a",
+   "label": "1a)",
+   "text": "§ 6 ods. 1 zákona Národnej rady Slovenskej republiky č. 182/1993 Z. z. o vlastníctve bytov a nebytových priestorov v znení neskorších predpisov."
+  },
+  {
+   "anchor": "fn-1b",
+   "label": "1b)",
+   "text": "§ 2 ods. 1 písm. m) zákona č. 309/2009 Z. z. o podpore obnoviteľných zdrojov energie a vysoko účinnej kombinovanej výroby a o zmene a doplnení niektorých zákonov v znení zákona č. 363/2022 Z. z."
+  },
+  {
+   "anchor": "fn-2",
+   "label": "2)",
+   "text": "§ 8 zákona č. 142/2000 Z. z. o metrológii a o zmene a doplnení niektorých zákonov v znení zákona č. 431/2004 Z. z."
+  },
+  {
+   "anchor": "fn-2a",
+   "label": "2a)",
+   "text": "§ 3 ods. 2 a 3 Stavebného zákona."
+  },
+  {
+   "anchor": "fn-2b",
+   "label": "2b)",
+   "text": "STN EN ISO 13790/NA Energetická hospodárnosť budov. Výpočet potreby energie na vykurovanie a chladenie. Národná príloha."
+  },
+  {
+   "anchor": "fn-3",
+   "label": "3)",
+   "text": "Zákon č. 250/2012 Z. z. o regulácii v sieťových odvetviach v znení neskorších predpisov."
+  },
+  {
+   "anchor": "fn-4",
+   "label": "4)",
+   "text": "Napríklad § 13 a 16 Obchodného zákonníka v znení neskorších predpisov."
+  },
+  {
+   "anchor": "fn-5",
+   "label": "5)",
+   "text": "Zákon č. 131/2002 Z. z. o vysokých školách a o zmene a doplnení niektorých zákonov v znení neskorších predpisov."
+  },
+  {
+   "anchor": "fn-5a",
+   "label": "5a)",
+   "text": "§ 4 ods. 1 zákona č. 136/2010 Z. z. o službách na vnútornom trhu a o zmene a doplnení niektorých zákonov."
+  },
+  {
+   "anchor": "fn-5aa",
+   "label": "5aa)",
+   "text": "§ 16 zákona č. 250/2012 Z. z. o regulácii v sieťových odvetviach v znení neskorších predpisov."
+  },
+  {
+   "anchor": "fn-6",
+   "label": "6)",
+   "text": "Zákon č. 253/1998 Z. z. o hlásení pobytu občanov Slovenskej republiky a registri obyvateľov Slovenskej republiky v znení neskorších predpisov."
+  },
+  {
+   "anchor": "fn-7",
+   "label": "7)",
+   "text": "Zákon č. 48/2002 Z. z. o pobyte cudzincov a o zmene a doplnení niektorých zákonov v znení neskorších predpisov."
+  },
+  {
+   "anchor": "fn-7a",
+   "label": "7a)",
+   "text": "§ 10 ods. 4 písm. a) zákona č. 330/2007 Z. z. o registri trestov a o zmene a doplnení niektorých zákonov v znení zákona č. 91/2016 Z. z."
+  },
+  {
+   "anchor": "fn-8",
+   "label": "8)",
+   "text": "§ 10 zákona č. 477/2002 Z. z. o uznávaní odborných kvalifikácií a o doplnení zákona Národnej rady Slovenskej republiky č. 145/1995 Z. z. o správnych poplatkoch v znení neskorších predpisov."
+  },
+  {
+   "anchor": "fn-9",
+   "label": "9)",
+   "text": "§ 11 zákona č. 477/2002 Z. z."
+  },
+  {
+   "anchor": "fn-9a",
+   "label": "9a)",
+   "text": "§ 11 zákona č. 136/2010 Z. z.\n§ 66b zákona č. 455/1991 Zb. v znení neskorších predpisov."
+  },
+  {
+   "anchor": "fn-10",
+   "label": "10)",
+   "text": "§ 69 a 70 Trestného zákona."
+  },
+  {
+   "anchor": "fn-11",
+   "label": "11)",
+   "text": "§ 220 až 230 Civilného mimosporového poriadku."
+  },
+  {
+   "anchor": "fn-11a",
+   "label": "11a)",
+   "text": "Zákon č. 250/2012 Z. z. o regulácii v sieťových odvetviach v znení neskorších predpisov."
+  },
+  {
+   "anchor": "fn-12",
+   "label": "12)",
+   "text": "Napríklad § 22 ods. 4 a § 29 zákona č. 250/2012 Z. z. v znení neskorších predpisov."
+  },
+  {
+   "anchor": "fn-12a",
+   "label": "12a)",
+   "text": "§ 6 ods. 1 písm. b) siedmy bod zákona Národnej rady Slovenskej republiky č. 162/1995 Z. z. o katastri nehnuteľností a o zápise vlastníckych a iných práv k nehnuteľnostiam (katastrálny zákon) v znení neskorších predpisov."
+  },
+  {
+   "anchor": "fn-12aa",
+   "label": "12aa)",
+   "text": "§ 151n až 151p Občianskeho zákonníka v znení neskorších predpisov."
+  },
+  {
+   "anchor": "fn-12ab",
+   "label": "12ab)",
+   "text": "§ 34 a 35 zákona Národnej rady Slovenskej republiky č. 162/1995 Z. z. v znení neskorších predpisov."
+  },
+  {
+   "anchor": "fn-12b",
+   "label": "12b)",
+   "text": "§ 52 ods. 1 písm. l) zákona č. 364/2004 Z. z. o vodách a o zmene zákona Slovenskej národnej rady č. 372/1990 Zb. o priestupkoch v znení neskorších predpisov (vodný zákon) v znení zákona č. 51/2018 Z. z."
+  },
+  {
+   "anchor": "fn-12c",
+   "label": "12c)",
+   "text": "§ 2 ods. 2 písm. b) zákona č. 309/2009 Z. z. o podpore obnoviteľných zdrojov energie a vysoko účinnej kombinovanej výroby a o zmene a doplnení niektorých zákonov."
+  },
+  {
+   "anchor": "fn-12d",
+   "label": "12d)",
+   "text": "§ 2 ods. 2 písm. j) zákona č. 309/2009 Z. z."
+  },
+  {
+   "anchor": "fn-12e",
+   "label": "12e)",
+   "text": "§ 8 zákona č. 476/2008 Z. z. o efektívnosti pri používaní energie (zákon o energetickej efektívnosti) a o zmene a doplnení zákona č. 555/2005 Z. z. o energetickej hospodárnosti budov a o zmene a doplnení niektorých zákonov v znení zákona č. 17/2007 Z. z. v znení zákona č. 69/2013 Z. z."
+  },
+  {
+   "anchor": "fn-12f",
+   "label": "12f)",
+   "text": "§ 2 ods. 1 písm. h) zákona č. 476/2008 Z. z."
+  },
+  {
+   "anchor": "fn-13",
+   "label": "13)",
+   "text": "Zákon č. 200/2022 Z. z. o územnom plánovaní v znení neskorších predpisov."
+  },
+  {
+   "anchor": "fn-13c",
+   "label": "13c)",
+   "text": "§ 60 Stavebného zákona."
+  },
+  {
+   "anchor": "fn-14",
+   "label": "14)",
+   "text": "§ 12 zákona č. 276/2001 Z. z. v znení zákona č. 442/2002 Z. z."
+  },
+  {
+   "anchor": "fn-14a",
+   "label": "14a)",
+   "text": "Napríklad § 4 ods. 5, § 14h ods. 2 a 3 zákona č. 309/2009 Z. z. v znení neskorších predpisov."
+  },
+  {
+   "anchor": "fn-14b",
+   "label": "14b)",
+   "text": "§ 2 ods. 7 zákona č. 555/2005 Z. z. o energetickej hospodárnosti budov a o zmene a doplnení niektorých zákonov v znení zákona č. 300/2012 Z. z."
+  },
+  {
+   "anchor": "fn-14c",
+   "label": "14c)",
+   "text": "§ 8 zákona č. 142/2000 Z. z. o metrológii a o zmene a doplnení niektorých zákonov v znení zákona č. 431/2004 Z. z."
+  },
+  {
+   "anchor": "fn-14d",
+   "label": "14d)",
+   "text": "Napríklad STN EN 834 Rozdeľovače vykurovacích nákladov na určenie pomernej spotreby tepla vykurovacími telesami. Prístroje s elektrickým napájaním."
+  },
+  {
+   "anchor": "fn-14e",
+   "label": "14e)",
+   "text": "§ 11 ods. 4 písm. a) zákona č. 476/2008 Z. z. v znení zákona č. 17/2007 Z. z."
+  },
+  {
+   "anchor": "fn-15",
+   "label": "15)",
+   "text": "§ 269 až 275 Obchodného zákonníka.\n§ 43 až 51 Občianskeho zákonníka v znení neskorších predpisov."
+  },
+  {
+   "anchor": "fn-15a",
+   "label": "15a)",
+   "text": "§ 30 ods. 1 písm. a) a c) zákona č. 124/2006 Z. z. o bezpečnosti a ochrane zdravia pri práci a o zmene a doplnení niektorých zákonov v znení neskorších predpisov."
+  },
+  {
+   "anchor": "fn-15b",
+   "label": "15b)",
+   "text": "§ 2 ods. 8 zákona č. 555/2005 Z. z. v znení neskorších predpisov."
+  },
+  {
+   "anchor": "fn-15c",
+   "label": "15c)",
+   "text": "§ 3 ods. 1 zákona č. 555/2005 Z. z."
+  },
+  {
+   "anchor": "fn-16",
+   "label": "16)",
+   "text": "§ 415 až 459 Občianskeho zákonníka v znení neskorších predpisov."
+  },
+  {
+   "anchor": "fn-16a",
+   "label": "16a)",
+   "text": "§ 6 zákona č. 555/2005 Z. z. v znení zákona č. 300/2012 Z. z."
+  },
+  {
+   "anchor": "fn-16b",
+   "label": "16b)",
+   "text": "§ 3 ods. 7 zákona č. 555/2005 Z. z. v znení zákona č. 300/2012 Z. z."
+  },
+  {
+   "anchor": "fn-16c",
+   "label": "16c)",
+   "text": "§ 14 ods.1 zákona č. 321/2014 Z. z. o energetickej efektívnosti a o zmene a doplnení niektorých zákonov."
+  },
+  {
+   "anchor": "fn-17",
+   "label": "17)",
+   "text": "§ 43 ods. 2 písm. a) až d) a h) zákona č. 656/2004 Z. z. o energetike a o zmene niektorých zákonov."
+  },
+  {
+   "anchor": "fn-18",
+   "label": "18)",
+   "text": "§ 415 až 459 Občianskeho zákonníka v znení neskorších predpisov.\n§ 469 až 470 Obchodného zákonníka."
+  },
+  {
+   "anchor": "fn-19",
+   "label": "19)",
+   "text": "Napríklad ústavný zákon č. 227/2002 Z. z. o bezpečnosti štátu v čase vojny, vojnového stavu, výnimočného stavu a núdzového stavu v znení neskorších predpisov, zákon Národnej rady Slovenskej republiky č. 42/1994 Z. z. o civilnej ochrane obyvateľstva v znení neskorších predpisov, zákon č. 387/2002 Z. z. o riadení štátu v krízových situáciách mimo času vojny a vojnového stavu v znení neskorších predpisov."
+  },
+  {
+   "anchor": "fn-19a",
+   "label": "19a)",
+   "text": "§ 5 zákona č. 179/2011 Z. z. o hospodárskej mobilizácii a o zmene a doplnení zákona č. 387/2002 Z. z. o riadení štátu v krízových situáciách mimo času vojny a vojnového stavu v znení neskorších predpisov v znení zákona č. 173/2015 Z. z."
+  },
+  {
+   "anchor": "fn-19aa",
+   "label": "19aa)",
+   "text": "Napríklad ústavný zákon č. 227/2002 Z. z. v znení neskorších predpisov, zákon Národnej rady Slovenskej republiky č. 42/1994 Z. z. v znení neskorších predpisov, zákon č. 387/2002 Z. z. v znení neskorších predpisov, zákon č. 179/2011 Z. z. v znení neskorších predpisov."
+  },
+  {
+   "anchor": "fn-19b",
+   "label": "19b)",
+   "text": "§ 16 ods. 5 zákona č. 200/2022 Z. z. o územnom plánovaní v znení zákona č. 205/2023 Z. z."
+  },
+  {
+   "anchor": "fn-20a",
+   "label": "20a)",
+   "text": "§ 27 ods. 2 zákona Slovenskej národnej rady č. 369/1990 Zb. o obecnom zriadení v znení neskorších predpisov."
+  },
+  {
+   "anchor": "fn-21",
+   "label": "21)",
+   "text": "Zákon č. 71/1967 Zb. o správnom konaní (správny poriadok) v znení neskorších predpisov."
+  },
+  {
+   "anchor": "fn-21a",
+   "label": "21a)",
+   "text": "§ 3 až 8 a § 10 až 16 zákona č. 136/2010 Z. z."
+  },
+  {
+   "anchor": "fn-22",
+   "label": "22)",
+   "text": "§ 89 zákona č. 251/2012 Z. z. o energetike a o zmene a doplnení niektorých zákonov v znení neskorších predpisov."
+  },
+  {
+   "anchor": "fn-23",
+   "label": "23)",
+   "text": "Zákon č. 283/2002 Z. z. o cestovných náhradách v znení neskorších predpisov."
+  },
+  {
+   "anchor": "fn-24",
+   "label": "24)",
+   "text": "§ 21 Stavebného zákona."
+  }
+ ]
+}

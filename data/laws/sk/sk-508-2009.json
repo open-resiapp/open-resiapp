@@ -1,0 +1,3433 @@
+{
+ "id": "sk-508-2009",
+ "jurisdiction": "sk",
+ "number": "508/2009 Z. z.",
+ "title": "Vyhláška Ministerstva práce, sociálnych vecí a rodiny Slovenskej republiky, ktorou sa ustanovujú podrobnosti na zaistenie bezpečnosti a ochrany zdravia pri práci s technickými zariadeniami tlakovými, zdvíhacími, elektrickými a plynovými a ktorou sa ustanovujú technické zariadenia, ktoré sa považujú za vyhradené technické zariadenia",
+ "effectiveFrom": "2014-09-01",
+ "effectiveTo": null,
+ "sourceUrl": "https://www.slov-lex.sk/ezbierky/pravne-predpisy/SK/ZZ/2009/508/20140901",
+ "fetchedAt": "2026-11-18T08:20:27.025Z",
+ "contentHash": "786399d5c29bfba0a091cb215384d828669d173991190c3abc4074a625a5f8bc",
+ "provisionCount": 44,
+ "parts": [
+  {
+   "type": "text",
+   "text": "Ministerstvo práce, sociálnych vecí a rodiny Slovenskej republiky podľa § 30 ods. 1 písm. a) a c) zákona č. 124/2006 Z. z. o bezpečnosti a ochrane zdravia pri práci a o zmene a doplnení niektorých zákonov (ďalej len „zákon“) ustanovuje:"
+  },
+  {
+   "type": "section",
+   "anchor": "s-g-zakladne-ustanovenia",
+   "kind": "group",
+   "heading": "Základné ustanovenia",
+   "children": [
+    {
+     "type": "provision",
+     "anchor": "p1",
+     "label": "§ 1",
+     "paragraphs": [
+      {
+       "anchor": "p1-x1",
+       "text": "Táto vyhláška ustanovuje",
+       "items": [
+        {
+         "anchor": "p1-x1-a",
+         "label": "a)",
+         "letter": "a",
+         "text": "podrobnosti na zaistenie bezpečnosti a ochrany zdravia pri práci a podrobnosti o odbornej spôsobilosti na výkon niektorých pracovných činností a na obsluhu niektorých technických zariadení,"
+        },
+        {
+         "anchor": "p1-x1-b",
+         "label": "b)",
+         "letter": "b",
+         "text": "technické zariadenia, ktoré sa považujú za vyhradené technické zariadenia."
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "type": "provision",
+     "anchor": "p2",
+     "label": "§ 2",
+     "paragraphs": [
+      {
+       "anchor": "p2-1",
+       "text": "Táto vyhláška sa vzťahuje na technické zariadenia tlakové, zdvíhacie, elektrické a plynové a ich časti (ďalej len „technické zariadenie“).",
+       "n": "1"
+      },
+      {
+       "anchor": "p2-2",
+       "text": "Táto vyhláška sa nevzťahuje na technické zariadenia, ktoré sú určenými výrobkami,¹) do ich uvedenia na trh alebo uvedenia do prevádzky.",
+       "n": "2"
+      }
+     ]
+    },
+    {
+     "type": "provision",
+     "anchor": "p3",
+     "label": "§ 3",
+     "paragraphs": [
+      {
+       "anchor": "p3-x1",
+       "text": "Na účely tejto vyhlášky sa rozumie",
+       "items": [
+        {
+         "anchor": "p3-x1-a",
+         "label": "a)",
+         "letter": "a",
+         "text": "opravou činnosť na technickom zariadení vrátane jeho rozoberania, odstránenia chýb a porúch, rekonštrukcie a montáže smerujúca k zabezpečeniu jeho funkčného a bezpečného stavu,"
+        },
+        {
+         "anchor": "p3-x1-b",
+         "label": "b)",
+         "letter": "b",
+         "text": "rozsahom preukazu alebo osvedčenia druh vykonávanej činnosti na technickom zariadení podľa druhu a rozsahu technického zariadenia rozdeleného do skupín podľa miery ohrozenia,"
+        },
+        {
+         "anchor": "p3-x1-c",
+         "label": "c)",
+         "letter": "c",
+         "text": "dodávateľom zamestnávateľ alebo fyzická osoba, ktorá je podnikateľom a nie je zamestnávateľom, ktorí dodávajú práce na vyhradených technických zariadeniach alebo dodávajú vyhradené technické zariadenia,"
+        },
+        {
+         "anchor": "p3-x1-d",
+         "label": "d)",
+         "letter": "d",
+         "text": "bezpečnostnotechnickou požiadavkou požiadavka upravujúca technické riešenie a spôsob prevádzky a kontroly technického zariadenia ustanovená právnymi predpismi a ostatnými predpismi na zaistenie bezpečnosti a ochrany zdravia pri práci²) alebo požiadavka posúdená a uvedená právnickou osobou oprávnenou na overovanie plnenia požiadaviek bezpečnosti technických zariadení podľa § 14 zákona (ďalej len „oprávnená právnická osoba“) v odbornom stanovisku, ak požiadavky na technické zariadenie nie sú upravené právnymi predpismi a ostatnými predpismi na zaistenie bezpečnosti a ochrany zdravia pri práci,"
+        },
+        {
+         "anchor": "p3-x1-e",
+         "label": "e)",
+         "letter": "e",
+         "text": "odborným vzdelaním ukončené stredoškolské vzdelanie technického smeru alebo vysokoškolské vzdelanie, ktorých súčasťou je výučba obsahujúca aspoň opis konštrukcie a funkcie príslušného technického zariadenia,"
+        },
+        {
+         "anchor": "p3-x1-f",
+         "label": "f)",
+         "letter": "f",
+         "text": "odbornou praxou činnosť pri projektovaní, konštruovaní, montáži, oprave, rekonštrukcii a pri výkone kontroly stavu bezpečnosti technického zariadenia príslušnej skupiny,"
+        },
+        {
+         "anchor": "p3-x1-g",
+         "label": "g)",
+         "letter": "g",
+         "text": "elektrickou inštaláciou zostava vzájomne spolupracujúcich elektrických zariadení s koordinovanými vlastnosťami, ktoré slúžia na plnenie určených cieľov,"
+        },
+        {
+         "anchor": "p3-x1-h",
+         "label": "h)",
+         "letter": "h",
+         "text": "plynmi látky alebo ich zmesi, ktoré sú v plynnom stave pri teplote 15oC a pri tlaku 0,1 MPa,"
+        },
+        {
+         "anchor": "p3-x1-i",
+         "label": "i)",
+         "letter": "i",
+         "text": "nebezpečným plynom alebo nebezpečnou kvapalinou chemická látka a chemická zmes,³) ktoré sú výbušné, mimoriadne horľavé, veľmi horľavé, ak ich najvyššia pracovná teplota je vyššia ako bod ich vzplanutia, veľmi jedovaté, jedovaté alebo oxidujúce, a tiež iné plyny a ich zmesi v takých množstvách alebo koncentráciách, ktoré môžu ohroziť život alebo zdravie ľudí."
+        }
+       ]
+      }
+     ],
+     "heading": "Vymedzenie pojmov"
+    },
+    {
+     "type": "provision",
+     "anchor": "p4",
+     "label": "§ 4",
+     "paragraphs": [
+      {
+       "anchor": "p4-1",
+       "text": "Druhy technických zariadení sa rozdeľujú podľa miery ohrozenia do skupiny A, skupiny B alebo skupiny C. V skupine A sú technické zariadenia s vysokou mierou ohrozenia, v skupine B sú technické zariadenia s vyššou mierou ohrozenia a v skupine C sú technické zariadenia s nižšou mierou ohrozenia. Rozdelenie technických zariadení je uvedené v prílohe č. 1.",
+       "n": "1"
+      },
+      {
+       "anchor": "p4-2",
+       "text": "Technické zariadenia skupiny A a technické zariadenia skupiny B sa považujú za vyhradené technické zariadenia.",
+       "n": "2"
+      }
+     ],
+     "heading": "Rozdelenie technických zariadení"
+    }
+   ]
+  },
+  {
+   "type": "section",
+   "anchor": "s-g-technicka-dokumentacia",
+   "kind": "group",
+   "heading": "Technická dokumentácia",
+   "children": [
+    {
+     "type": "provision",
+     "anchor": "p5",
+     "label": "§ 5",
+     "paragraphs": [
+      {
+       "anchor": "p5-1",
+       "text": "Požiadavky na zaistenie bezpečnosti a ochrany zdravia pri práci vrátane požiadaviek na zaistenie bezpečnosti vyhradených technických zariadení určuje technická dokumentácia, ktorou je konštrukčná technická dokumentácia alebo projektová technická dokumentácia (ďalej len „konštrukčná dokumentácia“) a sprievodná technická dokumentácia.",
+       "n": "1"
+      },
+      {
+       "anchor": "p5-2",
+       "text": "Konštrukčnú dokumentáciu zabezpečí dodávateľ vyhradeného technického zariadenia v súlade s bezpečnostnotechnickými požiadavkami. Obsah konštrukčnej dokumentácie vyhradeného technického zariadenia je uvedený v prílohe č. 2.",
+       "n": "2"
+      },
+      {
+       "anchor": "p5-3",
+       "text": "Vyrábať, montovať na mieste budúcej prevádzky a rekonštruovať vyhradené technické zariadenie možno iba podľa konštrukčnej dokumentácie, ku ktorej bolo vydané odborné stanovisko podľa § 14 ods. 1 písm. d) zákona, ktorým sa posudzuje konštrukčná dokumentácia (ďalej len „odborné stanovisko k dokumentácii“). Pri vyhradenom technickom zariadení elektrickom sa odborné stanovisko k dokumentácii vyžaduje iba na technické zariadenie skupiny A.",
+       "n": "3"
+      },
+      {
+       "anchor": "p5-4",
+       "text": "Odborné stanovisko k dokumentácii sa vydá na základe žiadosti o posúdenie konštrukčnej dokumentácie, ak je konštrukčná dokumentácia v súlade s bezpečnostnotechnickými požiadavkami.",
+       "n": "4"
+      }
+     ]
+    },
+    {
+     "type": "provision",
+     "anchor": "p6",
+     "label": "§ 6",
+     "paragraphs": [
+      {
+       "anchor": "p6-x1",
+       "text": "Sprievodnú technickú dokumentáciu poskytovanú na používanie vyhradeného technického zariadenia zabezpečí dodávateľ vyhradeného technického zariadenia v súlade s bezpečnostnotechnickými požiadavkami. Obsah sprievodnej technickej dokumentácie vyhradeného technického zariadenia je uvedený v prílohe č. 3."
+      }
+     ]
+    },
+    {
+     "type": "provision",
+     "anchor": "p7",
+     "label": "§ 7",
+     "paragraphs": [
+      {
+       "anchor": "p7-1",
+       "text": "Pri výrobe, montáži, rekonštrukcii alebo oprave technického zariadenia sa bezpečnosť a ochrana zdravia pri práci vrátane bezpečnosti technických zariadení zabezpečí najmä",
+       "n": "1",
+       "items": [
+        {
+         "anchor": "p7-1-a",
+         "label": "a)",
+         "letter": "a",
+         "text": "organizačnou štruktúrou, určením postupov a procesov potrebných na zaistenie bezpečnosti technických zariadení,"
+        },
+        {
+         "anchor": "p7-1-b",
+         "label": "b)",
+         "letter": "b",
+         "text": "vykonávaním prác odborne spôsobilými osobami, najmä aby nerozoberateľné spoje⁴) na tlakových častiach vyhradených technických zariadení tlakových, nosných častiach vyhradených technických zariadení zdvíhacích a žeriavových dráh, častiach vyhradených technických zariadení plynových, ktoré prichádzajú do priameho styku s plynom, a na oceľových konštrukciách⁵) vyhradených technických zariadení zhotovovali osoby s príslušnou odbornou spôsobilosťou,⁶)"
+        },
+        {
+         "anchor": "p7-1-c",
+         "label": "c)",
+         "letter": "c",
+         "text": "používaním základných materiálov a prídavných materiálov s príslušnou dokumentáciou pri zhotovovaní nerozoberateľných spojov,"
+        },
+        {
+         "anchor": "p7-1-d",
+         "label": "d)",
+         "letter": "d",
+         "text": "vykonaním kontroly stavu bezpečnosti technického zariadenia podľa § 9."
+        }
+       ]
+      },
+      {
+       "anchor": "p7-2",
+       "text": "Výrobca a dodávateľ preukazuje dokladmi o výsledkoch prehliadok, kontrol a skúšok vlastnosti častí technických zariadení, ktoré môžu ovplyvniť ich bezpečnosť a pri ktorých je to určené v odbornom stanovisku k dokumentácii alebo bezpečnostnotechnickými požiadavkami.",
+       "n": "2"
+      }
+     ],
+     "heading": "Podrobnosti na zaistenie bezpečnosti a ochrany zdravia pri práci pri činnosti súvisiacej s výrobou, montážou, rekonštrukciou, opravou a dodávkou technického zariadenia"
+    },
+    {
+     "type": "provision",
+     "anchor": "p8",
+     "label": "§ 8",
+     "paragraphs": [
+      {
+       "anchor": "p8-x1",
+       "text": "Zamestnávateľ, fyzická osoba, ktorá je podnikateľom a nie je zamestnávateľom, a iné osoby podľa zákona, ktorí na plnenie svojich úloh používajú technické zariadenie (ďalej len „prevádzkovateľ“) zabezpečia bezpečnosť technického zariadenia, ak pri jeho prevádzke dodržiavajú bezpečnostnotechnické požiadavky a",
+       "items": [
+        {
+         "anchor": "p8-x1-a",
+         "label": "a)",
+         "letter": "a",
+         "text": "vedú sprievodnú technickú dokumentáciu technického zariadenia vrátane dokladov o vykonaných prehliadkach, kontrolách a skúškach,"
+        },
+        {
+         "anchor": "p8-x1-b",
+         "label": "b)",
+         "letter": "b",
+         "text": "vedú evidenciu vyhradeného technického zariadenia s údajmi podľa prílohy č. 4 zodpovedajúcu skutočnému stavu,"
+        },
+        {
+         "anchor": "p8-x1-c",
+         "label": "c)",
+         "letter": "c",
+         "text": "vydajú miestny prevádzkový predpis na prevádzku vyhradeného technického zariadenia skupiny A v súlade s bezpečnostnotechnickými požiadavkami, ak technická dokumentácia nezohľadňuje skutočné prevádzkové a užívateľské podmienky,"
+        },
+        {
+         "anchor": "p8-x1-d",
+         "label": "d)",
+         "letter": "d",
+         "text": "zabezpečia vykonanie kontroly stavu bezpečnosti technického zariadenia podľa § 9."
+        }
+       ]
+      }
+     ],
+     "heading": "Podrobnosti na zaistenie bezpečnosti a ochrany zdravia pri práci pri prevádzke technického zariadenia"
+    },
+    {
+     "type": "provision",
+     "anchor": "p9",
+     "label": "§ 9",
+     "paragraphs": [
+      {
+       "anchor": "p9-1",
+       "text": "Stav bezpečnosti technického zariadenia kontroluje",
+       "n": "1",
+       "items": [
+        {
+         "anchor": "p9-1-a",
+         "label": "a)",
+         "letter": "a",
+         "text": "typovou skúškou, úradnou skúškou a opakovanou úradnou skúškou oprávnená právnická osoba,"
+        },
+        {
+         "anchor": "p9-1-b",
+         "label": "b)",
+         "letter": "b",
+         "text": "skúškami u výrobcu technického zariadenia výrobcom určená osoba alebo revízny technik,"
+        },
+        {
+         "anchor": "p9-1-c",
+         "label": "c)",
+         "letter": "c",
+         "text": "odbornou prehliadkou a odbornou skúškou revízny technik,"
+        },
+        {
+         "anchor": "p9-1-d",
+         "label": "d)",
+         "letter": "d",
+         "text": "revíziou elektrického ručného náradia počas používania a revíziou elektrického spotrebiča počas používania prevádzkovateľom určená osoba s odbornou spôsobilosťou podľa § 22 až 24 alebo prevádzkovateľom určená poučená osoba pod dohľadom osoby s odbornou spôsobilosťou podľa § 22 až 24,"
+        },
+        {
+         "anchor": "p9-1-e",
+         "label": "e)",
+         "letter": "e",
+         "text": "kontrolou elektrického ručného náradia počas používania a kontrolou elektrického spotrebiča počas používania prevádzkovateľom určená osoba s odbornou spôsobilosťou podľa § 20 až 24,"
+        },
+        {
+         "anchor": "p9-1-f",
+         "label": "f)",
+         "letter": "f",
+         "text": "inými prehliadkami a skúškami osoba na opravu podľa § 18 ods. 1, osoba určená prevádzkovateľom podľa bezpečnostnotechnických požiadaviek, a ak to nevyplýva z bezpečnostnotechnických požiadaviek, osoba určená prevádzkovateľom podľa sprievodnej technickej dokumentácie."
+        }
+       ]
+      },
+      {
+       "anchor": "p9-2",
+       "text": "Kontrola stavu bezpečnosti technického zariadenia sa vykonáva podľa príloh č. 5 až 10, bezpečnostnotechnických požiadaviek a sprievodnej technickej dokumentácie",
+       "n": "2",
+       "items": [
+        {
+         "anchor": "p9-2-a",
+         "label": "a)",
+         "letter": "a",
+         "text": "počas výroby alebo montáže a po ich dokončení,"
+        },
+        {
+         "anchor": "p9-2-b",
+         "label": "b)",
+         "letter": "b",
+         "text": "po inštalovaní na mieste budúcej prevádzky pred prvým uvedením do prevádzky a po inštalovaní na inom mieste⁷) s výnimkou technického zariadenia prenosného, prevozného alebo určeného na prepravu,"
+        },
+        {
+         "anchor": "p9-2-c",
+         "label": "c)",
+         "letter": "c",
+         "text": "pred opätovným uvedením do prevádzky",
+         "items": [
+          {
+           "anchor": "p9-2-c-1",
+           "label": "1.",
+           "letter": "1",
+           "text": "po odstavení dlhšom ako jeden rok,"
+          },
+          {
+           "anchor": "p9-2-c-2",
+           "label": "2.",
+           "letter": "2",
+           "text": "po demontáži a opätovnej montáži, ktorou môže byť ovplyvnený stav bezpečnosti,"
+          },
+          {
+           "anchor": "p9-2-c-3",
+           "label": "3.",
+           "letter": "3",
+           "text": "po rekonštrukcii a oprave; po oprave technického zariadenia elektrického, ak bola potrebná zmena istenia,"
+          },
+          {
+           "anchor": "p9-2-c-4",
+           "label": "4.",
+           "letter": "4",
+           "text": "ak jeho používanie bolo zakázané inšpektorom práce,"
+          }
+         ]
+        },
+        {
+         "anchor": "p9-2-d",
+         "label": "d)",
+         "letter": "d",
+         "text": "počas prevádzky podľa prevádzkových podmienok na základe posúdenia rizika, najmenej v ustanovených lehotách."
+        }
+       ]
+      },
+      {
+       "anchor": "p9-3",
+       "text": "Pred začatím kontroly stavu bezpečnosti technického zariadenia prevádzkovateľ po dohode s dodávateľom pripraví technické zariadenie na vykonanie kontroly a podľa potreby zabezpečí nevyhnutné ochranné opatrenia, najmä odpojenie od prívodu energie, meranie, odplynenie, dýchacie prístroje, oživovaciu techniku, obmedzenie počtu prítomných osôb.",
+       "n": "3"
+      },
+      {
+       "anchor": "p9-4",
+       "text": "Osoba, ktorá vykonala kontrolu stavu bezpečnosti technického zariadenia podľa odseku 1, vyhotoví o výsledku kontroly doklad, ktorý odovzdá výrobcovi alebo prevádzkovateľovi. Doklad o výsledku kontroly stavu bezpečnosti technického zariadenia sa priloží k technickej dokumentácii technického zariadenia.",
+       "n": "4"
+      }
+     ],
+     "heading": "Kontrola stavu bezpečnosti technického zariadenia"
+    },
+    {
+     "type": "provision",
+     "anchor": "p10",
+     "label": "§ 10",
+     "paragraphs": [
+      {
+       "anchor": "p10-1",
+       "text": "Vyhradené technické zariadenie, pri ktorom sa predpokladá sériová výroba desiatich a viacerých kusov rovnakého vyhotovenia, sa podrobí typovej skúške, ktorou sa overuje, či zodpovedá konštrukčnej dokumentácii typu, ku ktorej bolo vydané odborné stanovisko k dokumentácii. Ak sa typovou skúškou preukáže zhoda vyhradeného technického zariadenia s konštrukčnou dokumentáciou typu, ku ktorej bolo vydané odborné stanovisko k dokumentácii, oprávnená právnická osoba vydá podľa § 14 ods. 1 písm. b) zákona osvedčenie o typovej skúške.",
+       "n": "1"
+      },
+      {
+       "anchor": "p10-2",
+       "text": "Na vyhradenom technickom zariadení, na ktoré bolo vydané osvedčenie o typovej skúške, možno vykonať zmeny po ich posúdení oprávnenou právnickou osobou.",
+       "n": "2"
+      }
+     ],
+     "heading": "Typová skúška"
+    },
+    {
+     "type": "provision",
+     "anchor": "p11",
+     "label": "§ 11",
+     "paragraphs": [
+      {
+       "anchor": "p11-1",
+       "text": "Stav bezpečnosti technického zariadenia u výrobcu sa kontroluje skúškami podľa príloh č. 5, 6 a 9.",
+       "n": "1"
+      },
+      {
+       "anchor": "p11-2",
+       "text": "O výsledku vykonanej skúšky sa vyhotoví písomný záznam, ktorý obsahuje meno, priezvisko a podpis výrobcom určenej osoby alebo revízneho technika a dátum vykonania skúšky.",
+       "n": "2"
+      }
+     ],
+     "heading": "Kontrola stavu bezpečnosti technického zariadenia u výrobcu"
+    },
+    {
+     "type": "provision",
+     "anchor": "p12",
+     "label": "§ 12",
+     "paragraphs": [
+      {
+       "anchor": "p12-1",
+       "text": "Úradná skúška sa vykoná pred uvedením technického zariadenia do prevádzky na vyhradenom technickom zariadení skupiny A a na vyhradenom technickom zariadení plynovom uvedenom v prílohe č. 1 IV. časti skupine B písm. a) až c) s médiom acetylén a písm. g) po ukončení inštalácie na mieste budúcej prevádzky a po ukončení rekonštrukcie, a ak ide o vyhradené technické zariadenie tlakové skupiny A a vyhradené technické zariadenie plynové skupiny A, aj po ukončení opravy tlakového celku zváraním. Úradnou skúškou sa overuje, či vyhradené technické zariadenie podľa prvej vety, ktoré nebolo uvedené do prevádzky podľa osobitného predpisu,⁸) je spôsobilé na bezpečnú prevádzku vrátane jeho bezpečnej obsluhy, a či zodpovedá konštrukčnej dokumentácii, ku ktorej bolo vydané odborné stanovisko k dokumentácii.",
+       "n": "1"
+      },
+      {
+       "anchor": "p12-2",
+       "text": "Opakovanou úradnou skúškou vykonávanou v pravidelných lehotách sa overuje, či vyhradené technické zariadenie skupiny A a vyhradené technické zariadenie plynové uvedené v prílohe č. 1 IV. časti skupine B písm. a) až c) s médiom acetylén spĺňa požiadavky na bezpečnú prevádzku a či je obsluhované bezpečným spôsobom. Opakovaná úradná skúška sa vykonáva",
+       "n": "2",
+       "items": [
+        {
+         "anchor": "p12-2-a",
+         "label": "a)",
+         "letter": "a",
+         "text": "v lehotách podľa príloh č. 5, 7 a 10,"
+        },
+        {
+         "anchor": "p12-2-b",
+         "label": "b)",
+         "letter": "b",
+         "text": "najneskôr po každých desiatich rokoch prevádzky technického zariadenia elektrického,"
+        },
+        {
+         "anchor": "p12-2-c",
+         "label": "c)",
+         "letter": "c",
+         "text": "pred opätovným uvedením technického zariadenia do prevádzky podľa § 9 ods. 2 písm. c)."
+        }
+       ]
+      },
+      {
+       "anchor": "p12-3",
+       "text": "Úradná skúška a opakovaná úradná skúška sa vykonáva na základe písomnej žiadosti prevádzkovateľa v dohodnutom termíne.",
+       "n": "3"
+      },
+      {
+       "anchor": "p12-4",
+       "text": "Ak vyhradené technické zariadenie spĺňa podmienky úradnej skúšky podľa odseku 1 alebo opakovanej úradnej skúšky podľa odseku 2, oprávnená právnická osoba vydá podľa § 14 ods. 1 písm. b) zákona do 30 dní po ukončení úradnej skúšky alebo opakovanej úradnej skúšky osvedčenie o úradnej skúške alebo osvedčenie o opakovanej úradnej skúške a výsledok úradnej skúšky alebo opakovanej úradnej skúšky potvrdí v sprievodnej technickej dokumentácii.",
+       "n": "4"
+      }
+     ],
+     "heading": "Úradná skúška a opakovaná úradná skúška"
+    },
+    {
+     "type": "provision",
+     "anchor": "p13",
+     "label": "§ 13",
+     "paragraphs": [
+      {
+       "anchor": "p13-1",
+       "text": "Odbornou prehliadkou a odbornou skúškou sa kontroluje stav bezpečnosti vyhradeného technického zariadenia po ukončení výroby, montáže, inštalácie na mieste budúcej prevádzky, rekonštrukcie a opravy a počas jeho prevádzky. Odborná prehliadka a odborná skúška sa vykonáva v rozsahu a v lehotách podľa príloh č. 5 až 10 a podľa bezpečnostnotechnických požiadaviek.",
+       "n": "1"
+      },
+      {
+       "anchor": "p13-2",
+       "text": "Odbornú prehliadku a odbornú skúšku nahrádza úradná skúška alebo opakovaná úradná skúška, ktorá bola vykonaná v rovnakej lehote. Dňom vykonania úradnej skúšky alebo opakovanej úradnej skúšky začínajú plynúť lehoty nasledujúcich odborných prehliadok a odborných skúšok.",
+       "n": "2"
+      }
+     ],
+     "heading": "Odborná prehliadka a odborná skúška"
+    },
+    {
+     "type": "provision",
+     "anchor": "p13a",
+     "label": "§ 13a",
+     "paragraphs": [
+      {
+       "anchor": "p13a-x1",
+       "text": "Revíziou elektrického ručného náradia a revíziou elektrického spotrebiča sa kontroluje stav bezpečnosti elektrického ručného náradia a stav bezpečnosti elektrického spotrebiča počas používania. Rozsah revízie a lehoty revízie elektrického ručného náradia a elektrického spotrebiča počas používania upravujú slovenské technické normy.⁸ᵃ)"
+      }
+     ],
+     "heading": "Revízia elektrického ručného náradia a revízia elektrického spotrebiča"
+    },
+    {
+     "type": "provision",
+     "anchor": "p13b",
+     "label": "§ 13b",
+     "paragraphs": [
+      {
+       "anchor": "p13b-x1",
+       "text": "Kontrolou elektrického ručného náradia a kontrolou elektrického spotrebiča sa kontroluje stav bezpečnosti elektrického ručného náradia a stav bezpečnosti elektrického spotrebiča počas používania. Rozsah kontroly a lehoty kontroly elektrického ručného náradia a elektrického spotrebiča počas používania upravujú slovenské technické normy.⁸ᵃ)"
+      }
+     ],
+     "heading": "Kontrola elektrického ručného náradia a kontrola elektrického spotrebiča"
+    },
+    {
+     "type": "provision",
+     "anchor": "p14",
+     "label": "§ 14",
+     "paragraphs": [
+      {
+       "anchor": "p14-1",
+       "text": "Oprávnená právnická osoba označí podľa § 14 ods. 1 písm. b) zákona vyhradené technické zariadenie, na ktoré bolo vydané osvedčenie o typovej skúške, osvedčenie o úradnej skúške alebo osvedčenie o opakovanej úradnej skúške. Vyhradené technické zariadenie elektrické sa označí v technickej dokumentácii.",
+       "n": "1"
+      },
+      {
+       "anchor": "p14-2",
+       "text": "Označenie vyhradeného technického zariadenia sa skladá z nezameniteľného symbolu oprávnenej právnickej osoby a posledného dvojčísla roku, v ktorom bola vykonaná typová skúška, úradná skúška alebo opakovaná úradná skúška.",
+       "n": "2"
+      },
+      {
+       "anchor": "p14-3",
+       "text": "Iné označenia a nápisy zameniteľné s označením podľa odseku 2 sa nesmú umiestňovať na vyhradenom technickom zariadení.",
+       "n": "3"
+      }
+     ],
+     "heading": "Označenie vyhradeného technického zariadenia"
+    },
+    {
+     "type": "provision",
+     "anchor": "p15",
+     "label": "§ 15",
+     "paragraphs": [
+      {
+       "anchor": "p15-1",
+       "text": "Odborná spôsobilosť na obsluhu vyhradeného technického zariadenia podľa § 17 ods. 1 a 2 sa preukazuje preukazom na vykonávanie činnosti (ďalej len „preukaz“) a odborná spôsobilosť na vykonávanie činností podľa § 16 ods. 1, § 18 ods. 1 a § 19 písm. b) až e) sa preukazuje osvedčením na vykonávanie činnosti (ďalej len „osvedčenie“).",
+       "n": "1"
+      },
+      {
+       "anchor": "p15-2",
+       "text": "Odborné vedomosti osoby na obsluhu vyhradeného technického zariadenia podľa § 17 ods. 1 overuje oprávnená právnická osoba a preukaz jej vydáva príslušný inšpektorát práce⁸ᵇ). Odborné vedomosti viazača bremien podľa § 17 ods. 2 overuje a preukaz mu vydáva fyzická osoba alebo právnická osoba, ktorá má oprávnenie podľa § 27 ods. 3 zákona (ďalej len „osoba oprávnená na výchovu a vzdelávanie“).",
+       "n": "2"
+      },
+      {
+       "anchor": "p15-3",
+       "text": "Odborné vedomosti na vykonávanie činností podľa § 16 ods. 1, § 18 ods. 1 a § 24 overuje oprávnená právnická osoba a osvedčenie vydáva príslušný inšpektorát práce⁸ᵇ).",
+       "n": "3"
+      },
+      {
+       "anchor": "p15-4",
+       "text": "Odborné vedomosti na vykonávanie činností podľa § 21 až 23 overuje a osvedčenie vydáva osoba oprávnená na výchovu a vzdelávanie; na činnosť podľa § 21 odborné vedomosti overuje a osvedčenie vydáva aj škola podľa § 21 ods. 3.",
+       "n": "4"
+      },
+      {
+       "anchor": "p15-5",
+       "text": "Fyzická osoba môže obsluhovať vyhradené technické zariadenie podľa odseku 2 a vykonávať činnosť na vyhradenom technickom zariadení podľa odsekov 3 a 4 v rozsahu vydaného preukazu alebo osvedčenia. Fyzická osoba s preukazom na obsluhu parného a kvapalinového kotla podľa § 17 ods. 1 písm. a) príslušnej triedy môže obsluhovať aj parný a kvapalinový kotol podľa § 17 ods. 1 písm. a) nižšej triedy, ak ide o kotol s rovnakým druhom paliva a rovnakým druhom pracovnej látky. Fyzická osoba s osvedčením na opravu parného a kvapalinového kotla podľa § 18 ods. 1 písm. a) príslušnej triedy môže opravovať aj parný a kvapalinový kotol podľa § 18 ods. 1 písm. a) nižšej triedy, ak ide o kotol s rovnakým druhom paliva a rovnakým druhom pracovnej látky.",
+       "n": "5"
+      },
+      {
+       "anchor": "p15-6",
+       "text": "Oprávnená právnická osoba a osoba oprávnená na výchovu a vzdelávanie oznamuje žiadateľovi dátum, čas a miesto overovania odborných vedomostí najmenej 15 dní pred jeho konaním.",
+       "n": "6"
+      },
+      {
+       "anchor": "p15-7",
+       "text": "Odborná spôsobilosť na obsluhu vyhradeného technického zariadenia určeného bezpečnostnotechnickými požiadavkami, ktoré nie je uvedené v § 17 ods. 1, odborná spôsobilosť na viazanie bremien na vyhradených technických zariadeniach zdvíhacích uvedených v § 17 ods. 2 druhej vete a odborná spôsobilosť na opravu vyhradeného technického zariadenia, ktoré nie je uvedené v § 18 ods. 1, sa preukazuje písomným dokladom, ktorý vyhotoví revízny technik po zaškolení a overení odborných vedomostí.",
+       "n": "7"
+      }
+     ],
+     "heading": "Odborná spôsobilosť"
+    },
+    {
+     "type": "provision",
+     "anchor": "p16",
+     "label": "§ 16",
+     "paragraphs": [
+      {
+       "anchor": "p16-1",
+       "text": "Revízny technik je fyzická osoba, ktorá má odborné vzdelanie a odbornú prax uvedené v prílohe č. 11 a ktorá v rozsahu vydaného osvedčenia môže",
+       "n": "1",
+       "items": [
+        {
+         "anchor": "p16-1-a",
+         "label": "a)",
+         "letter": "a",
+         "text": "vykonávať odbornú prehliadku a odbornú skúšku podľa vypracovaného pracovného postupu a v súlade s právnymi predpismi a ostatnými predpismi na zaistenie bezpečnosti a ochrany zdravia pri práci,"
+        },
+        {
+         "anchor": "p16-1-b",
+         "label": "b)",
+         "letter": "b",
+         "text": "zaškoľovať osobu na obsluhu vyhradeného technického zariadenia určeného bezpečnostnotechnickými požiadavkami, ktoré nie je uvedené v § 17 ods. 1, osobu na viazanie bremien na vyhradených technických zariadeniach zdvíhacích uvedených v § 17 ods. 2 druhej vete a osobu na opravu vyhradeného technického zariadenia, ktoré nie je uvedené v § 18 ods. 1; rozsah teoretickej časti a praktickej časti zaškoľovania určujú bezpečnostnotechnické požiadavky,"
+        },
+        {
+         "anchor": "p16-1-c",
+         "label": "c)",
+         "letter": "c",
+         "text": "overovať odborné vedomosti osoby na obsluhu vyhradeného technického zariadenia, osoby na viazanie bremien a osoby na opravu vyhradeného technického zariadenia podľa § 15 ods. 7 a vyhotovovať o tom písomný doklad."
+        }
+       ]
+      },
+      {
+       "anchor": "p16-2",
+       "text": "O výsledku odbornej prehliadky a odbornej skúšky sa vyhotoví správa, ktorá obsahuje",
+       "n": "2",
+       "items": [
+        {
+         "anchor": "p16-2-a",
+         "label": "a)",
+         "letter": "a",
+         "text": "názov a sídlo prevádzkovateľa s označením prevádzky a jej miesta, v ktorej bola odborná prehliadka a odborná skúška vykonaná,"
+        },
+        {
+         "anchor": "p16-2-b",
+         "label": "b)",
+         "letter": "b",
+         "text": "dátum vykonania odbornej prehliadky a odbornej skúšky, meno a priezvisko revízneho technika, rozsah a evidenčné číslo jeho osvedčenia,"
+        },
+        {
+         "anchor": "p16-2-c",
+         "label": "c)",
+         "letter": "c",
+         "text": "druh odbornej prehliadky a odbornej skúšky,"
+        },
+        {
+         "anchor": "p16-2-d",
+         "label": "d)",
+         "letter": "d",
+         "text": "jednoznačné označenie, druh a technické parametre kontrolovaného vyhradeného technického zariadenia,"
+        },
+        {
+         "anchor": "p16-2-e",
+         "label": "e)",
+         "letter": "e",
+         "text": "údaje o vykonanom meraní a vyskúšaní vyhradeného technického zariadenia vrátane výrobného čísla alebo evidenčného čísla použitého meracieho prístroja,⁹)"
+        },
+        {
+         "anchor": "p16-2-f",
+         "label": "f)",
+         "letter": "f",
+         "text": "údaje o tom, či a ako boli odstránené nedostatky zistené pri predchádzajúcej odbornej prehliadke a odbornej skúške technického zariadenia,"
+        },
+        {
+         "anchor": "p16-2-g",
+         "label": "g)",
+         "letter": "g",
+         "text": "zistené nedostatky, ktoré sú v rozpore s právnymi predpismi a ostatnými predpismi na zaistenie bezpečnosti a ochrany zdravia pri práci, ich závažnosť z hľadiska bezpečnosti a spoľahlivosti prevádzky a obsluhy vyhradeného technického zariadenia,"
+        },
+        {
+         "anchor": "p16-2-h",
+         "label": "h)",
+         "letter": "h",
+         "text": "celkové zhodnotenie technického zariadenia s uvedením, či je z hľadiska bezpečnosti spôsobilé ďalšej prevádzky,"
+        },
+        {
+         "anchor": "p16-2-i",
+         "label": "i)",
+         "letter": "i",
+         "text": "návrh opatrení na odstránenie zistených nedostatkov so zreteľom na ich závažnosť a návrh na odstavenie zariadenia z prevádzky, ak zariadenie bezprostredne ohrozuje život a zdravie,"
+        },
+        {
+         "anchor": "p16-2-j",
+         "label": "j)",
+         "letter": "j",
+         "text": "meno, priezvisko a podpis revízneho technika,"
+        },
+        {
+         "anchor": "p16-2-k",
+         "label": "k)",
+         "letter": "k",
+         "text": "názov a číslo oprávnenia zamestnávateľa, ak odbornú prehliadku a odbornú skúšku vykonal zamestnávateľ."
+        }
+       ]
+      },
+      {
+       "anchor": "p16-3",
+       "text": "Ustanovenie odseku 1 písm. b) a c) sa nevzťahuje na revízneho technika vyhradených technických zariadení elektrických podľa § 24.",
+       "n": "3"
+      }
+     ],
+     "heading": "Revízny technik"
+    },
+    {
+     "type": "provision",
+     "anchor": "p17",
+     "label": "§ 17",
+     "paragraphs": [
+      {
+       "anchor": "p17-1",
+       "text": "Obsluhovať vyhradené technické zariadenie môže len osoba na obsluhu, ktorá má platný preukaz, ak ide o",
+       "n": "1",
+       "items": [
+        {
+         "anchor": "p17-1-a",
+         "label": "a)",
+         "letter": "a",
+         "text": "parný a kvapalinový kotol I. až V. triedy,"
+        },
+        {
+         "anchor": "p17-1-b",
+         "label": "b)",
+         "letter": "b",
+         "text": "mobilný žeriav výložníkového typu, vežový žeriav výložníkového typu a pohyblivú pracovnú plošinu na podvozku s motorovým pohonom skupiny A, ktorá je určená na prevádzku na pozemných komunikáciách,"
+        },
+        {
+         "anchor": "p17-1-c",
+         "label": "c)",
+         "letter": "c",
+         "text": "technické zariadenie plynové skupiny A okrem technického zariadenia plynového uvedeného v prílohe č. 1 IV. časti skupine A písm. d) a g)."
+        }
+       ]
+      },
+      {
+       "anchor": "p17-2",
+       "text": "Viazať bremená na vyhradených technických zariadeniach zdvíhacích uvedených v prílohe č. 1 II. časti skupine A písm. a) môže len viazač bremien, ktorý má platný preukaz. Viazať bremená na vyhradených technických zariadeniach zdvíhacích uvedených v prílohe č. 1 II. časti skupine B písm. a) môže fyzická osoba, ktorá má písomný doklad o overení odborných vedomostí vyhotovený revíznym technikom.",
+       "n": "2"
+      },
+      {
+       "anchor": "p17-3",
+       "text": "Obsluhovať vyhradené technické zariadenie určené bezpečnostnotechnickými požiadavkami, ktoré nie je uvedené v odseku 1, môže osoba na obsluhu vyhradeného technického zariadenia, ktorá má písomný doklad o overení odborných vedomostí vyhotovený revíznym technikom; to sa nevzťahuje na obsluhu vyhradeného technického zariadenia elektrického.",
+       "n": "3"
+      },
+      {
+       "anchor": "p17-4",
+       "text": "Samostatne plniť nádrž motorového vozidla plynom môže aj fyzická osoba, ktorá je vodičom tohto motorového vozidla, ak bola s bezpečným spôsobom plnenia oboznámená osobou na obsluhu vyhradeného technického zariadenia plynového s preukazom príslušného rozsahu.",
+       "n": "4"
+      }
+     ],
+     "heading": "Obsluha vyhradeného technického zariadenia"
+    },
+    {
+     "type": "provision",
+     "anchor": "p18",
+     "label": "§ 18",
+     "paragraphs": [
+      {
+       "anchor": "p18-1",
+       "text": "Opravovať a rekonštruovať vyhradené technické zariadenie a montovať vyhradené technické zariadenie do funkčného celku na mieste jeho budúcej prevádzky, riadiť práce pri tejto oprave, rekonštrukcii alebo montáži a vykonať po ukončení opravy prehliadku a skúšku opravovanej časti vyhradeného technického zariadenia uskutočnenej výmenou opotrebovaných častí za nové s výnimkou zásahu do bezpečnostných zariadení a s výnimkou ustanovenou bezpečnostnotechnickými požiadavkami môže len osoba na opravu, ktorá má platné osvedčenie, ak ide o",
+       "n": "1",
+       "items": [
+        {
+         "anchor": "p18-1-a",
+         "label": "a)",
+         "letter": "a",
+         "text": "parný a kvapalinový kotol I. až V. triedy,"
+        },
+        {
+         "anchor": "p18-1-b",
+         "label": "b)",
+         "letter": "b",
+         "text": "potrubné vedenie uvedené v prílohe č. 1 I. časti skupine A písm. e),"
+        },
+        {
+         "anchor": "p18-1-c",
+         "label": "c)",
+         "letter": "c",
+         "text": "osobný a nákladný výťah s povolenou dopravou osôb skupiny A,"
+        },
+        {
+         "anchor": "p18-1-d",
+         "label": "d)",
+         "letter": "d",
+         "text": "technické zariadenie plynové skupiny A."
+        }
+       ]
+      },
+      {
+       "anchor": "p18-2",
+       "text": "Vyhradené technické zariadenie, ktoré nie je uvedené v odseku 1, môže opravovať, rekonštruovať a montovať do funkčného celku na mieste jeho budúcej prevádzky osoba na opravu, ktorá má písomný doklad o overení odborných vedomostí vyhotovený revíznym technikom; to sa nevzťahuje na vyhradené technické zariadenie elektrické.",
+       "n": "2"
+      }
+     ],
+     "heading": "Oprava, rekonštrukcia a montáž vyhradeného technického zariadenia"
+    },
+    {
+     "type": "provision",
+     "anchor": "p19",
+     "label": "§ 19",
+     "paragraphs": [
+      {
+       "anchor": "p19-x1",
+       "text": "Činnosti na technickom zariadení elektrickom môže podľa odbornej spôsobilosti vykonávať",
+       "items": [
+        {
+         "anchor": "p19-x1-a",
+         "label": "a)",
+         "letter": "a",
+         "text": "poučená osoba,"
+        },
+        {
+         "anchor": "p19-x1-b",
+         "label": "b)",
+         "letter": "b",
+         "text": "elektrotechnik,"
+        },
+        {
+         "anchor": "p19-x1-c",
+         "label": "c)",
+         "letter": "c",
+         "text": "samostatný elektrotechnik,"
+        },
+        {
+         "anchor": "p19-x1-d",
+         "label": "d)",
+         "letter": "d",
+         "text": "elektrotechnik na riadenie činnosti alebo na riadenie prevádzky,"
+        },
+        {
+         "anchor": "p19-x1-e",
+         "label": "e)",
+         "letter": "e",
+         "text": "revízny technik."
+        }
+       ]
+      }
+     ],
+     "heading": "Odborná spôsobilosť na činnosť na technickom zariadení elektrickom"
+    },
+    {
+     "type": "provision",
+     "anchor": "p20",
+     "label": "§ 20",
+     "paragraphs": [
+      {
+       "anchor": "p20-1",
+       "text": "Poučená osoba je fyzická osoba bez elektrotechnického vzdelania, ktorá môže obsluhovať technické zariadenie elektrické alebo vykonávať na ňom prácu v súlade s bezpečnostnotechnickými požiadavkami, ak bola v rozsahu vykonávanej činnosti preukázateľne oboznámená o činnosti na tomto technickom zariadení elektrickom a o postupe pri zabezpečovaní prvej pomoci pri úraze elektrickým prúdom.",
+       "n": "1"
+      },
+      {
+       "anchor": "p20-2",
+       "text": "Oboznámenie podľa odseku 1 vykonáva fyzická osoba, ktorá má odbornú spôsobilosť podľa § 21 až 24. U fyzickej osoby bez elektrotechnického vzdelania, ktorá obsluhuje technické zariadenie elektrické nízkeho napätia, môže oboznámenie vykonať aj poučená osoba, ktorá bola poverená prevádzkovateľom touto činnosťou.",
+       "n": "2"
+      }
+     ],
+     "heading": "Poučená osoba"
+    },
+    {
+     "type": "provision",
+     "anchor": "p21",
+     "label": "§ 21",
+     "paragraphs": [
+      {
+       "anchor": "p21-1",
+       "text": "Elektrotechnik je fyzická osoba, ktorá má ukončené stredoškolské elektrotechnické vzdelanie alebo vysokoškolské elektrotechnické vzdelanie.",
+       "n": "1"
+      },
+      {
+       "anchor": "p21-2",
+       "text": "Elektrotechnik je aj fyzická osoba, ktorá môže v rozsahu svojho odborného vzdelania vykonávať činnosť na vyhradenom technickom zariadení elektrickom, ak má odborné vzdelanie v inom učebnom odbore alebo v inom študijnom odbore ako elektrotechnickom, ktorého súčasťou je výučba zameraná na príslušné technické zariadenie elektrické, alebo ak absolvovala ďalšie odborné vzdelávanie v akreditovanom vzdelávacom programe⁹ᵃ) zameranom na technické zariadenie elektrické v minimálnom rozsahu 400 hodín.",
+       "n": "2"
+      },
+      {
+       "anchor": "p21-3",
+       "text": "Škola s učebným odborom elektrotechnického zamerania alebo so študijným odborom elektrotechnického zamerania, ktorá v rámci učebných osnov vykonáva aj výučbu v oblasti bezpečnosti a ochrany zdravia pri práci a bezpečnosti technických zariadení na technických zariadeniach elektrických, zásad ochrany pred úrazom elektrickým prúdom a postupu pri zabezpečovaní prvej pomoci pri úraze elektrickým prúdom, môže overovať odbornú spôsobilosť elektrotechnika ako súčasť záverečných skúšok.",
+       "n": "3"
+      }
+     ],
+     "heading": "Elektrotechnik"
+    },
+    {
+     "type": "provision",
+     "anchor": "p22",
+     "label": "§ 22",
+     "paragraphs": [
+      {
+       "anchor": "p22-1",
+       "text": "Samostatný elektrotechnik je fyzická osoba, ktorá spĺňa požiadavky odbornej spôsobilosti elektrotechnika a ktorá má odbornú prax uvedenú v prílohe č. 11.",
+       "n": "1"
+      },
+      {
+       "anchor": "p22-2",
+       "text": "Samostatný elektrotechnik môže riadiť činnosť poučených osôb bez obmedzenia ich počtu a riadiť činnosť najviac dvoch elektrotechnikov.",
+       "n": "2"
+      },
+      {
+       "anchor": "p22-3",
+       "text": "Fyzická osoba, ktorá má ukončené vysokoškolské elektrotechnické vzdelanie a ktorá pracuje v laboratóriu vedeckého ústavu, výskumného ústavu alebo vývojového ústavu, môže samostatne vykonávať činnosť na vyhradenom technickom zariadení elektrickom na tomto pracovisku po splnení požiadavky na odbornú prax pre samostatného elektrotechnika uvedenú v prílohe č. 11; overenie jeho odbornej spôsobilosti sa nevyžaduje.",
+       "n": "3"
+      }
+     ],
+     "heading": "Samostatný elektrotechnik"
+    },
+    {
+     "type": "provision",
+     "anchor": "p23",
+     "label": "§ 23",
+     "paragraphs": [
+      {
+       "anchor": "p23-1",
+       "text": "Elektrotechnik na riadenie činnosti alebo na riadenie prevádzky je fyzická osoba, ktorá spĺňa požiadavky odbornej spôsobilosti elektrotechnika a ktorá má odbornú prax uvedenú v prílohe č. 11.",
+       "n": "1"
+      },
+      {
+       "anchor": "p23-2",
+       "text": "Elektrotechnik na riadenie činnosti alebo na riadenie prevádzky môže vykonávať činnosť samostatného elektrotechnika a riadiť činnosť poučených osôb, elektrotechnikov, samostatných elektrotechnikov a elektrotechnikov na riadenie činnosti alebo na riadenie prevádzky bez obmedzenia ich počtu alebo riadiť prevádzku technických zariadení elektrických.",
+       "n": "2"
+      }
+     ],
+     "heading": "Elektrotechnik na riadenie činnosti alebo na riadenie prevádzky"
+    },
+    {
+     "type": "provision",
+     "anchor": "p24",
+     "label": "§ 24",
+     "paragraphs": [
+      {
+       "anchor": "p24-1",
+       "text": "Revízny technik vyhradeného technického zariadenia elektrického je fyzická osoba, ktorá spĺňa požiadavky odbornej spôsobilosti elektrotechnika a ktorá má odbornú prax uvedenú v prílohe č. 11.",
+       "n": "1"
+      },
+      {
+       "anchor": "p24-2",
+       "text": "Revízny technik vyhradeného technického zariadenia elektrického môže okrem odbornej prehliadky a odbornej skúšky vyhradeného technického zariadenia elektrického vykonávať činnosť elektrotechnika na riadenie činnosti alebo na riadenie prevádzky a vykonávať skúšku vyhradeného technického zariadenia elektrického po ukončení výroby.",
+       "n": "2"
+      }
+     ],
+     "heading": "Revízny technik vyhradeného technického zariadenia elektrického"
+    },
+    {
+     "type": "provision",
+     "anchor": "p25",
+     "label": "§ 25",
+     "paragraphs": [
+      {
+       "anchor": "p25-1",
+       "text": "Do dĺžky odbornej praxe samostatného elektrotechnika, elektrotechnika na riadenie činnosti alebo na riadenie prevádzky a revízneho technika vyhradeného technického zariadenia elektrického sa započítava čas vykonávania činnosti na príslušnom technickom zariadení elektrickom príslušného napätia a príslušnej triedy objektu. Ak čas vykonávania činnosti na príslušnom technickom zariadení elektrickom príslušného napätia a príslušnej triedy objektu bol prerušený na dlhšie ako tri roky, do dĺžky odbornej praxe sa započíta iba polovica času vykonávania tejto činnosti pred jeho prerušením.",
+       "n": "1"
+      },
+      {
+       "anchor": "p25-2",
+       "text": "Do dĺžky odbornej praxe samostatného elektrotechnika, elektrotechnika na riadenie činnosti alebo na riadenie prevádzky a revízneho technika vyhradeného technického zariadenia elektrického sa započítava aj polovica času vykonávania činnosti na inom technickom zariadení elektrickom.",
+       "n": "2"
+      }
+     ],
+     "heading": "Zápočet dĺžky odbornej praxe"
+    }
+   ]
+  },
+  {
+   "type": "section",
+   "anchor": "s-g-spolocne-prechodne-a-zaverecne-ustanovenia",
+   "kind": "group",
+   "heading": "Spoločné, prechodné a záverečné ustanovenia",
+   "children": [
+    {
+     "type": "provision",
+     "anchor": "p26",
+     "label": "§ 26",
+     "paragraphs": [
+      {
+       "anchor": "p26-1",
+       "text": "Na tlakovú nádobu hasiaceho prístroja uvedenú v prílohe č. 1 I. časti skupine A písm. d) a v prílohe č. 1 I. časti skupine B písm. d) sa nevzťahujú ustanovenia § 8 písm. c), § 15 a 17.",
+       "n": "1"
+      },
+      {
+       "anchor": "p26-2",
+       "text": "Na tlakovú nádobu hasiaceho prístroja uvedenú v prílohe č. 1 I. časti skupine A písm. d) sa nevzťahuje",
+       "n": "2",
+       "items": [
+        {
+         "anchor": "p26-2-a",
+         "label": "a)",
+         "letter": "a",
+         "text": "§ 9 ods. 1 písm. a) a § 12 ods. 2 v časti upravujúcej opakovanú úradnú skúšku podľa prílohy č. 5,"
+        },
+        {
+         "anchor": "p26-2-b",
+         "label": "b)",
+         "letter": "b",
+         "text": "§ 9 ods. 2 písm. c) druhý bod okrem demontáže a opätovnej montáže bezpečnostného príslušenstva tejto nádoby."
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "type": "provision",
+     "anchor": "p27",
+     "label": "§ 27",
+     "paragraphs": [
+      {
+       "anchor": "p27-1",
+       "text": "Na základe preukazu alebo osvedčenia platného k 31. decembru 2009 možno vykonávať činnosti podľa tejto vyhlášky na vyhradených technických zariadeniach uvedených v prílohe č. 1 len v rozsahu, na ktorý boli vydané. Ak rozsah preukazu alebo osvedčenia platného k 31. decembru 2009 podľa skupiny a druhu vyhradeného technického zariadenia nezodpovedá skupine a druhu vyhradeného technického zariadenia podľa prílohy č. 1, možno činnosti na tomto vyhradenom technickom zariadení podľa prílohy č. 1 vykonávať len po získaní preukazu alebo osvedčenia príslušného rozsahu.",
+       "n": "1"
+      },
+      {
+       "anchor": "p27-2",
+       "text": "Činnosti podľa § 17 ods. 1 písm. a) na tlakovej nádobe stabilnej uvedenej v prílohe č. 1 I. časti skupine A písm. b) druhom bode a technickom zariadení tlakovom uvedenom v prílohe č. 1 I. časti skupine A písm. f) a g) a podľa § 18 ods. 1 písm. a) na tlakovej nádobe stabilnej uvedenej v prílohe č. 1 I. časti skupine A písm. b) druhom bode a technickom zariadení tlakovom uvedenom v prílohe č. 1 I. časti skupine A písm. f) a g) možno vykonávať najneskôr do 31. decembra 2012 bez preukazu alebo osvedčenia po overení odborných vedomostí revíznym technikom s osvedčením na vyhradené technické zariadenie tlakové.",
+       "n": "2"
+      },
+      {
+       "anchor": "p27-3",
+       "text": "Kontrola stavu bezpečnosti technického zariadenia podľa § 9 ods. 1 písm. c) na vyhradenom technickom zariadení uvedenom v prílohe č. 1 I. časti skupine A písm. e) a skupine B písm. e) prvom bode, na tlakovej nádobe stabilnej uvedenej v prílohe č. 1 I. časti skupine A písm. b) druhom bode a na technickom zariadení tlakovom uvedenom v prílohe č. 1 I. časti skupine A písm. f) a g) sa vykonáva najskôr od 1. januára 2011. Sprievodná technická dokumentácia vyhradeného technického zariadenia uvedeného v prílohe č. 1 I. časti skupine A písm. e) sa spracuje v súlade s prílohou č. 3 najneskôr pred vykonaním najbližšej rekonštrukcie.",
+       "n": "3"
+      },
+      {
+       "anchor": "p27-4",
+       "text": "Platné osvedčenie o konštrukčnej dokumentácii sa považuje za odborné stanovisko k dokumentácii podľa tejto vyhlášky.",
+       "n": "4"
+      }
+     ]
+    },
+    {
+     "type": "provision",
+     "anchor": "p27a",
+     "label": "§ 27a",
+     "paragraphs": [
+      {
+       "anchor": "p27a-x1",
+       "text": "Sprievodná technická dokumentácia vyhradeného technického zariadenia uvedeného v prílohe č. 1 I. časti skupine B písm. e) druhom bode s pracovnou látkou horúca voda sa spracuje v súlade s prílohou č. 3 najneskôr pred vykonaním najbližšej rekonštrukcie."
+      }
+     ],
+     "heading": "Prechodné ustanovenie účinné od 1. januára 2014"
+    },
+    {
+     "type": "provision",
+     "anchor": "p28",
+     "label": "§ 28",
+     "paragraphs": [
+      {
+       "anchor": "p28-1",
+       "text": "Požiadavky ustanovené touto vyhláškou sa neuplatnia na výrobky do ich uvedenia na trh alebo uvedenia do prevádzky, ak tieto výrobky boli vyrobené alebo uvedené na trh v niektorom členskom štáte Európskej únie alebo v Turecku, alebo boli za rovnakej podmienky uvedené na trh v niektorom zo štátov Európskeho združenia voľného obchodu, ktoré sú súčasne zmluvnou stranou dohody o Európskom hospodárskom priestore.",
+       "n": "1"
+      },
+      {
+       "anchor": "p28-2",
+       "text": "Táto vyhláška bola prijatá v súlade s právne záväzným aktom Európskych spoločenstiev v oblasti technických noriem a technických predpisov¹⁰) pod číslom notifikácie 2009/0388/SK.",
+       "n": "2"
+      }
+     ]
+    },
+    {
+     "type": "provision",
+     "anchor": "p29",
+     "label": "§ 29",
+     "paragraphs": [
+      {
+       "anchor": "p29-x1",
+       "text": "Zrušujú sa:"
+      },
+      {
+       "anchor": "p29-x2",
+       "text": "",
+       "items": [
+        {
+         "anchor": "p29-x2-1",
+         "label": "1.",
+         "letter": "1",
+         "text": "vyhláška Slovenského úradu bezpečnosti práce č. 86/1978 Zb. o kontrolách, revíziách a skúškach plynových zariadení v znení vyhlášky Úradu bezpečnosti práce Slovenskej republiky č. 74/1996 Z. z.,"
+        },
+        {
+         "anchor": "p29-x2-2",
+         "label": "2.",
+         "letter": "2",
+         "text": "vyhláška Ministerstva práce, sociálnych vecí a rodiny Slovenskej republiky č. 718/2002 Z. z. na zaistenie bezpečnosti a ochrany zdravia pri práci a bezpečnosti technických zariadení."
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "type": "provision",
+     "anchor": "p30",
+     "label": "§ 30",
+     "paragraphs": [
+      {
+       "anchor": "p30-x1",
+       "text": "Táto vyhláška nadobúda účinnosť 1. januára 2010."
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "type": "section",
+   "anchor": "s-prilohy",
+   "kind": "prilohy",
+   "label": "Prílohy",
+   "children": [
+    {
+     "type": "provision",
+     "anchor": "priloha1",
+     "label": "Príloha č. 1 k vyhláške č. 508/2009 Z. z.",
+     "paragraphs": [
+      {
+       "anchor": "priloha1-x1",
+       "text": "",
+       "items": [
+        {
+         "anchor": "priloha1-x1-i1",
+         "label": "",
+         "letter": "i1",
+         "text": "ROZDELENIE TECHNICKÝCH ZARIADENÍ PODĽA MIERY OHROZENIA",
+         "items": [
+          {
+           "anchor": "priloha1-x1-i1-i1",
+           "label": "",
+           "letter": "i1",
+           "text": "I. ČASŤ ROZDELENIE TECHNICKÝCH ZARIADENÍ TLAKOVÝCH",
+           "items": [
+            {
+             "anchor": "priloha1-x1-i1-i1-a",
+             "label": "A.",
+             "letter": "a",
+             "text": "Technické zariadenia tlakové skupiny A podľa druhu sú:",
+             "items": [
+              {
+               "anchor": "priloha1-x1-i1-i1-a-a",
+               "label": "a)",
+               "letter": "a",
+               "text": "vykurované alebo inak vyhrievané technické zariadenie s rizikom prehriatia určené na výrobu pary alebo na ohrev kvapalín, ktorých teplota je vyššia ako bod varu pri tlaku¹¹) 0,05 MPa",
+               "items": [
+                {
+                 "anchor": "priloha1-x1-i1-i1-a-a-1",
+                 "label": "1.",
+                 "letter": "1",
+                 "text": "parný kotol s menovitým množstvom vyrábanej pary nad 115 t/h (I. trieda),"
+                },
+                {
+                 "anchor": "priloha1-x1-i1-i1-a-a-2",
+                 "label": "2.",
+                 "letter": "2",
+                 "text": "parný kotol s menovitým množstvom vyrábanej pary nad 50 t/h do 115 t/h vrátane a kvapalinový kotol s tepelným výkonom nad 35 MW (II. trieda),"
+                },
+                {
+                 "anchor": "priloha1-x1-i1-i1-a-a-3",
+                 "label": "3.",
+                 "letter": "3",
+                 "text": "parný kotol s menovitým množstvom vyrábanej pary nad 8 t/h do 50 t/h vrátane a kvapalinový kotol s tepelným výkonom nad 5,8 MW do 35 MW vrátane (III. trieda),"
+                },
+                {
+                 "anchor": "priloha1-x1-i1-i1-a-a-4",
+                 "label": "4.",
+                 "letter": "4",
+                 "text": "parný kotol s menovitým množstvom vyrábanej pary do 8 t/h vrátane a kvapalinový kotol s tepelným výkonom do 5,8 MW (IV. trieda),"
+                }
+               ]
+              },
+              {
+               "anchor": "priloha1-x1-i1-i1-a-b",
+               "label": "b)",
+               "letter": "b",
+               "text": "tlaková nádoba stabilná, ktorá",
+               "items": [
+                {
+                 "anchor": "priloha1-x1-i1-i1-a-b-1",
+                 "label": "1.",
+                 "letter": "1",
+                 "text": "obsahuje nie nebezpečné plyny, pary alebo kvapaliny s teplotou vyššou, ako je ich bod varu pri atmosférickom tlaku (1013,25 hPa) s najvyšším pracovným tlakom vyšším ako 0,2 MPa, s objemom nad 10 litrov a ktorej súčin objemu technického zariadenia tlakového v litroch a najvyššieho pracovného tlaku¹²) v MPa (ďalej len „bezpečnostný súčin“) je väčší ako 20 (200), okrem tlakovej nádoby, ktorá obsahuje rádioaktívne látky;\nDo tejto skupiny patrí aj nádoba na výrobu pary, ktorá je súčasťou pracovného prostriedku, ak spĺňa uvedené parametre,"
+                },
+                {
+                 "anchor": "priloha1-x1-i1-i1-a-b-2",
+                 "label": "2.",
+                 "letter": "2",
+                 "text": "obsahuje nebezpečné plyny alebo nebezpečné kvapaliny pri akejkoľvek teplote, ktorej najvyšší dovolený tlak je vyšší ako 0,05 MPa, s objemom nad 1 liter, a ktorej bezpečnostný súčin je väčší ako 5 (50), okrem tlakovej nádoby, ktorá obsahuje rádioaktívne látky;\nObjem technického zariadenia tlakového je určený veľkosťou priestoru vymedzeného stenami namáhanými vnútorným alebo vonkajším tlakom pracovnej látky, pričom objem zabudovaných technických zariadení, výmurovky alebo výplne sa neodpočítava;\nTechnické zariadenie tlakové s viacerými priestormi sa do skupiny zaradí podľa priestoru, ktorého parametre patria do najvyššej skupiny,"
+                }
+               ]
+              },
+              {
+               "anchor": "priloha1-x1-i1-i1-a-c",
+               "label": "c)",
+               "letter": "c",
+               "text": "tlaková nádoba na dopravu plynov, ktorých kritická teplota je nižšia ako 50 oC, alebo plynov, ktoré pri teplote 50 oC majú absolútny tlak pár vyšší ako 0,3 MPa, napríklad cisterna,"
+              },
+              {
+               "anchor": "priloha1-x1-i1-i1-a-d",
+               "label": "d)",
+               "letter": "d",
+               "text": "tlaková nádoba pojazdného hasiaceho prístroja vodného, pojazdného hasiaceho prístroja vodného s prísadami, pojazdného hasiaceho prístroja penového a pojazdného hasiaceho prístroja práškového,"
+              },
+              {
+               "anchor": "priloha1-x1-i1-i1-a-e",
+               "label": "e)",
+               "letter": "e",
+               "text": "potrubné vedenie s menovitou svetlosťou potrubia väčšou ako DN 25 na rozvod nebezpečnej kvapaliny s najvyšším dovoleným tlakom nad 1 MPa, ktorého súčin najvyššieho dovoleného tlaku v MPa a menovitej svetlosti DN je väčší ako 200 (2 000)."
+              }
+             ]
+            },
+            {
+             "anchor": "priloha1-x1-i1-i1-b",
+             "label": "B.",
+             "letter": "b",
+             "text": "Technické zariadenia tlakové skupiny B podľa druhu sú:",
+             "items": [
+              {
+               "anchor": "priloha1-x1-i1-i1-b-a",
+               "label": "a)",
+               "letter": "a",
+               "text": "vykurované alebo inak vyhrievané zariadenie s rizikom prehriatia určené na výrobu pary s menovitým tlakom do 0,05 MPa vrátane alebo na ohrev kvapaliny pri teplote nižšej, ako je bod varu pri tlaku 0,05 MPa, s menovitým tepelným výkonom nad 100 kW (V. trieda),"
+              },
+              {
+               "anchor": "priloha1-x1-i1-i1-b-b",
+               "label": "b)",
+               "letter": "b",
+               "text": "tlaková nádoba stabilná s najvyšším pracovným tlakom vyšším ako 0,05 MPa, ktorá obsahuje",
+               "items": [
+                {
+                 "anchor": "priloha1-x1-i1-i1-b-b-1",
+                 "label": "1.",
+                 "letter": "1",
+                 "text": "nie nebezpečné plyny, pary alebo kvapaliny s teplotou vyššou, ako je ich bod varu pri tlaku 0,05 MPa, s objemom nad 1 liter a ktorých bezpečnostný súčin je väčší ako 5 (50);\nDo tejto skupiny patrí aj nádoba na výrobu pary, ktorá je súčasťou pracovného prostriedku, ak spĺňa uvedené parametre,"
+                },
+                {
+                 "anchor": "priloha1-x1-i1-i1-b-b-2",
+                 "label": "2.",
+                 "letter": "2",
+                 "text": "nebezpečné plyny alebo nebezpečné kvapaliny pri akejkoľvek teplote, ktorých najvyšší dovolený tlak je vyšší ako 0,05 MPa, s objemom nad 1 liter a ktorých bezpečnostný súčin je väčší ako 2,5 (25),"
+                }
+               ]
+              },
+              {
+               "anchor": "priloha1-x1-i1-i1-b-c",
+               "label": "c)",
+               "letter": "c",
+               "text": "tlaková nádoba na dopravu plynov, ktorých kritická teplota je nižšia ako 50 oC, alebo plynov, ktoré pri teplote 50 oC majú absolútny tlak pár vyšší ako 0,3 MPa, s objemom nad 1 liter, ktorej bezpečnostný súčin je väčší ako 5 (50), napríklad sud a fľaša,"
+              },
+              {
+               "anchor": "priloha1-x1-i1-i1-b-d",
+               "label": "d)",
+               "letter": "d",
+               "text": "tlaková nádoba prenosného hasiaceho prístroja a tlaková nádoba pojazdného hasiaceho prístroja CO₂,"
+              },
+              {
+               "anchor": "priloha1-x1-i1-i1-b-e",
+               "label": "e)",
+               "letter": "e",
+               "text": "potrubné vedenie",
+               "items": [
+                {
+                 "anchor": "priloha1-x1-i1-i1-b-e-1",
+                 "label": "1.",
+                 "letter": "1",
+                 "text": "na rozvod nebezpečnej kvapaliny s najvyšším dovoleným tlakom nad 0,05 MPa do 1 MPa, ktorého súčin najväčšieho dovoleného tlaku v MPa a menovitej svetlosti potrubia DN je 200 (2 000) a väčší,"
+                },
+                {
+                 "anchor": "priloha1-x1-i1-i1-b-e-2",
+                 "label": "2.",
+                 "letter": "2",
+                 "text": "s pracovnou látkou vodná para alebo horúca voda, ktorého súčin najväčšieho pracovného tlaku v MPa a menovitej svetlosti potrubia DN je 350 (3 500) a väčší, pričom menovitá svetlosť potrubia je väčšia ako DN 100, a to bez ohľadu na rozšírené časti,"
+                }
+               ]
+              },
+              {
+               "anchor": "priloha1-x1-i1-i1-b-f",
+               "label": "f)",
+               "letter": "f",
+               "text": "bezpečnostné príslušenstvo, ktoré",
+               "items": [
+                {
+                 "anchor": "priloha1-x1-i1-i1-b-f-1",
+                 "label": "1.",
+                 "letter": "1",
+                 "text": "chráni technické zariadenie tlakové pred prekročením najvyššieho pracovného tlaku,"
+                },
+                {
+                 "anchor": "priloha1-x1-i1-i1-b-f-2",
+                 "label": "2.",
+                 "letter": "2",
+                 "text": "zabezpečuje sledovanie a dodržiavanie pracovnej teploty v tých technických zariadeniach tlakových, pri ktorých jej prekročenie alebo pokles mimo určených hraníc ohrozuje ich bezpečnosť,"
+                },
+                {
+                 "anchor": "priloha1-x1-i1-i1-b-f-3",
+                 "label": "3.",
+                 "letter": "3",
+                 "text": "zabezpečuje sledovanie a dodržiavanie úrovne hladiny v tých technických zariadeniach tlakových, pri ktorých jej prekročenie alebo pokles mimo určených hraníc ohrozuje ich bezpečnosť,"
+                },
+                {
+                 "anchor": "priloha1-x1-i1-i1-b-f-4",
+                 "label": "4.",
+                 "letter": "4",
+                 "text": "je určené na automatickú prevádzku parného a kvapalinového kotla, napríklad na automatické odluhovanie a odkalovanie, na automatickú reguláciu prietoku, napájania a teploty prehriatej a prihriatej pary a vody."
+                }
+               ]
+              }
+             ]
+            },
+            {
+             "anchor": "priloha1-x1-i1-i1-c",
+             "label": "C.",
+             "letter": "c",
+             "text": "Technické zariadenia tlakové skupiny C sú:",
+             "items": [
+              {
+               "anchor": "priloha1-x1-i1-i1-c-i1",
+               "label": "",
+               "letter": "i1",
+               "text": "Technické zariadenia tlakové nezaradené do skupiny A alebo skupiny B."
+              }
+             ]
+            }
+           ]
+          },
+          {
+           "anchor": "priloha1-x1-i1-i2",
+           "label": "",
+           "letter": "i2",
+           "text": "II. ČASŤ ROZDELENIE TECHNICKÝCH ZARIADENÍ ZDVÍHACÍCH",
+           "items": [
+            {
+             "anchor": "priloha1-x1-i1-i2-a",
+             "label": "A.",
+             "letter": "a",
+             "text": "Technické zariadenia zdvíhacie skupiny A podľa druhu sú:",
+             "items": [
+              {
+               "anchor": "priloha1-x1-i1-i2-a-a",
+               "label": "a)",
+               "letter": "a",
+               "text": "žeriav a zdvíhadlo s motorovým pohonom, napríklad elektrickým, hydraulickým, s nosnosťou nad 1 000 kg a žeriav a zdvíhadlo s ľudským pohonom nad 5 000 kg vrátane trvalej dráhy žeriavu a dočasnej dráhy žeriavu výložníkového typu,"
+              },
+              {
+               "anchor": "priloha1-x1-i1-i2-a-b",
+               "label": "b)",
+               "letter": "b",
+               "text": "pohyblivá pracovná plošina s motorovým pohonom a s výškou zdvihu nad 1,5 m,"
+              },
+              {
+               "anchor": "priloha1-x1-i1-i2-a-c",
+               "label": "c)",
+               "letter": "c",
+               "text": "výťah a zdvíhacia plošina, ktorá je trvalou súčasťou budovy a objektu, a to",
+               "items": [
+                {
+                 "anchor": "priloha1-x1-i1-i2-a-c-1",
+                 "label": "1.",
+                 "letter": "1",
+                 "text": "osobný a nákladný výťah s povolenou dopravou osôb,"
+                },
+                {
+                 "anchor": "priloha1-x1-i1-i2-a-c-2",
+                 "label": "2.",
+                 "letter": "2",
+                 "text": "nákladný výťah s prístupom osôb do klietky,"
+                },
+                {
+                 "anchor": "priloha1-x1-i1-i2-a-c-3",
+                 "label": "3.",
+                 "letter": "3",
+                 "text": "nákladný výťah so zakázanou prepravou osôb,"
+                },
+                {
+                 "anchor": "priloha1-x1-i1-i2-a-c-4",
+                 "label": "4.",
+                 "letter": "4",
+                 "text": "zdvíhacia plošina s povolenou dopravou osôb a nákladu,"
+                }
+               ]
+              },
+              {
+               "anchor": "priloha1-x1-i1-i2-a-d",
+               "label": "d)",
+               "letter": "d",
+               "text": "stavebný výťah",
+               "items": [
+                {
+                 "anchor": "priloha1-x1-i1-i2-a-d-1",
+                 "label": "1.",
+                 "letter": "1",
+                 "text": "na prepravu osôb a nákladu,"
+                },
+                {
+                 "anchor": "priloha1-x1-i1-i2-a-d-2",
+                 "label": "2.",
+                 "letter": "2",
+                 "text": "nákladný s prístupom osôb na nosnú plošinu,"
+                }
+               ]
+              },
+              {
+               "anchor": "priloha1-x1-i1-i2-a-e",
+               "label": "e)",
+               "letter": "e",
+               "text": "regálový zakladač so stanovišťom obsluhy na zakladači a jeho presuvňa,"
+              },
+              {
+               "anchor": "priloha1-x1-i1-i2-a-f",
+               "label": "f)",
+               "letter": "f",
+               "text": "pohyblivé schody a chodníky,"
+              },
+              {
+               "anchor": "priloha1-x1-i1-i2-a-g",
+               "label": "g)",
+               "letter": "g",
+               "text": "lyžiarsky vlek a vodnolyžiarsky vlek,"
+              },
+              {
+               "anchor": "priloha1-x1-i1-i2-a-h",
+               "label": "h)",
+               "letter": "h",
+               "text": "výsuvný rebrík s motorovým pohonom,"
+              },
+              {
+               "anchor": "priloha1-x1-i1-i2-a-i",
+               "label": "i)",
+               "letter": "i",
+               "text": "zariadenie technickej zábavnej činnosti, napríklad lunaparku a iného zábavného zariadenia, s motorovým pohonom:",
+               "items": [
+                {
+                 "anchor": "priloha1-x1-i1-i2-a-i-1",
+                 "label": "1.",
+                 "letter": "1",
+                 "text": "na zdvíhanie osôb v zariadení na to určenom, napríklad gondole, sedačke, kabínke, do výšky nad 1,5 m, alebo ktorým sa osoby počas prevádzky zariadenia dostanú do výšky nad 1,5 m nad terén, napríklad kolotočom,"
+                },
+                {
+                 "anchor": "priloha1-x1-i1-i2-a-i-2",
+                 "label": "2.",
+                 "letter": "2",
+                 "text": "horská dráha s vozíkmi na koľajnicovej trati s prevýšením vyšším ako 3 m,"
+                }
+               ]
+              },
+              {
+               "anchor": "priloha1-x1-i1-i2-a-j",
+               "label": "j)",
+               "letter": "j",
+               "text": "pohyblivé javiskové zariadenie s motorovým pohonom v",
+               "items": [
+                {
+                 "anchor": "priloha1-x1-i1-i2-a-j-1",
+                 "label": "1.",
+                 "letter": "1",
+                 "text": "hornej javiskovej časti, napríklad javiskový ťah, požiarna a akustická opona, portálový most a portálová veža, osvetľovacia batéria, záves svietidiel a lustrov, projekčný rám,"
+                },
+                {
+                 "anchor": "priloha1-x1-i1-i2-a-j-2",
+                 "label": "2.",
+                 "letter": "2",
+                 "text": "dolnej javiskovej časti, napríklad zdvíhací stôl, stôl orchestriska, javiskové prepadlisko,"
+                }
+               ]
+              },
+              {
+               "anchor": "priloha1-x1-i1-i2-a-k",
+               "label": "k)",
+               "letter": "k",
+               "text": "zdvíhacie čelo určené na montáž na vozidlo alebo do vozidla, ktoré je určené na zdvíhanie osôb pri nastupovaní alebo vystupovaní z vozidla."
+              }
+             ]
+            },
+            {
+             "anchor": "priloha1-x1-i1-i2-b",
+             "label": "B.",
+             "letter": "b",
+             "text": "Technické zariadenia zdvíhacie skupiny B podľa druhu sú:",
+             "items": [
+              {
+               "anchor": "priloha1-x1-i1-i2-b-a",
+               "label": "a)",
+               "letter": "a",
+               "text": "zariadenie, ktorým je",
+               "items": [
+                {
+                 "anchor": "priloha1-x1-i1-i2-b-a-1",
+                 "label": "1.",
+                 "letter": "1",
+                 "text": "žeriav a zdvíhadlo s motorovým pohonom s nosnosťou do 1 000 kg vrátane a s ľudským pohonom s nosnosťou od 1 000 kg do 5 000 kg vrátane,"
+                },
+                {
+                 "anchor": "priloha1-x1-i1-i2-b-a-2",
+                 "label": "2.",
+                 "letter": "2",
+                 "text": "vrátok s motorovým pohonom určený na zdvíhanie bremien,"
+                }
+               ]
+              },
+              {
+               "anchor": "priloha1-x1-i1-i2-b-b",
+               "label": "b)",
+               "letter": "b",
+               "text": "zdvíhacie ústrojenstvo dopravného vozíka a nakladača s motorovým pohonom určené na zdvíhanie a prepravu bremena pomocou prostriedku na viazanie, zavesenie alebo uchopenie,"
+              },
+              {
+               "anchor": "priloha1-x1-i1-i2-b-c",
+               "label": "c)",
+               "letter": "c",
+               "text": "prídavné zdvíhacie príslušenstvo na zavesenie alebo uchopenie bremena, ktoré nie je trvalou súčasťou technického zariadenia zdvíhacieho skupiny A a skupiny B, a to",
+               "items": [
+                {
+                 "anchor": "priloha1-x1-i1-i2-b-c-1",
+                 "label": "1.",
+                 "letter": "1",
+                 "text": "zdvíhacie ústrojenstvo na manipuláciu s kontajnerom ISO,"
+                },
+                {
+                 "anchor": "priloha1-x1-i1-i2-b-c-2",
+                 "label": "2.",
+                 "letter": "2",
+                 "text": "zariadenie na zavesenie alebo uchopenie bremena, napríklad magnet, traverza, prísavkové zariadenie, kliešte, drapák, okrem prostriedkov uvedených v skupine C písm. a),"
+                }
+               ]
+              },
+              {
+               "anchor": "priloha1-x1-i1-i2-b-d",
+               "label": "d)",
+               "letter": "d",
+               "text": "špeciálne zdvíhacie zariadenie s motorovým pohonom určené na zdvíhanie bremena, a to",
+               "items": [
+                {
+                 "anchor": "priloha1-x1-i1-i2-b-d-1",
+                 "label": "1.",
+                 "letter": "1",
+                 "text": "zdvíhacia rampa,"
+                },
+                {
+                 "anchor": "priloha1-x1-i1-i2-b-d-2",
+                 "label": "2.",
+                 "letter": "2",
+                 "text": "zdvíhacia plošina,"
+                },
+                {
+                 "anchor": "priloha1-x1-i1-i2-b-d-3",
+                 "label": "3.",
+                 "letter": "3",
+                 "text": "stabilné, mobilné a premiestniteľné servisné zdvíhacie zariadenie, ktoré je určené len na zdvíhanie vozidla,"
+                },
+                {
+                 "anchor": "priloha1-x1-i1-i2-b-d-4",
+                 "label": "4.",
+                 "letter": "4",
+                 "text": "zdvíhacie čelo určené na montáž na vozidlo alebo do vozidla, ktoré je určené na nakladanie alebo vykladanie nákladu,"
+                }
+               ]
+              },
+              {
+               "anchor": "priloha1-x1-i1-i2-b-e",
+               "label": "e)",
+               "letter": "e",
+               "text": "nákladný stavebný výťah bez prístupu osôb na nosnú plošinu,"
+              },
+              {
+               "anchor": "priloha1-x1-i1-i2-b-f",
+               "label": "f)",
+               "letter": "f",
+               "text": "zvislá posuvná brána s motorovým pohonom s výškou zdvihu nad 2,7 m,"
+              },
+              {
+               "anchor": "priloha1-x1-i1-i2-b-g",
+               "label": "g)",
+               "letter": "g",
+               "text": "regálový zakladač bez stanovišťa obsluhy na zakladači a jeho presuvňa okrem zariadenia, ktoré je súčasťou automatizovaných systémov na manipuláciu a skladovanie,"
+              },
+              {
+               "anchor": "priloha1-x1-i1-i2-b-h",
+               "label": "h)",
+               "letter": "h",
+               "text": "javiskové zariadenie s ľudským pohonom,"
+              },
+              {
+               "anchor": "priloha1-x1-i1-i2-b-i",
+               "label": "i)",
+               "letter": "i",
+               "text": "schodiskový výťah a zvislá zdvíhacia plošina určené na používanie osobou s obmedzenou schopnosťou pohybu."
+              }
+             ]
+            },
+            {
+             "anchor": "priloha1-x1-i1-i2-c",
+             "label": "C.",
+             "letter": "c",
+             "text": "Technické zariadenia zdvíhacie skupiny C podľa druhu sú:",
+             "items": [
+              {
+               "anchor": "priloha1-x1-i1-i2-c-a",
+               "label": "a)",
+               "letter": "a",
+               "text": "prostriedok na viazanie a zavesenie bremena, ktorý nie je trvalou súčasťou zdvíhacieho zariadenia, napríklad viazacie lano, reťaz, popruh, pás, hák, strmeň,"
+              },
+              {
+               "anchor": "priloha1-x1-i1-i2-c-b",
+               "label": "b)",
+               "letter": "b",
+               "text": "technické zariadenie zdvíhacie, ktoré je súčasťou pracovného prostriedku, napríklad technologickej linky, stroja alebo automatizovaného systému na manipuláciu a skladovanie,"
+              },
+              {
+               "anchor": "priloha1-x1-i1-i2-c-c",
+               "label": "c)",
+               "letter": "c",
+               "text": "technické zariadenie zdvíhacie zostavované jednorazovo, napríklad na montážne účely, na prepravu,"
+              },
+              {
+               "anchor": "priloha1-x1-i1-i2-c-d",
+               "label": "d)",
+               "letter": "d",
+               "text": "ostatné technické zariadenia zdvíhacie skupiny B s ľudským pohonom."
+              }
+             ]
+            }
+           ]
+          },
+          {
+           "anchor": "priloha1-x1-i1-i3",
+           "label": "",
+           "letter": "i3",
+           "text": "III. ČASŤ ROZDELENIE TECHNICKÝCH ZARIADENÍ ELEKTRICKÝCH",
+           "items": [
+            {
+             "anchor": "priloha1-x1-i1-i3-a",
+             "label": "A.",
+             "letter": "a",
+             "text": "Technické zariadenia elektrické skupiny A podľa druhu sú:",
+             "items": [
+              {
+               "anchor": "priloha1-x1-i1-i3-a-a",
+               "label": "a)",
+               "letter": "a",
+               "text": "technické zariadenie na výrobu elektrickej energie s menovitým výkonom 3 MW a viac vrátane ochrany pred účinkami atmosférickej elektriny,"
+              },
+              {
+               "anchor": "priloha1-x1-i1-i3-a-b",
+               "label": "b)",
+               "letter": "b",
+               "text": "technické zariadenie na premenu elektrickej energie s príkonom 250 kVA a viac vrátane ochrany pred účinkami atmosférickej elektriny,"
+              },
+              {
+               "anchor": "priloha1-x1-i1-i3-a-c",
+               "label": "c)",
+               "letter": "c",
+               "text": "elektrická sieť striedavého napätia nad 1000 V alebo jednosmerného napätia nad 1 500 V vrátane ochrany pred účinkami atmosférickej elektriny,"
+              },
+              {
+               "anchor": "priloha1-x1-i1-i3-a-d",
+               "label": "d)",
+               "letter": "d",
+               "text": "elektrická inštalácia v prostredí s nebezpečenstvom požiaru horľavých materiálov, kvapalín, plynov alebo prachu (vonkajší vplyv BE2) vrátane ochrany pred účinkami atmosférickej a statickej elektriny,"
+              },
+              {
+               "anchor": "priloha1-x1-i1-i3-a-e",
+               "label": "e)",
+               "letter": "e",
+               "text": "elektrická inštalácia v priestore s nebezpečenstvom výbuchu (vonkajší vplyv BE3) vrátane ochrany pred účinkami atmosférickej a statickej elektriny,"
+              },
+              {
+               "anchor": "priloha1-x1-i1-i3-a-f",
+               "label": "f)",
+               "letter": "f",
+               "text": "elektrická inštalácia v priestoroch s vonkajším vplyvom s trvalým výskytom korozívnych alebo znečisťujúcich látok vrátane ochrany pred účinkami atmosférickej elektriny,"
+              },
+              {
+               "anchor": "priloha1-x1-i1-i3-a-g",
+               "label": "g)",
+               "letter": "g",
+               "text": "elektrická inštalácia v priestore s vonkajším vplyvom vody z iného zdroja ako z dažďa AD3 až AD8 alebo s dotykom s vodivými časťami, ktoré majú potenciál zeme s vonkajším vplyvom BC3 a BC4 vrátane ochrany pred účinkami atmosférickej elektriny,"
+              },
+              {
+               "anchor": "priloha1-x1-i1-i3-a-h",
+               "label": "h)",
+               "letter": "h",
+               "text": "elektrická inštalácia v miestnosti na zdravotnícke účely vrátane ochrany pred účinkami atmosférickej a statickej elektriny okrem všeobecnej vyšetrovne a priestoru s požiadavkami P0, P1 a P2 definovanými podľa osobitných predpisov pre zdravotnícke zariadenie,"
+              },
+              {
+               "anchor": "priloha1-x1-i1-i3-a-i",
+               "label": "i)",
+               "letter": "i",
+               "text": "elektrická inštalácia v objekte určenom na zhromažďovanie viac ako 250 osôb v jednom priestore vrátane ochrany pred účinkami atmosférickej elektriny."
+              }
+             ]
+            },
+            {
+             "anchor": "priloha1-x1-i1-i3-b",
+             "label": "B.",
+             "letter": "b",
+             "text": "Technické zariadenia elektrické skupiny B sú:",
+             "items": [
+              {
+               "anchor": "priloha1-x1-i1-i3-b-i1",
+               "label": "",
+               "letter": "i1",
+               "text": "Technické zariadenia elektrické nezaradené do skupiny A s prúdom alebo napätím, ktoré nie sú bezpečné."
+              }
+             ]
+            },
+            {
+             "anchor": "priloha1-x1-i1-i3-c",
+             "label": "C.",
+             "letter": "c",
+             "text": "Technické zariadenia elektrické skupiny C sú:",
+             "items": [
+              {
+               "anchor": "priloha1-x1-i1-i3-c-i1",
+               "label": "",
+               "letter": "i1",
+               "text": "Technické zariadenia elektrické nezaradené do skupiny A a skupiny B."
+              }
+             ]
+            }
+           ]
+          },
+          {
+           "anchor": "priloha1-x1-i1-i4",
+           "label": "",
+           "letter": "i4",
+           "text": "IV. ČASŤ ROZDELENIE TECHNICKÝCH ZARIADENÍ PLYNOVÝCH",
+           "items": [
+            {
+             "anchor": "priloha1-x1-i1-i4-a",
+             "label": "A.",
+             "letter": "a",
+             "text": "Technické zariadenia plynové skupiny A podľa druhu sú zariadenia pracujúce s nebezpečnými plynmi\nurčené na",
+             "items": [
+              {
+               "anchor": "priloha1-x1-i1-i4-a-a",
+               "label": "a)",
+               "letter": "a",
+               "text": "výrobu plynu s jednotkovým výkonom vyšším ako 10 Nm³/h vrátane zariadenia upravujúceho zloženie plynu na technické hodnoty vyžadované osobitným predpisom alebo odberateľom,"
+              },
+              {
+               "anchor": "priloha1-x1-i1-i4-a-b",
+               "label": "b)",
+               "letter": "b",
+               "text": "skladovanie plynu s najvyšším pracovným tlakom plynu do 0,05 MPa vrátane s vnútorným objemom nad 100 m³, napríklad v plynojeme a zásobníku,"
+              },
+              {
+               "anchor": "priloha1-x1-i1-i4-a-c",
+               "label": "c)",
+               "letter": "c",
+               "text": "plnenie kovových tlakových nádob na dopravu plynov s výkonom nad 10 Nm³/h,"
+              },
+              {
+               "anchor": "priloha1-x1-i1-i4-a-d",
+               "label": "d)",
+               "letter": "d",
+               "text": "zásobovanie plynom z kovových tlakových nádob stabilných alebo z kovových tlakových nádob na dopravu plynov (tlaková stanica) s výkonom nad 10 Nm³/h,"
+              },
+              {
+               "anchor": "priloha1-x1-i1-i4-a-e",
+               "label": "e)",
+               "letter": "e",
+               "text": "zvyšovanie tlaku plynu s najvyšším pracovným tlakom plynu na výstupe vyšším ako 0,4 MPa,"
+              },
+              {
+               "anchor": "priloha1-x1-i1-i4-a-f",
+               "label": "f)",
+               "letter": "f",
+               "text": "znižovanie tlaku plynu s najvyšším pracovným tlakom plynu na vstupe vyšším ako 0,4 MPa,"
+              },
+              {
+               "anchor": "priloha1-x1-i1-i4-a-g",
+               "label": "g)",
+               "letter": "g",
+               "text": "rozvod plynu s tlakom plynu nad 0,4 MPa a acetylénovod,"
+              },
+              {
+               "anchor": "priloha1-x1-i1-i4-a-h",
+               "label": "h)",
+               "letter": "h",
+               "text": "spotrebu plynu spaľovaním s výkonom jednotlivého zariadenia alebo so súčtom výkonov jednotlivých zariadení tvoriacich funkčný celok nad 0,5 MW vrátane zariadenia na výrobu ochranných atmosfér pri tepelnom spracúvaní,"
+              },
+              {
+               "anchor": "priloha1-x1-i1-i4-a-i",
+               "label": "i)",
+               "letter": "i",
+               "text": "chladenie a mrazenie s množstvom plynu na chladenie nad 25 kg."
+              }
+             ]
+            },
+            {
+             "anchor": "priloha1-x1-i1-i4-b",
+             "label": "B.",
+             "letter": "b",
+             "text": "Technické zariadenia plynové skupiny B podľa druhu sú zariadenia pracujúce s nebezpečnými plynmi,\nktoré sú určené na",
+             "items": [
+              {
+               "anchor": "priloha1-x1-i1-i4-b-a",
+               "label": "a)",
+               "letter": "a",
+               "text": "výrobu plynu s jednotkovým výkonom do 10 Nm³/h vrátane,"
+              },
+              {
+               "anchor": "priloha1-x1-i1-i4-b-b",
+               "label": "b)",
+               "letter": "b",
+               "text": "skladovanie plynu s najvyšším pracovným tlakom plynu do 0,05 MPa vrátane s vnútorným objemom do 100 m³, napríklad v plynojeme a zásobníku,"
+              },
+              {
+               "anchor": "priloha1-x1-i1-i4-b-c",
+               "label": "c)",
+               "letter": "c",
+               "text": "plnenie kovových tlakových nádob na dopravu plynu s výkonom do 10 Nm³/h vrátane,"
+              },
+              {
+               "anchor": "priloha1-x1-i1-i4-b-d",
+               "label": "d)",
+               "letter": "d",
+               "text": "zásobovanie plynom z kovových tlakových nádob stabilných alebo z kovových tlakových nádob na dopravu plynu (tlaková stanica) s výkonom do 10 Nm³/h vrátane, ak umožňujú pripojiť viac ako dve fľaše na dopravu plynov,"
+              },
+              {
+               "anchor": "priloha1-x1-i1-i4-b-e",
+               "label": "e)",
+               "letter": "e",
+               "text": "zvyšovanie tlaku plynu s najvyšším pracovným tlakom plynu na výstupe do 0,4 MPa vrátane,"
+              },
+              {
+               "anchor": "priloha1-x1-i1-i4-b-f",
+               "label": "f)",
+               "letter": "f",
+               "text": "znižovanie tlaku plynu s najvyšším pracovným tlakom plynu na vstupe do 0,4 MPa vrátane s výkonom nad 25 Nm³/h okrem zariadení uvedených v písmene g),"
+              },
+              {
+               "anchor": "priloha1-x1-i1-i4-b-g",
+               "label": "g)",
+               "letter": "g",
+               "text": "rozvod plynu, a to potrubné vedenie určené na rozvod plynu vrátane regulačného zariadenia zaradeného do tohto potrubného vedenia s výkonom odberného plynového zariadenia do 25 Nm³/h vrátane s najvyšším pracovným tlakom plynu na vstupe do 0,4 MPa vrátane okrem potrubného vedenia určeného na rozvod acetylénu,"
+              },
+              {
+               "anchor": "priloha1-x1-i1-i4-b-h",
+               "label": "h)",
+               "letter": "h",
+               "text": "spotrebu plynu spaľovaním s výkonom jednotlivého zariadenia alebo so súčtom výkonov jednotlivých zariadení tvoriacich funkčný celok od 5 kW do 0,5 MW vrátane zariadenia na výrobu ochranných atmosfér pri tepelnom spracúvaní a spotrebiča, pri ktorom sa vyžaduje napojenie na odťah spalín,"
+              },
+              {
+               "anchor": "priloha1-x1-i1-i4-b-i",
+               "label": "i)",
+               "letter": "i",
+               "text": "chladenie a mrazenie s množstvom plynu na chladenie od 3 kg do 25 kg vrátane."
+              }
+             ]
+            },
+            {
+             "anchor": "priloha1-x1-i1-i4-c",
+             "label": "C.",
+             "letter": "c",
+             "text": "Technické zariadenia plynové skupiny C podľa druhu sú:",
+             "items": [
+              {
+               "anchor": "priloha1-x1-i1-i4-c-a",
+               "label": "a)",
+               "letter": "a",
+               "text": "technické zariadenia pracujúce s nebezpečným plynom nezaradené do skupiny A alebo skupiny B,"
+              },
+              {
+               "anchor": "priloha1-x1-i1-i4-c-b",
+               "label": "b)",
+               "letter": "b",
+               "text": "technické zariadenia pracujúce s ostatnými plynmi."
+              }
+             ]
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "type": "provision",
+     "anchor": "priloha2",
+     "label": "Príloha č. 2 k vyhláške č. 508/2009 Z. z.",
+     "paragraphs": [
+      {
+       "anchor": "priloha2-x1",
+       "text": "",
+       "items": [
+        {
+         "anchor": "priloha2-x1-i1",
+         "label": "",
+         "letter": "i1",
+         "text": "OBSAH KONŠTRUKČNEJ DOKUMENTÁCIE VYHRADENÉHO TECHNICKÉHO ZARIADENIA",
+         "items": [
+          {
+           "anchor": "priloha2-x1-i1-a",
+           "label": "A.",
+           "letter": "a",
+           "text": "Konštrukčná dokumentácia obsahuje",
+           "items": [
+            {
+             "anchor": "priloha2-x1-i1-a-a",
+             "label": "a)",
+             "letter": "a",
+             "text": "meno, priezvisko a miesto podnikania výrobcu, ak ide o fyzickú osobu, a názov, sídlo, identifikačné číslo organizácie a právnu formu výrobcu, ak ide o právnickú osobu,"
+            },
+            {
+             "anchor": "priloha2-x1-i1-a-b",
+             "label": "b)",
+             "letter": "b",
+             "text": "charakteristiku technického zariadenia vrátane rozdelenia do skupín podľa druhu podľa § 4 a prílohy č. 1,"
+            },
+            {
+             "anchor": "priloha2-x1-i1-a-c",
+             "label": "c)",
+             "letter": "c",
+             "text": "všeobecný popis technického zariadenia, jeho funkciu a základné technické parametre podľa prílohy č. 4 písm. g),"
+            },
+            {
+             "anchor": "priloha2-x1-i1-a-d",
+             "label": "d)",
+             "letter": "d",
+             "text": "celkový výkres technického zariadenia a výkresy ovládacích obvodov, najmä schémy elektrického zapojenia, hydraulických alebo pneumatických rozvodov, ako aj príslušné popisy a vysvetlenia potrebné na pochopenie prevádzky technického zariadenia vrátane príslušných údajov a parametrov prístrojov, vedení, potrubí, meracích, regulačných a zabezpečovacích prvkov,"
+            },
+            {
+             "anchor": "priloha2-x1-i1-a-e",
+             "label": "e)",
+             "letter": "e",
+             "text": "výkresy hlavných celkov technického zariadenia doplnené výpočtami dôležitých konštrukčných častí a mechanizmov, výsledkami skúšok, certifikátmi, ktoré sú potrebné na overenie zhody zariadenia so základnými požiadavkami na bezpečnosť a ochranu zdravia pri práci,"
+            },
+            {
+             "anchor": "priloha2-x1-i1-a-f",
+             "label": "f)",
+             "letter": "f",
+             "text": "dokumentáciu o posúdení rizík vrátane zoznamu základných požiadaviek na bezpečnosť a ochranu zdravia pri práci, ktoré platia pre technické zariadenie, popisu použitých ochranných opatrení na vylúčenie označených nebezpečenstiev alebo na zmenšenie rizík a podľa potreby aj označenia neodstrániteľných rizík súvisiacich s technickým zariadením,"
+            },
+            {
+             "anchor": "priloha2-x1-i1-a-g",
+             "label": "g)",
+             "letter": "g",
+             "text": "zoznam predpisov, technických noriem a iných technických špecifikácií uvádzajúcich základné požiadavky na bezpečnosť a ochranu zdravia pri práci týkajúcich sa technického zariadenia a podľa potreby s výpisom odlišností a popisom spôsobu riešenia z hľadiska zaistenia bezpečnosti technického zariadenia,"
+            },
+            {
+             "anchor": "priloha2-x1-i1-a-h",
+             "label": "h)",
+             "letter": "h",
+             "text": "návod na použitie technického zariadenia vrátane zásad na vykonávanie skúšok technického zariadenia a kritérií ich úspešnosti,"
+            },
+            {
+             "anchor": "priloha2-x1-i1-a-i",
+             "label": "i)",
+             "letter": "i",
+             "text": "prípadné technické správy s výsledkami skúšok, ktoré vykonal výrobca alebo výrobcom určená osoba,"
+            },
+            {
+             "anchor": "priloha2-x1-i1-a-j",
+             "label": "j)",
+             "letter": "j",
+             "text": "podľa potreby aj kópie ES vyhlásení o zhode pre zariadenia alebo iné výrobky začleňované do technického zariadenia."
+            }
+           ]
+          },
+          {
+           "anchor": "priloha2-x1-i1-b",
+           "label": "B.",
+           "letter": "b",
+           "text": "Konštrukčná dokumentácia vyhradeného technického zariadenia tlakového a vyhradeného technického zariadenia plynového obsahuje okrem požiadaviek uvedených v bode A aj",
+           "items": [
+            {
+             "anchor": "priloha2-x1-i1-b-a",
+             "label": "a)",
+             "letter": "a",
+             "text": "názov pracovnej látky, jej fyzikálne a chemické vlastnosti,"
+            },
+            {
+             "anchor": "priloha2-x1-i1-b-b",
+             "label": "b)",
+             "letter": "b",
+             "text": "výkresy tlakových a dôležitých konštrukčných častí v mierke spolu s údajmi potrebnými na pevnostný výpočet,"
+            },
+            {
+             "anchor": "priloha2-x1-i1-b-c",
+             "label": "c)",
+             "letter": "c",
+             "text": "pevnostné výpočty a ďalšie výpočty konštrukčných častí a bezpečnostného príslušenstva podľa bezpečnostnotechnických požiadaviek,"
+            },
+            {
+             "anchor": "priloha2-x1-i1-b-d",
+             "label": "d)",
+             "letter": "d",
+             "text": "náčrt zapojenia technického zariadenia z hľadiska parametrov vstupov a výstupov pracovnej látky vo všetkých priestoroch, ak je to pre úplnosť údajov potrebné."
+            }
+           ]
+          },
+          {
+           "anchor": "priloha2-x1-i1-c",
+           "label": "C.",
+           "letter": "c",
+           "text": "Konštrukčná dokumentácia trvalej dráhy žeriava obsahuje",
+           "items": [
+            {
+             "anchor": "priloha2-x1-i1-c-a",
+             "label": "a)",
+             "letter": "a",
+             "text": "meno, priezvisko a miesto podnikania výrobcu, ak ide o fyzickú osobu, a názov, sídlo, identifikačné číslo organizácie a právnu formu výrobcu, ak ide o právnickú osobu,"
+            },
+            {
+             "anchor": "priloha2-x1-i1-c-b",
+             "label": "b)",
+             "letter": "b",
+             "text": "charakteristiku dráhy vrátane zariadenia do výrobnej skupiny,"
+            },
+            {
+             "anchor": "priloha2-x1-i1-c-c",
+             "label": "c)",
+             "letter": "c",
+             "text": "výkresy zostáv a podzostáv a súpis použitého materiálu,"
+            },
+            {
+             "anchor": "priloha2-x1-i1-c-d",
+             "label": "d)",
+             "letter": "d",
+             "text": "statický výpočet,"
+            },
+            {
+             "anchor": "priloha2-x1-i1-c-e",
+             "label": "e)",
+             "letter": "e",
+             "text": "technickú správu so zásadami vykonávania kontrol a kritériami ich úspešnosti, zoznamom použitých predpisov a technických noriem."
+            }
+           ]
+          },
+          {
+           "anchor": "priloha2-x1-i1-d",
+           "label": "D.",
+           "letter": "d",
+           "text": "Konštrukčná dokumentácia dočasnej dráhy žeriava výložníkového typu obsahuje",
+           "items": [
+            {
+             "anchor": "priloha2-x1-i1-d-a",
+             "label": "a)",
+             "letter": "a",
+             "text": "meno, priezvisko a miesto podnikania výrobcu, ak ide o fyzickú osobu, a názov, sídlo, identifikačné číslo organizácie a právnu formu výrobcu, ak ide o právnickú osobu,"
+            },
+            {
+             "anchor": "priloha2-x1-i1-d-b",
+             "label": "b)",
+             "letter": "b",
+             "text": "technickú správu s lehotami a rozsahom kontrol v prevádzke, kritériami ich úspešnosti, zoznamom použitých predpisov a technických noriem,"
+            },
+            {
+             "anchor": "priloha2-x1-i1-d-c",
+             "label": "c)",
+             "letter": "c",
+             "text": "doklad o únosnosti a vlastnostiach podložia,"
+            },
+            {
+             "anchor": "priloha2-x1-i1-d-d",
+             "label": "d)",
+             "letter": "d",
+             "text": "celkový výkres obsahujúci celkovú situáciu,"
+            },
+            {
+             "anchor": "priloha2-x1-i1-d-e",
+             "label": "e)",
+             "letter": "e",
+             "text": "výkresy podzostáv obsahujúce priečne rezy, údaje o žľabe pre vlečný napájací kábel, umiestnení a vyhotovení narážok, vypínacích líšt koncových vypínačov, uzemnení dráhy, umiestnení hlavného vypínača napájacieho vedenia a súpis použitého materiálu."
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "type": "provision",
+     "anchor": "priloha3",
+     "label": "Príloha č. 3 k vyhláške č. 508/2009 Z. z.",
+     "paragraphs": [
+      {
+       "anchor": "priloha3-x1",
+       "text": "",
+       "items": [
+        {
+         "anchor": "priloha3-x1-i1",
+         "label": "",
+         "letter": "i1",
+         "text": "OBSAH SPRIEVODNEJ TECHNICKEJ DOKUMENTÁCIE VYHRADENÉHO TECHNICKÉHO ZARIADENIA\nSprievodná technická dokumentácia vyhradeného technického zariadenia obsahuje",
+         "items": [
+          {
+           "anchor": "priloha3-x1-i1-a",
+           "label": "a)",
+           "letter": "a",
+           "text": "údaje identifikujúce výrobcu alebo dodávateľa, základné údaje o technickom zariadení najmenej v rozsahu prílohy č. 4 a charakteristiku prostredia, v ktorom môže zariadenie pracovať,"
+          },
+          {
+           "anchor": "priloha3-x1-i1-b",
+           "label": "b)",
+           "letter": "b",
+           "text": "pokyny na používanie alebo odkazy na predpisy, ktoré obsahujú",
+           "items": [
+            {
+             "anchor": "priloha3-x1-i1-b-1",
+             "label": "1.",
+             "letter": "1",
+             "text": "prípustný spôsob používania,"
+            },
+            {
+             "anchor": "priloha3-x1-i1-b-2",
+             "label": "2.",
+             "letter": "2",
+             "text": "návod na obsluhu, nastavovanie, údržbu, opravy, prehliadky a skúšky vrátane výkresov a schém potrebných na vykonávanie týchto činností a ochranných opatrení, ktoré sa musia vykonať pri týchto činnostiach,"
+            },
+            {
+             "anchor": "priloha3-x1-i1-b-3",
+             "label": "3.",
+             "letter": "3",
+             "text": "požiadavky na vedenie technickej dokumentácie a dokladov,"
+            },
+            {
+             "anchor": "priloha3-x1-i1-b-4",
+             "label": "4.",
+             "letter": "4",
+             "text": "požiadavky na odbornú spôsobilosť osôb vykonávajúcich obsluhu, nastavovanie, údržbu, opravy, prehliadky a skúšky,"
+            },
+            {
+             "anchor": "priloha3-x1-i1-b-5",
+             "label": "5.",
+             "letter": "5",
+             "text": "návod na montáž, vyskúšanie a podmienky uvedenia technického zariadenia do prevádzky,"
+            },
+            {
+             "anchor": "priloha3-x1-i1-b-6",
+             "label": "6.",
+             "letter": "6",
+             "text": "požiadavky na zabezpečenie stability technického zariadenia počas prepravy, montáže, používania, počas skúšania, počas predvídateľných porúch, demontáže a podľa potreby aj v čase mimo jeho prevádzky,"
+            },
+            {
+             "anchor": "priloha3-x1-i1-b-7",
+             "label": "7.",
+             "letter": "7",
+             "text": "zoznam náhradných dielov a príslušenstva,"
+            }
+           ]
+          },
+          {
+           "anchor": "priloha3-x1-i1-c",
+           "label": "c)",
+           "letter": "c",
+           "text": "preberacie dokumenty, a to",
+           "items": [
+            {
+             "anchor": "priloha3-x1-i1-c-1",
+             "label": "1.",
+             "letter": "1",
+             "text": "pasport, revíznu knihu alebo iný dokument technického zariadenia v rozsahu určenom bezpečnostnotechnickými požiadavkami,"
+            },
+            {
+             "anchor": "priloha3-x1-i1-c-2",
+             "label": "2.",
+             "letter": "2",
+             "text": "odborné stanovisko k dokumentácii, ak bolo vydané,"
+            },
+            {
+             "anchor": "priloha3-x1-i1-c-3",
+             "label": "3.",
+             "letter": "3",
+             "text": "doklad o súlade technického zariadenia s bezpečnostnotechnickými požiadavkami,"
+            },
+            {
+             "anchor": "priloha3-x1-i1-c-4",
+             "label": "4.",
+             "letter": "4",
+             "text": "osvedčenie o typovej skúške technického zariadenia, ak bola vykonaná,"
+            },
+            {
+             "anchor": "priloha3-x1-i1-c-5",
+             "label": "5.",
+             "letter": "5",
+             "text": "osvedčenie o úradnej skúške alebo inej skúške vykonanej oprávnenou právnickou osobou alebo o skúške vykonanej revíznym technikom výrobcu alebo revíznym technikom,"
+            },
+            {
+             "anchor": "priloha3-x1-i1-c-6",
+             "label": "6.",
+             "letter": "6",
+             "text": "atesty, certifikáty a iné."
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "type": "provision",
+     "anchor": "priloha4",
+     "label": "Príloha č. 4 k vyhláške č. 508/2009 Z. z.",
+     "paragraphs": [
+      {
+       "anchor": "priloha4-x1",
+       "text": "",
+       "items": [
+        {
+         "anchor": "priloha4-x1-i1",
+         "label": "",
+         "letter": "i1",
+         "text": "EVIDENCIA VYHRADENÉHO TECHNICKÉHO ZARIADENIA\nEvidencia vyhradeného technického zariadenia obsahuje",
+         "items": [
+          {
+           "anchor": "priloha4-x1-i1-a",
+           "label": "a)",
+           "letter": "a",
+           "text": "názov vyhradeného technického zariadenia,"
+          },
+          {
+           "anchor": "priloha4-x1-i1-b",
+           "label": "b)",
+           "letter": "b",
+           "text": "typové označenie,"
+          },
+          {
+           "anchor": "priloha4-x1-i1-c",
+           "label": "c)",
+           "letter": "c",
+           "text": "meno, priezvisko a miesto podnikania výrobcu, ak ide o fyzickú osobu, a názov, sídlo, identifikačné číslo organizácie a právnu formu výrobcu, ak ide o právnickú osobu,"
+          },
+          {
+           "anchor": "priloha4-x1-i1-d",
+           "label": "d)",
+           "letter": "d",
+           "text": "výrobné číslo,"
+          },
+          {
+           "anchor": "priloha4-x1-i1-e",
+           "label": "e)",
+           "letter": "e",
+           "text": "rok výroby,"
+          },
+          {
+           "anchor": "priloha4-x1-i1-f",
+           "label": "f)",
+           "letter": "f",
+           "text": "umiestnenie,"
+          },
+          {
+           "anchor": "priloha4-x1-i1-g",
+           "label": "g)",
+           "letter": "g",
+           "text": "základné technické parametre, ktoré sú",
+           "items": [
+            {
+             "anchor": "priloha4-x1-i1-g-1",
+             "label": "1.",
+             "letter": "1",
+             "text": "pre tlakovú nádobu",
+             "items": [
+              {
+               "anchor": "priloha4-x1-i1-g-1-a",
+               "label": "a.",
+               "letter": "a",
+               "text": "najvyšší pracovný tlak,"
+              },
+              {
+               "anchor": "priloha4-x1-i1-g-1-b",
+               "label": "b.",
+               "letter": "b",
+               "text": "skúšobný tlak,"
+              },
+              {
+               "anchor": "priloha4-x1-i1-g-1-c",
+               "label": "c.",
+               "letter": "c",
+               "text": "najvyššia a najnižšia pracovná teplota,"
+              },
+              {
+               "anchor": "priloha4-x1-i1-g-1-d",
+               "label": "d.",
+               "letter": "d",
+               "text": "vnútorný objem,"
+              },
+              {
+               "anchor": "priloha4-x1-i1-g-1-e",
+               "label": "e.",
+               "letter": "e",
+               "text": "základné technické parametre bezpečnostného príslušenstva,"
+              }
+             ]
+            },
+            {
+             "anchor": "priloha4-x1-i1-g-2",
+             "label": "2.",
+             "letter": "2",
+             "text": "pre kotol",
+             "items": [
+              {
+               "anchor": "priloha4-x1-i1-g-2-a",
+               "label": "a.",
+               "letter": "a",
+               "text": "výhrevná plocha kotla v m²,"
+              },
+              {
+               "anchor": "priloha4-x1-i1-g-2-b",
+               "label": "b.",
+               "letter": "b",
+               "text": "výkon kotla (množstvo vyrábanej pary v t/h alebo MW),"
+              },
+              {
+               "anchor": "priloha4-x1-i1-g-2-c",
+               "label": "c.",
+               "letter": "c",
+               "text": "teplota napájacej vody a výstupná teplota pary alebo vody,"
+              },
+              {
+               "anchor": "priloha4-x1-i1-g-2-d",
+               "label": "d.",
+               "letter": "d",
+               "text": "druh paliva,"
+              }
+             ]
+            },
+            {
+             "anchor": "priloha4-x1-i1-g-3",
+             "label": "3.",
+             "letter": "3",
+             "text": "pre vyhradené technické zariadenie zdvíhacie",
+             "items": [
+              {
+               "anchor": "priloha4-x1-i1-g-3-a",
+               "label": "a.",
+               "letter": "a",
+               "text": "nosnosť a pre pohyblivé schody, chodníky a vleky prepravná kapacita,"
+              },
+              {
+               "anchor": "priloha4-x1-i1-g-3-b",
+               "label": "b.",
+               "letter": "b",
+               "text": "zdvih,"
+              },
+              {
+               "anchor": "priloha4-x1-i1-g-3-c",
+               "label": "c.",
+               "letter": "c",
+               "text": "menovitá rýchlosť,"
+              },
+              {
+               "anchor": "priloha4-x1-i1-g-3-d",
+               "label": "d.",
+               "letter": "d",
+               "text": "rozpätie, vyloženie,"
+              },
+              {
+               "anchor": "priloha4-x1-i1-g-3-e",
+               "label": "e.",
+               "letter": "e",
+               "text": "ovládanie,"
+              },
+              {
+               "anchor": "priloha4-x1-i1-g-3-f",
+               "label": "f.",
+               "letter": "f",
+               "text": "druh pohonu,"
+              }
+             ]
+            },
+            {
+             "anchor": "priloha4-x1-i1-g-4",
+             "label": "4.",
+             "letter": "4",
+             "text": "pre žeriavovú dráhu",
+             "items": [
+              {
+               "anchor": "priloha4-x1-i1-g-4-a",
+               "label": "a.",
+               "letter": "a",
+               "text": "dovolené zaťaženie,"
+              },
+              {
+               "anchor": "priloha4-x1-i1-g-4-b",
+               "label": "b.",
+               "letter": "b",
+               "text": "dĺžka,"
+              },
+              {
+               "anchor": "priloha4-x1-i1-g-4-c",
+               "label": "c.",
+               "letter": "c",
+               "text": "rozchod,"
+              },
+              {
+               "anchor": "priloha4-x1-i1-g-4-d",
+               "label": "d.",
+               "letter": "d",
+               "text": "výšková úroveň,"
+              }
+             ]
+            },
+            {
+             "anchor": "priloha4-x1-i1-g-5",
+             "label": "5.",
+             "letter": "5",
+             "text": "pre vyhradené technické zariadenie elektrické",
+             "items": [
+              {
+               "anchor": "priloha4-x1-i1-g-5-a",
+               "label": "a.",
+               "letter": "a",
+               "text": "menovité napätie a prúd,"
+              },
+              {
+               "anchor": "priloha4-x1-i1-g-5-b",
+               "label": "b.",
+               "letter": "b",
+               "text": "menovitý výkon alebo príkon,"
+              },
+              {
+               "anchor": "priloha4-x1-i1-g-5-c",
+               "label": "c.",
+               "letter": "c",
+               "text": "krytie vzhľadom na prostredie a vonkajší vplyv (vyhotovenie),"
+              }
+             ]
+            },
+            {
+             "anchor": "priloha4-x1-i1-g-6",
+             "label": "6.",
+             "letter": "6",
+             "text": "pre vyhradené technické zariadenie plynové",
+             "items": [
+              {
+               "anchor": "priloha4-x1-i1-g-6-a",
+               "label": "a.",
+               "letter": "a",
+               "text": "druh plynu,"
+              },
+              {
+               "anchor": "priloha4-x1-i1-g-6-b",
+               "label": "b.",
+               "letter": "b",
+               "text": "najvyšší pracovný tlak plynu,"
+              },
+              {
+               "anchor": "priloha4-x1-i1-g-6-c",
+               "label": "c.",
+               "letter": "c",
+               "text": "prietok plynu pre zdroj plynu alebo regulačnú stanicu,"
+              },
+              {
+               "anchor": "priloha4-x1-i1-g-6-d",
+               "label": "d.",
+               "letter": "d",
+               "text": "dĺžka (pre plynovod mimo plynárenského zariadenia),"
+              },
+              {
+               "anchor": "priloha4-x1-i1-g-6-e",
+               "label": "e.",
+               "letter": "e",
+               "text": "výkon pre spotrebiče,"
+              },
+              {
+               "anchor": "priloha4-x1-i1-g-6-f",
+               "label": "f.",
+               "letter": "f",
+               "text": "obsah chladiva pre chladiaci okruh,"
+              }
+             ]
+            },
+            {
+             "anchor": "priloha4-x1-i1-g-7",
+             "label": "7.",
+             "letter": "7",
+             "text": "potrubné systémy uvedené v prílohe č. 1 I. časti skupine A písm. e) a g) a skupine B písm. e)",
+             "items": [
+              {
+               "anchor": "priloha4-x1-i1-g-7-a",
+               "label": "a.",
+               "letter": "a",
+               "text": "najvyšší pracovný pretlak,"
+              },
+              {
+               "anchor": "priloha4-x1-i1-g-7-b",
+               "label": "b.",
+               "letter": "b",
+               "text": "najvyššia pracovná teplota,"
+              },
+              {
+               "anchor": "priloha4-x1-i1-g-7-c",
+               "label": "c.",
+               "letter": "c",
+               "text": "skúšobný pretlak,"
+              },
+              {
+               "anchor": "priloha4-x1-i1-g-7-d",
+               "label": "d.",
+               "letter": "d",
+               "text": "výpočtový pretlak,"
+              },
+              {
+               "anchor": "priloha4-x1-i1-g-7-e",
+               "label": "e.",
+               "letter": "e",
+               "text": "menovitá svetlosť DN a pri čerpadlách výkon,"
+              },
+              {
+               "anchor": "priloha4-x1-i1-g-7-f",
+               "label": "f.",
+               "letter": "f",
+               "text": "pracovná látka,"
+              },
+              {
+               "anchor": "priloha4-x1-i1-g-7-g",
+               "label": "g.",
+               "letter": "g",
+               "text": "dĺžka potrubia."
+              }
+             ]
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "type": "provision",
+     "anchor": "priloha5",
+     "label": "Príloha č. 5 k vyhláške č. 508/2009 Z. z.",
+     "paragraphs": [
+      {
+       "anchor": "priloha5-x1",
+       "text": "",
+       "items": [
+        {
+         "anchor": "priloha5-x1-i1",
+         "label": "",
+         "letter": "i1",
+         "text": "PREHLIADKY A SKÚŠKY TECHNICKÝCH ZARIADENÍ TLAKOVÝCH",
+         "items": [
+          {
+           "anchor": "priloha5-x1-i1-i1",
+           "label": "",
+           "letter": "i1",
+           "text": "| Technické\nzariadenie\ntlakové | Výroba*) | Uvedenie\ndo prevádzky¹) | Prevádzka |\n| Skupina/ druh | Odborné\nstanovisko\nk dokumentácii | Typová výroba | Kusová výroba | Úradná\nskúška | Opakovaná\núradná\nskúška²) | Skúška\npo oprave³) | Odborná prehliadka a odborná skúška |\n| Typová\nskúška | Skúška\nďalších\nkusov | Stavebná a prvá\ntlaková skúška | Prvá vonkajšia\nprehliadka | Opakovaná\nvonkajšia\nprehliadka | Vnútorná\nprehliadka²) | Tlaková\nskúška²) |\n| A | a | OPO | OPO | OV | OPO | OPO | OPO/6r | OPO | X | RT/6m | RT/1r⁹) | RT/6r |\n| b | OPO | OPO | OV | OPO | OPO | OPO/10r | OPO | X | RT/1r | RT/5r | RT/10r |\n| c | OPO | OPO | OV | OPO | X | X⁴) | X | X | O⁵) | X | X |\n| d | OPO | OPO | OV | OPO | X | X | RT | RT | O⁵) | RT⁶) | RT⁶) |\n| e | OPO | X | X | OPO | OPO | X | OPO | RT | RT/1r | X | X |\n| B | a | OPO | OPO | OV | RT | X | X | RT | RT | RT/1r | RT/1r⁹) | RT/10r |\n| b | OPO | OPO | OV | RT | X | X | RT | RT | RT/1r | RT/5r³) | RT/10r³) |\n| c | OPO | OPO | OV | RT | X | X⁴) | X | X | O⁵) | X | X |\n| d | OPO | OPO | OV | RT | X | X | RT | RT | O⁵) | RT⁶) | RT⁶) |\n| e1 | OPO | X | X | OPO | X | X | RT | RT | RT/1r | X | X |\n| e2 | OPO | X | X | OPO | X | X | RT | RT | O/1r | X | X |\n| f | OPO | OPO | OV | RT | ⁷) | ⁷) | RT | ⁷) | ⁷) | X | X |\n| C | | X | X | X | X | X | X | O, TPV | TPV | TPV | TPV | TPV |"
+          },
+          {
+           "anchor": "priloha5-x1-i1-i2",
+           "label": "",
+           "letter": "i2",
+           "text": "Vysvetlivky:"
+          },
+          {
+           "anchor": "priloha5-x1-i1-i3",
+           "label": "",
+           "letter": "i3",
+           "text": "*) Nevzťahuje sa na technické zariadenie podľa § 2 ods. 2."
+          },
+          {
+           "anchor": "priloha5-x1-i1-i4",
+           "label": "",
+           "letter": "i4",
+           "text": "¹) Na mieste budúcej prevádzky."
+          },
+          {
+           "anchor": "priloha5-x1-i1-i5",
+           "label": "",
+           "letter": "i5",
+           "text": "²) Vnútornú prehliadku a tlakovú skúšku možno nahradiť inými rovnocennými skúškami podľa príslušných predpisov a slovenských technických noriem."
+          },
+          {
+           "anchor": "priloha5-x1-i1-i6",
+           "label": "",
+           "letter": "i6",
+           "text": "³) Po každom zásahu do tlakového celku, ktorého výsledkom je nerozoberateľný spoj."
+          },
+          {
+           "anchor": "priloha5-x1-i1-i7",
+           "label": "",
+           "letter": "i7",
+           "text": "⁴) Kontrola podľa zákona č. 254/2011 Z. z. o prepravovateľných tlakových zariadeniach a o zmene a doplnení niektorých zákonov."
+          },
+          {
+           "anchor": "priloha5-x1-i1-i8",
+           "label": "",
+           "letter": "i8",
+           "text": "⁵) Pred každým naplnením nádoby."
+          },
+          {
+           "anchor": "priloha5-x1-i1-i9",
+           "label": "",
+           "letter": "i9",
+           "text": "⁶) Lehoty závisia od použitého hnacieho plynu."
+          },
+          {
+           "anchor": "priloha5-x1-i1-i10",
+           "label": "",
+           "letter": "i10",
+           "text": "⁷) Spolu s technickým zariadením tlakovým, na ktorom je namontované."
+          },
+          {
+           "anchor": "priloha5-x1-i1-i11",
+           "label": "",
+           "letter": "i11",
+           "text": "⁹) Pri nepretržitej prevádzke technologického zariadenia, ktorého súčasťou je tlakové zariadenie, v lehote najbližšej plánovanej odstávky, najneskôr raz za tri roky, ak vnútornú prehliadku tlakového zariadenia nemožno vykonať bez prerušenia nepretržitej prevádzky tohto zariadenia, ak sa opakovaná vonkajšia prehliadka vykonáva najmenej raz za tri mesiace a podľa posúdenia rizika je prevádzka tlakového zariadenia bezpečná."
+          },
+          {
+           "anchor": "priloha5-x1-i1-i12",
+           "label": "",
+           "letter": "i12",
+           "text": "OPO – oprávnená právnická osoba"
+          },
+          {
+           "anchor": "priloha5-x1-i1-i13",
+           "label": "",
+           "letter": "i13",
+           "text": "RT – revízny technik"
+          },
+          {
+           "anchor": "priloha5-x1-i1-i14",
+           "label": "",
+           "letter": "i14",
+           "text": "O – prevádzkovateľom určená osoba"
+          },
+          {
+           "anchor": "priloha5-x1-i1-i15",
+           "label": "",
+           "letter": "i15",
+           "text": "OV – výrobcom určená osoba"
+          },
+          {
+           "anchor": "priloha5-x1-i1-i16",
+           "label": "",
+           "letter": "i16",
+           "text": "X – nevyžaduje sa"
+          },
+          {
+           "anchor": "priloha5-x1-i1-i17",
+           "label": "",
+           "letter": "i17",
+           "text": "TPV – technické podmienky výrobcu (dodávateľa)"
+          },
+          {
+           "anchor": "priloha5-x1-i1-i18",
+           "label": "",
+           "letter": "i18",
+           "text": "r – roky"
+          },
+          {
+           "anchor": "priloha5-x1-i1-i19",
+           "label": "",
+           "letter": "i19",
+           "text": "m – mesiace"
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "type": "provision",
+     "anchor": "priloha6",
+     "label": "Príloha č. 6 k vyhláške č. 508/2009 Z. z.",
+     "paragraphs": [
+      {
+       "anchor": "priloha6-x1",
+       "text": "",
+       "items": [
+        {
+         "anchor": "priloha6-x1-i1",
+         "label": "",
+         "letter": "i1",
+         "text": "PREHLIADKY A SKÚŠKY TECHNICKÝCH ZARIADENÍ ZDVÍHACÍCH PRED UVEDENÍM DO PREVÁDZKY\n| Technické zariadenie zdvíhacie | Výroba*) |\n| Odborné stanovisko k dokumentácii\n| Typová výroba | Kusová výroba |\n| Prototyp | Ďalšie výrobky | |\n| Skupina/\ndruh | Montážna skúška typu | Typová\nskúška | Montážna skúška | Úradná skúška | Odborná prehliadka alebo odborná skúška | Montážna skúška | Úradná skúška | Odborná prehliadka alebo odborná skúška |\n| A | a | OPO | OV/RT¹) | OPO¹) | OV/RT¹) | OPO¹)²)³) | RT⁴) | RT²)//OV/RT⁴) | OPO | X |\n| b | OPO | OV/RT | OPO | OV/RT | OPO²) | RT⁴) | RT²)//OV/RT⁴) | OPO | X |\n| c 1 | OPO | OV/RT | OPO | OV/RT | OPO | X | RT²)//OV/RT⁴) | OPO | X |\n| c 2 | OPO | OV/RT | OPO | OV/RT | OPO | X | RT²)//OV/RT⁴) | OPO | X |\n| c 3 | OPO | OV/RT | OPO | OV/RT | OPO | X | RT²)//OV/RT⁴) | OPO | X |\n| d 1 | OPO | OV/RT | OPO | OV/RT | OPO²) | RT⁴) | RT²)//OV/RT⁴) | OPO | X |\n| d 2 | OPO | OV/RT | OPO | OV/RT | OPO²) | RT⁴) | RT²)//OV/RT⁴) | OPO | X |\n| e | OPO | OV/RT | OPO | OV/RT | OPO | X | RT²)//OV/RT⁴) | OPO²) | X |\n| f | OPO | OV/RT | OPO | OV/RT | OPO | X | RT²)//OV/RT⁴) | OPO | X |\n| g | OPO | OV/RT | OPO | OV/RT | OPO²) | RT⁴) | RT²)//OV/RT⁴) | OPO | X |\n| h | OPO | OV/RT | OPO | OV/RT | OPO²) | RT⁴) | RT²)//OV/RT⁴) | OPO | X |\n| i 1 | OPO | OV/RT | OPO | OV/RT | OPO²) | RT⁴) | RT²)//OV/RT⁴) | OPO | X |\n| i 2 | OPO | OV/RT | OPO | OV/RT | OPO²) | RT⁴) | RT²)//OV/RT⁴) | OPO | X |\n| j 1 | OPO | OV/RT | OPO | OV/RT | OPO | X | RT²)//OV/RT⁴) | OPO | X |\n| j 2 | OPO | OV/RT | OPO | OV/RT | OPO | X | RT²)//OV/RT⁴) | OPO | X |\n| k | OPO | OV/RT | OPO | OV/RT | OPO | X | RT²)//OV/RT⁴) | OPO | X |\n| B | a 1 | OPO | OV/RT | OPO | OV/RT | X | RT | RT²)//OV/RT⁴) | X | RT |\n| a 2 | OPO | OV/RT | OPO | OV/RT | X | RT | RT²)//OV/RT⁴) | X | RT |\n| b | OPO | OV/RT | OPO | OV/RT | X | RT | RT²)/OV/RT⁴) | X | RT |\n| c 1 | OPO | OV/RT | OPO | OV/RT | X | RT | RT²)//OV/RT⁴) | X | RT |\n| c 2 | OPO | OV/RT | OPO | OV/RT | X | RT | RT²)//OV/RT⁴) | X | RT |\n| d 1 | OPO | OV/RT | OPO | OV/RT | X | RT | RT²)//OV/RT⁴) | X | RT |\n| d 2 | OPO | OV/RT | OPO | OV/RT | X | RT | RT²)//OV/RT⁴) | X | RT |\n| d 3 | OPO | OV/RT | OPO | OV/RT | X | RT | RT²)//OV/RT⁴) | X | RT |\n| d 4 | OPO | OV/RT | OPO | OV/RT | X | RT | RT²)//OV/RT⁴) | X | RT |\n| e | OPO | OV/RT | OPO | OV/RT | X | RT | RT²)//OV/RT⁴) | X | RT |\n| f | OPO | OV/RT | OPO | OV/RT | X | RT | RT²)//OV/RT⁴) | X | RT |\n| g | OPO | OV/RT | OPO | OV/RT | X | RT | RT²)//OV/RT⁴) | X | RT |\n| h | OPO | OV/RT | OPO | OV/RT | X | RT | RT²)//OV/RT⁴) | X | RT |\n| i | OPO | OV/RT | OPO | OV/RT | X | RT | RT²)//OV/RT⁴) | X | RT |\n| C | a | X | X | X | O | X | X | O | X | X |\n| b | X | X | X | O | X | X | O | X | X |\n| c | X | X | X | O | X | X | O | X | X |\n| d | X | X | X | O | X | X | O | X | X |\nVysvetlivky:",
+         "items": [
+          {
+           "anchor": "priloha6-x1-i1-i1",
+           "label": "*)",
+           "letter": "i1",
+           "text": "Nevzťahuje sa na technické zariadenie podľa § 2 ods. 2."
+          },
+          {
+           "anchor": "priloha6-x1-i1-1",
+           "label": "1)",
+           "letter": "1",
+           "text": "Nevyžaduje sa pre trvalé dráhy žeriavov a dočasné dráhy žeriavov výložníkového typu."
+          },
+          {
+           "anchor": "priloha6-x1-i1-2",
+           "label": "2)",
+           "letter": "2",
+           "text": "Len ak sa technické zariadenie zmontovalo u odberateľa na mieste budúcej prevádzky."
+          },
+          {
+           "anchor": "priloha6-x1-i1-3",
+           "label": "3)",
+           "letter": "3",
+           "text": "Pre trvalú dráhu žeriavu sa vykoná ako súčasť úradnej skúšky po zmontovaní žeriavu na mieste budúcej prevádzky."
+          },
+          {
+           "anchor": "priloha6-x1-i1-4",
+           "label": "4)",
+           "letter": "4",
+           "text": "Len ak sa technické zariadenie zmontovalo u výrobcu."
+          },
+          {
+           "anchor": "priloha6-x1-i1-i6",
+           "label": "",
+           "letter": "i6",
+           "text": "X – nevyžaduje sa"
+          },
+          {
+           "anchor": "priloha6-x1-i1-i7",
+           "label": "",
+           "letter": "i7",
+           "text": "OPO – oprávnená právnická osoba"
+          },
+          {
+           "anchor": "priloha6-x1-i1-i8",
+           "label": "",
+           "letter": "i8",
+           "text": "OV – výrobcom určená osoba"
+          },
+          {
+           "anchor": "priloha6-x1-i1-i9",
+           "label": "",
+           "letter": "i9",
+           "text": "RT – revízny technik"
+          },
+          {
+           "anchor": "priloha6-x1-i1-i10",
+           "label": "",
+           "letter": "i10",
+           "text": "O – prevádzkovateľom určená osoba"
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "type": "provision",
+     "anchor": "priloha7",
+     "label": "Príloha č. 7 k vyhláške č. 508/2009 Z. z.",
+     "paragraphs": [
+      {
+       "anchor": "priloha7-x1",
+       "text": "",
+       "items": [
+        {
+         "anchor": "priloha7-x1-i1",
+         "label": "",
+         "letter": "i1",
+         "text": "PREHLIADKY A SKÚŠKY TECHNICKÝCH ZARIADENÍ ZDVÍHACÍCH POČAS PREVÁDZKY\n| Technické zariadenie zdvíhacie | Prevádzka |\n| Skupina/\ndruh | Opakovaná úradná skúška | Skúška po rekonštrukcii | Prehliadka a skúška po oprave²) | Odborná prehliadka a odborná skúška¹) |\n| Montážna skúška | Úradná skúška | Odborná prehliadka | Odborná skúška |\n| A | a | OPO/10r³) | RT | OPO | RT/O | RT/2r⁴)⁵) | RT/4r⁴)⁵) |\n| b | OPO/10r | RT | OPO | RT/O | RT/1r | RT/2r |\n| c 1 | OPO/6r | RT | OPO | RT/O | RT/3m | RT/3r |\n| c 2 | OPO/10r | RT | OPO | RT/O | RT/6m | RT/6r |\n| c 3 | OPO/10r | RT | OPO | RT/O | RT/6m | RT/6r |\n| c 4 | OPO/6r | RT | OPO | RT/O | RT/3m | RT/3r |\n| d 1 | OPO/10r | RT | OPO | RT/O | RT/3m | RT/3r |\n| d 2 | OPO/10r | RT | OPO | RT/O | RT/TPV | RT/TPV |\n| e | OPO/10r | RT | OPO | RT/O | RT/1r | RT/2r |\n| f | OPO/10r | RT | OPO | RT/O | RT/3m | RT/3r |\n| g | OPO/10r | RT | OPO | RT/O | RT/TPV | RT/1r |\n| h | OPO/10r | RT | OPO | RT/O | RT/TPV | RT/TPV |\n| i 1 | OPO/10r | RT | OPO | RT/O | RT/6m | RT/1r |\n| i 2 | OPO/10r | RT | OPO | RT/O | RT/6m | RT/1r |\n| j 1 | OPO/10r | RT | OPO | RT/O | RT/TPV | RT/2r |\n| j 2 | OPO/10r | RT | OPO | RT/O | RT/TPV | RT/2r |\n| k | OPO/6r | RT | OPO | RT/O | RT/3m | RT/3r |\n| B | a 1 | X | RT | X | RT/O | RT/3r⁴) | RT/6r⁴) |\n| a 2 | X | RT | X | RT/O | RT/TPV | RT/TPV |\n| b | X | RT | X | RT/O | RT/TPV | RT/TPV |\n| c 1 | X | RT | X | RT/O | RT/TPV | RT/TPV |\n| c 2 | X | RT | X | RT/O | RT/TPV | RT/TPV |\n| d 1 | X | RT | X | RT/O | RT/TPV | RT/TPV |\n| d 2 | X | RT | X | RT/O | RT/TPV | RT/TPV |\n| d 3 | X | RT | X | RT/O | RT/TPV | RT/TPV |\n| d 4 | X | RT | X | RT/O | RT/TPV | RT/TPV |\n| e | X | RT | X | RT/O | RT/TPV | RT/TPV |\n| f | X | RT | X | RT/O | RT/TPV | RT/TPV |\n| g | X | RT | X | RT/O | RT/TPV | RT/TPV |\n| h | X | RT | X | RT/O | RT/TPV | RT/TPV |\n| i | X | RT | X | RT/O | RT/TPV | RT/TPV |\n| C | a | X | O | X | O | O/TPV | O/TPV |\n| b | X | O | X | O | O/TPV | O/TPV |\n| c | X | O | X | O | O/TPV | O/TPV |\n| d | X | O | X | O | O/TPV | O/TPV |\nVysvetlivky:",
+         "items": [
+          {
+           "anchor": "priloha7-x1-i1-1",
+           "label": "1)",
+           "letter": "1",
+           "text": "Lehoty platia, ak technické podmienky výrobcu neurčujú kratšie lehoty."
+          },
+          {
+           "anchor": "priloha7-x1-i1-2",
+           "label": "2)",
+           "letter": "2",
+           "text": "Podľa § 18 ods. 1."
+          },
+          {
+           "anchor": "priloha7-x1-i1-3",
+           "label": "3)",
+           "letter": "3",
+           "text": "Pre dočasnú žeriavovú dráhu sa nevyžaduje."
+          },
+          {
+           "anchor": "priloha7-x1-i1-4",
+           "label": "4)",
+           "letter": "4",
+           "text": "Pre trvalé žeriavové dráhy, pre stavebné žeriavy, mobilné žeriavy (cestné výložníkové), lanové žeriavy, nakladacie žeriavy (hydraulické ruky), železničné žeriavy a pre žeriavy v horúcom alebo v agresívnom prostredí je lehota\n– odborných prehliadok jeden rok,\n– odborných skúšok dva roky."
+          },
+          {
+           "anchor": "priloha7-x1-i1-5",
+           "label": "5)",
+           "letter": "5",
+           "text": "Pre dočasnú žeriavovú dráhu v lehotách podľa technických podmienok výrobcu."
+          },
+          {
+           "anchor": "priloha7-x1-i1-i6",
+           "label": "",
+           "letter": "i6",
+           "text": "RT – revízny technik"
+          },
+          {
+           "anchor": "priloha7-x1-i1-i7",
+           "label": "",
+           "letter": "i7",
+           "text": "TPV – lehoty podľa technických podmienok výrobcu"
+          },
+          {
+           "anchor": "priloha7-x1-i1-i8",
+           "label": "",
+           "letter": "i8",
+           "text": "OPO – oprávnená právnická osoba"
+          },
+          {
+           "anchor": "priloha7-x1-i1-i9",
+           "label": "",
+           "letter": "i9",
+           "text": "O – prevádzkovateľom určená osoba"
+          },
+          {
+           "anchor": "priloha7-x1-i1-i10",
+           "label": "",
+           "letter": "i10",
+           "text": "X – nevyžaduje sa"
+          },
+          {
+           "anchor": "priloha7-x1-i1-i11",
+           "label": "",
+           "letter": "i11",
+           "text": "r – roky"
+          },
+          {
+           "anchor": "priloha7-x1-i1-i12",
+           "label": "",
+           "letter": "i12",
+           "text": "m – mesiace"
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "type": "provision",
+     "anchor": "priloha8",
+     "label": "Príloha č. 8 k vyhláške č. 508/2009 Z. z.",
+     "paragraphs": [
+      {
+       "anchor": "priloha8-x1",
+       "text": "",
+       "items": [
+        {
+         "anchor": "priloha8-x1-i1",
+         "label": "",
+         "letter": "i1",
+         "text": "PREHLIADKY A SKÚŠKY TECHNICKÝCH ZARIADENÍ ELEKTRICKÝCH POČAS PREVÁDZKY",
+         "items": [
+          {
+           "anchor": "priloha8-x1-i1-a",
+           "label": "A.",
+           "letter": "a",
+           "text": "Lehoty odborných prehliadok a odborných skúšok elektrickej inštalácie a zariadenia na ochranu pred účinkami statickej elektriny a atmosférickej elektriny podľa druhu objektu a zariadení\n| Druh objektu a zariadenia | Lehota (roky)⁶) |\n| a) Elektrická inštalácia\n1. murovaná obytná a kancelárska budova\n2. škola, materská škola, jasle, hotel a iné ubytovacie zariadenie, rekreačné stredisko\n3. výšková budova, ktorej výška od najvyššieho poschodia obývaného alebo inak používaného osobami po úroveň zeme je pre obytnú budovu väčšia ako 50 m a pre inú budovu väčšia ako 30 m a objekty a priestory určené na zhromažďovanie viac ako 250 osôb, napríklad kultúrne a športové zariadenie, obchodný dom, stanica hromadnej dopravy,\n4. objekt zhotovený z horľavých materiálov so stupňom horľavosti C, D, E a F¹)\n5. pojazdný a prevozný prostriedok²)\n6. dočasná elektrická inštalácia³) |\n5\n3\n2\n2\n1\n0,5 |\n| b) Zariadenie na ochranu pred účinkami statickej elektriny¹²ᵃ)\n1. objekt s priestorom s nebezpečenstvom požiaru\n2. objekt s priestorom s nebezpečenstvom výbuchu\n3. ostatný objekt |\n2\n2⁵)\n5 |\n| c) Zariadenie na ochranu pred účinkami atmosférickej elektriny¹²ᵇ)\n1. hladina ochrany I a II\n2. hladina ochrany III a IV\n3. objekt s priestorom s nebezpečenstvom výbuchu |\n2\n4\n1⁵) |\nVysvetlivky:",
+           "items": [
+            {
+             "anchor": "priloha8-x1-i1-a-1",
+             "label": "1)",
+             "letter": "1",
+             "text": "Vyhláška Ministerstva vnútra Slovenskej republiky č. 94/2004 Z. z., ktorou sa ustanovujú technické požiadavky na protipožiarnu bezpečnosť pri výstavbe a pri užívaní stavieb v znení neskorších predpisov."
+            },
+            {
+             "anchor": "priloha8-x1-i1-a-2",
+             "label": "2)",
+             "letter": "2",
+             "text": "Pojazdný a prevozný prostriedok je zariadenie s elektrickým zariadením podľa STN 33 2000-7-754: 2006 Elektrické inštalácie budov. Časť 7: Požiadavky na osobitné inštalácie alebo priestory. Oddiel 754: Elektrické inštalácie v karavanoch a v motorových karavanoch, podľa STN 34 1330: 1976 Elektrotechnické predpisy STN. Predpisy pre elektrické silnoprúdové zariadenia v pojazdných a prevozných prostriedkoch a ďalšie mobilné prostriedky, napríklad pojazdná a prevozná miešačka, pásový dopravník."
+            },
+            {
+             "anchor": "priloha8-x1-i1-a-3",
+             "label": "3)",
+             "letter": "3",
+             "text": "Napríklad STN 33 2000-7-704: 2007 Elektrické inštalácie nízkeho napätia. Časť 7-704: Požiadavky na osobitné inštalácie alebo priestory. Inštalácie na staveniskách a búraniskách; STN 33 2000-7-711: 2004 Elektrické inštalácie budov. Časť 7-711: Požiadavky na osobitné inštalácie alebo priestory. Výstavy, prehliadky a stánky."
+            },
+            {
+             "anchor": "priloha8-x1-i1-a-5",
+             "label": "5)",
+             "letter": "5",
+             "text": "Pre prepočítavač množstva plynu s vlastným zdrojom malého napätia je lehota päť rokov."
+            },
+            {
+             "anchor": "priloha8-x1-i1-a-6",
+             "label": "6)",
+             "letter": "6",
+             "text": "Pri určovaní lehoty odbornej prehliadky a odbornej skúšky určí sa kratšia lehota z príslušných lehôt uvedených v tabuľke A a v tabuľke B."
+            }
+           ]
+          },
+          {
+           "anchor": "priloha8-x1-i1-b",
+           "label": "B.",
+           "letter": "b",
+           "text": "Lehoty odborných prehliadok a odborných skúšok elektrickej inštalácie a zariadenia na ochranu pred účinkami statickej elektriny a atmosférickej elektriny podľa klasifikácie vonkajších vplyvov\n|\n|\n| Lehoty¹)odborných prehliadok a odborných skúšok podľa vonkajších vplyvov\n(v rokoch) |\n| Kategória¹³) | Vonkajšie vplyvy¹³) | Trieda¹³) |\n| | | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 |\n| A | AA Teplota okolia | 3 | 3 | 3 | 5 | 5 | 3 | 3 | 3 | |\n| | AB Teplota a vlhkosť | 3 | 3 | 3 | 5 | 5 | 3 | 3 | 3 | |\n| | AC Nadmorská výška | 5 | 3 | | | | | | | |\n| | AD Voda z iného zdroja ako z dažďa | 5 | 3 | 1 | 1 | 1 | 1 | 1 | 1 | |\n| | Dážď | 4 | </< TD> | </< TD> | </< TD> | </< TD> | </< TD> | </< TD> | </< TD> | |\n| | AE Cudzie pevné telesá | 5 | 5 | 5 | 5 | 3 | 3 | | | |\n| | AF Korózia | 5 | 4 | 3 | 1 | | | | | |\n| | AG Nárazy, otrasy | 5 | 5 | 2 | | | | | | |\n| | AH Vibrácie | 5 | 5 | 2 | | | | | | |\n| | AJ Iné mechanické namáhania | |\n| | AK Rastlinstvo alebo plesne | 5 | 3 | | | | | | | |\n| | AL Živočíchy | 5 | 3 | | | | | | | |\n| | AM Elektromagnetické, elektrostatické a ionizujúce účinky | 5 | 5 |\n| | AN Slnečné žiarenie | 5 | 5 | 4 | | | | | | |\n| | AP Seizmicita | 5 | 5 | | | | | | | |\n| | AQ Blesk | 5²) | 5²) | 5²) | | | | | | |\n| | AR Pohyb vzduchu | 5 | 5 | 5 | | | | | | |\n| | AS Vietor | 5 | 5 | 4 | | | | | | |\n| | AT Snehová pokrývka | 5 | 4 | 4 | | | | | | |\n| | AU Námraza | 5 | 4 | 4 | 4 | 4 | 4 | 4 | 4 | 4 |\n| B | BA Spôsobilosť osôb | 5 | 4 | 5 | 5 | 5 | | | | |\n| | BB Odpor tela | 5 | 5 | 3 | | | | | | |\n| | BC Dotyk so zemou | 5 | 5 | 4 | 1 | | | | | |\n| | BD Únik | 5 | 4 | 2 | 2 | | | | | |\n| | BE Spracúvané/skladované látky | 5 | 2³) | 2⁴) | 5 | | | | | |\n| C | CA Stavebné materiály | 5 | 2 | | | | | | | |\n| | CB Konštrukcia stavby | 5 | 2 | 2 | 2 | | | | |\n|\nVysvetlivky:",
+           "items": [
+            {
+             "anchor": "priloha8-x1-i1-b-1",
+             "label": "1)",
+             "letter": "1",
+             "text": "Pri určovaní lehoty odbornej prehliadky a odbornej skúšky určí sa kratšia lehota z príslušných lehôt uvedených v tabuľke A a v tabuľke B."
+            },
+            {
+             "anchor": "priloha8-x1-i1-b-2",
+             "label": "2)",
+             "letter": "2",
+             "text": "Platí pre elektrické inštalácie a zariadenia na ochranu pred účinkami statickej elektriny."
+            },
+            {
+             "anchor": "priloha8-x1-i1-b-3",
+             "label": "3)",
+             "letter": "3",
+             "text": "Platí pre triedy BE2-N1 až BE2-N3."
+            },
+            {
+             "anchor": "priloha8-x1-i1-b-4",
+             "label": "4)",
+             "letter": "4",
+             "text": "Platí pre triedy BE3-N1 až BE3-N3."
+            },
+            {
+             "anchor": "priloha8-x1-i1-b-i5",
+             "label": "",
+             "letter": "i5",
+             "text": "Triedy so zvýrazneným tmavým pozadím sa považujú za triedy normálnych vonkajších vplyvov.¹³)"
+            },
+            {
+             "anchor": "priloha8-x1-i1-b-i6",
+             "label": "",
+             "letter": "i6",
+             "text": "Lehoty odborných prehliadok a odborných skúšok existujúcich elektrických zariadení, v prípade ktorých bol protokol o určení prostredia vypracovaný do 31. januára 2009, upravuje slovenská technická norma.¹⁴)"
+            }
+           ],
+           "tail": "Poznámky:"
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "type": "provision",
+     "anchor": "priloha9",
+     "label": "Príloha č. 9 k vyhláške č. 508/2009 Z. z.",
+     "paragraphs": [
+      {
+       "anchor": "priloha9-x1",
+       "text": "",
+       "items": [
+        {
+         "anchor": "priloha9-x1-i1",
+         "label": "",
+         "letter": "i1",
+         "text": "PREHLIADKY A SKÚŠKY TECHNICKÝCH ZARIADENÍ PLYNOVÝCH PRED UVEDENÍM DO PREVÁDZKY\n| Technické zariadenie plynové | Výroba*) | Uvedenie do prevádzky |\n| Odborné stanovisko k dokumentácii | Typová výroba | Kusová výroba | Úradná skúška | Odborná prehliadka alebo odborná skúška |\n| Skupina/druh | Typová skúška | Skúška ďalších kusov | Montážna skúška |\n| A | a | OPO | OPO | OV/RT | OV/RT | OPO | X |\n| b | OPO | OPO | OV/RT | OV/RT | OPO | X |\n| c | OPO | OPO | OV/RT | OV/RT | OPO | X |\n| d | OPO | OPO | OV/RT | OV/RT | OPO | X |\n| e | OPO | OPO | OV/RT | OV/RT | OPO | X |\n| f | OPO | OPO | OV/RT | OV/RT | OPO | X |\n| g | OPO | X | X | X | OPO | X |\n| h | OPO | OPO | OV/RT | OV/RT | OPO | X |\n| i | OPO | OPO | OV/RT | OV/RT | OPO | X |\n| B | a | OPO | OPO | OV/RT | OV/RT | OPO¹) | RT²) |\n| b | OPO | OPO | OV/RT | OV/RT | OPO¹) | RT²) |\n| c | OPO | OPO | OV/RT | OV/RT | OPO¹) | RT²) |\n| d | OPO | OPO | OV/RT | OV/RT | X | RT |\n| e | OPO | OPO | OV/RT | OV/RT | X | RT |\n| f | OPO | OPO | OV/RT | OV/RT | X | RT |\n| g | OPO | X | X | X | OPO³) | RT |\n| h | OPO | OPO | OV/RT | OV/RT | X | RT |\n| i | OPO | OPO | OV/RT | OV/RT | X | RT |\n| C | a | X | X | TPV | TPV | X | O |\n| b | X | X | TPV | TPV | X | O |\nVysvetlivky:",
+         "items": [
+          {
+           "anchor": "priloha9-x1-i1-i1",
+           "label": "*)",
+           "letter": "i1",
+           "text": "Nevzťahuje sa na technické zariadenie podľa § 2 ods. 2."
+          },
+          {
+           "anchor": "priloha9-x1-i1-1",
+           "label": "1)",
+           "letter": "1",
+           "text": "Vyžaduje sa len pri acetyléne."
+          },
+          {
+           "anchor": "priloha9-x1-i1-2",
+           "label": "2)",
+           "letter": "2",
+           "text": "Nevyžaduje sa pri acetyléne."
+          },
+          {
+           "anchor": "priloha9-x1-i1-3",
+           "label": "3)",
+           "letter": "3",
+           "text": "Vyžaduje sa pre plynovody z nekovových materiálov."
+          },
+          {
+           "anchor": "priloha9-x1-i1-i5",
+           "label": "",
+           "letter": "i5",
+           "text": "TPV – podľa technických podmienok výrobcu"
+          },
+          {
+           "anchor": "priloha9-x1-i1-i6",
+           "label": "",
+           "letter": "i6",
+           "text": "OPO – oprávnená právnická osoba"
+          },
+          {
+           "anchor": "priloha9-x1-i1-i7",
+           "label": "",
+           "letter": "i7",
+           "text": "OV – výrobcom určená osoba"
+          },
+          {
+           "anchor": "priloha9-x1-i1-i8",
+           "label": "",
+           "letter": "i8",
+           "text": "RT – revízny technik"
+          },
+          {
+           "anchor": "priloha9-x1-i1-i9",
+           "label": "",
+           "letter": "i9",
+           "text": "O – prevádzkovateľom určená osoba"
+          },
+          {
+           "anchor": "priloha9-x1-i1-i10",
+           "label": "",
+           "letter": "i10",
+           "text": "X – nevyžaduje sa/nepredpokladá sa"
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "type": "provision",
+     "anchor": "priloha10",
+     "label": "Príloha č. 10 k vyhláške č. 508/2009 Z. z",
+     "paragraphs": [
+      {
+       "anchor": "priloha10-x1",
+       "text": "",
+       "items": [
+        {
+         "anchor": "priloha10-x1-i1",
+         "label": "",
+         "letter": "i1",
+         "text": "PREHLIADKY A SKÚŠKY TECHNICKÝCH ZARIADENÍ PLYNOVÝCH POČAS PREVÁDZKY\n| Technické zariadenie plynové | Prevádzka |\n| Skupina/\ndruh | Opakovaná úradná skúška | Skúška po oprave¹) | Odborná prehliadka²) | Odborná skúška²) |\n| A | a | OPO/10r | RT/OPO³) | RT/6m | RT/3r |\n| b | OPO/10r | RT/OPO³) | RT/1r | RT/5r |\n| c | OPO/10r | RT/OPO³) | RT/3m | RT/1r |\n| d | OPO/10r | RT/OPO³) | RT/1r | RT/5r |\n| e | OPO/10r | RT/OPO³) | RT/1r | RT/3r |\n| f | OPO/10r | RT/OPO³) | RT/1r | RT/2r |\n| g | OPO/10r | RT/OPO³) | RT/1r | RT/5r |\n| h | OPO/6r | RT/OPO³) | RT/6m | RT/3r⁵) |\n| i | OPO/10r | RT/OPO³) | RT/1r | RT/5r |\n| B | a | OPO/10r⁴) | RT | RT/6m | RT/3r |\n| b | OPO/10r⁴) | RT | RT/1r | RT/5r |\n| c | OPO/10r⁴) | RT | RT/3m | RT/1r |\n| d | X | RT | RT/1r | RT/5r |\n| e | X | RT | RT/1r | RT/3r |\n| f | X | RT | RT/1r | RT/3r |\n| g | X | RT | RT/3r | RT/6r |\n| h | X | RT | RT/1r | RT/3r |\n| i | X | RT | O/TPV | TPV |\n| C | a | X | TPV | O/3r | TPV |\n| b | X | TPV | O/5r | TPV |\nVysvetlivky:",
+         "items": [
+          {
+           "anchor": "priloha10-x1-i1-1",
+           "label": "1)",
+           "letter": "1",
+           "text": "Opravou je zásah do časti, ktorá je v priamom styku s plynom."
+          },
+          {
+           "anchor": "priloha10-x1-i1-2",
+           "label": "2)",
+           "letter": "2",
+           "text": "Lehoty sa počítajú do konca kalendárneho mesiaca."
+          },
+          {
+           "anchor": "priloha10-x1-i1-3",
+           "label": "3)",
+           "letter": "3",
+           "text": "Len po oprave tlakového celku zváraním."
+          },
+          {
+           "anchor": "priloha10-x1-i1-4",
+           "label": "4)",
+           "letter": "4",
+           "text": "Len pri acetyléne."
+          },
+          {
+           "anchor": "priloha10-x1-i1-5",
+           "label": "5)",
+           "letter": "5",
+           "text": "Pri nepretržitej prevádzke technologického zariadenia, ktorého súčasťou je plynové zariadenie, v lehote najbližšej plánovanej odstávky, najneskôr raz za štyri roky, ak odbornú skúšku plynového zariadenia nemožno vykonať bez prerušenia nepretržitej prevádzky tohto zariadenia, ak sa opakovaná odborná prehliadka vykonáva najmenej raz za tri mesiace a podľa posúdenia rizika je prevádzka plynového zariadenia bezpečná."
+          },
+          {
+           "anchor": "priloha10-x1-i1-i6",
+           "label": "",
+           "letter": "i6",
+           "text": "OPO – oprávnená právnická osoba"
+          },
+          {
+           "anchor": "priloha10-x1-i1-i7",
+           "label": "",
+           "letter": "i7",
+           "text": "RT – revízny technik"
+          },
+          {
+           "anchor": "priloha10-x1-i1-i8",
+           "label": "",
+           "letter": "i8",
+           "text": "O – prevádzkovateľom určená osoba"
+          },
+          {
+           "anchor": "priloha10-x1-i1-i9",
+           "label": "",
+           "letter": "i9",
+           "text": "r – roky"
+          },
+          {
+           "anchor": "priloha10-x1-i1-i10",
+           "label": "",
+           "letter": "i10",
+           "text": "m – mesiace"
+          },
+          {
+           "anchor": "priloha10-x1-i1-i11",
+           "label": "",
+           "letter": "i11",
+           "text": "TPV – podľa technických podmienok výrobcu"
+          },
+          {
+           "anchor": "priloha10-x1-i1-i12",
+           "label": "",
+           "letter": "i12",
+           "text": "X – nevyžaduje sa"
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "type": "provision",
+     "anchor": "priloha11",
+     "label": "Príloha č. 11 k vyhláške č. 508/2009 Z. z.",
+     "paragraphs": [
+      {
+       "anchor": "priloha11-x1",
+       "text": "",
+       "items": [
+        {
+         "anchor": "priloha11-x1-i1",
+         "label": "",
+         "letter": "i1",
+         "text": "ODBORNÉ VZDELANIE A ODBORNÁ PRAX PRE JEDNOTLIVÉ STUPNE ODBORNEJ SPÔSOBILOSTI NA ČINNOSŤ NA TECHNICKÝCH ZARIADENIACH\n| a) Revízny technik podľa § 16 | ÚSO | 5 rokov |\n| VŠ | 2 roky |\n| b) Samostatný elektrotechnik podľa § 22 |\n| | do 1 000 V | nad 1 000 V |\n| pri činnosti vykonanej na technickom\nzariadení elektrickom vrátane bleskozvodu | vyučený,\nÚSO, VŠ | 1 rok | 2 roky |\n| c) Elektrotechnik na riadenie činnosti alebo na riadenie prevádzky podľa § 23 |\n| | do 1 000 V | nad 1 000 V |\n| pri činnosti vykonávanej na technickom\nzariadení elektrickom vrátane bleskozvodu | vyučený | 4 roky | 5 rokov |\n| ÚSO | 3 roky | 4 roky |\n| VŠ | 2 roky | 3 roky |\n| d) Revízny technik vyhradeného technického zariadenia elektrického podľa § 24 |\n| | skupina¹) |\n| E1 | E2 | E4, E5 |\n| 1. pri činnosti vykonávanej na technickom zariadení elektrickom v objekte triedy²) A a B1 vrátane bleskozvodu | ÚSO | 6 rokov | 5 rokov | 3 roky |\n| VŠ | 4 roky | 3 roky | 1 rok |\n| | skupina¹) |\n| E1 | E2 | E4, E5 |\n| 2. pri činnosti vykonávanej na technickom zariadení elektrickom v objekte²) triedy B vrátane bleskozvodu | ÚSO | 7 rokov | 6 rokov | 5 rokov |\n| VŠ | 5 rokov | 4 roky | 3 roky |\nVysvetlivky:",
+         "items": [
+          {
+           "anchor": "priloha11-x1-i1-1",
+           "label": "1)",
+           "letter": "1",
+           "text": "Technické zariadenia elektrické z hľadiska odbornej spôsobilosti na vykonávanie odborných prehliadok a odborných skúšok sa rozdeľujú na skupiny:\nE1 – technické zariadenie bez obmedzenia napätia vrátane bleskozvodu,\nE2 – technické zariadenie s napätím do 1 000 V vrátane bleskozvodu,\nE4 – elektrický stroj, prístroj, rozvádzač,\nE5 – elektrická prípojka nn."
+          },
+          {
+           "anchor": "priloha11-x1-i1-2",
+           "label": "2)",
+           "letter": "2",
+           "text": "Objekty z hľadiska odbornej spôsobilosti na vykonávanie odborných prehliadok a odborných skúšok technických zariadení elektrických sa rozdeľujú do tried:\nA – objekt bez nebezpečenstva výbuchu,\nB – objekt s nebezpečenstvom výbuchu,\nB1 – objekt s nebezpečenstvom výbuchu len v rozsahu technického zariadenia elektrického v regulačnej stanici plynu."
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  }
+ ],
+ "footnotes": [
+  {
+   "anchor": "fn-1",
+   "label": "1)",
+   "text": "§ 9 ods. 1 a 3 zákona č. 264/1999 Z. z. o technických požiadavkách na výrobky a o posudzovaní zhody a o zmene a doplnení niektorých zákonov v znení neskorších predpisov."
+  },
+  {
+   "anchor": "fn-2",
+   "label": "2)",
+   "text": "§ 39 Zákonníka práce."
+  },
+  {
+   "anchor": "fn-3",
+   "label": "3)",
+   "text": "Nariadenie Európskeho parlamentu a Rady (ES) č. 1272/2008 zo 16. decembra 2008 o klasifikácii, označovaní a balení látok a zmesí, o zmene, doplnení a zrušení smerníc 67/548/EHS a 1999/45/ES a o zmene a doplnení nariadenia (ES) č. 1907/2006 (Ú. v. EÚ L 353, 31. 12. 2008)."
+  },
+  {
+   "anchor": "fn-4",
+   "label": "4)",
+   "text": "Napríklad STN EN ISO 15614 – 1 Stanovenie a schválenie postupov zvárania kovových materiálov. Skúška postupu zvárania. Časť 1: Oblúkové a plameňové zváranie ocelí a oblúkové zváranie niklu a niklových zliatin."
+  },
+  {
+   "anchor": "fn-5",
+   "label": "5)",
+   "text": "STN 73 2601 Zhotovovanie oceľových konštrukcií."
+  },
+  {
+   "anchor": "fn-6",
+   "label": "6)",
+   "text": "Napríklad STN EN 287-1+A2 Kvalifikačné skúšky zváračov. Tavné zváranie. Časť 1: Ocele, STN EN ISO 9606-2 Skúšky zváračov. Tavné zváranie. Časť 2: Hliník a zliatiny hliníka (ISO 9606-2:2004), STN EN 13133 Tvrdé spájkovanie. Skúška spájkovača, STN EN 13067 Personál pre zváranie plastov. Skúšky odbornej spôsobilosti zváračov. Zváranie spojov."
+  },
+  {
+   "anchor": "fn-7",
+   "label": "7)",
+   "text": "§ 5 nariadenia vlády Slovenskej republiky č. 392/2006 Z. z. o minimálnych bezpečnostných a zdravotných požiadavkách pri používaní pracovných prostriedkov."
+  },
+  {
+   "anchor": "fn-8",
+   "label": "8)",
+   "text": "Prílohy č. 6 a 10 nariadenia vlády Slovenskej republiky č. 571/2001 Z. z., ktorým sa ustanovujú podrobnosti o technických požiadavkách a postupoch posudzovania zhody na výťahy v znení neskorších predpisov.\nPríloha č. 3 bod 11 nariadenia vlády Slovenskej republiky č. 576/2002 Z. z., ktorým sa ustanovujú podrobnosti o technických požiadavkách a postupoch posudzovania zhody na tlakové zariadenie a ktorým sa mení a dopĺňa nariadenie vlády Slovenskej republiky č. 400/1999 Z. z., ktorým sa ustanovujú podrobnosti o technických požiadavkách na ostatné určené výrobky v znení neskorších predpisov."
+  },
+  {
+   "anchor": "fn-8a",
+   "label": "8a)",
+   "text": "STN 33 1600 Revízie a kontroly elektrického ručného náradia počas používania.\nSTN 33 1610 Revízie a kontroly elektrických spotrebičov počas ich používania."
+  },
+  {
+   "anchor": "fn-8b",
+   "label": "8b)",
+   "text": "§ 7 ods. 3 písm. d) prvý bod zákona č. 125/2006 Z. z. o inšpekcii práce a o zmene a doplnení zákona č. 82/2005 Z. z. o nelegálnej práci a nelegálnom zamestnávaní a o zmene a doplnení niektorých zákonov v znení zákona č. 154/2013 Z. z."
+  },
+  {
+   "anchor": "fn-9",
+   "label": "9)",
+   "text": "Zákon č. 142/2000 Z. z. o metrológii a o zmene a doplnení niektorých zákonov v znení neskorších predpisov."
+  },
+  {
+   "anchor": "fn-9a",
+   "label": "9a)",
+   "text": "§ 4 ods. 1 písm. a) zákona č. 568/2009 Z. z. o celoživotnom vzdelávaní a o zmene a doplnení niektorých zákonov."
+  },
+  {
+   "anchor": "fn-10",
+   "label": "10)",
+   "text": "Smernica Európskeho parlamentu a Rady 98/34/ES z 22. júna 1998 o postupe pri poskytovaní informácií v oblasti technických noriem a predpisov v platnom znení (Mimoriadne vydanie Ú. v. EÚ, kap. 13/zv. 20)."
+  },
+  {
+   "anchor": "fn-11",
+   "label": "11)",
+   "text": "§ 1 ods. 4 písm. g) nariadenia vlády Slovenskej republiky č. 576/2002 Z. z."
+  },
+  {
+   "anchor": "fn-12",
+   "label": "12)",
+   "text": "§ 1 ods. 4 písm. h) nariadenia vlády Slovenskej republiky č. 576/2002 Z. z. v znení nariadenia vlády Slovenskej republiky č. 329/2003 Z. z."
+  },
+  {
+   "anchor": "fn-12a",
+   "label": "12a)",
+   "text": "STN 33 2030 Elektrotechnické predpisy. Ochrana pred nebezpečnými účinkami statickej elektriny (33 2030)."
+  },
+  {
+   "anchor": "fn-12b",
+   "label": "12b)",
+   "text": "Súbor STN EN 62305 Ochrana pred bleskom (34 1390)."
+  },
+  {
+   "anchor": "fn-13",
+   "label": "13)",
+   "text": "STN 33 2000-5-51 Elektrické inštalácie budov. Časť 5-51: Výber a stavba elektrických zariadení. Spoločné pravidlá."
+  },
+  {
+   "anchor": "fn-14",
+   "label": "14)",
+   "text": "STN 33 1500 Elektrotechnické predpisy. Revízie elektrických zariadení."
+  },
+  {
+   "anchor": "fn-20",
+   "label": "*)",
+   "text": "Nevzťahuje sa na technické zariadenie podľa § 2 ods. 2."
+  },
+  {
+   "anchor": "fn-1~2",
+   "label": "1)",
+   "text": "Na mieste budúcej prevádzky."
+  },
+  {
+   "anchor": "fn-2~2",
+   "label": "2)",
+   "text": "Vnútornú prehliadku a tlakovú skúšku možno nahradiť inými rovnocennými skúškami podľa príslušných predpisov a slovenských technických noriem."
+  },
+  {
+   "anchor": "fn-3~2",
+   "label": "3)",
+   "text": "Po každom zásahu do tlakového celku, ktorého výsledkom je nerozoberateľný spoj."
+  },
+  {
+   "anchor": "fn-4~2",
+   "label": "4)",
+   "text": "Kontrola podľa zákona č. 254/2011 Z. z. o prepravovateľných tlakových zariadeniach a o zmene a doplnení niektorých zákonov."
+  },
+  {
+   "anchor": "fn-5~2",
+   "label": "5)",
+   "text": "Pred každým naplnením nádoby."
+  },
+  {
+   "anchor": "fn-6~2",
+   "label": "6)",
+   "text": "Lehoty závisia od použitého hnacieho plynu."
+  },
+  {
+   "anchor": "fn-7~2",
+   "label": "7)",
+   "text": "Spolu s technickým zariadením tlakovým, na ktorom je namontované."
+  },
+  {
+   "anchor": "fn-8~2",
+   "label": "8)",
+   "text": "V lehote najbližšej plánovanej odstávky na výmenu paliva."
+  },
+  {
+   "anchor": "fn-9~2",
+   "label": "9)",
+   "text": "Pri nepretržitej prevádzke technologického zariadenia, ktorého súčasťou je tlakové zariadenie, v lehote najbližšej plánovanej odstávky, najneskôr raz za tri roky, ak vnútornú prehliadku tlakového zariadenia nemožno vykonať bez prerušenia nepretržitej prevádzky tohto zariadenia, ak sa opakovaná vonkajšia prehliadka vykonáva najmenej raz za tri mesiace a podľa posúdenia rizika je prevádzka tlakového zariadenia bezpečná."
+  },
+  {
+   "anchor": "fn-30",
+   "label": "*)",
+   "text": "Nevzťahuje sa na technické zariadenie podľa § 2 ods. 2."
+  },
+  {
+   "anchor": "fn-1~3",
+   "label": "1)",
+   "text": "Nevyžaduje sa pre trvalé dráhy žeriavov a dočasné dráhy žeriavov výložníkového typu."
+  },
+  {
+   "anchor": "fn-2~3",
+   "label": "2)",
+   "text": "Len ak sa technické zariadenie zmontovalo u odberateľa na mieste budúcej prevádzky."
+  },
+  {
+   "anchor": "fn-3~3",
+   "label": "3)",
+   "text": "Pre trvalú dráhu žeriavu sa vykoná ako súčasť úradnej skúšky po zmontovaní žeriavu na mieste budúcej prevádzky."
+  },
+  {
+   "anchor": "fn-4~3",
+   "label": "4)",
+   "text": "Len ak sa technické zariadenie zmontovalo u výrobcu."
+  },
+  {
+   "anchor": "fn-1~4",
+   "label": "1)",
+   "text": "Lehoty platia, ak technické podmienky výrobcu neurčujú kratšie lehoty."
+  },
+  {
+   "anchor": "fn-2~4",
+   "label": "2)",
+   "text": "Podľa § 18 ods. 1."
+  },
+  {
+   "anchor": "fn-3~4",
+   "label": "3)",
+   "text": "Pre dočasnú žeriavovú dráhu sa nevyžaduje."
+  },
+  {
+   "anchor": "fn-4~4",
+   "label": "4)",
+   "text": "Pre trvalé žeriavové dráhy, pre stavebné žeriavy, mobilné žeriavy (cestné výložníkové), lanové žeriavy, nakladacie žeriavy (hydraulické ruky), železničné žeriavy a pre žeriavy v horúcom alebo v agresívnom prostredí je lehota\n– odborných prehliadok jeden rok,\n– odborných skúšok dva roky."
+  },
+  {
+   "anchor": "fn-5~3",
+   "label": "5)",
+   "text": "Pre dočasnú žeriavovú dráhu v lehotách podľa technických podmienok výrobcu."
+  },
+  {
+   "anchor": "fn-1~5",
+   "label": "1)",
+   "text": "Vyhláška Ministerstva vnútra Slovenskej republiky č. 94/2004 Z. z., ktorou sa ustanovujú technické požiadavky na protipožiarnu bezpečnosť pri výstavbe a pri užívaní stavieb v znení neskorších predpisov."
+  },
+  {
+   "anchor": "fn-2~5",
+   "label": "2)",
+   "text": "Pojazdný a prevozný prostriedok je zariadenie s elektrickým zariadením podľa STN 33 2000-7-754: 2006 Elektrické inštalácie budov. Časť 7: Požiadavky na osobitné inštalácie alebo priestory. Oddiel 754: Elektrické inštalácie v karavanoch a v motorových karavanoch, podľa STN 34 1330: 1976 Elektrotechnické predpisy STN. Predpisy pre elektrické silnoprúdové zariadenia v pojazdných a prevozných prostriedkoch a ďalšie mobilné prostriedky, napríklad pojazdná a prevozná miešačka, pásový dopravník."
+  },
+  {
+   "anchor": "fn-3~5",
+   "label": "3)",
+   "text": "Napríklad STN 33 2000-7-704: 2007 Elektrické inštalácie nízkeho napätia. Časť 7-704: Požiadavky na osobitné inštalácie alebo priestory. Inštalácie na staveniskách a búraniskách; STN 33 2000-7-711: 2004 Elektrické inštalácie budov. Časť 7-711: Požiadavky na osobitné inštalácie alebo priestory. Výstavy, prehliadky a stánky."
+  },
+  {
+   "anchor": "fn-5~4",
+   "label": "5)",
+   "text": "Pre prepočítavač množstva plynu s vlastným zdrojom malého napätia je lehota päť rokov."
+  },
+  {
+   "anchor": "fn-6~3",
+   "label": "6)",
+   "text": "Pri určovaní lehoty odbornej prehliadky a odbornej skúšky určí sa kratšia lehota z príslušných lehôt uvedených v tabuľke A a v tabuľke B."
+  },
+  {
+   "anchor": "fn-1~6",
+   "label": "1)",
+   "text": "Pri určovaní lehoty odbornej prehliadky a odbornej skúšky určí sa kratšia lehota z príslušných lehôt uvedených v tabuľke A a v tabuľke B."
+  },
+  {
+   "anchor": "fn-2~6",
+   "label": "2)",
+   "text": "Platí pre elektrické inštalácie a zariadenia na ochranu pred účinkami statickej elektriny."
+  },
+  {
+   "anchor": "fn-3~6",
+   "label": "3)",
+   "text": "Platí pre triedy BE2-N1 až BE2-N3."
+  },
+  {
+   "anchor": "fn-4~5",
+   "label": "4)",
+   "text": "Platí pre triedy BE3-N1 až BE3-N3."
+  },
+  {
+   "anchor": "fn-49",
+   "label": "*)",
+   "text": "Nevzťahuje sa na technické zariadenie podľa § 2 ods. 2."
+  },
+  {
+   "anchor": "fn-1~7",
+   "label": "1)",
+   "text": "Vyžaduje sa len pri acetyléne."
+  },
+  {
+   "anchor": "fn-2~7",
+   "label": "2)",
+   "text": "Nevyžaduje sa pri acetyléne."
+  },
+  {
+   "anchor": "fn-3~7",
+   "label": "3)",
+   "text": "Vyžaduje sa pre plynovody z nekovových materiálov."
+  },
+  {
+   "anchor": "fn-1~8",
+   "label": "1)",
+   "text": "Opravou je zásah do časti, ktorá je v priamom styku s plynom."
+  },
+  {
+   "anchor": "fn-2~8",
+   "label": "2)",
+   "text": "Lehoty sa počítajú do konca kalendárneho mesiaca."
+  },
+  {
+   "anchor": "fn-3~8",
+   "label": "3)",
+   "text": "Len po oprave tlakového celku zváraním."
+  },
+  {
+   "anchor": "fn-4~6",
+   "label": "4)",
+   "text": "Len pri acetyléne."
+  },
+  {
+   "anchor": "fn-5~5",
+   "label": "5)",
+   "text": "Pri nepretržitej prevádzke technologického zariadenia, ktorého súčasťou je plynové zariadenie, v lehote najbližšej plánovanej odstávky, najneskôr raz za štyri roky, ak odbornú skúšku plynového zariadenia nemožno vykonať bez prerušenia nepretržitej prevádzky tohto zariadenia, ak sa opakovaná odborná prehliadka vykonáva najmenej raz za tri mesiace a podľa posúdenia rizika je prevádzka plynového zariadenia bezpečná."
+  },
+  {
+   "anchor": "fn-1~9",
+   "label": "1)",
+   "text": "Technické zariadenia elektrické z hľadiska odbornej spôsobilosti na vykonávanie odborných prehliadok a odborných skúšok sa rozdeľujú na skupiny:\nE1 – technické zariadenie bez obmedzenia napätia vrátane bleskozvodu,\nE2 – technické zariadenie s napätím do 1 000 V vrátane bleskozvodu,\nE4 – elektrický stroj, prístroj, rozvádzač,\nE5 – elektrická prípojka nn."
+  },
+  {
+   "anchor": "fn-2~9",
+   "label": "2)",
+   "text": "Objekty z hľadiska odbornej spôsobilosti na vykonávanie odborných prehliadok a odborných skúšok technických zariadení elektrických sa rozdeľujú do tried:\nA – objekt bez nebezpečenstva výbuchu,\nB – objekt s nebezpečenstvom výbuchu,\nB1 – objekt s nebezpečenstvom výbuchu len v rozsahu technického zariadenia elektrického v regulačnej stanici plynu."
+  }
+ ]
+}
