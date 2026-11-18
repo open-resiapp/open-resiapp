@@ -1,0 +1,3592 @@
+{
+ "id": "sk-150-2013",
+ "jurisdiction": "sk",
+ "number": "150/2013 Z. z.",
+ "title": "Zákon o Štátnom fonde rozvoja bývania",
+ "effectiveFrom": "2026-01-01",
+ "effectiveTo": "2026-12-31",
+ "sourceUrl": "https://www.slov-lex.sk/ezbierky/pravne-predpisy/SK/ZZ/2013/150/20260101",
+ "fetchedAt": "2026-11-18T08:20:19.790Z",
+ "contentHash": "190aa63ad40e2f463b51a7c1385c03c7537dd8d1e6f85faa93bee00365390879",
+ "provisionCount": 45,
+ "parts": [
+  {
+   "type": "text",
+   "text": "Národná rada Slovenskej republiky sa uzniesla na tomto zákone:"
+  },
+  {
+   "type": "provision",
+   "anchor": "p1",
+   "label": "§ 1",
+   "paragraphs": [
+    {
+     "anchor": "p1-1",
+     "text": "Štátny fond rozvoja bývania¹) je právnická osoba so sídlom v Bratislave (ďalej len „fond“).",
+     "n": "1"
+    },
+    {
+     "anchor": "p1-2",
+     "text": "Financovanie priorít štátnej bytovej politiky schválených vládou Slovenskej republiky (ďalej len „vláda“) pri rozširovaní a zveľaďovaní bytového fondu sa uskutočňuje prostredníctvom fondu.",
+     "n": "2"
+    },
+    {
+     "anchor": "p1-3",
+     "text": "Na účely tohto zákona je fond finančnou inštitúciou slúžiacou na implementáciu finančných nástrojov podľa osobitného predpisu.²)",
+     "n": "3"
+    }
+   ],
+   "heading": "Základné ustanovenia"
+  },
+  {
+   "type": "provision",
+   "anchor": "p2",
+   "label": "§ 2",
+   "paragraphs": [
+    {
+     "anchor": "p2-1",
+     "text": "Správcom fondu je Ministerstvo dopravy Slovenskej republiky (ďalej len „ministerstvo“).",
+     "n": "1"
+    },
+    {
+     "anchor": "p2-2",
+     "text": "Štatutárnym orgánom fondu je generálny riaditeľ, ktorého vymenúva a odvoláva minister dopravy Slovenskej republiky (ďalej len „minister“).",
+     "n": "2"
+    }
+   ],
+   "heading": "Správa fondu"
+  },
+  {
+   "type": "provision",
+   "anchor": "p3",
+   "label": "§ 3",
+   "paragraphs": [
+    {
+     "anchor": "p3-x1",
+     "text": "Príjmami fondu sú",
+     "items": [
+      {
+       "anchor": "p3-x1-a",
+       "label": "a)",
+       "letter": "a",
+       "text": "splátky istiny úverov poskytnutých z fondu,"
+      },
+      {
+       "anchor": "p3-x1-b",
+       "label": "b)",
+       "letter": "b",
+       "text": "splátky úrokov z úverov poskytnutých z fondu,"
+      },
+      {
+       "anchor": "p3-x1-c",
+       "label": "c)",
+       "letter": "c",
+       "text": "výnosy zo sankcií uložených fondom,"
+      },
+      {
+       "anchor": "p3-x1-d",
+       "label": "d)",
+       "letter": "d",
+       "text": "výnosy z prostriedkov fondu uložených v Štátnej pokladnici okrem výnosov z prostriedkov poskytnutých fondu zo štátneho rozpočtu,²ᵃ)"
+      },
+      {
+       "anchor": "p3-x1-e",
+       "label": "e)",
+       "letter": "e",
+       "text": "príjmy z výťažku pri výkone exekúcie, príjmy z výťažku pri výkone dobrovoľnej dražby,"
+      },
+      {
+       "anchor": "p3-x1-f",
+       "label": "f)",
+       "letter": "f",
+       "text": "zostatky prostriedkov fondu k 31. decembru predchádzajúceho rozpočtového roka a zostatky prostriedkov poskytnutých fondu zo štátneho rozpočtu, ak spĺňajú podmienky podľa osobitného predpisu,³)"
+      },
+      {
+       "anchor": "p3-x1-g",
+       "label": "g)",
+       "letter": "g",
+       "text": "zostatky nevyčerpanej podpory vrátenej žiadateľom o podporu (ďalej len „žiadateľ“) okrem zostatkov vrátenej nevyčerpanej podpory poskytnutej z prostriedkov štátneho rozpočtu v prechádzajúcich rokoch,"
+      },
+      {
+       "anchor": "p3-x1-h",
+       "label": "h)",
+       "letter": "h",
+       "text": "výnosy z účtov zriadených fondom pre žiadateľov v banke podľa § 5 ods. 5 na realizáciu finančných operácií okrem výnosov z prostriedkov poskytnutých fondu zo štátneho rozpočtu,²ᵃ)"
+      },
+      {
+       "anchor": "p3-x1-i",
+       "label": "i)",
+       "letter": "i",
+       "text": "dary,"
+      },
+      {
+       "anchor": "p3-x1-j",
+       "label": "j)",
+       "letter": "j",
+       "text": "dotácie zo štátneho rozpočtu,¹)"
+      },
+      {
+       "anchor": "p3-x1-k",
+       "label": "k)",
+       "letter": "k",
+       "text": "finančné prostriedky Európskej únie,"
+      },
+      {
+       "anchor": "p3-x1-l",
+       "label": "l)",
+       "letter": "l",
+       "text": "finančné prostriedky z Environmentálneho fondu,"
+      },
+      {
+       "anchor": "p3-x1-m",
+       "label": "m)",
+       "letter": "m",
+       "text": "iné príjmy, ak tak ustanovuje osobitný predpis."
+      }
+     ]
+    }
+   ],
+   "heading": "Príjmy fondu"
+  },
+  {
+   "type": "provision",
+   "anchor": "p4",
+   "label": "§ 4",
+   "paragraphs": [
+    {
+     "anchor": "p4-1",
+     "text": "Prostriedky fondu možno použiť na",
+     "n": "1",
+     "items": [
+      {
+       "anchor": "p4-1-a",
+       "label": "a)",
+       "letter": "a",
+       "text": "štátnu podporu poskytovanú na účel uskutočnenia pomoci štátu pri rozširovaní a zveľaďovaní bytového fondu (ďalej len „podpora“),"
+      },
+      {
+       "anchor": "p4-1-b",
+       "label": "b)",
+       "letter": "b",
+       "text": "výdavky súvisiace s činnosťou fondu."
+      }
+     ]
+    },
+    {
+     "anchor": "p4-2",
+     "text": "O zmenách rozpočtu fondu, ktoré majú vplyv na prebytok rozpočtu verejnej správy alebo na schodok rozpočtu verejnej správy v súlade s jednotnou metodikou platnou pre Európsku úniu, rozhoduje minister po predchádzajúcom písomnom súhlase Ministerstva financií Slovenskej republiky. O ostatných zmenách rozpočtu fondu rozhoduje minister.",
+     "n": "2"
+    },
+    {
+     "anchor": "p4-3",
+     "text": "Výdavky súvisiace s činnosťou fondu, okrem výdavkov za bankové služby³ᵃ) a výdavkov za vykonanie finančných operácií podľa § 5 ods. 5, nesmú ročne presiahnuť 7 % z ročných príjmov fondu podľa § 3 písm. a) až e) a h). Na odmeňovanie zamestnancov fondu sa vzťahuje osobitný predpis.⁴)",
+     "n": "3"
+    },
+    {
+     "anchor": "p4-4",
+     "text": "Výdavky súvisiace s činnosťou fondu možno zvýšiť o odplatu za vykonávanie finančného nástroja podľa osobitného predpisu.²)",
+     "n": "4"
+    },
+    {
+     "anchor": "p4-5",
+     "text": "Na poskytnutie podpory nie je právny nárok.",
+     "n": "5"
+    }
+   ],
+   "heading": "Použitie prostriedkov fondu"
+  },
+  {
+   "type": "provision",
+   "anchor": "p5",
+   "label": "§ 5",
+   "paragraphs": [
+    {
+     "anchor": "p5-1",
+     "text": "Fond hospodári podľa schváleného rozpočtu.",
+     "n": "1"
+    },
+    {
+     "anchor": "p5-2",
+     "text": "Rozpočet fondu je zapojený finančnými vzťahmi na rozpočet ministerstva.",
+     "n": "2"
+    },
+    {
+     "anchor": "p5-3",
+     "text": "Po zúčtovaní finančných vzťahov so štátnym rozpočtom sa zostatok prostriedkov fondu k 31. decembru príslušného kalendárneho roku prevádza do nasledujúceho rozpočtového roka.",
+     "n": "3"
+    },
+    {
+     "anchor": "p5-4",
+     "text": "Prostriedky fondu sú vedené na osobitných účtoch v Štátnej pokladnici v štruktúre podľa ich zdrojov.",
+     "n": "4"
+    },
+    {
+     "anchor": "p5-5",
+     "text": "Fond môže poveriť vykonávaním finančných operácií súvisiacich s používaním prostriedkov fondu podľa § 4 ods. 1 písm. a) len banku so 100 % majetkovou účasťou štátu určenú ministerstvom po dohode s Ministerstvom financií Slovenskej republiky.",
+     "n": "5"
+    },
+    {
+     "anchor": "p5-6",
+     "text": "Štátna pokladnica na základe príkazu fondu uskutočňuje prevody prostriedkov fondu do banky podľa odseku 5.",
+     "n": "6"
+    },
+    {
+     "anchor": "p5-7",
+     "text": "V rozpočte fondu sa osobitne rozpočtujú finančné prostriedky na",
+     "n": "7",
+     "items": [
+      {
+       "anchor": "p5-7-a",
+       "label": "a)",
+       "letter": "a",
+       "text": "obstaranie nájomného bytu podľa § 6 ods. 1 písm. b), na ktoré sa poskytuje podpora podľa osobitného predpisu,⁵)"
+      },
+      {
+       "anchor": "p5-7-b",
+       "label": "b)",
+       "letter": "b",
+       "text": "obstaranie nájomného bytu podľa § 6 ods. 1 písm. b) prvého bodu a druhého bodu financované z príjmov podľa § 3 písm. k),"
+      },
+      {
+       "anchor": "p5-7-c",
+       "label": "c)",
+       "letter": "c",
+       "text": "obnovu bytovej budovy podľa § 6 ods. 1 písm. c), ktorou sa dosiahne zlepšenie jej energetickej hospodárnosti, financovanú z príjmov podľa § 3 písm. k),"
+      },
+      {
+       "anchor": "p5-7-d",
+       "label": "d)",
+       "letter": "d",
+       "text": "obstaranie technickej vybavenosti podľa § 6 ods. 1 písm. f), na ktoré sa poskytuje podpora podľa osobitného predpisu,⁵)"
+      },
+      {
+       "anchor": "p5-7-e",
+       "label": "e)",
+       "letter": "e",
+       "text": "účely financované z príjmov podľa § 3 písm. l)."
+      }
+     ]
+    }
+   ],
+   "heading": "Hospodárenie s prostriedkami fondu"
+  },
+  {
+   "type": "provision",
+   "anchor": "p6",
+   "label": "§ 6",
+   "paragraphs": [
+    {
+     "anchor": "p6-1",
+     "text": "Podporu možno poskytnúť na tieto účely:",
+     "n": "1",
+     "items": [
+      {
+       "anchor": "p6-1-a",
+       "label": "a)",
+       "letter": "a",
+       "text": "obstaranie bytu",
+       "items": [
+        {
+         "anchor": "p6-1-a-1",
+         "label": "1.",
+         "letter": "1",
+         "text": "výstavbou bytu vrátane bytu získaného nadstavbou, prístavbou alebo stavebnou úpravou budovy, ak vznikne byt v bytovom dome,⁵ᵃ) v rodinnom dome⁵ᵇ) alebo v polyfunkčnom dome,"
+        },
+        {
+         "anchor": "p6-1-a-2",
+         "label": "2.",
+         "letter": "2",
+         "text": "kúpou bytu v bytovom dome,⁵ᵃ) rodinnom dome⁵ᵇ) alebo v polyfunkčnom dome,"
+        }
+       ]
+      },
+      {
+       "anchor": "p6-1-b",
+       "label": "b)",
+       "letter": "b",
+       "text": "obstaranie nájomného bytu",
+       "items": [
+        {
+         "anchor": "p6-1-b-1",
+         "label": "1.",
+         "letter": "1",
+         "text": "výstavbou nájomného bytu vrátane nájomného bytu získaného nadstavbou alebo prístavbou bytovej budovy alebo nadstavbou alebo prístavbou nebytovej budovy,⁶) ak vznikne bytový dom, rodinný dom alebo polyfunkčný dom,"
+        },
+        {
+         "anchor": "p6-1-b-2",
+         "label": "2.",
+         "letter": "2",
+         "text": "kúpou nájomného bytu v bytovom dome, v rodinnom dome alebo v polyfunkčnom dome,"
+        },
+        {
+         "anchor": "p6-1-b-3",
+         "label": "3.",
+         "letter": "3",
+         "text": "stavebnou úpravou nájomného bytu, ktorý žiadateľ podľa § 7 ods. 1 písm. b) a c)",
+         "items": [
+          {
+           "anchor": "p6-1-b-3-3a",
+           "label": "3a.",
+           "letter": "3a",
+           "text": "nadobudol prevodom vlastníctva nehnuteľného majetku štátu v správe Ministerstva obrany Slovenskej republiky na základe darovacej zmluvy a byt sa nachádza v bytovom dome,"
+          },
+          {
+           "anchor": "p6-1-b-3-3b",
+           "label": "3b.",
+           "letter": "3b",
+           "text": "má vo svojom výlučnom vlastníctve a byt sa nachádza v bytovom dome, ktorý nezodpovedá základným požiadavkám na stavby⁶ᵃ) a na ktorý bolo vydané rozhodnutie podľa osobitného predpisu,⁶ᵇ) alebo"
+          },
+          {
+           "anchor": "p6-1-b-3-3c",
+           "label": "3c.",
+           "letter": "3c",
+           "text": "má vo svojom výlučnom vlastníctve a byt sa nachádza v budove, ktorá je národnou kultúrnou pamiatkou⁶ᶜ) alebo sa nachádza v lokalitách zapísaných v Zozname svetového dedičstva,⁶ᵈ)"
+          }
+         ]
+        },
+        {
+         "anchor": "p6-1-b-4",
+         "label": "4.",
+         "letter": "4",
+         "text": "stavebnou úpravou bytovej budovy alebo nebytovej budovy, ak po vykonaní stavebnej úpravy vznikne byt v bytovom dome, rodinnom dome alebo polyfunkčnom dome,"
+        }
+       ]
+      },
+      {
+       "anchor": "p6-1-c",
+       "label": "c)",
+       "letter": "c",
+       "text": "obnova bytovej budovy",
+       "items": [
+        {
+         "anchor": "p6-1-c-1",
+         "label": "1.",
+         "letter": "1",
+         "text": "modernizáciou alebo rekonštrukciou spoločných častí bytového domu a spoločných zariadení bytového domu⁷) (ďalej len „modernizácia bytového domu“),"
+        },
+        {
+         "anchor": "p6-1-c-2",
+         "label": "2.",
+         "letter": "2",
+         "text": "odstránením systémovej poruchy bytového domu, ktorú nezavinili užívatelia bytov, ale má pôvod v nesprávne navrhnutých materiáloch a detailoch, nesprávne použitej technológii výstavby alebo v nedodržaní navrhnutého postupu realizácie stavby (ďalej len „odstránenie systémovej poruchy“),"
+        },
+        {
+         "anchor": "p6-1-c-3",
+         "label": "3.",
+         "letter": "3",
+         "text": "stavebnými úpravami existujúceho bytového domu alebo jeho samostatne užívanej časti alebo rodinného domu, ktorými sa vykonáva zásah do tepelnej ochrany zateplením⁸ᵃᵃ) obvodového plášťa, strešného plášťa a výmenou pôvodných otvorových výplní bytového domu alebo rodinného domu (ďalej len „zateplenie bytovej budovy“),"
+        }
+       ]
+      },
+      {
+       "anchor": "p6-1-d",
+       "label": "d)",
+       "letter": "d",
+       "text": "obstaranie zariadenia sociálnych služieb",
+       "items": [
+        {
+         "anchor": "p6-1-d-1",
+         "label": "1.",
+         "letter": "1",
+         "text": "výstavbou zariadenia sociálnych služieb, prístavbou alebo nadstavbou zariadenia sociálnych služieb alebo stavebnou úpravou bytovej budovy alebo nebytovej budovy, ktorou vznikne zariadenie sociálnych služieb (ďalej len „výstavba zariadenia sociálnych služieb“),"
+        },
+        {
+         "anchor": "p6-1-d-2",
+         "label": "2.",
+         "letter": "2",
+         "text": "kúpou zariadenia sociálnych služieb,"
+        }
+       ]
+      },
+      {
+       "anchor": "p6-1-e",
+       "label": "e)",
+       "letter": "e",
+       "text": "obnova zariadenia sociálnych služieb",
+       "items": [
+        {
+         "anchor": "p6-1-e-1",
+         "label": "1.",
+         "letter": "1",
+         "text": "stavebnými úpravami existujúceho zariadenia sociálnych služieb, ktorými sa vykonáva zásah do tepelnej ochrany zateplením obvodového plášťa, strešného plášťa a výmenou pôvodných otvorových výplní (ďalej len „zateplenie zariadenia sociálnych služieb“),"
+        },
+        {
+         "anchor": "p6-1-e-2",
+         "label": "2.",
+         "letter": "2",
+         "text": "modernizáciou alebo rekonštrukciou obytných miestností, príslušenstva obytných miestností a spoločných priestorov zariadenia sociálnych služieb (ďalej len „modernizácia zariadenia sociálnych služieb“),"
+        }
+       ]
+      },
+      {
+       "anchor": "p6-1-f",
+       "label": "f)",
+       "letter": "f",
+       "text": "obstaranie technickej vybavenosti⁸ᵃ) podmieňujúcej výstavbu a užívanie nájomných bytov, na ktorých obstaranie bola poskytnutá podpora podľa písmena b) alebo dotácia na rozvoj bývania podľa osobitného predpisu,⁵) obstaranie technickej vybavenosti podmieňujúcej výstavbu alebo užívanie zariadenia sociálnych služieb, na obstaranie ktorého bola poskytnutá podpora podľa písmena d), alebo obstaranie technickej vybavenosti podmieňujúcej výstavbu a užívanie ubytovacieho domu, na obstaranie ktorého bola poskytnutá podpora podľa písmena h) alebo obstaranie technickej vybavenosti podmieňujúcej výstavbu a užívanie internátu, na ktorého obstaranie bola poskytnutá podpora podľa písmena i)",
+       "items": [
+        {
+         "anchor": "p6-1-f-1",
+         "label": "1.",
+         "letter": "1",
+         "text": "výstavbou technickej vybavenosti,"
+        },
+        {
+         "anchor": "p6-1-f-2",
+         "label": "2.",
+         "letter": "2",
+         "text": "kúpou technickej vybavenosti,"
+        }
+       ]
+      },
+      {
+       "anchor": "p6-1-g",
+       "label": "g)",
+       "letter": "g",
+       "text": "kúpa pozemku podmieňujúceho výstavbu a užívanie",
+       "items": [
+        {
+         "anchor": "p6-1-g-1",
+         "label": "1.",
+         "letter": "1",
+         "text": "nájomných bytov, na ktorých obstaranie bola poskytnutá podpora podľa písmena b),"
+        },
+        {
+         "anchor": "p6-1-g-2",
+         "label": "2.",
+         "letter": "2",
+         "text": "zariadenia sociálnych služieb, na ktorého obstaranie bola poskytnutá podpora podľa písmena d),"
+        },
+        {
+         "anchor": "p6-1-g-3",
+         "label": "3.",
+         "letter": "3",
+         "text": "ubytovacieho domu, na ktorého obstaranie bola poskytnutá podpora podľa písmena h), alebo"
+        },
+        {
+         "anchor": "p6-1-g-4",
+         "label": "4.",
+         "letter": "4",
+         "text": "internátu, na ktorého obstaranie bola poskytnutá podpora podľa písmena i),"
+        }
+       ]
+      },
+      {
+       "anchor": "p6-1-h",
+       "label": "h)",
+       "letter": "h",
+       "text": "obstaranie ubytovacieho domu",
+       "items": [
+        {
+         "anchor": "p6-1-h-1",
+         "label": "1.",
+         "letter": "1",
+         "text": "výstavbou ubytovacieho domu vrátane ubytovacieho domu získaného nadstavbou, prístavbou alebo stavebnou úpravou bytovej budovy a nebytovej budovy, ak vznikne ubytovací dom,"
+        },
+        {
+         "anchor": "p6-1-h-2",
+         "label": "2.",
+         "letter": "2",
+         "text": "kúpou ubytovacieho domu,"
+        }
+       ]
+      },
+      {
+       "anchor": "p6-1-i",
+       "label": "i)",
+       "letter": "i",
+       "text": "obstaranie internátu",
+       "items": [
+        {
+         "anchor": "p6-1-i-1",
+         "label": "1.",
+         "letter": "1",
+         "text": "výstavbou internátu vrátane internátu získaného nadstavbou, prístavbou alebo stavebnou úpravou bytového domu alebo nebytovej budovy, ak vznikne internát,"
+        },
+        {
+         "anchor": "p6-1-i-2",
+         "label": "2.",
+         "letter": "2",
+         "text": "kúpou internátu,"
+        }
+       ]
+      },
+      {
+       "anchor": "p6-1-j",
+       "label": "j)",
+       "letter": "j",
+       "text": "obnova internátu",
+       "items": [
+        {
+         "anchor": "p6-1-j-1",
+         "label": "1.",
+         "letter": "1",
+         "text": "stavebnými úpravami existujúceho internátu, ktorými sa vykonáva zásah do tepelnej ochrany zateplením obvodového plášťa, strešného plášťa a výmenou pôvodných otvorových výplní (ďalej len „zateplenie internátu“),"
+        },
+        {
+         "anchor": "p6-1-j-2",
+         "label": "2.",
+         "letter": "2",
+         "text": "modernizáciou alebo rekonštrukciou izieb, príslušenstva izieb a spoločných priestorov internátu (ďalej len „modernizácia internátu“)."
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "anchor": "p6-2",
+     "text": "Na účely tohto zákona sa polyfunkčným domom rozumie budova so zmiešaným účelom užívania, v ktorej najmenej jedna tretina podlahovej plochy je určená na bývanie.",
+     "n": "2"
+    },
+    {
+     "anchor": "p6-3",
+     "text": "Podporu na kúpu nájomného bytu podľa odseku 1 písm. b) druhého bodu, kúpu zariadenia sociálnych služieb podľa odseku 1 písm. d) druhého bodu, kúpu ubytovacieho domu podľa odseku 1 písm. h) druhého bodu a kúpu internátu podľa odseku 1 písm. i) druhého bodu možno poskytnúť, ak ku dňu podania žiadosti od nadobudnutia právoplatnosti kolaudačného rozhodnutia alebo kolaudačného osvedčenia⁸ᵇ) nájomného bytu, zariadenia sociálnych služieb, ubytovacieho domu alebo internátu neuplynuli viac ako tri roky.",
+     "n": "3"
+    },
+    {
+     "anchor": "p6-4",
+     "text": "Na účely tohto zákona modernizáciou bytového domu podľa odseku 1 písm. c) prvého bodu sa rozumie",
+     "n": "4",
+     "items": [
+      {
+       "anchor": "p6-4-a",
+       "label": "a)",
+       "letter": "a",
+       "text": "výmena alebo modernizácia výťahu v bytovom dome,"
+      },
+      {
+       "anchor": "p6-4-b",
+       "label": "b)",
+       "letter": "b",
+       "text": "výmena spoločných rozvodov plynu, elektriny, kanalizácie, vody, vzduchotechniky a tepla v bytovom dome,"
+      },
+      {
+       "anchor": "p6-4-c",
+       "label": "c)",
+       "letter": "c",
+       "text": "stavebná úprava spoločných častí bytového domu a spoločných zariadení bytového domu, ktorou sa umožní prístup do bytov v bytovom dome pre osoby s obmedzenou schopnosťou pohybu,"
+      },
+      {
+       "anchor": "p6-4-d",
+       "label": "d)",
+       "letter": "d",
+       "text": "vybudovanie technického zariadenia na využívanie obnoviteľných zdrojov energie (ďalej len „realizácia obnoviteľného zdroja energie“) a vybudovanie zariadenia na mechanické vetranie so systémom rekuperácie tepla pre vlastnú spotrebu bytovej budovy,"
+      },
+      {
+       "anchor": "p6-4-e",
+       "label": "e)",
+       "letter": "e",
+       "text": "iná modernizácia bytového domu neuvedená v písmenách a) až d) a v odseku 1 písm. c) druhom bode."
+      }
+     ]
+    },
+    {
+     "anchor": "p6-5",
+     "text": "Na účely tohto zákona zariadením sociálnych služieb sa rozumie zariadenie podporovaného bývania, zariadenie pre seniorov, zariadenie opatrovateľskej služby, domov sociálnych služieb a špecializované zariadenie podľa osobitného predpisu.⁹)",
+     "n": "5"
+    },
+    {
+     "anchor": "p6-6",
+     "text": "Na účely tohto zákona príslušenstvom obytnej miestnosti zariadenia sociálnych služieb sa rozumie predsieň, kuchyňa alebo kuchynský kút, komora, WC, kúpeľňa, kúpeľňový kút alebo sprchovací kút, ak sú jej súčasťou alebo ak sú k nej priamo priľahlé, balkón alebo lodžia. Na účely tohto zákona spoločnými priestormi zariadenia sociálnych služieb sa rozumie najmä spoločenská miestnosť, jedáleň, miestnosť na poskytovanie zdravotnej starostlivosti, miestnosť na poskytovanie fyziatricko-rehabilitačnej starostlivosti, miestnosť pre zamestnancov zariadenia sociálnych služieb, chodba, schodisko, pivnica, kuchyňa, WC a kúpeľňa, ak nie sú súčasťou obytnej miestnosti zariadenia sociálnych služieb a ak nie sú k nej priamo priľahlé, balkón alebo lodžia. Spoločným zariadením zariadenia sociálnych služieb sa rozumejú zariadenia, ktoré slúžia výlučne tomuto zariadeniu sociálnych služieb, a to aj v prípade, ak sú umiestnené mimo zariadenia sociálnych služieb. Na účely tohto zákona spoločnými zariadeniami sú najmä výťahy, práčovne, kotolne vrátane technologického zariadenia, sušiarne, bleskozvody, komíny, vodovodné, teplonosné, kanalizačné, elektrické, telefónne a plynové prípojky.",
+     "n": "6"
+    },
+    {
+     "anchor": "p6-7",
+     "text": "Na účely tohto zákona sa ubytovacím domom rozumie najmä ostatná budova na bývanie, ktorá je určená na celoročné ubytovanie súvisiace najmä s výkonom práce a pozostáva z ubytovacích buniek. Ubytovacou bunkou je súbor najviac dvoch obytných miestností a príslušenstva. Na účely tohto zákona sa príslušenstvom ubytovacej bunky rozumie najmä zádverie a priestor vybavený zariadením na osobnú hygienu, balkón alebo lodžia. Ubytovaciu bunku je možné vybaviť aj kuchynským kútom. Ak súčasťou ubytovacej bunky pozostávajúcej z dvoch obytných miestností je kuchynský kút a priestor vybavený zariadením na osobnú hygienu, musia byť umiestnené tak, aby boli prístupné obom obytným miestnostiam a neboli umiestnené priamo v obytnej miestnosti.",
+     "n": "7"
+    },
+    {
+     "anchor": "p6-8",
+     "text": "Súčasťou ubytovacieho domu môže byť aj spoločný priestor, ktorým sa rozumie najmä spoločenská miestnosť, kuchyňa alebo kuchynský kút, ak nie je súčasťou ubytovacej bunky, balkón alebo lodžia, a miestnosť pre zamestnancov ubytovacieho domu.",
+     "n": "8"
+    },
+    {
+     "anchor": "p6-9",
+     "text": "Podporu na účel podľa odseku 1 písm. b) tretieho bodu možno poskytnúť aj vtedy, ak sa stavebnými úpravami nájomného bytu zmení počet nájomných bytov v bytovom dome.",
+     "n": "9"
+    },
+    {
+     "anchor": "p6-10",
+     "text": "Na účely tohto zákona technickými zariadeniami na využívanie obnoviteľných zdrojov energie sa rozumejú slnečné tepelné kolektory, fotovoltické panely a tepelné čerpadlá.",
+     "n": "10"
+    },
+    {
+     "anchor": "p6-11",
+     "text": "Na účely tohto zákona internátom sa rozumie ostatná bytová budova určená na ubytovanie žiakov stredných škôl alebo študentov vysokých škôl.",
+     "n": "11"
+    },
+    {
+     "anchor": "p6-12",
+     "text": "Na účely tohto zákona",
+     "n": "12",
+     "items": [
+      {
+       "anchor": "p6-12-a",
+       "label": "a)",
+       "letter": "a",
+       "text": "príslušenstvom izby v internáte sa rozumie najmä zádverie, priestor vybavený zariadením na osobnú hygienu, balkón alebo lodžia,"
+      },
+      {
+       "anchor": "p6-12-b",
+       "label": "b)",
+       "letter": "b",
+       "text": "spoločným priestorom internátu sa rozumie najmä spoločenská miestnosť, kuchyňa alebo kuchynský kút, študovňa, knižnica, sklad, priestor vybavený zariadením na osobnú hygienu, telocvičňa, miestnosť pre zamestnancov internátu, chodba a schodisko,"
+      },
+      {
+       "anchor": "p6-12-c",
+       "label": "c)",
+       "letter": "c",
+       "text": "spoločným zariadením internátu sa rozumejú najmä výťahy, práčovne, kotolne vrátane technologického zariadenia, sušiarne, bleskozvody, komíny, vodovodné, teplonosné, kanalizačné, elektrické, telekomunikačné a plynové prípojky."
+      }
+     ]
+    }
+   ],
+   "heading": "Účel podpory"
+  },
+  {
+   "type": "provision",
+   "anchor": "p7",
+   "label": "§ 7",
+   "paragraphs": [
+    {
+     "anchor": "p7-1",
+     "text": "Žiadateľom môže byť",
+     "n": "1",
+     "items": [
+      {
+       "anchor": "p7-1-a",
+       "label": "a)",
+       "letter": "a",
+       "text": "fyzická osoba, ktorá je občanom členského štátu Európskej únie, štátu, ktorý je zmluvnou stranou Dohody o Európskom hospodárskom priestore alebo Švajčiarskej konfederácie, ktorá má na území Slovenskej republiky trvalý pobyt, dovŕšila vek 18 rokov a má príjem z podnikania, zo závislej činnosti alebo podľa osobitného predpisu,¹⁰)"
+      },
+      {
+       "anchor": "p7-1-b",
+       "label": "b)",
+       "letter": "b",
+       "text": "obec; v hlavnom meste Slovenskej republiky Bratislave a v meste Košice aj mestská časť,"
+      },
+      {
+       "anchor": "p7-1-c",
+       "label": "c)",
+       "letter": "c",
+       "text": "samosprávny kraj,"
+      },
+      {
+       "anchor": "p7-1-d",
+       "label": "d)",
+       "letter": "d",
+       "text": "vlastníci bytov a nebytových priestorov v bytovom dome zastúpení spoločenstvom vlastníkov bytov a nebytových priestorov v bytovom dome,¹¹)"
+      },
+      {
+       "anchor": "p7-1-e",
+       "label": "e)",
+       "letter": "e",
+       "text": "vlastníci bytov a nebytových priestorov v bytovom dome zastúpení správcom,¹²) ktorý vykonáva správu bytového domu na základe zmluvy o výkone správy uzatvorenej podľa osobitného predpisu¹³) a je zapísaný v zozname správcov podľa osobitného predpisu,¹³ᵃᵃ)"
+      },
+      {
+       "anchor": "p7-1-f",
+       "label": "f)",
+       "letter": "f",
+       "text": "nezisková organizácia poskytujúca všeobecne prospešné služby na zabezpečovanie bývania, správy, údržby a obnovy bytového fondu podľa osobitného predpisu,¹³ᵃ)"
+      },
+      {
+       "anchor": "p7-1-g",
+       "label": "g)",
+       "letter": "g",
+       "text": "iná právnická osoba so sídlom na území Slovenskej republiky."
+      }
+     ]
+    },
+    {
+     "anchor": "p7-2",
+     "text": "Podporu na obstaranie bytu podľa § 6 ods. 1 písm. a) možno poskytnúť žiadateľovi podľa odseku 1 písm. a).",
+     "n": "2"
+    },
+    {
+     "anchor": "p7-3",
+     "text": "Podporu na obstaranie bytu podľa § 6 ods. 1 písm. a) možno poskytnúť aj rodinnému príslušníkovi¹⁴) žiadateľa podľa odseku 1 písm. a), ktorý nie je občanom členského štátu Európskej únie, štátu, ktorý je zmluvnou stranou Dohody o Európskom hospodárskom priestore alebo Švajčiarskej konfederácie, ktorý má trvalý pobyt na území Slovenskej republiky a spĺňa podmienky ustanovené týmto zákonom.",
+     "n": "3"
+    },
+    {
+     "anchor": "p7-4",
+     "text": "Podporu na obstaranie nájomného bytu podľa § 6 ods. 1 písm. b) možno poskytnúť žiadateľovi podľa odseku 1 písm. b), c) a f) a podporu na obstaranie nájomného bytu podľa § 6 ods. 1 písm. b) prvého bodu, druhého bodu a štvrtého bodu možno poskytnúť žiadateľovi podľa odseku 1 písm. g).",
+     "n": "4"
+    },
+    {
+     "anchor": "p7-5",
+     "text": "Podporu na modernizáciu bytového domu podľa § 6 ods. 1 písm. c) prvého bodu alebo zateplenie bytovej budovy podľa § 6 ods. 1 písm. c) tretieho bodu možno poskytnúť žiadateľovi podľa odseku 1.",
+     "n": "5"
+    },
+    {
+     "anchor": "p7-6",
+     "text": "Podporu na odstránenie systémovej poruchy bytového domu podľa § 6 ods. 1 písm. c) druhého bodu možno poskytnúť žiadateľovi podľa odseku 1 písm. b) až g).",
+     "n": "6"
+    },
+    {
+     "anchor": "p7-7",
+     "text": "Podporu na obstaranie zariadenia sociálnych služieb podľa § 6 ods. 1 písm. d) a obnovu zariadenia sociálnych služieb podľa § 6 ods. 1 písm. e) možno poskytnúť žiadateľovi podľa odseku 1 písm. b), c), f) a g).",
+     "n": "7"
+    },
+    {
+     "anchor": "p7-8",
+     "text": "Podporu na obstaranie technickej vybavenosti podľa § 6 ods. 1 písm. f) možno poskytnúť žiadateľovi podľa odseku 1 písm. b), c), f) a g).",
+     "n": "8"
+    },
+    {
+     "anchor": "p7-9",
+     "text": "Podporu na kúpu pozemku podľa § 6 ods. 1 písm. g) možno poskytnúť žiadateľovi podľa odseku 1 písm. b), c), f) a g).",
+     "n": "9"
+    },
+    {
+     "anchor": "p7-10",
+     "text": "Podporu na obstaranie ubytovacieho domu podľa § 6 ods. 1 písm. h) možno poskytnúť žiadateľovi podľa odseku 1 písm. b), c), f) a g).",
+     "n": "10"
+    },
+    {
+     "anchor": "p7-11",
+     "text": "Podporu na obstaranie internátu podľa § 6 ods. 1 písm. i) alebo obnovu internátu podľa § 6 ods. 1 písm. j) možno poskytnúť žiadateľovi podľa odseku 1 písm. c) a g).",
+     "n": "11"
+    }
+   ],
+   "heading": "Žiadateľ"
+  },
+  {
+   "type": "provision",
+   "anchor": "p8",
+   "label": "§ 8",
+   "paragraphs": [
+    {
+     "anchor": "p8-1",
+     "text": "Podpora sa poskytuje vo forme úveru s lehotou splatnosti najviac 40 rokov a v rozsahu najviac 100 % obstarávacích nákladov, a to najviac",
+     "n": "1",
+     "items": [
+      {
+       "anchor": "p8-1-a",
+       "label": "a)",
+       "letter": "a",
+       "text": "200 000 eur na byt, ak ide o obstaranie bytu podľa § 6 ods. 1 písm. a),"
+      },
+      {
+       "anchor": "p8-1-b",
+       "label": "b)",
+       "letter": "b",
+       "text": "3 000 eur na 1 m²podlahovej plochy bytu, ak ide o obstaranie nájomného bytu podľa § 6 ods. 1 písm. b),"
+      },
+      {
+       "anchor": "p8-1-c",
+       "label": "c)",
+       "letter": "c",
+       "text": "2 000 eur na 1 m²podlahovej plochy bytu,¹⁵) ak ide o modernizáciu bytového domu podľa § 6 ods. 1 písm. c) prvého bodu alebo odstránenie systémovej poruchy bytového domu podľa § 6 ods. 1 písm. c) druhého bodu,"
+      },
+      {
+       "anchor": "p8-1-d",
+       "label": "d)",
+       "letter": "d",
+       "text": "400 eur na 1 m²podlahovej plochy bytu, ak ide o zateplenie bytovej budovy podľa § 6 ods. 1 písm. c) tretieho bodu,"
+      },
+      {
+       "anchor": "p8-1-e",
+       "label": "e)",
+       "letter": "e",
+       "text": "2 500 eur na 1 m²podlahovej plochy obytnej miestnosti, príslušenstva obytných miestností, spoločných priestorov zariadenia sociálnych služieb vrátane podlahovej plochy na umiestnenie spoločného zariadenia, ak ide o obstaranie zariadenia sociálnych služieb podľa § 6 ods. 1 písm. d),"
+      },
+      {
+       "anchor": "p8-1-f",
+       "label": "f)",
+       "letter": "f",
+       "text": "400 eur na 1 m²podlahovej plochy obytnej miestnosti, príslušenstva obytných miestností, spoločných priestorov zariadenia sociálnych služieb vrátane podlahovej plochy na umiestnenie spoločného zariadenia, ak ide o zateplenie zariadenia sociálnych služieb podľa § 6 ods. 1 písm. e) prvého bodu,"
+      },
+      {
+       "anchor": "p8-1-g",
+       "label": "g)",
+       "letter": "g",
+       "text": "1 600 eur na 1 m²podlahovej plochy obytnej miestnosti, príslušenstva obytných miestností, spoločných priestorov zariadenia sociálnych služieb vrátane podlahovej plochy na umiestnenie spoločného zariadenia, ak ide o modernizáciu zariadenia sociálnych služieb podľa § 6 ods. 1 písm. e) druhého bodu,"
+      },
+      {
+       "anchor": "p8-1-h",
+       "label": "h)",
+       "letter": "h",
+       "text": "12 000 eur na jeden obstarávaný nájomný byt, jednu obytnú miestnosť, jednu obstarávanú ubytovaciu bunku alebo na jednu obstarávanú izbu, ak ide o obstaranie technickej vybavenosti podľa § 6 ods. 1 písm. f),"
+      },
+      {
+       "anchor": "p8-1-i",
+       "label": "i)",
+       "letter": "i",
+       "text": "17 000 eur na jeden obstarávaný nájomný byt, jednu obytnú miestnosť, jednu obstarávanú ubytovaciu bunku alebo na jednu obstarávanú izbu, ak ide o kúpu pozemku podľa § 6 ods. 1 písm. g),"
+      },
+      {
+       "anchor": "p8-1-j",
+       "label": "j)",
+       "letter": "j",
+       "text": "2 500 eur na 1 m²podlahovej plochy ubytovacej bunky, ak ide o obstaranie ubytovacieho domu podľa § 6 ods. 1 písm. h),"
+      },
+      {
+       "anchor": "p8-1-k",
+       "label": "k)",
+       "letter": "k",
+       "text": "2 500 eur na 1 m²podlahovej plochy izby, príslušenstva izby, spoločných priestorov internátu vrátane podlahovej plochy na umiestnenie spoločného zariadenia, ak ide o obstaranie internátu podľa § 6 ods. 1 písm. i),"
+      },
+      {
+       "anchor": "p8-1-l",
+       "label": "l)",
+       "letter": "l",
+       "text": "400 eur na 1 m²podlahovej plochy izby, príslušenstva izby, spoločných priestorov internátu vrátane podlahovej plochy na umiestnenie spoločného zariadenia, ak ide o zateplenie internátu podľa § 6 ods. 1 písm. j) prvého bodu,"
+      },
+      {
+       "anchor": "p8-1-m",
+       "label": "m)",
+       "letter": "m",
+       "text": "1 600 eur na 1 m²podlahovej plochy izby, príslušenstva izby, spoločných priestorov internátu vrátane podlahovej plochy na umiestnenie spoločného zariadenia, ak ide o modernizáciu internátu podľa § 6 ods. 1 písm. j) druhého bodu."
+      }
+     ]
+    },
+    {
+     "anchor": "p8-2",
+     "text": "Suma úveru vypočítaná podľa odseku 1 sa zaokrúhli na celé desiatky eur smerom nadol.",
+     "n": "2"
+    },
+    {
+     "anchor": "p8-3",
+     "text": "Obstarávacím nákladom obstarania bytu podľa § 6 ods. 1 písm. a) prvého bodu, obstarania nájomného bytu podľa § 6 ods. 1 písm. b) prvého bodu, tretieho bodu a štvrtého bodu, obstarania zariadenia sociálnych služieb podľa § 6 ods. 1 písm. d) prvého bodu, obstarania technickej vybavenosti podľa § 6 ods. 1 písm. f) prvého bodu, obstarania ubytovacieho domu podľa § 6 ods. 1 písm. h) prvého bodu a obstarania internátu podľa § 6 ods. 1 písm. i) prvého bodu sú všetky náklady vynaložené na uskutočnenie stavby. Do obstarávacieho nákladu podľa prvej vety je možné započítať cenu projektovej dokumentácie, ak osobitný predpis neustanovuje inak.¹⁵ᵇ) Cena pozemku a nebytového priestoru s výnimkou nebytového priestoru podľa osobitného predpisu¹⁵ᵇᵃ) sa do obstarávacieho nákladu nezapočíta. Do obstarávacieho nákladu obstarania technickej vybavenosti podľa § 6 ods. 1 písm. f) prvého bodu sa nezapočítajú ani náklady na vodovodnú prípojku alebo kanalizačnú prípojku, ak sú tieto náklady zahrnuté v obstarávacom náklade obstarania nájomného bytu podľa § 6 ods. 1 písm. b), obstarania zariadenia sociálnych služieb podľa § 6 ods. 1 písm. d), obstarania ubytovacieho domu podľa § 6 ods. 1 písm. h) alebo obstarania internátu podľa § 6 ods. 1 písm. i).",
+     "n": "3"
+    },
+    {
+     "anchor": "p8-4",
+     "text": "Obstarávacím nákladom obstarania bytu podľa § 6 ods. 1 písm. a) druhého bodu, obstarania nájomného bytu podľa § 6 ods. 1 písm. b) druhého bodu, obstarania zariadenia sociálnych služieb podľa § 6 ods. 1 písm. d) druhého bodu, obstarania ubytovacieho domu podľa § 6 ods. 1 písm. h) druhého bodu a obstarania internátu podľa § 6 ods. 1 písm. i) druhého bodu je cena dohodnutá v kúpnej zmluve alebo v zmluve o budúcej kúpnej zmluve. Cena pozemku sa pri obstaraní nájomného bytu podľa § 6 ods. 1 písm. b) druhého bodu, obstaraní zariadenia sociálnych služieb podľa § 6 ods. 1 písm. d) druhého bodu, obstaraní ubytovacieho domu podľa § 6 ods. 1 písm. h) druhého bodu a obstaraní internátu podľa § 6 ods. 1 písm. i) druhého bodu do obstarávacieho nákladu nezapočíta. Cena nebytového priestoru s výnimkou nebytového priestoru podľa osobitného predpisu¹⁵ᵇᵃ) sa do obstarávacieho nákladu obstarania bytu, obstarania nájomného bytu, obstarania zariadenia sociálnych služieb, obstarania ubytovacieho domu a obstarania internátu nezapočíta.",
+     "n": "4"
+    },
+    {
+     "anchor": "p8-5",
+     "text": "Obstarávacím nákladom obnovy bytovej budovy podľa § 6 ods. 1 písm. c), obnovy zariadenia sociálnych služieb podľa § 6 ods. 1 písm. e) a obnovy internátu podľa § 6 ods. 1 písm. j) je cena zhotovenia stavby. Do obstarávacieho nákladu podľa prvej vety je možné započítať cenu projektovej dokumentácie, cenu odborného posudku preukazujúceho existenciu systémovej poruchy a projektového energetického hodnotenia bytovej budovy. Do obstarávacieho nákladu podľa prvej vety sa nezapočíta cena obnovy nebytového priestoru okrem garáží a garážových stojísk v bytovej budove.",
+     "n": "5"
+    },
+    {
+     "anchor": "p8-6",
+     "text": "Obstarávacím nákladom obstarania technickej vybavenosti podľa § 6 ods. 1 písm. f) druhého bodu je cena dohodnutá v kúpnej zmluve alebo v zmluve o budúcej kúpnej zmluve. Cena pozemku sa do obstarávacieho nákladu obstarania technickej vybavenosti nezapočíta. Do obstarávacieho nákladu obstarania technickej vybavenosti podľa § 6 ods. 1 písm. f) druhého bodu sa nezapočítajú ani náklady na vodovodnú prípojku alebo kanalizačnú prípojku, ak sú tieto náklady zahrnuté v obstarávacom náklade obstarania nájomného bytu podľa § 6 ods. 1 písm. b).",
+     "n": "6"
+    },
+    {
+     "anchor": "p8-7",
+     "text": "Obstarávacím nákladom kúpy pozemku podľa § 6 ods. 1 písm. g) je cena dohodnutá v kúpnej zmluve alebo v zmluve o budúcej kúpnej zmluve.",
+     "n": "7"
+    },
+    {
+     "anchor": "p8-8",
+     "text": "Obstarávacím nákladom podľa odsekov 3 až 7 sa rozumie cena vrátane dane z pridanej hodnoty.¹⁵ᶜ)",
+     "n": "8"
+    },
+    {
+     "anchor": "p8-9",
+     "text": "Do obstarávacieho nákladu zateplenia bytovej budovy podľa § 6 ods. 1 písm. c) tretieho bodu, obnovy zariadenia sociálnych služieb podľa § 6 ods. 1 písm. e), obnovy internátu podľa § 6 ods. 1 písm. j) alebo výmeny spoločných rozvodov plynu, elektriny, kanalizácie, vody, vzduchotechniky a tepla v bytovom dome podľa § 6 ods. 4 písm. b) sa môže započítať aj cena za realizáciu vodozádržných opatrení a vybudovanie vonkajších tieniacich prvkov.",
+     "n": "9"
+    }
+   ],
+   "heading": "Forma a výška podpory"
+  },
+  {
+   "type": "section",
+   "anchor": "s-g-podmienky-a-postup-pri-poskytovani-podpory",
+   "kind": "group",
+   "heading": "Podmienky a postup pri poskytovaní podpory",
+   "children": [
+    {
+     "type": "provision",
+     "anchor": "p9",
+     "label": "§ 9",
+     "paragraphs": [
+      {
+       "anchor": "p9-1",
+       "text": "Podpora sa poskytne žiadateľovi, ktorý splní podmienky ustanovené týmto zákonom a ktorý preukáže schopnosť",
+       "n": "1",
+       "items": [
+        {
+         "anchor": "p9-1-a",
+         "label": "a)",
+         "letter": "a",
+         "text": "platiť splátky istiny úveru a úroky z úveru v dohodnutej výške a v dohodnutých lehotách a"
+        },
+        {
+         "anchor": "p9-1-b",
+         "label": "b)",
+         "letter": "b",
+         "text": "zabezpečiť záväzky vyplývajúce z úveru."
+        }
+       ]
+      },
+      {
+       "anchor": "p9-2",
+       "text": "Ak je žiadateľom člen domácnosti podľa § 10 ods. 4 písm. c), schopnosť platiť splátky istiny úveru a úroky z úveru podľa odseku 1 písm. a) preukáže so žiadateľom aj fyzická osoba s ťažkým zdravotným postihnutím podľa osobitného predpisu;¹⁸) táto schopnosť sa preukazuje len do konca kalendárneho roku, v ktorom fyzická osoba s ťažkým zdravotným postihnutím dovŕši vek 65 rokov.",
+       "n": "2"
+      },
+      {
+       "anchor": "p9-3",
+       "text": "Podporu možno poskytnúť žiadateľovi, ktorý",
+       "n": "3",
+       "items": [
+        {
+         "anchor": "p9-3-a",
+         "label": "a)",
+         "letter": "a",
+         "text": "nie je v likvidácii, nútenej správe, konkurze, reštrukturalizácii alebo proti ktorému nie je vedené konkurzné konanie alebo nebol zamietnutý návrh na vyhlásenie konkurzu pre nedostatok majetku,"
+        },
+        {
+         "anchor": "p9-3-b",
+         "label": "b)",
+         "letter": "b",
+         "text": "nemá evidované nedoplatky na poistnom na sociálne poistenie a zdravotná poisťovňa neeviduje voči nemu pohľadávky po splatnosti podľa osobitných predpisov,¹⁵ᵈ)"
+        },
+        {
+         "anchor": "p9-3-c",
+         "label": "c)",
+         "letter": "c",
+         "text": "nemá evidované nedoplatky voči daňovému úradu a colnému úradu podľa osobitných predpisov,¹⁵ᵉ)"
+        },
+        {
+         "anchor": "p9-3-d",
+         "label": "d)",
+         "letter": "d",
+         "text": "má vysporiadané iné finančné vzťahy so štátnym rozpočtom,"
+        },
+        {
+         "anchor": "p9-3-e",
+         "label": "e)",
+         "letter": "e",
+         "text": "plní záväzky voči fondu a iným veriteľom,"
+        },
+        {
+         "anchor": "p9-3-f",
+         "label": "f)",
+         "letter": "f",
+         "text": "nie je v exekučnom konaní a"
+        },
+        {
+         "anchor": "p9-3-g",
+         "label": "g)",
+         "letter": "g",
+         "text": "spĺňa podmienky ustanovené týmto zákonom."
+        }
+       ]
+      },
+      {
+       "anchor": "p9-4",
+       "text": "Splnenie podmienok podľa odseku 3 písm. a) a d) až f) preukazuje správca podľa § 7 ods. 1 písm. e). Splnenie podmienok podľa odseku 3 písm. a) až c) a f) overuje podľa osobitného predpisu¹⁸ᵃ) fond.",
+       "n": "4"
+      },
+      {
+       "anchor": "p9-5",
+       "text": "Čerpanie podpory sa realizuje bezhotovostným prevodom z účtu v banke podľa § 5 ods. 5 zriadeného fondom pre žiadateľa.",
+       "n": "5"
+      },
+      {
+       "anchor": "p9-6",
+       "text": "Podporu, ktorá je štátnou pomocou, možno poskytnúť len v súlade s osobitnými predpismi v oblasti štátnej pomoci.¹⁶)",
+       "n": "6"
+      },
+      {
+       "anchor": "p9-7",
+       "text": "Termín dokončenia stavby, ak ide o účely podľa § 6 ods. 1 písm. a) prvého bodu, písm. b) prvého bodu, tretieho bodu a štvrtého bodu, písm. c), písm. d) prvého bodu, písm. e), písm. f) prvého bodu, písm. h) prvého bodu, písm. i) prvého bodu a písm. j) môže byť najneskôr 24 mesiacov odo dňa otvorenia účtu podľa odseku 5. Termín dokončenia stavby podľa prvej vety môže fond predĺžiť v prípadoch hodných osobitného zreteľa.",
+       "n": "7"
+      },
+      {
+       "anchor": "p9-8",
+       "text": "Podporu na obstaranie nájomného bytu podľa § 6 ods. 1 písm. b) druhého bodu, tretieho bodu a štvrtého bodu, na stavebnú úpravu bytovej budovy alebo nebytovej budovy, ktorou vznikne zariadenie sociálnych služieb podľa § 6 ods. 1 písm. d), na obstaranie ubytovacieho domu podľa § 6 ods. 1 písm. h) a na obstaranie internátu podľa § 6 ods. 1 písm. i) možno poskytnúť, ak všetky technické zariadenia budovy boli vymenené najviac 10 rokov pred podaním žiadosti alebo budú vymenené počas realizácie stavebných úprav.",
+       "n": "8"
+      },
+      {
+       "anchor": "p9-9",
+       "text": "Podmienka poskytnutia podpory podľa odseku 8 sa uplatní na účel podľa § 6 ods. 1 písm. b) druhého bodu, ak ide o kúpu bytu, ktorý vznikol stavebnou úpravou ostatnej budovy na bývanie alebo nebytovej budovy, alebo podľa § 6 ods. 1 písm. d) druhého bodu, ak ide o kúpu zariadenia sociálnych služieb, ktoré vzniklo stavebnou úpravou bytovej budovy alebo nebytovej budovy, alebo podľa § 6 ods. 1 písm. h) druhého bodu, ak ide o kúpu ubytovacieho domu, ktorý vznikol stavebnou úpravou bytovej budovy alebo nebytovej budovy, alebo podľa § 6 ods. 1 písm. i) druhého bodu, ak ide o kúpu internátu, ktorý vznikol stavebnou úpravou bytového domu alebo nebytovej budovy.",
+       "n": "9"
+      },
+      {
+       "anchor": "p9-10",
+       "text": "Technickým zariadením budovy sa na účely tohto zákona rozumie rozvod plynu, elektriny, kanalizácie, vody a tepla, kotolňa, výmenníková stanica, slaboprúdové rozvody a výťah.",
+       "n": "10"
+      },
+      {
+       "anchor": "p9-11",
+       "text": "Fond môže v období od nadobudnutia účinnosti zmluvy o poskytnutí podpory (ďalej len „zmluva“) do ukončenia čerpania poskytnutej podpory zvýšiť poskytnutú podporu pri dodržaní podmienok ustanovených týmto zákonom, ak o to žiadateľ požiada. Zvýšenie poskytnutej podpory sa nepovažuje za poskytnutie ďalšej podpory na ten istý účel. Zvýšenie podpory nemá vplyv na výšku úrokovej sadzby, ktorá bola určená.",
+       "n": "11"
+      },
+      {
+       "anchor": "p9-12",
+       "text": "Ak žiadateľ podľa § 7 ods. 1 písm. g) nevykonával hospodársku činnosť pred podaním žiadosti, splnenie podmienky podľa odseku 1 písm. a) môže preukázať materská spoločnosť žiadateľa, ktorá pristúpi k záväzku vyplývajúcemu z úveru. Materskou spoločnosťou sa na účely tohto zákona rozumie právnická osoba, ktorá má väčšinový obchodný podiel u žiadateľa a sídlo na území Slovenskej republiky.",
+       "n": "12"
+      },
+      {
+       "anchor": "p9-13",
+       "text": "Splnenie podmienky podľa odseku 1 písm. a), odseku 2 a § 10 ods. 5 overuje fond bez súhlasu žiadateľa podľa § 7 ods. 1 písm. a), fyzickej osoby podľa odseku 2 a osôb podľa § 10 ods. 5, na základe údajov poskytnutých Sociálnou poisťovňou. Sociálna poisťovňa na základe fondom poskytnutých vstupných údajov poskytuje fondu zo svojho informačného systému elektronicky a bez súhlasu osôb uvedených v prvej vete údaje v rozsahu potrebnom na účel overenia splnenia podmienky pre poskytnutie podpory.",
+       "n": "13"
+      },
+      {
+       "anchor": "p9-14",
+       "text": "Fond môže žiadateľovi podľa § 7 ods. 1 písm. g) najskôr po uplynutí troch rokov od nadobudnutia účinnosti zmluvy alebo účinnosti dodatku k zmluve z dôvodu zvýšenia poskytnutej podpory podľa odseku 11, znížiť výšku úrokovej sadzby pri dodržaní podmienok ustanovených týmto zákonom, ak o to žiadateľ požiada. Fond môže rozhodnúť o znížení úrokovej sadzby iba raz počas platnosti zmluvy.",
+       "n": "14"
+      }
+     ],
+     "heading": "Všeobecné podmienky poskytnutia podpory"
+    },
+    {
+     "type": "provision",
+     "anchor": "p10",
+     "label": "§ 10",
+     "paragraphs": [
+      {
+       "anchor": "p10-1",
+       "text": "Podporu na obstaranie bytu podľa § 6 ods. 1 písm. a) a obstaranie nájomného bytu podľa § 6 ods. 1 písm. b) možno poskytnúť len vtedy, ak",
+       "n": "1",
+       "items": [
+        {
+         "anchor": "p10-1-a",
+         "label": "a)",
+         "letter": "a",
+         "text": "podlahová plocha bytu¹⁵) v bytovom dome¹⁶ᵃ) alebo v polyfunkčnom dome neprevyšuje 80 m²,"
+        },
+        {
+         "anchor": "p10-1-b",
+         "label": "b)",
+         "letter": "b",
+         "text": "podlahová plocha bytových a iných priestorov v rodinnom dome prislúchajúca k jednému bytu neprevyšuje 120 m² a viac ako polovica z tejto podlahovej plochy je určená na bývanie."
+        }
+       ]
+      },
+      {
+       "anchor": "p10-2",
+       "text": "Podlahovú plochu bytu podľa odseku 1 možno zvýšiť najviac o 10 %, ak ide o byt, ktorý je",
+       "n": "2",
+       "items": [
+        {
+         "anchor": "p10-2-a",
+         "label": "a)",
+         "letter": "a",
+         "text": "stavebne určený na bývanie fyzickej osoby so zdravotným postihnutím uvedeným v prílohe č. 1, alebo"
+        },
+        {
+         "anchor": "p10-2-b",
+         "label": "b)",
+         "letter": "b",
+         "text": "národnou kultúrnou pamiatkou alebo sa nachádza v lokalitách zapísaných v Zozname svetového dedičstva."
+        }
+       ]
+      },
+      {
+       "anchor": "p10-3",
+       "text": "Do podlahovej plochy bytu podľa odseku 1 písm. b) sa nezapočíta podlahová plocha",
+       "n": "3",
+       "items": [
+        {
+         "anchor": "p10-3-a",
+         "label": "a)",
+         "letter": "a",
+         "text": "podkrovného priestoru, ak jeho podchodná výška vymedzená konštrukciou krovu nepresahuje 1 800 mm,"
+        },
+        {
+         "anchor": "p10-3-b",
+         "label": "b)",
+         "letter": "b",
+         "text": "balkóna, lodžie a terasy a"
+        },
+        {
+         "anchor": "p10-3-c",
+         "label": "c)",
+         "letter": "c",
+         "text": "garáže do 25 m²."
+        }
+       ]
+      },
+      {
+       "anchor": "p10-4",
+       "text": "Žiadateľovi podľa § 7 ods. 1 písm. a) možno podporu na obstaranie bytu podľa § 6 ods. 1 písm. a) poskytnúť, ak ide o",
+       "n": "4",
+       "items": [
+        {
+         "anchor": "p10-4-a",
+         "label": "a)",
+         "letter": "a",
+         "text": "manželov, ktorých vek v deň podania žiadosti nepresiahne 35 rokov; podmienku veku musí spĺňať každý z manželov,"
+        },
+        {
+         "anchor": "p10-4-b",
+         "label": "b)",
+         "letter": "b",
+         "text": "manželov s maloletým dieťaťom vo veku najviac šesť rokov žijúceho s nimi v domácnosti¹⁷) alebo rodičov maloletého dieťaťa vo veku najviac šesť rokov žijúceho s nimi v domácnosti,¹⁷)"
+        },
+        {
+         "anchor": "p10-4-c",
+         "label": "c)",
+         "letter": "c",
+         "text": "člena domácnosti,¹⁷) ktorej členom je aj fyzická osoba s ťažkým zdravotným postihnutím podľa osobitného predpisu, žijúceho v spoločnej domácnosti aspoň jeden rok a zabezpečujúceho bývanie tejto fyzickej osobe s ťažkým zdravotným postihnutím, alebo fyzickú osobu s ťažkým zdravotným postihnutím podľa osobitného predpisu,"
+        },
+        {
+         "anchor": "p10-4-d",
+         "label": "d)",
+         "letter": "d",
+         "text": "fyzickú osobu, pre ktorú boli vykonávané opatrenia pobytovou formou na základe rozhodnutia súdu v centre pre deti a rodiny, fyzickú osobu, ktorej skončila ústavná starostlivosť v domove sociálnych služieb pre deti, fyzickú osobu, ktorej skončilo poskytovanie sociálnej služby v zariadení sociálnych služieb s celoročnou pobytovou formou, alebo fyzickú osobu, ktorej zanikla pestúnska starostlivosť, náhradná osobná starostlivosť alebo osobná starostlivosť poručníka (ďalej len „osoba po skončení starostlivosti“), ktorá v deň podania žiadosti nepresiahne vek 35 rokov, alebo osobu po skončení starostlivosti s maloletým dieťaťom vo veku najviac tri roky alebo najviac päť rokov, ak ide o dieťa, ktoré si osoba po skončení starostlivosti osvojila; v prípade manželov musí podmienku veku spĺňať každý z manželov,"
+        },
+        {
+         "anchor": "p10-4-e",
+         "label": "e)",
+         "letter": "e",
+         "text": "osamelého rodiča s nezaopatreným dieťaťom vo veku najviac 15 rokov alebo osamelú fyzickú osobu, ktorej bolo dieťa zverené do starostlivosti nahrádzajúcej starostlivosť rodičov, ak sa osobne stará o dieťa vo veku najviac 15 rokov."
+        }
+       ]
+      },
+      {
+       "anchor": "p10-5",
+       "text": "Žiadateľovi podľa odseku 4 možno poskytnúť podporu len vtedy, ak mesačný príjem žiadateľa a osôb, ktorých príjmy sa posudzujú spoločne podľa osobitného predpisu,¹⁹) neprevyšuje päťnásobok sumy životného minima²⁰) vypočítaného pre žiadateľa a osoby, ktorých príjmy sa posudzujú spoločne. Mesačný príjem sa vypočíta z príjmu²¹) za predchádzajúci kalendárny rok ako podiel tohto príjmu a príslušného počtu mesiacov, za ktoré tento príjem patril. Ak žiadateľom podľa odseku 4 písm. c) je člen domácnosti, ktorej členom je aj fyzická osoba s ťažkým zdravotným postihnutím a táto nepatrí do okruhu spoločne posudzovaných osôb podľa osobitného predpisu,¹⁹) pri výpočte príjmu žiadateľa a s ním spoločne posudzovaných osôb sa fyzická osoba s ťažkým zdravotným postihnutím považuje za ďalšiu spoločne posudzovanú plnoletú fyzickú osobu.",
+       "n": "5"
+      },
+      {
+       "anchor": "p10-6",
+       "text": "Žiadateľovi podľa § 7 ods. 1 písm. a) možno počas platnosti zmluvy na obstaranie bytu podľa § 6 ods. 1 písm. a) odpustiť 2 000 eur z úveru poskytnutého podľa § 8 ods. 1 písm. a), ak",
+       "n": "6",
+       "items": [
+        {
+         "anchor": "p10-6-a",
+         "label": "a)",
+         "letter": "a",
+         "text": "sa mu narodilo dieťa, ktoré s ním žije v spoločnej domácnosti a dožilo sa jedného roku veku, alebo si osvojil dieťa, ktoré s ním žije v spoločnej domácnosti aspoň jeden rok,"
+        },
+        {
+         "anchor": "p10-6-b",
+         "label": "b)",
+         "letter": "b",
+         "text": "písomne požiada fond o odpustenie časti úveru najneskôr do jedného roku po vzniku nároku na odpustenie časti úveru a"
+        },
+        {
+         "anchor": "p10-6-c",
+         "label": "c)",
+         "letter": "c",
+         "text": "dodržiava podmienky dohodnuté v zmluve a ku dňu podania žiadosti podľa písmena b) má splnené záväzky voči fondu."
+        }
+       ]
+      },
+      {
+       "anchor": "p10-7",
+       "text": "Ak ku dňu podania žiadosti podľa odseku 6 je zostatok úveru nižší ako 2 000 eur, možno žiadateľovi odpustiť sumu rovnajúcu sa zostatku úveru.",
+       "n": "7"
+      },
+      {
+       "anchor": "p10-8",
+       "text": "Podporu na obstaranie bytu podľa § 6 ods. 1 písm. a) žiadateľovi podľa § 7 ods. 1 písm. a) je možné poskytnúť iba raz. Ak žiadateľ podľa odseku 4 písm. c) žije v spoločnej domácnosti s fyzickou osobou s ťažkým zdravotným postihnutím podľa osobitného predpisu aspoň jeden rok a žiadateľ zabezpečuje tejto fyzickej osobe bývanie, táto podmienka sa vzťahuje na nich oboch.",
+       "n": "8"
+      },
+      {
+       "anchor": "p10-9",
+       "text": "Žiadateľovi podľa § 7 ods. 1 písm. b), c) a f) možno podporu na obstaranie nájomného bytu podľa § 6 ods. 1 písm. b) poskytnúť, ak",
+       "n": "9",
+       "items": [
+        {
+         "anchor": "p10-9-a",
+         "label": "a)",
+         "letter": "a",
+         "text": "priemerná podlahová plocha²²) obstarávaného nájomného bytu neprevýši 60 m², okrem obstarávaného nájomného bytu podľa § 6 ods. 1 písm. b) tretieho bodu bodu 3c,"
+        },
+        {
+         "anchor": "p10-9-b",
+         "label": "b)",
+         "letter": "b",
+         "text": "obstarávacie náklady stavby prepočítané na m² podlahovej plochy nájomného bytu nepresiahnu hodnotu ustanovenú osobitným predpisom,²³)"
+        },
+        {
+         "anchor": "p10-9-c",
+         "label": "c)",
+         "letter": "c",
+         "text": "sa žiadateľ v zmluve zaviaže, že",
+         "items": [
+          {
+           "anchor": "p10-9-c-1",
+           "label": "1.",
+           "letter": "1",
+           "text": "zriadi záložné právo na nájomný byt obstaraný podľa tohto zákona v prospech fondu na zabezpečenie peňažných pohľadávok fondu vyplývajúcich z úveru,"
+          },
+          {
+           "anchor": "p10-9-c-2",
+           "label": "2.",
+           "letter": "2",
+           "text": "zriadi záložné právo na nájomný byt obstaraný podľa tohto zákona v prospech fondu na zabezpečenie dodržania podmienok podľa § 14e ods. 1 a"
+          },
+          {
+           "anchor": "p10-9-c-3",
+           "label": "3.",
+           "letter": "3",
+           "text": "dodrží pri prenájme osobitný predpis,²⁴) ak odsek 16 neustanovuje inak,"
+          }
+         ]
+        },
+        {
+         "anchor": "p10-9-d",
+         "label": "d)",
+         "letter": "d",
+         "text": "z celkového počtu obstarávaných nájomných bytov v bytovej budove alebo v nebytovej budove, ktorá má zriadený výťah, minimálne 15 % bytov je navrhnutých univerzálne z hľadiska stavebných konštrukcií a to tak, aby ich mohli využívať osoby so zdravotným postihnutím bez dodatočných úprav týchto konštrukcií; podrobnosti univerzálneho navrhovania ustanoví Úrad pre územné plánovanie a výstavbu Slovenskej republiky všeobecne záväzným právnym predpisom."
+        }
+       ]
+      },
+      {
+       "anchor": "p10-10",
+       "text": "Žiadateľovi podľa § 7 ods. 1 písm. g) možno podporu na obstaranie nájomného bytu podľa § 6 ods. 1 písm. b) poskytnúť, ak",
+       "n": "10",
+       "items": [
+        {
+         "anchor": "p10-10-a",
+         "label": "a)",
+         "letter": "a",
+         "text": "priemerná podlahová plocha\n²²) obstarávaného nájomného bytu neprevýši 70 m²,"
+        },
+        {
+         "anchor": "p10-10-b",
+         "label": "b)",
+         "letter": "b",
+         "text": "sa žiadateľ v zmluve zaviaže, že",
+         "items": [
+          {
+           "anchor": "p10-10-b-1",
+           "label": "1.",
+           "letter": "1",
+           "text": "zriadi záložné právo na nájomný byt obstaraný podľa tohto zákona v prospech fondu na zabezpečenie peňažných pohľadávok fondu vyplývajúcich z úveru,"
+          },
+          {
+           "anchor": "p10-10-b-2",
+           "label": "2.",
+           "letter": "2",
+           "text": "zriadi záložné právo na nájomný byt obstaraný podľa tohto zákona v prospech fondu na zabezpečenie dodržania podmienok podľa § 14e ods. 2,"
+          },
+          {
+           "anchor": "p10-10-b-3",
+           "label": "3.",
+           "letter": "3",
+           "text": "najmenej 80 % z obstarávaných nájomných bytov prenajme fyzickým osobám žijúcim v spoločnej domácnosti s mesačným príjmom domácnosti najviac vo výške päťnásobku životného minima domácnosti a"
+          },
+          {
+           "anchor": "p10-10-b-4",
+           "label": "4.",
+           "letter": "4",
+           "text": "ročné nájomné určí vo výške najviac 10 % z obstarávacieho nákladu nájomného bytu."
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "anchor": "p10-11",
+       "text": "Splnenie podmienky príjmu domácnosti podľa odseku 10 písm. b) tretieho bodu sa posudzuje pri uzavieraní zmluvy o nájme nájomného bytu. Na zmenu výšky príjmu domácnosti podľa prvej vety počas platnosti zmluvy o nájme nájomného bytu sa neprihliada. Povinnosť splnenia podmienky príjmu domácnosti pri uzavieraní zmluvy o nájme nájomného bytu podľa odseku 10 písm. b) tretieho bodu sa nevzťahuje na prípady, ak obstarávané nájomné byty žiadateľ prenajíma fyzickým osobám, ktoré sú zdravotníckymi pracovníkmi²⁴ᵃ) a ktoré sú zároveň zamestnancami žiadateľa.",
+       "n": "11"
+      },
+      {
+       "anchor": "p10-12",
+       "text": "Podporu na obstaranie nájomného bytu podľa § 6 ods. 1 písm. b) možno poskytnúť len vtedy, ak žiadateľ podľa § 7 ods. 1",
+       "n": "12",
+       "items": [
+        {
+         "anchor": "p10-12-a",
+         "label": "a)",
+         "letter": "a",
+         "text": "písm. b) a c) obstaráva nájomný byt na svojom území,"
+        },
+        {
+         "anchor": "p10-12-b",
+         "label": "b)",
+         "letter": "b",
+         "text": "písm. f) a g) obstaráva nájomný byt na území Slovenskej republiky."
+        }
+       ]
+      },
+      {
+       "anchor": "p10-13",
+       "text": "Podporu na obstaranie bytu podľa § 6 ods. 1 písm. a) a na obstaranie nájomného bytu podľa § 6 ods. 1 písm. b) možno poskytnúť aj, ak žiadateľ uzavrel so stavebníkom zmluvu o budúcej kúpnej zmluve a následne kúpnu zmluvu uzavrie najneskôr do konca mesiaca december v druhom kalendárnom roku nasledujúcom po roku, v ktorom bola uzavretá zmluva. Spolu s následnou kúpnou zmluvou žiadateľ predloží fondu aj právoplatné kolaudačné rozhodnutie alebo kolaudačné osvedčenie obstarávaného bytu alebo nájomného bytu.",
+       "n": "13"
+      },
+      {
+       "anchor": "p10-14",
+       "text": "Podporu na obstaranie nájomného bytu podľa § 6 ods. 1 písm. b) v rodinnom dome možno poskytnúť iba vtedy, ak sa v rodinnom dome nachádzajú najmenej dva byty.",
+       "n": "14"
+      },
+      {
+       "anchor": "p10-15",
+       "text": "Podporu na obstaranie toho istého nájomného bytu podľa § 6 ods. 1 písm. b) je možné poskytnúť iba raz.",
+       "n": "15"
+      },
+      {
+       "anchor": "p10-16",
+       "text": "Podporu na obstaranie nájomného bytu podľa odseku 9 vo výške 100 % obstarávacieho nákladu možno poskytnúť žiadateľovi podľa § 7 ods. 1 písm. b), c) a f), ak",
+       "n": "16",
+       "items": [
+        {
+         "anchor": "p10-16-a",
+         "label": "a)",
+         "letter": "a",
+         "text": "žiadateľ preukáže, že v období 12 mesiacov pred podaním žiadosti podľa § 15 ods. 2 mal uzavreté nájomné zmluvy na 85 % nájomných bytov vo vlastníctve žiadateľa,"
+        },
+        {
+         "anchor": "p10-16-b",
+         "label": "b)",
+         "letter": "b",
+         "text": "sa stavba nachádza v obci,",
+         "items": [
+          {
+           "anchor": "p10-16-b-1",
+           "label": "1.",
+           "letter": "1",
+           "text": "ktorá sa nachádza v okrese s nízkou mierou nezamestnanosti,"
+          },
+          {
+           "anchor": "p10-16-b-2",
+           "label": "2.",
+           "letter": "2",
+           "text": "na území ktorej sa realizuje výstavba priemyselného parku alebo sa nachádza priemyselný park, alebo"
+          },
+          {
+           "anchor": "p10-16-b-3",
+           "label": "3.",
+           "letter": "3",
+           "text": "na území ktorej sa realizuje významná investícia podľa osobitného predpisu²⁴ᵇ) a"
+          }
+         ]
+        },
+        {
+         "anchor": "p10-16-c",
+         "label": "c)",
+         "letter": "c",
+         "text": "sa žiadateľ zaviaže, že minimálne 80 % z obstarávaných nájomných bytov prenajme fyzickým osobám žijúcim v domácnosti s mesačným príjmom domácnosti najviac vo výške štvornásobku životného minima domácnosti; splnenie podmienky príjmu domácnosti sa posudzuje pri uzavieraní zmluvy o nájme nájomného bytu a na zmenu príjmu domácnosti sa počas platnosti zmluvy neprihliada."
+        }
+       ]
+      },
+      {
+       "anchor": "p10-17",
+       "text": "Na účely tohto zákona okresom s nízkou mierou nezamestnanosti je okres, v ktorom podiel disponibilných uchádzačov o zamestnanie na obyvateľstve v produktívnom veku, ktorý vykazuje Ústredie práce, sociálnych vecí a rodiny, bol v priemere za kalendárny rok predchádzajúci kalendárnemu roku podania žiadosti nižší ako priemerný podiel disponibilných uchádzačov o zamestnanie na obyvateľstve v produktívnom veku v Slovenskej republike za kalendárny rok predchádzajúci kalendárnemu roku podania žiadosti.",
+       "n": "17"
+      },
+      {
+       "anchor": "p10-18",
+       "text": "Počas lehoty splatnosti úveru na obstaranie bytu podľa § 6 ods. 1 písm. a) alebo na obstaranie nájomného bytu podľa § 6 ods. 1 písm. b) možno zmeniť účel podpory len vtedy, ak žiadateľ obstaráva byt alebo nájomný byt naďalej spĺňajúci podmienky podľa odseku 1.",
+       "n": "18"
+      },
+      {
+       "anchor": "p10-19",
+       "text": "Ak žiadateľ podľa odseku 4 nadobúda byt podľa § 6 ods. 1 písm. a) do podielového spoluvlastníctva, jednotliví spoluvlastníci zodpovedajú za záväzky vyplývajúce z úveru poskytnutého podľa tohto zákona spoločne a nerozdielne.",
+       "n": "19"
+      }
+     ],
+     "heading": "Podmienky poskytnutia podpory na obstaranie bytu a na obstaranie nájomného bytu"
+    }
+   ]
+  },
+  {
+   "type": "section",
+   "anchor": "s-g-podmienky-poskytnutia-podpory-na-obnovu-bytovej-budovy",
+   "kind": "group",
+   "heading": "Podmienky poskytnutia podpory na obnovu bytovej budovy",
+   "children": [
+    {
+     "type": "provision",
+     "anchor": "p11",
+     "label": "§ 11",
+     "paragraphs": [
+      {
+       "anchor": "p11-1",
+       "text": "Podporu na modernizáciu bytového domu podľa § 6 ods. 4 písm. a) možno poskytnúť len vtedy, ak ide o výmenu alebo modernizáciu výťahu s preukázaním zhody určeného výrobku.²⁵)",
+       "n": "1"
+      },
+      {
+       "anchor": "p11-2",
+       "text": "Podporu na modernizáciu bytového domu podľa § 6 ods. 4 písm. c) možno poskytnúť len vtedy, ak sa realizáciou stavebných úprav",
+       "n": "2",
+       "items": [
+        {
+         "anchor": "p11-2-a",
+         "label": "a)",
+         "letter": "a",
+         "text": "zabezpečí prístup do všetkých bytov osobám s obmedzenou schopnosťou pohybu a"
+        },
+        {
+         "anchor": "p11-2-b",
+         "label": "b)",
+         "letter": "b",
+         "text": "dodržia podmienky ustanovené osobitným predpisom,²⁶) ak je to technicky uskutočniteľné."
+        }
+       ]
+      },
+      {
+       "anchor": "p11-3",
+       "text": "Podporu na modernizáciu bytového domu podľa § 6 ods. 1 písm. c) prvého bodu možno poskytnúť aj žiadateľovi podľa § 7 ods. 1 písm. a), ktorý je vlastníkom bytu podľa osobitného predpisu.²⁷)",
+       "n": "3"
+      },
+      {
+       "anchor": "p11-4",
+       "text": "Podporu na modernizáciu bytového domu podľa § 6 ods. 4 písm. e) možno poskytnúť na vybudovanie nových spoločných častí bytového domu a nových spoločných zariadení bytového domu vstavbou, prístavbou alebo nadstavbou²⁷ᵃ) na základe rozhodnutia vlastníkov bytov a nebytových priestorov v bytovom dome podľa osobitného predpisu.²⁷ᵇ)",
+       "n": "4"
+      },
+      {
+       "anchor": "p11-5",
+       "text": "Modernizácia bytového domu uvedená v § 6 ods. 4 môže byť vykonávaná súčasne alebo postupne na jednej stavbe. Na stavebné práce realizované pri modernizácii bytového domu podľa § 6 ods. 4, na ktoré už bola poskytnutá podpora podľa tohto zákona, nie je možné poskytnúť podporu opakovane.",
+       "n": "5"
+      },
+      {
+       "anchor": "p11-6",
+       "text": "Podporu na modernizáciu spoločných častí bytového domu podľa § 6 ods. 4 písm. e) realizovanú zateplením podľa § 6 ods. 1 písm. c) tretieho bodu možno poskytnúť len vtedy, ak sú splnené podmienky podľa § 12 ods. 3 písm. d) prvého bodu až tretieho bodu a podmienky podľa § 13 ods. 1 písm. b) a c).",
+       "n": "6"
+      }
+     ],
+     "heading": "Podmienky poskytnutia podpory na modernizáciu bytového domu"
+    },
+    {
+     "type": "provision",
+     "anchor": "p12",
+     "label": "§ 12",
+     "paragraphs": [
+      {
+       "anchor": "p12-1",
+       "text": "Podporu na odstránenie systémovej poruchy podľa § 6 ods. 1 písm. c) druhého bodu možno poskytnúť na odstránenie systémovej poruchy bytového domu, ktorou je porucha",
+       "n": "1",
+       "items": [
+        {
+         "anchor": "p12-1-a",
+         "label": "a)",
+         "letter": "a",
+         "text": "obkladových dielcov z keramzitbetónu, lávobetónu a tufobetónu na klimaticky najviac namáhanom štíte bytového domu,"
+        },
+        {
+         "anchor": "p12-1-b",
+         "label": "b)",
+         "letter": "b",
+         "text": "troskopemzobetónových obkladových dielcov na štítoch bytového domu,"
+        },
+        {
+         "anchor": "p12-1-c",
+         "label": "c)",
+         "letter": "c",
+         "text": "vystupujúcich konštrukcií schodiskového priestoru bytového domu,"
+        },
+        {
+         "anchor": "p12-1-d",
+         "label": "d)",
+         "letter": "d",
+         "text": "predsadených lodžií s kazetovými stropnými panelmi bytového domu,"
+        },
+        {
+         "anchor": "p12-1-e",
+         "label": "e)",
+         "letter": "e",
+         "text": "predsadených lodžií s dutinovými stropnými panelmi bytového domu,"
+        },
+        {
+         "anchor": "p12-1-f",
+         "label": "f)",
+         "letter": "f",
+         "text": "balkónov a lodžií bytového domu,"
+        },
+        {
+         "anchor": "p12-1-g",
+         "label": "g)",
+         "letter": "g",
+         "text": "vystupujúcich zvislých pilastrov a vodorovných ríms bytového domu,"
+        },
+        {
+         "anchor": "p12-1-h",
+         "label": "h)",
+         "letter": "h",
+         "text": "obvodového plášťa z pórobetónových dielcov bytového domu,"
+        },
+        {
+         "anchor": "p12-1-i",
+         "label": "i)",
+         "letter": "i",
+         "text": "stykov obvodového plášťa s vrstvenými dielcami s tepelnoizolačnou vrstvou hrúbky aspoň 80 mm bytového domu,"
+        },
+        {
+         "anchor": "p12-1-j",
+         "label": "j)",
+         "letter": "j",
+         "text": "atiky bytového domu,"
+        },
+        {
+         "anchor": "p12-1-k",
+         "label": "k)",
+         "letter": "k",
+         "text": "obvodového plášťa a nosných stien z pórobetónových tvárnic bytového domu,"
+        },
+        {
+         "anchor": "p12-1-l",
+         "label": "l)",
+         "letter": "l",
+         "text": "predsadenej lodžie bytového domu a obvodového plášťa zo spínaných pórobetónových dielcov bytového domu."
+        }
+       ]
+      },
+      {
+       "anchor": "p12-2",
+       "text": "Popis výskytu systémovej poruchy bytového domu podľa odseku 1, vrátane jej sprievodných znakov a povinného spôsobu jej odstránenia, je uvedený v prílohe č. 2.",
+       "n": "2"
+      },
+      {
+       "anchor": "p12-3",
+       "text": "Podporu na odstránenie systémovej poruchy podľa § 6 ods. 1 písm. c) druhého bodu možno poskytnúť, ak",
+       "n": "3",
+       "items": [
+        {
+         "anchor": "p12-3-a",
+         "label": "a)",
+         "letter": "a",
+         "text": "existenciu systémovej poruchy preukáže odborný posudok vypracovaný autorizovaným stavebným inžinierom,²⁸) ktorý obsahuje",
+         "items": [
+          {
+           "anchor": "p12-3-a-1",
+           "label": "1.",
+           "letter": "1",
+           "text": "výsledky stavebnej diagnostiky bytového domu s popisom systémovej poruchy, s rozsahom a stupňom poškodenia,"
+          },
+          {
+           "anchor": "p12-3-a-2",
+           "label": "2.",
+           "letter": "2",
+           "text": "návrh spôsobu odstránenia každej systémovej poruchy, ktorým sa zamedzí jej opakovaný vznik,"
+          },
+          {
+           "anchor": "p12-3-a-3",
+           "label": "3.",
+           "letter": "3",
+           "text": "orientačnú výšku nákladov na odstránenie systémovej poruchy,"
+          }
+         ]
+        },
+        {
+         "anchor": "p12-3-b",
+         "label": "b)",
+         "letter": "b",
+         "text": "sa na stavbe budú realizovať minimálne činnosti uvedené v prílohe č. 2,"
+        },
+        {
+         "anchor": "p12-3-c",
+         "label": "c)",
+         "letter": "c",
+         "text": "na stavbu bude spracovaný evidenčný list systémovej poruchy, ktorého vzor je uvedený v prílohe č. 2a,"
+        },
+        {
+         "anchor": "p12-3-d",
+         "label": "d)",
+         "letter": "d",
+         "text": "sa systémová porucha odstraňuje zateplením a",
+         "items": [
+          {
+           "anchor": "p12-3-d-1",
+           "label": "1.",
+           "letter": "1",
+           "text": "stavba sa navrhuje uskutočniť tepelnoizolačným systémom na vonkajšiu tepelnú ochranu stien, na ktorý vydal vyhlásenie zhody výrobca systému,"
+          },
+          {
+           "anchor": "p12-3-d-2",
+           "label": "2.",
+           "letter": "2",
+           "text": "stavbu realizuje zhotoviteľ, ktorý má na systém podľa prvého bodu správu z inšpekcie vydanú akreditovaným inšpekčným orgánom,³⁰)"
+          },
+          {
+           "anchor": "p12-3-d-3",
+           "label": "3.",
+           "letter": "3",
+           "text": "pri realizácii stavby je zabezpečený dohľad odborným technickým dozorom, ktorým je fyzická osoba oprávnená vykonávať funkciu stavebného dozoru podľa osobitného predpisu,³¹) pričom ide o fyzickú osobu, ktorá nemá zmluvný vzťah, pracovnoprávny vzťah alebo iný obdobný vzťah so zhotoviteľom stavby,"
+          },
+          {
+           "anchor": "p12-3-d-4",
+           "label": "4.",
+           "letter": "4",
+           "text": "súčasťou projektového riešenia zateplenia obvodového plášťa je odstránenie systémovej poruchy vystupujúcich konštrukcií, ak táto systémová porucha nebola odstránená pred podaním žiadosti,"
+          },
+          {
+           "anchor": "p12-3-d-5",
+           "label": "5.",
+           "letter": "5",
+           "text": "obvodový plášť po zateplení spĺňa kritérium tepelnoizolačných vlastností stavebných konštrukcií preukázaním rovnej alebo nižšej hodnoty súčiniteľa prechodu tepla stavebných konštrukcií, ako je požiadavka najmä podľa slovenskej technickej normy,³³)"
+          }
+         ]
+        },
+        {
+         "anchor": "p12-3-e",
+         "label": "e)",
+         "letter": "e",
+         "text": "nie je možné uplatniť právo zo zodpovednosti za systémovú poruchu u zhotoviteľa stavby,"
+        },
+        {
+         "anchor": "p12-3-f",
+         "label": "f)",
+         "letter": "f",
+         "text": "na bytový dom, jeho ucelenú sekciu alebo vstup nebola poskytnutá podpora na ten istý druh systémovej poruchy podľa osobitného predpisu,³²)"
+        },
+        {
+         "anchor": "p12-3-g",
+         "label": "g)",
+         "letter": "g",
+         "text": "právoplatné kolaudačné rozhodnutie pre bytový dom bolo vydané pred 1. januárom 1994."
+        }
+       ]
+      },
+      {
+       "anchor": "p12-4",
+       "text": "Podporu možno poskytnúť na odstránenie jednotlivých systémových porúch bytového domu osobitne alebo súčasne. Na každý druh systémovej poruchy je možné poskytnúť podporu počas životnosti bytového domu, jeho ucelenej sekcie alebo vstupu iba jedenkrát.",
+       "n": "4"
+      }
+     ],
+     "heading": "Podmienky poskytnutia podpory na odstránenie systémovej poruchy bytového domu"
+    },
+    {
+     "type": "provision",
+     "anchor": "p13",
+     "label": "§ 13",
+     "paragraphs": [
+      {
+       "anchor": "p13-1",
+       "text": "Podporu na zateplenie bytovej budovy podľa § 6 ods. 1 písm. c) tretieho bodu možno poskytnúť, ak sa zlepšia tepelnotechnické vlastnosti bytovej budovy, ktoré sa preukazujú",
+       "n": "1",
+       "items": [
+        {
+         "anchor": "p13-1-a",
+         "label": "a)",
+         "letter": "a",
+         "text": "dosiahnutím zníženia potreby primárnej energie bytovej budovy minimálne o 30 % oproti výpočtovo určenej potrebe primárnej energie bytovej budovy pred realizáciou zateplenia bytovej budovy,"
+        },
+        {
+         "anchor": "p13-1-b",
+         "label": "b)",
+         "letter": "b",
+         "text": "splnením hygienického kritéria, kritéria výmeny vzduchu a energetického kritéria zodpovedajúcich najmä slovenskej technickej norme,³³)"
+        },
+        {
+         "anchor": "p13-1-c",
+         "label": "c)",
+         "letter": "c",
+         "text": "splnením kritéria minimálnych tepelnoizolačných vlastností stavebných konštrukcií preukázaním rovnej alebo nižšej hodnoty súčiniteľa prechodu tepla stavebných konštrukcií, ako je požiadavka najmä podľa slovenskej technickej normy,³³) pričom stavebnými konštrukciami sú obvodový plášť, strešný plášť, otvorové konštrukcie a vodorovné deliace konštrukcie medzi vykurovaným a nevykurovaným priestorom."
+        }
+       ]
+      },
+      {
+       "anchor": "p13-2",
+       "text": "Podporu na zateplenie bytovej budovy podľa § 6 ods. 1 písm. c) tretieho bodu možno poskytnúť len vtedy, ak",
+       "n": "2",
+       "items": [
+        {
+         "anchor": "p13-2-a",
+         "label": "a)",
+         "letter": "a",
+         "text": "sú splnené podmienky podľa § 12 ods. 3 písm. d) prvého až tretieho bodu,"
+        },
+        {
+         "anchor": "p13-2-b",
+         "label": "b)",
+         "letter": "b",
+         "text": "súčasťou projektového riešenia zateplenia bytovej budovy sú nevyhnutné súvisiace stavebné úpravy pozostávajúce z opravy vystupujúcich častí stavby, ako sú napríklad lodžia, balkón, prekrytie vstupu, strojovňa výťahu, stavebnej úpravy vstupov a schodiskových priestorov stavby, výmeny všetkých otvorových výplní v spoločných častiach a výmeny pôvodných okenných otvorových výplní bytov v rozsahu aspoň 85 % z ich celkovej plochy,"
+        },
+        {
+         "anchor": "p13-2-c",
+         "label": "c)",
+         "letter": "c",
+         "text": "sa preukáže, že v prípade výskytu systémovej poruchy na bytovom dome bola systémová porucha ku dňu podania žiadosti odstránená alebo jej odstránenie je súčasťou projektového riešenia zateplenia bytovej budovy,"
+        },
+        {
+         "anchor": "p13-2-d",
+         "label": "d)",
+         "letter": "d",
+         "text": "súčasťou projektového riešenia zateplenia bytovej budovy je vyregulovanie vykurovacej sústavy,"
+        },
+        {
+         "anchor": "p13-2-e",
+         "label": "e)",
+         "letter": "e",
+         "text": "kolaudačné rozhodnutie alebo iný doklad preukazuje, že budova bola daná do užívania aspoň desať rokov pred podaním žiadosti podľa § 15 ods. 2 písm. a),"
+        },
+        {
+         "anchor": "p13-2-f",
+         "label": "f)",
+         "letter": "f",
+         "text": "sa žiadateľ v zmluve zaviaže predložiť energetický certifikát zateplenej budovy vrátane správy k energetickému certifikátu po dokončení zateplenia bytovej budovy, ktorým sa preukáže splnenie podmienky podľa odseku 1 písm. a),"
+        },
+        {
+         "anchor": "p13-2-g",
+         "label": "g)",
+         "letter": "g",
+         "text": "na zateplenie bytovej budovy neboli poskytnuté iné verejné prostriedky alebo finančné prostriedky zo zdrojov Európskej únie."
+        }
+       ]
+      },
+      {
+       "anchor": "p13-3",
+       "text": "Podporu na zateplenie bytovej budovy možno poskytnúť aj vtedy, ak na zateplenie bytovej budovy alebo odstránenie systémovej poruchy bytovej budovy zateplením podľa § 12 ods. 1 písm. a) alebo písm. b) poskytol fond alebo ministerstvo podporu aspoň desať rokov pred podaním žiadosti.",
+       "n": "3"
+      },
+      {
+       "anchor": "p13-4",
+       "text": "Z poskytnutej podpory možno počas platnosti zmluvy odpustiť najviac 30 % sumy úveru, ak",
+       "n": "4",
+       "items": [
+        {
+         "anchor": "p13-4-a",
+         "label": "a)",
+         "letter": "a",
+         "text": "podpora bola poskytnutá na zateplenie bytového domu podľa § 6 ods. 1 písm. c) tretieho bodu a na realizáciu obnoviteľného zdroja energie podľa § 6 ods. 4 písm. d),"
+        },
+        {
+         "anchor": "p13-4-b",
+         "label": "b)",
+         "letter": "b",
+         "text": "bolo preukázané zníženie potreby primárnej energie bytového domu minimálne o 30 % oproti výpočtovo určenej potrebe primárnej energie bytového domu pred realizáciou zateplenia bytového domu,"
+        },
+        {
+         "anchor": "p13-4-c",
+         "label": "c)",
+         "letter": "c",
+         "text": "žiadateľ písomne požiada fond o odpustenie časti úveru najneskôr do jedného roku po predložení energetického certifikátu zatepleného bytového domu vrátane správy k energetickému certifikátu a"
+        },
+        {
+         "anchor": "p13-4-d",
+         "label": "d)",
+         "letter": "d",
+         "text": "žiadateľ dodržiava podmienky dohodnuté v zmluve a ku dňu podania žiadosti podľa písmena c) má splnené záväzky voči fondu."
+        }
+       ]
+      }
+     ],
+     "heading": "Podmienky poskytnutia podpory na zateplenie bytovej budovy"
+    },
+    {
+     "type": "provision",
+     "anchor": "p14",
+     "label": "§ 14",
+     "paragraphs": [
+      {
+       "anchor": "p14-1",
+       "text": "Podporu na obstaranie zariadenia sociálnych služieb podľa § 6 ods. 1 písm. d) a podporu na obnovu zariadenia sociálnych služieb podľa § 6 ods. 1 písm. e) možno poskytnúť žiadateľovi len vtedy, ak sa žiadateľ v zmluve zaviaže, že",
+       "n": "1",
+       "items": [
+        {
+         "anchor": "p14-1-a",
+         "label": "a)",
+         "letter": "a",
+         "text": "zriadi záložné právo na zariadenie sociálnych služieb obstarané podľa tohto zákona v prospech fondu na zabezpečenie peňažných pohľadávok fondu vyplývajúcich z úveru a"
+        },
+        {
+         "anchor": "p14-1-b",
+         "label": "b)",
+         "letter": "b",
+         "text": "zriadi záložné právo na zariadenie sociálnych služieb obstarané podľa tohto zákona v prospech fondu na zabezpečenie dodržania podmienok podľa § 14e ods. 3."
+        }
+       ]
+      },
+      {
+       "anchor": "p14-2",
+       "text": "Podporu na zateplenie zariadenia sociálnych služieb podľa § 6 ods. 1 písm. e) prvého bodu možno poskytnúť len vtedy, ak sú splnené podmienky podľa § 12 ods. 3 písm. d) prvého až tretieho bodu, § 13 ods. 1, ods. 2 písm. d) a e).",
+       "n": "2"
+      },
+      {
+       "anchor": "p14-3",
+       "text": "Podporu na obstaranie toho istého zariadenia sociálnych služieb je možné poskytnúť iba raz.",
+       "n": "3"
+      },
+      {
+       "anchor": "p14-4",
+       "text": "Podporu na obstaranie zariadenia sociálnych služieb podľa § 6 ods. 1 písm. d) druhého bodu možno poskytnúť aj vtedy, ak žiadateľ uzavrel so zhotoviteľom zmluvu o budúcej kúpnej zmluve a kúpnu zmluvu uzavrie najneskôr do konca mesiaca december v druhom kalendárnom roku nasledujúcom po roku, v ktorom bola uzavretá zmluva. Spolu s následnou kúpnou zmluvou žiadateľ predloží fondu aj právoplatné kolaudačné rozhodnutie alebo kolaudačné osvedčenie obstarávaného zariadenia sociálnych služieb.",
+       "n": "4"
+      },
+      {
+       "anchor": "p14-5",
+       "text": "Na modernizáciu zariadenia sociálnych služieb podľa § 6 ods. 1 písm. e) druhého bodu sa ustanovenie § 6 ods. 4 použije primerane.",
+       "n": "5"
+      },
+      {
+       "anchor": "p14-6",
+       "text": "Podporu na obnovu zariadenia sociálnych služieb podľa § 6 ods. 1 písm. e) možno poskytnúť na týmto zákonom ustanovený rozsah obnovy súčasne alebo postupne na jednej budove. Na stavebné práce realizované pri obnove zariadenia sociálnych služieb podľa § 6 ods. 1 písm. e), na ktoré sa už poskytla podpora podľa tohto zákona, nie je možné poskytnúť podporu opakovane.",
+       "n": "6"
+      }
+     ],
+     "heading": "Podmienky poskytnutia podpory na obstaranie a obnovu zariadenia sociálnych služieb"
+    },
+    {
+     "type": "provision",
+     "anchor": "p14a",
+     "label": "§ 14a",
+     "paragraphs": [
+      {
+       "anchor": "p14a-1",
+       "text": "Podporu na obstaranie technickej vybavenosti podľa § 6 ods. 1 písm. f) možno poskytnúť, ak bolo rozhodnuté o poskytnutí podpory na obstaranie nájomného bytu podľa § 6 ods. 1 písm. b), na obstaranie zariadenia sociálnych služieb podľa § 6 ods. 1 písm. d) alebo na obstaranie ubytovacieho domu podľa § 6 ods. 1 písm. h) alebo o poskytnutí dotácie na obstaranie nájomného bytu podľa osobitného predpisu.⁵)",
+       "n": "1"
+      },
+      {
+       "anchor": "p14a-2",
+       "text": "Podporu na obstaranie technickej vybavenosti podľa § 6 ods. 1 písm. f) možno poskytnúť, ak súvisí s obstarávaním nájomných bytov, obstaraním zariadenia sociálnych služieb alebo s obstaraním ubytovacieho domu; túto podporu možno poskytnúť len jedenkrát.",
+       "n": "2"
+      },
+      {
+       "anchor": "p14a-3",
+       "text": "K obstarávanému nájomnému bytu možno poskytnúť podporu len na jeden z druhov technickej vybavenosti podľa osobitného predpisu.³³ᵃ)",
+       "n": "3"
+      },
+      {
+       "anchor": "p14a-4",
+       "text": "K obstarávanému ubytovaciemu domu alebo obstarávanému zariadeniu sociálnych služieb nemožno poskytnúť podporu na garážové stojisko.",
+       "n": "4"
+      },
+      {
+       "anchor": "p14a-5",
+       "text": "Ak obstaranie nájomného bytu, obstaranie zariadenia sociálnych služieb alebo obstaranie ubytovacieho domu podmieňuje aj obstaranie prislúchajúcej technickej vybavenosti, súčasťou žiadosti o podporu na obstaranie nájomného bytu, obstaranie zariadenia sociálnych služieb alebo obstaranie ubytovacieho domu je aj žiadosť o podporu na obstaranie technickej vybavenosti.",
+       "n": "5"
+      },
+      {
+       "anchor": "p14a-6",
+       "text": "Podporu na obstaranie technickej vybavenosti podľa § 6 ods. 1 písm. f) druhého bodu možno poskytnúť aj vtedy, ak žiadateľ uzavrel so zhotoviteľom zmluvu o budúcej kúpnej zmluve a kúpnu zmluvu uzavrie najneskôr do konca mesiaca december v druhom kalendárnom roku nasledujúcom po roku, v ktorom bola uzavretá zmluva. Spolu s následnou kúpnou zmluvou žiadateľ predloží fondu aj právoplatné kolaudačné rozhodnutie, kolaudačné osvedčenie alebo osvedčenie o skutočnom zhotovení obstarávanej technickej vybavenosti.",
+       "n": "6"
+      },
+      {
+       "anchor": "p14a-7",
+       "text": "Splnenie povinnosti podľa odseku 5 sa nevyžaduje, ak žiadateľ vyhlási, že obstaranie prislúchajúcej technickej vybavenosti zabezpečí bez podpory podľa tohto zákona.",
+       "n": "7"
+      }
+     ],
+     "heading": "Podmienky poskytnutia podpory na obstaranie technickej vybavenosti"
+    },
+    {
+     "type": "provision",
+     "anchor": "p14b",
+     "label": "§ 14b",
+     "paragraphs": [
+      {
+       "anchor": "p14b-1",
+       "text": "Podporu na kúpu pozemku podľa § 6 ods. 1 písm. g) možno poskytnúť, ak bolo rozhodnuté o poskytnutí podpory na obstaranie nájomného bytu podľa § 6 ods. 1 písm. b), na obstaranie zariadenia sociálnych služieb podľa § 6 ods. 1 písm. d) alebo na obstaranie ubytovacieho domu podľa § 6 ods. 1 písm. h).",
+       "n": "1"
+      },
+      {
+       "anchor": "p14b-2",
+       "text": "Podporu na kúpu pozemku podľa § 6 ods. 1 písm. g) možno poskytnúť, ak súvisí s obstarávaním nájomných bytov, obstaraním zariadenia sociálnych služieb alebo obstarávaním ubytovacieho domu. Podporu na kúpu pozemku k jednej stavbe podľa § 6 ods. 1 písm. b), § 6 ods. 1 písm. d) a § 6 ods. 1 písm. h) možno poskytnúť len jedenkrát.",
+       "n": "2"
+      },
+      {
+       "anchor": "p14b-3",
+       "text": "Ak obstaranie nájomného bytu, obstaranie zariadenia sociálnych služieb alebo obstaranie ubytovacieho domu podmieňuje aj kúpa pozemku, súčasťou žiadosti o podporu na obstaranie nájomného bytu, obstaranie zariadenia sociálnych služieb alebo obstaranie ubytovacieho domu je aj žiadosť o podporu na kúpu pozemku.",
+       "n": "3"
+      },
+      {
+       "anchor": "p14b-4",
+       "text": "Podporu na kúpu pozemku podľa § 6 ods. 1 písm. g) možno poskytnúť aj vtedy, ak žiadateľ uzavrel zmluvu o budúcej kúpnej zmluve a kúpnu zmluvu uzavrie najneskôr do konca mesiaca december v druhom kalendárnom roku nasledujúcom po roku, v ktorom bola uzavretá zmluva.",
+       "n": "4"
+      },
+      {
+       "anchor": "p14b-5",
+       "text": "Kúpou pozemku podľa § 6 ods. 1 písm. g) sa rozumie aj vyplatenie už poskytnutého úveru na kúpu tohto pozemku.",
+       "n": "5"
+      },
+      {
+       "anchor": "p14b-6",
+       "text": "Splnenie povinnosti podľa odseku 3 sa nevyžaduje, ak žiadateľ vyhlási, že kúpu pozemku zabezpečí bez podpory podľa tohto zákona.",
+       "n": "6"
+      }
+     ],
+     "heading": "Podmienky poskytnutia podpory na kúpu pozemku"
+    },
+    {
+     "type": "provision",
+     "anchor": "p14c",
+     "label": "§ 14c",
+     "paragraphs": [
+      {
+       "anchor": "p14c-1",
+       "text": "Podporu na obstaranie ubytovacieho domu podľa § 6 ods. 1 písm. h) možno poskytnúť len vtedy, ak",
+       "n": "1",
+       "items": [
+        {
+         "anchor": "p14c-1-a",
+         "label": "a)",
+         "letter": "a",
+         "text": "počet ubytovacích buniek v ubytovacom dome je najmenej 10,"
+        },
+        {
+         "anchor": "p14c-1-b",
+         "label": "b)",
+         "letter": "b",
+         "text": "sa žiadateľ v zmluve zaviaže, že",
+         "items": [
+          {
+           "anchor": "p14c-1-b-1",
+           "label": "1.",
+           "letter": "1",
+           "text": "zriadi záložné právo na ubytovací dom obstaraný podľa tohto zákona v prospech fondu na zabezpečenie peňažných pohľadávok fondu vyplývajúcich z úveru a"
+          },
+          {
+           "anchor": "p14c-1-b-2",
+           "label": "2.",
+           "letter": "2",
+           "text": "zriadi záložné právo na ubytovací dom obstaraný podľa tohto zákona v prospech fondu na zabezpečenie dodržania podmienok podľa § 14e ods. 4,"
+          }
+         ]
+        },
+        {
+         "anchor": "p14c-1-c",
+         "label": "c)",
+         "letter": "c",
+         "text": "sa žiadateľ zaviaže, že v zmluve zriadi záložné právo na ubytovací dom obstaraný podľa tohto zákona v prospech fondu."
+        }
+       ]
+      },
+      {
+       "anchor": "p14c-2",
+       "text": "Podporu na obstaranie ubytovacieho domu možno poskytnúť len vtedy, ak sa stavba nachádza",
+       "n": "2",
+       "items": [
+        {
+         "anchor": "p14c-2-a",
+         "label": "a)",
+         "letter": "a",
+         "text": "v meste alebo v priľahlých s mestom priamo susediacich obciach alebo"
+        },
+        {
+         "anchor": "p14c-2-b",
+         "label": "b)",
+         "letter": "b",
+         "text": "v obci, na území ktorej sa realizuje výstavba priemyselného parku alebo sa nachádza priemyselný park, alebo"
+        },
+        {
+         "anchor": "p14c-2-c",
+         "label": "c)",
+         "letter": "c",
+         "text": "v obci, na území ktorej sa nachádza prevádzkareň žiadateľa podľa § 7 ods. 1 písm. g) minimálne s 500 zamestnancami."
+        }
+       ]
+      },
+      {
+       "anchor": "p14c-3",
+       "text": "Podporu na obstaranie toho istého ubytovacieho domu je možné poskytnúť iba raz.",
+       "n": "3"
+      },
+      {
+       "anchor": "p14c-4",
+       "text": "Podporu na obstaranie ubytovacieho domu podľa § 6 ods. 1 písm. h) druhého bodu možno poskytnúť aj vtedy, ak žiadateľ uzavrel so zhotoviteľom zmluvu o budúcej kúpnej zmluve a kúpnu zmluvu uzavrie najneskôr do konca mesiaca december v druhom kalendárnom roku nasledujúcom po roku, v ktorom bola uzavretá zmluva. Spolu s následnou kúpnou zmluvou žiadateľ predloží fondu aj právoplatné kolaudačné rozhodnutie alebo kolaudačné osvedčenie obstarávaného ubytovacieho domu.",
+       "n": "4"
+      },
+      {
+       "anchor": "p14c-5",
+       "text": "Podporu na obstaranie ubytovacieho domu nie je možné poskytnúť, ak sa obstaráva stavebnou úpravou bytovej budovy, na ktorej obstaranie bola poskytnutá podpora podľa tohto zákona alebo dotácia z verejných prostriedkov.³⁴)",
+       "n": "5"
+      }
+     ],
+     "heading": "Podmienky poskytnutia podpory na obstaranie ubytovacieho domu"
+    },
+    {
+     "type": "provision",
+     "anchor": "p14d",
+     "label": "§ 14d",
+     "paragraphs": [
+      {
+       "anchor": "p14d-1",
+       "text": "Podporu na obstaranie internátu podľa § 6 ods. 1 písm. i) možno poskytnúť len vtedy, ak internát spĺňa požiadavky na vnútorné prostredie budov a minimálne požiadavky na ubytovacie zariadenia.",
+       "n": "1"
+      },
+      {
+       "anchor": "p14d-2",
+       "text": "Podporu na obstaranie internátu podľa § 6 ods. 1 písm. i) a podporu na obnovu internátu podľa § 6 ods. 1 písm. j) možno poskytnúť len vtedy, ak",
+       "n": "2",
+       "items": [
+        {
+         "anchor": "p14d-2-a",
+         "label": "a)",
+         "letter": "a",
+         "text": "počet izieb v internáte je najmenej 20,"
+        },
+        {
+         "anchor": "p14d-2-b",
+         "label": "b)",
+         "letter": "b",
+         "text": "najmenej 80 % izieb v obstarávanom internáte alebo obnovovanom internáte bude poskytovať ubytovanie žiakom stredných škôl alebo študentom vysokých škôl a"
+        },
+        {
+         "anchor": "p14d-2-c",
+         "label": "c)",
+         "letter": "c",
+         "text": "sa žiadateľ v zmluve zaviaže, že",
+         "items": [
+          {
+           "anchor": "p14d-2-c-1",
+           "label": "1.",
+           "letter": "1",
+           "text": "zriadi záložné právo na internát obstaraný podľa tohto zákona v prospech fondu na zabezpečenie peňažných pohľadávok fondu vyplývajúcich z úveru a"
+          },
+          {
+           "anchor": "p14d-2-c-2",
+           "label": "2.",
+           "letter": "2",
+           "text": "zriadi záložné právo na internát obstaraný podľa tohto zákona v prospech fondu na zabezpečenie dodržania podmienok podľa § 14e ods. 5."
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "anchor": "p14d-3",
+       "text": "Žiadateľovi podľa § 7 ods. 1 písm. g) možno podporu na obstaranie internátu podľa § 6 ods. 1 písm. i) alebo obnovu internátu podľa § 6 ods. 1 písm. j) poskytnúť, ak ide o verejnú vysokú školu.³⁴ᵃ)",
+       "n": "3"
+      },
+      {
+       "anchor": "p14d-4",
+       "text": "Podporu na zateplenie internátu podľa § 6 ods. 1 písm. j) prvého bodu možno poskytnúť len vtedy, ak sú splnené podmienky podľa § 12 ods. 3 písm. d) prvého až tretieho bodu a § 13 ods. 1 a ods. 2 písm. d) a e).",
+       "n": "4"
+      },
+      {
+       "anchor": "p14d-5",
+       "text": "Podporu na obstaranie toho istého internátu je možné poskytnúť iba raz.",
+       "n": "5"
+      },
+      {
+       "anchor": "p14d-6",
+       "text": "Podporu na obstaranie internátu podľa § 6 ods. 1 písm. i) druhého bodu možno poskytnúť aj vtedy, ak žiadateľ uzavrel so zhotoviteľom zmluvu o budúcej kúpnej zmluve a kúpnu zmluvu uzavrie najneskôr do konca mesiaca december v druhom kalendárnom roku nasledujúcom po roku, v ktorom bola uzavretá zmluva. Spolu s následnou kúpnou zmluvou žiadateľ predloží fondu aj právoplatné kolaudačné rozhodnutie alebo kolaudačné osvedčenie obstarávaného internátu.",
+       "n": "6"
+      },
+      {
+       "anchor": "p14d-7",
+       "text": "Na modernizáciu internátu podľa § 6 ods. 1 písm. j) druhého bodu sa § 6 ods. 4 použije primerane.",
+       "n": "7"
+      },
+      {
+       "anchor": "p14d-8",
+       "text": "Podporu na obnovu internátu podľa § 6 ods. 1 písm. j) možno poskytnúť na týmto zákonom ustanovený rozsah obnovy súčasne alebo postupne na jednej budove. Na stavebné práce realizované pri obnove internátu podľa § 6 ods. 1 písm. j), na ktoré sa už poskytla podpora podľa tohto zákona, nie je možné poskytnúť podporu opakovane.",
+       "n": "8"
+      }
+     ],
+     "heading": "Podmienky poskytnutia podpory na obstaranie a obnovu internátu"
+    },
+    {
+     "type": "provision",
+     "anchor": "p14e",
+     "label": "§ 14e",
+     "paragraphs": [
+      {
+       "anchor": "p14e-1",
+       "text": "Žiadateľ podľa § 7 ods. 1 písm. b), c) a f) je povinný byt, na ktorého obstaranie bola poskytnutá podpora podľa § 10 ods. 9, trvalo prenajímať podľa tohto zákona odo dňa jeho obstarania. Tento byt nie je možné previesť na inú osobu.",
+       "n": "1"
+      },
+      {
+       "anchor": "p14e-2",
+       "text": "Žiadateľ podľa § 7 ods. 1 písm. g) je povinný byt, na ktorého obstaranie bola poskytnutá podpora podľa § 10 ods. 10, prenajímať podľa tohto zákona počas lehoty splatnosti úveru, najmenej po dobu 30 rokov odo dňa jeho obstarania. Zakazuje sa zmena účelu využitia tohto bytu po dobu podľa prvej vety.",
+       "n": "2"
+      },
+      {
+       "anchor": "p14e-3",
+       "text": "Žiadateľ podľa § 7 ods. 1 písm. b), c), f) a g) je povinný v zariadení sociálnych služieb, na ktorého obstaranie alebo obnovu bola poskytnutá podpora podľa § 14 ods. 1, poskytovať alebo zabezpečiť poskytovanie sociálnych služieb podľa osobitného predpisu⁹) počas lehoty splatnosti úveru, najmenej po dobu 30 rokov odo dňa jeho obstarania. Zakazuje sa zmena účelu využitia tohto zariadenia sociálnych služieb po dobu podľa prvej vety.",
+       "n": "3"
+      },
+      {
+       "anchor": "p14e-4",
+       "text": "Žiadateľ podľa § 7 ods. 1 písm. b), c), f) a g) je povinný v ubytovacom dome, na ktorého obstaranie bola poskytnutá podpora podľa § 14c ods. 1, poskytovať ubytovanie podľa tohto zákona počas lehoty splatnosti úveru, najmenej po dobu 20 rokov odo dňa jeho obstarania. Zakazuje sa zmena účelu využitia tohto ubytovacieho domu po dobu podľa prvej vety.",
+       "n": "4"
+      },
+      {
+       "anchor": "p14e-5",
+       "text": "Žiadateľ podľa § 7 ods. 1 písm. c) a g) je povinný v internáte, na ktorého obstaranie bola poskytnutá podpora podľa § 14d ods. 2, poskytovať ubytovanie podľa tohto zákona počas lehoty splatnosti úveru, najmenej po dobu 30 rokov odo dňa jeho obstarania. Zakazuje sa zmena účelu využitia tohto internátu po dobu podľa prvej vety.",
+       "n": "5"
+      },
+      {
+       "anchor": "p14e-6",
+       "text": "Obmedzenie prevodu predmetu podpory podľa odseku 1 sa zapisuje do katastra nehnuteľností ako poznámka o právach k nehnuteľnostiam na návrh poskytovateľa podpory. Zmluva o nakladaní s predmetom podpory uzavretá v rozpore s odsekom 1 je neplatná.",
+       "n": "6"
+      },
+      {
+       "anchor": "p14e-7",
+       "text": "Zmena vlastníka predmetu podpory podľa odsekov 2 až 5 je možná len s predchádzajúcim súhlasom fondu. Pri zmene vlastníka predmetu podpory vstupuje nadobúdateľ do právneho postavenia žiadateľa a je povinný dodržiavať ustanovenia tohto zákona.",
+       "n": "7"
+      }
+     ],
+     "heading": "Podmienky nakladania s predmetom podpory"
+    },
+    {
+     "type": "provision",
+     "anchor": "p15",
+     "label": "§ 15",
+     "paragraphs": [
+      {
+       "anchor": "p15-1",
+       "text": "Žiadateľ predkladá fondu žiadosť o podporu (ďalej len „žiadosť“) prostredníctvom",
+       "n": "1",
+       "items": [
+        {
+         "anchor": "p15-1-a",
+         "label": "a)",
+         "letter": "a",
+         "text": "obce alebo mestskej časti, ktorá je sídlom okresu³⁵) pre územný obvod podľa prílohy č. 3 (ďalej len „obec“) príslušný podľa miesta stavby, ak ide o účely podľa § 6 ods. 1 písm. a) a c) alebo"
+        },
+        {
+         "anchor": "p15-1-b",
+         "label": "b)",
+         "letter": "b",
+         "text": "okresného úradu v sídle kraja príslušného podľa miesta stavby, ak ide o účel podľa § 6 ods. 1 písm. b), d) až j)."
+        }
+       ]
+      },
+      {
+       "anchor": "p15-2",
+       "text": "Žiadosť sa predkladá v termíne",
+       "n": "2",
+       "items": [
+        {
+         "anchor": "p15-2-a",
+         "label": "a)",
+         "letter": "a",
+         "text": "od 15. januára do 31. augusta príslušného kalendárneho roka, ak ide o účel podľa § 6 ods. 1 písm. a) a c),"
+        },
+        {
+         "anchor": "p15-2-b",
+         "label": "b)",
+         "letter": "b",
+         "text": "od 15. januára do 31. mája príslušného kalendárneho roka, ak ide o účel podľa § 6 ods. 1 písm. b), f) a g) pre žiadateľa podľa § 7 ods. 1 písm. b), c) a f) a žiadateľ žiada poskytnutie podpory podľa osobitného predpisu,⁵)"
+        },
+        {
+         "anchor": "p15-2-c",
+         "label": "c)",
+         "letter": "c",
+         "text": "od 15. januára do 31. augusta príslušného kalendárneho roka, ak ide o účel podľa § 6 ods. 1 písm. b), d) až h) pre žiadateľa podľa § 7 ods. 1 písm. b), c), f) a g),"
+        },
+        {
+         "anchor": "p15-2-d",
+         "label": "d)",
+         "letter": "d",
+         "text": "od 15. januára do 31. augusta príslušného kalendárneho roka, ak ide o účel podľa § 6 ods. 1 písm. i) a j) pre žiadateľa podľa § 7 ods. 1 písm. c) a g)."
+        }
+       ]
+      },
+      {
+       "anchor": "p15-3",
+       "text": "Ustanovenie odseku 2 sa neuplatní na predloženie žiadosti, ktorou sa rieši odstránenie následkov živelnej udalosti podľa odseku 27.",
+       "n": "3"
+      },
+      {
+       "anchor": "p15-4",
+       "text": "Žiadosť sa predkladá",
+       "n": "4",
+       "items": [
+        {
+         "anchor": "p15-4-a",
+         "label": "a)",
+         "letter": "a",
+         "text": "v listinnej podobe alebo"
+        },
+        {
+         "anchor": "p15-4-b",
+         "label": "b)",
+         "letter": "b",
+         "text": "v elektronickej podobe spôsobom ustanoveným v odseku 8."
+        }
+       ]
+      },
+      {
+       "anchor": "p15-5",
+       "text": "Žiadosť obsahuje najmä",
+       "n": "5",
+       "items": [
+        {
+         "anchor": "p15-5-a",
+         "label": "a)",
+         "letter": "a",
+         "text": "identifikačné údaje žiadateľa,"
+        },
+        {
+         "anchor": "p15-5-b",
+         "label": "b)",
+         "letter": "b",
+         "text": "účel a požadovanú výšku podpory,"
+        },
+        {
+         "anchor": "p15-5-c",
+         "label": "c)",
+         "letter": "c",
+         "text": "údaje o stavbe,"
+        },
+        {
+         "anchor": "p15-5-d",
+         "label": "d)",
+         "letter": "d",
+         "text": "preukázanie schopnosti platenia splátok istiny požadovaného úveru a úrokov z požadovaného úveru podľa § 9 ods. 1 písm. a),"
+        },
+        {
+         "anchor": "p15-5-e",
+         "label": "e)",
+         "letter": "e",
+         "text": "návrh na zabezpečenie záväzkov podľa § 9 ods. 1 písm. b)."
+        }
+       ]
+      },
+      {
+       "anchor": "p15-6",
+       "text": "Identifikačné údaje podľa odseku 5 písm. a) sú",
+       "n": "6",
+       "items": [
+        {
+         "anchor": "p15-6-a",
+         "label": "a)",
+         "letter": "a",
+         "text": "u žiadateľa uvedeného v § 7 ods. 1 písm. a)",
+         "items": [
+          {
+           "anchor": "p15-6-a-1",
+           "label": "1.",
+           "letter": "1",
+           "text": "meno, priezvisko a rodné priezvisko,"
+          },
+          {
+           "anchor": "p15-6-a-2",
+           "label": "2.",
+           "letter": "2",
+           "text": "adresa trvalého pobytu,"
+          },
+          {
+           "anchor": "p15-6-a-3",
+           "label": "3.",
+           "letter": "3",
+           "text": "dátum narodenia,"
+          },
+          {
+           "anchor": "p15-6-a-4",
+           "label": "4.",
+           "letter": "4",
+           "text": "rodné číslo,"
+          },
+          {
+           "anchor": "p15-6-a-5",
+           "label": "5.",
+           "letter": "5",
+           "text": "štátna príslušnosť,"
+          },
+          {
+           "anchor": "p15-6-a-6",
+           "label": "6.",
+           "letter": "6",
+           "text": "rodinný stav,"
+          }
+         ]
+        },
+        {
+         "anchor": "p15-6-b",
+         "label": "b)",
+         "letter": "b",
+         "text": "u žiadateľa uvedeného v § 7 ods. 1 písm. b) a c)",
+         "items": [
+          {
+           "anchor": "p15-6-b-1",
+           "label": "1.",
+           "letter": "1",
+           "text": "názov obce alebo samosprávneho kraja,"
+          },
+          {
+           "anchor": "p15-6-b-2",
+           "label": "2.",
+           "letter": "2",
+           "text": "adresa obecného úradu alebo úradu samosprávneho kraja,"
+          },
+          {
+           "anchor": "p15-6-b-3",
+           "label": "3.",
+           "letter": "3",
+           "text": "identifikačné číslo organizácie,"
+          }
+         ]
+        },
+        {
+         "anchor": "p15-6-c",
+         "label": "c)",
+         "letter": "c",
+         "text": "u žiadateľa uvedeného v § 7 ods. 1 písm. d) až g)",
+         "items": [
+          {
+           "anchor": "p15-6-c-1",
+           "label": "1.",
+           "letter": "1",
+           "text": "názov a sídlo žiadateľa,"
+          },
+          {
+           "anchor": "p15-6-c-2",
+           "label": "2.",
+           "letter": "2",
+           "text": "identifikačné číslo organizácie."
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "anchor": "p15-7",
+       "text": "Návrh na zabezpečenie záväzkov podľa odseku 5 písm. e) sa preukazuje",
+       "n": "7",
+       "items": [
+        {
+         "anchor": "p15-7-a",
+         "label": "a)",
+         "letter": "a",
+         "text": "určením nehnuteľného majetku, ktorý bude predmetom záložného práva u žiadateľa uvedeného v § 7 ods. 1; ak tento majetok tvoria stavby, musia byť poistené pre prípad následkov živelných udalostí,"
+        },
+        {
+         "anchor": "p15-7-b",
+         "label": "b)",
+         "letter": "b",
+         "text": "označením bankovej záruky u žiadateľa uvedeného v § 7 ods. 1 alebo"
+        },
+        {
+         "anchor": "p15-7-c",
+         "label": "c)",
+         "letter": "c",
+         "text": "označením účtu zriadeného v banke, na ktorom je vedený fond prevádzky, údržby a opráv,³⁶) u žiadateľa uvedeného v § 7 ods. 1 písm. d) a e), pričom predmetom záložného práva u žiadateľa uvedeného v § 7 ods. 1 písm. d) a e) budú všetky súčasné a budúce pohľadávky vrátane ich príslušenstva voči jednotlivým vlastníkom bytov a nebytových priestorov na úhradu mesačných platieb do fondu prevádzky, údržby a opráv a všetky súčasné a budúce pohľadávky vrátane ich príslušenstva na vyplatenie zostatku účtu zriadeného v banke, na ktorom je vedený fond prevádzky, údržby a opráv."
+        }
+       ]
+      },
+      {
+       "anchor": "p15-8",
+       "text": "Žiadateľ predkladá žiadosť v elektronickej podobe tak, že údaje podľa odseku 5 vyplní prostredníctvom formulára žiadosti zverejneného na webovom sídle fondu, ku ktorému môže pripojiť prílohy podľa osobitného predpisu³⁶ᵃ) (ďalej len „elektronická príloha“). Pre zaevidovanie žiadosti v elektronickej podobe vrátane pripojených elektronických príloh v informačnom systéme fondu je žiadateľ povinný formulár žiadosti autorizovať kvalifikovaným elektronickým podpisom alebo kvalifikovanou elektronickou pečaťou podľa osobitného predpisu.³⁶ᵇ) Listinné prílohy k žiadosti je žiadateľ povinný doručiť do piatich pracovných dní odo dňa odoslania formulára žiadosti spolu s dokumentom obsahujúcim jedinečný identifikátor vygenerovaný po odoslaní formulára žiadosti. Dňom predloženia žiadosti je deň doručenia listinných príloh k žiadosti.",
+       "n": "8"
+      },
+      {
+       "anchor": "p15-9",
+       "text": "Obec alebo okresný úrad v sídle kraja bezprostredne po doručení žiadosti predloženej podľa odseku 4 písm. a) zaeviduje žiadosť v informačnom systéme fondu a do 15 pracovných dní odo dňa doručenia žiadosti overí úplnosť jej náležitostí v poradí podľa doručenia žiadosti. Overenie úplnosti náležitostí žiadosti predloženej podľa odseku 4 písm. a) vyznačí zamestnanec obce alebo okresného úradu v sídle kraja odtlačkom úradnej pečiatky, podpisom a vyznačením v informačnom systéme fondu. Zhodu kópie dokladu priloženého k žiadosti s originálom dokladu môže na účely tohto zákona vyznačiť zamestnanec obce alebo okresného úradu v sídle kraja.",
+       "n": "9"
+      },
+      {
+       "anchor": "p15-10",
+       "text": "Pri doručení žiadosti predloženej podľa odseku 4 písm. b) obec alebo okresný úrad v sídle kraja overí úplnosť náležitostí žiadosti do 15 pracovných dní odo dňa doručenia listinných príloh k žiadosti v poradí podľa doručenia žiadosti. Overenie úplnosti náležitostí žiadosti predloženej podľa odseku 4 písm. b) vyznačí zamestnanec obce alebo okresného úradu v sídle kraja v informačnom systéme fondu.",
+       "n": "10"
+      },
+      {
+       "anchor": "p15-11",
+       "text": "Ak sú v žiadosti nedostatky, obec alebo okresný úrad v sídle kraja vyzve žiadateľa, aby v lehote do desiatich pracovných dní odo dňa doručenia písomnej výzvy odstránil nedostatky v žiadosti.",
+       "n": "11"
+      },
+      {
+       "anchor": "p15-12",
+       "text": "Úplnú a overenú žiadosť obec alebo okresný úrad v sídle kraja bezodkladne odošle fondu prostredníctvom informačného systému fondu v poradí podľa doručenia úplnej žiadosti a súčasne zašle fondu",
+       "n": "12",
+       "items": [
+        {
+         "anchor": "p15-12-a",
+         "label": "a)",
+         "letter": "a",
+         "text": "overenú listinnú podobu úplnej žiadosti predloženej podľa odseku 4 písm. a) alebo"
+        },
+        {
+         "anchor": "p15-12-b",
+         "label": "b)",
+         "letter": "b",
+         "text": "listinné prílohy k úplnej žiadosti predloženej podľa odseku 4 písm. b)."
+        }
+       ]
+      },
+      {
+       "anchor": "p15-13",
+       "text": "Žiadosť, v ktorej žiadateľ ani po výzve podľa odseku 11 neodstránil nedostatky, alebo žiadosť, ktorá nie je v súlade s týmto zákonom, obec alebo okresný úrad v sídle kraja bezodkladne vráti žiadateľovi. Formulár žiadosti a elektronické prílohy k žiadosti sa žiadateľovi nezasielajú späť.",
+       "n": "13"
+      },
+      {
+       "anchor": "p15-14",
+       "text": "Žiadateľ, ktorému bola žiadosť vrátená podľa odseku 13, môže podať podnet na preskúmanie postupu obce alebo okresného úradu v sídle kraja. Podnet predkladá žiadateľ fondu prostredníctvom obce alebo okresného úradu v sídle kraja v lehote do desiatich pracovných dní odo dňa doručenia vrátenej žiadosti. K podnetu je žiadateľ povinný doložiť žiadosť predloženú podľa odseku 4 písm. a) alebo listinné prílohy k žiadosti predloženej podľa odseku 4 písm. b), ktoré boli predmetom overovania obcou alebo okresným úradom v sídle kraja. Obec alebo okresný úrad v sídle kraja spolu s podnetom predloží fondu aj svoju spisovú dokumentáciu, ktorá bola súčasťou procesu overovania.",
+       "n": "14"
+      },
+      {
+       "anchor": "p15-15",
+       "text": "Fond preskúma v lehote do 20 pracovných dní odo dňa doručenia podnetu podľa odseku 14 postup obce alebo okresného úradu v sídle kraja a v prípade zistenia ich nesprávneho postupu zaradí žiadosť do poradia žiadostí. Ak fond nezistí nesprávny postup obce alebo okresného úradu v sídle kraja, podnet zamietne a vráti žiadateľovi žiadosť predloženú podľa odseku 4 písm. a) alebo listinné prílohy k žiadosti predloženej podľa odseku 4 písm. b).",
+       "n": "15"
+      },
+      {
+       "anchor": "p15-16",
+       "text": "Fond vedie evidenciu žiadostí podľa účelu podpory v poradí podľa prideleného poradového čísla, ktoré vygeneruje informačný systém fondu po vyznačení overenia úplnosti náležitostí žiadosti obcou alebo okresným úradom v sídle kraja.",
+       "n": "16"
+      },
+      {
+       "anchor": "p15-17",
+       "text": "Ak má fond v rozpočte príslušného kalendárneho roku disponibilné finančné zdroje na príslušný účel podpory, v lehote do 45 pracovných dní odo dňa doručenia úplnej žiadosti a bezprostredne po jej posúdení zašle žiadateľovi rozhodnutie o výške podpory, výške úrokovej sadzby a lehote splatnosti (ďalej len „rozhodnutie“).",
+       "n": "17"
+      },
+      {
+       "anchor": "p15-18",
+       "text": "Ak v lehote do 45 pracovných dní odo dňa doručenia úplnej žiadosti fond nemá v rozpočte príslušného kalendárneho roku disponibilné finančné zdroje na príslušný účel podpory, o žiadosti rozhodne najneskôr do 31. decembra príslušného kalendárneho roka.",
+       "n": "18"
+      },
+      {
+       "anchor": "p15-19",
+       "text": "Ak je pre rozhodnutie o poskytnutí podpory nevyhnutné odstrániť nedostatky v žiadosti, fond vyzve žiadateľa, aby v primeranej lehote odstránil nedostatky v žiadosti. Fond rozhodne o poskytnutí podpory bezprostredne po odstránení nedostatkov v žiadosti.",
+       "n": "19"
+      },
+      {
+       "anchor": "p15-20",
+       "text": "Na účely tohto zákona nedostatkom žiadosti sa rozumie nezrovnalosť alebo nejasnosť v žiadosti alebo jej prílohách, ktoré žiadateľ predložil so žiadosťou, alebo chýbajúca príloha k žiadosti. Za nedostatky v žiadosti sa nepovažujú zrejmé chyby v písaní alebo iné zrejmé nesprávnosti. Vysvetlenie nezrovnalosti alebo nejasnosti žiadateľ spracuje v samostatnom dokumente. Doplnenie chýbajúcej prílohy k žiadosti možno akceptovať len vtedy, ak skutočnosti preukazované touto prílohou mali právne účinky pred termínom podania žiadosti. Vysvetlením alebo doplnením chýbajúcej prílohy nemôže dôjsť k zmene účelu žiadosti.",
+       "n": "20"
+      },
+      {
+       "anchor": "p15-21",
+       "text": "Rozhodnutie fondu o poskytnutí podpory k žiadosti doručenej neskôr ako žiadosť, ku ktorej fond vyzval žiadateľa na odstránenie nedostatkov v žiadosti, sa nepovažuje za porušenie poradia podľa odseku 16.",
+       "n": "21"
+      },
+      {
+       "anchor": "p15-22",
+       "text": "Fond rozhodne o neposkytnutí podpory a vráti žiadosť predloženú podľa odseku 4 písm. a) alebo listinné prílohy k žiadosti predloženej podľa odseku 4 písm. b) vrátane rozhodnutia o neposkytnutí podpory bezodkladne žiadateľovi, ak",
+       "n": "22",
+       "items": [
+        {
+         "anchor": "p15-22-a",
+         "label": "a)",
+         "letter": "a",
+         "text": "žiadosť nespĺňa podmienky ustanovené týmto zákonom alebo"
+        },
+        {
+         "anchor": "p15-22-b",
+         "label": "b)",
+         "letter": "b",
+         "text": "sú vyčerpané disponibilné finančné zdroje na príslušný účel podpory v príslušnom kalendárnom roku."
+        }
+       ]
+      },
+      {
+       "anchor": "p15-23",
+       "text": "O poskytnutí podpory pri žiadosti predkladanej súčasne so žiadosťou o dotáciu na rozvoj bývania podľa osobitného predpisu⁵) spĺňajúcej podmienky ustanovené týmto zákonom rozhodne fond až po doručení oznámenia o možnosti poskytnutia dotácie na rozvoj bývania podľa osobitného predpisu.⁵) Oznámenie doručí fondu ministerstvo bezodkladne.",
+       "n": "23"
+      },
+      {
+       "anchor": "p15-24",
+       "text": "Žiadateľ, ktorému nebola poskytnutá podpora podľa odseku 22 písm. a), môže podať podnet na preskúmanie postupu fondu. Podnet predkladá ministerstvu prostredníctvom fondu v lehote do desiatich pracovných dní odo dňa doručenia vrátenej žiadosti. K podnetu je žiadateľ povinný doložiť žiadosť predloženú podľa odseku 4 písm. a) alebo listinné prílohy k žiadosti predloženej podľa odseku 4 písm. b), ktoré boli predmetom posudzovania žiadosti fondom. Fond spolu s podnetom predloží ministerstvu úplnú žiadosť, ktorá bola predmetom posudzovania fondom, a svoju spisovú dokumentáciu, ktorá bola súčasťou procesu posudzovania.",
+       "n": "24"
+      },
+      {
+       "anchor": "p15-25",
+       "text": "Ministerstvo preskúma v lehote do 20 pracovných dní odo dňa doručenia podnetu podľa odseku 24 postup fondu a v prípade zistenia nesprávneho postupu vráti fondu žiadosť predloženú podľa odseku 4 písm. a) alebo listinné prílohy k žiadosti predloženej podľa odseku 4 písm. b). Fond zaradí žiadosť do poradia žiadostí podľa prideleného poradového čísla podľa odseku 16. Ak ministerstvo nezistí nesprávny postup fondu, podnet zamietne a vráti žiadateľovi žiadosť predloženú podľa odseku 4 písm. a) alebo listinné prílohy k žiadosti predloženej podľa odseku 4 písm. b), ak odsek 26 neustanovuje inak.",
+       "n": "25"
+      },
+      {
+       "anchor": "p15-26",
+       "text": "Ak ministerstvo zistí nesprávny postup fondu po 31. decembri kalendárneho roka, v ktorom sa predložila žiadosť fondu, fond postupuje podľa podmienok ustanovených týmto zákonom v čase podania žiadosti. Fond žiadosť bezodkladne opätovne posúdi mimo poradia na poskytnutie podpory podľa odseku 16.",
+       "n": "26"
+      },
+      {
+       "anchor": "p15-27",
+       "text": "Minister môže udeliť výnimku z poradia na poskytnutie podpory podľa odseku 16 pre žiadosť, ktorá sa predkladá z dôvodu odstránenia následkov živelnej udalosti. Na účely tohto zákona sa živelnou udalosťou rozumie povodeň, záplava, víchrica, úder blesku, požiar, krupobitie, zosuv pôdy, zrútenie skaly alebo zemín, zosuv alebo zrútenie lavíny a zemetrasenie dosahujúce aspoň 5. stupeň medzinárodnej stupnice udávajúcej makroskopické účinky zemetrasenia.",
+       "n": "27"
+      },
+      {
+       "anchor": "p15-28",
+       "text": "Na konanie o poskytovaní podpory sa nevzťahuje všeobecný predpis o správnom konaní.",
+       "n": "28"
+      }
+     ],
+     "heading": "Postup pri poskytovaní podpory"
+    },
+    {
+     "type": "provision",
+     "anchor": "p16",
+     "label": "§ 16",
+     "paragraphs": [
+      {
+       "anchor": "p16-1",
+       "text": "Fond v lehote do 20 pracovných dní odo dňa vydania rozhodnutia podľa § 15 ods. 17 zašle žiadateľovi návrh zmluvy, ktorý obsahuje najmä",
+       "n": "1",
+       "items": [
+        {
+         "anchor": "p16-1-a",
+         "label": "a)",
+         "letter": "a",
+         "text": "identifikačné údaje žiadateľa podľa § 15 ods. 6 a fondu,"
+        },
+        {
+         "anchor": "p16-1-b",
+         "label": "b)",
+         "letter": "b",
+         "text": "účel a výšku poskytnutej podpory,"
+        },
+        {
+         "anchor": "p16-1-c",
+         "label": "c)",
+         "letter": "c",
+         "text": "spôsob plnenia záväzkov zmluvných strán,"
+        },
+        {
+         "anchor": "p16-1-d",
+         "label": "d)",
+         "letter": "d",
+         "text": "zabezpečenie záväzkov vyplývajúcich z úveru,"
+        },
+        {
+         "anchor": "p16-1-e",
+         "label": "e)",
+         "letter": "e",
+         "text": "bezhotovostný spôsob úhrady z podpory,"
+        },
+        {
+         "anchor": "p16-1-f",
+         "label": "f)",
+         "letter": "f",
+         "text": "podmienky čerpania podpory,"
+        },
+        {
+         "anchor": "p16-1-g",
+         "label": "g)",
+         "letter": "g",
+         "text": "technické podmienky stavby a dĺžku času jej uskutočnenia,"
+        },
+        {
+         "anchor": "p16-1-h",
+         "label": "h)",
+         "letter": "h",
+         "text": "spôsob kontroly plnenia zmluvných podmienok a dôsledky ich nedodržania,"
+        },
+        {
+         "anchor": "p16-1-i",
+         "label": "i)",
+         "letter": "i",
+         "text": "sankcie za porušenie podmienok ustanovených v § 18,"
+        },
+        {
+         "anchor": "p16-1-j",
+         "label": "j)",
+         "letter": "j",
+         "text": "zabezpečenie záväzku žiadateľa na zachovanie nájomného charakteru bytu podľa § 10 ods. 9 písm. c) prvého a druhého bodu alebo § 10 ods. 10 písm. b) prvého a druhého bodu,"
+        },
+        {
+         "anchor": "p16-1-k",
+         "label": "k)",
+         "letter": "k",
+         "text": "zabezpečenie záväzku žiadateľa na poskytovanie alebo zabezpečenie poskytovania sociálnych služieb podľa § 14 ods. 1 alebo ubytovania podľa § 14c ods. 1 písm. b) alebo ubytovania podľa § 14d ods. 2 písm. c),"
+        },
+        {
+         "anchor": "p16-1-l",
+         "label": "l)",
+         "letter": "l",
+         "text": "trvanie zmluvného vzťahu,"
+        },
+        {
+         "anchor": "p16-1-m",
+         "label": "m)",
+         "letter": "m",
+         "text": "podpisy zmluvných strán."
+        }
+       ]
+      },
+      {
+       "anchor": "p16-2",
+       "text": "Ak žiadateľ odmietne uzatvoriť s fondom zmluvu podľa odseku 1 alebo neuzavrie zmluvu podľa odseku 1 najneskôr do troch kalendárnych mesiacov odo dňa doručenia návrhu zmluvy žiadateľovi, rozhodnutie vydané fondom podľa § 15 ods. 17 zaniká a žiadosť predloženú podľa § 15 ods. 4 písm. a) alebo listinné prílohy k žiadosti predloženej podľa § 15 ods. 4 písm. b) fond bezodkladne vráti žiadateľovi.",
+       "n": "2"
+      },
+      {
+       "anchor": "p16-3",
+       "text": "Práva a povinnosti zo zmluvy môže žiadateľ podľa § 7 ods. 1 písm. g) previesť na inú osobu len po predchádzajúcom písomnom súhlase fondu.",
+       "n": "3"
+      },
+      {
+       "anchor": "p16-4",
+       "text": "Fond uchováva po dobu platnosti zmluvného vzťahu doklady preukazujúce splnenie podmienok poskytnutia podpory podľa tohto zákona.",
+       "n": "4"
+      }
+     ],
+     "heading": "Zmluva"
+    },
+    {
+     "type": "provision",
+     "anchor": "p17",
+     "label": "§ 17",
+     "paragraphs": [
+      {
+       "anchor": "p17-1",
+       "text": "Ministerstvo vykonáva kontrolu dodržiavania ustanovení zákona o výške podpory, podmienkach a postupe pri poskytovaní podpory.",
+       "n": "1"
+      },
+      {
+       "anchor": "p17-2",
+       "text": "Fond vykonáva kontrolu",
+       "n": "2",
+       "items": [
+        {
+         "anchor": "p17-2-a",
+         "label": "a)",
+         "letter": "a",
+         "text": "dodržania postupu podľa § 15 ods. 9 až 14,"
+        },
+        {
+         "anchor": "p17-2-b",
+         "label": "b)",
+         "letter": "b",
+         "text": "účelu použitia podpory,"
+        },
+        {
+         "anchor": "p17-2-c",
+         "label": "c)",
+         "letter": "c",
+         "text": "dodržiavania podmienok, za ktorých boli prostriedky fondu poskytnuté,"
+        },
+        {
+         "anchor": "p17-2-d",
+         "label": "d)",
+         "letter": "d",
+         "text": "dodržiavania zmluvných podmienok."
+        }
+       ]
+      },
+      {
+       "anchor": "p17-x1",
+       "text": "",
+       "items": [
+        {
+         "anchor": "p17-x1-i1",
+         "label": "",
+         "letter": "i1",
+         "text": "(3) Kontrolu dodržiavania zmluvných podmienok a podkladov k čerpaniu podpory poskytnutej z fondu pred ich zaslaním fondu vykonáva",
+         "items": [
+          {
+           "anchor": "p17-x1-i1-a",
+           "label": "a)",
+           "letter": "a",
+           "text": "okresný úrad v sídle kraja u žiadateľa, ak ide o účel podľa § 6 ods. 1 písm. b), d) až j),"
+          },
+          {
+           "anchor": "p17-x1-i1-b",
+           "label": "b)",
+           "letter": "b",
+           "text": "obec u žiadateľa, ak ide o účel podľa § 6 ods. 1 písm. a) a c)."
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "anchor": "p17-4",
+       "text": "Ustanoveniami odsekov 1 až 3 nie sú dotknuté oprávnenia kontrolných orgánov podľa osobitných predpisov.³⁷)",
+       "n": "4"
+      }
+     ],
+     "heading": "Kontrola"
+    },
+    {
+     "type": "provision",
+     "anchor": "p18",
+     "label": "§ 18",
+     "paragraphs": [
+      {
+       "anchor": "p18-1",
+       "text": "Ak žiadateľ porušil finančnú disciplínu pri nakladaní s prostriedkami fondu, uplatní sa postup podľa osobitného predpisu,³⁸) ak tento zákon neustanovuje inak.",
+       "n": "1"
+      },
+      {
+       "anchor": "p18-2",
+       "text": "Žiadateľ je povinný finančné prostriedky vrátiť, ak porušil podmienky poskytnutia podpory na",
+       "n": "2",
+       "items": [
+        {
+         "anchor": "p18-2-a",
+         "label": "a)",
+         "letter": "a",
+         "text": "obstaranie bytu alebo nájomného bytu podľa § 10 ods. 1, 2, ods. 9 písm. a) a b), ods. 10 písm. a) alebo ods. 13,"
+        },
+        {
+         "anchor": "p18-2-b",
+         "label": "b)",
+         "letter": "b",
+         "text": "modernizáciu bytového domu podľa § 11 ods. 1 alebo ods. 2,"
+        },
+        {
+         "anchor": "p18-2-c",
+         "label": "c)",
+         "letter": "c",
+         "text": "odstránenie systémovej poruchy bytového domu podľa § 12 ods. 3 písm. b) alebo písm. d),"
+        },
+        {
+         "anchor": "p18-2-d",
+         "label": "d)",
+         "letter": "d",
+         "text": "zateplenie bytovej budovy podľa § 13 ods. 1 alebo ods. 2 písm. b) až d),"
+        },
+        {
+         "anchor": "p18-2-e",
+         "label": "e)",
+         "letter": "e",
+         "text": "obstaranie zariadenia sociálnych služieb a obnovu zariadenia sociálnych služieb podľa § 14,"
+        },
+        {
+         "anchor": "p18-2-f",
+         "label": "f)",
+         "letter": "f",
+         "text": "obstaranie technickej vybavenosti podľa § 14a,"
+        },
+        {
+         "anchor": "p18-2-g",
+         "label": "g)",
+         "letter": "g",
+         "text": "kúpu pozemku podľa § 14b,"
+        },
+        {
+         "anchor": "p18-2-h",
+         "label": "h)",
+         "letter": "h",
+         "text": "obstaranie ubytovacieho domu podľa § 14c, alebo",
+         "items": [
+          {
+           "anchor": "p18-2-h-i",
+           "label": "i)",
+           "letter": "i",
+           "text": "obstaranie internátu a obnovu internátu podľa § 14d."
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "anchor": "p18-3",
+       "text": "Za nedodržanie termínu dokončenia stavby podľa § 9 ods. 7 sa ukladá odvod vo výške 0,5 % zo sumy poskytnutého úveru za každých aj začatých 12 mesiacov, o ktoré sa predĺži termín dokončenia stavby, a penále vo výške 0,02 % z tejto sumy za každý aj začatý deň omeškania s úhradou uloženého odvodu do dňa odvedenia finančných prostriedkov; odvod sa neuloží žiadateľovi, u ktorého došlo k nedodržaniu termínu dokončenia stavby v dôsledku dôvodov hodných osobitného zreteľa. Ak žiadateľ nedokončí stavbu ani v termíne piatich rokov od termínu ustanoveného podľa § 9 ods. 7, je povinný vrátiť nesplatenú časť úveru.",
+       "n": "3"
+      },
+      {
+       "anchor": "p18-4",
+       "text": "Za nedodržanie podmienok podľa § 14e ods. 1 až 5 je žiadateľ povinný vrátiť nesplatenú časť úveru a uloží sa mu odvod najviac vo výške 100 % poskytnutého úveru v závislosti od dĺžky obdobia od vzniku porušenia podmienok podľa § 14e ods. 1 až 5 do konca trvania obdobia viazanosti podľa § 14e ods. 1 až 5.",
+       "n": "4"
+      },
+      {
+       "anchor": "p18-5",
+       "text": "Za nepredloženie energetického certifikátu zateplenej budovy vrátane správy k energetickému certifikátu podľa § 13 ods. 2. písm. f) sa ukladá odvod vo výške 0,5 % zo sumy poskytnutého úveru a penále vo výške 0,02 % z tejto sumy za každý aj začatý deň omeškania s úhradou uloženého odvodu do dňa odvedenia finančných prostriedkov.",
+       "n": "5"
+      },
+      {
+       "anchor": "p18-6",
+       "text": "Za nedodržanie podmienky zriadenia záložného práva k nehnuteľnosti sa ukladá odvod vo výške 0,5 % zo sumy poskytnutého úveru za každých aj začatých 12 mesiacov, o ktoré sa predĺži termín dokončenia stavby, a penále vo výške 0,02 % z tejto sumy za každý aj začatý deň omeškania s úhradou uloženého odvodu do dňa odvedenia finančných prostriedkov. Ak žiadateľ nesplní podmienku zriadenia záložného práva ani v termíne do troch rokov od termínu vzniku splnenia tejto podmienky, je povinný vrátiť nesplatenú časť úveru.",
+       "n": "6"
+      },
+      {
+       "anchor": "p18-7",
+       "text": "Fond je povinný umožniť predčasné splatenie zostatku poskytnutého úveru alebo časti úveru na základe písomnej žiadosti žiadateľa. Ak bola poskytnutá podpora na obstaranie nájomného bytu podľa § 6 ods. 1 písm. b) alebo obstaranie ubytovacieho domu podľa § 6 ods. 1 písm. h), povinnosť podľa prvej vety vzniká fondu až po uplynutí 30 rokov od nadobudnutia právoplatnosti kolaudačného rozhodnutia alebo kolaudačného osvedčenia nájomného bytu alebo minimálnej doby poskytovania ubytovania v ubytovacom dome podľa tohto zákona. Za predčasné splatenie zostatku poskytnutého úveru alebo časti úveru nemôže fond požadovať poplatok.",
+       "n": "7"
+      },
+      {
+       "anchor": "p18-8",
+       "text": "Odvod, vrátenie nesplatenej časti úveru a penále podľa odsekov 1 až 6 ukladá a vymáha fond. Pri ukladaní a vymáhaní odvodu, povinnosti vrátiť nesplatenú časť úveru a penále fond postupuje podľa všeobecného predpisu o správnom konaní. ³⁸ᵃ)",
+       "n": "8"
+      },
+      {
+       "anchor": "p18-9",
+       "text": "Fond môže na písomné požiadanie žiadateľa, uzavrieť so žiadateľom dohodu o splátkach alebo dohodu o odklade splátok.",
+       "n": "9"
+      }
+     ],
+     "heading": "Sankcie"
+    },
+    {
+     "type": "provision",
+     "anchor": "p19",
+     "label": "§ 19",
+     "paragraphs": [
+      {
+       "anchor": "p19-1",
+       "text": "Fond vytvára a vedie informačný systém, ktorý generuje poradie žiadostí podľa § 15 ods. 16 a umožňuje elektronickú komunikáciu s fondom. Informačný systém fondu obsahuje najmä informácie o žiadostiach, žiadateľoch, spôsobe zabezpečenia úveru a o podporách poskytnutých podľa tohto zákona.",
+       "n": "1"
+      },
+      {
+       "anchor": "p19-2",
+       "text": "Fond zverejňuje na svojom webovom sídle najmä",
+       "n": "2",
+       "items": [
+        {
+         "anchor": "p19-2-a",
+         "label": "a)",
+         "letter": "a",
+         "text": "schválený rozpočet fondu na poskytovanie podpory podľa účelu pre daný rozpočtový rok a návrh rozpočtu na nasledujúce dva roky,"
+        },
+        {
+         "anchor": "p19-2-b",
+         "label": "b)",
+         "letter": "b",
+         "text": "informácie pre žiadateľa nevyhnutné na predloženie žiadosti,"
+        },
+        {
+         "anchor": "p19-2-c",
+         "label": "c)",
+         "letter": "c",
+         "text": "informácie o počte predložených žiadostí aj s objemom požadovanej podpory a počtom bytov, lôžok, ubytovacích buniek podľa účelov podpory,"
+        },
+        {
+         "anchor": "p19-2-d",
+         "label": "d)",
+         "letter": "d",
+         "text": "informácie o počte uzatvorených zmlúv o poskytnutí podpory aj s objemom poskytnutej podpory a počtom bytov, lôžok, ubytovacích buniek podľa účelov podpory,"
+        },
+        {
+         "anchor": "p19-2-e",
+         "label": "e)",
+         "letter": "e",
+         "text": "informácie o počte žiadostí podľa § 15 ods. 22 písm. a) aj s objemom požadovanej podpory a počtom bytov, lôžok, ubytovacích buniek podľa účelov podpory,"
+        },
+        {
+         "anchor": "p19-2-f",
+         "label": "f)",
+         "letter": "f",
+         "text": "podrobnosti o elektronickej komunikácii a poskytovaní elektronických služieb."
+        }
+       ]
+      },
+      {
+       "anchor": "p19-3",
+       "text": "Informácie podľa odseku 2 písm. c) až e) je fond povinný zverejniť štvrťročne k piatemu dňu kalendárneho mesiaca nasledujúceho po ukončení kalendárneho štvrťroka.",
+       "n": "3"
+      },
+      {
+       "anchor": "p19-4",
+       "text": "Na elektronickú komunikáciu s fondom sa vzťahuje osobitný predpis,³⁹) ak tento zákon neustanovuje inak.",
+       "n": "4"
+      }
+     ],
+     "heading": "Informačný systém fondu"
+    }
+   ]
+  },
+  {
+   "type": "provision",
+   "anchor": "p20",
+   "label": "§ 20",
+   "paragraphs": [
+    {
+     "anchor": "p20-1",
+     "text": "Podrobnosti o organizácii a činnosti fondu upravuje štatút fondu, ktorý schvaľuje minister.",
+     "n": "1"
+    },
+    {
+     "anchor": "p20-2",
+     "text": "Nevyčerpanú alebo neoprávnene vyčerpanú časť podpory je žiadateľ povinný vrátiť fondu.",
+     "n": "2"
+    },
+    {
+     "anchor": "p20-3",
+     "text": "Prevody prostriedkov podľa odseku 2 vykoná banka podľa § 5 ods. 5 na účet fondu v Štátnej pokladnici bezodkladne.",
+     "n": "3"
+    }
+   ],
+   "heading": "Osobitné ustanovenie"
+  },
+  {
+   "type": "provision",
+   "anchor": "p21",
+   "label": "§ 21",
+   "paragraphs": [
+    {
+     "anchor": "p21-x1",
+     "text": "Ministerstvo ustanoví všeobecne záväzným právnym predpisom podrobnosti o",
+     "items": [
+      {
+       "anchor": "p21-x1-a",
+       "label": "a)",
+       "letter": "a",
+       "text": "výške poskytovanej podpory, ročnej úrokovej sadzbe úveru a lehote splatnosti úveru podľa účelu podpory a žiadateľa podľa § 7 a § 10 ods. 4,"
+      },
+      {
+       "anchor": "p21-x1-b",
+       "label": "b)",
+       "letter": "b",
+       "text": "odpustení časti z poskytnutej podpory podľa § 13 ods. 4 a všeobecných podmienkach poskytnutia podpory,"
+      },
+      {
+       "anchor": "p21-x1-c",
+       "label": "c)",
+       "letter": "c",
+       "text": "obsahu žiadosti o poskytnutie podpory a forme jej predkladania."
+      }
+     ]
+    }
+   ],
+   "heading": "Splnomocňovacie ustanovenie"
+  },
+  {
+   "type": "provision",
+   "anchor": "p22",
+   "label": "§ 22",
+   "paragraphs": [
+    {
+     "anchor": "p22-1",
+     "text": "Štátny fond rozvoja bývania podľa zákona č. 607/2003 Z. z. o Štátnom fonde rozvoja bývania v znení neskorších predpisov je fondom podľa tohto zákona.",
+     "n": "1"
+    },
+    {
+     "anchor": "p22-2",
+     "text": "Pohľadávky, záväzky, pracovnoprávne vzťahy, právne vzťahy a iné vzťahy fondu vzniknuté pred 1. januárom 2014 sa považujú za pohľadávky, záväzky, pracovnoprávne vzťahy, právne vzťahy a iné vzťahy fondu podľa tohto zákona.",
+     "n": "2"
+    }
+   ],
+   "heading": "Spoločné ustanovenia"
+  },
+  {
+   "type": "provision",
+   "anchor": "p23",
+   "label": "§ 23",
+   "paragraphs": [
+    {
+     "anchor": "p23-x1",
+     "text": "Žiadosti o poskytnutie podpory, ktoré boli podané a",
+     "items": [
+      {
+       "anchor": "p23-x1-a",
+       "label": "a)",
+       "letter": "a",
+       "text": "boli overené do 31. decembra 2013, budú posúdené a fond o nich rozhodne v súlade so zákonom účinným do 31. decembra 2013,"
+      },
+      {
+       "anchor": "p23-x1-b",
+       "label": "b)",
+       "letter": "b",
+       "text": "neboli overené do 31. decembra 2013, sa vrátia späť žiadateľovi."
+      }
+     ]
+    }
+   ],
+   "heading": "Prechodné ustanovenia"
+  },
+  {
+   "type": "provision",
+   "anchor": "p23a",
+   "label": "§ 23a",
+   "paragraphs": [
+    {
+     "anchor": "p23a-x1",
+     "text": "Ustanovenie § 8 ods. 13 sa vzťahuje na podporu poskytnutú od 1. januára 2016."
+    }
+   ],
+   "heading": "Prechodné ustanovenie k úprave účinnej od 1. januára 2016"
+  },
+  {
+   "type": "provision",
+   "anchor": "p23b",
+   "label": "§ 23b",
+   "paragraphs": [
+    {
+     "anchor": "p23b-1",
+     "text": "Žiadateľovi, fyzickej osobe, ktorému fond poskytol úver na výstavbu bytu alebo kúpu bytu podľa predpisov účinných do 1. januára 2014, možno počas platnosti zmluvy odpustiť časť poskytnutého úveru podľa § 10 ods. 7, ak",
+     "n": "1",
+     "items": [
+      {
+       "anchor": "p23b-1-a",
+       "label": "a)",
+       "letter": "a",
+       "text": "spĺňa podmienky podľa § 10 ods. 7 písm. a) a c) a"
+      },
+      {
+       "anchor": "p23b-1-b",
+       "label": "b)",
+       "letter": "b",
+       "text": "písomne požiada fond o odpustenie časti poskytnutého úveru na obstaranie bytu najneskôr do 31. decembra 2018."
+      }
+     ]
+    },
+    {
+     "anchor": "p23b-2",
+     "text": "Časť poskytnutého úveru podľa § 10 ods. 7 možno odpustiť len jedenkrát na každé dieťa žiadateľa, ktoré spĺňa podmienku podľa § 10 ods. 7 písm. a).",
+     "n": "2"
+    }
+   ],
+   "heading": "Prechodné ustanovenia k úpravám účinným od 1. januára 2018"
+  },
+  {
+   "type": "provision",
+   "anchor": "p23c",
+   "label": "§ 23c",
+   "paragraphs": [
+    {
+     "anchor": "p23c-x1",
+     "text": "Žiadosti o poskytnutie podpory na obstaranie bytu podľa § 6 ods. 1 písm. a) podané do 30. júna 2019 sa posudzujú podľa doterajších predpisov."
+    }
+   ],
+   "heading": "Prechodné ustanovenia k úpravám účinným od 1. júla 2019"
+  },
+  {
+   "type": "provision",
+   "anchor": "p23d",
+   "label": "§ 23d",
+   "paragraphs": [
+    {
+     "anchor": "p23d-x1",
+     "text": "Žiadosti o poskytnutie podpory, ktoré boli podané pred 1. decembrom 2019, sa posúdia a fond o nich rozhodne podľa zákona v znení účinnom do 30. novembra 2019."
+    }
+   ],
+   "heading": "Prechodné ustanovenie k úpravám účinným od 1. decembra 2019"
+  },
+  {
+   "type": "provision",
+   "anchor": "p23e",
+   "label": "§ 23e",
+   "paragraphs": [
+    {
+     "anchor": "p23e-1",
+     "text": "Žiadateľ podľa § 7 ods. 1 písm. g), ktorému bola poskytnutá podpora na obstaranie nájomného bytu podľa § 6 ods. 1 písm. b) podľa predpisov účinných do 31. decembra 2019, postupuje pri uzatváraní zmluvy o nájme nájomného bytu podľa zákona účinného od 1. januára 2020.",
+     "n": "1"
+    },
+    {
+     "anchor": "p23e-2",
+     "text": "Ustanovenie § 18 ods. 6 druhej vety v znení účinnom od 1. januára 2020 sa uplatní aj na zmluvy o poskytnutí podpory uzatvorené podľa predpisov účinných do 31. decembra 2019.",
+     "n": "2"
+    }
+   ],
+   "heading": "Prechodné ustanovenia k úpravám účinným od 1. januára 2020"
+  },
+  {
+   "type": "provision",
+   "anchor": "p23f",
+   "label": "§ 23f",
+   "paragraphs": [
+    {
+     "anchor": "p23f-x1",
+     "text": "Žiadosti o poskytnutie podpory na obstaranie bytu podľa § 6 ods. 1 písm. a) podané do 31. decembra 2019 sa posudzujú podľa doterajších predpisov."
+    }
+   ],
+   "heading": "Prechodné ustanovenie k úpravám účinným od 1. januára 2020"
+  },
+  {
+   "type": "provision",
+   "anchor": "p23g",
+   "label": "§ 23g",
+   "paragraphs": [
+    {
+     "anchor": "p23g-1",
+     "text": "Podmienka podľa § 10 ods. 17 prvej vety sa považuje za splnenú aj v prípade, ak žiadateľ o poskytnutie podpory podľa § 6 ods. 1 písm. b) druhého bodu, ktorému bola priznaná podpora",
+     "n": "1",
+     "items": [
+      {
+       "anchor": "p23g-1-a",
+       "label": "a)",
+       "letter": "a",
+       "text": "v roku 2018, uzavrie následnú kúpnu zmluvu najneskôr do konca mesiaca august 2021, alebo"
+      },
+      {
+       "anchor": "p23g-1-b",
+       "label": "b)",
+       "letter": "b",
+       "text": "v roku 2019, uzavrie následnú kúpnu zmluvu najneskôr do konca mesiaca august 2022."
+      }
+     ]
+    },
+    {
+     "anchor": "p23g-2",
+     "text": "Podmienka podľa § 14a ods. 7 prvej vety sa považuje za splnenú aj v prípade, ak žiadateľ o poskytnutie podpory podľa § 6 ods. 1 písm. f) druhého bodu, ktorému bola priznaná podpora",
+     "n": "2",
+     "items": [
+      {
+       "anchor": "p23g-2-a",
+       "label": "a)",
+       "letter": "a",
+       "text": "v roku 2018, uzavrie následnú kúpnu zmluvu najneskôr do konca mesiaca august 2021, alebo"
+      },
+      {
+       "anchor": "p23g-2-b",
+       "label": "b)",
+       "letter": "b",
+       "text": "v roku 2019, uzavrie následnú kúpnu zmluvu najneskôr do konca mesiaca august 2022."
+      }
+     ]
+    },
+    {
+     "anchor": "p23g-3",
+     "text": "Termín na predkladanie žiadostí podľa § 15 ods. 2 písm. c) a e) na kalendárny rok 2020 sa predlžuje do 31. augusta 2020.",
+     "n": "3"
+    },
+    {
+     "anchor": "p23g-4",
+     "text": "So žiadateľom, ktorému fond poskytol úver, ktorého splatnosť neuplynula pred vyhlásením mimoriadnej situácie, núdzového stavu alebo výnimočného stavu v súvislosti s ochorením COVID-19, a tento žiadateľ požiadal v roku 2020 o odklad splátok, je možné dohodnúť predĺženie lehoty splatnosti úveru najviac o 12 mesiacov. Na podmienku maximálnej lehoty splatnosti úveru vyplývajúcu z predpisov účinných v čase vzniku zmluvného vzťahu sa pri rozhodovaní o predĺžení lehoty splatnosti úveru podľa prvej vety neprihliada.",
+     "n": "4"
+    }
+   ],
+   "heading": "Prechodné ustanovenia súvisiace s krízovou situáciou\nspôsobenou ochorením COVID-19"
+  },
+  {
+   "type": "provision",
+   "anchor": "p23h",
+   "label": "§ 23h",
+   "paragraphs": [
+    {
+     "anchor": "p23h-x1",
+     "text": "Žiadateľ podľa § 7 ods. 1 písm. b), c) a f), ktorému bola poskytnutá podpora na obstaranie nájomného bytu podľa § 6 ods. 1 písm. b) vo výške 100 % obstarávacieho nákladu podľa predpisov účinných do 31. decembra 2020, postupuje pri uzatváraní zmluvy o nájme nájomného bytu podľa zákona účinného od 1. januára 2021."
+    }
+   ],
+   "heading": "Prechodné ustanovenie k úpravám účinným od 1. januára 2021"
+  },
+  {
+   "type": "provision",
+   "anchor": "p23i",
+   "label": "§ 23i",
+   "paragraphs": [
+    {
+     "anchor": "p23i-x1",
+     "text": "Podmienka podľa § 10 ods. 10 písm. d) sa použije prvýkrát na posudzovanie žiadostí podaných od 15. januára 2024."
+    }
+   ],
+   "heading": "Prechodné ustanovenie k úpravám účinným od 1. januára 2023"
+  },
+  {
+   "type": "provision",
+   "anchor": "p23j",
+   "label": "§ 23j",
+   "paragraphs": [
+    {
+     "anchor": "p23j-x1",
+     "text": "Podmienka podľa § 10 ods. 9 písm. d) sa použije prvýkrát na posudzovanie žiadosti predloženej od 15. januára 2027, ak prílohou žiadosti je právoplatne overený projekt stavby alebo právoplatné rozhodnutie o stavebnom zámere, ak stavebný úrad overil projekt stavby súčasne s vydaním rozhodnutia o stavebnom zámere a ak stavebník podal žiadosť o overenie projektu stavby alebo o vydanie takéhoto rozhodnutia o stavebnom zámere stavebnému úradu od 1. januára 2027."
+    }
+   ],
+   "heading": "Prechodné ustanovenie k úpravám účinným od 1. januára 2024"
+  },
+  {
+   "type": "provision",
+   "anchor": "p23k",
+   "label": "§ 23k",
+   "paragraphs": [
+    {
+     "anchor": "p23k-x1",
+     "text": "Práva a povinnosti zo zodpovednosti za porušenie záväzkov zo zmlúv uzavretých pred 1. januárom 2026 sa spravujú týmto zákonom v znení účinnom do 31. decembra 2025."
+    }
+   ],
+   "heading": "Prechodné ustanovenie k úpravám účinným od 1. januára 2026"
+  },
+  {
+   "type": "provision",
+   "anchor": "p24",
+   "label": "§ 24",
+   "paragraphs": [
+    {
+     "anchor": "p24-x1",
+     "text": "Zrušujú sa:"
+    },
+    {
+     "anchor": "p24-x2",
+     "text": "",
+     "items": [
+      {
+       "anchor": "p24-x2-1",
+       "label": "1.",
+       "letter": "1",
+       "text": "zákon č. 607/2003 Z. z. o Štátnom fonde rozvoja bývania v znení zákona č. 523/2004 Z. z., zákona č. 536/2004 Z. z., zákona č. 349/2007 Z. z., zákona č. 518/2008 Z. z., zákona č. 265/2009 Z. z. a zákona č. 302/2012 Z. z.,"
+      },
+      {
+       "anchor": "p24-x2-2",
+       "label": "2.",
+       "letter": "2",
+       "text": "nariadenie vlády Slovenskej republiky č. 432/2007 Z. z., ktorým sa ustanovujú podrobnosti o druhoch a výškach poskytovaných podpôr na jednotlivé účely z prostriedkov Štátneho fondu rozvoja bývania v znení nariadenia vlády Slovenskej republiky č. 547/2008 Z. z.,"
+      },
+      {
+       "anchor": "p24-x2-3",
+       "label": "3.",
+       "letter": "3",
+       "text": "vyhláška Ministerstva výstavby a regionálneho rozvoja Slovenskej republiky č. 582/2007 Z. z. o podrobnostiach o obsahu žiadosti, o technických podmienkach a o dĺžke času uskutočnenia stavby, na ktorú sa poskytuje štátna podpora v znení vyhlášky Ministerstva výstavby a regionálneho rozvoja Slovenskej republiky č. 535/2009 Z. z."
+      }
+     ]
+    }
+   ],
+   "heading": "Záverečné ustanovenia"
+  },
+  {
+   "type": "provision",
+   "anchor": "p25",
+   "label": "§ 25",
+   "paragraphs": [
+    {
+     "anchor": "p25-x1",
+     "text": "Tento zákon nadobúda účinnosť 1. januára 2014."
+    }
+   ],
+   "heading": "Účinnosť"
+  },
+  {
+   "type": "section",
+   "anchor": "s-prilohy",
+   "kind": "prilohy",
+   "label": "Prílohy",
+   "children": [
+    {
+     "type": "provision",
+     "anchor": "priloha1",
+     "label": "Príloha č. 1\nk zákonu č. 150/2013 Z. z.",
+     "paragraphs": [
+      {
+       "anchor": "priloha1-x1",
+       "text": "",
+       "items": [
+        {
+         "anchor": "priloha1-x1-i1",
+         "label": "",
+         "letter": "i1",
+         "text": "Zoznam zdravotných postihnutí\n| Zdravotné postihnutie | Diagnóza – príklady\n|\n| Postihnutie centrálneho alebo periférneho nervového systému |\n| 1. | Neurodegeneratívne postihnutie so stredne ťažkým obmedzením pohyblivosti s poruchou posturálnej stability, so slabosťou dvoch končatín, s mnohopočetnými pohybovými komplikáciami typu rigidity, hypokinézy, tremoru, ataxie, mimovoľných pohybov alebo s komplexnou poruchou | roztrúsená mozgovomiechová skleróza (stredne ťažká forma, ťažká forma – triparéza a kvadruparéza),\nkoordinačné poruchy a poruchy rovnováhy – ťažká forma s nemožnosťou samostatného pohybu\n|\n| 2. | Viacpočetné postihnutie nervov a miešnych koreňov s ťažkou poruchou funkcie | čiastočné a úplné mozgové obrny (pyramídového a extrapyramídového pôvodu) – hemiplégia, paraplégia, kvadruplégia, hemiparéza ťažkého stupňa, paraparéza ťažkého stupňa, kvadruparéza ťažkého stupňa,\npoškodenie miechy – hemiplégia, paraplégia, kvadruplégia, hemiparéza ťažkého stupňa, paraparéza ťažkého stupňa, kvadruparéza ťažkého stupňa\n|\n| 3. | Stredne ťažké obmedzenie aspoň jednej hornej končatiny a aspoň jednej dolnej končatiny | úplná strata jednej hornej končatiny a jednej dolnej končatiny,\nstrata oboch dolných končatín v stehne,\nstrata jednej dolnej končatiny v stehne a jednej dolnej končatiny v predkolení s krátkymi amputačnými kýpťami s výrazne zníženou funkciou amputovaného kýpťa,\nstrata jednej dolnej končatiny v bedrovom kĺbe alebo s veľmi krátkym amputačným kýpťom,\nstrata jednej dolnej končatiny v stehne po kolenný kĺb,\nstrata oboch dolných končatín v predkolení |\n| Postihnutie kĺbov, kostí, svalov a šliach |\n| 4. | Rozsiahle degeneratívne a poúrazové zmeny na chrbtici a medzistavcových platničkách s trvalým chronickým motorickým deficitom na periférii, insuficiencia svalového korzetu, ťažké deformity chrbtice s obmedzením exkurzií hrudníka alebo ankylózy jednotlivých segmentov chrbtice | spondylartritída ankylozujúca – Bechterevova choroba – ťažký stupeň postihnutia chrbtice s ankylózou bedrových kĺbov\n|\n| 5. | Svalové ochorenia – myopatie, zápalové, metabolické, endokrinné, kongenitálne svalové dystrofie, progresívne svalové dystrofie alebo poúrazové svalové poškodenia s aspoň stredne ťažkým obmedzením pohyblivosti | myopatie, kongenitálne, progresívne svalové dystrofie (Duchenneov, Beckerov typ a pod.), zápalové myozitídy, polyomyozitídy a pod., metabolické a endokrinologické (stredná forma s výrazným obmedzením hýbavosti, ťažká forma – imobilita),\nmyasténia gravis, myastenický syndróm – ťažké formy s výrazným obmedzením hýbavosti\n|\n| 6. | Ťažké obmedzenie funkcie aspoň jednej dolnej končatiny, ťažké obmedzenie pohyblivosti v oblasti aspoň jedného bedrového kĺbu alebo ťažké obmedzenie pohyblivosti v oblasti aspoň kolenného kĺbu | stuhnutie oboch bedrových kĺbov po vyčerpaní možností konzervatívnej a radikálnej liečby,\nstuhnutie jedného bedrového kĺbu v nepriaznivom postavení bez možnosti ďalšej liečby,\nstuhnutie oboch kolenných kĺbov po vyčerpaní možností konzervatívnej a radikálnej liečby |\n| Postihnutie vnútorných orgánov, následky iných ochorení |\n| 7. | Stav pri onkologickom ochorení počas akútnej liečby alebo pri obmedzení pohyblivosti a výkonnosti pri bežnom a ľahkom zaťažení, s kachexiou alebo s inými komplikáciami | onkologické ochorenia v terminálnom štádiu s poruchami |\n| 8. | Postihnutie obličiek s obmedzením funkcie stredného stupňa (obličkové funkcie sú značne znížené so značným obmedzením výkonnosti – kreatinín pod 150 umol/l) alebo ťažkého stupňa (sú prítomné laboratórne známky chronickej obličkovej insuficiencie s podstatným obmedzením výkonnosti – kreatinín nad 150 umol/l) | terminálne štádium chronickej obličkovej nedostatočnosti liečenej hemodialýzou |\n| 9. | Imobilita z akýchkoľvek príčin alebo komplexná porucha z rôznych príčin | onkologické ochorenia v terminálnom štádiu s poruchami |\n| Postihnutie zraku |\n| 10. | Obojstranná ťažká strata zraku od vízu 6/18 (0,3) do nuly, ktorou sa rozumie zraková ostrosť s korekciou u oboch očí, v kategórii oslabenia zraku v štádiu slabozrakosti a viac | úplná slepota |\n| 11. | Úplná slepota alebo praktická slepota oboch očí | úplná slepota |\n| 12. | Obojstranné výpadky zorného poľa (úplné, polovičné alebo kvadrantové) alebo koncentrické zúženie zorného poľa od 29 stupňov do nuly | úplná slepota |"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "type": "provision",
+     "anchor": "priloha2",
+     "label": "Príloha č. 2\nk zákonu č. 150/2013 Z. z.",
+     "paragraphs": [
+      {
+       "anchor": "priloha2-x1",
+       "text": "",
+       "items": [
+        {
+         "anchor": "priloha2-x1-i1",
+         "label": "",
+         "letter": "i1",
+         "text": "ZOZNAM SYSTÉMOVÝCH PORÚCH BYTOVÉHO DOMU\n| Porucha | Druh systémovej poruchy | Výskyt poruchy | Sprievodný znak poruchy | Povinný spôsob odstránenia poruchy |\n| a) | Porucha obkladových dielcov z keramzitbetónu, lávobetónu a tufobetónu na klimaticky najviac namáhanom štíte bytového domu. | Konštrukčný systém najmä\nZT, ZTB, T06B BA, BA, MS-5, MS-11 | Trhliny v keramzitbetóne, lávobetóne a tufobetóne, zatekanie dažďovej vody, oddeľovanie, drolenie a vypadávanie hmoty obkladových dielcov z keramzitbetónu, lávobetónu a tufobetónu. | Odstránenie obkladových dielcov alebo ich prikotvenie (v prípade potreby) a zateplenie celej štítovej steny s prekrytím nárožia budovy. |\n| b) | Porucha troskopemzobetónových obkladových dielcov na štítoch bytového domu. | Konštrukčný systém najmä T06B-KE, ŽA. | Oddeľovanie troskopemzobetónových obkladových dielcov od nosnej Železobetónovej steny a zatekanie dažďovej vody. | Prikotvenie obkladových dielcov kotvami z nerezovej ocele prenášajúcimi zvislé a aj vodorovné zaťaženie a zateplenie štítovej steny s prekrytím nárožia budovy. |\n| c) | Porucha vystupujúcich konštrukcií schodiskového priestoru bytového domu. | Konštrukčný systém alebo stavebná sústava najmä ZTB, BA-BC, T06B ŽA, BA NKS-S. | Trhliny medzi vystupujúcou a ostatnou časťou budovy, korózia spojovacej výstuže a oceľových rámov zasklenia, praskliny, lámanie a vypadávanie copilitu a zasklenia, zatekanie dažďovej vody. | Zvýšenie vodorovnej tuhosti schodiska (v prípade potreby), výmena copilitovej steny a zasklenia, oprava trhlín v schodisku, zateplenie schodiska vrátane priľahlej plochy priečelia pri kúte. |\n| d) | Porucha predsadených lodžií s kazetovými stropnými panelmi bytového domu. | Konštrukčný systém najmä ZT. | Trhliny a vypadávanie betónovej hmoty, vypadávanie betónovej hmoty v mieste uloženia lodžiovej dosky (na podporný rám alebo stenu) a v strede dosky v dôsledku korózie kotvenia zábradlia rozpadom betónovej hmoty rebrovej lodžiovej dosky, zatekanie dažďovej vody vplyvom chýbajúcej alebo porušenej hydroizolácie v podlahe a korózie výstuže. | Odstránenie všetkých podlahových vrstiev vrátane hydroizolácie, odstránenie zdegradovaného betónu tlakovou vodou a jeho opravenie a ošetrenie skorodovanej výstuže, dodatočná podpora v uložení lodžiovej dosky na podporný rám alebo stenu (v prípade potreby), prídavná podpora v strede lodžiovej dosky (v prípade potreby), odstránenie a výmena zábradlia vrátane jeho kotvenia a zhotovenie novej hydroizolácie a podlahových vrstiev vrátane oplechovania. |\n| e) | Porucha predsadených lodžií s dutinovými stropnými panelmi bytového domu. | Konštrukčný systém T08 B. | Trhliny v betóne v oblasti uloženia lodžiovej dosky, korózia kotvenia zábradlia, zatekanie dažďovej vody do pozdĺžnych dutín lodžiovej stropnej dosky, korózia výstuže a vypadávanie betónovej hmoty. | Odstránenie všetkých podlahových vrstiev vrátane hydroizolácie, odstránenie zdegradovaného betónu tlakovou vodou a jeho vyspravenie a ošetrenie skorodovanej výstuže, dodatočná podpora v uložení a v strede rozpätia lodžiovej dosky (v prípade potreby), odstránenie a výmena zábradlia, vrátane jeho kotvenia, zhotovenie novej hydroizolácie a podlahových vrstiev vrátane oplechovania. |\n| f) | Porucha balkónov a lodžií bytového domu. | Stavebná sústava alebo konštrukčný systém najmä\nT-11 až T-16, T 01B až T 03B, BA, MS-5, MS-11, LB, MB, G-57, NMB, PV-2, K-61, PD-62, T06B, B-70, BA-BC. | Trhliny v betónovej hmote, zatekanie dažďovej vody, vypadávanie betónovej hmoty, korózia výstuže alebo korózia nosnej oceľovej konštrukcie, korózia kotvenia zábradlia a vytváranie tepelného mosta. | Odstránenie všetkých podlahových vrstiev vrátane hydroizolácie a zábradlia, odstránenie zdegradovaného betónu tlakovou vodou a jeho vyspravenie a ošetrenie skorodovanej výstuže, odstránenie alebo náhrada balkónovej, resp. lodžiovej dosky (v prípade potreby), vytvorenie nových podlahových vrstiev vrátane hydroizolácie, tepelnoizolačnej vrstvy, ak je to technicky uskutočniteľné, a oplechovania, montáž zábradlia vrátane jeho kotvenia, zateplenie balkónovej dosky alebo lodžiovej dosky a dosky nad vrchnou lodžiou v prípade vytvárania tepelného mosta. |\n| g) | Porucha vystupujúcich zvislých pilastrov a vodorovných ríms bytového domu. | Konštrukčný systém najmä\nLB, MB. | Vytváranie trhlín v betónovej hmote, zatekanie dažďovej vody, korózia výstuže, vypadávanie betónovej hmoty a vytváranie tepelného mosta. | Odstránenie zdegradovaného betónu pilastrov a ríms, ošetrenie výstuže a betónu, zateplenie ríms a pilastrov vrátane plochy obvodového plášťa medzi nimi. |\n| h) | Porucha obvodového plášťa z pórobetónových dielcov bytového domu. | Konštrukčný systém alebo stavebná sústava najmä T06B NA, T06B BA, T08B,P1.15, SpM-P1.15,\nPS 82 TT a BANKS-S. | Trhliny medzi prvkami a v hmote pórobetónu, zatekanie dažďovej vody medzi prvky pórobetónových dielcov obvodového plášťa a do hmoty pórobetónu, zatekanie spôsobujúce koróziu oceľových konzol, spínacích ťahadiel a výstuže. | Odstránenie zdegradovaného pórobetónu, ošetrenie výstuže, oprava povrchov maltou na pórobetón (tepelnoizolačná malta), celoplošné zateplenie obvodového plášťa (neplatí pre priečelia s lodžiami BANKS-S) a oprava vnútorných povrchov obvodového plášťa. |\n| i) | Porucha stykov obvodového plášťa s vrstvenými dielcami s tepelnoizolačnou vrstvou hrúbky aspoň 80 mm bytového domu. | Stavebná sústava najmä P1.14, SpM-P1.14, PS82, P1.24. | Zatekanie dažďovej vody stykmi obvodového plášťa a korózia výstuže spojov. | Vyčistenie škár (v prípade potreby), odstránenie zdegradovaného betónu a oprava povrchu a celoplošné zateplenie obvodového plášťa s prikotvením membrány k nosnej časti obvodového dielca (v prípade potreby). |\n| j) | Porucha atiky bytového domu. | Stavebná sústava najmä\nPS 82 PP. | Odklonenie montovaných atikových dielcov od zvislej roviny, otváranie vertikálnej škáry styku a deformácia oplechovania, trhliny v strešnej krytine, zatekanie dažďovej vody. | Odstránenie strešných vrstiev (horný plášť) v páse pri atike, vrátenie atikových dielcov do pôvodnej polohy (v prípade potreby) a ich ukotvenie, doplnenie strešných vrstiev s dilatáciou pri atike a zateplenie strechy. |\n| k) | Porucha obvodového plášťa a nosných stien z pórobetónových tvárnic bytového domu. | Konštrukčný systém PV-2. | Trhliny v povrchovej úprave, odúvanie a odpadávanie povrchových úprav (brizolitu a vnútorných omietok). | Odstránenie uvoľnenej povrchovej úpravy, vyrovnanie podkladu a zateplenie obvodového plášťa a nanesenie nových vnútorných povrchových úprav zohľadňujúcich fyzikálno-mechanické vlastnosti podkladu. |\n| l) | Porucha predsadenej lodžie a súvisiaceho obvodového plášťa zo spínaných pórobetónových dielcov bytového domu. | Stavebná sústava\nBA NKS-S. | Nesprávne ukotvená lodžia a zábradlie, trhliny v obvodovom plášti, vypadávanie hmoty pórobetónu v nadpraží obvodových dielcov pri predsadenej lodžii, uvoľnenie ukotvenia zábradlia. | Zabezpečenie ukotvenia zábradlia a odstránenie priťaženia lodžiovej dosky, odstránenie uvoľnených častí stavebných konštrukcií predsadených lodžií a dielcov obvodového plášťa tlakovou vodou, plnohodnotná náhrada odstránených častí a vyrovnanie podkladu, zabezpečenie funkcie posuvného spoja predsadenej lodžie a nosnej konštrukcie budovy, zabezpečenie funkcie posuvného spoja na predsadených atikách nad lodžiou, zabezpečenie funkcie posuvného spoja na plochej streche a zateplenie obvodového plášťa na priečelí s lodžiami. |"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "type": "provision",
+     "anchor": "priloha2ak",
+     "label": "Príloha č. 2a\nk zákonu č. 150/2013 Z. z.",
+     "paragraphs": [
+      {
+       "anchor": "priloha2ak-x1",
+       "text": "",
+       "items": [
+        {
+         "anchor": "priloha2ak-x1-i1",
+         "label": "",
+         "letter": "i1",
+         "text": "Prevziať prílohu - Príloha č. 2a k zákonu č. 150/2013 Z. z."
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "type": "provision",
+     "anchor": "priloha3",
+     "label": "Príloha č. 3\nk zákonu č. 150/2013 Z. z.",
+     "paragraphs": [
+      {
+       "anchor": "priloha3-x1",
+       "text": "",
+       "items": [
+        {
+         "anchor": "priloha3-x1-i1",
+         "label": "",
+         "letter": "i1",
+         "text": "ZOZNAM OBCÍ NA PREDKLADANIE ŽIADOSTÍ\n| Kraj\n| Obec, v ktorej sa žiadosť predkladá | Územný obvod |\n| Bratislavský | mestská časť Ružinov | Bratislava I |\n| Bratislava II |\n| mestská časť Nové Mesto | Bratislava III |\n| Pezinok |\n| mestská časť Karlova Ves | Bratislava IV |\n| Malacky |\n| mestská časť Petržalka | Bratislava V |\n| Senec |\n| Trnavský | Galanta | Dunajská Streda |\n| Galanta |\n| Hlohovec | Hlohovec |\n| Piešťany |\n| Trnava | Senica |\n| Skalica |\n| Trnava |\n| Trenčiansky | Prievidza | Bánovce nad Bebravou |\n| Partizánske |\n| Prievidza |\n| Nové Mesto nad Váhom | Myjava |\n| Nové Mesto nad Váhom |\n| Trenčín | Ilava |\n| Považská Bystrica |\n| Púchov |\n| Trenčín |\n| Nitriansky | Komárno | Komárno |\n| Nové Zámky | Levice |\n| Nové Zámky |\n| Šaľa |\n| Nitra | Nitra |\n| Topoľčany |\n| Zlaté Moravce |\n| Žilinský | Žilina | Bytča |\n| Čadca |\n| Kysucké Nové Mesto |\n| Námestovo |\n| Žilina |\n| Liptovský Mikuláš | Liptovský Mikuláš |\n| Ružomberok |\n| Tvrdošín |\n| Martin | Dolný Kubín |\n| Martin |\n| Turčianske Teplice |\n| Banskobystrický | Banská Bystrica | Banská Bystrica |\n| Brezno |\n| Zvolen | Detva |\n| Krupina |\n| Veľký Krtíš |\n| Zvolen |\n| Lučenec | Lučenec |\n| Poltár |\n| Revúca |\n| Rimavská Sobota |\n| Žiar nad Hronom | Banská Štiavnica |\n| Žarnovica |\n| Žiar nad Hronom |\n| Prešovský | Humenné | Humenné |\n| Medzilaborce |\n| Snina |\n| Stropkov |\n| Vranov na Topľou |\n| Poprad | Kežmarok |\n| Poprad |\n| Stará Ľubovňa |\n| Prešov | Bardejov |\n| Levoča |\n| Prešov |\n| Sabinov |\n| Svidník |\n| Košický | mestská časť Staré Mesto | Košice I |\n| Košice III |\n| mestská časť Západ | Košice II |\n| Košice IV |\n| Košice-okolie |\n| Michalovce | Michalovce |\n| Sobrance |\n| Trebišov |\n| Spišská Nová Ves | Gelnica |\n| Rožňava |\n| Spišská Nová Ves |"
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  }
+ ],
+ "footnotes": [
+  {
+   "anchor": "fn-1",
+   "label": "1)",
+   "text": "§ 5 zákona č. 523/2004 Z. z. o rozpočtových pravidlách verejnej správy a o zmene a doplnení niektorých zákonov v znení neskorších predpisov."
+  },
+  {
+   "anchor": "fn-2",
+   "label": "2)",
+   "text": "Nariadenie Európskeho parlamentu a Rady (EÚ) č. 1303/2013 zo 17. decembra 2013, ktorým sa stanovujú spoločné ustanovenia o Európskom fonde regionálneho rozvoja, Európskom sociálnom fonde, Kohéznom fonde, Európskom poľnohospodárskom fonde pre rozvoj vidieka a Európskom námornom a rybárskom fonde a ktorým sa stanovujú všeobecné ustanovenia o Európskom fonde regionálneho rozvoja, Európskom sociálnom fonde, Kohéznom fonde a Európskom námornom a rybárskom fonde, a ktorým sa zrušuje nariadenie Rady (ES) č. 1083/2006 (Ú. v. EÚ L 347, 20. 12. 2013)."
+  },
+  {
+   "anchor": "fn-2a",
+   "label": "2a)",
+   "text": "§ 7 ods. 1 písm. m) zákona č. 523/2004 Z. z."
+  },
+  {
+   "anchor": "fn-3",
+   "label": "3)",
+   "text": "§ 8 zákona č. 523/2004 Z. z. v znení neskorších predpisov."
+  },
+  {
+   "anchor": "fn-3a",
+   "label": "3a)",
+   "text": "§ 5 písm. s) zákona č. 483/2001 Z. z. o bankách a o zmene a doplnení niektorých zákonov v znení neskorších predpisov."
+  },
+  {
+   "anchor": "fn-4",
+   "label": "4)",
+   "text": "Zákon č. 553/2003 Z. z. o odmeňovaní niektorých zamestnancov pri výkone práce vo verejnom záujme a o zmene a doplnení niektorých zákonov v znení neskorších predpisov."
+  },
+  {
+   "anchor": "fn-5",
+   "label": "5)",
+   "text": "§ 15 zákona č. 443/2010 Z. z. o dotáciách na rozvoj bývania a o sociálnom bývaní v znení neskorších predpisov."
+  },
+  {
+   "anchor": "fn-5a",
+   "label": "5a)",
+   "text": "§ 2 ods. 1 písm. a) zákona č. 443/2010 Z. z."
+  },
+  {
+   "anchor": "fn-5b",
+   "label": "5b)",
+   "text": "§ 2 ods. 1 písm. b) zákona č. 443/2010 Z. z."
+  },
+  {
+   "anchor": "fn-6",
+   "label": "6)",
+   "text": "§ 3 ods. 3 Stavebného zákona."
+  },
+  {
+   "anchor": "fn-6a",
+   "label": "6a)",
+   "text": "§ 18 Stavebného zákona."
+  },
+  {
+   "anchor": "fn-6b",
+   "label": "6b)",
+   "text": "§ 73, 74 a 76 Stavebného zákona."
+  },
+  {
+   "anchor": "fn-6c",
+   "label": "6c)",
+   "text": "§ 2 ods. 3 zákona č. 49/2002 Z. z. o ochrane pamiatkového fondu v znení zákona č. 104/2014 Z. z."
+  },
+  {
+   "anchor": "fn-6d",
+   "label": "6d)",
+   "text": "Čl. 11 druhý bod Dohovoru o ochrane svetového kultúrneho a prírodného dedičstva (oznámenie Federálneho ministerstva zahraničných vecí č. 159/1991 Zb.)."
+  },
+  {
+   "anchor": "fn-7",
+   "label": "7)",
+   "text": "§ 2 ods. 4 a 5 zákona Národnej rady Slovenskej republiky č. 182/1993 Z. z. o vlastníctve bytov a nebytových priestorov v znení neskorších predpisov."
+  },
+  {
+   "anchor": "fn-8a",
+   "label": "8a)",
+   "text": "§ 2 ods. 1 písm. p) zákona č. 443/2010 Z. z. v znení neskorších predpisov."
+  },
+  {
+   "anchor": "fn-8aa",
+   "label": "8aa)",
+   "text": "§ 4 zákona č. 555/2005 Z. z. o energetickej hospodárnosti budov a o zmene a doplnení niektorých zákonov v znení neskorších predpisov."
+  },
+  {
+   "anchor": "fn-8b",
+   "label": "8b)",
+   "text": "§ 46 zákona č. 201/2022 Z. z. o výstavbe."
+  },
+  {
+   "anchor": "fn-9",
+   "label": "9)",
+   "text": "§ 34 až 36, 38 a 39 zákona č. 448/2008 Z. z. o sociálnych službách a o zmene a doplnení zákona č. 455/1991 Zb. o živnostenskom podnikaní (živnostenský zákon) v znení neskorších predpisov v znení neskorších predpisov."
+  },
+  {
+   "anchor": "fn-10",
+   "label": "10)",
+   "text": "Napríklad § 54 zákona č. 131/2002 Z. z. o vysokých školách a o zmene a doplnení niektorých zákonov v znení neskorších predpisov, zákon č. 461/2003 Z. z. o sociálnom poistení v znení neskorších predpisov, § 6 ods. 2 zákona č. 595/2003 Z. z. o dani z príjmu v znení neskorších predpisov, zákon č. 571/2009 Z. z. o rodičovskom príspevku a o zmene a doplnení niektorých zákonov v znení neskorších predpisov."
+  },
+  {
+   "anchor": "fn-11",
+   "label": "11)",
+   "text": "§ 7 ods. 1 zákona Národnej rady Slovenskej republiky č. 182/1993 Z. z. v znení neskorších predpisov."
+  },
+  {
+   "anchor": "fn-12",
+   "label": "12)",
+   "text": "§ 8 ods. 1 zákona Národnej rady Slovenskej republiky č. 182/1993 Z. z. v znení neskorších predpisov."
+  },
+  {
+   "anchor": "fn-13",
+   "label": "13)",
+   "text": "§ 8a ods. 1 zákona Národnej rady Slovenskej republiky č. 182/1993 Z. z. v znení neskorších predpisov."
+  },
+  {
+   "anchor": "fn-13a",
+   "label": "13a)",
+   "text": "§ 7 písm. f) zákona č. 443/2010 Z. z. v znení zákona č. 134/2013 Z. z."
+  },
+  {
+   "anchor": "fn-13aa",
+   "label": "13aa)",
+   "text": "§ 7 zákona č. 246/2015 Z. z. o správcoch bytových domov a o zmene a doplnení zákona Národnej rady Slovenskej republiky č. 182/1993 Z. z. o vlastníctve bytov a nebytových priestorov v znení neskorších predpisov."
+  },
+  {
+   "anchor": "fn-14",
+   "label": "14)",
+   "text": "§ 2 ods. 5 zákona č. 404/2011 Z. z. o pobyte cudzincov a o zmene a doplnení niektorých zákonov."
+  },
+  {
+   "anchor": "fn-15",
+   "label": "15)",
+   "text": "§ 2 ods. 1 písm. g) zákona č. 443/2010 Z. z."
+  },
+  {
+   "anchor": "fn-15b",
+   "label": "15b)",
+   "text": "§ 8 zákona č. 443/2010 Z. z."
+  },
+  {
+   "anchor": "fn-15ba",
+   "label": "15ba)",
+   "text": "§ 8 ods. 16 zákona č. 443/2010 Z. z. v znení zákona č. 358/2020 Z. z."
+  },
+  {
+   "anchor": "fn-15c",
+   "label": "15c)",
+   "text": "Zákon č. 222/2004 Z. z. o dani z pridanej hodnoty v znení neskorších predpisov."
+  },
+  {
+   "anchor": "fn-15d",
+   "label": "15d)",
+   "text": "§ 170 ods. 21 zákona č. 461/2003 Z. z. v znení zákona č. 221/2019 Z. z.\n§ 25 ods. 5 zákona č. 580/2004 Z. z. o zdravotnom poistení a o zmene a doplnení zákona č. 95/2002 Z. z. o poisťovníctve a o zmene a doplnení niektorých zákonov v znení zákona č. 221/2019 Z. z."
+  },
+  {
+   "anchor": "fn-15e",
+   "label": "15e)",
+   "text": "Zákon č. 199/2004 Z. z. Colný zákon a o zmene a doplnení niektorých zákonov v znení neskorších predpisov.\nZákon č. 563/2009 Z. z. o správe daní (daňový poriadok) a o zmene a doplnení niektorých zákonov v znení neskorších predpisov."
+  },
+  {
+   "anchor": "fn-16",
+   "label": "16)",
+   "text": "Napríklad čl. 107 a 108 Zmluvy o fungovaní Európskej únie (Ú. v. EÚ C 326, 26. 10. 2012), zákon č. 231/1999 Z. z. o štátnej pomoci v znení neskorších predpisov."
+  },
+  {
+   "anchor": "fn-16a",
+   "label": "16a)",
+   "text": "§ 2 ods. 1 písm. a) zákona č. 443/2010 Z. z."
+  },
+  {
+   "anchor": "fn-17",
+   "label": "17)",
+   "text": "§ 115 Občianskeho zákonníka."
+  },
+  {
+   "anchor": "fn-18",
+   "label": "18)",
+   "text": "§ 2 ods. 3 zákona č. 447/2008 Z. z. o peňažných príspevkoch na kompenzáciu ťažkého zdravotného postihnutia a o zmene a doplnení niektorých zákonov v znení neskorších predpisov."
+  },
+  {
+   "anchor": "fn-18a",
+   "label": "18a)",
+   "text": "Zákon č. 177/2018 Z. z. o niektorých opatreniach na znižovanie administratívnej záťaže využívaním informačných systémov verejnej správy a o zmene a doplnení niektorých zákonov (zákon proti byrokracii) v znení zákona č. 221/2019 Z. z."
+  },
+  {
+   "anchor": "fn-19",
+   "label": "19)",
+   "text": "§ 3 zákona č. 601/2003 Z. z. o životnom minime a o zmene a doplnení niektorých zákonov."
+  },
+  {
+   "anchor": "fn-20",
+   "label": "20)",
+   "text": "§ 2 zákona č. 601/2003 Z. z. v znení v znení neskorších predpisov."
+  },
+  {
+   "anchor": "fn-21",
+   "label": "21)",
+   "text": "§ 4 zákona č. 601/2003 Z. z. v znení v znení neskorších predpisov."
+  },
+  {
+   "anchor": "fn-22",
+   "label": "22)",
+   "text": "§ 2 ods. 1 písm. l) zákona č. 443/2010 Z. z."
+  },
+  {
+   "anchor": "fn-23",
+   "label": "23)",
+   "text": "§ 11 ods. 1 písm. c) zákona č. 443/2010 Z. z. v znení zákona č. 134/2013 Z. z."
+  },
+  {
+   "anchor": "fn-24",
+   "label": "24)",
+   "text": "§ 22 zákona č. 443/2010 Z. z."
+  },
+  {
+   "anchor": "fn-24a",
+   "label": "24a)",
+   "text": "§ 27 zákona č. 578/2004 Z. z. o poskytovateľoch zdravotnej starostlivosti, zdravotníckych pracovníkoch, stavovských organizáciách v zdravotníctve a o zmene a doplnení niektorých zákonov v znení neskorších predpisov."
+  },
+  {
+   "anchor": "fn-24b",
+   "label": "24b)",
+   "text": "Zákon č. 175/1999 Z. z. o niektorých opatreniach týkajúcich sa prípravy významných investícií a o doplnení niektorých zákonov v znení neskorších predpisov."
+  },
+  {
+   "anchor": "fn-25",
+   "label": "25)",
+   "text": "§ 9 zákona č. 264/1999 Z. z. o technických požiadavkách na výrobky a o posudzovaní zhody a o zmene a doplnení niektorých zákonov v znení neskorších predpisov."
+  },
+  {
+   "anchor": "fn-26",
+   "label": "26)",
+   "text": "§ 56 až 64 vyhlášky Ministerstva životného prostredia Slovenskej republiky č. 532/2002 Z. z., ktorou sa ustanovujú podrobnosti o všeobecných technických požiadavkách na výstavbu a o všeobecných technických požiadavkách na stavby užívané osobami s obmedzenou schopnosťou pohybu a orientácie."
+  },
+  {
+   "anchor": "fn-27",
+   "label": "27)",
+   "text": "§ 2 ods. 1 zákona č. 260/2011 Z. z. o ukončení a spôsobe usporiadania niektorých nájomných vzťahov k bytom a o doplnení zákona Národnej rady Slovenskej republiky č. 18/1996 Z. z. o cenách v znení neskorších predpisov."
+  },
+  {
+   "anchor": "fn-27a",
+   "label": "27a)",
+   "text": "§ 5 Stavebného zákona."
+  },
+  {
+   "anchor": "fn-27b",
+   "label": "27b)",
+   "text": "§ 14b ods. 2 a 3 zákona Národnej rady Slovenskej republiky č. 182/1993 Z. z. v znení neskorších predpisov."
+  },
+  {
+   "anchor": "fn-28",
+   "label": "28)",
+   "text": "§ 3 ods. 3 zákona Slovenskej národnej rady č. 138/1992 Zb. o autorizovaných architektoch a autorizovaných stavebných inžinieroch v znení neskorších predpisov."
+  },
+  {
+   "anchor": "fn-30",
+   "label": "30)",
+   "text": "Zákon č. 505/2009 Z. z. o akreditácii orgánov posudzovania zhody a o zmene a doplnení niektorých zákonov."
+  },
+  {
+   "anchor": "fn-31",
+   "label": "31)",
+   "text": "Zákon Slovenskej národnej rady č. 138/1992 Zb. v znení neskorších predpisov."
+  },
+  {
+   "anchor": "fn-32",
+   "label": "32)",
+   "text": "§ 3 písm. c) zákona č. 443/2010 Z. z."
+  },
+  {
+   "anchor": "fn-33",
+   "label": "33)",
+   "text": "STN 73 0540-2 Tepelná ochrana budov. Tepelnotechnické vlastnosti stavebných konštrukcií a budov. Časť 2: Funkčné požiadavky."
+  },
+  {
+   "anchor": "fn-33a",
+   "label": "33a)",
+   "text": "§ 2 ods. 1 písm. o) štvrtý bod a piaty bod zákona č. 443/2010 Z. z."
+  },
+  {
+   "anchor": "fn-34",
+   "label": "34)",
+   "text": "Napríklad zákon č. 443/2010 Z. z. v znení neskorších predpisov."
+  },
+  {
+   "anchor": "fn-34a",
+   "label": "34a)",
+   "text": "§ 2 ods. 2 písm. a) zákona č. 131/2002 Z. z. o vysokých školách a o zmene a doplnení niektorých zákonov."
+  },
+  {
+   "anchor": "fn-35",
+   "label": "35)",
+   "text": "Zákon Národnej rady Slovenskej republiky č. 221/1996 Z. z. o územnom a správnom usporiadaní Slovenskej republiky v znení neskorších predpisov."
+  },
+  {
+   "anchor": "fn-36",
+   "label": "36)",
+   "text": "§ 10 zákona Národnej rady Slovenskej republiky č. 182/1993 Z. z. v znení neskorších predpisov."
+  },
+  {
+   "anchor": "fn-36a",
+   "label": "36a)",
+   "text": "§ 25 ods. 3 zákona č. 305/2013 Z. z. o elektronickej podobe výkonu pôsobnosti orgánov verejnej moci a o zmene a doplnení niektorých zákonov (zákon o e-Governmente)."
+  },
+  {
+   "anchor": "fn-36b",
+   "label": "36b)",
+   "text": "§ 23 ods. 1 zákona č. 305/2013 Z. z."
+  },
+  {
+   "anchor": "fn-37",
+   "label": "37)",
+   "text": "Napríklad zákon Národnej rady Slovenskej republiky č. 39/1993 Z. z. o Najvyššom kontrolnom úrade Slovenskej republiky v znení neskorších predpisov, zákon č. 502/2001 Z. z. o finančnej kontrole a vnútornom audite a o zmene a doplnení niektorých zákonov v znení neskorších predpisov a zákon č. 528/2008 Z. z. o pomoci a podpore poskytovanej z fondov Európskej únie v znení neskorších predpisov, zákon č. 292/2014 Z. z. o príspevku poskytovanom z európskych štrukturálnych a investičných fondov a o zmene a doplnení niektorých zákonov."
+  },
+  {
+   "anchor": "fn-38",
+   "label": "38)",
+   "text": "§ 31 zákona č. 523/2004 Z. z. v znení neskorších predpisov."
+  },
+  {
+   "anchor": "fn-38a",
+   "label": "38a)",
+   "text": "Zákon č. 71/1967 Zb. o správnom konaní (správny poriadok) v znení neskorších predpisov."
+  },
+  {
+   "anchor": "fn-39",
+   "label": "39)",
+   "text": "Zákon č. 305/2013 Z. z. v znení neskorších predpisov."
+  }
+ ]
+}

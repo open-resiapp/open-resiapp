@@ -1,0 +1,3466 @@
+{
+ "id": "sk-182-1993",
+ "jurisdiction": "sk",
+ "number": "182/1993 Z. z.",
+ "title": "Zákon Národnej rady Slovenskej republiky o vlastníctve bytov a nebytových priestorov",
+ "effectiveFrom": "2025-04-01",
+ "effectiveTo": null,
+ "sourceUrl": "https://www.slov-lex.sk/ezbierky/pravne-predpisy/SK/ZZ/1993/182/20250401",
+ "fetchedAt": "2026-11-18T08:20:03.672Z",
+ "contentHash": "f90ec194b1e289ad2d04dbdeb7707102c6d2d62123bf66d8eb2bce6d67b2b0c8",
+ "provisionCount": 62,
+ "parts": [
+  {
+   "type": "text",
+   "text": "Národná rada Slovenskej republiky sa uzniesla na tomto zákone:"
+  },
+  {
+   "type": "section",
+   "anchor": "s-clanok-1",
+   "kind": "clanok",
+   "label": "Čl. I",
+   "children": [
+    {
+     "type": "section",
+     "anchor": "s-clanok-1-cast-prva",
+     "kind": "cast",
+     "label": "PRVÁ ČASŤ",
+     "heading": "ZÁKLADNÉ USTANOVENIA",
+     "children": [
+      {
+       "type": "section",
+       "anchor": "s-clanok-1-cast-prva-g-predmet-a-rozsah-upravy",
+       "kind": "group",
+       "heading": "Predmet a rozsah úpravy",
+       "children": [
+        {
+         "type": "provision",
+         "anchor": "p1",
+         "label": "§ 1",
+         "paragraphs": [
+          {
+           "anchor": "p1-1",
+           "text": "Tento zákon upravuje",
+           "n": "1",
+           "items": [
+            {
+             "anchor": "p1-1-a",
+             "label": "a)",
+             "letter": "a",
+             "text": "vlastníctvo bytov a nebytových priestorov,"
+            },
+            {
+             "anchor": "p1-1-b",
+             "label": "b)",
+             "letter": "b",
+             "text": "správu bytov a nebytových priestorov, spoločných častí domu, spoločných zariadení domu, príslušenstva domu a pozemku,"
+            },
+            {
+             "anchor": "p1-1-c",
+             "label": "c)",
+             "letter": "c",
+             "text": "práva a povinnosti vlastníkov bytov a nebytových priestorov,"
+            },
+            {
+             "anchor": "p1-1-d",
+             "label": "d)",
+             "letter": "d",
+             "text": "spôsob a podmienky nadobudnutia vlastníctva bytov a nebytových priestorov, spoločných častí domu, spoločných zariadení domu, príslušenstva domu a pozemku."
+            }
+           ]
+          },
+          {
+           "anchor": "p1-2",
+           "text": "Tento zákon sa nevzťahuje na",
+           "n": "2",
+           "items": [
+            {
+             "anchor": "p1-2-a",
+             "label": "a)",
+             "letter": "a",
+             "text": "byty osobitného určenia¹) okrem bytov stavebne určených na bývanie ťažko telesne postihnutej osoby, najmä bezbariérový byt,¹ᵃ)"
+            },
+            {
+             "anchor": "p1-2-b",
+             "label": "b)",
+             "letter": "b",
+             "text": "byty v domoch osobitného určenia,²)"
+            },
+            {
+             "anchor": "p1-2-c",
+             "label": "c)",
+             "letter": "c",
+             "text": "domy, ktoré majú len jeden byt alebo len jeden nebytový priestor."
+            }
+           ]
+          }
+         ]
+        },
+        {
+         "type": "provision",
+         "anchor": "p2",
+         "label": "§ 2",
+         "paragraphs": [
+          {
+           "anchor": "p2-1",
+           "text": "Na účely tohto zákona sa rozumie",
+           "n": "1",
+           "items": [
+            {
+             "anchor": "p2-1-a",
+             "label": "a)",
+             "letter": "a",
+             "text": "domom bytový dom alebo nebytový dom,"
+            },
+            {
+             "anchor": "p2-1-b",
+             "label": "b)",
+             "letter": "b",
+             "text": "bytovým domom budova, v ktorej",
+             "items": [
+              {
+               "anchor": "p2-1-b-1",
+               "label": "1.",
+               "letter": "1",
+               "text": "je viac ako polovica podlahovej plochy určená na bývanie,"
+              },
+              {
+               "anchor": "p2-1-b-2",
+               "label": "2.",
+               "letter": "2",
+               "text": "sú byty a nebytové priestory vo vlastníctve alebo spoluvlastníctve jednotlivých vlastníkov a"
+              },
+              {
+               "anchor": "p2-1-b-3",
+               "label": "3.",
+               "letter": "3",
+               "text": "sú spoločné časti a spoločné zariadenia súčasne v podielovom spoluvlastníctve týchto vlastníkov bytov a nebytových priestorov,"
+              }
+             ]
+            },
+            {
+             "anchor": "p2-1-c",
+             "label": "c)",
+             "letter": "c",
+             "text": "nebytovým domom budova, v ktorej",
+             "items": [
+              {
+               "anchor": "p2-1-c-1",
+               "label": "1.",
+               "letter": "1",
+               "text": "je menej ako polovica podlahovej plochy určená na bývanie,"
+              },
+              {
+               "anchor": "p2-1-c-2",
+               "label": "2.",
+               "letter": "2",
+               "text": "sú byty a nebytové priestory vo vlastníctve alebo spoluvlastníctve jednotlivých vlastníkov a"
+              },
+              {
+               "anchor": "p2-1-c-3",
+               "label": "3.",
+               "letter": "3",
+               "text": "sú spoločné časti a spoločné zariadenia súčasne v podielovom spoluvlastníctve týchto vlastníkov bytov a nebytových priestorov,"
+              }
+             ]
+            },
+            {
+             "anchor": "p2-1-d",
+             "label": "d)",
+             "letter": "d",
+             "text": "bytom miestnosť alebo súbor miestností, ktoré sú kolaudačným osvedčením stavebného úradu určené na bývanie ako samostatná bytová jednotka,"
+            },
+            {
+             "anchor": "p2-1-e",
+             "label": "e)",
+             "letter": "e",
+             "text": "nebytovým priestorom miestnosť alebo súbor miestností, ktoré sú kolaudačným osvedčením stavebného úradu určené na iné účely ako na bývanie; nebytovým priestorom nie je príslušenstvo bytu⁵) ani spoločné časti domu a spoločné zariadenia domu,"
+            },
+            {
+             "anchor": "p2-1-f",
+             "label": "f)",
+             "letter": "f",
+             "text": "podlahovou plochou plocha všetkých miestností bytu alebo nebytového priestoru bez plochy balkónu, lodžie a terasy, okrem terasy, ktorá nie je spoločnou časťou domu; do podlahovej plochy bytu sa započítava aj plocha miestností, ktoré tvoria príslušenstvo bytu,⁵)"
+            },
+            {
+             "anchor": "p2-1-g",
+             "label": "g)",
+             "letter": "g",
+             "text": "spoločnou časťou domu časť domu nevyhnutná na jeho podstatu a bezpečnosť, najmä základy domu, strecha, chodba, obvodové múry, priečelie, vchody, schodištia, terasa, podkrovie, povala, vodorovné nosné a izolačné konštrukcie, zvislé nosné konštrukcie, ako aj miestnosť domu, ktorá je určená na spoločné užívanie a umiestnenie technologických zariadení, najmä práčovne, kotolne, sušiarne alebo kočikárne,"
+            },
+            {
+             "anchor": "p2-1-h",
+             "label": "h)",
+             "letter": "h",
+             "text": "spoločným zariadením domu technologické zariadenie, ktoré je určené na spoločné užívanie a slúži výlučne tomuto domu, a to aj keď je umiestnené mimo domu, najmä výťah, zariadenie na výrobu tepla a teplej úžitkovej vody, vzduchotechnika, spoločné elektrické a telekomunikačné rozvody, bleskozvod, komín, vodovodná prípojka, teplonosná prípojka, kanalizačná prípojka, elektrická prípojka, plynová prípojka a telekomunikačná prípojka,"
+            },
+            {
+             "anchor": "p2-1-i",
+             "label": "i)",
+             "letter": "i",
+             "text": "príslušenstvom domu stavby umiestnené na priľahlom pozemku, ktoré sú určené na spoločné užívanie a slúžia výlučne tomuto domu, pričom nie sú stavebnou súčasťou domu, najmä prístrešky, kôlne, altány,"
+            },
+            {
+             "anchor": "p2-1-j",
+             "label": "j)",
+             "letter": "j",
+             "text": "priľahlým pozemkom oplotený pozemok susediaci s domom, ktorý slúži výlučne tomuto domu,"
+            },
+            {
+             "anchor": "p2-1-k",
+             "label": "k)",
+             "letter": "k",
+             "text": "prevádzkou činnosti a prostriedky potrebné na pravidelné udržiavanie spoločných častí domu, spoločných zariadení domu, príslušenstva domu a priľahlého pozemku v stave spôsobilom na ich riadne užívanie; za prevádzku sa považujú aj povinné revízie technických zariadení podľa osobitného predpisu,⁵ᵃ)"
+            },
+            {
+             "anchor": "p2-1-l",
+             "label": "l)",
+             "letter": "l",
+             "text": "údržbou činnosti, ktoré sú potrebné na zachovanie pôvodného štandardu a kvality spoločných častí domu, spoločných zariadení domu a príslušenstva domu, ako aj odstránenie nedostatkov zistených servisnou kontrolou,"
+            },
+            {
+             "anchor": "p2-1-m",
+             "label": "m)",
+             "letter": "m",
+             "text": "opravou odstránenie čiastočného fyzického opotrebovania alebo poškodenia spoločných častí domu, spoločných zariadení domu a príslušenstva domu z dôvodu ich uvedenia do predchádzajúceho stavu alebo prevádzkyschopného stavu,"
+            },
+            {
+             "anchor": "p2-1-n",
+             "label": "n)",
+             "letter": "n",
+             "text": "rekonštrukciou zásahy do spoločných častí domu, spoločných zariadení domu a príslušenstva domu, ktoré znamenajú zmenu v ich kvalite alebo technických parametroch,"
+            },
+            {
+             "anchor": "p2-1-o",
+             "label": "o)",
+             "letter": "o",
+             "text": "modernizáciou obnova, zlepšenie alebo rozšírenie vybavenosti a použiteľnosti spoločných častí domu, spoločných zariadení domu a príslušenstva domu,"
+            },
+            {
+             "anchor": "p2-1-p",
+             "label": "p)",
+             "letter": "p",
+             "text": "garážou v dome nebytový priestor v dome, ktorý je kolaudačným osvedčením stavebného úradu určený na odstavenie a parkovanie vozidiel,"
+            },
+            {
+             "anchor": "p2-1-q",
+             "label": "q)",
+             "letter": "q",
+             "text": "garážovým stojiskom plošne vymedzená časť garáže v dome,"
+            },
+            {
+             "anchor": "p2-1-r",
+             "label": "r)",
+             "letter": "r",
+             "text": "skladovým priestorom časť nebytového priestoru v dome určeného kolaudačným osvedčením stavebného úradu na skladovanie, ktorá je fyzicky oddelená od ostatných častí tohto nebytového priestoru, ak nejde o príslušenstvo bytu,⁵)"
+            },
+            {
+             "anchor": "p2-1-s",
+             "label": "s)",
+             "letter": "s",
+             "text": "domovým poriadkom súbor pravidiel a zásad dodržiavania dobrých mravov pri výkone práv a povinností vlastníkov a nájomcov bytov a nebytových priestorov v dome, osôb, ktoré žijú s uvedenými osobami v spoločnej domácnosti, ako aj osôb, ktoré sa zdržiavajú v dome, pri užívaní spoločných častí domu, spoločných zariadení domu, príslušenstva domu a priľahlého pozemku schválený vlastníkmi bytov a nebytových priestorov v dome."
+            }
+           ]
+          },
+          {
+           "anchor": "p2-2",
+           "text": "Garážové stojisko nie je samostatným nebytovým priestorom.",
+           "n": "2"
+          }
+         ]
+        },
+        {
+         "type": "provision",
+         "anchor": "p3",
+         "label": "§ 3",
+         "paragraphs": [
+          {
+           "anchor": "p3-1",
+           "text": "Ak tento zákon neustanovuje inak, vzťahuje sa na práva a povinnosti vlastníkov domov, bytov a nebytových priestorov Občiansky zákonník a osobitné predpisy.⁶)",
+           "n": "1"
+          },
+          {
+           "anchor": "p3-2",
+           "text": "Právne vzťahy k bytom a nebytovým priestorom v domoch sa spravujú ustanoveniami Občianskeho zákonníka a osobitných predpisov, ktoré sa týkajú nehnuteľností, ak tento zákon neustanovuje inak.",
+           "n": "2"
+          },
+          {
+           "anchor": "p3-3",
+           "text": "Ustanovenia osobitných predpisov⁷) nie sú týmto zákonom dotknuté.",
+           "n": "3"
+          }
+         ]
+        },
+        {
+         "type": "provision",
+         "anchor": "p4",
+         "label": "§ 4",
+         "paragraphs": [
+          {
+           "anchor": "p4-1",
+           "text": "Vlastníctvo bytu alebo nebytového priestoru v dome sa nadobúda",
+           "n": "1",
+           "items": [
+            {
+             "anchor": "p4-1-a",
+             "label": "a)",
+             "letter": "a",
+             "text": "na základe zmluvy o prevode vlastníctva bytu alebo nebytového priestoru v dome s vlastníkom domu alebo s právnickou osobou, ktorá má právo hospodárenia k domu, s vlastníkom bytu alebo nebytového priestoru,"
+            },
+            {
+             "anchor": "p4-1-b",
+             "label": "b)",
+             "letter": "b",
+             "text": "na základe zmluvy o výstavbe, vstavbe alebo nadstavbe domu,"
+            },
+            {
+             "anchor": "p4-1-c",
+             "label": "c)",
+             "letter": "c",
+             "text": "dedením,"
+            },
+            {
+             "anchor": "p4-1-d",
+             "label": "d)",
+             "letter": "d",
+             "text": "rozhodnutím štátneho orgánu.⁸)"
+            }
+           ]
+          },
+          {
+           "anchor": "p4-2",
+           "text": "Byt alebo nebytový priestor v dome môže byť vo vlastníctve fyzickej osoby alebo právnickej osoby, v podielovom spoluvlastníctve fyzickej osoby alebo právnickej osoby alebo v bezpodielovom spoluvlastníctve manželov.",
+           "n": "2"
+          }
+         ],
+         "heading": "Nadobúdanie vlastníctva"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "type": "section",
+     "anchor": "s-clanok-1-cast-druha",
+     "kind": "cast",
+     "label": "DRUHÁ ČASŤ",
+     "heading": "PREVOD VLASTNÍCTVA BYTOV A NEBYTOVÝCH PRIESTOROV V DOME",
+     "children": [
+      {
+       "type": "provision",
+       "anchor": "p5",
+       "label": "§ 5",
+       "paragraphs": [
+        {
+         "anchor": "p5-1",
+         "text": "Zmluva o prevode vlastníctva bytu a zmluva o prevode vlastníctva nebytového priestoru v dome musí byť písomná a okrem všeobecných náležitostí⁹) musí obsahovať",
+         "n": "1",
+         "items": [
+          {
+           "anchor": "p5-1-a",
+           "label": "a)",
+           "letter": "a",
+           "text": "popis bytu alebo nebytového priestoru v dome a príslušenstva bytu,⁵) vymedzenie polohy bytu alebo nebytového priestoru v dome označením čísla bytu, čísla vchodu a opisom nebytového priestoru, určenie rozsahu podlahovej plochy a vybavenia bytu a nebytového priestoru v dome,"
+          },
+          {
+           "anchor": "p5-1-b",
+           "label": "b)",
+           "letter": "b",
+           "text": "vymedzenie veľkosti spoluvlastníckeho podielu vlastníka bytu alebo nebytového priestoru v dome na spoločných častiach domu, spoločných zariadeniach domu, na príslušenstve, na pozemku zastavanom domom a na priľahlom pozemku, pričom veľkosť spoluvlastníckeho podielu je určená podielom podlahovej plochy bytu alebo nebytového priestoru k úhrnu podlahových plôch všetkých bytov a nebytových priestorov v dome, ak sa pri priľahlom pozemku nepostupuje podľa písmena e),"
+          },
+          {
+           "anchor": "p5-1-c",
+           "label": "c)",
+           "letter": "c",
+           "text": "určenie a popis spoločných častí domu, spoločných zariadení domu, príslušenstva a priľahlého pozemku a prípadné určenie, ktoré spoločné časti domu a spoločné zariadenia domu, časti príslušenstva a priľahlého pozemku užívajú len niektorí vlastníci bytov a niektorí vlastníci nebytových priestorov,"
+          },
+          {
+           "anchor": "p5-1-d",
+           "label": "d)",
+           "letter": "d",
+           "text": "úpravu práv k pozemku zastavanému domom a k priľahlému pozemku,"
+          },
+          {
+           "anchor": "p5-1-e",
+           "label": "e)",
+           "letter": "e",
+           "text": "vymedzenie veľkosti spoluvlastníckeho podielu na priľahlom pozemku dohodou nadobúdateľa bytu alebo nebytového priestoru s vlastníkom domu,"
+          },
+          {
+           "anchor": "p5-1-f",
+           "label": "f)",
+           "letter": "f",
+           "text": "vyhlásenie nadobúdateľa bytu alebo nebytového priestoru v dome o pristúpení k zmluve o spoločenstve vlastníkov alebo k zmluve o výkone správy,"
+          },
+          {
+           "anchor": "p5-1-g",
+           "label": "g)",
+           "letter": "g",
+           "text": "úpravu práv k zariadeniam civilnej ochrany, ak sú také objekty v dome, po predchádzajúcom súhlase príslušných orgánov.⁹ᵃ)"
+          }
+         ]
+        },
+        {
+         "anchor": "p5-2",
+         "text": "Prílohou zmluvy o prevode vlastníctva bytu alebo zmluvy o prevode vlastníctva nebytového priestoru je potvrdenie správcu alebo predsedu spoločenstva vlastníkov bytov a nebytových priestorov v dome, že vlastník bytu alebo nebytového priestoru v dome nemá žiadne nedoplatky na úhradách za plnenia spojené s užívaním bytu alebo nebytového priestoru v dome a na tvorbe fondu prevádzky, údržby a opráv; to neplatí, ak ide o prvý prevod vlastníctva bytu alebo nebytového priestoru v dome.",
+         "n": "2"
+        },
+        {
+         "anchor": "p5-3",
+         "text": "Zmluva o prevode vlastníctva bytu alebo zmluva o prevode vlastníctva nebytového priestoru v dome okrem náležitostí podľa odseku 1 môže obsahovať aj vymedzenie spoluvlastníckeho podielu na kotolni, ak vykuruje viac domov a na základe dohody medzi nadobúdateľmi bytov a vlastníkom domu prechádza zmluvou o prevode vlastníctva bytu do podielového spoluvlastníctva vlastníkov bytov a vlastníkov nebytových priestorov v dome.",
+         "n": "3"
+        },
+        {
+         "anchor": "p5-4",
+         "text": "Vlastníctvo bytu alebo nebytového priestoru v dome, spoluvlastnícky podiel na spoločných častiach domu, na spoločných zariadeniach domu a na príslušenstve a spoluvlastnícky podiel na pozemku zastavanom domom a na priľahlom pozemku sa nadobúdajú vkladom do katastra nehnuteľností.¹⁰)",
+         "n": "4"
+        },
+        {
+         "anchor": "p5-5",
+         "text": "K prvej zmluve o prevode vlastníctva bytu alebo nebytového priestoru v dome sa pripoja situačné plány jednotlivých poschodí domu s vyznačením jednotlivých bytov a nebytových priestorov v dome, vrátane vyznačenia garážových stojísk a skladových priestorov, ich čísiel a identifikácia pozemku. Návrh na zápis a dokumentáciu je povinný predložiť predávajúci.",
+         "n": "5"
+        },
+        {
+         "anchor": "p5-6",
+         "text": "Práva a povinnosti zo zmluvy o prevode vlastníctva bytu alebo nebytového priestoru v dome prechádzajú na právneho nástupcu vlastníka bytu alebo nebytového priestoru v dome.",
+         "n": "6"
+        },
+        {
+         "anchor": "p5-7",
+         "text": "Ak nedôjde k prevodu vlastníctva všetkých bytov a nebytových priestorov v dome, je pôvodný vlastník domu vlastníkom ostatných bytov a nebytových priestorov v dome, spoluvlastníkom spoločných častí domu, spoločných zariadení domu, príslušenstva a pozemku a má práva a povinnosti vlastníka bytov a nebytových priestorov v dome.",
+         "n": "7"
+        },
+        {
+         "anchor": "p5-8",
+         "text": "Náklady spojené s prevodom vlastníctva bytu a nebytového priestoru znáša predávajúci; predávajúci môže požadovať od nadobúdateľa náhradu preukázateľne zaplatených správnych poplatkov a odmenu notára podľa osobitných predpisov.¹⁰ᵃ)",
+         "n": "8"
+        }
+       ],
+       "heading": "Zmluva o prevode vlastníctva bytu a nebytového priestoru v dome"
+      },
+      {
+       "type": "section",
+       "anchor": "s-clanok-1-cast-druha-g-sprava-domu-vlastnikmi-bytov-a-nebytovych-priestorov-v-dom",
+       "kind": "group",
+       "heading": "Správa domu vlastníkmi bytov a nebytových priestorov v dome",
+       "children": [
+        {
+         "type": "provision",
+         "anchor": "p6",
+         "label": "§ 6",
+         "paragraphs": [
+          {
+           "anchor": "p6-1",
+           "text": "Správu domu vykonáva spoločenstvo vlastníkov bytov a nebytových priestorov v dome (ďalej len „spoločenstvo“) alebo iná právnická osoba alebo fyzická osoba, s ktorou vlastníci bytov a nebytových priestorov uzatvoria zmluvu o výkone správy (ďalej len „správca“). Vlastníci bytov a nebytových priestorov v dome sú povinní zabezpečiť správu domu spoločenstvom alebo správcom. Povinnosť správy domu vzniká dňom prvého prevodu vlastníctva bytu alebo nebytového priestoru v dome. Povinnosť správy domu sa nevzťahuje na",
+           "n": "1",
+           "items": [
+            {
+             "anchor": "p6-1-a",
+             "label": "a)",
+             "letter": "a",
+             "text": "domy, v ktorých sú najviac tri byty alebo najviac tri nebytové priestory, alebo najviac spoločne tri byty a nebytové priestory,"
+            },
+            {
+             "anchor": "p6-1-b",
+             "label": "b)",
+             "letter": "b",
+             "text": "domy, v ktorých sú všetky byty a všetky nebytové priestory vo vlastníctve toho istého vlastníka; povinnosť správy vznikne, ak aspoň jeden byt alebo jeden nebytový priestor nadobudne iný vlastník."
+            }
+           ]
+          },
+          {
+           "anchor": "p6-2",
+           "text": "Správa domu je obstarávanie služieb a tovaru, ktorými správca alebo spoločenstvo zabezpečuje pre vlastníkov bytov a nebytových priestorov v dome",
+           "n": "2",
+           "items": [
+            {
+             "anchor": "p6-2-a",
+             "label": "a)",
+             "letter": "a",
+             "text": "prevádzku, údržbu, opravy, rekonštrukciu a modernizáciu spoločných častí domu, spoločných zariadení domu, priľahlého pozemku a príslušenstva,"
+            },
+            {
+             "anchor": "p6-2-b",
+             "label": "b)",
+             "letter": "b",
+             "text": "služby spojené s užívaním bytu alebo nebytového priestoru,"
+            },
+            {
+             "anchor": "p6-2-c",
+             "label": "c)",
+             "letter": "c",
+             "text": "vedenie účtu domu v banke,"
+            },
+            {
+             "anchor": "p6-2-d",
+             "label": "d)",
+             "letter": "d",
+             "text": "vymáhanie škody, nedoplatkov vo fonde prevádzky, údržby a opráv a iných pohľadávok a nárokov,"
+            },
+            {
+             "anchor": "p6-2-e",
+             "label": "e)",
+             "letter": "e",
+             "text": "iné činnosti, ktoré bezprostredne súvisia s užívaním domu ako celku jednotlivými vlastníkmi bytov a nebytových priestorov v dome."
+            }
+           ]
+          },
+          {
+           "anchor": "p6-3",
+           "text": "Na správu domu nesmú byť dohodnuté súčasne viaceré formy správy domu. Na správu v jednom dome môže byť uzavretá zmluva len s jedným správcom alebo len jedna zmluva o spoločenstve.",
+           "n": "3"
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "type": "section",
+       "anchor": "s-clanok-1-cast-druha-g-spolocenstvo",
+       "kind": "group",
+       "heading": "Spoločenstvo",
+       "children": [
+        {
+         "type": "provision",
+         "anchor": "p7",
+         "label": "§ 7",
+         "paragraphs": [
+          {
+           "anchor": "p7-1",
+           "text": "Spoločenstvo je právnická osoba¹¹) založená podľa tohto zákona, ktorá spravuje spoločné časti domu a spoločné zariadenia domu, nebytové priestory, ktoré sú v spoluvlastníctve vlastníkov bytov a nebytových priestorov (ďalej len „spoločné nebytové priestory\"), príslušenstvo a priľahlý pozemok vrátane ich údržby a obnovy. Spoločenstvo zabezpečuje plnenia spojené s užívaním bytov a nebytových priestorov v dome. Spoločenstvo vzniká dňom zápisu do registra spoločenstiev vedenom obvodným úradom v sídle kraja (ďalej len _\"správny orgán\") príslušným podľa sídla spoločenstva¹²) (ďalej len „register\").",
+           "n": "1"
+          },
+          {
+           "anchor": "p7-2",
+           "text": "Návrh na zápis do registra je povinný podať zvolený predseda alebo poverený vlastník bytu alebo nebytového priestoru v dome do 30 dní od schválenia zmluvy o spoločenstve alebo správca pri vzniku spoločenstva zo zákona. Návrh na zápis zmien alebo zániku zapisovaných údajov podľa odseku 7 je povinný podať príslušnému správnemu orgánu predseda alebo poverený vlastník bytu alebo nebytového priestoru v dome do 30 dní odo dňa, keď zmena nastala. Pravosť podpisu na návrhu na zápis do registra musí byť úradne osvedčená. Súčasťou návrhu na zápis do registra je",
+           "n": "2",
+           "items": [
+            {
+             "anchor": "p7-2-a",
+             "label": "a)",
+             "letter": "a",
+             "text": "zmluva o spoločenstve v dvoch vyhotoveniach alebo jej dodatok v dvoch vyhotoveniach, ak sa týka zmeny alebo zániku údajov zapisovaných do registra,"
+            },
+            {
+             "anchor": "p7-2-b",
+             "label": "b)",
+             "letter": "b",
+             "text": "zápisnica a prezenčná listina zo zhromaždenia alebo schôdze vlastníkov bytov a nebytových priestorov v dome (ďalej len „schôdza vlastníkov“) alebo hlasovacia listina a výsledok písomného hlasovania; to neplatí, ak ide o vznik spoločenstva zo zákona,"
+            },
+            {
+             "anchor": "p7-2-c",
+             "label": "c)",
+             "letter": "c",
+             "text": "údaje zvoleného predsedu potrebné na vyžiadanie výpisu z registra trestov,12aaaa) ak ide o návrh na prvý zápis údajov do registra alebo zmenu v osobe predsedu,"
+            },
+            {
+             "anchor": "p7-2-d",
+             "label": "d)",
+             "letter": "d",
+             "text": "údaje podľa osobitného predpisu12aaab) potrebné na účel overenia vlastníckeho práva k domu, ak ide o návrh na prvý zápis údajov do registra,"
+            },
+            {
+             "anchor": "p7-2-e",
+             "label": "e)",
+             "letter": "e",
+             "text": "výpoveď zmluvy o výkone správy, ak ide o zmenu formy správy,"
+            },
+            {
+             "anchor": "p7-2-f",
+             "label": "f)",
+             "letter": "f",
+             "text": "doklad o zaplatení správneho poplatku."
+            }
+           ]
+          },
+          {
+           "anchor": "p7-3",
+           "text": "Konanie o registrácii sa začne dňom, keď je správnemu orgánu doručený návrh na zápis do registra, ktorý obsahuje náležitosti podľa odseku 2. Prekážkou konania o registrácii spoločenstva nie je plynutie výpovednej lehoty pri skončení platnosti zmluvy o výkone správy. Správny orgán je povinný na účely výkonu verejnej moci získavať alebo používať údaje poskytnuté podľa odseku 2 písm. c) a d).",
+           "n": "3"
+          },
+          {
+           "anchor": "p7-4",
+           "text": "Ak návrh na zápis do registra neobsahuje náležitosti podľa odseku 2, správny orgán upozorní zvoleného predsedu alebo povereného vlastníka bytu alebo nebytového priestoru v dome alebo správcu pri vzniku spoločenstva zo zákona do 15 dní od doručenia návrhu, že konanie o registrácii začne až po odstránení nedostatkov.",
+           "n": "4"
+          },
+          {
+           "anchor": "p7-5",
+           "text": "Správny orgán vykoná zápis do registra do 15 dní od začatia konania, alebo ak ide o zmenu formy správy, nasledujúci deň po skončení platnosti zmluvy o výkone správy. Správny orgán do troch dní po zápise do registra zašle spoločenstvu jedno vyhotovenie zmluvy o spoločenstve, na ktorom vyznačí deň vykonania zápisu do registra.",
+           "n": "5"
+          },
+          {
+           "anchor": "p7-6",
+           "text": "Vznik spoločenstva, jeho názov a sídlo oznámi správny orgán príslušnej krajskej správe Štatistického úradu Slovenskej republiky do desiatich dní odo dňa zápisu do registra.",
+           "n": "6"
+          },
+          {
+           "anchor": "p7-7",
+           "text": "Do registra sa zapisuje",
+           "n": "7",
+           "items": [
+            {
+             "anchor": "p7-7-a",
+             "label": "a)",
+             "letter": "a",
+             "text": "názov a sídlo spoločenstva,"
+            },
+            {
+             "anchor": "p7-7-b",
+             "label": "b)",
+             "letter": "b",
+             "text": "identifikačné číslo,"
+            },
+            {
+             "anchor": "p7-7-c",
+             "label": "c)",
+             "letter": "c",
+             "text": "orgány spoločenstva,"
+            },
+            {
+             "anchor": "p7-7-d",
+             "label": "d)",
+             "letter": "d",
+             "text": "meno, priezvisko a adresa trvalého pobytu štatutárneho orgánu."
+            }
+           ]
+          },
+          {
+           "anchor": "p7-8",
+           "text": "Spoločenstvo môžu založiť aj vlastníci bytov a nebytových priestorov viacerých domov.",
+           "n": "8"
+          },
+          {
+           "anchor": "p7-9",
+           "text": "V registri sa ďalej vyznačí",
+           "n": "9",
+           "items": [
+            {
+             "anchor": "p7-9-a",
+             "label": "a)",
+             "letter": "a",
+             "text": "vstup spoločenstva do likvidácie vrátane mena, priezviska a adresy trvalého pobytu likvidátora,"
+            },
+            {
+             "anchor": "p7-9-b",
+             "label": "b)",
+             "letter": "b",
+             "text": "vyhlásenie konkurzu vrátane mena, priezviska a adresy trvalého pobytu správcu konkurznej podstaty,"
+            },
+            {
+             "anchor": "p7-9-c",
+             "label": "c)",
+             "letter": "c",
+             "text": "právny dôvod výmazu spoločenstva."
+            }
+           ]
+          },
+          {
+           "anchor": "p7-10",
+           "text": "Náležitosti zapísané v registri sú účinné voči každému odo dňa vykonania zápisu do registra.",
+           "n": "10"
+          },
+          {
+           "anchor": "p7-11",
+           "text": "Na konanie podľa tohto zákona sa nevzťahuje všeobecný predpis o správnom konaní.",
+           "n": "11"
+          }
+         ]
+        },
+        {
+         "type": "provision",
+         "anchor": "p7a",
+         "label": "§ 7a",
+         "paragraphs": [
+          {
+           "anchor": "p7a-1",
+           "text": "Zmluva o spoločenstve sa uzatvára v písomnej forme na neurčitú dobu. Zmluva o spoločenstve sa schvaľuje rozhodnutím vlastníkov bytov a nebytových priestorov v dome. Zmluvu o spoločenstve podpisuje osoba zvolená za predsedu a iná osoba poverená vlastníkmi bytov a nebytových priestorov v dome, pričom pravosť podpisov týchto osôb musí byť úradne osvedčená; podpis ostatných vlastníkov bytov a nebytových priestorov v dome sa nevyžaduje. Takto uzavretá zmluva o spoločenstve je záväzná pre všetkých vlastníkov bytov a nebytových priestorov v dome. Predseda spoločenstva je povinný schválenú zmluvu o spoločenstve a pri jej zmene úplné znenie zmluvy o spoločenstve doručiť každému vlastníkovi bytu a nebytového priestoru v dome do 30 dní od jej schválenia vlastníkmi bytov a nebytových priestorov v dome. Zmluvu o spoločenstve nemôže vlastník bytu alebo nebytového priestoru v dome vypovedať.",
+           "n": "1"
+          },
+          {
+           "anchor": "p7a-2",
+           "text": "S prevodom alebo prechodom vlastníctva bytu alebo nebytového priestoru v dome prechádzajú na nového vlastníka bytu alebo nebytového priestoru v dome práva a povinnosti vyplývajúce zo zmluvy o spoločenstve. Ak vlastník bytu alebo nebytového priestoru v dome nadobudol byt alebo nebytový priestor v dome na základe zmluvy o vstavbe alebo nadstavbe domu, pristupuje k zmluve o spoločenstve. Prevodom alebo prechodom bytu alebo nebytového priestoru na nového vlastníka odstupuje doterajší vlastník bytu alebo nebytového priestoru v dome od zmluvy o spoločenstve; záväzky vyplývajúce z tejto zmluvy zanikajú až ich usporiadaním. Nového vlastníka bytu alebo nebytového priestoru v dome zaväzujú aj právne úkony týkajúce sa domu, spoločných častí domu a spoločných zariadení domu, príslušenstva a pozemku vykonané pred prevodom alebo prechodom vlastníctva bytu alebo nebytového priestoru v dome.",
+           "n": "2"
+          },
+          {
+           "anchor": "p7a-3",
+           "text": "Zmluva o spoločenstve musí obsahovať",
+           "n": "3",
+           "items": [
+            {
+             "anchor": "p7a-3-a",
+             "label": "a)",
+             "letter": "a",
+             "text": "názov a sídlo spoločenstva,"
+            },
+            {
+             "anchor": "p7a-3-b",
+             "label": "b)",
+             "letter": "b",
+             "text": "orgány spoločenstva a ich právomoc,"
+            },
+            {
+             "anchor": "p7a-3-c",
+             "label": "c)",
+             "letter": "c",
+             "text": "spôsob správy spoločných častí domu, spoločných zariadení domu, spoločných nebytových priestorov, príslušenstva a pozemku,"
+            },
+            {
+             "anchor": "p7a-3-d",
+             "label": "d)",
+             "letter": "d",
+             "text": "úpravu práv a povinností vlastníkov bytov a nebytových priestorov v dome,"
+            },
+            {
+             "anchor": "p7a-3-e",
+             "label": "e)",
+             "letter": "e",
+             "text": "úpravu majetkových pomerov spoločenstva,"
+            },
+            {
+             "anchor": "p7a-3-f",
+             "label": "f)",
+             "letter": "f",
+             "text": "spôsob a oprávnenie hospodárenia s prostriedkami fondu prevádzky, údržby a opráv."
+            }
+           ]
+          },
+          {
+           "anchor": "p7a-4",
+           "text": "V zmluve o spoločenstve sa môže určiť, že spoločenstvo vydá stanovy, ktoré upravia vnútornú organizáciu spoločenstva a podrobnejšie upravia niektoré veci obsiahnuté v zmluve o spoločenstve.",
+           "n": "4"
+          }
+         ]
+        },
+        {
+         "type": "provision",
+         "anchor": "p7b",
+         "label": "§ 7b",
+         "paragraphs": [
+          {
+           "anchor": "p7b-1",
+           "text": "Spoločenstvo môže vykonávať len činnosti vymedzené týmto zákonom. Hospodári s úhradami vlastníkov bytov a nebytových priestorov v dome za plnenia spojené s užívaním bytu alebo nebytového priestoru okrem úhrad za tie služby a práce, ktoré vlastník bytu a nebytového priestoru v dome uhrádza priamo dodávateľovi (ďalej len „úhrady za plnenia\"), a s fondom prevádzky, údržby a opráv, ktorý sa tvorí z príspevkov vlastníkov bytov a nebytových priestorov v dome, ako aj s majetkom získaným svojou činnosťou. Do majetku spoločenstva nepatria byty a nebytové priestory v dome. Spoločenstvo nemôže nadobúdať do vlastníctva byty, nebytové priestory alebo iný nehnuteľný majetok. Spoločenstvo môže v mene vlastníkov bytov prenajímať spoločné nebytové priestory, spoločné časti domu a zariadenia domu, príslušenstvo a priľahlý pozemok.",
+           "n": "1"
+          },
+          {
+           "anchor": "p7b-2",
+           "text": "Spoločenstvo uzatvára v mene a na účet vlastníkov bytov a nebytových priestorov v dome zmluvy v rozsahu svojej činnosti podľa tohto zákona, najmä o dodávke plnení spojených s užívaním bytov a nebytových priestorov, o poistení domu alebo o prenájme podľa odseku 1. Spoločenstvo rozhoduje o rozúčtovaní nákladov na správu domu a úhrad za plnenia na jednotlivých vlastníkov bytov a nebytových priestorov v dome, ak to nevylučuje osobitný predpis¹²ᵃᵃ). Pri rozúčtovaní je spoločenstvo povinné zohľadniť mieru využívania spoločných častí a spoločných zariadení domu vlastníkmi bytov a nebytových priestorov v dome. Spoločenstvo môže vo vlastnom mene vymáhať plnenie povinností vlastníkov bytov a nebytových priestorov v dome podľa tohto zákona.",
+           "n": "2"
+          },
+          {
+           "anchor": "p7b-3",
+           "text": "Spoločenstvo je povinné najneskôr do 31. mája nasledujúceho roka predložiť vlastníkom bytov a nebytových priestorov v dome správu o svojej činnosti za predchádzajúci rok týkajúcej sa domu, najmä o finančnom hospodárení domu, o stave spoločných častí domu a spoločných zariadení domu, ako aj o iných významných skutočnostiach, ktoré súvisia so správou domu. Zároveň je povinné vykonať vyúčtovanie použitia fondu prevádzky, údržby a opráv, úhrad za plnenia rozúčtované na jednotlivé byty a nebytové priestory v dome.",
+           "n": "3"
+          },
+          {
+           "anchor": "p7b-4",
+           "text": "Spoločenstvo sa nemôže zúčastňovať na podnikaní iných osôb a nemôže uzatvárať zmluvy o tichom spoločenstve. Spoločenstvo je povinné finančné prostriedky vybrané od vlastníkov bytov a nebytových priestorov v dome alebo získané vlastnou činnosťou zhromažďovať len na účtoch v banke. Majiteľom účtu domu zriadeného spoločenstvom v banke sú vlastníci bytov a nebytových priestorov v dome; spoločenstvo je príslušné disponovať s finančnými prostriedkami na účte domu a vykonávať k tomuto účtu práva a povinnosti vkladateľa podľa osobitného zákona o ochrane vkladov.12aaa) Ak spoločenstvo tvorí viac domov, musí viesť samostatné analytické účty osobitne za každý dom.",
+           "n": "4"
+          },
+          {
+           "anchor": "p7b-5",
+           "text": "Vlastníci bytov a nebytových priestorov v dome sú povinní uhrádzať finančné prostriedky do fondu prevádzky, údržby a opráv a úhrady za plnenia.",
+           "n": "5"
+          },
+          {
+           "anchor": "p7b-6",
+           "text": "Spoločenstvo môže uzavrieť zmluvu o úvere na opravu, rekonštrukciu alebo modernizáciu spoločných častí, spoločných zariadení a príslušenstva domu. Ak spoločenstvo tvorí viac domov, ručenie sa týka iba vlastníkov bytov a nebytových priestorov v dome, ktorého sa úver týka. Vlastník bytu alebo nebytového priestoru v dome ručí za záväzky vyplývajúce z úverovej zmluvy v pomere veľkosti spoluvlastníckeho podielu na dome vymedzeného podľa § 5 ods. 1 písm. b) až do výšky ceny bytu alebo nebytového priestoru podľa znaleckého posudku.",
+           "n": "6"
+          }
+         ]
+        },
+        {
+         "type": "provision",
+         "anchor": "p7c",
+         "label": "§ 7c",
+         "paragraphs": [
+          {
+           "anchor": "p7c-1",
+           "text": "Orgánmi spoločenstva sú",
+           "n": "1",
+           "items": [
+            {
+             "anchor": "p7c-1-a",
+             "label": "a)",
+             "letter": "a",
+             "text": "predseda,"
+            },
+            {
+             "anchor": "p7c-1-b",
+             "label": "b)",
+             "letter": "b",
+             "text": "rada,"
+            },
+            {
+             "anchor": "p7c-1-c",
+             "label": "c)",
+             "letter": "c",
+             "text": "zhromaždenie,"
+            },
+            {
+             "anchor": "p7c-1-d",
+             "label": "d)",
+             "letter": "d",
+             "text": "iný orgán, ak tak ustanoví zmluva o spoločenstve."
+            }
+           ]
+          },
+          {
+           "anchor": "p7c-2",
+           "text": "Predseda je štatutárny orgán, ktorý riadi činnosť spoločenstva a koná v jeho mene. Predsedu volí zhromaždenie na tri roky. Za predsedu môže byť zvolená len fyzická osoba, ktorá je spôsobilá na právne úkony, je vlastníkom alebo spoluvlastníkom bytu alebo nebytového priestoru v dome a je bezúhonná. Predseda rozhoduje o všetkých záležitostiach spoločenstva, ak nie sú týmto zákonom, zmluvou o spoločenstve alebo stanovami zverené inému orgánu spoločenstva. Predseda navrhuje po prerokovaní v rade zhromaždeniu na schválenie",
+           "n": "2",
+           "items": [
+            {
+             "anchor": "p7c-2-a",
+             "label": "a)",
+             "letter": "a",
+             "text": "rozpočet spoločenstva na príslušný kalendárny rok,"
+            },
+            {
+             "anchor": "p7c-2-b",
+             "label": "b)",
+             "letter": "b",
+             "text": "ročnú účtovnú závierku spoločenstva,"
+            },
+            {
+             "anchor": "p7c-2-c",
+             "label": "c)",
+             "letter": "c",
+             "text": "výšku mesačných úhrad za plnenia,"
+            },
+            {
+             "anchor": "p7c-2-d",
+             "label": "d)",
+             "letter": "d",
+             "text": "výšku mesačných platieb za správu,"
+            },
+            {
+             "anchor": "p7c-2-e",
+             "label": "e)",
+             "letter": "e",
+             "text": "použitie prostriedkov fondu prevádzky, údržby a opráv,"
+            },
+            {
+             "anchor": "p7c-2-f",
+             "label": "f)",
+             "letter": "f",
+             "text": "výšku príspevkov do fondu prevádzky, údržby a opráv,"
+            },
+            {
+             "anchor": "p7c-2-g",
+             "label": "g)",
+             "letter": "g",
+             "text": "vyúčtovanie úhrad za plnenia,"
+            },
+            {
+             "anchor": "p7c-2-h",
+             "label": "h)",
+             "letter": "h",
+             "text": "podanie návrhu na exekučné konanie,¹²ᵃᵇ)"
+            },
+            {
+             "anchor": "p7c-2-i",
+             "label": "i)",
+             "letter": "i",
+             "text": "vykonanie dobrovoľnej dražby¹²ᵃᶜ) bytu alebo nebytového priestoru v dome na uspokojenie pohľadávok podľa § 15."
+            }
+           ]
+          },
+          {
+           "anchor": "p7c-3",
+           "text": "Predsedu odvoláva zhromaždenie. Funkčné obdobie predsedu sa skončí dňom, keď zanikne vlastnícke právo predsedu k bytu alebo k nebytovému priestoru v dome. Ak je predseda odvolaný alebo sa skončilo funkčné obdobie predsedu z dôvodu zániku jeho vlastníckeho práva k bytu alebo k nebytovému priestoru v dome a nie je súčasne zvolený nový predseda, ak sa predseda vzdá funkcie alebo ju nie je schopný vykonávať z iných dôvodov najmenej po dobu troch po sebe nasledujúcich kalendárnych mesiacov, do zvolenia nového predsedu vykonáva funkciu predsedu člen rady určený radou.",
+           "n": "3"
+          },
+          {
+           "anchor": "p7c-4",
+           "text": "Predseda zodpovedá za škodu spôsobenú spoločenstvu, vlastníkom bytov a nebytových priestorov v dome alebo tretím osobám porušením svojich povinností alebo prekročením svojich právomocí.",
+           "n": "4"
+          },
+          {
+           "anchor": "p7c-5",
+           "text": "Rada je dozorný orgán spoločenstva. Rada",
+           "n": "5",
+           "items": [
+            {
+             "anchor": "p7c-5-a",
+             "label": "a)",
+             "letter": "a",
+             "text": "zvoláva zhromaždenie najmenej raz za rok,"
+            },
+            {
+             "anchor": "p7c-5-b",
+             "label": "b)",
+             "letter": "b",
+             "text": "kontroluje vedenie účtovníctva a iných dokladov,"
+            },
+            {
+             "anchor": "p7c-5-c",
+             "label": "c)",
+             "letter": "c",
+             "text": "navrhuje odvolanie predsedu,"
+            },
+            {
+             "anchor": "p7c-5-d",
+             "label": "d)",
+             "letter": "d",
+             "text": "kontroluje činnosť spoločenstva a navrhuje opatrenia na nápravu nedostatkov."
+            }
+           ]
+          },
+          {
+           "anchor": "p7c-6",
+           "text": "Rada má najmenej troch členov. Členom rady môže byť len vlastník bytu alebo nebytového priestoru v dome. Členom rady nemôže byť predseda. Funkčné obdobie rady je tri roky. Na platné rozhodnutie rady je potrebný súhlas nadpolovičnej väčšiny jej členov. Členovia rady sú oprávnení nahliadať do všetkých dokladov a záznamov týkajúcich sa činnosti spoločenstva a kontrolujú, či spoločenstvo vykonáva činnosť v súlade s týmto zákonom, zmluvou o spoločenstve alebo stanovami spoločenstva. Rada sa nezriaďuje v domoch, v ktorých je najviac osem bytov a nebytových priestorov; v takom prípade kompetencie rady vykonáva zhromaždenie.",
+           "n": "6"
+          },
+          {
+           "anchor": "p7c-7",
+           "text": "Predseda a člen rady nesmie",
+           "n": "7",
+           "items": [
+            {
+             "anchor": "p7c-7-a",
+             "label": "a)",
+             "letter": "a",
+             "text": "vo vlastnom mene ani na vlastný účet uzavierať obchody, ktoré súvisia s činnosťou spoločenstva,"
+            },
+            {
+             "anchor": "p7c-7-b",
+             "label": "b)",
+             "letter": "b",
+             "text": "sprostredkúvať pre iné osoby obchody, ktoré sú predmetom činnosti spoločenstva alebo s ním súvisia."
+            }
+           ]
+          },
+          {
+           "anchor": "p7c-8",
+           "text": "Za bezúhonného sa na účely tohto zákona považuje ten, kto nebol právoplatne odsúdený za trestný čin hospodársky, trestný čin proti majetku alebo iný trestný čin spáchaný úmyselne, ktorého skutková podstata súvisí s predmetom činnosti spoločenstva, ak sa naň nehľadí, akoby nebol odsúdený.¹²ᵃ) Bezúhonnosť sa preukazuje výpisom z registra trestov.¹²ᵇ)",
+           "n": "8"
+          },
+          {
+           "anchor": "p7c-9",
+           "text": "Zhromaždenie tvoria všetci vlastníci bytov a nebytových priestorov v dome. Zhromaždenie rozhoduje o veciach, o ktorých rozhodujú vlastníci bytov a nebytových priestorov podľa § 14 až 14b. Rozhoduje tiež o ďalších skutočnostiach, o ktorých podľa tohto zákona nerozhoduje iný orgán spoločenstva. Na zvolanie zhromaždenia sa použijú primerane ustanovenia § 14a ods. 1.",
+           "n": "9"
+          }
+         ]
+        },
+        {
+         "type": "provision",
+         "anchor": "p7d",
+         "label": "§ 7d",
+         "paragraphs": [
+          {
+           "anchor": "p7d-1",
+           "text": "Spoločenstvo sa zrušuje",
+           "n": "1",
+           "items": [
+            {
+             "anchor": "p7d-1-a",
+             "label": "a)",
+             "letter": "a",
+             "text": "dňom uvedeným v rozhodnutí zhromaždenia o zrušení spoločenstva, inak dňom, keď bolo toto rozhodnutie prijaté,"
+            },
+            {
+             "anchor": "p7d-1-b",
+             "label": "b)",
+             "letter": "b",
+             "text": "rozhodnutím zhromaždenia o zlúčení, splynutí alebo rozdelení spoločenstva,"
+            },
+            {
+             "anchor": "p7d-1-c",
+             "label": "c)",
+             "letter": "c",
+             "text": "vyhlásením konkurzu alebo zamietnutím návrhu na vyhlásenie konkurzu pre nedostatok majetku."
+            }
+           ]
+          },
+          {
+           "anchor": "p7d-2",
+           "text": "Spoločenstvo nemožno zrušiť podľa odseku 1 písm. a), ak nie je ku dňu zrušenia uzavretá zmluva o výkone správy.",
+           "n": "2"
+          },
+          {
+           "anchor": "p7d-3",
+           "text": "Zhromaždenie môže rozhodnúť o zlúčení alebo splynutí spoločenstva s iným spoločenstvom. Pri zlúčení prechádza majetok zrušeného spoločenstva a zostatok úhrad za plnenia na spoločenstvo, s ktorým sa spoločenstvo zlúčilo. Pri splynutí prechádza majetok spoločenstva a zostatok úhrad za plnenia na spoločenstvo vzniknuté splynutím. Zmeny, ktoré zo zlúčenia alebo zo splynutia vyplývajú a sú predmetom zápisu do registra, oznámi predseda novovzniknutého spoločenstva do siedmich dní príslušnému správnemu orgánu.",
+           "n": "3"
+          },
+          {
+           "anchor": "p7d-4",
+           "text": "Spoločenstvo zaniká ku dňu výmazu z registra. Jeho zániku predchádza zrušenie s likvidáciou alebo bez likvidácie. Likvidácia sa nevyžaduje, ak majetok spoločenstva prechádza na iné spoločenstvo po zlúčení, rozdelení alebo splynutí. V registri sa vykoná výmaz zaniknutého spoločenstva a zápis spoločenstva vzniknutého splynutím k tomu istému dňu. Výmaz zlučovaného alebo rozdeleného spoločenstva a zápis zmeny pri spoločenstve, s ktorým sa zanikajúce spoločenstvo zlúčilo, alebo zápis nových spoločenstiev po rozdelení sa vykoná k tomu istému dňu.",
+           "n": "4"
+          },
+          {
+           "anchor": "p7d-5",
+           "text": "Fond prevádzky, údržby a opráv a úhrady za plnenia môže likvidátor použiť len na účely podľa tohto zákona. Ich zostatky likvidátor na základe rozhodnutia zhromaždenia prevedie do 30 dní od zápisu zrušenia spoločenstva v registri na správcu určeného v rozhodnutí zhromaždenia.",
+           "n": "5"
+          },
+          {
+           "anchor": "p7d-6",
+           "text": "Likvidačný zostatok sa prevedie do fondu prevádzky, údržby a opráv príslušného domu. Odmenu likvidátora určí ten, kto likvidátora vymenoval. Náklady likvidácie sa uhradia z majetku spoločenstva. Na zrušenie spoločenstva s likvidáciou alebo bez likvidácie a na zánik sa použijú primerane ustanovenia Obchodného zákonníka o zrušení a zániku obchodných spoločností,¹²ᶜ) ak tento zákon neustanovuje inak.",
+           "n": "6"
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "type": "section",
+       "anchor": "s-clanok-1-cast-druha-g-spravca",
+       "kind": "group",
+       "heading": "Správca",
+       "children": [
+        {
+         "type": "provision",
+         "anchor": "p8",
+         "label": "§ 8",
+         "paragraphs": [
+          {
+           "anchor": "p8-1",
+           "text": "Správcom môže byť právnická osoba alebo fyzická osoba podnikateľ, ktorá má v predmete podnikania alebo v predmete činnosti správu a údržbu bytového fondu; správca, ktorý spravuje bytové domy, musí spĺňať aj podmienky podľa osobitného predpisu.¹²ᶜᵃ) Činnosť správcu môže byť vykonávaná len podľa tohto zákona.",
+           "n": "1"
+          },
+          {
+           "anchor": "p8-2",
+           "text": "Akákoľvek zmena, zrušenie, splynutie alebo zlúčenie správcov nemôže byť na ujmu vlastníkov bytov a nebytových priestorov v dome. Správca je povinný o tejto skutočnosti bezodkladne informovať vlastníkov bytov a nebytových priestorov v dome.",
+           "n": "2"
+          },
+          {
+           "anchor": "p8-3",
+           "text": "Správca je povinný viesť samostatné analytické účty osobitne za každý dom, ktorý spravuje. Prostriedky získané z úhrad za plnenia od vlastníkov bytov a nebytových priestorov v dome a prostriedky fondu prevádzky, údržby a opráv (ďalej len „majetok vlastníkov“) musí správca viesť oddelene od účtov správcu v banke, a to osobitne pre každý spravovaný dom. Majiteľom účtu domu zriadeného správcom v banke sú vlastníci bytov a nebytových priestorov v dome; správca je príslušný disponovať s finančnými prostriedkami na účte domu a vykonávať k tomuto účtu práva a povinnosti vkladateľa podľa osobitného zákona o ochrane vkladov12aaa). Majetok vlastníkov nie je súčasťou majetku správcu. Majetok vlastníkov nesmie správca použiť na krytie alebo úhradu záväzkov, ktoré bezprostredne nesúvisia s činnosťou spojenou so správou domu. Správca nesmie využiť majetok vlastníkov vo vlastný prospech alebo v prospech tretích osôb.",
+           "n": "3"
+          },
+          {
+           "anchor": "p8-4",
+           "text": "Majetok vlastníkov nemôže byť súčasťou konkurznej podstaty správcu ani predmetom výkonu rozhodnutia podľa osobitných predpisov,¹²ᵈ) ktorý smeruje proti majetku správcu.",
+           "n": "4"
+          },
+          {
+           "anchor": "p8-5",
+           "text": "Správca zodpovedá vlastníkom bytov a nebytových priestorov v dome za všetky škody vzniknuté v dôsledku neplnenia alebo nedostatočného plnenia svojich povinností vyplývajúcich z tohto zákona alebo zo zmluvy o výkone správy.",
+           "n": "5"
+          }
+         ]
+        },
+        {
+         "type": "provision",
+         "anchor": "p8a",
+         "label": "§ 8a",
+         "paragraphs": [
+          {
+           "anchor": "p8a-1",
+           "text": "Vlastníci bytov a nebytových priestorov v dome uzatvoria so správcom písomnú zmluvu o výkone správy. Zmluva o výkone správy, jej zmena alebo zánik schválené podľa § 14b ods. 1 písm. e) sú záväzné pre všetkých vlastníkov bytov a nebytových priestorov v dome, ak sú podpísané správcom a osobou poverenou vlastníkmi bytov a nebytových priestorov v dome, pričom pravosť podpisov týchto osôb musí byť úradne osvedčená. Vlastník bytu alebo nebytového priestoru v dome nemôže zmluvu o výkone správy vypovedať. Správca je povinný schválenú zmluvu a pri jej zmene úplné znenie zmluvy doručiť každému vlastníkovi bytu a nebytového priestoru v dome do 30 dní od jej schválenia vlastníkmi bytov a nebytových priestorov v dome. Na doručovanie sa vzťahuje osobitný predpis.¹²ᵉ) Zmluva o výkone správy obsahuje najmä",
+           "n": "1",
+           "items": [
+            {
+             "anchor": "p8a-1-a",
+             "label": "a)",
+             "letter": "a",
+             "text": "vzájomné práva a povinnosti správcu a vlastníkov bytov a nebytových priestorov v dome pri zabezpečovaní prevádzky, údržby a opráv domu,"
+            },
+            {
+             "anchor": "p8a-1-b",
+             "label": "b)",
+             "letter": "b",
+             "text": "spôsob výkonu správy spoločných častí domu, spoločných zariadení domu, spoločných nebytových priestorov, príslušenstva a pozemku,"
+            },
+            {
+             "anchor": "p8a-1-c",
+             "label": "c)",
+             "letter": "c",
+             "text": "zásady hospodárenia s prostriedkami fondu prevádzky, údržby a opráv vrátane rozsahu oprávnenia disponovať s nimi,"
+            },
+            {
+             "anchor": "p8a-1-d",
+             "label": "d)",
+             "letter": "d",
+             "text": "zásady platenia úhrad za plnenia a hospodárenie s nimi,"
+            },
+            {
+             "anchor": "p8a-1-e",
+             "label": "e)",
+             "letter": "e",
+             "text": "zásady určenia výšky platieb za správu,"
+            },
+            {
+             "anchor": "p8a-1-f",
+             "label": "f)",
+             "letter": "f",
+             "text": "rozsah a obsah správy o činnosti správcu podľa odseku 2."
+            }
+           ]
+          },
+          {
+           "anchor": "p8a-2",
+           "text": "Správca je povinný najneskôr do 31. mája nasledujúceho roka predložiť vlastníkom bytov a nebytových priestorov v dome správu o svojej činnosti za predchádzajúci rok týkajúcej sa domu, najmä o finančnom hospodárení domu, o stave spoločných častí domu a spoločných zariadení domu, ako aj o iných významných skutočnostiach, ktoré súvisia so správou domu. Zároveň je povinný vykonať vyúčtovanie použitia fondu prevádzky, údržby a opráv, úhrad za plnenia rozúčtované na jednotlivé byty a nebytové priestory v dome.",
+           "n": "2"
+          },
+          {
+           "anchor": "p8a-3",
+           "text": "Dňom skončenia správy domu prechádzajú všetky práva a povinnosti vyplývajúce zo zmlúv, ktoré súvisia so správou domu a ktoré boli uzatvorené v mene vlastníkov bytov a nebytových priestorov v dome, alebo zo zmlúv uzavretých na základe rozhodnutia vlastníkov bytov a nebytových priestorov v dome na nového správcu alebo na spoločenstvo.",
+           "n": "3"
+          },
+          {
+           "anchor": "p8a-4",
+           "text": "Ak správca nepredloží vlastníkom bytov a nebytových priestorov v dome správu o svojej činnosti za predchádzajúci rok týkajúcu sa domu, vyúčtovanie použitia fondu prevádzky, údržby a opráv a úhrad za plnenia v lehote podľa odseku 2, nemá až do ich predloženia nárok na platby za správu; nárok na platbu za správu nemá správca aj vtedy, ak nepredloží do 30. novembra bežného roka plán opráv na nasledujúci kalendárny rok podľa § 8b ods. 1 písm. g). Ak správca najneskôr v deň skončenia správy neprevedie zostatok finančných prostriedkov na účte domu v banke na účet založený novým správcom alebo spoločenstvom, je povinný zaplatiť na účet domu založený novým správcom alebo spoločenstvom úroky z omeškania.",
+           "n": "4"
+          },
+          {
+           "anchor": "p8a-5",
+           "text": "Komunikáciu vlastníkov bytov a nebytových priestorov v dome so správcom zabezpečuje zástupca vlastníkov zvolený vlastníkmi bytov a nebytových priestorov v dome. Zástupcom vlastníkov môže byť len vlastník bytu alebo nebytového priestoru v dome. Zástupca vlastníkov informuje vlastníkov bytov a nebytových priestorov v dome o činnosti správcu a o dôležitých otázkach týkajúcich sa správy domu. Zástupca vlastníkov je povinný uplatňovať voči správcovi požiadavky vlastníkov bytov a nebytových priestorov v dome v súlade so zmluvou o výkone správy a prijatými rozhodnutiami vlastníkov bytov a nebytových priestorov v dome. Zástupca vlastníkov nie je oprávnený rozhodovať o veciach, o ktorých môžu rozhodovať len vlastníci bytov a nebytových priestorov v dome podľa § 14 až 14b.",
+           "n": "5"
+          },
+          {
+           "anchor": "p8a-6",
+           "text": "Zmluva o výkone správy sa uzatvára so správcom písomne na neurčitý čas. Vlastníci bytov a nebytových priestorov v dome môžu vypovedať zmluvu o výkone správy len na základe rozhodnutia podľa § 14b ods. 1 písm. e). Výpovedná lehota je tri mesiace, ak sa zmluvné strany v zmluve o výkone správy nedohodnú inak. Výpovedná lehota začína plynúť od prvého dňa kalendárneho mesiaca nasledujúceho po doručení výpovede.",
+           "n": "6"
+          },
+          {
+           "anchor": "p8a-7",
+           "text": "S prevodom alebo prechodom vlastníctva bytu alebo nebytového priestoru v dome prechádzajú na nového vlastníka bytu alebo nebytového priestoru v dome práva a povinnosti vyplývajúce zo zmluvy o výkone správy. Ak vlastník bytu alebo nebytového priestoru v dome nadobudol byt alebo nebytový priestor v dome na základe zmluvy o vstavbe alebo nadstavbe domu, pristupuje k zmluve o výkone správy. Prevodom alebo prechodom bytu alebo nebytového priestoru v dome na nového vlastníka odstupuje doterajší vlastník bytu alebo nebytového priestoru v dome od zmluvy o výkone správy; záväzky vyplývajúce z tejto zmluvy zanikajú až ich usporiadaním. Nového vlastníka bytu alebo nebytového priestoru v dome zaväzujú aj právne úkony týkajúce sa domu, spoločných častí domu a spoločných zariadení domu, príslušenstva a pozemku vykonané pred prevodom alebo prechodom vlastníctva bytu alebo nebytového priestoru v dome.",
+           "n": "7"
+          },
+          {
+           "anchor": "p8a-8",
+           "text": "Ak správca vypovedal zmluvu o výkone správy, nemôže ukončiť výkon správy, ak vlastníci bytov a nebytových priestorov v dome nemajú ku dňu skončenia výpovednej lehoty uzavretú zmluvu o výkone správy s iným správcom alebo nie je založené spoločenstvo. Právne vzťahy vlastníkov bytov a nebytových priestorov v dome a správcu po uplynutí výpovednej lehoty sa riadia ustanoveniami vypovedanej zmluvy o výkone správy. Ak do jedného roka nebudú mať vlastníci bytov a nebytových priestorov v dome uzatvorenú zmluvu o výkone správy s iným správcom alebo si nezaložia spoločenstvo, vzniká spoločenstvo zo zákona. Na spoločenstvo prechádzajú všetky práva a povinnosti vyplývajúce zo zmlúv, ktoré súvisia so správou domu a ktoré boli uzatvorené v mene vlastníkov bytov a nebytových priestorov v dome, alebo zo zmlúv uzavretých na základe rozhodnutia vlastníkov bytov a nebytových priestorov v dome. Správca je povinný o vzniku spoločenstva písomne informovať všetkých vlastníkov bytov a nebytových priestorov v dome a zabezpečiť registráciu spoločenstva na príslušnom správnom orgáne. V tomto prípade sa nepoužije ustanovenie § 14b ods. 1 písm. g) a predsedu spoločenstva určí správca.",
+           "n": "8"
+          },
+          {
+           "anchor": "p8a-9",
+           "text": "Ak bol správca vyčiarknutý zo zoznamu správcov,¹²ᶜᵃ) zmluva o výkone správy bytového domu zaniká dňom účinnosti zmluvy o výkone správy uzavretej s novým správcom alebo dňom vzniku spoločenstva, najneskôr však uplynutím šiestich mesiacov od vyčiarknutia zo zoznamu správcov.",
+           "n": "9"
+          },
+          {
+           "anchor": "p8a-10",
+           "text": "Po vyčiarknutí zo zoznamu správcov je doterajší správca povinný",
+           "n": "10",
+           "items": [
+            {
+             "anchor": "p8a-10-a",
+             "label": "a)",
+             "letter": "a",
+             "text": "o tejto skutočnosti informovať vlastníkov do siedmich dní od nadobudnutia právoplatnosti rozhodnutia o vyčiarknutí zo zoznamu správcov,"
+            },
+            {
+             "anchor": "p8a-10-b",
+             "label": "b)",
+             "letter": "b",
+             "text": "vykonať nevyhnutné činnosti smerujúce k ukončeniu výkonu správy a jej odovzdaniu novému správcovi bez zbytočného odkladu po tom, ako bol správca vlastníkmi zvolený alebo vzniknutému spoločenstvu; ak správca nie je zvolený alebo spoločenstvo nevzniklo do šiestich mesiacov od nadobudnutia právoplatnosti rozhodnutia o vyčiarknutí zo zoznamu správcov, vzniká spoločenstvo zo zákona a doterajší správca je povinný použiť primerane postup podľa odseku 8,"
+            },
+            {
+             "anchor": "p8a-10-c",
+             "label": "c)",
+             "letter": "c",
+             "text": "do uzavretia zmluvy o výkone správy s novým správcom alebo vzniku spoločenstva zabezpečovať prevádzku bytového domu podľa § 2 ods. 1 písm. k) a zabezpečiť odstránenie chyby alebo poruchy podľa § 9 ods. 4, najviac po dobu šesť mesiacov od nadobudnutia právoplatnosti rozhodnutia o vyčiarknutí zo zoznamu správcov."
+            }
+           ]
+          },
+          {
+           "anchor": "p8a-11",
+           "text": "Ustanovenia odsekov 9 a 10 sa nevzťahujú na zmluvy o výkone správy budov, ktoré nemajú charakter bytového domu podľa § 24 ods. 1.",
+           "n": "11"
+          }
+         ]
+        },
+        {
+         "type": "provision",
+         "anchor": "p8b",
+         "label": "§ 8b",
+         "paragraphs": [
+          {
+           "anchor": "p8b-1",
+           "text": "Pri správe domu je správca povinný",
+           "n": "1",
+           "items": [
+            {
+             "anchor": "p8b-1-a",
+             "label": "a)",
+             "letter": "a",
+             "text": "hospodáriť s majetkom vlastníkov bytov a nebytových priestorov v dome s odbornou starostlivosťou v súlade s podmienkami zmluvy o výkone správy,"
+            },
+            {
+             "anchor": "p8b-1-b",
+             "label": "b)",
+             "letter": "b",
+             "text": "dbať na ochranu práv vlastníkov bytov a nebytových priestorov v dome a uprednostňovať ich záujmy pred vlastnými,"
+            },
+            {
+             "anchor": "p8b-1-c",
+             "label": "c)",
+             "letter": "c",
+             "text": "zastupovať vlastníkov bytov a nebytových priestorov v dome pri vymáhaní škody, ktorá im vznikla činnosťou tretích osôb alebo činnosťou vlastníka bytu alebo nebytového priestoru v dome,"
+            },
+            {
+             "anchor": "p8b-1-d",
+             "label": "d)",
+             "letter": "d",
+             "text": "vykonávať práva k majetku vlastníkov len v záujme vlastníkov bytov a nebytových priestorov v dome,"
+            },
+            {
+             "anchor": "p8b-1-e",
+             "label": "e)",
+             "letter": "e",
+             "text": "sledovať úhrady za plnenia a úhrady preddavkov do fondu prevádzky údržby a opráv od vlastníkov bytov a nebytových priestorov v dome a vymáhať vzniknuté nedoplatky,"
+            },
+            {
+             "anchor": "p8b-1-f",
+             "label": "f)",
+             "letter": "f",
+             "text": "zvolať schôdzu vlastníkov podľa potreby, najmenej raz za rok, alebo keď o to požiadajú vlastníci bytov a nebytových priestorov v dome, ktorí majú aspoň štvrtinu hlasov (ďalej len „štvrtina vlastníkov bytov a nebytových priestorov v dome“),"
+            },
+            {
+             "anchor": "p8b-1-g",
+             "label": "g)",
+             "letter": "g",
+             "text": "vypracovať a každoročne do 30. novembra vlastníkom bytov a nebytových priestorov v dome predložiť plán opráv na nasledujúci kalendárny rok, ktorý zohľadní najmä opotrebenie materiálu a stav spoločných častí domu a spoločných zariadení domu a navrhnúť výšku tvorby fondu prevádzky údržby a opráv domu na kalendárny rok,"
+            },
+            {
+             "anchor": "p8b-1-h",
+             "label": "h)",
+             "letter": "h",
+             "text": "podať návrh na vykonanie dobrovoľnej dražby¹²ᵃᶜ) bytu alebo nebytového priestoru v dome na uspokojenie pohľadávok podľa § 15 na základe rozhodnutia podľa § 14b ods. 1 písm. o),"
+            },
+            {
+             "anchor": "p8b-1-i",
+             "label": "i)",
+             "letter": "i",
+             "text": "podať návrh na exekučné konanie,¹²ᵃᵇ)"
+            },
+            {
+             "anchor": "p8b-1-j",
+             "label": "j)",
+             "letter": "j",
+             "text": "zabezpečovať všetky ďalšie činnosti potrebné na riadny výkon správy domu v súlade so zmluvou o výkone správy a s týmto zákonom,"
+            },
+            {
+             "anchor": "p8b-1-k",
+             "label": "k)",
+             "letter": "k",
+             "text": "priebežne zverejňovať na mieste v dome obvyklom v spoločných častiach domu alebo na webovom sídle správcu, ak ho má zriadené, postup pri obstarávaní tovarov a služieb, v rámci zabezpečovania prevádzky, údržby, opravy, rekonštrukcie a modernizácie a pri všetkých iných činnostiach spojených so správou domu, vrátane jednotlivých cenových ponúk."
+            }
+           ]
+          },
+          {
+           "anchor": "p8b-2",
+           "text": "Pri obstarávaní služieb a tovaru je správca povinný dojednať čo najvýhodnejšie podmienky, aké sa dali dojednať v prospech vlastníkov bytov a nebytových priestorov v dome. Správca je povinný riadiť sa rozhodnutím vlastníkov bytov a nebytových priestorov v dome o výbere dodávateľa, ak nejde o zabezpečenie odborných prehliadok a skúšok technického zariadenia,⁵ᵃ) ktoré je správca povinný vykonávať pri správe domu.",
+           "n": "2"
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "type": "section",
+       "anchor": "s-clanok-1-cast-druha-g-spolocne-ustanovenia-k-sprave-domu",
+       "kind": "group",
+       "heading": "Spoločné ustanovenia k správe domu",
+       "children": [
+        {
+         "type": "provision",
+         "anchor": "p9",
+         "label": "§ 9",
+         "paragraphs": [
+          {
+           "anchor": "p9-1",
+           "text": "Práva a povinnosti zo zodpovednosti za vady a za škody voči zhotoviteľovi domu prechádzajú z pôvodného vlastníka domu na vlastníkov bytov a nebytových priestorov v dome.",
+           "n": "1"
+          },
+          {
+           "anchor": "p9-2",
+           "text": "Právne úkony týkajúce sa domu, spoločných častí domu a spoločných zariadení domu, príslušenstva a pozemku zaväzujú všetkých vlastníkov bytov a nebytových priestorov v dome. Správca a spoločenstvo zodpovedajú za záväzky vzniknuté pri výkone správy domu až do výšky splatených úhrad za plnenia alebo do výšky zostatku fondu prevádzky, údržby a opráv v príslušnom dome. Ak tieto záväzky nie sú kryté zaplatenými úhradami za plnenia alebo úhradami preddavkov do fondu prevádzky, údržby a opráv, vlastník bytu a nebytového priestoru v dome zodpovedá za záväzky nad rámec zaplatených úhrad za plnenia alebo preddavkov do fondu prevádzky, údržby a opráv v rozsahu svojho spoluvlastníckeho podielu podľa § 5 ods. 1 písm. b).",
+           "n": "2"
+          },
+          {
+           "anchor": "p9-3",
+           "text": "Správca alebo spoločenstvo je oprávnené na účely správy domu spracúvať osobné údaje vlastníkov bytov a nebytových priestorov v dome v rozsahu meno, priezvisko, dátum narodenia, rodné číslo, adresa trvalého alebo prechodného pobytu, číslo bytu, telefónne číslo, elektronická adresa, číslo účtu a kód banky. Správca alebo spoločenstvo je oprávnené na účel ochrany majetku vlastníkov bytov a nebytových priestorov v dome zverejňovať zoznam vlastníkov bytov a nebytových priestorov v dome, ktorí majú úhrnnú výšku nedoplatkov na preddavkoch do fondu prevádzky, údržby a opráv domu a na úhradách za plnenie aspoň vo výške trojnásobku ich aktuálneho mesačného určenia. V zozname sa uvedie meno a priezvisko vlastníka bytu alebo nebytového priestoru v dome a suma nedoplatku na preddavkoch do fondu prevádzky, údržby a opráv domu alebo na úhradách za plnenie. Zoznam sa zverejňuje na mieste obvyklom na oznamovanie informácií v dome.",
+           "n": "3"
+          },
+          {
+           "anchor": "p9-4",
+           "text": "Správca alebo predseda je povinný zabezpečiť odstránenie chyby alebo poruchy technického zariadenia, ktoré boli zistené kontrolou stavu bezpečnosti technického zariadenia,⁵ᵃ) ak bezprostredne ohrozujú život, zdravie alebo majetok, a to aj bez súhlasu vlastníkov bytov a nebytových priestorov v dome. Správca alebo predseda je povinný zabezpečiť aj bez súhlasu vlastníkov bytov a nebytových priestorov v dome odstránenie chyby, poruchy alebo poškodenia spoločných častí domu, spoločných zariadení domu a príslušenstva, ak bezprostredne ohrozujú život, zdravie alebo majetok.",
+           "n": "4"
+          },
+          {
+           "anchor": "p9-5",
+           "text": "Spoločenstvo a správca sú povinní",
+           "n": "5",
+           "items": [
+            {
+             "anchor": "p9-5-a",
+             "label": "a)",
+             "letter": "a",
+             "text": "evidovať a uchovávať všetky prijaté rozhodnutia vlastníkov bytov a nebytových priestorov v dome vrátane zápisníc zo zhromaždení, schôdzí vlastníkov a výsledkov písomných hlasovaní vrátane hlasovacích listín,"
+            },
+            {
+             "anchor": "p9-5-b",
+             "label": "b)",
+             "letter": "b",
+             "text": "viesť zoznam a dokumentáciu súdnych sporov týkajúcich sa domu,"
+            },
+            {
+             "anchor": "p9-5-c",
+             "label": "c)",
+             "letter": "c",
+             "text": "priebežne aktualizovať evidenciu rozhodnutí vlastníkov bytov a nebytových priestorov v dome; predseda alebo správca zodpovedá aj za správnosť evidencie,"
+            },
+            {
+             "anchor": "p9-5-d",
+             "label": "d)",
+             "letter": "d",
+             "text": "umožniť vlastníkovi bytu a nebytového priestoru v dome na požiadanie nahliadnuť do dokladov týkajúcich sa správy domu alebo čerpania fondu prevádzky, údržby a opráv, robiť si z nich výpisy, odpisy a kópie alebo môžu na náklady vlastníka bytu a nebytového priestoru v dome vyhotoviť z nich kópie; pri poskytovaní týchto informácií je predseda alebo správca povinný zabezpečiť ochranu osobných údajov podľa osobitného predpisu,¹²ᶠ)"
+            },
+            {
+             "anchor": "p9-5-e",
+             "label": "e)",
+             "letter": "e",
+             "text": "uplatňovať práva vlastníkov bytov a nebytových priestorov v dome vyplývajúce zo zodpovednosti za vady domu, spoločných častí domu, spoločných zariadení domu, spoločných nebytových priestorov, príslušenstva, pozemku zastavaného domom a priľahlého pozemku voči tretím osobám."
+            }
+           ]
+          },
+          {
+           "anchor": "p9-6",
+           "text": "Ak zaniká zmluva o spoločenstve alebo zmluva o výkone správy alebo ak správca alebo spoločenstvo končia svoju činnosť, je doterajšie spoločenstvo alebo doterajší správca povinný najneskôr v deň zániku zmluvy alebo v deň skončenia činnosti predložiť vlastníkom bytov a nebytových priestorov v dome správu o svojej činnosti týkajúcej sa tohto domu a previesť zostatok majetku vlastníkov na účtoch v banke na nový účet domu zriadený novým správcom alebo novým spoločenstvom. Doterajšie spoločenstvo alebo doterajší správca sú zároveň v rovnakej lehote povinní odovzdať novému správcovi, predsedovi založeného spoločenstva alebo na tento účel poverenému vlastníkovi bytu alebo nebytového priestoru v dome celú dokumentáciu týkajúcu sa správy domu, najmä dodávateľské zmluvy, pracovné zmluvy a poistné zmluvy, účtovné doklady, technickú dokumentáciu domu, vyúčtovania úhrad za plnenia a vyúčtovania fondu prevádzky, údržby a opráv, zápisnice a rozhodnutia vlastníkov bytov a nebytových priestorov v dome, ako aj ďalšie dokumenty nevyhnutne potrebné na riadny výkon správy domu novou osobou.",
+           "n": "6"
+          },
+          {
+           "anchor": "p9-7",
+           "text": "Spoločenstvo a správca sú povinní vykonávať správu domu samostatne v mene a na účet vlastníkov bytov a nebytových priestorov v dome. Spoločenstvo a správca vo vlastnom mene zastupujú a konajú na účet vlastníkov bytov a nebytových priestorov v dome pred súdom a iným orgánom verejnej moci; toto zastupovanie trvá, ak sa v konaní pred súdom alebo iným orgánom verejnej moci nepreukáže rozpor záujmov spoločenstva alebo správcu so záujmom zastupovaných vlastníkov bytov a nebytových priestorov v dome.",
+           "n": "7"
+          },
+          {
+           "anchor": "p9-8",
+           "text": "Spoločenstvo a správca zastupujú v konaní pred súdom a iným orgánom verejnej moci aj vlastníkov bytov a nebytových priestorov v dome,",
+           "n": "8",
+           "items": [
+            {
+             "anchor": "p9-8-a",
+             "label": "a)",
+             "letter": "a",
+             "text": "proti ktorým smeruje návrh na začatie konania podaný prehlasovaným vlastníkom bytu alebo nebytového priestoru v dome, návrh na začatie konania o zdržanie sa výkonu záložného práva alebo zákaz výkonu záložného práva podaný iným vlastníkom bytu alebo nebytového priestoru v dome,"
+            },
+            {
+             "anchor": "p9-8-b",
+             "label": "b)",
+             "letter": "b",
+             "text": "ktorí sa domáhajú úhrady dlhu alebo plnenia inej povinnosti vlastníkom bytu alebo nebytového priestoru v dome."
+            }
+           ]
+          }
+         ]
+        },
+        {
+         "type": "provision",
+         "anchor": "p10",
+         "label": "§ 10",
+         "paragraphs": [
+          {
+           "anchor": "p10-1",
+           "text": "Vlastníci bytov a nebytových priestorov v dome sú povinní v súlade so zmluvou o spoločenstve alebo so zmluvou o výkone správy poukazovať preddavky mesačne vopred do fondu prevádzky, údržby a opráv, a to od prvého dňa mesiaca nasledujúceho po vklade¹⁰) vlastníckeho práva do katastra nehnuteľností. Výšku preddavku do fondu prevádzky, údržby a opráv určia vlastníci bytov a nebytových priestorov v dome spravidla vždy na jeden rok vopred tak, aby sa pokryli predpokladané náklady na prevádzku, údržbu a opravy spoločných častí domu, spoločných zariadení domu, spoločných nebytových priestorov, príslušenstva a priľahlého pozemku, ako aj výdavky na obnovu, modernizáciu a rekonštrukciu domu. Vlastníci bytov a nebytových priestorov v dome vykonávajú úhrady do fondu prevádzky, údržby a opráv podľa veľkosti spoluvlastníckeho podielu; ak k bytu alebo nebytovému priestoru v dome prilieha podľa § 19 ods. 4 balkón, lodžia alebo terasa, pre účely tvorby fondu prevádzky, údržby a opráv domu sa zarátava do veľkosti spoluvlastníckeho podielu 25 % z podlahovej plochy balkóna, lodžie alebo terasy. Pri určení preddavkov do fondu prevádzky, údržby a opráv vlastníci bytov a nebytových priestorov v dome zohľadnia mieru využívania spoločných častí domu a spoločných zariadení domu vlastníkmi nebytových priestorov.",
+           "n": "1"
+          },
+          {
+           "anchor": "p10-2",
+           "text": "Príjmom fondu prevádzky, údržby a opráv domu sú",
+           "n": "2",
+           "items": [
+            {
+             "anchor": "p10-2-a",
+             "label": "a)",
+             "letter": "a",
+             "text": "mesačné preddavky vlastníkov bytov a nebytových priestorov,"
+            },
+            {
+             "anchor": "p10-2-b",
+             "label": "b)",
+             "letter": "b",
+             "text": "príjem za prenájom spoločných častí domu, spoločných zariadení domu, spoločných nebytových priestorov, príslušenstva a priľahlého pozemku,"
+            },
+            {
+             "anchor": "p10-2-c",
+             "label": "c)",
+             "letter": "c",
+             "text": "výnosy z účtu domu vedeného v banke,"
+            },
+            {
+             "anchor": "p10-2-d",
+             "label": "d)",
+             "letter": "d",
+             "text": "príjmy z výťažku exekúcie bytu alebo nebytového priestoru alebo z dobrovoľnej dražby bytu alebo nebytového priestoru, vo výške pohľadávok voči vlastníkovi bytu zo zákonného záložného práva, ktoré vzniklo podľa tohto zákona,"
+            },
+            {
+             "anchor": "p10-2-e",
+             "label": "e)",
+             "letter": "e",
+             "text": "zmluvné pokuty a úroky z omeškania vzniknuté použitím prostriedkov fondu prevádzky, údržby a opráv domu."
+            }
+           ]
+          },
+          {
+           "anchor": "p10-3",
+           "text": "Z fondu prevádzky, údržby a opráv sa financujú výdavky spojené s nákladmi na prevádzku, údržbu a opravy spoločných častí domu, spoločných zariadení domu, spoločných nebytových priestorov, príslušenstva a priľahlého pozemku, ako aj výdavky na obnovu, modernizáciu a rekonštrukciu domu. Z fondu prevádzky, údržby a opráv sa financujú aj opravy balkónov, lodžií a tých terás, ktoré sú spoločnými časťami domu. Prostriedky fondu prevádzky, údržby a opráv možno prechodne použiť na úhradu za plnenia spojené s užívaním bytov a nebytových priestorov v dome v prípade ich dočasného nedostatku. Po preklenutí nedostatku prostriedkov na úhradu tohto plnenia, sa uvedené prostriedky vrátia do fondu prevádzky, údržby a opráv.",
+           "n": "3"
+          },
+          {
+           "anchor": "p10-4",
+           "text": "Spoločenstvo a správca vedie prostriedky vo fonde prevádzky, údržby a opráv oddelene od prostriedkov zhromaždených od vlastníkov bytov a nebytových priestorov v dome na úhrady za plnenia, pričom sa musí zachovať účel použitia týchto prostriedkov. Ak spoločenstvo tvorí viac domov, zriaďuje sa fond prevádzky, údržby a opráv osobitne pre každý dom.",
+           "n": "4"
+          },
+          {
+           "anchor": "p10-5",
+           "text": "Prevodom alebo prechodom vlastníctva bytu alebo nebytového priestoru nemá doterajší vlastník bytu alebo nebytového priestoru v dome právo na vrátenie alikvotnej časti zostatku fondu prevádzky, údržby a opráv od spoločenstva alebo správcu.",
+           "n": "5"
+          },
+          {
+           "anchor": "p10-6",
+           "text": "Úhrady za plnenia sú vlastníci bytov a nebytových priestorov v dome povinní mesačne vopred uhrádzať na účet domu v banke. Pri rozúčtovaní úhrad za plnenia sa zohľadňuje miera využívania spoločných častí domu a spoločných zariadení domu vlastníkmi bytov alebo nebytových priestorov v dome. Okrem služieb a prác, ktoré vlastník bytu a nebytového priestoru v dome uhrádza priamo dodávateľovi, sa za plnenie spojené s užívaním bytu alebo nebytového priestoru považuje najmä osvetlenie spoločných častí domu, odvoz odpadov, čistenie žúmp, užívanie výťahov, upratovanie, dodávka tepla a teplej vody, dodávka vody od vodárenských spoločností a odvádzanie odpadových vôd.",
+           "n": "6"
+          },
+          {
+           "anchor": "p10-7",
+           "text": "Vlastník bytu alebo nebytového priestoru v dome, ktorý sa neužíva, sa nemôže domáhať upustenia od povinnosti uhrádzať preddavky do fondu prevádzky, údržby a opráv, úhrady za plnenia a platby za správu.",
+           "n": "7"
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "type": "section",
+       "anchor": "s-clanok-1-cast-druha-g-prava-a-povinnosti-vlastnikov-bytov-a-nebytovych-priestoro",
+       "kind": "group",
+       "heading": "Práva a povinnosti vlastníkov bytov a nebytových priestorov v dome",
+       "children": [
+        {
+         "type": "provision",
+         "anchor": "p11",
+         "label": "§ 11",
+         "paragraphs": [
+          {
+           "anchor": "p11-1",
+           "text": "Vlastník bytu alebo nebytového priestoru v dome je povinný na svoje náklady byt a nebytový priestor v dome udržiavať v stave spôsobilom na riadne užívanie, najmä včas zabezpečovať údržbu a opravy. Je povinný konať tak, aby pri užívaní, udržiavaní, zmenách, pri prenajatí bytu alebo nebytového priestoru v dome, prípadne jeho časti a pri inom nakladaní s bytom a nebytovým priestorom v dome nerušil a neohrozoval ostatných vo výkone ich vlastníckych, spoluvlastníckych a spoluužívacích práv.",
+           "n": "1"
+          },
+          {
+           "anchor": "p11-2",
+           "text": "Vlastník bytu alebo nebytového priestoru v dome je povinný odstrániť závady a poškodenia, ktoré na iných bytoch alebo nebytových priestoroch v dome alebo na spoločných častiach domu alebo spoločných zariadeniach domu alebo príslušenstve spôsobil sám alebo osoby, ktoré jeho byt alebo nebytový priestor užívajú.",
+           "n": "2"
+          },
+          {
+           "anchor": "p11-3",
+           "text": "Vlastník bytu alebo nebytového priestoru v dome je povinný umožniť na požiadanie na nevyhnutný čas a v nevyhnutnej miere vstup do bytu alebo nebytového priestoru zástupcovi spoločenstva, správcovi a osobe oprávnenej vykonávať opravu a údržbu za účelom vykonania obhliadky alebo opravy, ak opravu nezabezpečí sám alebo ak ide o opravu spoločných častí domu alebo spoločných zariadení domu prístupných z jeho bytu alebo montáž a údržbu zariadení na meranie spotreby tepla a vody v byte a nebytovom priestore a odpočet nameraných hodnôt; ak vlastník bytu alebo nebytového priestoru neumožní na požiadanie vstup do bytu, zodpovedá za škody vzniknuté takýmto konaním.",
+           "n": "3"
+          },
+          {
+           "anchor": "p11-4",
+           "text": "Vlastník bytu alebo nebytového priestoru v dome nemôže vykonávať úpravy bytu alebo nebytového priestoru v dome, ktorými by ohrozoval alebo rušil ostatných v neprimeranom rozsahu alebo by menil vzhľad domu bez súhlasu vlastníkov bytov a nebytových priestorov v dome. Ustanovenia osobitných predpisov nie sú tým dotknuté.¹³)",
+           "n": "4"
+          },
+          {
+           "anchor": "p11-5",
+           "text": "Ak vlastník bytu alebo nebytového priestoru v dome svojím konaním zasahuje do výkonu vlastníckeho práva ostatných vlastníkov bytov alebo nebytových priestorov v tomto dome takým spôsobom, že obmedzuje alebo znemožňuje výkon vlastníckeho práva tým, že hrubo poškodzuje byt alebo nebytový priestor, spoločné časti domu, spoločné zariadenia domu, spoločné nebytové priestory, príslušenstvo alebo sústavne narušuje pokojné bývanie ostatných vlastníkov bytov, ohrozuje bezpečnosť alebo porušuje dobré mravy v dome, alebo neplní povinnosti uložené rozhodnutím súdu, môže súd na návrh spoločenstva alebo niektorého vlastníka bytu alebo nebytového priestoru v dome nariadiť predaj bytu alebo nebytového priestoru.",
+           "n": "5"
+          },
+          {
+           "anchor": "p11-6",
+           "text": "Vlastník bytu alebo nebytového priestoru v dome má právo nahliadať do dokladov týkajúcich sa správy domu alebo čerpania fondu prevádzky, údržby a opráv a robiť si z nich výpisy, odpisy a kópie.",
+           "n": "6"
+          },
+          {
+           "anchor": "p11-7",
+           "text": "Vlastníci bytov a nebytových priestorov v dome sú povinní umožniť odstránenie nedostatkov zistených kontrolou stavu bezpečnosti technického zariadenia.⁵ᵃ) Ak vlastníci bytov a nebytových priestorov v dome neumožnia odstránenie zistených nedostatkov na technických zariadeniach, zodpovedajú za vzniknuté škody.",
+           "n": "7"
+          },
+          {
+           "anchor": "p11-8",
+           "text": "Vlastník bytu alebo nebytového priestoru v dome, ktorý stavebne upravuje byt alebo nebytový priestor, je povinný na výzvu umožniť prístup do bytu alebo nebytového priestoru správcovi alebo predsedovi z dôvodu kontroly, či stavebné úpravy neohrozujú, nepoškodzujú alebo nemenia spoločné časti domu alebo spoločné zariadenia domu. Ak vlastník bytu alebo nebytového priestoru v dome neumožní vstup do bytu alebo nebytového priestoru, správca alebo predseda je povinný oznámiť vykonávanie stavebných úprav bytu alebo nebytového priestoru príslušnému stavebnému úradu.",
+           "n": "8"
+          },
+          {
+           "anchor": "p11-9",
+           "text": "Vlastník bytu je povinný oznámiť bez zbytočného odkladu správcovi alebo spoločenstvu zmeny v počte osôb, ktoré užívajú byt súvisle minimálne počas dvoch mesiacov. Ak vlastník byt neužíva, je povinný oznámiť správcovi alebo spoločenstvu svoju adresu a každú jej zmenu.",
+           "n": "9"
+          },
+          {
+           "anchor": "p11-10",
+           "text": "Vlastníci bytov a nebytových priestorov, nájomcovia, osoby, ktoré žijú s uvedenými osobami v domácnosti a osoby, ktoré sa zdržiavajú v dome, sú povinné dodržiavať domový poriadok schválený vlastníkmi podľa § 14b ods. 1 písm. s). Za tým účelom je správca alebo spoločenstvo povinné zverejniť domový poriadok na mieste obvyklom na oznamovanie informácií v dome.",
+           "n": "10"
+          }
+         ]
+        },
+        {
+         "type": "provision",
+         "anchor": "p12",
+         "label": "§ 12",
+         "paragraphs": [
+          {
+           "anchor": "p12-1",
+           "text": "Vlastník bytu alebo nebytového priestoru v dome a osoby, ktoré s ním žijú v domácnosti,¹⁴) majú právo užívať byt alebo nebytový priestor v dome, spoločné časti domu, spoločné zariadenia domu, príslušenstvo a pozemok, ktorých užívanie je spojené s užívaním bytu alebo nebytového priestoru v dome, a priľahlý pozemok.",
+           "n": "1"
+          },
+          {
+           "anchor": "p12-2",
+           "text": "Vlastník bytu alebo nebytového priestoru v dome je oprávnený prenajať ho inej osobe. Nájom a podnájom bytu a nebytového priestoru v dome alebo jeho časti upravujú osobitné predpisy.¹⁵)",
+           "n": "2"
+          }
+         ]
+        },
+        {
+         "type": "provision",
+         "anchor": "p13",
+         "label": "§ 13",
+         "paragraphs": [
+          {
+           "anchor": "p13-1",
+           "text": "S vlastníctvom bytu a nebytového priestoru v dome je nerozlučne spojené spoluvlastníctvo spoločných častí domu, spoločných zariadení domu, príslušenstva a spoluvlastníctvo alebo iné spoločné práva k pozemku.",
+           "n": "1"
+          },
+          {
+           "anchor": "p13-2",
+           "text": "Spoluvlastníci spoločných častí domu, spoločných zariadení domu, príslušenstva a pozemku sa nemôžu dožadovať zrušenia spoluvlastníctva podľa Občianskeho zákonníka; tým nie je dotknuté právo prevodu priľahlého pozemku a príslušenstva alebo ich častí podľa § 14b ods. 3.",
+           "n": "2"
+          }
+         ]
+        },
+        {
+         "type": "provision",
+         "anchor": "p14",
+         "label": "§ 14",
+         "paragraphs": [
+          {
+           "anchor": "p14-1",
+           "text": "Vlastník bytu alebo nebytového priestoru v dome má právo a povinnosť zúčastňovať sa na správe domu a hlasovaním rozhodovať ako spoluvlastník o všetkých veciach, ktoré sa týkajú správy domu, spoločných častí domu a spoločných zariadení domu, spoločných nebytových priestorov, príslušenstva a pozemku zastavaného domom alebo priľahlého pozemku.",
+           "n": "1"
+          },
+          {
+           "anchor": "p14-2",
+           "text": "Rozhodnutia vlastníkov bytov a nebytových priestorov v dome sa prijímajú na schôdzi vlastníkov alebo písomným hlasovaním; na účely rozhodovania vlastníkov sa za schôdzu vlastníkov považuje aj zhromaždenie. Vlastník bytu alebo nebytového priestoru v dome môže uplatniť svoje hlasovacie právo pri písomnom hlasovaní na hlasovacej listine alebo prostredníctvom prostriedkov informačnej a komunikačnej technológie (ďalej len „elektronické hlasovanie“); elektronické hlasovanie nemožno uplatniť, ak písomné hlasovanie vyhlasuje štvrtina vlastníkov bytov a nebytových priestorov v dome.",
+           "n": "2"
+          },
+          {
+           "anchor": "p14-3",
+           "text": "Za každý byt a nebytový priestor v dome má vlastník bytu alebo nebytového priestoru v dome jeden hlas pripadajúci na byt alebo na nebytový priestor v dome; to platí aj vtedy, ak je byt alebo nebytový priestor v dome v podielovom spoluvlastníctve viacerých osôb.",
+           "n": "3"
+          },
+          {
+           "anchor": "p14-4",
+           "text": "Vlastník bytu alebo nebytového priestoru v dome môže v listinnej podobe, s úradne osvedčeným podpisom, splnomocniť inú osobu, aby ho pri hlasovaní zastupovala. Splnomocnená osoba sa originálom plnomocenstva preukazuje na začiatku schôdze vlastníkov rade, zástupcovi vlastníkov alebo na požiadanie aj vlastníkovi bytu alebo nebytového priestoru v dome. Pri písomnom hlasovaní sa splnomocnená osoba preukazuje originálom plnomocenstva overovateľom a pri elektronickom hlasovaní správcovi alebo rade. Vlastník bytu alebo nebytového priestoru v dome nemôže splnomocniť na zastupovanie",
+           "n": "4",
+           "items": [
+            {
+             "anchor": "p14-4-a",
+             "label": "a)",
+             "letter": "a",
+             "text": "správcu,"
+            },
+            {
+             "anchor": "p14-4-b",
+             "label": "b)",
+             "letter": "b",
+             "text": "kandidáta na volené funkcie v spoločenstve a na funkciu zástupcu vlastníkov, ak ide o hlasovanie o ich voľbe,"
+            },
+            {
+             "anchor": "p14-4-c",
+             "label": "c)",
+             "letter": "c",
+             "text": "predsedu, člena rady alebo zástupcu vlastníkov, ak ide o hlasovanie o ich odvolaní."
+            }
+           ]
+          }
+         ]
+        },
+        {
+         "type": "provision",
+         "anchor": "p14a",
+         "label": "§ 14a",
+         "paragraphs": [
+          {
+           "anchor": "p14a-1",
+           "text": "Schôdzu vlastníkov zvoláva správca alebo rada podľa potreby, najmenej raz za kalendárny rok, alebo keď o to požiada aspoň štvrtina vlastníkov bytov a nebytových priestorov v dome alebo predseda. Termín konania schôdze vlastníkov musí byť určený tak, aby sa jej mohol zúčastniť čo najväčší počet vlastníkov bytov a nebytových priestorov v dome. Správca alebo rada sú povinní zaradiť hlasovanie o súhlase s inštaláciou nabíjacieho bodu¹⁵ᵃᵃ) na najbližšiu schôdzu vlastníkov, ak vlastník bytu alebo nebytového priestoru v dome písomne oznámi správcovi alebo rade záujem o inštaláciu nabíjacieho bodu; ak sa na schôdzi vlastníkov neprijme rozhodnutie, správca alebo rada vyhlásia o tejto veci písomné hlasovanie. Písomné hlasovanie vyhlasuje správca alebo rada podľa potreby, alebo keď o to požiada aspoň štvrtina vlastníkov bytov a nebytových priestorov v dome alebo predseda. O písomnom hlasovaní môžu rozhodnúť vlastníci bytov a nebytových priestorov v dome aj hlasovaním na schôdzi vlastníkov. Schôdza vlastníkov alebo začiatok písomného hlasovania sa musí uskutočniť do 15 dní od doručenia žiadosti predsedu alebo aspoň štvrtiny vlastníkov bytov a nebytových priestorov v dome. Ak správca alebo rada v tomto termíne nekoná alebo sa rada podľa § 7c ods. 6 nezriaďuje, právo zvolať schôdzu vlastníkov alebo vyhlásiť písomné hlasovanie má aspoň štvrtina vlastníkov bytov a nebytových priestorov v dome alebo predseda.",
+           "n": "1"
+          },
+          {
+           "anchor": "p14a-2",
+           "text": "Termín, miesto a program schôdze vlastníkov alebo termín, miesto a otázky písomného hlasovania musia byť vlastníkom bytov a nebytových priestorov v dome oznámené najneskôr sedem dní vopred. Oznámenie o schôdzi vlastníkov alebo oznámenie o písomnom hlasovaní musí byť v listinnej podobe doručené každému vlastníkovi bytu alebo nebytového priestoru v dome, ak zmluva o spoločenstve alebo zmluva o výkone správy neurčí iný spôsob doručenia. Oznámenie o schôdzi vlastníkov alebo písomnom hlasovaní musí byť doručené správcovi alebo predsedovi, ak sa ich rozhodovanie dotýka.",
+           "n": "2"
+          },
+          {
+           "anchor": "p14a-3",
+           "text": "Schôdzu vlastníkov vedie predseda alebo správca, ak vlastníci bytov a nebytových priestorov v dome nerozhodli inak.",
+           "n": "3"
+          },
+          {
+           "anchor": "p14a-4",
+           "text": "Písomné hlasovanie sa uskutočňuje na hlasovacej listine alebo na viacerých listinách, ktoré obsahujú úplné znenie schvaľovaného návrhu, otázky označené poradovými číslami, termín hlasovania, meno a priezvisko vlastníka bytu alebo nebytového priestoru v dome, jeho súhlas alebo nesúhlas vyjadrený vlastnoručným podpisom s uvedením dátumu hlasovania. Podpis vlastníka bytu a nebytového priestoru v dome na hlasovacej listine potvrdia najmenej dvaja overovatelia prítomní pri podpise, ktorí boli zvolení vlastníkmi bytov alebo nebytových priestorov v dome; zmluva o spoločenstve alebo zmluva o výkone správy môže určiť, kedy je potrebné úradné osvedčenie pravosti podpisov pri hlasovaní. Ak vlastník bytu alebo nebytového priestoru v dome nevyznačí svoj názor na hlasovacej listine, je hlas neplatný. Po vykonaní písomného hlasovania správca, predseda, rada alebo zvolený zástupca aspoň jednej štvrtiny vlastníkov bytov a nebytových priestorov v dome zistí výsledok hlasovania za účasti dvoch overovateľov.",
+           "n": "4"
+          },
+          {
+           "anchor": "p14a-5",
+           "text": "Ak pri písomnom hlasovaní vlastník bytu alebo nebytového priestoru v dome prejaví záujem hlasovať elektronicky, vykonanie elektronického hlasovania zabezpečí spoločenstvo alebo správca. Pri elektronickom hlasovaní spoločenstvo alebo správca musí",
+           "n": "5",
+           "items": [
+            {
+             "anchor": "p14a-5-a",
+             "label": "a)",
+             "letter": "a",
+             "text": "vykonať všetky opatrenia potrebné na zabezpečenie riadneho a nerušeného priebehu elektronického hlasovania,"
+            },
+            {
+             "anchor": "p14a-5-b",
+             "label": "b)",
+             "letter": "b",
+             "text": "prijímať hlasy uplatnené elektronickým hlasovaním odo dňa uverejnenia oznámenia o konaní písomného hlasovania najneskôr do konca termínu určeného na písomné hlasovanie,"
+            },
+            {
+             "anchor": "p14a-5-c",
+             "label": "c)",
+             "letter": "c",
+             "text": "potvrdiť bez zbytočného odkladu prijatie hlasu tomu, kto uplatnil svoje hlasovacie právo elektronickým hlasovaním; potvrdenie o prijatí hlasu sa vykoná rovnakým spôsobom ako elektronické hlasovanie."
+            }
+           ]
+          },
+          {
+           "anchor": "p14a-6",
+           "text": "Na účely elektronického hlasovania vlastník bytu alebo nebytového priestoru v dome oznámi spoločenstvu alebo správcovi svoju elektronickú adresu. Elektronické hlasovanie musí byť vykonané spôsobom,",
+           "n": "6",
+           "items": [
+            {
+             "anchor": "p14a-6-a",
+             "label": "a)",
+             "letter": "a",
+             "text": "ktorý umožňuje overiť účasť vlastníkov bytov alebo nebytových priestorov v dome na hlasovaní vylučujúci akúkoľvek zameniteľnosť,"
+            },
+            {
+             "anchor": "p14a-6-b",
+             "label": "b)",
+             "letter": "b",
+             "text": "z ktorého je zrejmý a určitý prejav vôle vlastníka bytu alebo nebytového priestoru v dome pri hlasovaní o konkrétnej otázke a"
+            },
+            {
+             "anchor": "p14a-6-c",
+             "label": "c)",
+             "letter": "c",
+             "text": "ktorý zabezpečí ochranu hlasovania a jeho výsledkov pred neoprávneným zásahom."
+            }
+           ]
+          },
+          {
+           "anchor": "p14a-7",
+           "text": "Ak vlastník bytu alebo nebytového priestoru v dome pri písomnom hlasovaní elektronicky hlasuje o jednej veci viackrát, za platný prejav vôle sa považuje elektronické hlasovanie vykonané v rámci písomného hlasovania ako posledné. Ak vlastník bytu alebo nebytového priestoru v dome vykoná svoje hlasovacie právo pri písomnom hlasovaní na hlasovacej listine aj elektronicky, na elektronické hlasovanie sa neprihliada.",
+           "n": "7"
+          },
+          {
+           "anchor": "p14a-8",
+           "text": "Zo schôdze vlastníkov alebo z písomného hlasovania musí byť vyhotovená zápisnica, ktorú spíše správca, predseda, člen rady, zástupca vlastníkov alebo zvolený vlastník bytu alebo nebytového priestoru v dome a podpíšu ju overovatelia. Prílohou zápisnice je originál prezenčnej listiny zo schôdze vlastníkov alebo originál hlasovacej listiny z písomného hlasovania, menný zoznam vlastníkov bytov a nebytových priestorov v dome, ktorí hlasovali elektronicky, ako aj plnomocenstvá a meno, priezvisko a vyjadrenie overovateľa, ktorý odmietol podpísať zápisnicu. Zápisnica musí obsahovať najmä",
+           "n": "8",
+           "items": [
+            {
+             "anchor": "p14a-8-a",
+             "label": "a)",
+             "letter": "a",
+             "text": "termín a miesto konania schôdze vlastníkov alebo písomného hlasovania,"
+            },
+            {
+             "anchor": "p14a-8-b",
+             "label": "b)",
+             "letter": "b",
+             "text": "odsúhlasený program schôdze vlastníkov a výsledky hlasovania k jednotlivým bodom programu,"
+            },
+            {
+             "anchor": "p14a-8-c",
+             "label": "c)",
+             "letter": "c",
+             "text": "znenie prijatých rozhodnutí schôdze vlastníkov,"
+            },
+            {
+             "anchor": "p14a-8-d",
+             "label": "d)",
+             "letter": "d",
+             "text": "iné skutočnosti, o ktorých rozhodli vlastníci bytov a nebytových priestorov v dome na schôdzi vlastníkov,"
+            },
+            {
+             "anchor": "p14a-8-e",
+             "label": "e)",
+             "letter": "e",
+             "text": "otázky písomného hlasovania a jeho výsledky,"
+            },
+            {
+             "anchor": "p14a-8-f",
+             "label": "f)",
+             "letter": "f",
+             "text": "meno, priezvisko a podpisy predsedajúceho, zapisovateľa a overovateľov."
+            }
+           ]
+          },
+          {
+           "anchor": "p14a-9",
+           "text": "Zápisnicu a výsledok hlasovania schôdze vlastníkov alebo písomného hlasovania musí zverejniť ten, kto schôdzu vlastníkov zvolal alebo vyhlásil písomné hlasovanie, a to do siedmich dní od konania schôdze vlastníkov alebo od skončenia písomného hlasovania spôsobom v dome obvyklým; oznámenie o výsledku hlasovania musí obsahovať dátum jeho zverejnenia. Spôsob zverejňovania, ktorý sa považuje v dome za obvyklý, si vlastníci bytov a nebytových priestorov v dome upravia v zmluve o spoločenstve alebo zmluve o výkone správy. Ak aspoň štvrtina vlastníkov bytov a nebytových priestorov v dome zvolala schôdzu vlastníkov alebo vyhlásila písomné hlasovanie, originál zápisnice a výsledok hlasovania schôdze vlastníkov alebo výsledok písomného hlasovania musí predsedovi spoločenstva alebo správcovi doručiť poverený zástupca vlastníkov bytov a nebytových priestorov v dome do siedmich dní od konania schôdze vlastníkov alebo od skončenia písomného hlasovania.",
+           "n": "9"
+          },
+          {
+           "anchor": "p14a-10",
+           "text": "Platné rozhodnutia sú záväzné pre všetkých vlastníkov bytov a nebytových priestorov v dome. Zmluvy a ich zmeny schválené vlastníkmi sú záväzné pre všetkých vlastníkov bytov a nebytových priestorov v dome, ak ich za vlastníkov bytov a nebytových priestorov v dome podpísala nimi poverená osoba.",
+           "n": "10"
+          },
+          {
+           "anchor": "p14a-11",
+           "text": "Prehlasovaný vlastník bytu alebo nebytového priestoru v dome má právo obrátiť sa do 30 dní od oznámenia výsledku hlasovania na súd, aby vo veci rozhodol, inak jeho právo zaniká. Ak sa vlastník bytu alebo nebytového priestoru v dome nemohol o výsledku hlasovania dozvedieť, má právo obrátiť sa na súd najneskôr do troch mesiacov od oznámenia výsledku hlasovania, inak jeho právo zaniká. Prehlasovaný vlastník bytu alebo nebytového priestoru v dome sa môže zároveň na príslušnom súde domáhať dočasného pozastavenia účinnosti rozhodnutia vlastníkov bytov a nebytových priestorov podľa osobitného predpisu.¹⁵ᵃ) Pri rovnosti hlasov, alebo ak sa potrebná väčšina podľa § 14b nedosiahne, rozhoduje na návrh ktoréhokoľvek vlastníka bytu alebo nebytového priestoru v dome súd.",
+           "n": "11"
+          }
+         ]
+        },
+        {
+         "type": "provision",
+         "anchor": "p14b",
+         "label": "§ 14b",
+         "paragraphs": [
+          {
+           "anchor": "p14b-1",
+           "text": "Vlastníci bytov a nebytových priestorov v dome prijímajú rozhodnutia nadpolovičnou väčšinou hlasov všetkých vlastníkov bytov a nebytových priestorov v dome, ak hlasujú o",
+           "n": "1",
+           "items": [
+            {
+             "anchor": "p14b-1-a",
+             "label": "a)",
+             "letter": "a",
+             "text": "zmluve o spoločenstve, jej zmene alebo o zrušení, zlúčení, splynutí alebo rozdelení spoločenstva a o poverení osoby oprávnenej podpísať zmluvu o spoločenstve,"
+            },
+            {
+             "anchor": "p14b-1-b",
+             "label": "b)",
+             "letter": "b",
+             "text": "voľbe alebo odvolaní predsedu,"
+            },
+            {
+             "anchor": "p14b-1-c",
+             "label": "c)",
+             "letter": "c",
+             "text": "stanovách spoločenstva a zásadách hospodárenia spoločenstva,"
+            },
+            {
+             "anchor": "p14b-1-d",
+             "label": "d)",
+             "letter": "d",
+             "text": "výške odmeny predsedovi a členom rady a výške mesačných platieb za správu spoločenstva,"
+            },
+            {
+             "anchor": "p14b-1-e",
+             "label": "e)",
+             "letter": "e",
+             "text": "zmluve o výkone správy, jej zmene, zániku alebo výpovedi a o poverení osoby oprávnenej podpísať tieto právne úkony po schválení vlastníkmi bytov a nebytových priestorov v dome,"
+            },
+            {
+             "anchor": "p14b-1-f",
+             "label": "f)",
+             "letter": "f",
+             "text": "výške platby za správu,"
+            },
+            {
+             "anchor": "p14b-1-g",
+             "label": "g)",
+             "letter": "g",
+             "text": "zmene formy správy,"
+            },
+            {
+             "anchor": "p14b-1-h",
+             "label": "h)",
+             "letter": "h",
+             "text": "výške odmeny zástupcu vlastníkov,"
+            },
+            {
+             "anchor": "p14b-1-i",
+             "label": "i)",
+             "letter": "i",
+             "text": "preddavkoch do fondu prevádzky, údržby a opráv a účele použitia prostriedkov fondu prevádzky, údržby a opráv, zásadách hospodárenia s týmito prostriedkami vrátane rozsahu oprávnenia disponovať s nimi,"
+            },
+            {
+             "anchor": "p14b-1-j",
+             "label": "j)",
+             "letter": "j",
+             "text": "zásadách určenia výšky mesačných úhrad za plnenia,"
+            },
+            {
+             "anchor": "p14b-1-k",
+             "label": "k)",
+             "letter": "k",
+             "text": "zohľadnení miery využívania spoločných častí domu a spoločných zariadení domu vlastníkmi nebytových priestorov a garáží v dome,"
+            },
+            {
+             "anchor": "p14b-1-l",
+             "label": "l)",
+             "letter": "l",
+             "text": "súhlase so stavebnou úpravou,¹⁵ᵃᵇ) ktorou sa zasahuje do spoločných častí domu, do spoločných zariadení domu, do príslušenstva alebo do priľahlého pozemku,"
+            },
+            {
+             "anchor": "p14b-1-m",
+             "label": "m)",
+             "letter": "m",
+             "text": "súhlase so stavebnou úpravou bytu alebo nebytového priestoru, ktorou vlastník bytu a nebytového priestoru v dome mení vzhľad domu a zasahuje do spoločných častí domu, zasahuje do spoločných zariadení domu vrátane odpojenia od spoločných rozvodov vykurovania a teplej úžitkovej vody v dome, príslušenstva alebo priľahlého pozemku, ak zmluva o spoločenstve alebo zmluva o výkone správy neurčuje inak,"
+            },
+            {
+             "anchor": "p14b-1-n",
+             "label": "n)",
+             "letter": "n",
+             "text": "inštalácii alebo úprave spoločnej antény alebo umiestnení elektronických komunikačných sietí v dome vrátane zavedenia bezpečnostného kamerového systému v spoločných častiach domu a spoločných zariadeniach domu,"
+            },
+            {
+             "anchor": "p14b-1-o",
+             "label": "o)",
+             "letter": "o",
+             "text": "podaní návrhu na exekučné konanie¹²ᵃᵇ) alebo návrhu na vykonanie dobrovoľnej dražby¹²ᵃᶜ) bytu alebo nebytového priestoru v dome,"
+            },
+            {
+             "anchor": "p14b-1-p",
+             "label": "p)",
+             "letter": "p",
+             "text": "nájme a výpožičke spoločných nebytových priestorov, spoločných častí domu, spoločných zariadení domu a príslušenstva,"
+            },
+            {
+             "anchor": "p14b-1-r",
+             "label": "r)",
+             "letter": "r",
+             "text": "práve výlučne užívať nové spoločné časti domu, spoločné zariadenia domu alebo príslušenstvo len niektorými vlastníkmi bytov a nebytových priestorov v dome podľa § 19 ods. 8,"
+            },
+            {
+             "anchor": "p14b-1-s",
+             "label": "s)",
+             "letter": "s",
+             "text": "prijatí, zmene alebo zrušení domového poriadku."
+            }
+           ]
+          },
+          {
+           "anchor": "p14b-2",
+           "text": "Vlastníci bytov a nebytových priestorov v dome prijímajú rozhodnutia dvojtretinovou väčšinou hlasov všetkých vlastníkov bytov a nebytových priestorov v dome, ak hlasujú o",
+           "n": "2",
+           "items": [
+            {
+             "anchor": "p14b-2-a",
+             "label": "a)",
+             "letter": "a",
+             "text": "zmene účelu užívania spoločných častí domu a spoločných zariadení domu,"
+            },
+            {
+             "anchor": "p14b-2-b",
+             "label": "b)",
+             "letter": "b",
+             "text": "zmluve o úvere alebo jej zmene,"
+            },
+            {
+             "anchor": "p14b-2-c",
+             "label": "c)",
+             "letter": "c",
+             "text": "zmluve o zabezpečení úveru alebo jej zmene,"
+            },
+            {
+             "anchor": "p14b-2-d",
+             "label": "d)",
+             "letter": "d",
+             "text": "zmluve o nájme a kúpe veci, ktorú vlastníci bytov a nebytových priestorov v dome užívajú s právom jej kúpy po uplynutí dojednaného času užívania, alebo jej zmene,"
+            },
+            {
+             "anchor": "p14b-2-e",
+             "label": "e)",
+             "letter": "e",
+             "text": "zmluve o vstavbe alebo nadstavbe bytu alebo nebytového priestoru v dome, vstavbe alebo nadstavbe novej spoločnej časti domu, nového spoločného zariadenia domu alebo nového príslušenstva, alebo o ich zmene; ak sa rozhoduje o nadstavbe alebo o vstavbe v podkroví alebo povale, vyžaduje sa zároveň súhlas všetkých vlastníkov bytov a nebytových priestorov v dome, ktorí majú s nadstavbou alebo vstavbou bezprostredne susediť,"
+            },
+            {
+             "anchor": "p14b-2-f",
+             "label": "f)",
+             "letter": "f",
+             "text": "stavebnej úprave, ktorou vznikne nová spoločná časť domu, nové spoločné zariadenie domu alebo nové príslušenstvo alebo zanikne spoločná časť domu, spoločné zariadenie domu alebo príslušenstvo,"
+            },
+            {
+             "anchor": "p14b-2-g",
+             "label": "g)",
+             "letter": "g",
+             "text": "zriadení vecného bremena k spoločným častiam domu, spoločným zariadeniam domu, príslušenstvu a k priľahlému pozemku."
+            }
+           ]
+          },
+          {
+           "anchor": "p14b-3",
+           "text": "Súhlas všetkých vlastníkov bytov a nebytových priestorov v dome sa vyžaduje pri rozhodovaní o zmluve o",
+           "n": "3",
+           "items": [
+            {
+             "anchor": "p14b-3-a",
+             "label": "a)",
+             "letter": "a",
+             "text": "prevode vlastníctva nebytového priestoru, priľahlého pozemku, príslušenstva alebo ich častí, ktoré sú v podielovom spoluvlastníctve vlastníkov bytov a nebytových priestorov v dome,"
+            },
+            {
+             "anchor": "p14b-3-b",
+             "label": "b)",
+             "letter": "b",
+             "text": "prístavbe výlučne novej spoločnej časti domu, výlučne nového spoločného zariadenia domu alebo výlučne nového príslušenstva, ktorými sa dom pôdorysne rozšíri a ktoré budú prevádzkovo spojené s domom.¹⁵ᵇ)"
+            }
+           ]
+          },
+          {
+           "anchor": "p14b-4",
+           "text": "O veciach, ktoré nie sú upravené v odsekoch 1 až 3, je na prijatie rozhodnutia potrebná nadpolovičná väčšina hlasov vlastníkov bytov a nebytových priestorov v dome, ktorí sú prítomní na schôdzi vlastníkov alebo sa zúčastnili písomného hlasovania.",
+           "n": "4"
+          },
+          {
+           "anchor": "p14b-5",
+           "text": "Súhlas vlastníkov bytov a nebytových priestorov v dome sa nevyžaduje pri montáži zdvíhacieho zariadenia podľa osobitného zákona¹⁵ᶜ) v spoločných častiach bytového domu.",
+           "n": "5"
+          },
+          {
+           "anchor": "p14b-6",
+           "text": "Ak vlastníci bytov a nebytových priestorov v dome rozhodli o veci, nové rozhodnutie o tej istej veci nahrádza predchádzajúce rozhodnutie. Pri hlasovaní o tej istej veci podľa odseku 1 do jedného roka od platného hlasovania sa vyžaduje súhlas dvojtretinovej väčšiny hlasov všetkých vlastníkov bytov a nebytových priestorov v dome. Pri hlasovaní o tej istej veci podľa odseku 2 do jedného roka od platného hlasovania o tej istej veci sa vyžaduje súhlas štvorpätinovej väčšiny hlasov všetkých vlastníkov bytov a nebytových priestorov v dome. Pri hlasovaní o tej istej veci podľa odseku 4 do jedného roka od platného hlasovania o tej istej veci sa vyžaduje súhlas nadpolovičnej väčšiny hlasov všetkých vlastníkov bytov a nebytových priestorov v dome.",
+           "n": "6"
+          },
+          {
+           "anchor": "p14b-7",
+           "text": "Ak spoločenstvo tvorí viac domov, o zmluve o vstavbe alebo nadstavbe, zmluve o úvere alebo jej zmene, zmluve o zabezpečení úveru alebo jej zmene, rozdelení spoločenstva a o použití fondu prevádzky, údržby a opráv hlasujú iba vlastníci bytov a nebytových priestorov v dome, ktorého sa predmet hlasovania týka.",
+           "n": "7"
+          }
+         ]
+        },
+        {
+         "type": "provision",
+         "anchor": "p15",
+         "label": "§ 15",
+         "paragraphs": [
+          {
+           "anchor": "p15-1",
+           "text": "Na zabezpečenie pohľadávok, ktoré vznikli alebo vzniknú v budúcnosti z právnych úkonov týkajúcich sa domu, spoločných častí domu, spoločných zariadení domu a príslušenstva a na zabezpečenie pohľadávok, ktoré vznikli alebo vzniknú v budúcnosti z právnych úkonov týkajúcich sa bytu alebo nebytového priestoru v dome, ktoré urobil vlastník bytu alebo nebytového priestoru v dome, vzniká zo zákona k bytu alebo k nebytovému priestoru v dome záložné právo¹⁶) v prospech ostatných vlastníkov bytov a nebytových priestorov. Existencia záložného práva sa zapíše do katastra nehnuteľností¹⁷) a nemožno ho vymazať počas existencie predmetu záložného práva.",
+           "n": "1"
+          },
+          {
+           "anchor": "p15-2",
+           "text": "Záložné právo k bytu alebo k nebytovému priestoru v dome možno zriadiť aj v prospech tretej osoby.",
+           "n": "2"
+          },
+          {
+           "anchor": "p15-3",
+           "text": "Záložné právo podľa odseku 1 trvá počas celej existencie predmetu záložného práva.",
+           "n": "3"
+          }
+         ]
+        },
+        {
+         "type": "provision",
+         "anchor": "p16",
+         "label": "§ 16",
+         "paragraphs": [
+          {
+           "anchor": "p16-1",
+           "text": "Byt, ktorého nájomcom je fyzická osoba, môže vlastník domu previesť do vlastníctva len tomuto nájomcovi, ak nie je nájom bytu dohodnutý na určitý čas. Týmto ustanovením nie je dotknuté predkupné právo spoluvlastníka domu.¹⁷ᵇ)",
+           "n": "1"
+          },
+          {
+           "anchor": "p16-2",
+           "text": "Ak nájomcovi nájom bytu skončil podľa osobitného predpisu,¹⁸) môže vlastník bytu previesť byt do vlastníctva tretej osoby, ak táto osoba poskytne nájomcovi bytovú náhradu podľa osobitného predpisu.¹⁹) Ustanovenia osobitného predpisu²⁰) sa v tomto prípade nepoužijú.",
+           "n": "2"
+          },
+          {
+           "anchor": "p16-3",
+           "text": "Súčasťou zmluvy o prevode vlastníctva bytu alebo nebytového priestoru v dome z vlastníctva bytového družstva je vzájomné vyrovnanie prostriedkov určených na financovanie údržby a opráv domu pripadajúcich na bytový a nebytový priestor v dome, ktorý je predmetom prevodu vlastníctva. Vzájomným vyrovnaním sa rozumie vyrovnanie nevyčerpaných zostatkov a vyrovnanie nedoplatkov na obytný dom zo strany budúceho vlastníka bytu alebo nebytového priestoru v dome. Nevyčerpané prostriedky určené na údržbu a opravu domu, bytu a nebytového priestoru v dome prevedie bytové družstvo na fond prevádzky, údržby a opráv vlastníkov bytov a nebytových priestorov v dome (§ 10). Na použitie uvedených prostriedkov platia ustanovenia § 10.",
+           "n": "3"
+          },
+          {
+           "anchor": "p16-4",
+           "text": "Ak je v dome vo vlastníctve bytového družstva nebytový priestor, ktorý vznikol na základe rozhodnutia o zmene v užívaní stavby²⁰ᵃ) zo spoločných častí domu alebo spoločných zariadení domu a nejde o prístavbu nebytového priestoru, prechádza tento nebytový priestor pri prevode bytov do podielového spoluvlastníctva vlastníkov bytov. Veľkosť spoluvlastníckeho podielu sa určuje podľa § 5 ods. 1 písm. b); rovnako sa postupuje aj pri nebytových priestoroch, na ktorých financovaní sa podieľali svojimi členskými podielmi len nájomcovia bytov v dome alebo ich právni predchodcovia. Ak bytové družstvo uzavrie zmluvu o prevode vlastníctva takýchto nebytových priestorov, táto zmluva je neplatná. Nájomné za užívanie takýchto priestorov je príjmom fondu prevádzky, údržby a opráv (§ 10 ods. 2) príslušného domu.",
+           "n": "4"
+          }
+         ],
+         "heading": "Osobitné ustanovenia o prevode vlastníctva bytu a nebytového priestoru v dome"
+        }
+       ]
+      },
+      {
+       "type": "section",
+       "anchor": "s-clanok-1-cast-druha-g-cena-bytu-a-nebytoveho-priestoru-v-dome-a-cena-pozemku",
+       "kind": "group",
+       "heading": "Cena bytu a nebytového priestoru v dome a cena pozemku",
+       "children": [
+        {
+         "type": "provision",
+         "anchor": "p17",
+         "label": "§ 17",
+         "paragraphs": [
+          {
+           "anchor": "p17-1",
+           "text": "Cena bytu, nebytového priestoru alebo ateliéru v dome, cena príslušenstva, cena pozemku zastavaného domom a cena priľahlého pozemku (ďalej len „cena“) sa dojednáva dohodou²¹) predávajúceho a kupujúceho.",
+           "n": "1"
+          },
+          {
+           "anchor": "p17-2",
+           "text": "Dohodnutá cena ateliéru, ak sa prevádza do vlastníctva nájomcovi, nesmie prevýšiť sumu určenú podľa odseku 6, § 18, 18a a 18b.",
+           "n": "2"
+          },
+          {
+           "anchor": "p17-3",
+           "text": "Dohodnutá cena bytu a pozemkov podľa odseku 1 nesmie prevýšiť cenu určenú podľa § 18, 18a a 18b, ak sa byt prevádza do vlastníctva doterajšieho nájomcu z vlastníctva",
+           "n": "3",
+           "items": [
+            {
+             "anchor": "p17-3-a",
+             "label": "a)",
+             "letter": "a",
+             "text": "štátu vrátane štátnych podnikov v likvidácii a Slovenského pozemkového fondu,"
+            },
+            {
+             "anchor": "p17-3-b",
+             "label": "b)",
+             "letter": "b",
+             "text": "obce, alebo vyššieho územného celku, ktorý nadobudol byty do vlastníctva podľa osobitného predpisu.²¹ᵃ)"
+            },
+            {
+             "anchor": "p17-3-c",
+             "label": "c)",
+             "letter": "c",
+             "text": "obchodnej spoločnosti s účasťou štátu alebo Fondu národného majetku Slovenskej republiky, alebo obce,"
+            },
+            {
+             "anchor": "p17-3-d",
+             "label": "d)",
+             "letter": "d",
+             "text": "poľnohospodárskeho družstva, výrobného družstva alebo spotrebného družstva,"
+            },
+            {
+             "anchor": "p17-3-e",
+             "label": "e)",
+             "letter": "e",
+             "text": "obchodnej spoločnosti založenej obchodnou spoločnosťou uvedenou v písmene c) alebo družstvom uvedeným v písmene d),"
+            },
+            {
+             "anchor": "p17-3-f",
+             "label": "f)",
+             "letter": "f",
+             "text": "právnickej osoby alebo fyzickej osoby, ktorá nadobudla byty do vlastníctva podľa osobitného predpisu,²²)"
+            },
+            {
+             "anchor": "p17-3-g",
+             "label": "g)",
+             "letter": "g",
+             "text": "záujmového združenia právnických osôb a do roku 1989 spoločenskej organizácie Revolučné odborové hnutie a jej právnych nástupcov, a to príslušné odborové zväzy odborových organizácií a následne Jednotný majetkový fond zväzov odborových organizácií v Slovenskej republike, ktorá nadobudla do vlastníctva byty postavené v rámci združenia finančných prostriedkov na bytovú výstavbu podľa osobitných predpisov platných v čase výstavby bytov,²²ᵃ)"
+            },
+            {
+             "anchor": "p17-3-h",
+             "label": "h)",
+             "letter": "h",
+             "text": "obchodnej spoločnosti založenej štátom podľa osobitného predpisu.²²ᵇ)"
+            }
+           ]
+          },
+          {
+           "anchor": "p17-4",
+           "text": "Ustanovenie odseku 3 sa nevzťahuje na prevod vlastníctva bytov v rodinných domoch, alebo ak je nájomcom bytu právnická osoba.",
+           "n": "4"
+          },
+          {
+           "anchor": "p17-5",
+           "text": "Byty, ktoré sú predmetom prevodu do vlastníctva doterajšiemu nájomcovi, nemožno vydražiť podľa osobitného predpisu.²³)",
+           "n": "5"
+          },
+          {
+           "anchor": "p17-6",
+           "text": "Dom vo vlastníctve obce alebo jeho časť nemožno previesť podľa osobitného predpisu²³ᵃ) do vlastníctva nájomcov bytov a nebytových priestorov v tomto dome ani do vlastníctva tretích osôb, ak požiada o prevod vlastníctva bytu v dome nájomca.",
+           "n": "6"
+          },
+          {
+           "anchor": "p17-7",
+           "text": "Ak sa prevádza byt alebo ateliér z vlastníctva bytového družstva do vlastníctva člena bytového družstva, ktorý je jeho nájomcom, je člen povinný uhradiť bytovému družstvu ako cenu bytu nesplatený investičný úver s príslušenstvom pripadajúci na tento byt. Prevodom vlastníctva družstevného bytu zaniká nárok člena družstva na vrátenie členského podielu. Ustanovenia osobitných predpisov nie sú týmto zákonom dotknuté.⁷)",
+           "n": "7"
+          },
+          {
+           "anchor": "p17-8",
+           "text": "Ustanovenia osobitných predpisov²⁴) o povinnosti bytového družstva vrátiť štátny príspevok sa nepoužijú, ak sa prevádza vlastníctvo bytu podľa odseku 7.",
+           "n": "8"
+          }
+         ]
+        },
+        {
+         "type": "provision",
+         "anchor": "p18",
+         "label": "§ 18",
+         "paragraphs": [
+          {
+           "anchor": "p18-1",
+           "text": "Cena za 1 m² podlahovej plochy bytu alebo ateliéru, ktorý sa prevádza do vlastníctva doterajšieho nájomcu z vlastníctva právnickej osoby alebo fyzickej osoby, ktoré sú uvedené v § 17 ods. 3, sa zisťuje tak, že z obstarávacej ceny domu sa odpočíta",
+           "n": "1",
+           "items": [
+            {
+             "anchor": "p18-1-a",
+             "label": "a)",
+             "letter": "a",
+             "text": "pri byte základný štátny príspevok poskytnutý na porovnateľný družstevný byt podľa roku začatia výstavby domu,"
+            },
+            {
+             "anchor": "p18-1-b",
+             "label": "b)",
+             "letter": "b",
+             "text": "pri byte 2 % a pri ateliéri 0,5 % opotrebenia za každý začatý rok veku domu,"
+            },
+            {
+             "anchor": "p18-1-i3",
+             "label": "",
+             "letter": "i3",
+             "text": "a vydelí sa súčtom podlahovej plochy bytov a ateliérov v dome. Ak nemožno zistiť obstarávaciu cenu domu, stanoví sa jeho východisková hodnota znaleckým posudkom podľa osobitného predpisu.²⁴ᵃᵃ)"
+            }
+           ]
+          },
+          {
+           "anchor": "p18-2",
+           "text": "Opotrebenie podľa odseku 1 písm. b) sa vypočíta z obstarávacej ceny domu a celková výška zníženia obstarávacej ceny domu podľa odseku 1 môže byť najviac 80 %.",
+           "n": "2"
+          },
+          {
+           "anchor": "p18-3",
+           "text": "Obstarávacou cenou domu na účely tohto zákona sa rozumie cena vedená v účtovníctve²⁴ᵃ) zohľadňujúca prvú generálnu inventarizáciu majetku v roku 1955 a druhú generálnu inventarizáciu majetku v roku 1965. Ak je súčasťou obstarávacej ceny domu nebytový priestor alebo garáž, obstarávacia cena domu sa odborným prepočtom zníži o časť prislúchajúcu nebytovému priestoru alebo garáži.",
+           "n": "3"
+          },
+          {
+           "anchor": "p18-4",
+           "text": "Ak sa prevádza byt alebo ateliér z vlastníctva štátu alebo obce do vlastníctva nájomcu, vlastník domu pri uzatváraní zmluvy o prevode vlastníctva bytu alebo ateliéru je povinný poskytnúť nadobúdateľovi na úhradu ceny zrážku z ceny zistenej podľa odseku 1 vo výške 30 %.",
+           "n": "4"
+          },
+          {
+           "anchor": "p18-5",
+           "text": "Odseky 1 až 4 sa nepoužijú na zistenie ceny bytu, ak vlastník uvedený v odseku 1 nadobudol byt do vlastníctva podľa § 4 ods. 1 písm. a) za cenu dohodou.²¹) V týchto prípadoch pri prevode vlastníctva bytu na nájomcu nemôže byť dohodnutá cena bytu nižšia, než za akú ju vlastník uvedený v odseku 1 nadobudol do vlastníctva.",
+           "n": "5"
+          },
+          {
+           "anchor": "p18-6",
+           "text": "Ak vlastník uvedený v odseku 1 nadobudol do vlastníctva spoluvlastnícky podiel na dome alebo na bytoch v dome na základe predkupného práva, cena za 1 m² podlahovej plochy bytu alebo ateliéru sa vypočíta ako súčet obstarávacej ceny spoluvlastníckeho podielu vlastníka uvedeného v odseku 1 zníženej o zrážky podľa odsekov 1 až 4 a obstarávacej ceny za nadobudnutie spoluvlastníckeho podielu bez odpočítania zrážok podľa odsekov 1 až 4, ktorý sa vydelí súčtom podlahovej plochy bytov a ateliérov v dome.",
+           "n": "6"
+          },
+          {
+           "anchor": "p18-7",
+           "text": "Ak sa predávajú byty v bytovom dome, ktorý je v spoluvlastníctve vlastníka uvedeného v odseku 1 a iného vlastníka, cena za 1 m² podlahovej plochy bytu alebo ateliéru v takomto dome sa vypočíta ako súčet obstarávacej ceny spoluvlastníckeho podielu vlastníka uvedeného v odseku 1 zníženej o zrážky podľa odseku 1 až 4 a ceny spoluvlastníckeho podielu iného vlastníka, ktorý sa vydelí súčtom podlahovej plochy bytov a ateliérov v takomto dome.",
+           "n": "7"
+          },
+          {
+           "anchor": "p18-8",
+           "text": "Ustanovenie odseku 5 sa nevzťahuje na služobné byty, byty¹) v správe rozpočtových organizácií a príspevkových organizácií Ministerstva financií Slovenskej republiky, Ministerstva školstva Slovenskej republiky, Ministerstva vnútra Slovenskej republiky, Ministerstva obrany Slovenskej republiky, Ministerstva práce, sociálnych vecí a rodiny Slovenskej republiky, Ministerstva zdravotníctva Slovenskej republiky a Ministerstva pôdohospodárstva Slovenskej republiky.",
+           "n": "8"
+          }
+         ],
+         "heading": "Cena bytu a ateliéru"
+        },
+        {
+         "type": "provision",
+         "anchor": "p18a",
+         "label": "§ 18a",
+         "paragraphs": [
+          {
+           "anchor": "p18a-1",
+           "text": "Vyššiu cenu pozemku zastavaného domom a priľahlého pozemku ako cenu zistenú podľa osobitného predpisu²⁴ᵇ) nemožno dojednať.",
+           "n": "1"
+          },
+          {
+           "anchor": "p18a-2",
+           "text": "Ak sa prevádza spoluvlastnícky podiel na pozemku zastavanom domom a priľahlom pozemku do vlastníctva vlastníka bytu, ktorý nadobudol byt do vlastníctva podľa osobitného predpisu,²⁴ᶜ) alebo do vlastníctva jeho dediča, alebo do vlastníctva manžela, detí, vnukov alebo rodičov pôvodného vlastníka bytu, cena za 1 m² pozemku sa rovná najvyššej výške ročného nájomného za 1 m² zistenej podľa osobitného predpisu.²⁴ᵈ)",
+           "n": "2"
+          },
+          {
+           "anchor": "p18a-3",
+           "text": "Obec je povinná previesť vlastníctvo zastavaného a priľahlého pozemku nadobudnuté podľa osobitného predpisu²⁴ᵉ) na vlastníka bytu, ktorý nadobudol byt do vlastníctva z vlastníctva bytového družstva, ak vlastník bytu požiada o prevod spoluvlastníckeho podielu pozemku, za cenu určenú podľa odseku 2; veľkosť spoluvlastníckeho podielu pozemku sa určí podľa § 5 ods. 1 písm. b).",
+           "n": "3"
+          }
+         ],
+         "heading": "Cena pozemku"
+        },
+        {
+         "type": "provision",
+         "anchor": "p18b",
+         "label": "§ 18b",
+         "paragraphs": [
+          {
+           "anchor": "p18b-1",
+           "text": "Ak sa prevádza byt alebo ateliér z vlastníctva štátu do vlastníctva nájomcu a nadobúdateľ uhradí po podpísaní zmluvy o prevode vlastníctva bytu alebo ateliéru v hotovosti najmenej",
+           "n": "1",
+           "items": [
+            {
+             "anchor": "p18b-1-a",
+             "label": "a)",
+             "letter": "a",
+             "text": "15 % z ceny bytu alebo ateliéru, musí zostatok uhradiť v pravidelných bezúročných splátkach do desiatich rokov odo dňa podpísania zmluvy o prevode vlastníctva bytu alebo ateliéru,"
+            },
+            {
+             "anchor": "p18b-1-b",
+             "label": "b)",
+             "letter": "b",
+             "text": "70 % z ceny bytu alebo ateliéru, poskytne mu predávajúci zľavu 10 % z ceny a zostatok uhradí v pravidelných bezúročných splátkach do jedného roka."
+            }
+           ]
+          },
+          {
+           "anchor": "p18b-2",
+           "text": "Ak sa prevádza byt z vlastníctva štátu v správe štátneho podniku v likvidácii do vlastníctva nájomcu, ustanovenie odseku 1 sa nepoužije.",
+           "n": "2"
+          },
+          {
+           "anchor": "p18b-3",
+           "text": "Ak sa prevádza byt alebo ateliér z vlastníctva obce do vlastníctva nájomcu, obec ustanoví všeobecne záväzným nariadením spôsob bezúročného splácania ceny bytu, ateliéru a pozemku.",
+           "n": "3"
+          },
+          {
+           "anchor": "p18b-4",
+           "text": "Ak sa prevádza byt z vlastníctva právnickej osoby alebo fyzickej osoby, ktorá nadobudla byt do vlastníctva podľa osobitného predpisu,²²) predávajúci umožní kupujúcemu bezúročné splácanie ceny bytu a spoluvlastníckeho podielu na zastavanom pozemku a priľahlom pozemku určenej podľa § 18, 18a a 18b do troch rokov odo dňa podpísania zmluvy o prevode vlastníctva bytu, ak o to kupujúci požiada.",
+           "n": "4"
+          },
+          {
+           "anchor": "p18b-5",
+           "text": "Kupujúci uhradí nesplatenú časť ceny bytu alebo ateliéru zistenú podľa § 18 ods. 1 v celej výške, ak prevedie vlastníctvo bytu alebo ateliéru na inú osobu ako na manžela, deti, vnukov alebo rodičov do desiatich rokov od uzavretia zmluvy o prevode vlastníctva bytu alebo ateliéru.",
+           "n": "5"
+          }
+         ]
+        },
+        {
+         "type": "provision",
+         "anchor": "p19",
+         "label": "§ 19",
+         "paragraphs": [
+          {
+           "anchor": "p19-1",
+           "text": "Spoločné časti domu a spoločné zariadenia domu a príslušenstvo sú v spoluvlastníctve vlastníkov bytov a nebytových priestorov v dome. S prevodom alebo prechodom vlastníctva bytu a nebytového priestoru v dome prechádza aj spoluvlastníctvo spoločných častí domu, spoločných zariadení domu a príslušenstva, ako aj spoluvlastnícke alebo iné spoločné práva k pozemku, prípadne ďalšie práva a povinnosti spojené s vlastníctvom bytu a nebytového priestoru v dome.",
+           "n": "1"
+          },
+          {
+           "anchor": "p19-2",
+           "text": "Práva a povinnosti pôvodného vlastníka domu a vlastníkov bytov a nebytových priestorov v dome, ktoré sa týkajú spoločných častí domu, spoločných zariadení domu, príslušenstva, pozemku zastavaného domom a priľahlého pozemku prechádzajú nadobudnutím vlastníctva bytu alebo nebytového priestoru v dome na nových vlastníkov bytov a nebytových priestorov v dome.",
+           "n": "2"
+          },
+          {
+           "anchor": "p19-3",
+           "text": "K spoločným častiam domu, spoločným zariadeniam domu, príslušenstvu a k priľahlému pozemku je možné zriadiť vecné bremeno.",
+           "n": "3"
+          },
+          {
+           "anchor": "p19-4",
+           "text": "Vlastník bytu alebo nebytového priestoru v dome má právo výlučne užívať spoločné časti domu, spoločné zariadenia domu, príslušenstvo alebo priľahlý pozemok, ak",
+           "n": "4",
+           "items": [
+            {
+             "anchor": "p19-4-a",
+             "label": "a)",
+             "letter": "a",
+             "text": "z ich stavebnotechnického alebo účelového určenia vyplýva, že majú byť užívané len s určitým bytom alebo nebytovým priestorom v dome, alebo"
+            },
+            {
+             "anchor": "p19-4-b",
+             "label": "b)",
+             "letter": "b",
+             "text": "sú určené na výlučné užívanie v prvej zmluve o prevode vlastníctva bytu, v prvej zmluve o prevode vlastníctva nebytového priestoru v dome alebo v zmluve o výstavbe, vstavbe alebo nadstavbe, alebo"
+            },
+            {
+             "anchor": "p19-4-c",
+             "label": "c)",
+             "letter": "c",
+             "text": "tak rozhodnú vlastníci bytov a nebytových priestorov v dome podľa odseku 8."
+            }
+           ]
+          },
+          {
+           "anchor": "p19-5",
+           "text": "Právo výlučne užívať spoločné časti domu, spoločné zariadenia domu alebo príslušenstvo môže patriť viacerým vlastníkom bytov a nebytových priestorov v dome spoločne.",
+           "n": "5"
+          },
+          {
+           "anchor": "p19-6",
+           "text": "Právo výlučne užívať spoločné časti domu, spoločné zariadenia domu, príslušenstvo alebo priľahlý pozemok prechádza na nového vlastníka bytu alebo nebytového priestoru v dome, s ktorým je spojené. Samostatný prevod alebo prechod práva výlučne užívať spoločné časti domu, spoločné zariadenia domu, príslušenstvo alebo priľahlý pozemok bez súčasného prevodu alebo prechodu bytu alebo nebytového priestoru v dome, s ktorým je spojené, nie je prípustný.",
+           "n": "6"
+          },
+          {
+           "anchor": "p19-7",
+           "text": "Vlastníci bytov a nebytových priestorov v dome nemajú právo požadovať od vlastníka bytu alebo nebytového priestoru v dome, ktorý má právo výlučne užívať spoločné časti domu, spoločné zariadenia domu, príslušenstvo alebo priľahlý pozemok, náhradu za toto právo.",
+           "n": "7"
+          },
+          {
+           "anchor": "p19-8",
+           "text": "Na základe rozhodnutia vlastníkov bytov a nebytových priestorov v dome podľa § 14b ods. 2 písm. e), f) alebo ods. 3 písm. b) môže vzniknúť nová spoločná časť domu, nové spoločné zariadenie domu alebo nové príslušenstvo. Vlastníci bytov a nebytových priestorov v dome môžu rozhodnúť, že právo výlučne užívať nové spoločné časti domu, nové spoločné zariadenia domu alebo nové príslušenstvo majú len niektorí vlastníci bytov a nebytových priestorov v dome.",
+           "n": "8"
+          }
+         ]
+        },
+        {
+         "type": "provision",
+         "anchor": "p20",
+         "label": "§ 20",
+         "paragraphs": [
+          {
+           "anchor": "p20-x1",
+           "text": "Vlastník bytu a nebytového priestoru v dome má právo previesť svoje vlastníctvo na inú osobu. Na prechod alebo prevod vlastníctva sa použijú ustanovenia Občianskeho zákonníka, ak tento zákon neustanovuje inak."
+          }
+         ],
+         "heading": "Prevod a prechod vlastníctva bytu a nebytového priestoru v dome"
+        },
+        {
+         "type": "provision",
+         "anchor": "p20a",
+         "label": "§ 20a",
+         "paragraphs": [
+          {
+           "anchor": "p20a-1",
+           "text": "Právo výlučne užívať určité garážové stojisko je právo spojené so spoluvlastníckym podielom na garáži v dome, ktoré vzniká prevodom alebo prechodom spoluvlastníckeho podielu na garáži v dome. Právo spoluvlastníka garáže v dome na výlučné užívanie určitého garážového stojiska môže zaniknúť len s jeho písomným súhlasom.",
+           "n": "1"
+          },
+          {
+           "anchor": "p20a-2",
+           "text": "Právo výlučne užívať určité garážové stojisko môže patriť viacerým spoluvlastníkom garáže v dome spoločne.",
+           "n": "2"
+          },
+          {
+           "anchor": "p20a-3",
+           "text": "Právo výlučne užívať určité garážové stojisko prechádza spolu s prevodom alebo prechodom spoluvlastníckeho podielu na garáži v dome, s ktorým je spojené, na jeho nadobúdateľa. Samostatný prevod alebo prechod práva výlučne užívať určité garážové stojisko bez prevodu alebo prechodu spoluvlastníckeho podielu na garáži v dome nie je prípustný.",
+           "n": "3"
+          },
+          {
+           "anchor": "p20a-4",
+           "text": "Spoluvlastník garáže v dome, ktorý má právo výlučne užívať určité garážové stojisko, je oprávnený ho prenechať inej osobe do užívania aj bez súhlasu ostatných spoluvlastníkov garáže v dome.",
+           "n": "4"
+          },
+          {
+           "anchor": "p20a-5",
+           "text": "Za právo výlučne užívať určité garážové stojisko nepatrí ostatným spoluvlastníkom garáže v dome právo na náhradu.",
+           "n": "5"
+          },
+          {
+           "anchor": "p20a-6",
+           "text": "Právo spoluvlastníka garáže v dome na výlučné užívanie určitého garážového stojiska sa zapíše do katastra nehnuteľností.²²ᵃᶜ)",
+           "n": "6"
+          },
+          {
+           "anchor": "p20a-7",
+           "text": "Spoluvlastníci garáže v dome nemajú predkupné právo,¹⁷ᵇ) ak sa prevádza spoluvlastnícky podiel na garáži v dome",
+           "n": "7",
+           "items": [
+            {
+             "anchor": "p20a-7-a",
+             "label": "a)",
+             "letter": "a",
+             "text": "spolu s prevodom vlastníctva bytu alebo nebytového priestoru v tom istom dome, v dome, ktorý je stavebnotechnicky prepojený s domom, v ktorom sa garáž v dome nachádza, alebo v dome, ktorý v rámci súboru stavieb inak vzájomne súvisí s domom, v ktorom sa garáž v dome nachádza,"
+            },
+            {
+             "anchor": "p20a-7-b",
+             "label": "b)",
+             "letter": "b",
+             "text": "na vlastníka bytu alebo nebytového priestoru v tom istom dome, v dome, ktorý je stavebnotechnicky prepojený s domom, v ktorom sa garáž v dome nachádza, alebo v dome, ktorý v rámci súboru stavieb inak vzájomne súvisí s domom, v ktorom sa garáž v dome nachádza."
+            }
+           ]
+          }
+         ],
+         "heading": "Právo výlučného užívania garážového stojiska"
+        },
+        {
+         "type": "provision",
+         "anchor": "p20b",
+         "label": "§ 20b",
+         "paragraphs": [
+          {
+           "anchor": "p20b-x1",
+           "text": "Ustanovenia § 20a sa použijú primerane aj na výlučné užívanie skladového priestoru."
+          }
+         ],
+         "heading": "Právo výlučného užívania skladového priestoru"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "type": "section",
+     "anchor": "s-clanok-1-cast-tretia",
+     "kind": "cast",
+     "label": "TRETIA ČASŤ",
+     "heading": "VÝSTAVBA DOMU",
+     "children": [
+      {
+       "type": "provision",
+       "anchor": "p21",
+       "label": "§ 21",
+       "paragraphs": [
+        {
+         "anchor": "p21-1",
+         "text": "Vlastníctvo bytov a nebytových priestorov v dome môže vzniknúť na základe zmluvy o výstavbe, vstavbe alebo nadstavbe domu (ďalej len „zmluva\") uzavretej medzi stavebníkmi alebo medzi doterajšími vlastníkmi bytov a nebytových priestorov v dome a stavebníkmi. Stavebníkom môže byť právnická osoba alebo fyzická osoba.",
+         "n": "1"
+        },
+        {
+         "anchor": "p21-2",
+         "text": "Zmluvou sa vymedzia vzájomné práva a povinnosti pri výstavbe medzi stavebníkmi alebo pri vstavbe alebo nadstavbe domu medzi stavebníkmi a vlastníkmi bytov a nebytových priestorov v dome.",
+         "n": "2"
+        },
+        {
+         "anchor": "p21-3",
+         "text": "Zmluva a jej zmeny sa zapisujú do katastra nehnuteľností.²⁴ᶠ)",
+         "n": "3"
+        },
+        {
+         "anchor": "p21-4",
+         "text": "Zmluvou môže vzniknúť aj výlučne nová spoločná časť domu, výlučne nové spoločné zariadenie domu alebo výlučne nové príslušenstvo. Účastníkmi takejto zmluvy sú všetci vlastníci bytov a nebytových priestorov v dome.",
+         "n": "4"
+        }
+       ]
+      },
+      {
+       "type": "provision",
+       "anchor": "p22",
+       "label": "§ 22",
+       "paragraphs": [
+        {
+         "anchor": "p22-1",
+         "text": "Zmluva obsahuje najmä",
+         "n": "1",
+         "items": [
+          {
+           "anchor": "p22-1-a",
+           "label": "a)",
+           "letter": "a",
+           "text": "určenie vlastníkov bytov a nebytových priestorov v dome s vymedzením polohy a uvedením rozsahu podlahovej plochy bytu a nebytového priestoru v dome,"
+          },
+          {
+           "anchor": "p22-1-b",
+           "label": "b)",
+           "letter": "b",
+           "text": "vymedzenie a výpočet spoločných častí domu, spoločných zariadení domu, spoločných nebytových priestorov a príslušenstva a prípadne určenie, ktoré spoločné časti domu a spoločné zariadenia domu alebo pozemok budú užívať len niektorí vlastníci,"
+          },
+          {
+           "anchor": "p22-1-c",
+           "label": "c)",
+           "letter": "c",
+           "text": "vymedzenie spoluvlastníckeho podielu vlastníka bytu alebo nebytového priestoru v dome na spoločných častiach domu, spoločných zariadeniach domu a spoločných nebytových priestorov, na príslušenstve a na pozemku, pričom veľkosť spoluvlastníckeho podielu je daná podielom podlahovej plochy bytu alebo nebytového priestoru k úhrnu podlahových plôch všetkých bytov a nebytových priestorov v dome,"
+          },
+          {
+           "anchor": "p22-1-d",
+           "label": "d)",
+           "letter": "d",
+           "text": "úpravu práv k pozemku určenému na stavbu domu, identifikáciu pozemku a jeho výmeru,"
+          },
+          {
+           "anchor": "p22-1-e",
+           "label": "e)",
+           "letter": "e",
+           "text": "určenie osoby oprávnenej zastupovať vlastníkov bytov a nebytových priestorov v dome,"
+          },
+          {
+           "anchor": "p22-1-f",
+           "label": "f)",
+           "letter": "f",
+           "text": "spôsob financovania stavebných nákladov, podiely a splatnosť príspevkov, prípadne rozsah ocenenia vlastnej práce stavebníkov."
+          }
+         ]
+        },
+        {
+         "anchor": "p22-2",
+         "text": "Ak vstavbou alebo nadstavbou vzniknú v dome nové byty alebo nebytové priestory, zmluvu so stavebníkom uzatvára vlastník domu alebo vlastníci bytov a nebytových priestorov v dome. Zmluva musí okrem náležitostí uvedených v odseku 1 obsahovať presné vymedzenie spoločných častí domu, spoločných zariadení domu alebo spoločných nebytových priestorov, v ktorých sa bude uskutočňovať vstavba alebo nadstavba.",
+         "n": "2"
+        },
+        {
+         "anchor": "p22-3",
+         "text": "Ak nie sú v dome prevedené byty do vlastníctva a vstavbou alebo nadstavbou vzniknú nové byty alebo nebytové priestory, musí byť obsahom zmluvy aj vymedzenie vlastníctva bytov a nebytových priestorov v dome a veľkosti spoluvlastníckych podielov podľa § 5 ods.1 písm. b).",
+         "n": "3"
+        },
+        {
+         "anchor": "p22-4",
+         "text": "Ak stavebník domu, ktorého výstavba bola začatá na základe rozhodnutia o stavebnom zámere, odpredá počas výstavby byty alebo nebytové priestory, uzatvára s budúcim vlastníkom bytu alebo nebytového priestoru zmluvu podľa odseku 1.",
+         "n": "4"
+        },
+        {
+         "anchor": "p22-5",
+         "text": "Stavebník je povinný v zmluve vymedziť vzájomné práva a povinnosti aj pri stavebných úpravách, ktorými sa mení veľkosť bytu, nebytového priestoru alebo príslušenstva na úkor spoločných častí domu alebo spoločných zariadení domu; zmluvu uzatvára vlastník bytu alebo nebytového priestoru v dome (stavebník) s ostatnými vlastníkmi bytov a nebytových priestorov v dome.",
+         "n": "5"
+        },
+        {
+         "anchor": "p22-6",
+         "text": "K zmluve sa musí na účely zápisu do katastra nehnuteľností predložiť dokumentácia, z ktorej je zrejmá plocha a poloha jednotlivých bytov, nebytových priestorov, spoločných častí domu a spoločných zariadení domu a príslušenstva.",
+         "n": "6"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "type": "section",
+     "anchor": "s-clanok-1-cast-stvrta",
+     "kind": "cast",
+     "label": "ŠTVRTÁ ČASŤ",
+     "heading": "SPOLOČNÉ USTANOVENIA",
+     "children": [
+      {
+       "type": "provision",
+       "anchor": "p23",
+       "label": "§ 23",
+       "paragraphs": [
+        {
+         "anchor": "p23-1",
+         "text": "S vlastníctvom bytu alebo nebytového priestoru v dome je nerozlučne spojené aj spoluvlastníctvo alebo iné spoločné právo k pozemku, na ktorom je dom postavený, a k priľahlému pozemku. Ak je vlastník domu aj vlastníkom pozemku, musí previesť zmluvou o prevode vlastníctva bytu na vlastníka bytu alebo nebytového priestoru v dome aj príslušný spoluvlastnícky podiel na pozemku a na priľahlom pozemku.",
+         "n": "1"
+        },
+        {
+         "anchor": "p23-2",
+         "text": "Právo trvalého užívania²⁵) pozemku zastavaného domom vo vlastníctve bytového družstva a pozemku priľahlého k tomuto domu, ktoré vzniklo podľa doterajších predpisov a trvá ku dňu účinnosti tohto zákona, sa mení dňom účinnosti tohto zákona na vlastníctvo bytového družstva.",
+         "n": "2"
+        },
+        {
+         "anchor": "p23-3",
+         "text": "Bytové družstvo je povinné previesť vlastníctvo zastavaného a priľahlého pozemku bezodplatne na vlastníka bytu alebo nebytového priestoru; veľkosť podielu sa určí podľa § 5 ods. 1 písm. b). Túto povinnosť má bytové družstvo aj pri bezodplatnom prevode bytu podľa osobitného predpisu.⁷)",
+         "n": "3"
+        },
+        {
+         "anchor": "p23-4",
+         "text": "Ak vlastník domu nie je vlastníkom pozemku a sú splnené podmienky na vydržanie podľa Občianskeho zákonníka, je vlastník domu povinný zápisom do katastra nehnuteľností¹⁰) usporiadať vlastníctvo pozemku pred prvým prevodom vlastníctva bytu alebo nebytového priestoru v dome.",
+         "n": "4"
+        },
+        {
+         "anchor": "p23-5",
+         "text": "Ak vlastník domu nie je vlastníkom pozemku, vzniká k pozemku právo zodpovedajúce vecnému bremenu,²⁶) ktoré sa zapíše do katastra nehnuteľností.¹⁷)",
+         "n": "5"
+        }
+       ],
+       "heading": "Práva k pozemku"
+      },
+      {
+       "type": "provision",
+       "anchor": "p24",
+       "label": "§ 24",
+       "paragraphs": [
+        {
+         "anchor": "p24-1",
+         "text": "Ustanovenia tohto zákona sa vzťahujú na nebytové domy okrem § 29 a § 29a ods. 1; na správcu nebytových domov sa nevzťahuje osobitný predpis.¹²ᶜᵃ)",
+         "n": "1"
+        },
+        {
+         "anchor": "p24-2",
+         "text": "Ustanovenie odseku 1 sa nevzťahuje na budovy a nebytové priestory v budovách, na ktorých prevod vlastníctva sa vzťahuje osobitný predpis.²⁶ᵃ)",
+         "n": "2"
+        }
+       ]
+      },
+      {
+       "type": "provision",
+       "anchor": "p24a",
+       "label": "§ 24a",
+       "paragraphs": [
+        {
+         "anchor": "p24a-1",
+         "text": "Ak bytové družstvo neodvedie banke finančné prostriedky splatené členmi bytového družstva za prevedené byty a nebytové priestory spolu s najbližšou splátkou úveru,⁷) je povinné odviesť do štátneho rozpočtu pomernú časť majetkovej ujmy, ktorá bola za tieto byty a nebytové priestory uhradená banke zo štátneho rozpočtu podľa osobitného predpisu.²⁶ᵇ)",
+         "n": "1"
+        },
+        {
+         "anchor": "p24a-2",
+         "text": "Na účely podľa odseku 1 sú bytové družstvá povinné každoročne do 31. januára oznámiť Ministerstvu financií Slovenskej republiky počet zmlúv o prevode vlastníctva bytov a nebytových priestorov uzatvorených podľa tohto zákona alebo podľa osobitného predpisu⁷) v predchádzajúcom kalendárnom roku.",
+         "n": "2"
+        }
+       ]
+      },
+      {
+       "type": "provision",
+       "anchor": "p25",
+       "label": "§ 25",
+       "paragraphs": [
+        {
+         "anchor": "p25-1",
+         "text": "K spoluvlastníctvu spoločných častí domu, spoločných zariadení domu, príslušenstva a k spoluvlastníctvu pozemku zastavanému domom a k priľahlému pozemku možno zriadiť záložné právo²⁷) len vtedy, ak sa súčasne zriadi záložné právo aj k bytu alebo nebytovému priestoru v dome.",
+         "n": "1"
+        },
+        {
+         "anchor": "p25-2",
+         "text": "Ak je byt alebo nebytový priestor v spoluvlastníctve, majú spoluvlastníci bytu alebo nebytového priestoru postavenie vlastníka bytu alebo nebytového priestoru a zodpovedajú voči ostatným vlastníkom bytov a nebytových priestorov v dome podľa osobitného predpisu.²⁷ᵃ)",
+         "n": "2"
+        }
+       ]
+      },
+      {
+       "type": "provision",
+       "anchor": "p25a",
+       "label": "§ 25a",
+       "paragraphs": [
+        {
+         "anchor": "p25a-1",
+         "text": "Ak zmluva o výkone správy alebo zmluva o spoločenstve upravuje právne vzťahy inak ako to ustanovuje tento zákon, uplatnia sa na tieto právne vzťahy ustanovenia tohto zákona.",
+         "n": "1"
+        },
+        {
+         "anchor": "p25a-2",
+         "text": "Ak osobitný predpis priznáva práva alebo ustanovuje povinnosti vlastníkovi budovy,²⁷ᵇ) za vlastníka budovy sa pri domoch považujú všetci vlastníci bytov a nebytových priestorov v dome. Za ich uplatnenie alebo plnenie zodpovedá spoločenstvo alebo správca. Vlastník bytu alebo nebytového priestoru v dome je povinný umožniť spoločenstvu alebo správcovi uplatniť práva alebo plniť povinnosti, inak zodpovedá za tým vzniknutú škodu.",
+         "n": "2"
+        }
+       ]
+      }
+     ]
+    },
+    {
+     "type": "section",
+     "anchor": "s-clanok-1-cast-piata",
+     "kind": "cast",
+     "label": "PIATA ČASŤ",
+     "heading": "PRECHODNÉ USTANOVENIA",
+     "children": [
+      {
+       "type": "provision",
+       "anchor": "p26",
+       "label": "§ 26",
+       "paragraphs": [
+        {
+         "anchor": "p26-x1",
+         "text": "Ak bol nájomcovi bytu zrušený nájom súdnym rozhodnutím z dôvodu skončenia pracovného pomeru, obnovuje sa odo dňa účinnosti tohto zákona nájomcovi bytu pôvodný nájom, ak nájomca ku dňu účinnosti tohto zákona byt bez prerušenia užíva."
+        }
+       ]
+      },
+      {
+       "type": "provision",
+       "anchor": "p27",
+       "label": "§ 27",
+       "paragraphs": [
+        {
+         "anchor": "p27-1",
+         "text": "Rozostavané domy s bytmi vo vlastníctve podľa doterajších predpisov²⁸) sa považujú za domy vo výstavbe podľa tohto zákona.",
+         "n": "1"
+        },
+        {
+         "anchor": "p27-2",
+         "text": "Vlastníci bytov a nebytových priestorov v dome, ktorým vlastnícke právo k bytu a nebytovému priestoru v dome vzniklo alebo vznikne podľa doterajších predpisov,²⁹) sa odo dňa účinnosti tohto zákona považujú za vlastníkov podľa tohto zákona.",
+         "n": "2"
+        },
+        {
+         "anchor": "p27-3",
+         "text": "Vlastníci domov, ktorí previedli celé obytné domy, všetky byty alebo časť bytov a nebytových priestorov v dome do vlastníctva²⁹) fyzických osôb, sú povinní do 31. decembra 1998 uviesť právne vzťahy do súladu s ustanoveniami § 6, 7, 8, 9, 10 a § 23. Vlastníci domov môžu podať návrh na súd, aby vlastníkom bytov alebo nebytových priestorov uložil splnenie týchto povinností.",
+         "n": "3"
+        },
+        {
+         "anchor": "p27-4",
+         "text": "Ak bytové družstvo prevedie vlastníctvo nebytového priestoru v dome, na ktorého výstavbu bola poskytnutá účelová dotácia³⁰) zo štátneho rozpočtu Slovenskej republiky, na právnickú osobu alebo fyzickú osobu s výnimkou prevodu podľa osobitného predpisu,⁷) je družstvo povinné vrátiť poskytnutú účelovú dotáciu do štátneho rozpočtu Slovenskej republiky, vzájomne vyrovnať vzťahy so združeným investorom a zvyšok zaplatenej ceny previesť do fondu prevádzky, údržby a opráv.",
+         "n": "4"
+        }
+       ]
+      },
+      {
+       "type": "provision",
+       "anchor": "p28",
+       "label": "§ 28",
+       "paragraphs": [
+        {
+         "anchor": "p28-x1",
+         "text": "Nájomca družstevného bytu, ktorý je členom bytového družstva, má nárok na prevod vlastníctva bytu podľa tohto zákona, ak nepožiadal o prevod vlastníctva podľa osobitného predpisu.⁷)"
+        }
+       ]
+      },
+      {
+       "type": "provision",
+       "anchor": "p29",
+       "label": "§ 29",
+       "paragraphs": [
+        {
+         "anchor": "p29-1",
+         "text": "Ak nájomca družstevného bytu, garáže alebo ateliéru požiadal bytové družstvo o prevod vlastníctva bytu, garáže alebo ateliéru podľa osobitného predpisu,⁷) je bytové družstvo povinné previesť vlastníctvo bytu, garáže alebo ateliéru do dvoch rokov od účinnosti tohto zákona; ak sa nájomca družstevného bytu, garáže alebo ateliéru písomne dohodol s bytovým družstvom o prevode vlastníctva v inej lehote, prevedie bytové družstvo vlastníctvo bytu, garáže alebo ateliéru v takto dohodnutej lehote.",
+         "n": "1"
+        },
+        {
+         "anchor": "p29-2",
+         "text": "Štátne podniky, štátne podniky v likvidácii, štátne rozpočtové organizácie a štátne príspevkové organizácie, právnické osoby, ktoré podľa osobitného zákona spravujú majetok štátu³⁰ᵃ) a bytové družstvá sú povinné s nájomcom bytu, garáže alebo s nájomcom ateliéru uzatvoriť zmluvu o prevode vlastníctva bytu, garáže alebo ateliéru do dvoch rokov odo dňa, keď nájomca požiada o prevod vlastníctva bytu, garáže alebo ateliéru. Nájomca môže po uplynutí tejto lehoty podať návrh na súd, aby uložil splnenie tejto povinnosti.",
+         "n": "2"
+        },
+        {
+         "anchor": "p29-3",
+         "text": "Ustanovenie odseku 2 sa nevzťahuje na",
+         "n": "3",
+         "items": [
+          {
+           "anchor": "p29-3-a",
+           "label": "a)",
+           "letter": "a",
+           "text": "služobné byty,³¹) byty v správe rozpočtových organizácií a príspevkových organizácií Ministerstva financií Slovenskej republiky, Ministerstva školstva Slovenskej republiky, Ministerstva vnútra Slovenskej republiky, Ministerstva obrany Slovenskej republiky, Ministerstva práce, sociálnych vecí a rodiny Slovenskej republiky a Ministerstva zdravotníctva Slovenskej republiky, na byty vo vnútornom kúpeľnom území³²) a území národných parkov, na byty slúžiace lesnému hospodárstvu a na byty vo vlastníctve Fondu národného majetku Slovenskej republiky obstarané z prostriedkov rozpočtu Fondu národného majetku Slovenskej republiky od 1. januára 1995,"
+          },
+          {
+           "anchor": "p29-3-b",
+           "label": "b)",
+           "letter": "b",
+           "text": "štátne podniky, štátne rozpočtové organizácie a štátne príspevkové organizácie, ak nadobudli byty do vlastníctva štátu podľa § 4 ods. 1 písm. a),"
+          },
+          {
+           "anchor": "p29-3-c",
+           "label": "c)",
+           "letter": "c",
+           "text": "byty v rodinných domoch."
+          }
+         ]
+        },
+        {
+         "anchor": "p29-4",
+         "text": "Ak štátny podnik neuzavrel s nájomcom bytu, garáže alebo ateliéru zmluvu o prevode vlastníctva v lehote podľa odseku 2 a v tejto lehote vypracoval privatizačný projekt,²²) je povinný na zabezpečenie tejto povinnosti s nájomcom uzavrieť zmluvu o budúcej zmluve.³³) Nájomca môže podať návrh na súd, aby uložil splnenie tejto povinnosti. Práva a povinnosti vyplývajúce zo zmluvy o budúcej zmluve prechádzajú na právneho nástupcu štátneho podniku v plnom rozsahu.",
+         "n": "4"
+        },
+        {
+         "anchor": "p29-5",
+         "text": "Vlastníci domov uvedení v § 17 ods. 3 môžu previesť vlastníctvo domu alebo jeho časti podľa osobitného predpisu²³ᵃ) len do vlastníctva štátu vrátane Slovenského pozemkového fondu, obce, obchodnej spoločnosti s účasťou štátu alebo obce alebo s účasťou Fondu národného majetku Slovenskej republiky.",
+         "n": "5"
+        },
+        {
+         "anchor": "p29-6",
+         "text": "Ak štátne podniky, štátne rozpočtové organizácie alebo štátne príspevkové organizácie prevedú domy alebo ich časti do vlastníctva obce alebo obchodnej spoločnosti podľa odseku 5, vzťahuje sa na nadobúdateľa povinnosť podľa odseku 2, pričom cena musí byť dohodnutá v súlade s § 17 ods. 3.",
+         "n": "6"
+        },
+        {
+         "anchor": "p29-7",
+         "text": "Vlastník domu, ktorý nadobudol dom do vlastníctva podľa osobitného predpisu³⁴) z vlastníctva štátu, Slovenského pozemkového fondu, obce, bytového družstva, obchodnej spoločnosti s účasťou obce, štátu alebo bytového družstva, alebo Fondu národného majetku Slovenskej republiky alebo z vlastníctva družstva alebo z vlastníctva obchodnej spoločnosti uvedenej v § 17 ods. 3 písm. e), alebo ak ide o byty alebo o ateliéry v domoch nadobudnutých podľa osobitného predpisu,²²) nemôže previesť vlastníctvo domu podľa osobitného predpisu,²³ᵃ) ak v dome požiadal nájomca o prevod vlastníctva bytu. Cena bytu nesmie presiahnuť cenu uvedenú v § 18 ods. 1 a § 18a ods. 1.",
+         "n": "7"
+        },
+        {
+         "anchor": "p29-8",
+         "text": "Vlastníci domov uvedení v odseku 7 a v § 17 ods. 3 písm. c) až f) sú povinní s nájomcom bytu uzatvoriť zmluvu o prevode vlastníctva bytu do dvoch rokov odo dňa, keď nájomca požiada o prevod vlastníctva bytu. To platí aj o vlastníkoch domov uvedených v § 17 ods. 3 písm. g) a h). Ak nájomca požiadal o prevod vlastníctva bytu pred nadobudnutím účinnosti tohto zákona, vlastník domu je povinný s nájomcom bytu uzatvoriť zmluvu o prevode vlastníctva bytu do dvoch rokov odo dňa nadobudnutia účinnosti tohto zákona. Nájomca môže po uplynutí tejto lehoty podať návrh na súd, aby uložil splnenie tejto povinnosti. Cena bytu a cena pozemku nesmie presiahnuť cenu uvedenú v § 18 ods. 1 a v § 18a ods. 1.",
+         "n": "8"
+        },
+        {
+         "anchor": "p29-9",
+         "text": "Ustanovenie odseku 8 sa nevzťahuje na služobné byty³¹) a na byty nadobudnuté do vlastníctva podľa § 4 ods. 1 písm. a) a na byty v rodinných domoch.",
+         "n": "9"
+        }
+       ]
+      },
+      {
+       "type": "provision",
+       "anchor": "p29a",
+       "label": "§ 29a",
+       "paragraphs": [
+        {
+         "anchor": "p29a-1",
+         "text": "Obec je povinná s nájomcom bytu uzavrieť zmluvu o prevode vlastníctva bytu do dvoch rokov odo dňa, keď nájomca požiada o prevod vlastníctva bytu podľa tohto zákona v dome, v ktorom požiada o prevod vlastníctva najmenej 50 % nájomcov bytov. Túto povinnosť obec nemá, ak nájomcom bytu je právnická osoba, ak ide o byt v rodinnom dome alebo ak ide o byt, na ktorý sa nevzťahovala povinnosť previesť vlastníctvo bytu podľa § 29 ods. 3 a vlastníctvo tohto bytu prešlo na obec podľa osobitného predpisu.²⁴ᵉ)",
+         "n": "1"
+        },
+        {
+         "anchor": "p29a-2",
+         "text": "Obec je povinná previesť ateliér do vlastníctva nájomcu do dvoch rokov odo dňa, keď nájomca požiada o prevod ateliéru.",
+         "n": "2"
+        },
+        {
+         "anchor": "p29a-3",
+         "text": "Ustanovenia odsekov 1 a 2 sa nevzťahujú na byty a ateliéry v domoch postavených po 1. júni 1998 z rozpočtu obce alebo z prostriedkov Štátneho fondu rozvoja bývania;³⁵) na zistenie ceny bytu a ateliéru v uvedenom dome sa nepoužijú ustanovenia § 18 a 18b.",
+         "n": "3"
+        }
+       ]
+      },
+      {
+       "type": "provision",
+       "anchor": "p29b",
+       "label": "§ 29b",
+       "paragraphs": [
+        {
+         "anchor": "p29b-1",
+         "text": "Ak štátny podnik, štátny podnik v likvidácii, štátna rozpočtová organizácia, štátna príspevková organizácia alebo obec neuzavrela s nájomcom, ktorý požiadal o prevod vlastníctva bytu podľa tohto zákona, zmluvu o prevode vlastníctva bytu v lehote ustanovenej týmto zákonom, je pri uzatváraní zmluvy aj po uplynutí zákonom ustanovenej lehoty povinná previesť byt za cenu vypočítanú podľa predpisov platných v posledný deň dvojročnej lehoty.",
+         "n": "1"
+        },
+        {
+         "anchor": "p29b-2",
+         "text": "Ak bytové družstvo neuzavrelo s nájomcom, ktorý požiadal o prevod vlastníctva bytu podľa tohto zákona alebo podľa osobitného predpisu,⁷) zmluvu o prevode vlastníctva bytu v lehote ustanovenej týmto zákonom, je pri uzatváraní zmluvy aj po uplynutí zákonom ustanovenej lehoty povinné previesť vlastníctvo bytu za nesplatený investičný úver s príslušenstvom ku dňu prevodu vlastníctva bytu.",
+         "n": "2"
+        },
+        {
+         "anchor": "p29b-3",
+         "text": "Nájomcovi bytu, ktorý požiadal o prevod vlastníctva bytu podľa tohto zákona alebo podľa osobitného predpisu⁷) alebo s ktorým bola uzavretá zmluva o budúcej zmluve, nezaniká právo na prevod vlastníctva bytu, aj keď k prevodu bytu do vlastníctva nedošlo v lehote podľa tohto zákona alebo v lehote dohodnutej v zmluve o budúcej zmluve, ak nájomca svoju žiadosť o prevod vlastníctva bytu písomne nevzal späť; týmto späťvzatím žiadosti nezaniká nájomcovi právo podať ďalšiu žiadosť o prevod vlastníctva bytu.",
+         "n": "3"
+        },
+        {
+         "anchor": "p29b-4",
+         "text": "Bytové družstvo, ktoré neodviedlo banke všetky finančné prostriedky splatené členmi družstva za prevedené byty a nebytové priestory podľa osobitného predpisu⁷) do 1. júna 1998, je povinné ich odviesť do troch mesiacov od 1. júna 1998.",
+         "n": "4"
+        },
+        {
+         "anchor": "p29b-5",
+         "text": "Bytové družstvá sú povinné oznámiť Ministerstvu financií Slovenskej republiky do šiestich mesiacov od 1. júna 1998 počet všetkých bytov, ktoré do 1. januára 1998 previedli do vlastníctva nájomcov podľa tohto zákona alebo podľa osobitného predpisu.⁷)",
+         "n": "5"
+        }
+       ]
+      },
+      {
+       "type": "provision",
+       "anchor": "p30",
+       "label": "§ 30",
+       "paragraphs": [
+        {
+         "anchor": "p30-x1",
+         "text": "Finančné prostriedky, ktoré obec získa z predaja bytov, nebytových priestorov, domov alebo ich častí, pozemkov zastavaných domom, ako aj z priľahlých pozemkov, sú príjmom rozpočtu obce. Obec tieto prostriedky môže použiť len na obnovu a rozvoj bytového fondu a výstavbu a obnovu infraštruktúry obce. Nevyčerpané finančné prostriedky sú zdrojom fondu rozvoja bývania obce a obec ich môže použiť iba na obnovu a rozvoj bytového fondu a výstavbu a obnovu infraštruktúry obce; o použití fondu rozvoja bývania obce rozhoduje obecné zastupiteľstvo."
+        }
+       ]
+      },
+      {
+       "type": "provision",
+       "anchor": "p31",
+       "label": "§ 31",
+       "paragraphs": [
+        {
+         "anchor": "p31-1",
+         "text": "Spoločenstvá, ktoré vznikli podľa doterajších predpisov, sa považujú za spoločenstvá podľa tohto zákona. Spoločenstvá, ktoré vznikli podľa doterajších predpisov, sú povinné prispôsobiť tomuto zákonu zmluvu o spoločenstve, orgány, hospodárenie, činnosť, prípadne stanovy najneskôr do šiestich mesiacov odo dňa nadobudnutia účinnosti tohto zákona.",
+         "n": "1"
+        },
+        {
+         "anchor": "p31-2",
+         "text": "Zmluvy o výkone správy, ktoré boli uzavreté pred nadobudnutím účinnosti tohto zákona, sa považujú za zmluvy o výkone správy podľa tohto zákona. Správcovia, ktorí vykonávali činnosť podľa doterajších predpisov, sú povinní zosúladiť svoju činnosť s týmto zákonom najneskôr do šiestich mesiacov od nadobudnutia jeho účinnosti.",
+         "n": "2"
+        }
+       ]
+      },
+      {
+       "type": "provision",
+       "anchor": "p31a",
+       "label": "§ 31a",
+       "paragraphs": [
+        {
+         "anchor": "p31a-x1",
+         "text": "Na výpočet ceny pozemku podľa § 18a sa použijú aj po 31. decembri 2003 ustanovenia cenového predpisu, podľa ktorého sa určovala cena pozemku do 31. decembra 2003."
+        }
+       ]
+      },
+      {
+       "type": "provision",
+       "anchor": "p32",
+       "label": "§ 32",
+       "paragraphs": [
+        {
+         "anchor": "p32-x1",
+         "text": "Byty a nebytové priestory v obytných domoch, ktoré boli vo vlastníctve cirkví a náboženských spoločností, rádov a kongregácií, nemožno prevádzať podľa tohto zákona do prijatia osobitného zákona o vrátení tohto majetku."
+        }
+       ]
+      },
+      {
+       "type": "provision",
+       "anchor": "p32a",
+       "label": "§ 32a",
+       "paragraphs": [
+        {
+         "anchor": "p32a-1",
+         "text": "Na prevod vlastníctva bytu v rodinnom dome vo vlastníctve štátu v správe štátnych podnikov a štátnych podnikov v likvidácii sa vzťahuje povinnosť previesť vlastníctvo takéhoto bytu podľa doterajšieho predpisu, ak nájomca písomne požiadal o jeho prevod do 1. augusta 1995; na výpočet ceny sa použije ustanovenie § 18, 18a a 18b.",
+         "n": "1"
+        },
+        {
+         "anchor": "p32a-2",
+         "text": "Bytové družstvá alebo obce, ktoré previedli všetky byty alebo časť bytov v bytovom dome do vlastníctva fyzických osôb, sú povinné do šiestich mesiacov od 1. augusta 1995 uviesť uzatvorené zmluvy o prevode vlastníctva bytov do 1. augusta 1995 do súladu s § 16 ods. 8.",
+         "n": "2"
+        },
+        {
+         "anchor": "p32a-3",
+         "text": "Na prevod vlastníctva bytov v domoch v správe štátnych podnikov na nájomcov, ktorými sú fyzické osoby, sa nevzťahuje ustanovenie § 45 zákona č. 92/1991 Zb. o prevode majetku štátu na iné osoby v znení neskorších predpisov.",
+         "n": "3"
+        },
+        {
+         "anchor": "p32a-4",
+         "text": "V prípadoch, keď došlo medzi predávajúcim a kupujúcim k dohode o kúpnej cene bytu do 1. augusta 1995, spôsob výpočtu uvedený v § 18 sa nepoužije.",
+         "n": "4"
+        }
+       ]
+      },
+      {
+       "type": "provision",
+       "anchor": "p32b",
+       "label": "§ 32b",
+       "paragraphs": [
+        {
+         "anchor": "p32b-x1",
+         "text": "Zmluvy o spoločenstve alebo zmluvy o výkone správy, ktoré určujú úhradu vlastníkov bytov a nebytových priestorov vo forme preddavku do fondu prevádzky, údržby a opráv inak ako na základe veľkosti spoluvlastníckeho podielu, je potrebné upraviť do 1. januára 2006 tak, aby boli v súlade so zákonom."
+        }
+       ],
+       "heading": "Prechodné ustanovenia"
+      },
+      {
+       "type": "provision",
+       "anchor": "p32c",
+       "label": "§ 32c",
+       "paragraphs": [
+        {
+         "anchor": "p32c-1",
+         "text": "Spoločenstvá, ktoré vznikli podľa doterajších predpisov v budovách, ktoré nie sú bytovými domami, sa nepovažujú za spoločenstvá podľa tohto zákona a správny orgán ich do 31. decembra 2007 vyčiarkne z registra.",
+         "n": "1"
+        },
+        {
+         "anchor": "p32c-2",
+         "text": "Vlastníci bytov a nebytových priestorov v dome, správcovia a predsedovia sú povinní zmluvy o výkone správy alebo zmluvy o spoločenstve uzatvorené do 1. júla 2007 uviesť do súladu s týmto zákonom do 31. decembra 2007. Tie časti zmluvy o výkone správy alebo zmluvy o spoločenstve, ktoré sú v rozpore s ustanoveniami tohto zákona, sú po uplynutí tejto lehoty neplatné.",
+         "n": "2"
+        }
+       ],
+       "heading": "Prechodné ustanovenia k úpravám účinným od 1. júla 2007"
+      },
+      {
+       "type": "provision",
+       "anchor": "p32d",
+       "label": "§ 32d",
+       "paragraphs": [
+        {
+         "anchor": "p32d-x1",
+         "text": "Vlastníci bytov a nebytových priestorov v dome, správcovia a predsedovia sú povinní zmluvy o výkone správy alebo zmluvy o spoločenstve uzatvorené do 1. apríla 2010 uviesť do súladu s týmto zákonom do 31. marca 2011. Tie časti zmluvy o výkone správy alebo zmluvy o spoločenstve, ktoré sú v rozpore s ustanoveniami tohto zákona, sú po uplynutí tejto lehoty neplatné."
+        }
+       ],
+       "heading": "Prechodné ustanovenia k úpravám účinným od 1. apríla 2010"
+      },
+      {
+       "type": "provision",
+       "anchor": "p32e",
+       "label": "§ 32e",
+       "paragraphs": [
+        {
+         "anchor": "p32e-1",
+         "text": "Funkčné obdobie predsedu zvoleného do 31. decembra 2015, ktorý nespĺňa podmienky na výkon funkcie podľa tohto zákona v znení účinnom od 1. januára 2016, sa skončí uplynutím jeho funkčného obdobia, najneskôr do troch rokov od jeho zápisu do registra.",
+         "n": "1"
+        },
+        {
+         "anchor": "p32e-2",
+         "text": "Zmluvy o výkone správy bytového domu účinné pred 1. januárom 2018 uzatvorené s fyzickou osobou alebo právnickou osobou vykonávajúcou správu bytových domov, ktorá k 31. decembru 2017 nespĺňa podmienky podľa osobitného predpisu,¹²ᶜᵃ) zanikajú najneskôr k 30. júnu 2018; o tomto je fyzická osoba alebo právnická osoba povinná písomne informovať vlastníkov najneskôr 60 dní pred zánikom zmlúv, pričom na vzťah tejto osoby a vlastníkov po 31. decembri 2017 sa uplatní postup podľa § 8a ods. 9 a 10.",
+         "n": "2"
+        },
+        {
+         "anchor": "p32e-3",
+         "text": "Povinnosť ustanovená v § 29 ods. 2 a 8 a v § 29a sa vzťahuje na vlastníkov domov alebo bytov len vtedy, ak nájomca bytu požiadal o prevod vlastníctva bytu do 31. decembra 2016; táto povinnosť nezaniká, ak je vlastníkom domu alebo bytu bytové družstvo a o prevod vlastníctva bytu požiada aj po 31. decembri 2016 nájomca družstevného bytu, ktorý je členom tohto bytového družstva.",
+         "n": "3"
+        },
+        {
+         "anchor": "p32e-4",
+         "text": "Vlastník domu alebo bytu uvedený v § 17 ods. 3 a § 29 ods. 7 je povinný uzavrieť s nájomcom bytu, ktorý požiadal o prevod vlastníctva bytu do 31. decembra 2016, zmluvu o prevode vlastníctva bytu; cenu bytu, pozemku zastavaného domom a priľahlého pozemku je povinný vypočítať podľa § 18, § 18a ods. 1 a § 18b. Ak vlastník domu alebo bytu zmluvu o prevode vlastníctva bytu do dvoch rokov od doručenia žiadosti neuzavrie, nájomca bytu môže po uplynutí tejto lehoty podať návrh na súd, aby uložil splnenie tejto povinnosti.",
+         "n": "4"
+        },
+        {
+         "anchor": "p32e-5",
+         "text": "Ak nájomca požiada o prevod vlastníctva bytu po 31. decembri 2016, na výpočet ceny bytu sa vzťahuje § 17 ods. 1; to neplatí, ak ide o nájomcu družstevného bytu, ktorý je členom bytového družstva.",
+         "n": "5"
+        }
+       ],
+       "heading": "Prechodné ustanovenia k úpravám účinným od 1. januára 2016"
+      },
+      {
+       "type": "provision",
+       "anchor": "p32f",
+       "label": "§ 32f",
+       "paragraphs": [
+        {
+         "anchor": "p32f-x1",
+         "text": "Od 1. septembra 2018 do 31. decembra 2018 je súčasťou návrhu na zápis do registra podľa § 7 ods. 2 písm. c) doklad o bezúhonnosti zvoleného predsedu."
+        }
+       ],
+       "heading": "Prechodné ustanovenie k úpravám účinným od 1. septembra 2018"
+      },
+      {
+       "type": "provision",
+       "anchor": "p32g",
+       "label": "§ 32g",
+       "paragraphs": [
+        {
+         "anchor": "p32g-1",
+         "text": "Ak je k 1. novembru 2018 zapísané v katastri nehnuteľností garážové stojisko spolu so spoluvlastníctvom garáže v dome, považuje sa za právo na výlučné užívanie určitého garážového stojiska spojené so spoluvlastníckym podielom na garáži v dome podľa § 20a.",
+         "n": "1"
+        },
+        {
+         "anchor": "p32g-2",
+         "text": "Ak nie je k 1. novembru 2018 zapísané v katastri nehnuteľností garážové stojisko spolu so spoluvlastníctvom garáže v dome, zapíše sa do katastra nehnuteľností právo spoluvlastníka garáže v dome na výlučné užívanie určitého garážového stojiska na základe písomnej dohody všetkých spoluvlastníkov garáže v dome, ktorou sa určí, ktorý spoluvlastník garáže v dome je oprávnený výlučne sám alebo spoločne s iným spoluvlastníkom garáže užívať určité garážové stojisko.",
+         "n": "2"
+        },
+        {
+         "anchor": "p32g-3",
+         "text": "Ustanovenia odsekov 1 a 2 sa primerane použijú aj na zápis skladového priestoru do katastra nehnuteľností.",
+         "n": "3"
+        },
+        {
+         "anchor": "p32g-4",
+         "text": "Správcovia a spoločenstvá do 30. júna 2019 zaevidujú rozhodnutia vlastníkov bytov a nebytových priestorov v dome prijaté pred 1. novembrom 2018 a zahrnú do zoznamu a dokumentácie súdnych konaní aj konania týkajúce sa domu začaté pred 1. novembrom 2018.",
+         "n": "4"
+        },
+        {
+         "anchor": "p32g-5",
+         "text": "Ak zástupca vlastníkov nie je vlastníkom bytu alebo nebytového priestoru v dome, vlastníci bytov a nebytových priestorov v dome zvolia nového zástupcu vlastníkov do 30. júna 2019.",
+         "n": "5"
+        },
+        {
+         "anchor": "p32g-6",
+         "text": "Práva a povinnosti zo zodpovednosti za vady a za škody voči dodávateľovi domu, ktoré prešli podľa doterajších predpisov z pôvodného vlastníka domu na spoločenstvo, ako aj práva a povinnosti spoločenstva zo zákonného záložného práva, prechádzajú dňom 1. novembra 2018 na vlastníkov bytov a nebytových priestorov v dome, ktorý spravuje spoločenstvo.",
+         "n": "6"
+        }
+       ],
+       "heading": "Prechodné ustanovenia k úpravám účinným od 1. novembra 2018"
+      },
+      {
+       "type": "provision",
+       "anchor": "p32h",
+       "label": "§ 32h",
+       "paragraphs": [
+        {
+         "anchor": "p32h-x1",
+         "text": "Záložné právo podľa § 15 ods. 1 v znení účinnom do 31. marca 2019 zapísané v katastri nehnuteľností v prospech spoločenstva sa považuje za záložné právo zapísané v prospech ostatných vlastníkov bytov a nebytových priestorov v dome."
+        }
+       ],
+       "heading": "Prechodné ustanovenie k úpravám účinným od 1. apríla 2019"
+      },
+      {
+       "type": "provision",
+       "anchor": "p32i",
+       "label": "§ 32i",
+       "paragraphs": [
+        {
+         "anchor": "p32i-x1",
+         "text": "Správca a spoločenstvo sú povinné upraviť zverejnené zoznamy vlastníkov podľa § 9 ods. 3 do 29. februára 2020."
+        }
+       ],
+       "heading": "Prechodné ustanovenie k úpravám účinným od 1. februára 2020"
+      },
+      {
+       "type": "provision",
+       "anchor": "p32j",
+       "label": "§ 32j",
+       "paragraphs": [
+        {
+         "anchor": "p32j-x1",
+         "text": "Na účely § 2 ods. 1 písm. d), e), p) a r) sa kolaudačným osvedčením rozumie kolaudačné rozhodnutie stavebného úradu vydané do 31. marca 2025, ako aj kolaudačné rozhodnutie stavebného úradu vydané od 1. apríla 2025, ak Stavebný zákon ustanovuje, že sa na kolaudáciu stavby použijú všeobecne záväzné právne predpisy účinné do 31. marca 2025."
+        }
+       ],
+       "heading": "Prechodné ustanovenie k úpravám účinným od 1. apríla 2024"
+      }
+     ]
+    },
+    {
+     "type": "section",
+     "anchor": "s-clanok-1-cast-siesta",
+     "kind": "cast",
+     "label": "ŠIESTA ČASŤ",
+     "heading": "ZÁVEREČNÉ USTANOVENIA",
+     "children": [
+      {
+       "type": "provision",
+       "anchor": "p33",
+       "label": "§ 33",
+       "paragraphs": [
+        {
+         "anchor": "p33-x1",
+         "text": "",
+         "items": [
+          {
+           "anchor": "p33-x1-1",
+           "label": "1.",
+           "letter": "1",
+           "text": "zákon č. 52/1966 Zb. o osobnom vlastníctve bytov v znení zákona č. 30/1978 Zb., zákona č. 509/1991 Zb., zákona č. 264/1992 Zb. a zákonného opatrenia Predsedníctva Federálneho zhromaždenia č. 297/1992 Zb.,"
+          },
+          {
+           "anchor": "p33-x1-2",
+           "label": "2.",
+           "letter": "2",
+           "text": "vyhláška Federálneho ministerstva financií, Ministerstva financií Českej socialistickej republiky, Ministerstva financií Slovenskej socialistickej republiky, Českého cenového úradu a Slovenského cenového úradu č. 47/1978 Zb. o predaji bytov z národného majetku občanom a o finančnej pomoci pri modernizácii zakúpených bytov v znení vyhlášky č. 2/1982 Zb., vyhlášky č. 160/1983 Zb., vyhlášky č. 547/1991 Zb. a vyhlášky č. 608/1992 Zb.,"
+          },
+          {
+           "anchor": "p33-x1-3",
+           "label": "3.",
+           "letter": "3",
+           "text": "vyhláška Federálneho ministerstva financií, Ministerstva financií Českej socialistickej republiky a Ministerstva financií Slovenskej socialistickej republiky č. 121/1980 Zb. o finančnej pomoci pri prevode skupinových rodinných domčekov z družstevného do osobného vlastníctva,"
+          },
+          {
+           "anchor": "p33-x1-4",
+           "label": "4.",
+           "letter": "4",
+           "text": "vyhláška Federálneho ministerstva financií, Ministerstva financií Českej socialistickej republiky a Ministerstva financií Slovenskej socialistickej republiky č. 122/1980 Zb. o jednorazovom príspevku na opatrenie náhradného bývania občanom, ktorí uvoľnia byt v objekte spravovanom štátnou socialistickou organizáciou v znení vyhlášky Federálneho ministerstva financií, Ministerstva financií Českej socialistickej republiky a Ministerstva financií Slovenskej socialistickej republiky č. 69/1982 Zb."
+          }
+         ]
+        }
+       ],
+       "heading": "Zrušujú sa"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "type": "provision",
+   "anchor": "cl2",
+   "label": "Čl. II",
+   "paragraphs": [
+    {
+     "anchor": "cl2-x1",
+     "text": "Zákon č. 42/1992 Zb. o úprave majetkových vzťahov a vyporiadaní majetkových nárokov v družstvách v znení zákonného opatrenia Predsedníctva Federálneho zhromaždenia č. 297/1992 Zb. a zákona č. 496/1992 Zb. sa mení takto:"
+    },
+    {
+     "anchor": "cl2-x2",
+     "text": "",
+     "items": [
+      {
+       "anchor": "cl2-x2-i1",
+       "label": "",
+       "letter": "i1",
+       "text": "V § 27 sa vypúšťajú slová „a nebytových“."
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "type": "provision",
+   "anchor": "cl3",
+   "label": "Čl. III",
+   "paragraphs": [
+    {
+     "anchor": "cl3-x1",
+     "text": "Tento zákon nadobúda účinnosť 1. septembrom 1993."
+    }
+   ]
+  }
+ ],
+ "footnotes": [
+  {
+   "anchor": "fn-1",
+   "label": "1)",
+   "text": "§ 2 zákona Slovenskej národnej rady č. 189/1992 Zb. o úprave niektorých pomerov súvisiacich s nájmom bytov a s bytovými náhradami."
+  },
+  {
+   "anchor": "fn-1a",
+   "label": "1a)",
+   "text": "§ 2 ods. 2 písm. a) zákona Slovenskej národnej rady č. 189/1992 Zb. o úprave niektorých pomerov súvisiacich s nájmom bytov a bytovými náhradami."
+  },
+  {
+   "anchor": "fn-2",
+   "label": "2)",
+   "text": "§ 3 zákona Slovenskej národnej rady č. 189/1992 Zb."
+  },
+  {
+   "anchor": "fn-5",
+   "label": "5)",
+   "text": "§ 121 ods. 2 Občianskeho zákonníka."
+  },
+  {
+   "anchor": "fn-5a",
+   "label": "5a)",
+   "text": "Napríklad zákon č. 314/2001 Z. z. o ochrane pred požiarmi v znení neskorších predpisov, zákon č. 124/2006 Z. z. o bezpečnosti a ochrane zdravia pri práci a o zmene a doplnení niektorých zákonov v znení neskorších predpisov, zákon č. 355/2007 Z. z. o ochrane, podpore a rozvoji verejného zdravia a o zmene a doplnení niektorých zákonov v znení neskorších predpisov, zákon č. 56/2018 Z. z. o posudzovaní zhody výrobku, sprístupňovaní určeného výrobku na trhu a o zmene a doplnení niektorých zákonov v znení neskorších predpisov."
+  },
+  {
+   "anchor": "fn-6",
+   "label": "6)",
+   "text": "Napr. zákon č. 116/1990 Zb. o nájme a podnájme nebytových priestorov v znení neskorších predpisov."
+  },
+  {
+   "anchor": "fn-7",
+   "label": "7)",
+   "text": "§ 22 a nasl. zákona č. 42/1992 Zb. o úprave majetkových vzťahov a vyporiadaní majetkových nárokov v družstvách v znení neskorších predpisov."
+  },
+  {
+   "anchor": "fn-8",
+   "label": "8)",
+   "text": "§ 132 Občianskeho zákonníka."
+  },
+  {
+   "anchor": "fn-9",
+   "label": "9)",
+   "text": "§ 43 a nasl. a § 588 a nasl. Občianskeho zákonníka."
+  },
+  {
+   "anchor": "fn-9a",
+   "label": "9a)",
+   "text": "Zákon Národnej rady Slovenskej republiky č. 42/1994 Z. z. o civilnej ochrane obyvateľstva v znení neskorších predpisov."
+  },
+  {
+   "anchor": "fn-10",
+   "label": "10)",
+   "text": "Zákon Národnej rady Slovenskej republiky č. 162/1995 Z. z. o katastri nehnuteľností a o zápise vlastníckych a iných práv k nehnuteľnostiam (katastrálny zákon) v znení neskorších predpisov."
+  },
+  {
+   "anchor": "fn-10a",
+   "label": "10a)",
+   "text": "Zákon Národnej rady Slovenskej republiky č. 145/1995 Z. z. o správnych poplatkoch v znení neskorších predpisov.\nPoložka C bod 3 prílohy k vyhláške Ministerstva spravodlivosti Slovenskej republiky č. 31/1993 Z. z. o odmenách a náhradách notárov v znení vyhlášky Ministerstva spravodlivosti Slovenskej republiky č. 209/1994 Z. z."
+  },
+  {
+   "anchor": "fn-11",
+   "label": "11)",
+   "text": "§ 18 ods. 2 písm. d) Občianskeho zákonníka."
+  },
+  {
+   "anchor": "fn-12",
+   "label": "12)",
+   "text": "§ 4 ods. 3 zákona č. 515/2003 Z. z. o krajských úradoch a obvodných úradoch a o zmene a doplnení niektorých zákonov."
+  },
+  {
+   "anchor": "fn-12a",
+   "label": "12a)",
+   "text": "§ 92 a 93 Trestného zákona v znení zákona č. 1/2014 Z. z."
+  },
+  {
+   "anchor": "fn-12aa",
+   "label": "12aa)",
+   "text": "Napríklad zákon č. 223/2001 Z. z. o odpadoch a o zmene a doplnení niektorých zákonov v znení neskorších predpisov, zákon č. 442/2002 Z. z. o verejných vodovodoch a verejných kanalizáciách a o zmene a doplnení zákona č. 276/2001 Z. z. o regulácii v sieťových odvetviach v znení neskorších predpisov, zákon č. 657/2004 Z. z. o tepelnej energetike v znení zákona č. 99/2007 Z. z."
+  },
+  {
+   "anchor": "fn-12aaa",
+   "label": "12aaa)",
+   "text": "Zákon Národnej rady Slovenskej republiky č. 118/1996 Z. z. o ochrane vkladov a o zmene a doplnení niektorých zákonov v znení neskorších predpisov."
+  },
+  {
+   "anchor": "fn-12aaaa",
+   "label": "12aaaa)",
+   "text": "§ 10 ods. 4 písm. a) zákona č. 330/2007 Z. z. o registri trestov a o zmene a doplnení niektorých zákonov v znení zákona č. 91/2016 Z. z."
+  },
+  {
+   "anchor": "fn-12aaab",
+   "label": "12aaab)",
+   "text": "§ 60 ods. 3 vyhlášky Úradu geodézie, kartografie a katastra Slovenskej republiky č. 461/2009 Z. z., ktorou sa vykonáva zákon Národnej rady Slovenskej republiky č. 162/1995 Z. z. o katastri nehnuteľností a o zápise vlastníckych a iných práv k nehnuteľnostiam (katastrálny zákon) v znení neskorších predpisov."
+  },
+  {
+   "anchor": "fn-12ab",
+   "label": "12ab)",
+   "text": "Zákon Národnej rady Slovenskej republiky č. 233/1995 Z. z. o súdnych exekútoroch a exekučnej činnosti (Exekučný poriadok) a o zmene a doplnení ďalších zákonov v znení neskorších predpisov."
+  },
+  {
+   "anchor": "fn-12ac",
+   "label": "12ac)",
+   "text": "Zákon č. 527/2002 Z. z. o dobrovoľných dražbách a o doplnení zákona Slovenskej národnej rady č. 323/1992 Zb. o notároch a notárskej činnosti (Notársky poriadok) v znení neskorších predpisov."
+  },
+  {
+   "anchor": "fn-12b",
+   "label": "12b)",
+   "text": "§ 10 zákona č. 330/2007 Z. z. v znení neskorších predpisov."
+  },
+  {
+   "anchor": "fn-12c",
+   "label": "12c)",
+   "text": "§ 68 až 75 Obchodného zákonníka."
+  },
+  {
+   "anchor": "fn-12ca",
+   "label": "12ca)",
+   "text": "Zákon č. 246/2015 Z. z. o správcoch bytových domov a o zmene a doplnení zákona Národnej rady Slovenskej republiky č. 182/1993 Z. z. o vlastníctve bytov a nebytových priestorov v znení neskorších predpisov."
+  },
+  {
+   "anchor": "fn-12d",
+   "label": "12d)",
+   "text": "Napríklad zákon č. 65/2001 Z. z. o správe a vymáhaní súdnych pohľadávok v znení neskorších predpisov, zákon Národnej rady Slovenskej republiky č. 233/1995 Z. z. o súdnych exekútoroch a exekučnej činnosti (Exekučný poriadok) a o zmene a doplnení ďalších zákonov v znení neskorších predpisov."
+  },
+  {
+   "anchor": "fn-12e",
+   "label": "12e)",
+   "text": "§ 106, 112 a 113 Civilného sporového poriadku."
+  },
+  {
+   "anchor": "fn-12f",
+   "label": "12f)",
+   "text": "Zákon č. 18/2018 Z. z. o ochrane osobných údajov a o zmene a doplnení niektorých zákonov."
+  },
+  {
+   "anchor": "fn-13",
+   "label": "13)",
+   "text": "Napr. § 54 a nasl. zákona č. 50/1976 Zb. o územnom plánovaní a stavebnom poriadku (stavebný zákon) v znení zákona č. 103/1990 Zb. a zákona č. 262/1992 Zb."
+  },
+  {
+   "anchor": "fn-13~2",
+   "label": "13)",
+   "text": "Napríklad § 18 Stavebného zákona."
+  },
+  {
+   "anchor": "fn-14",
+   "label": "14)",
+   "text": "§ 115 Občianskeho zákonníka."
+  },
+  {
+   "anchor": "fn-15",
+   "label": "15)",
+   "text": "§ 685 a nasl. Občianskeho zákonníka.\nZákon č. 116/1990 Zb. v znení neskorších predpisov."
+  },
+  {
+   "anchor": "fn-15a",
+   "label": "15a)",
+   "text": "§ 324 až 340 Civilného sporového poriadku."
+  },
+  {
+   "anchor": "fn-15aa",
+   "label": "15aa)",
+   "text": "§ 2 písm. b) bod 34 zákona č. 251/2012 Z. z. o energetike a o zmene a doplnení niektorých zákonov v znení neskorších predpisov."
+  },
+  {
+   "anchor": "fn-15ab",
+   "label": "15ab)",
+   "text": "§ 2 ods. 9 Stavebného zákona."
+  },
+  {
+   "anchor": "fn-15b",
+   "label": "15b)",
+   "text": "§ 5 ods. 3 Stavebného zákona."
+  },
+  {
+   "anchor": "fn-15c",
+   "label": "15c)",
+   "text": "§ 33 ods. 2 zákona č. 447/2008 Z. z. o peňažných príspevkoch na kompenzáciu ťažkého zdravotného postihnutia a o zmene a doplnení niektorých zákonov v znení neskorších predpisov."
+  },
+  {
+   "anchor": "fn-16",
+   "label": "16)",
+   "text": "§ 151b a 151c Občianskeho zákonníka."
+  },
+  {
+   "anchor": "fn-17",
+   "label": "17)",
+   "text": "§ 34 zákona Národnej rady Slovenskej republiky č. 162/1995 Z. z. v znení neskorších predpisov."
+  },
+  {
+   "anchor": "fn-17b",
+   "label": "17b)",
+   "text": "§ 140 Občianskeho zákonníka."
+  },
+  {
+   "anchor": "fn-18",
+   "label": "18)",
+   "text": "§ 711 ods. 1 písm. c) a d) Občianskeho zákonníka."
+  },
+  {
+   "anchor": "fn-19",
+   "label": "19)",
+   "text": "§ 712 a 712a ods. 2, 3, 4 a 5 Občianskeho zákonníka."
+  },
+  {
+   "anchor": "fn-20",
+   "label": "20)",
+   "text": "§ 5 ods. 2 písm. a) a d) zákona Slovenskej národnej rady č. 189/1992 Zb."
+  },
+  {
+   "anchor": "fn-20a",
+   "label": "20a)",
+   "text": "§ 68 Stavebného zákona."
+  },
+  {
+   "anchor": "fn-21",
+   "label": "21)",
+   "text": "Zákon Národnej rady Slovenskej republiky č. 18/1996 Z. z. o cenách."
+  },
+  {
+   "anchor": "fn-21a",
+   "label": "21a)",
+   "text": "Zákon č. 446/2001 Z. z. o majetku vyšších územných celkov v znení zákona č. 521/2003 Z. z."
+  },
+  {
+   "anchor": "fn-22",
+   "label": "22)",
+   "text": "Napríklad zákon č. 92/1991 Zb. o podmienkach prevodu majetku štátu na iné osoby v znení neskorších predpisov, zákon č. 13/2002 Z. z. o podmienkach premeny niektorých rozpočtových organizácií a príspevkových organizácií na neziskové organizácie poskytujúce všeobecne prospešné služby (transformačný zákon) a ktorým sa mení a dopĺňa zákon č. 92/1991 Zb. o podmienkach prevodu majetku štátu na iné osoby v znení neskorších predpisov v znení neskorších predpisov, zákon č. 578/2004 Z. z. o poskytovateľoch zdravotnej starostlivosti, zdravotníckych pracovníkoch, stavovských organizáciách v zdravotníctve a o zmene a doplnení niektorých zákonov v znení neskorších predpisov, zákon č. 541/2005 Z. z. o transformácii niektorých štátnych podnikov na akciové spoločnosti."
+  },
+  {
+   "anchor": "fn-22a",
+   "label": "22a)",
+   "text": "Napríklad zákon č. 109/1964 Zb. Hospodársky zákonník v znení neskorších predpisov, vyhláška Ministerstva financií č. 86/1968 Zb. o združovaní prostriedkov socialistických organizácií."
+  },
+  {
+   "anchor": "fn-22ac",
+   "label": "22ac)",
+   "text": "§ 38 a 39 zákona Národnej rady Slovenskej republiky č. 162/1995 Z. z. v znení neskorších predpisov."
+  },
+  {
+   "anchor": "fn-22b",
+   "label": "22b)",
+   "text": "Zákon č. 104/1990 Zb. o akciových spoločnostiach.\nObchodný zákonník."
+  },
+  {
+   "anchor": "fn-23",
+   "label": "23)",
+   "text": "Napríklad zákon Národnej rady Slovenskej republiky č. 233/1995 Z. z. o súdnych exekútoroch a exekučnej činnosti (Exekučný poriadok) a o zmene a doplnení ďalších zákonov v znení neskorších predpisov, zákon č. 7/2005 Z. z. o konkurze a reštrukturalizácii a o zmene a doplnení niektorých zákonov v znení neskorších predpisov, § 14 ods. 1 zákona č. 92/1991 Zb. o podmienkach prevodu majetku štátu na iné osoby v znení neskorších predpisov, zákon č. 111/1990 Zb. o štátnom podniku v znení neskorších predpisov."
+  },
+  {
+   "anchor": "fn-23a",
+   "label": "23a)",
+   "text": "Napríklad § 588 Občianskeho zákonníka, § 56 až 220 Obchodného zákonníka."
+  },
+  {
+   "anchor": "fn-24",
+   "label": "24)",
+   "text": "Napr. § 6 ods. 6 vyhlášky č. 136/1985 Zb. o finančnej, úverovej a inej pomoci družstevnej a individuálnej bytovej výstavbe a modernizácii rodinných domčekov v osobnom vlastníctve v znení neskorších predpisov."
+  },
+  {
+   "anchor": "fn-24a",
+   "label": "24a)",
+   "text": "Zákon č. 563/1991 Zb. o účtovníctve."
+  },
+  {
+   "anchor": "fn-24aa",
+   "label": "24aa)",
+   "text": "Vyhláška Ministerstva spravodlivosti Slovenskej republiky č. 492/2004 Z. z. o stanovení všeobecnej hodnoty majetku v znení neskorších predpisov."
+  },
+  {
+   "anchor": "fn-24b",
+   "label": "24b)",
+   "text": "§ 15 ods. 1 vyhlášky Ministerstva financií Slovenskej republiky č. 465/1991 Zb. o cenách stavieb, pozemkov, trvalých porastov, úhradách za zriadenie práva osobného užívania pozemkov a náhradách za dočasné užívanie pozemkov v znení neskorších predpisov."
+  },
+  {
+   "anchor": "fn-24c",
+   "label": "24c)",
+   "text": "Zákon č. 52/1966 Zb. o osobnom vlastníctve bytov v znení neskorších predpisov."
+  },
+  {
+   "anchor": "fn-24d",
+   "label": "24d)",
+   "text": "§ 17 ods. 1 vyhlášky Ministerstva financií Slovenskej republiky č. 465/1991 Zb. v znení neskorších predpisov."
+  },
+  {
+   "anchor": "fn-24e",
+   "label": "24e)",
+   "text": "Zákon Slovenskej národnej rady č. 138/1991 Zb. o majetku obcí v znení neskorších predpisov."
+  },
+  {
+   "anchor": "fn-24f",
+   "label": "24f)",
+   "text": "§ 34 a § 46 ods. 5 a 6 zákona Národnej rady Slovenskej republiky č. 162/1995 Z. z. v znení neskorších predpisov."
+  },
+  {
+   "anchor": "fn-25",
+   "label": "25)",
+   "text": "§ 876 Občianskeho zákonníka."
+  },
+  {
+   "anchor": "fn-26",
+   "label": "26)",
+   "text": "§ 151n a nasl. Občianskeho zákonníka."
+  },
+  {
+   "anchor": "fn-26a",
+   "label": "26a)",
+   "text": "Zákon Národnej rady Slovenskej republiky č. 278/1993 Z. z. o správe majetku štátu v znení zákona Národnej rady Slovenskej republiky č. 374/1996 Z. z."
+  },
+  {
+   "anchor": "fn-26b",
+   "label": "26b)",
+   "text": "Zákon č. 21/1992 Zb. o bankách v znení neskorších predpisov."
+  },
+  {
+   "anchor": "fn-27",
+   "label": "27)",
+   "text": "§ 151a a nasl. Občianskeho zákonníka."
+  },
+  {
+   "anchor": "fn-27a",
+   "label": "27a)",
+   "text": "§ 136 a nasl. Občianskeho zákonníka."
+  },
+  {
+   "anchor": "fn-27b",
+   "label": "27b)",
+   "text": "Napríklad § 8e zákona Národnej rady Slovenskej republiky č. 278/1993 Z. z. o správe majetku štátu v znení neskorších predpisov, § 7 zákona č. 150/2013 Z. z. o Štátnom fonde rozvoja bývania v znení neskorších predpisov, § 11 zákona č. 321/2014 Z. z. o energetickej efektívnosti a o zmene a doplnení niektorých zákonov."
+  },
+  {
+   "anchor": "fn-28",
+   "label": "28)",
+   "text": "§ 12 zákona č. 52/1966 Zb. o osobnom vlastníctve bytov v znení neskorších predpisov."
+  },
+  {
+   "anchor": "fn-29",
+   "label": "29)",
+   "text": "Zákon č. 52/1966 Zb. v znení neskorších predpisov.\nZákon č. 42/1992 Zb."
+  },
+  {
+   "anchor": "fn-30",
+   "label": "30)",
+   "text": "Napr. výnos FMF, MF ČSR a MF SSR o financovaní komunálnej bytovej výstavby a výstavby technického a občianskeho vybavenia uverejnený pod č. 33 vo Finančnom spravodajcovi č. 6-7/1987, registrovaný v čiastke 26/1987 Zb."
+  },
+  {
+   "anchor": "fn-30a",
+   "label": "30a)",
+   "text": "Napríklad zákon Národnej rady Slovenskej republiky č. 258/1993 Z. z. o Železniciach Slovenskej republiky v znení neskorších predpisov."
+  },
+  {
+   "anchor": "fn-31",
+   "label": "31)",
+   "text": "§ 1 ods. 2 písm. a) až f) zákona Slovenskej národnej rady č. 189/1992 Zb. o úprave niektorých pomerov súvisiacich s nájmom bytov a s bytovými náhradami."
+  },
+  {
+   "anchor": "fn-32",
+   "label": "32)",
+   "text": "§ 63 ods. 2 písm. h) zákona Národnej rady Slovenskej republiky č. 277/1994 Z. z. o zdravotnej starostlivosti.§ 18 vyhlášky Ministerstva zdravotníctva Slovenskej socialistickej republiky č. 15/1972 Zb. o ochrane a rozvoji prírodných liečebných kúpeľov a prírodných liečivých zdrojov v znení neskorších predpisov."
+  },
+  {
+   "anchor": "fn-33",
+   "label": "33)",
+   "text": "§ 50a Občianskeho zákonníka."
+  },
+  {
+   "anchor": "fn-34",
+   "label": "34)",
+   "text": "Napríklad zákon č. 7/2005 Z. z. v znení neskorších predpisov, zákon Národnej rady Slovenskej republiky č. 233/1995 Z. z. v znení neskorších predpisov."
+  },
+  {
+   "anchor": "fn-35",
+   "label": "35)",
+   "text": "Zákon Národnej rady Slovenskej republiky č. 124/1996 Z. z. o Štátnom fonde rozvoja bývania v znení zákona Národnej rady Slovenskej republiky č. 1/1997 Z. z."
+  }
+ ]
+}

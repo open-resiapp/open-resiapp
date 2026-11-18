@@ -41,6 +41,9 @@ COPY --from=builder /app/drizzle ./drizzle
 COPY --from=builder /app/drizzle.config.ts ./drizzle.config.ts
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/messages ./messages
+# Laws library (static JSON from `pnpm laws:sync`), read via fs at runtime
+# by src/lib/laws.server.ts — not traced into .next/standalone.
+COPY --from=builder /app/data/laws ./data/laws
 COPY --from=builder /app/src/scripts ./src/scripts
 COPY --from=builder /app/src/db ./src/db
 COPY --from=builder /app/src/lib ./src/lib

@@ -1,0 +1,1380 @@
+{
+ "id": "cz-89-2012",
+ "jurisdiction": "cz",
+ "number": "89/2012 Sb.",
+ "title": "Občanský zákoník",
+ "effectiveFrom": "2026-01-01",
+ "effectiveTo": "2026-12-31",
+ "sourceUrl": "https://e-sbirka.gov.cz/sb/2012/89/2026-01-01",
+ "fetchedAt": "2026-11-18T08:20:36.859Z",
+ "contentHash": "910e5487f499183279323cc3131fc698c4f1d473b7b6ffe6ba6a0324c10969ec",
+ "scope": "§ 1158 – § 1222 (bytové spoluvlastnictví)",
+ "provisionCount": 63,
+ "parts": [
+  {
+   "type": "section",
+   "anchor": "s-cast-3",
+   "kind": "cast",
+   "label": "ČÁST TŘETÍ",
+   "heading": "ABSOLUTNÍ MAJETKOVÁ PRÁVA",
+   "children": [
+    {
+     "type": "section",
+     "anchor": "s-cast-3-hlava-2",
+     "kind": "hlava",
+     "label": "HLAVA II",
+     "heading": "VĚCNÁ PRÁVA",
+     "children": [
+      {
+       "type": "section",
+       "anchor": "s-cast-3-hlava-2-dil-4",
+       "kind": "dil",
+       "label": "Díl 4",
+       "heading": "Spoluvlastnictví",
+       "children": [
+        {
+         "type": "section",
+         "anchor": "s-cast-3-hlava-2-dil-4-oddil-5",
+         "kind": "oddil",
+         "label": "Oddíl 5",
+         "heading": "Bytové spoluvlastnictví",
+         "children": [
+          {
+           "type": "section",
+           "anchor": "s-cast-3-hlava-2-dil-4-oddil-5-pododdil-1",
+           "kind": "pododdil",
+           "label": "Pododdíl 1",
+           "heading": "Obecná ustanovení",
+           "children": [
+            {
+             "type": "provision",
+             "anchor": "p1158",
+             "label": "§ 1158",
+             "paragraphs": [
+              {
+               "anchor": "p1158-1",
+               "text": "Bytové spoluvlastnictví je spoluvlastnictví nemovité věci založené vlastnictvím jednotek. Bytové spoluvlastnictví může vzniknout, pokud je součástí nemovité věci dům alespoň s dvěma byty.",
+               "n": "1"
+              },
+              {
+               "anchor": "p1158-2",
+               "text": "Co je stanoveno v tomto oddílu o bytu, platí také pro nebytový prostor, jakož i pro soubor bytů nebo nebytových prostorů.",
+               "n": "2"
+              }
+             ]
+            },
+            {
+             "type": "provision",
+             "anchor": "p1159",
+             "label": "§ 1159",
+             "paragraphs": [
+              {
+               "anchor": "p1159-x1",
+               "text": "Jednotka zahrnuje byt jako prostorově oddělenou část domu a podíl na společných částech nemovité věci vzájemně spojené a neoddělitelné. Jednotka je věc nemovitá."
+              }
+             ]
+            },
+            {
+             "type": "heading",
+             "anchor": "h-spolecne-casti",
+             "text": "Společné části"
+            },
+            {
+             "type": "provision",
+             "anchor": "p1160",
+             "label": "§ 1160",
+             "paragraphs": [
+              {
+               "anchor": "p1160-1",
+               "text": "Společné jsou alespoň ty části nemovité věci, které podle své povahy mají sloužit vlastníkům jednotek společně.",
+               "n": "1"
+              },
+              {
+               "anchor": "p1160-2",
+               "text": "Společnými jsou vždy pozemek, na němž byl dům zřízen, nebo věcné právo, jež vlastníkům jednotek zakládá právo mít na pozemku dům, stavební části podstatné pro zachování domu včetně jeho hlavních konstrukcí, a jeho tvaru i vzhledu, jakož i pro zachování bytu jiného vlastníka jednotky, a zařízení sloužící i jinému vlastníku jednotky k užívání bytu. To platí i v případě, že se určitá část přenechá některému vlastníku jednotky k výlučnému užívání.",
+               "n": "2"
+              }
+             ]
+            },
+            {
+             "type": "provision",
+             "anchor": "p1161",
+             "label": "§ 1161",
+             "paragraphs": [
+              {
+               "anchor": "p1161-x1",
+               "text": "Neurčí-li se podíly na společných částech se zřetelem k povaze, rozměrům a umístění bytu nebo jako stejné, platí, že jsou stanoveny poměrem velikosti podlahové plochy bytu k celkové podlahové ploše všech bytů v domě."
+              }
+             ]
+            },
+            {
+             "type": "provision",
+             "anchor": "p1162",
+             "label": "§ 1162",
+             "paragraphs": [
+              {
+               "anchor": "p1162-1",
+               "text": "Jsou-li podíly na společných částech určeny jinak než poměrem velikosti podlahové plochy bytu k celkové podlahové ploše všech bytů v domě nebo než jako stejné, má vlastník jednotky právo domáhat se změny tohoto určení, pokud se okolnosti změnily tak podstatně, že určení jeho podílu na společných částech je zjevně nespravedlivé.",
+               "n": "1"
+              },
+              {
+               "anchor": "p1162-2",
+               "text": "Nedojde-li na návrh vlastníka jednotky ke změně prohlášení (§ 1169), změní prohlášení soud.",
+               "n": "2"
+              }
+             ]
+            }
+           ]
+          },
+          {
+           "type": "section",
+           "anchor": "s-cast-3-hlava-2-dil-4-oddil-5-pododdil-2",
+           "kind": "pododdil",
+           "label": "Pododdíl 2",
+           "heading": "Vznik jednotky",
+           "children": [
+            {
+             "type": "provision",
+             "anchor": "p1163",
+             "label": "§ 1163",
+             "paragraphs": [
+              {
+               "anchor": "p1163-x1",
+               "text": "Zavázaly-li se k tomu strany v souvislosti se stavbou domu nebo jeho změnou, vznikne jednotka výstavbou, pokud je dům alespoň v takovém stupni rozestavěnosti, že je již navenek uzavřen obvodovými stěnami a střešní konstrukcí a byt je uzavřen obvodovými stěnami."
+              }
+             ],
+             "heading": "Výstavba"
+            },
+            {
+             "type": "provision",
+             "anchor": "p1164",
+             "label": "§ 1164",
+             "paragraphs": [
+              {
+               "anchor": "p1164-1",
+               "text": "Zápisem do veřejného seznamu jednotka vznikne, pokud vlastník nebo osoba k tomu oprávněná z jiného věcného práva prohlášením rozdělí své právo k domu a pozemku na vlastnické právo k jednotkám.",
+               "n": "1"
+              },
+              {
+               "anchor": "p1164-2",
+               "text": "Zápisem do veřejného seznamu jednotka vznikne i v případě, že si to ujednají spoluvlastníci při oddělení ze spoluvlastnictví nebo při jeho zrušení a vypořádání, nebo že si to ujednají manželé při změně rozsahu nebo při vypořádání společného jmění. Ustanovení o prohlášení se na tato ujednání použijí přiměřeně.",
+               "n": "2"
+              }
+             ],
+             "heading": "Zápis do veřejného seznamu"
+            },
+            {
+             "type": "provision",
+             "anchor": "p1165",
+             "label": "§ 1165",
+             "paragraphs": [
+              {
+               "anchor": "p1165-x1",
+               "text": "Jednotka vznikne, pokud o tom rozhodne soud při oddělení ze spoluvlastnictví, při zrušení a vypořádání spoluvlastnictví, při zúžení společného jmění nebo při vypořádání společného jmění."
+              }
+             ],
+             "heading": "Rozhodnutí soudu"
+            },
+            {
+             "type": "heading",
+             "anchor": "h-prohlaseni",
+             "text": "Prohlášení"
+            },
+            {
+             "type": "provision",
+             "anchor": "p1166",
+             "label": "§ 1166",
+             "paragraphs": [
+              {
+               "anchor": "p1166-1",
+               "text": "Při rozdělení práva k nemovité věci na vlastnické právo k jednotkám se uvedou alespoň",
+               "n": "1",
+               "items": [
+                {
+                 "anchor": "p1166-1-a",
+                 "label": "a)",
+                 "letter": "a",
+                 "text": "údaje o pozemku, domu, obci a katastrálním území,"
+                },
+                {
+                 "anchor": "p1166-1-b",
+                 "label": "b)",
+                 "letter": "b",
+                 "text": "údaje o jednotce, zejména",
+                 "items": [
+                  {
+                   "anchor": "p1166-1-b-1",
+                   "label": "1.",
+                   "letter": "1",
+                   "text": "pojmenování a označení jednotlivých bytů alespoň číslem a umístěním s určením účelu užívání,"
+                  },
+                  {
+                   "anchor": "p1166-1-b-2",
+                   "label": "2.",
+                   "letter": "2",
+                   "text": "určení a popis společných částí se zřetelem k jejich stavební, technické nebo uživatelské povaze a s případným určením, které z nich jsou vyhrazeny k výlučnému užívání vlastníku určité jednotky,"
+                  },
+                  {
+                   "anchor": "p1166-1-b-3",
+                   "label": "3.",
+                   "letter": "3",
+                   "text": "velikost podílů na společných částech,"
+                  }
+                 ]
+                },
+                {
+                 "anchor": "p1166-1-c",
+                 "label": "c)",
+                 "letter": "c",
+                 "text": "jaká věcná a jiná práva a jaké závady přecházejí se vznikem vlastnického práva k jednotce na všechny vlastníky jednotek nebo na některé z nich."
+                }
+               ]
+              },
+              {
+               "anchor": "p1166-2",
+               "text": "K prohlášení se přiloží půdorysy všech podlaží, popřípadě jejich schémata, určující polohu bytů a společných částí domu, spolu s údaji o podlahových plochách bytů.",
+               "n": "2"
+              }
+             ]
+            },
+            {
+             "type": "provision",
+             "anchor": "p1167",
+             "label": "§ 1167",
+             "paragraphs": [
+              {
+               "anchor": "p1167-x1",
+               "text": "Dojde-li k zápisu vlastnického práva k jednotkám do veřejného seznamu, nelze prohlášení prohlásit za neplatné ani nelze určit, že vlastnické právo k jednotce nevzniklo, v případě, že věcné právo k jednotce nabyla další osoba."
+              }
+             ]
+            },
+            {
+             "type": "provision",
+             "anchor": "p1168",
+             "label": "§ 1168",
+             "paragraphs": [
+              {
+               "anchor": "p1168-1",
+               "text": "Vymezuje-li prohlášení jednotku neurčitým nebo nesprávným způsobem a neodstraní-li je původce prohlášení bez zbytečného odkladu poté, co ho na vadu upozornila osoba, která na tom má právní zájem, mohou vadu odstranit vlastníci dotčených jednotek společným prohlášením. Nedojde-li k tomu, rozhodne o odstranění vady soud na návrh osoby, která na tom má právní zájem.",
+               "n": "1"
+              },
+              {
+               "anchor": "p1168-2",
+               "text": "Určí-li prohlášení neurčitě nebo nesprávně podíl vlastníka jednotky na společných částech, nepřihlíží se k tomu.",
+               "n": "2"
+              }
+             ],
+             "heading": "Odstranění vady prohlášení"
+            },
+            {
+             "type": "provision",
+             "anchor": "p1169",
+             "label": "§ 1169",
+             "paragraphs": [
+              {
+               "anchor": "p1169-1",
+               "text": "Vlastníci jednotek mohou prohlášení změnit. Ke změně prohlášení se vyžaduje písemný souhlas vlastníka jednotky, jehož práv a povinností se změna dotkne. Je-li jednotka zatížena, vyžaduje se rovněž písemný souhlas osoby oprávněné z věcného práva, pokud se jejích práv a povinností změna dotkne. Pro účinnost změny prohlášení se vyžaduje souhlas většiny hlasů všech vlastníků jednotek, ledaže se změna dotýká práv a povinností všech vlastníků jednotek.",
+               "n": "1"
+              },
+              {
+               "anchor": "p1169-2",
+               "text": "Ke změně prohlášení postačí souhlas většiny hlasů všech vlastníků jednotek, týká-li se změna",
+               "n": "2",
+               "items": [
+                {
+                 "anchor": "p1169-2-a",
+                 "label": "a)",
+                 "letter": "a",
+                 "text": "společných částí, při které se nemění velikost podílu na společných částech, nejde-li o části ve výlučném užívání vlastníka jednotky,"
+                },
+                {
+                 "anchor": "p1169-2-b",
+                 "label": "b)",
+                 "letter": "b",
+                 "text": "účelu užívání bytu na základě žádosti jeho vlastníka, nebo"
+                },
+                {
+                 "anchor": "p1169-2-c",
+                 "label": "c)",
+                 "letter": "c",
+                 "text": "pravidel pro správu domu a pozemku a užívání společných částí, jsou-li určena v prohlášení."
+                }
+               ]
+              },
+              {
+               "anchor": "p1169-3",
+               "text": "Pro přezkoumání rozhodnutí o změně prohlášení se ustanovení § 1209 použije přiměřeně.",
+               "n": "3"
+              }
+             ],
+             "heading": "Změna prohlášení"
+            }
+           ]
+          },
+          {
+           "type": "section",
+           "anchor": "s-cast-3-hlava-2-dil-4-oddil-5-pododdil-3",
+           "kind": "pododdil",
+           "label": "Pododdíl 3",
+           "heading": "Výstavba domu s jednotkami",
+           "children": [
+            {
+             "type": "provision",
+             "anchor": "p1170",
+             "label": "§ 1170",
+             "paragraphs": [
+              {
+               "anchor": "p1170-1",
+               "text": "Smlouvou o výstavbě se strany zavazují podílet se společně na výstavbě, dokončení nebo na změně domu za účelem zřízení nebo změny jednotek. Pro práva a povinnosti stran platí přiměřeně ustanovení tohoto zákona o společnosti.",
+               "n": "1"
+              },
+              {
+               "anchor": "p1170-2",
+               "text": "Ve smlouvě strany ujednají alespoň",
+               "n": "2",
+               "items": [
+                {
+                 "anchor": "p1170-2-a",
+                 "label": "a)",
+                 "letter": "a",
+                 "text": "údaje stanovené jako náležitosti prohlášení o rozdělení práva k domu a pozemku na vlastnické právo k jednotkám,"
+                },
+                {
+                 "anchor": "p1170-2-b",
+                 "label": "b)",
+                 "letter": "b",
+                 "text": "způsob úhrady nákladů výstavby, popřípadě ocenění svépomocně prováděných prací, a"
+                },
+                {
+                 "anchor": "p1170-2-c",
+                 "label": "c)",
+                 "letter": "c",
+                 "text": "velikost spoluvlastnických podílů k domu, a má-li být dům součástí pozemku, velikost spoluvlastnických podílů k pozemku, na dobu, než výstavbou vznikne první jednotka; spoluvlastnické podíly se určí ve velikosti odpovídající velikosti podílu vlastníka jednotky na společných částech."
+                }
+               ]
+              },
+              {
+               "anchor": "p1170-3",
+               "text": "Smlouva vyžaduje písemnou formu.",
+               "n": "3"
+              }
+             ],
+             "heading": "Smlouva o výstavbě"
+            },
+            {
+             "type": "provision",
+             "anchor": "p1171",
+             "label": "§ 1171",
+             "paragraphs": [
+              {
+               "anchor": "p1171-x1",
+               "text": "Je-li smlouva o výstavbě uzavřena v době, kdy je dům již rozestavěn, ale byty ještě rozestavěny nejsou, ujednají si strany velikost spoluvlastnických podílů k nemovité věci ve velikosti odpovídající velikosti spoluvlastnických podílů budoucích vlastníků jednotek na společných částech."
+              }
+             ]
+            },
+            {
+             "type": "provision",
+             "anchor": "p1172",
+             "label": "§ 1172",
+             "paragraphs": [
+              {
+               "anchor": "p1172-1",
+               "text": "Má-li jednotka vzniknout nástavbou, přístavbou nebo stavební úpravou domu a nejsou-li v domě jednotky dosud vymezeny, ujednají strany ve smlouvě i vymezení jednotek v domě a vlastník nebo osoba k tomu oprávněná z jiného věcného práva převede na zájemce o nabytí nové jednotky spoluvlastnický podíl k nemovité věci ve velikosti odpovídající velikosti jeho spoluvlastnického podílu jako vlastníka jednotky na společných částech.",
+               "n": "1"
+              },
+              {
+               "anchor": "p1172-2",
+               "text": "Má-li vzniknout nová jednotka nebo má-li být dosavadní jednotka změněna nástavbou, přístavbou nebo stavební úpravou v domě, kde jsou jednotky již vymezeny, ujednají strany ve smlouvě i změny velikosti spoluvlastnických podílů po vzniku nové jednotky nebo změně dosavadní jednotky tak, aby odpovídaly nově určeným velikostem spoluvlastnických podílů.",
+               "n": "2"
+              }
+             ]
+            },
+            {
+             "type": "provision",
+             "anchor": "p1173",
+             "label": "§ 1173",
+             "paragraphs": [
+              {
+               "anchor": "p1173-x1",
+               "text": "Neobsahuje-li smlouva o výstavbě výslovné ujednání o odchylkách od určení jednotek, považuje se výstavba za řádnou, pokud je odchylka jen nepatrná a dotčený spoluvlastník ji měl a mohl rozumně očekávat. Nedohodnou-li se strany, rozhodne soud, jak se důsledky odchylky od určení jednotek vypořádají."
+              }
+             ]
+            },
+            {
+             "type": "provision",
+             "anchor": "p1174",
+             "label": "§ 1174",
+             "paragraphs": [
+              {
+               "anchor": "p1174-1",
+               "text": "Vznikne-li výstavbou dům, zůstanou strany až do vzniku jednotky podílovými spoluvlastníky nemovité věci.",
+               "n": "1"
+              },
+              {
+               "anchor": "p1174-2",
+               "text": "Vznikem jednotky se podílové spoluvlastnictví nemovité věci mění v bytové spoluvlastnictví.",
+               "n": "2"
+              }
+             ]
+            }
+           ]
+          },
+          {
+           "type": "section",
+           "anchor": "s-cast-3-hlava-2-dil-4-oddil-5-pododdil-4",
+           "kind": "pododdil",
+           "label": "Pododdíl 4",
+           "heading": "Práva a povinnosti vlastníka jednotky",
+           "children": [
+            {
+             "type": "provision",
+             "anchor": "p1175",
+             "label": "§ 1175",
+             "paragraphs": [
+              {
+               "anchor": "p1175-1",
+               "text": "Vlastník jednotky má právo svobodně spravovat, výlučně užívat a uvnitř stavebně upravovat svůj byt jakož i užívat společné části, nesmí však ztížit jinému vlastníku jednotky výkon stejných práv ani ohrozit, změnit nebo poškodit společné části.",
+               "n": "1"
+              },
+              {
+               "anchor": "p1175-2",
+               "text": "Vlastník jednotky spravuje svůj byt, jak to vyžaduje nezávadný stav a dobrý vzhled domu; jde-li však o společné části uvnitř bytu a společné části, které slouží vlastníku jednotky k výlučnému užívání, provádí a hradí pouze údržbu a drobné opravy.",
+               "n": "2"
+              }
+             ]
+            },
+            {
+             "type": "provision",
+             "anchor": "p1176",
+             "label": "§ 1176",
+             "paragraphs": [
+              {
+               "anchor": "p1176-x1",
+               "text": "Vznikem vlastnického práva k jednotce vzniká vlastníku jednotky povinnost řídit se pravidly pro správu domu a pozemku a užívání společných částí, pokud byl s těmito pravidly seznámen nebo pokud je měl a mohl znát, jakož i zajistit jejich dodržování osobami, jimž umožnil přístup do domu nebo bytu."
+              }
+             ]
+            },
+            {
+             "type": "provision",
+             "anchor": "p1177",
+             "label": "§ 1177",
+             "paragraphs": [
+              {
+               "anchor": "p1177-x1",
+               "text": "Vlastník jednotky oznámí bez zbytečného odkladu osobě odpovědné za správu domu a pozemku (dále jen „osoba odpovědná za správu domu“) své jméno, bydliště, jméno a bydliště osoby, které přenechal byt k užívání na dobu nikoli přechodnou, a počet osob, které budou mít v bytě domácnost. To platí i v případě změny těchto údajů."
+              }
+             ]
+            },
+            {
+             "type": "provision",
+             "anchor": "p1178",
+             "label": "§ 1178",
+             "paragraphs": [
+              {
+               "anchor": "p1178-1",
+               "text": "Osoba odpovědná za správu domu vede seznam vlastníků jednotek a osob, kterým vlastník přenechal byt k užívání, v rozsahu stanoveném v § 1177.",
+               "n": "1"
+              },
+              {
+               "anchor": "p1178-2",
+               "text": "Požádá-li o to vlastník jednotky, sdělí mu osoba odpovědná za správu domu jméno a bydliště kteréhokoli vlastníka jednotky nebo osoby, které přenechal byt k užívání.",
+               "n": "2"
+              }
+             ]
+            },
+            {
+             "type": "provision",
+             "anchor": "p1179",
+             "label": "§ 1179",
+             "paragraphs": [
+              {
+               "anchor": "p1179-x1",
+               "text": "Vlastník jednotky má právo seznámit se, jak osoba odpovědná za správu domu hospodaří a jak dům nebo pozemek spravuje. U této osoby může vlastník jednotky nahlížet do smluv uzavřených ve věcech správy, jakož i do účetních knih a dokladů, a pořizovat si z nich výpisy, opisy a kopie."
+              }
+             ]
+            },
+            {
+             "type": "provision",
+             "anchor": "p1180",
+             "label": "§ 1180",
+             "paragraphs": [
+              {
+               "anchor": "p1180-1",
+               "text": "Vlastník jednotky přispívá na správu domu a pozemku v poměru odpovídajícím jeho podílu na společných částech, nebylo-li v prohlášení určeno jinak, zejména se zřetelem k povaze, rozměrům a umístění společné části, která slouží jen některému vlastníku jednotky k výlučnému užívání, a k rozsahu povinnosti vlastníka jednotky spravovat tuto část na vlastní náklad.",
+               "n": "1"
+              },
+              {
+               "anchor": "p1180-2",
+               "text": "Příspěvky určené na odměňování osoby, která dům spravuje, nebo členů jejích orgánů, na vedení účetnictví a na podobné náklady vlastní správní činnosti se rozvrhnou na každou jednotku stejně.",
+               "n": "2"
+              }
+             ]
+            },
+            {
+             "type": "provision",
+             "anchor": "p1181",
+             "label": "§ 1181",
+             "paragraphs": [
+              {
+               "anchor": "p1181-x1",
+               "text": "Vlastník jednotky platí zálohy na plnění spojená nebo související s užíváním bytu (služby) a má právo, aby mu osoba odpovědná za správu domu zálohy včas vyúčtovala."
+              }
+             ]
+            },
+            {
+             "type": "provision",
+             "anchor": "p1182",
+             "label": "§ 1182",
+             "paragraphs": [
+              {
+               "anchor": "p1182-1",
+               "text": "Vlastník jednotky předem oznámí osobě odpovědné za správu domu stavební úpravu uvnitř svého bytu.",
+               "n": "1"
+              },
+              {
+               "anchor": "p1182-2",
+               "text": "Upravuje-li vlastník jednotky stavebně svůj byt, umožní osobě odpovědné za správu domu na základě její předchozí výzvy ověření, zda stavební úpravy neohrožují, nepoškozují nebo nemění společné části, a to popřípadě i přístupem do bytu.",
+               "n": "2"
+              },
+              {
+               "anchor": "p1182-3",
+               "text": "Vlastník jednotky předem oznámí osobě odpovědné za správu domu podnikání nebo jinou činnost v bytě, která může vést k narušení obvyklého klidu a pořádku v domě na dobu nikoli přechodnou.",
+               "n": "3"
+              }
+             ]
+            },
+            {
+             "type": "provision",
+             "anchor": "p1183",
+             "label": "§ 1183",
+             "paragraphs": [
+              {
+               "anchor": "p1183-1",
+               "text": "Vlastník jednotky se zdrží všeho, co brání údržbě, opravě, úpravě, přestavbě či jiné změně domu nebo pozemku, o nichž bylo řádně rozhodnuto; jsou-li prováděny uvnitř bytu nebo na společné části, která slouží výlučně k užívání vlastníka jednotky, umožní do nich přístup, pokud k tomu byl předem vyzván osobou odpovědnou za správu domu. To platí i pro umístění, údržbu a kontrolu zařízení pro měření spotřeby vody, plynu, tepla a jiných energií.",
+               "n": "1"
+              },
+              {
+               "anchor": "p1183-2",
+               "text": "Při poškození jednotky prováděním prací podle odstavce 1, nahradí vlastníku jednotky škodu společenství vlastníků jednotek (dále jen „společenství vlastníků“), a nevzniklo-li, nahradí ji poměrně spoluvlastníci domu. Prováděl-li však tyto práce ve svém zájmu jen některý vlastník jednotky, nahradí škodu sám.",
+               "n": "2"
+              }
+             ]
+            },
+            {
+             "type": "provision",
+             "anchor": "p1184",
+             "label": "§ 1184",
+             "paragraphs": [
+              {
+               "anchor": "p1184-1",
+               "text": "Na návrh osoby odpovědné za správu domu může soud nařídit prodej jednotky toho vlastníka, který i přes písemnou výstrahu osoby odpovědné za správu domu porušuje své povinnosti způsobem podstatně omezujícím nebo znemožňujícím výkon práv ostatních vlastníků jednotek.",
+               "n": "1"
+              },
+              {
+               "anchor": "p1184-2",
+               "text": "Ve výstraze podle odstavce 1 se uvede důvod jejího udělení, upozornění na možnost podání návrhu na nařízení prodeje jednotky a výzva, aby se vlastník porušování povinností zdržel, popřípadě aby následky porušování povinností odstranil; k tomu se vlastníkovi vždy poskytne přiměřená lhůta, nejméně však 30 dnů.",
+               "n": "2"
+              },
+              {
+               "anchor": "p1184-3",
+               "text": "S podáním návrhu podle odstavce 1 musí vyslovit souhlas většina všech vlastníků jednotek; při určení většiny potřebné pro vyslovení souhlasu se nepřihlíží k hlasu vlastníka podle odstavce 1.",
+               "n": "3"
+              }
+             ]
+            },
+            {
+             "type": "provision",
+             "anchor": "p1185",
+             "label": "§ 1185",
+             "paragraphs": [
+              {
+               "anchor": "p1185-1",
+               "text": "Vlastník jednotky může své právo k jednotce rozdělit na podíly, ledaže to bylo vyloučeno.",
+               "n": "1"
+              },
+              {
+               "anchor": "p1185-2",
+               "text": "Spoluvlastníci jednotky zmocní společného zástupce, který bude vykonávat jejich práva vůči osobě odpovědné za správu domu. To platí i v případě manželů, kteří mají jednotku ve společném jmění.",
+               "n": "2"
+              }
+             ],
+             "heading": "Spoluvlastnictví jednotky"
+            },
+            {
+             "type": "heading",
+             "anchor": "h-zvlastni-ustanoveni-o-prevodu-jednotky",
+             "text": "Zvláštní ustanovení o převodu jednotky"
+            },
+            {
+             "type": "provision",
+             "anchor": "p1186",
+             "label": "§ 1186",
+             "paragraphs": [
+              {
+               "anchor": "p1186-1",
+               "text": "Při převodu vlastnického práva k jednotce nevzniká osobě odpovědné za správu domu povinnost vypořádat příspěvky na správu domu a zálohy na plnění spojená nebo související s užíváním bytu.",
+               "n": "1"
+              },
+              {
+               "anchor": "p1186-2",
+               "text": "Při převodu vlastnického práva k jednotce přecházejí s jednotkou na nabyvatele dluhy převodce vůči osobě odpovědné za správu domu na příspěvcích na správu domu a pozemku a na plněních spojených nebo souvisejících s užíváním bytu a zálohách na tato plnění, měl-li je a mohl-li je nabyvatel zjistit. Za dluhy, které na nabyvatele jednotky přešly, ručí převodce osobě odpovědné za správu domu.",
+               "n": "2"
+              },
+              {
+               "anchor": "p1186-3",
+               "text": "Převádí-li vlastník vlastnické právo k jednotce, doloží nabyvateli potvrzením osoby odpovědné za správu domu, jaké má dluhy podle odstavce 2, popřípadě že takové dluhy nejsou; potvrzení vydá nabyvateli se souhlasem převodce také osoba odpovědná za správu domu. Má se za to, že nabyvatel nemohl tyto dluhy zjistit, pokud je nemohl zjistit z potvrzení osoby odpovědné za správu domu nebo nevydala-li tato osoba potvrzení bez zbytečného odkladu, ač o něj byla požádána.",
+               "n": "3"
+              }
+             ]
+            },
+            {
+             "type": "provision",
+             "anchor": "p1187",
+             "label": "§ 1187",
+             "paragraphs": [
+              {
+               "anchor": "p1187-1",
+               "text": "Vznikla-li jednotka rozdělením práva k domu nebo pozemku na vlastnické právo k jednotkám, má nájemce bytu předkupní právo k jednotce při jejím prvním převodu. To platí i v případě nájmu nebytového prostoru, pokud byl pronajat v souvislosti s bytem v tomtéž domě. Předkupní právo zanikne, nepřijme-li nájemce nabídku do šesti měsíců od její účinnosti.",
+               "n": "1"
+              },
+              {
+               "anchor": "p1187-2",
+               "text": "Je-li nájemcem právnická osoba, ustanovení odstavce 1 se nepoužije.",
+               "n": "2"
+              }
+             ]
+            },
+            {
+             "type": "provision",
+             "anchor": "p1188",
+             "label": "§ 1188",
+             "paragraphs": [
+              {
+               "anchor": "p1188-x1",
+               "text": "Vznikne-li jednotka v domě ve vlastnictví nebo ve spoluvlastnictví právnické osoby a je-li nájemcem člen nebo společník této právnické osoby, který se podílel prací nebo majetkovou účastí na pořízení nemovité věci, lze vlastnické právo k jednotce převést jen na něho. To platí i v případě, že se na pořízení nemovité věci podílel právní předchůdce společníka nebo člena."
+              }
+             ]
+            }
+           ]
+          },
+          {
+           "type": "section",
+           "anchor": "s-cast-3-hlava-2-dil-4-oddil-5-pododdil-5",
+           "kind": "pododdil",
+           "label": "Pododdíl 5",
+           "heading": "Správa domu a pozemku",
+           "children": [
+            {
+             "type": "provision",
+             "anchor": "p1189",
+             "label": "§ 1189",
+             "paragraphs": [
+              {
+               "anchor": "p1189-1",
+               "text": "Správa domu a pozemku zahrnuje vše, co nenáleží vlastníku jednotky a co je v zájmu všech spoluvlastníků nutné nebo účelné pro řádnou péči o dům a pozemek jako funkční celek a zachování nebo zlepšení společných částí. Správa domu a pozemku zahrnuje i činnosti spojené s údržbou a opravou společných částí, přípravou a prováděním změn společných částí domu nástavbou, přístavbou, stavební úpravou nebo změnou v užívání, jakož i se zřízením, udržováním nebo zlepšením zařízení v domě nebo na pozemku sloužících všem spoluvlastníkům domu.",
+               "n": "1"
+              },
+              {
+               "anchor": "p1189-2",
+               "text": "Má se za to, že se správa vztahuje i na společné části, které slouží výlučně k užívání jen některému spoluvlastníku.",
+               "n": "2"
+              }
+             ]
+            },
+            {
+             "type": "provision",
+             "anchor": "p1190",
+             "label": "§ 1190",
+             "paragraphs": [
+              {
+               "anchor": "p1190-x1",
+               "text": "Osobou odpovědnou za správu domu je společenství vlastníků. Nevzniklo-li společenství vlastníků, je osobou odpovědnou za správu domu správce."
+              }
+             ]
+            },
+            {
+             "type": "heading",
+             "anchor": "h-sprava-bez-vzniku-spolecenstvi-vlastniku",
+             "text": "Správa bez vzniku společenství vlastníků"
+            },
+            {
+             "type": "provision",
+             "anchor": "p1191",
+             "label": "§ 1191",
+             "paragraphs": [
+              {
+               "anchor": "p1191-1",
+               "text": "Nevzniklo-li společenství vlastníků, použijí se na správu pravidla pro správu domu a pozemku a užívání společných částí určená v prohlášení; bylo-li založeno společenství vlastníků a nejsou-li v prohlášení určena tato pravidla, použijí se na správu pravidla obsažená ve stanovách.",
+               "n": "1"
+              },
+              {
+               "anchor": "p1191-2",
+               "text": "Pro rozhodování v záležitostech správy domu a pozemku se použijí obdobně ustanovení tohoto zákona o shromáždění. Vlastníky jednotek svolává správce. K přijetí rozhodnutí se vyžaduje souhlas většiny hlasů všech vlastníků jednotek a souhlas většiny všech vlastníků jednotek, ledaže prohlášení nebo stanovy vyžadují počet vyšší; ustanovení § 1209 není dotčeno.",
+               "n": "2"
+              }
+             ]
+            },
+            {
+             "type": "provision",
+             "anchor": "p1192",
+             "label": "§ 1192",
+             "paragraphs": [
+              {
+               "anchor": "p1192-x1",
+               "text": "Z právních jednání správce jsou vlastníci jednotek oprávněni a zavázáni společně a nerozdílně; jde-li však o právní jednání v záležitosti, která je v působnosti shromáždění, jsou oprávněni a zavázáni, pouze pokud je k němu dán souhlas podle § 1191 odst. 2."
+              }
+             ]
+            },
+            {
+             "type": "provision",
+             "anchor": "p1193",
+             "label": "§ 1193",
+             "paragraphs": [
+              {
+               "anchor": "p1193-1",
+               "text": "První správce je určen v prohlášení. Při volbě nového správce se postupuje podle § 1191 odst. 2. Správce lze odvolat pouze se současným zvolením nového správce.",
+               "n": "1"
+              },
+              {
+               "anchor": "p1193-2",
+               "text": "Má-li některý vlastník jednotky při vzniku jednotek podíl na společných částech větší než poloviční, jde o většinového vlastníka, který je vždy správcem. Přestane-li být správce většinovým vlastníkem, mohou vlastníci jednotek zvolit nového správce.",
+               "n": "2"
+              },
+              {
+               "anchor": "p1193-3",
+               "text": "Je-li pro to důležitý důvod, soud na návrh některého vlastníka jednotky správce, který je většinovým vlastníkem, odvolá a jmenuje nového správce; to platí i v případě soudem jmenovaného správce. Soudem jmenovaný správce může navrhnout soudu, aby jej odvolal, prokáže-li, že na něm nelze spravedlivě požadovat, aby správcem setrval. Přestane-li být soudem odvolaný správce většinovým vlastníkem, zvolí vlastníci jednotek bez zbytečného odkladu nového správce. Okamžikem zvolení nového správce přestává být soudem jmenovaný správce správcem.",
+               "n": "3"
+              }
+             ]
+            },
+            {
+             "type": "heading",
+             "anchor": "h-spolecenstvi-vlastniku",
+             "text": "Společenství vlastníků"
+            },
+            {
+             "type": "provision",
+             "anchor": "p1194",
+             "label": "§ 1194",
+             "paragraphs": [
+              {
+               "anchor": "p1194-1",
+               "text": "Společenství vlastníků je právnická osoba založená za účelem zajišťování správy domu a pozemku; při naplňování svého účelu je způsobilé nabývat práva a zavazovat se k povinnostem. Společenství vlastníků nesmí podnikat ani se přímo či nepřímo podílet na podnikání nebo jiné činnosti podnikatelů nebo být jejich společníkem nebo členem.",
+               "n": "1"
+              },
+              {
+               "anchor": "p1194-2",
+               "text": "Členství ve společenství vlastníků je neoddělitelně spojeno s vlastnictvím jednotky. Za dluhy společenství vlastníků ručí jeho člen v poměru podle velikosti svého podílu na společných částech.",
+               "n": "2"
+              }
+             ]
+            },
+            {
+             "type": "provision",
+             "anchor": "p1195",
+             "label": "§ 1195",
+             "paragraphs": [
+              {
+               "anchor": "p1195-1",
+               "text": "Společenství vlastníků může nabývat majetek a nakládat s ním pouze pro účely správy domu a pozemku.",
+               "n": "1"
+              },
+              {
+               "anchor": "p1195-2",
+               "text": "Práva a povinnosti ze závazků spojených se správou domu a pozemku vzniklých před vznikem společenství vlastníků, z nichž jsou vlastníci jednotek oprávněni a zavázáni společně a nerozdílně, přechází dnem vzniku společenství vlastníků na společenství vlastníků. Společenství vlastníků oznámí bez zbytečného odkladu po svém vzniku všem věřitelům a dlužníkům, kteří jsou oprávněni a zavázáni z těchto pohledávek a dluhů, že došlo ke vzniku společenství vlastníků. Vlastníci jednotek ručí za splnění dluhu společně a nerozdílně, ledaže věřitel bez zbytečného odkladu vyslovil souhlas s tím, aby vlastníci jednotek ručili podle § 1194 odst. 2.",
+               "n": "2"
+              },
+              {
+               "anchor": "p1195-3",
+               "text": "K právnímu jednání, kterým společenství vlastníků zajistí dluh jiné osoby, se nepřihlíží.",
+               "n": "3"
+              },
+              {
+               "anchor": "p1195-4",
+               "text": "Společenství vlastníků, které vzniklo po převodu jednotek z vlastnictví právnické osoby podle § 1188 do vlastnictví jeho členů, může dluh z úvěru poskytnutého této právnické osobě na opravu, údržbu nebo stavební úpravu domu, převzít, přistoupit k němu nebo jej zajistit, pokud s tím souhlasí všichni jeho členové; souhlas musí mít písemnou formu s úředně ověřeným podpisem. Je-li pro to důležitý důvod a lze-li to po členu spravedlivě požadovat, může společenství vlastníků navrhnout soudu, aby prohlášení vůle člena, který nesouhlasil s převzetím, přistoupením nebo zajištěním takového dluhu, bylo nahrazeno soudním rozhodnutím.",
+               "n": "4"
+              }
+             ]
+            },
+            {
+             "type": "provision",
+             "anchor": "p1196",
+             "label": "§ 1196",
+             "paragraphs": [
+              {
+               "anchor": "p1196-1",
+               "text": "Společenství vlastníků právně jedná v mezích svého účelu s vlastníky jednotek i s třetími osobami.",
+               "n": "1"
+              },
+              {
+               "anchor": "p1196-2",
+               "text": "Vzniknou-li vlastníkům jednotek práva vadou jednotky, zastupuje společenství vlastníků vlastníky jednotek při uplatňování těchto práv.",
+               "n": "2"
+              }
+             ]
+            },
+            {
+             "type": "provision",
+             "anchor": "p1197",
+             "label": "§ 1197",
+             "paragraphs": [
+              {
+               "anchor": "p1197-x1",
+               "text": "Sdruží-li se společenství vlastníků s jiným společenstvím vlastníků ke spolupráci při naplňování svého účelu nebo stane-li se členem právnické osoby sdružující společenství vlastníků nebo vlastníky jednotek nebo jinak působící v oblasti bydlení, nesmí se zavázat k jiné majetkové účasti, než je poskytnutí členského vkladu nebo poskytování členských příspěvků. Zaváže-li se společenství vlastníků podílet se na ztrátě jiné osoby, hradit její dluhy nebo je zajistit, nepřihlíží se k tomu, ledaže se jedná o případ uvedený v § 1195 odst. 4."
+              }
+             ]
+            },
+            {
+             "type": "provision",
+             "anchor": "p1198",
+             "label": "§ 1198",
+             "paragraphs": [
+              {
+               "anchor": "p1198-1",
+               "text": "Nebylo-li společenství vlastníků založeno již dříve, založí je vlastníci jednotek v domě, kde je alespoň pět jednotek, z nichž alespoň čtyři jsou ve vlastnictví čtyř různých vlastníků.",
+               "n": "1"
+              },
+              {
+               "anchor": "p1198-2",
+               "text": "Do veřejného seznamu se nezapíše vlastnické právo k jednotce převáděné dalšímu vlastníku, pokud není prokázán vznik společenství vlastníků.",
+               "n": "2"
+              }
+             ]
+            },
+            {
+             "type": "provision",
+             "anchor": "p1199",
+             "label": "§ 1199",
+             "paragraphs": [
+              {
+               "anchor": "p1199-x1",
+               "text": "Je-li v domě méně než pět jednotek, může být společenství vlastníků založeno, pokud s tím souhlasí všichni vlastníci jednotek."
+              }
+             ]
+            },
+            {
+             "type": "provision",
+             "anchor": "p1200",
+             "label": "§ 1200",
+             "paragraphs": [
+              {
+               "anchor": "p1200-1",
+               "text": "Společenství vlastníků se založí schválením stanov; společenství vlastníků může založit i jediný vlastník všech jednotek. Ke schválení stanov se vyžaduje jejich přijetí na ustavující schůzi většinou hlasů všech vlastníků jednotek, nebo shoda všech vlastníků jednotek na jejich obsahu; ustanovení § 1209 není dotčeno.",
+               "n": "1"
+              },
+              {
+               "anchor": "p1200-2",
+               "text": "Stanovy obsahují alespoň",
+               "n": "2",
+               "items": [
+                {
+                 "anchor": "p1200-2-a",
+                 "label": "a)",
+                 "letter": "a",
+                 "text": "název obsahující slovo „společenství vlastníků“ a označení domu, pro který společenství vlastníků vzniklo,"
+                },
+                {
+                 "anchor": "p1200-2-b",
+                 "label": "b)",
+                 "letter": "b",
+                 "text": "sídlo určené v domě, pro který společenství vlastníků vzniklo; není-li to možné, na jiném vhodném místě,"
+                },
+                {
+                 "anchor": "p1200-2-c",
+                 "label": "c)",
+                 "letter": "c",
+                 "text": "členská práva a povinnosti vlastníků jednotek,"
+                },
+                {
+                 "anchor": "p1200-2-d",
+                 "label": "d)",
+                 "letter": "d",
+                 "text": "určení orgánů, jejich působnosti, počtu členů volených orgánů a jejich funkčního období, jakož i způsobu svolávání, jednání a usnášení,"
+                },
+                {
+                 "anchor": "p1200-2-e",
+                 "label": "e)",
+                 "letter": "e",
+                 "text": "určení prvních členů statutárního orgánu,"
+                },
+                {
+                 "anchor": "p1200-2-f",
+                 "label": "f)",
+                 "letter": "f",
+                 "text": "pravidla pro správu domu a pozemku a užívání společných částí."
+                }
+               ]
+              },
+              {
+               "anchor": "p1200-3",
+               "text": "Údaj podle odstavce 2 písm. e) lze po vzniku společenství vlastníků ze stanov vypustit; stanovy mohou svěřit toto rozhodnutí do působnosti statutárního orgánu. Toto rozhodnutí se nepovažuje za rozhodnutí o změně stanov.",
+               "n": "3"
+              },
+              {
+               "anchor": "p1200-4",
+               "text": "Rozhodnutí ustavující schůze o přijetí stanov se osvědčuje veřejnou listinou, která obsahuje schválený text stanov. Zakládá-li se společenství vlastníků přijetím stanov všemi vlastníky jednotek, vyžadují stanovy formu veřejné listiny. Zakládá-li společenství vlastníků jediný vlastník všech jednotek, stanovy formu veřejné listiny nevyžadují.",
+               "n": "4"
+              },
+              {
+               "anchor": "p1200-5",
+               "text": "Při změně stanov se forma veřejné listiny nevyžaduje.",
+               "n": "5"
+              }
+             ],
+             "heading": "Založení společenství vlastníků"
+            },
+            {
+             "type": "provision",
+             "anchor": "p1201",
+             "label": "§ 1201",
+             "paragraphs": [
+              {
+               "anchor": "p1201-x1",
+               "text": "Ke změně stanov před vznikem společenství vlastníků se vyžaduje souhlas většiny hlasů všech vlastníků jednotek, ledaže stanovy vyžadují vyšší počet."
+              }
+             ]
+            },
+            {
+             "type": "provision",
+             "anchor": "p1204",
+             "label": "§ 1204",
+             "paragraphs": [
+              {
+               "anchor": "p1204-x1",
+               "text": "Společenství vlastníků vzniká dnem zápisu do veřejného rejstříku."
+              }
+             ],
+             "heading": "Vznik společenství vlastníků"
+            },
+            {
+             "type": "provision",
+             "anchor": "p1205",
+             "label": "§ 1205",
+             "paragraphs": [
+              {
+               "anchor": "p1205-1",
+               "text": "Nejvyšší orgán společenství vlastníků je shromáždění. Statutární orgán je výbor, ledaže stanovy určí, že je statutárním orgánem předseda společenství vlastníků. Zřídí-li stanovy další orgány, nelze jim založit působnost vyhrazenou shromáždění nebo statutárnímu orgánu.",
+               "n": "1"
+              },
+              {
+               "anchor": "p1205-2",
+               "text": "Způsobilý být členem voleného orgánu nebo zástupcem právnické osoby jako člena takového orgánu je ten, kdo je plně svéprávný a je bezúhonný ve smyslu jiného právního předpisu upravujícího živnostenské podnikání.",
+               "n": "2"
+              }
+             ],
+             "heading": "Orgány společenství vlastníků"
+            },
+            {
+             "type": "heading",
+             "anchor": "h-shromazdeni",
+             "text": "Shromáždění"
+            },
+            {
+             "type": "provision",
+             "anchor": "p1206",
+             "label": "§ 1206",
+             "paragraphs": [
+              {
+               "anchor": "p1206-1",
+               "text": "Shromáždění tvoří všichni vlastníci jednotek. Každý z nich má počet hlasů odpovídající velikosti jeho podílu na společných částech; je-li však vlastníkem jednotky společenství vlastníků, k jeho hlasu se nepřihlíží.",
+               "n": "1"
+              },
+              {
+               "anchor": "p1206-2",
+               "text": "Shromáždění je způsobilé usnášet se za přítomnosti vlastníků jednotek, kteří mají většinu všech hlasů. K přijetí rozhodnutí se vyžaduje souhlas většiny hlasů přítomných vlastníků jednotek, ledaže stanovy nebo zákon vyžadují vyšší počet hlasů.",
+               "n": "2"
+              },
+              {
+               "anchor": "p1206-3",
+               "text": "Působnost shromáždění vykonává ve společenství vlastníků s jediným vlastníkem tento vlastník.",
+               "n": "3"
+              }
+             ]
+            },
+            {
+             "type": "provision",
+             "anchor": "p1207",
+             "label": "§ 1207",
+             "paragraphs": [
+              {
+               "anchor": "p1207-1",
+               "text": "Statutární orgán svolá shromáždění k zasedání tak, aby se konalo nejméně jedenkrát do roka. Statutární orgán svolá shromáždění i z podnětu vlastníků jednotek, kteří mají více než čtvrtinu všech hlasů, nejméně však dvou z nich; neučiní-li to, svolají tito vlastníci shromáždění k zasedání na náklad společenství vlastníků sami.",
+               "n": "1"
+              },
+              {
+               "anchor": "p1207-2",
+               "text": "Nejsou-li k pozvánce připojeny podklady týkající se pořadu zasedání, umožní svolavatel každému vlastníku jednotky včas se s nimi seznámit.",
+               "n": "2"
+              },
+              {
+               "anchor": "p1207-3",
+               "text": "Pokud o to před rozesláním pozvánky na shromáždění požádají vlastníci jednotek podle odstavce 1, zařadí statutární orgán na pořad shromáždění jimi určenou záležitost za předpokladu, že k takové záležitosti je navrženo usnesení nebo je její zařazení odůvodněno.",
+               "n": "3"
+              }
+             ]
+            },
+            {
+             "type": "provision",
+             "anchor": "p1208",
+             "label": "§ 1208",
+             "paragraphs": [
+              {
+               "anchor": "p1208-x1",
+               "text": "Do působnosti shromáždění patří",
+               "items": [
+                {
+                 "anchor": "p1208-x1-a",
+                 "label": "a)",
+                 "letter": "a",
+                 "text": "změna stanov,"
+                },
+                {
+                 "anchor": "p1208-x1-b",
+                 "label": "b)",
+                 "letter": "b",
+                 "text": "volba a odvolávání členů volených orgánů a rozhodování o výši jejich odměn,"
+                },
+                {
+                 "anchor": "p1208-x1-c",
+                 "label": "c)",
+                 "letter": "c",
+                 "text": "schválení rozpočtu, účetní závěrky, vypořádání výsledku hospodaření a zprávy o hospodaření společenství vlastníků a správě domu a pozemku, jakož i celkové výše příspěvků na správu domu a pozemku pro příští období a rozhodnutí o vyúčtování nebo vypořádání nevyčerpaných příspěvků,"
+                },
+                {
+                 "anchor": "p1208-x1-d",
+                 "label": "d)",
+                 "letter": "d",
+                 "text": "schválení druhu služeb a způsobu rozúčtování cen služeb na jednotky,"
+                },
+                {
+                 "anchor": "p1208-x1-e",
+                 "label": "e)",
+                 "letter": "e",
+                 "text": "rozhodování",
+                 "items": [
+                  {
+                   "anchor": "p1208-x1-e-1",
+                   "label": "1.",
+                   "letter": "1",
+                   "text": "o členství společenství vlastníků v právnické osobě působící v oblasti bydlení,"
+                  },
+                  {
+                   "anchor": "p1208-x1-e-2",
+                   "label": "2.",
+                   "letter": "2",
+                   "text": "o opravě nebo údržbě společné části anebo stavební úpravě společné části, která nevyžaduje změnu prohlášení, převyšují-li náklady částku stanovenou prováděcím právním předpisem; to neplatí, pokud stanovy určí něco jiného,"
+                  }
+                 ]
+                },
+                {
+                 "anchor": "p1208-x1-f",
+                 "label": "f)",
+                 "letter": "f",
+                 "text": "udělování předchozího souhlasu",
+                 "items": [
+                  {
+                   "anchor": "p1208-x1-f-1",
+                   "label": "1.",
+                   "letter": "1",
+                   "text": "k nabytí, zcizení nebo zatížení nemovitých věcí nebo k jinému nakládání s nimi,"
+                  },
+                  {
+                   "anchor": "p1208-x1-f-2",
+                   "label": "2.",
+                   "letter": "2",
+                   "text": "k nabytí, zcizení nebo zatížení movitých věcí, jejichž hodnota převyšuje částku stanovenou prováděcím právním předpisem, nebo k jinému nakládání s nimi; to neplatí, pokud stanovy určí něco jiného,"
+                  },
+                  {
+                   "anchor": "p1208-x1-f-3",
+                   "label": "3.",
+                   "letter": "3",
+                   "text": "k uzavření smlouvy o úvěru společenstvím vlastníků včetně schválení výše a podmínek úvěru,"
+                  },
+                  {
+                   "anchor": "p1208-x1-f-4",
+                   "label": "4.",
+                   "letter": "4",
+                   "text": "k uzavření smlouvy o zřízení zástavního práva k jednotce, pokud dotčený vlastník jednotky v písemné formě s uzavřením zástavní smlouvy souhlasil,"
+                  }
+                 ]
+                },
+                {
+                 "anchor": "p1208-x1-g",
+                 "label": "g)",
+                 "letter": "g",
+                 "text": "určení osoby, která má zajišťovat některé činnosti správy domu a pozemku, a rozhodnutí o její změně,"
+                },
+                {
+                 "anchor": "p1208-x1-h",
+                 "label": "h)",
+                 "letter": "h",
+                 "text": "rozhodování v dalších záležitostech určených zákonem, stanovami nebo v záležitostech, které si shromáždění k rozhodnutí vyhradí."
+                }
+               ]
+              }
+             ]
+            },
+            {
+             "type": "provision",
+             "anchor": "p1209",
+             "label": "§ 1209",
+             "paragraphs": [
+              {
+               "anchor": "p1209-1",
+               "text": "Je-li pro to důležitý důvod, může přehlasovaný vlastník jednotky navrhnout soudu, aby o záležitosti týkající se správy domu a pozemku rozhodl; v rámci toho může též navrhnout, aby soud dočasně zakázal jednat podle napadeného rozhodnutí. Není-li návrh podán do tří měsíců ode dne, kdy se vlastník jednotky o rozhodnutí dozvěděl nebo dozvědět mohl, jeho právo zaniká.",
+               "n": "1"
+              },
+              {
+               "anchor": "p1209-2",
+               "text": "Soud uspořádá právní poměry vlastníků jednotek podle slušného uvážení. Soud může zejména rozhodnout, zda se má rozhodnutí uskutečnit bez výhrad, s výhradami či proti zajištění, anebo zda se uskutečnit vůbec nemá.",
+               "n": "2"
+              },
+              {
+               "anchor": "p1209-3",
+               "text": "Je-li pro to důležitý důvod, může každý vlastník jednotky navrhnout soudu, aby rozhodl o záležitosti, která byla shromáždění řádně předložena k rozhodnutí, ale o které nebylo rozhodnuto pro nezpůsobilost shromáždění usnášet se.",
+               "n": "3"
+              }
+             ]
+            },
+            {
+             "type": "provision",
+             "anchor": "p1210",
+             "label": "§ 1210",
+             "paragraphs": [
+              {
+               "anchor": "p1210-x1",
+               "text": "Připouští-li stanovy konání náhradního shromáždění, je náhradní shromáždění způsobilé usnášet se za přítomnosti vlastníků jednotek, kteří mají alespoň 40 % všech hlasů."
+              }
+             ],
+             "heading": "Náhradní shromáždění"
+            },
+            {
+             "type": "heading",
+             "anchor": "h-rozhodovani-mimo-zasedani",
+             "text": "Rozhodování mimo zasedání"
+            },
+            {
+             "type": "provision",
+             "anchor": "p1211",
+             "label": "§ 1211",
+             "paragraphs": [
+              {
+               "anchor": "p1211-1",
+               "text": "Není-li svolané shromáždění způsobilé usnášet se, může osoba, která je oprávněna shromáždění svolat, navrhnout v písemné formě, aby vlastníci jednotek rozhodli o týchž záležitostech mimo zasedání. V jiných případech lze navrhnout přijetí rozhodnutí mimo zasedání, pokud to připustí stanovy.",
+               "n": "1"
+              },
+              {
+               "anchor": "p1211-2",
+               "text": "Vyžaduje-li zákon nebo stanovy, aby přijetí rozhodnutí shromáždění bylo osvědčeno veřejnou listinou, návrh musí mít formu veřejné listiny; v takovém případě se vlastníkům jednotek zasílá kopie veřejné listiny o návrhu rozhodnutí. Přijetí rozhodnutí se osvědčuje veřejnou listinou.",
+               "n": "2"
+              },
+              {
+               "anchor": "p1211-3",
+               "text": "Návrh musí obsahovat alespoň návrh rozhodnutí, podklady potřebné pro jeho posouzení nebo údaj, kde jsou uveřejněny, a údaj o lhůtě, ve které se má vlastník jednotky vyjádřit. Neurčí-li stanovy delší lhůtu, platí, že lhůta činí patnáct dní.",
+               "n": "3"
+              }
+             ]
+            },
+            {
+             "type": "provision",
+             "anchor": "p1212",
+             "label": "§ 1212",
+             "paragraphs": [
+              {
+               "anchor": "p1212-x1",
+               "text": "K platnosti hlasování se vyžaduje vyjádření vlastníka jednotky s uvedením dne, měsíce a roku, kdy bylo učiněno, podepsané vlastní rukou na listině obsahující plné znění návrhu rozhodnutí. Vyžaduje-li zákon nebo stanovy, aby přijetí rozhodnutí shromáždění bylo osvědčeno veřejnou listinou, musí být podpis vlastníka jednotky na vyjádření úředně ověřen."
+              }
+             ]
+            },
+            {
+             "type": "provision",
+             "anchor": "p1213",
+             "label": "§ 1213",
+             "paragraphs": [
+              {
+               "anchor": "p1213-x1",
+               "text": "Statutární orgán oznámí vlastníkům jednotek v písemné formě výsledek hlasování, a pokud bylo usnesení přijato, oznámí jim i celý obsah přijatého usnesení. Neučiní-li to bez zbytečného odkladu, může oznámení učinit na náklady společenství vlastníků ten, kdo usnesení navrhl."
+              }
+             ]
+            },
+            {
+             "type": "provision",
+             "anchor": "p1214",
+             "label": "§ 1214",
+             "paragraphs": [
+              {
+               "anchor": "p1214-x1",
+               "text": "Většina se počítá z celkového počtu hlasů všech vlastníků jednotek, ledaže zákon stanoví, že se počítá z celkového počtu vlastníků jednotek."
+              }
+             ]
+            },
+            {
+             "type": "heading",
+             "anchor": "h-zruseni-spolecenstvi-vlastniku",
+             "text": "Zrušení společenství vlastníků"
+            },
+            {
+             "type": "provision",
+             "anchor": "p1215",
+             "label": "§ 1215",
+             "paragraphs": [
+              {
+               "anchor": "p1215-1",
+               "text": "Společenství vlastníků se zrušuje dnem zániku vlastnického práva ke všem jednotkám v domě.",
+               "n": "1"
+              },
+              {
+               "anchor": "p1215-2",
+               "text": "Rozhodnutím vlastníků jednotek lze společenství vlastníků zrušit, pokud bylo založeno dobrovolně nebo pokud počet jednotek v domě nebo počet vlastníků jednotek klesl na méně než pět. V takovém případě vlastníci jednotek přijmou pravidla pro správu domu a pozemku a užívání společných částí.",
+               "n": "2"
+              }
+             ]
+            },
+            {
+             "type": "provision",
+             "anchor": "p1216",
+             "label": "§ 1216",
+             "paragraphs": [
+              {
+               "anchor": "p1216-x1",
+               "text": "Při zrušení společenství vlastníků se neprovádí likvidace. Práva a povinnosti společenství vlastníků přecházejí dnem jeho zániku na vlastníky jednotek v poměru stanoveném podle podílu každého vlastníka jednotky na společných částech."
+              }
+             ]
+            }
+           ]
+          },
+          {
+           "type": "section",
+           "anchor": "s-cast-3-hlava-2-dil-4-oddil-5-pododdil-6",
+           "kind": "pododdil",
+           "label": "Pododdíl 6",
+           "heading": "Zrušení bytového spoluvlastnictví",
+           "children": [
+            {
+             "type": "provision",
+             "anchor": "p1217",
+             "label": "§ 1217",
+             "paragraphs": [
+              {
+               "anchor": "p1217-1",
+               "text": "Dohodnou-li se vlastníci jednotek o přeměně bytového spoluvlastnictví v podílové spoluvlastnictví nemovité věci, změní se bytové spoluvlastnictví v podílové spoluvlastnictví zápisem do veřejného seznamu. Má se za to, že se velikost spoluvlastnického podílu každého spoluvlastníka rovná velikosti podílu, jaký měl jako vlastník jednotky na společných částech.",
+               "n": "1"
+              },
+              {
+               "anchor": "p1217-2",
+               "text": "Jsou-li všechny jednotky v domě ve společném jmění a dohodnou-li se manželé o přeměně bytového spoluvlastnictví na vlastnictví nemovité věci ve společném jmění, změní se bytové spoluvlastnictví ve vlastnictví nemovité věci ve společném jmění zápisem do veřejného seznamu.",
+               "n": "2"
+              },
+              {
+               "anchor": "p1217-3",
+               "text": "Dohoda podle odstavců 1 a 2 vyžaduje písemnou formu.",
+               "n": "3"
+              }
+             ]
+            },
+            {
+             "type": "provision",
+             "anchor": "p1218",
+             "label": "§ 1218",
+             "paragraphs": [
+              {
+               "anchor": "p1218-1",
+               "text": "Má-li ke všem jednotkám v domě vlastnické právo jediný vlastník a prohlásí-li, že mění vlastnické právo k jednotkám na vlastnické právo k nemovité věci, bytové spoluvlastnictví zanikne zápisem do veřejného seznamu.",
+               "n": "1"
+              },
+              {
+               "anchor": "p1218-2",
+               "text": "Prohlášení vyžaduje písemnou formu.",
+               "n": "2"
+              }
+             ]
+            },
+            {
+             "type": "provision",
+             "anchor": "p1219",
+             "label": "§ 1219",
+             "paragraphs": [
+              {
+               "anchor": "p1219-x1",
+               "text": "Je-li jednotka zatížena, vyžaduje se k platnosti dohody nebo prohlášení o zrušení bytového spoluvlastnictví souhlas osoby oprávněné z věcného práva udělený v písemné formě."
+              }
+             ]
+            }
+           ]
+          },
+          {
+           "type": "section",
+           "anchor": "s-cast-3-hlava-2-dil-4-oddil-5-pododdil-7",
+           "kind": "pododdil",
+           "label": "Pododdíl 7",
+           "heading": "Společná ustanovení",
+           "children": [
+            {
+             "type": "provision",
+             "anchor": "p1220",
+             "label": "§ 1220",
+             "paragraphs": [
+              {
+               "anchor": "p1220-1",
+               "text": "Změní-li se prohlášení, vyhotoví jeho úplné znění osoba odpovědná za správu domu a bez zbytečného odkladu je založí do sbírky listin u orgánu, u něhož je nemovitá věc zapsána ve veřejném seznamu; to platí i v případě, že jsou náležitosti prohlášení obsaženy ve smlouvě o výstavbě.",
+               "n": "1"
+              },
+              {
+               "anchor": "p1220-2",
+               "text": "Je-li osoba odpovědná za správu domu zapsána do veřejného rejstříku, založí bez zbytečného odkladu prohlášení v úplném znění i do sbírky listin u orgánu, který vede veřejný rejstřík.",
+               "n": "2"
+              }
+             ]
+            },
+            {
+             "type": "provision",
+             "anchor": "p1221",
+             "label": "§ 1221",
+             "paragraphs": [
+              {
+               "anchor": "p1221-1",
+               "text": "Nevyplývá-li z ustanovení o společenství vlastníků něco jiného, použijí se přiměřeně ustanovení o spolku, zejména ustanovení o svolání, zasedání a rozhodování kolektivních orgánů, o neplatnosti rozhodnutí nebo o následcích jeho rozporu s dobrými mravy. Nepoužijí se však ustanovení o shromáždění delegátů ani o dílčích členských schůzích.",
+               "n": "1"
+              },
+              {
+               "anchor": "p1221-2",
+               "text": "Stanoví-li zákon ve věcech bytového spoluvlastnictví působnost vlastníkům jednotek, lze ji vykonat i jejich rozhodnutím přijatým na shromáždění.",
+               "n": "2"
+              }
+             ]
+            },
+            {
+             "type": "provision",
+             "anchor": "p1222",
+             "label": "§ 1222",
+             "paragraphs": [
+              {
+               "anchor": "p1222-x1",
+               "text": "Prováděcí právní předpis stanoví, jakým způsobem se vypočte podlahová plocha bytu v jednotce, o kterých částech nemovité věci se má za to, že jsou společné, a podrobnosti o činnostech týkajících se správy domu a pozemku."
+              }
+             ]
+            }
+           ]
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  }
+ ],
+ "footnotes": [
+  {
+   "anchor": "fn-1",
+   "label": "1)",
+   "text": "Směrnice Rady 85/374/EHS ze dne 25. července 1985 o sbližování právních a správních předpisů členských států týkajících se odpovědnosti za vadné výrobky, ve znění směrnice Evropského parlamentu a Rady 1999/34/ES.\nSměrnice Rady 86/653/EHS ze dne 18. prosince 1986 o koordinaci právní úpravy členských států týkající se nezávislých obchodních zástupců.\nSměrnice Rady 93/13/EHS ze dne 5. dubna 1993 o zneužívajících ujednáních ve spotřebitelských smlouvách, ve znění směrnice Evropského parlamentu a Rady 2011/83/EU a směrnice Evropského parlamentu a Rady (EU) 2019/2161.\nSměrnice Evropského parlamentu a Rady 98/6/ES ze dne 16. února 1998 o ochraně spotřebitelů při označování cen výrobků nabízených spotřebiteli, ve znění směrnice Evropského parlamentu a Rady (EU) 2019/2161.\nSměrnice Evropského parlamentu a Rady 2000/31/ES ze dne 8. června 2000 o některých právních aspektech služeb informační společnosti, zejména elektronického obchodu, na vnitřním trhu.\nSměrnice Evropského parlamentu a Rady 2002/65/ES ze dne 23. září 2002 o uvádění finančních služeb pro spotřebitele na trh na dálku a o změně směrnice Rady 90/619/EHS a směrnic 97/7/ES a 98/27/ES, ve znění směrnice Evropského parlamentu a Rady 2005/29/ES, směrnice Evropského parlamentu a Rady 2007/64/ES a směrnice Evropského parlamentu a Rady (EU) 2015/2366.\nSměrnice Evropského parlamentu a Rady 2006/114/ES ze dne 12. prosince 2006 o klamavé a srovnávací reklamě (kodifikované znění).\nSměrnice Evropského parlamentu a Rady 2008/122/ES ze dne 14. ledna 2009 o ochraně spotřebitele ve vztahu k některým aspektům smluv o dočasném užívání ubytovacího zařízení (timeshare), o dlouhodobých rekreačních produktech, o dalším prodeji a o výměně.\nSměrnice Evropského parlamentu a Rady 2009/138/ES ze dne 25. listopadu 2009 o přístupu k pojišťovací a zajišťovací činnosti a jejím výkonu (Solventnost II), ve znění směrnice Evropského parlamentu a Rady 2011/89/EU, směrnice Evropského parlamentu a Rady 2012/23/EU, směrnice Evropského parlamentu a Rady 2013/23/EU, směrnice Evropského parlamentu a Rady 2013/58/EU, směrnice Evropského parlamentu a Rady 2014/51/EU, směrnice (EU) 2016/2341, směrnice (EU) 2017/2402 a směrnice (EU) 2018/843.\nSměrnice Evropského parlamentu a Rady 2011/7/EU ze dne 16. února 2011 o postupu proti opožděným platbám v obchodních transakcích.\nSměrnice Evropského parlamentu a Rady 2011/83/EU ze dne 25. října 2011 o právech spotřebitelů, kterou se mění směrnice Rady 93/13/EHS a směrnice Evropského parlamentu a Rady 1999/44/ES a zrušuje směrnice Rady 85/577/EHS a směrnice Evropského parlamentu a Rady 97/7/ES, ve znění směrnice Evropského parlamentu a Rady (EU) 2015/2302 a směrnice Evropského parlamentu a Rady (EU) 2019/2161.\nSměrnice Evropského parlamentu a Rady (EU) 2015/2302 ze dne 25. listopadu 2015 o souborných cestovních službách a spojených cestovních službách, o změně nařízení Evropského parlamentu a Rady (ES) č. 2006/2004 a směrnice Evropského parlamentu a Rady 2011/83/EU a o zrušení směrnice Rady 90/314/EHS.\nSměrnice Evropského parlamentu a Rady (EU) 2019/770 ze dne 20. května 2019 o některých aspektech smluv o poskytování digitálního obsahu a digitálních služeb.\nSměrnice Evropského parlamentu a Rady (EU) 2019/771 ze dne 20. května 2019 o některých aspektech smluv o prodeji zboží, o změně nařízení (EU) 2017/2394 a směrnice 2009/22/ES a o zrušení směrnice 1999/44/ES.\nSměrnice Evropského parlamentu a Rady (EU) 2019/790 ze dne 17. dubna 2019 o autorském právu a právech s ním souvisejících na jednotném digitálním trhu a o změně směrnic 96/9/ES a 2001/29/ES."
+  },
+  {
+   "anchor": "fn-2",
+   "label": "2)",
+   "text": "Nařízení Evropského parlamentu a Rady (ES) č. 261/2004 ze dne 11. února 2004, kterým se stanoví společná pravidla náhrad a pomoci cestujícím v letecké dopravě v případě odepření nástupu na palubu, zrušení nebo významného zpoždění letů a kterým se zrušuje nařízení (EHS) č. 295/91.\nNařízení Evropského parlamentu a Rady (ES) č. 1371/2007 ze dne 23. října 2007 o právech a povinnostech cestujících v železniční přepravě.\nNařízení Evropského parlamentu a Rady (ES) č. 392/2009 ze dne 23. dubna 2009 o odpovědnosti dopravců k cestujícím po moři v případě nehod.\nNařízení Evropského parlamentu a Rady (EU) č. 1177/2010 ze dne 24. listopadu 2010 o právech cestujících při cestování po moři a na vnitrozemských vodních cestách a o změně nařízení (ES) č. 2006/2004.\nNařízení Evropského parlamentu a Rady (EU) č. 181/2011 ze dne 16. února 2011 o právech cestujících v autobusové a autokarové dopravě a o změně nařízení (ES) č. 2006/2004."
+  }
+ ]
+}

@@ -1,0 +1,2764 @@
+{
+ "id": "sk-555-2005",
+ "jurisdiction": "sk",
+ "number": "555/2005 Z. z.",
+ "title": "Zákon o energetickej hospodárnosti budov a o zmene a doplnení niektorých zákonov",
+ "effectiveFrom": "2025-04-01",
+ "effectiveTo": "2026-12-31",
+ "sourceUrl": "https://www.slov-lex.sk/ezbierky/pravne-predpisy/SK/ZZ/2005/555/20250401",
+ "fetchedAt": "2026-11-18T08:20:14.977Z",
+ "contentHash": "b2e78279eb44d0625fd6419ea5f3eb5643ed4ce1618ce1133f02362cc8598f81",
+ "provisionCount": 39,
+ "parts": [
+  {
+   "type": "text",
+   "text": "Národná rada Slovenskej republiky sa uzniesla na tomto zákone:"
+  },
+  {
+   "type": "section",
+   "anchor": "s-clanok-1",
+   "kind": "clanok",
+   "label": "Čl. I",
+   "children": [
+    {
+     "type": "provision",
+     "anchor": "p1",
+     "label": "§ 1",
+     "paragraphs": [
+      {
+       "anchor": "p1-x1",
+       "text": "Tento zákon ustanovuje postupy a opatrenia na zlepšenie energetickej hospodárnosti budov a pôsobnosť orgánov verejnej správy."
+      }
+     ],
+     "heading": "Predmet úpravy"
+    },
+    {
+     "type": "provision",
+     "anchor": "p2",
+     "label": "§ 2",
+     "paragraphs": [
+      {
+       "anchor": "p2-1",
+       "text": "Postupmi a opatreniami na zlepšenie energetickej hospodárnosti budov sú:",
+       "n": "1",
+       "items": [
+        {
+         "anchor": "p2-1-a",
+         "label": "a)",
+         "letter": "a",
+         "text": "jednotná metodika výpočtu integrovanej energetickej hospodárnosti budovy (ďalej len „výpočet“),"
+        },
+        {
+         "anchor": "p2-1-b",
+         "label": "b)",
+         "letter": "b",
+         "text": "určenie a uplatňovanie minimálnych požiadaviek na energetickú hospodárnosť",
+         "items": [
+          {
+           "anchor": "p2-1-b-1",
+           "label": "1.",
+           "letter": "1",
+           "text": "nových budov,"
+          },
+          {
+           "anchor": "p2-1-b-2",
+           "label": "2.",
+           "letter": "2",
+           "text": "existujúcich budov pri ich významnej obnove,"
+          },
+          {
+           "anchor": "p2-1-b-3",
+           "label": "3.",
+           "letter": "3",
+           "text": "stavebných konštrukcií a prvkov tvoriacich ich časť, ktoré oddeľujú vnútorné prostredie budov od vonkajšieho prostredia (ďalej len „obalová konštrukcia“) a"
+          },
+          {
+           "anchor": "p2-1-b-4",
+           "label": "4.",
+           "letter": "4",
+           "text": "technických zariadení budovy alebo jej samostatne užívanej časti na vykurovanie, na chladenie a vetranie, na prípravu teplej vody, na osvetlenie alebo na ich kombináciu, na automatizáciu a riadenie budovy a na výrobu elektrickej energie na mieste vrátane systémov, ktoré využívajú energiu z obnoviteľných zdrojov (ďalej len „technický systém budovy“),"
+          }
+         ]
+        },
+        {
+         "anchor": "p2-1-c",
+         "label": "c)",
+         "letter": "c",
+         "text": "povinná energetická certifikácia budov a systém kontroly energetických certifikátov,"
+        },
+        {
+         "anchor": "p2-1-d",
+         "label": "d)",
+         "letter": "d",
+         "text": "vypracúvanie národných plánov zameraných na zvyšovanie počtu budov s takmer nulovou potrebou energie (ďalej len „národný plán“),"
+        },
+        {
+         "anchor": "p2-1-e",
+         "label": "e)",
+         "letter": "e",
+         "text": "vypracovanie dlhodobej stratégie obnovy fondu budov (ďalej len „stratégia obnovy“),"
+        },
+        {
+         "anchor": "p2-1-f",
+         "label": "f)",
+         "letter": "f",
+         "text": "uplatňovanie výrobkov, softvéru a inžinierskych služieb, ktorými sa môže podporovať energeticky efektívna, hospodárna a bezpečná prevádzka technických systémov budovy prostredníctvom riadenia a uľahčením manuálneho ovládania týchto technických systémov budovy (ďalej len „systém automatizácie a riadenia budovy“)."
+        }
+       ]
+      },
+      {
+       "anchor": "p2-2",
+       "text": "Postupy a opatrenia podľa odseku 1 sa nevzťahujú na",
+       "n": "2",
+       "items": [
+        {
+         "anchor": "p2-2-a",
+         "label": "a)",
+         "letter": "a",
+         "text": "budovy a pamätníky chránené z dôvodu architektonickej alebo historickej hodnoty alebo ako súčasť charakteristického prostredia, pri ktorých by dodržanie požiadaviek na energetickú hospodárnosť budov neprijateľne zmenilo ich charakter alebo vzhľad,"
+        },
+        {
+         "anchor": "p2-2-b",
+         "label": "b)",
+         "letter": "b",
+         "text": "kostoly a iné budovy používané ako miesta na bohoslužby alebo na náboženské podujatia,"
+        },
+        {
+         "anchor": "p2-2-c",
+         "label": "c)",
+         "letter": "c",
+         "text": "budovy, ktoré sú dočasnými stavbami s plánovaným časom užívania kratším ako dva roky,"
+        },
+        {
+         "anchor": "p2-2-d",
+         "label": "d)",
+         "letter": "d",
+         "text": "priemyselné stavby, dielne a nebytové poľnohospodárske budovy s nízkou spotrebou energie,"
+        },
+        {
+         "anchor": "p2-2-e",
+         "label": "e)",
+         "letter": "e",
+         "text": "bytové budovy, ktoré sú určené na užívanie menej než štyri mesiace v roku alebo na obmedzené užívanie počas roka s očakávanou spotrebou energie nižšou ako 25 % spotreby pri celoročnom užívaní,"
+        },
+        {
+         "anchor": "p2-2-f",
+         "label": "f)",
+         "letter": "f",
+         "text": "samostatne stojace budovy, ktorých úžitková plocha je menšia ako 50 m²."
+        }
+       ]
+      },
+      {
+       "anchor": "p2-3",
+       "text": "Budovou na účely tohto zákona je zastrešená stavba so stenami, v ktorej sa používa energia na úpravu vnútorného prostredia. Budovou sa rozumie stavba ako celok alebo jej časť, ktorá bola projektovaná alebo zmenená na samostatné užívanie (ďalej len „samostatná časť“).",
+       "n": "3"
+      },
+      {
+       "anchor": "p2-4",
+       "text": "Budovami podľa odseku 2 písm. a) sú najmä budovy",
+       "n": "4",
+       "items": [
+        {
+         "anchor": "p2-4-a",
+         "label": "a)",
+         "letter": "a",
+         "text": "vyhlásené za národné kultúrne pamiatky,¹)"
+        },
+        {
+         "anchor": "p2-4-b",
+         "label": "b)",
+         "letter": "b",
+         "text": "v pamiatkovej rezervácii alebo v pamiatkovej zóne ako súčasť historického sídelného usporiadania,"
+        },
+        {
+         "anchor": "p2-4-c",
+         "label": "c)",
+         "letter": "c",
+         "text": "uvedené do užívania pred 1. januárom 1947."
+        }
+       ]
+      },
+      {
+       "anchor": "p2-5",
+       "text": "Novou budovou na účely tohto zákona je budova, ktorej energetická hospodárnosť sa ovplyvňuje v projekte stavby alebo počas výstavby.",
+       "n": "5"
+      },
+      {
+       "anchor": "p2-6",
+       "text": "Existujúcou budovou na účely tohto zákona je užívaná budova, ktorej energetická hospodárnosť sa dá vypočítať z údajov, ktoré sú známe alebo sa dajú zistiť prehliadkou a meraním.",
+       "n": "6"
+      },
+      {
+       "anchor": "p2-7",
+       "text": "Významnou obnovou budovy sú stavebné úpravy²) existujúcej budovy, ktorými sa vykonáva zásah do jej obalovej konštrukcie v rozsahu viac ako 25 % jej plochy, najmä zateplením obvodového plášťa a strešného plášťa a výmenou pôvodných otvorových výplní. Významnú obnovu budovy možno uskutočniť jej jednorazovou stavebnou úpravou alebo postupnými čiastkovými stavebnými úpravami.",
+       "n": "7"
+      },
+      {
+       "anchor": "p2-8",
+       "text": "Hĺbkovou obnovou budovy je významná obnova budovy a významná obnova technického zariadenia budovy, ktorou sa dosiahne zatriedenie budovy do energetickej triedy požadovanej pre kategóriu budovy, pri ktorej sa zohľadní ekonomický životný cyklus jednotlivých prvkov budovy. Prvkom budovy sa rozumie najmä technický systém budovy alebo stavebná konštrukcia tvoriaca časť obalových konštrukcií budovy.",
+       "n": "8"
+      },
+      {
+       "anchor": "p2-9",
+       "text": "Významnou obnovou technického zariadenia budovy je obnova technického systému budovy, ktorej investičné náklady sú vyššie ako 50 % investičných nákladov na obstaranie nového porovnateľného technického zariadenia budovy.",
+       "n": "9"
+      },
+      {
+       "anchor": "p2-10",
+       "text": "Budovou s takmer nulovou potrebou energie sa rozumie budova s veľmi vysokou energetickou hospodárnosťou. Takmer nulové alebo veľmi malé množstvo energie potrebné na užívanie takej budovy musí byť zabezpečené efektívnou tepelnou ochranou a vo vysokej miere energiou dodanou z obnoviteľných zdrojov nachádzajúcich sa v budove alebo v jej blízkosti.",
+       "n": "10"
+      }
+     ],
+     "heading": "Postupy a opatrenia na zlepšenie energetickej hospodárnosti budov"
+    },
+    {
+     "type": "provision",
+     "anchor": "p3",
+     "label": "§ 3",
+     "paragraphs": [
+      {
+       "anchor": "p3-1",
+       "text": "Energetická hospodárnosť je množstvo energie potrebnej na splnenie všetkých energetických potrieb súvisiacich s normalizovaným užívaním budovy, najmä množstvo energie potrebnej na vykurovanie a prípravu teplej vody, na chladenie a vetranie a na osvetlenie.",
+       "n": "1"
+      },
+      {
+       "anchor": "p3-2",
+       "text": "Energetická hospodárnosť budovy sa určuje výpočtom alebo výpočtom s použitím nameranej spotreby energie a vyjadruje sa v číselných ukazovateľoch potreby energie v budove a primárnej energie. Primárnou energiou je energia z obnoviteľných a neobnoviteľných zdrojov, ktorá neprešla procesom konverzie ani transformácie.",
+       "n": "2"
+      },
+      {
+       "anchor": "p3-3",
+       "text": "Výpočet zohľadňuje",
+       "n": "3",
+       "items": [
+        {
+         "anchor": "p3-3-a",
+         "label": "a)",
+         "letter": "a",
+         "text": "charakteristiky stavebnej konštrukcie budovy, najmä tepelnotechnické vlastnosti obvodového a strešného plášťa a otvorových konštrukcií a tepelné straty spôsobené stavebnou konštrukciou a spôsobom jej užívania,"
+        },
+        {
+         "anchor": "p3-3-b",
+         "label": "b)",
+         "letter": "b",
+         "text": "polohu a orientáciu budovy a vplyv vonkajších klimatických podmienok na vnútorné prostredie, najmä vplyv teploty vzduchu, vetra a slnečného žiarenia,"
+        },
+        {
+         "anchor": "p3-3-c",
+         "label": "c)",
+         "letter": "c",
+         "text": "vnútorné prostredie vrátane projektovaných požiadaviek na vnútorné prostredie,"
+        },
+        {
+         "anchor": "p3-3-d",
+         "label": "d)",
+         "letter": "d",
+         "text": "energetické vybavenie, najmä druh, typ a výkon vykurovacieho systému a systém zásobovania teplou vodou a ich tepelnoizolačné charakteristiky a účinnosť,"
+        },
+        {
+         "anchor": "p3-3-e",
+         "label": "e)",
+         "letter": "e",
+         "text": "prirodzené vetranie, najmä vplyv tepelných strát na vnútorné prostredie,"
+        },
+        {
+         "anchor": "p3-3-f",
+         "label": "f)",
+         "letter": "f",
+         "text": "zabudované osvetľovacie zariadenie, najmä jeho druh, typ, vek a fyzický stav, svetelný výkon a energetický príkon,"
+        },
+        {
+         "anchor": "p3-3-g",
+         "label": "g)",
+         "letter": "g",
+         "text": "miestne pomery, najmä vplyv susedných budov,"
+        },
+        {
+         "anchor": "p3-3-h",
+         "label": "h)",
+         "letter": "h",
+         "text": "pasívny solárny systém a solárna ochrana, najmä tepelný zisk pre vnútorné prostredie,"
+        },
+        {
+         "anchor": "p3-3-i",
+         "label": "i)",
+         "letter": "i",
+         "text": "klimatizačný systém, najmä jeho druh, typ, výkon, vek a fyzický stav,"
+        },
+        {
+         "anchor": "p3-3-j",
+         "label": "j)",
+         "letter": "j",
+         "text": "fyzický stav budovy,"
+        },
+        {
+         "anchor": "p3-3-k",
+         "label": "k)",
+         "letter": "k",
+         "text": "ostatné faktory, ktoré ovplyvňujú spotrebu energie v budove, najmä vplyv tepelných ziskov."
+        }
+       ]
+      },
+      {
+       "anchor": "p3-4",
+       "text": "Výpočet musí zohľadňovať vplyv denného osvetlenia a vplyv vysokoúčinných alternatívnych systémov, a to",
+       "n": "4",
+       "items": [
+        {
+         "anchor": "p3-4-a",
+         "label": "a)",
+         "letter": "a",
+         "text": "aktívneho solárneho systému a ostatných vykurovacích systémov a elektrických systémov založených na obnoviteľných energetických zdrojoch,"
+        },
+        {
+         "anchor": "p3-4-b",
+         "label": "b)",
+         "letter": "b",
+         "text": "elektriny a tepla vyrábaných v zdroji s kombinovanou výrobou,"
+        },
+        {
+         "anchor": "p3-4-c",
+         "label": "c)",
+         "letter": "c",
+         "text": "diaľkového alebo blokového vykurovania a chladenia."
+        }
+       ]
+      },
+      {
+       "anchor": "p3-5",
+       "text": "Na účely výpočtu sa budovy členia na tieto kategórie:",
+       "n": "5",
+       "items": [
+        {
+         "anchor": "p3-5-a",
+         "label": "a)",
+         "letter": "a",
+         "text": "rodinné domy,"
+        },
+        {
+         "anchor": "p3-5-b",
+         "label": "b)",
+         "letter": "b",
+         "text": "bytové domy,"
+        },
+        {
+         "anchor": "p3-5-c",
+         "label": "c)",
+         "letter": "c",
+         "text": "administratívne budovy,"
+        },
+        {
+         "anchor": "p3-5-d",
+         "label": "d)",
+         "letter": "d",
+         "text": "budovy škôl a školských zariadení,"
+        },
+        {
+         "anchor": "p3-5-e",
+         "label": "e)",
+         "letter": "e",
+         "text": "budovy nemocníc,"
+        },
+        {
+         "anchor": "p3-5-f",
+         "label": "f)",
+         "letter": "f",
+         "text": "budovy hotelov a reštaurácií,"
+        },
+        {
+         "anchor": "p3-5-g",
+         "label": "g)",
+         "letter": "g",
+         "text": "športové haly a iné budovy určené na šport,"
+        },
+        {
+         "anchor": "p3-5-h",
+         "label": "h)",
+         "letter": "h",
+         "text": "budovy pre veľkoobchodné a maloobchodné služby,"
+        },
+        {
+         "anchor": "p3-5-i",
+         "label": "i)",
+         "letter": "i",
+         "text": "ostatné nevýrobné budovy spotrebujúce energiu."
+        }
+       ]
+      },
+      {
+       "anchor": "p3-6",
+       "text": "Ak ide o rodinné domy a bytové domy, výpočet nezohľadňuje vplyv faktorov uvedených v odseku 3 písm. f) a i).",
+       "n": "6"
+      },
+      {
+       "anchor": "p3-7",
+       "text": "Podľa energetickej hospodárnosti sa jednotlivé kategórie budov zatrieďujú do energetických tried A až G. Každá energetická trieda je vyjadrená číselným rozpätím a je súčtom číselných ukazovateľov z jednotlivých miest a spôsobov spotreby energie v budove vyjadrených čiastkovými energetickými triedami.",
+       "n": "7"
+      }
+     ],
+     "heading": "Energetická hospodárnosť budov"
+    },
+    {
+     "type": "provision",
+     "anchor": "p4",
+     "label": "§ 4",
+     "paragraphs": [
+      {
+       "anchor": "p4-1",
+       "text": "Nová budova musí spĺňať minimálne požiadavky na energetickú hospodárnosť. Technické parametre minimálnych požiadaviek vyplývajú z technických predpisov a z technických noriem. Ak je to technicky, funkčne a ekonomicky uskutočniteľné, minimálne požiadavky na energetickú hospodárnosť nových budov musí spĺňať aj existujúca budova po uskutočnení jej významnej obnovy.",
+       "n": "1"
+      },
+      {
+       "anchor": "p4-2",
+       "text": "Ak ide o novú budovu, musí sa v príprave jej výstavby posúdiť technická, environmentálna a ekonomická využiteľnosť vysokoúčinných alternatívnych energetických systémov v mieste výstavby.",
+       "n": "2"
+      },
+      {
+       "anchor": "p4-3",
+       "text": "Ak je to technicky, funkčne a ekonomicky uskutočniteľné, v príprave významnej obnovy existujúcej budovy sa musí zohľadniť technická, environmentálna a energetická realizovateľnosť vysokoúčinných alternatívnych systémov, ako aj podmienky zdravej klímy vo vnútornom prostredí budovy, úroveň protipožiarnej bezpečnosti a riziká vyplývajúce z intenzívnej seizmickej činnosti.",
+       "n": "3"
+      },
+      {
+       "anchor": "p4-4",
+       "text": "Projektant je povinný splnenie minimálnych požiadaviek na energetickú hospodárnosť budovy podľa odseku 1 zahrnúť do projektovej dokumentácie na účely konania o stavebnom zámere a výsledok energetického hodnotenia podľa § 4a ods. 2 uviesť v technickej správe projektovej dokumentácie.",
+       "n": "4"
+      },
+      {
+       "anchor": "p4-5",
+       "text": "Ak sa významná obnova budovy týka zmeny jej obalovej konštrukcie, ktorá významne ovplyvní energetickú hospodárnosť budovy, projektant je povinný v projektovej dokumentácii na povolenie zmeny stavby navrhnúť také riešenie, aby sa touto zmenou dosiahlo splnenie minimálnych požiadaviek na energetickú hospodárnosť ako na novú budovu s rovnakou funkčnosťou, umiestnením a kategóriou. Na tento účel projektant musí navrhnúť použitie vhodných stavebných výrobkov a konštrukčných riešení vrátane technického systému budovy v rozsahu, v akom je to technicky, funkčne a ekonomicky uskutočniteľné.",
+       "n": "5"
+      },
+      {
+       "anchor": "p4-6",
+       "text": "Nákladovo optimálnou úrovňou minimálnych požiadaviek na energetickú hospodárnosť budovy (ďalej len „nákladovo optimálna úroveň“) sa rozumie úroveň energetickej hospodárnosti, ktorá vedie k najnižším nákladom počas odhadovaného ekonomického životného cyklu budovy. Najnižšie náklady sa určujú so zohľadnením investičných nákladov súvisiacich s energiou a nákladov na údržbu a prevádzku podľa kategórie budovy vrátane nákladov na energiu a úspory príjmov z vyrobenej energie v budove a nákladov na likvidáciu budovy. Nákladovo optimálna úroveň sa nachádza v rozsahu úrovní energetickej hospodárnosti budovy, v ktorej je analýza nákladov a výnosov vypočítaná pre odhadovaný ekonomický životný cyklus budovy pozitívna.",
+       "n": "6"
+      },
+      {
+       "anchor": "p4-7",
+       "text": "Odhadovaný ekonomický životný cyklus sa určuje",
+       "n": "7",
+       "items": [
+        {
+         "anchor": "p4-7-a",
+         "label": "a)",
+         "letter": "a",
+         "text": "pre celú budovu, ak sú požiadavky na energetickú hospodárnosť určené pre budovu ako celok, alebo"
+        },
+        {
+         "anchor": "p4-7-b",
+         "label": "b)",
+         "letter": "b",
+         "text": "pre jej samostatnú časť, ak sú požiadavky na energetickú hospodárnosť určené len pre samostatnú časť."
+        }
+       ]
+      },
+      {
+       "anchor": "p4-8",
+       "text": "Na postup podľa odseku 6 sa použije rámec porovnávacej metodiky podľa osobitného predpisu³ᵃ) a parametre, ktoré ovplyvňujú výpočet, najmä vplyv klimatických podmienok a dostupnosť energetickej infraštruktúry.",
+       "n": "8"
+      }
+     ],
+     "heading": "Minimálne požiadavky na energetickú hospodárnosť budov"
+    },
+    {
+     "type": "provision",
+     "anchor": "p4a",
+     "label": "§ 4a",
+     "paragraphs": [
+      {
+       "anchor": "p4a-1",
+       "text": "Na výpočet energetického hodnotenia sa používa",
+       "n": "1",
+       "items": [
+        {
+         "anchor": "p4a-1-a",
+         "label": "a)",
+         "letter": "a",
+         "text": "projektové energetické hodnotenie,"
+        },
+        {
+         "anchor": "p4a-1-b",
+         "label": "b)",
+         "letter": "b",
+         "text": "normalizované energetické hodnotenie,"
+        },
+        {
+         "anchor": "p4a-1-c",
+         "label": "c)",
+         "letter": "c",
+         "text": "prevádzkové energetické hodnotenie."
+        }
+       ]
+      },
+      {
+       "anchor": "p4a-2",
+       "text": "Projektovým energetickým hodnotením je určovanie potreby energie v budove vypočítaním podľa projektovej dokumentácie a projektovaných ukazovateľov. Projektové energetické hodnotenie sa uskutočňuje vo fáze navrhovania a projektovania novej budovy alebo významnej obnovy budovy.",
+       "n": "2"
+      },
+      {
+       "anchor": "p4a-3",
+       "text": "Normalizovaným energetickým hodnotením je určovanie potreby energie v budove vypočítaním s použitím normalizovaných vstupných údajov o vonkajších klimatických podmienkach, o vnútornom prostredí budovy, o spôsobe jej užívania a s použitím údajov o skutočnom vyhotovení jej stavebných konštrukcií a údajov o technickom systéme budovy.",
+       "n": "3"
+      },
+      {
+       "anchor": "p4a-4",
+       "text": "Prevádzkovým energetickým hodnotením je určovanie potreby energie s použitím nameranej skutočnej spotreby energie v budove.",
+       "n": "4"
+      },
+      {
+       "anchor": "p4a-5",
+       "text": "Výsledkom energetického hodnotenia je integrovaná energetická hospodárnosť budovy, ktorá je podkladom na zatriedenie budovy do energetickej triedy podľa § 3 ods. 7.",
+       "n": "5"
+      }
+     ],
+     "heading": "Energetické hodnotenie"
+    },
+    {
+     "type": "provision",
+     "anchor": "p4b",
+     "label": "§ 4b",
+     "paragraphs": [
+      {
+       "anchor": "p4b-1",
+       "text": "Národný plán obsahuje opatrenia a postupy potrebné na zvyšovanie počtu budov s takmer nulovou potrebou energie s rozlíšením na jednotlivé kategórie budov. Plnením opatrení a postupov národného plánu sa musí dosiahnuť, aby boli budovami s takmer nulovou potrebou energie",
+       "n": "1",
+       "items": [
+        {
+         "anchor": "p4b-1-a",
+         "label": "a)",
+         "letter": "a",
+         "text": "po 31. decembri 2018 všetky nové budovy, v ktorých sídlia a ktoré vlastnia orgány verejnej moci, a"
+        },
+        {
+         "anchor": "p4b-1-b",
+         "label": "b)",
+         "letter": "b",
+         "text": "od 31. decembra 2020 všetky nové budovy."
+        }
+       ]
+      },
+      {
+       "anchor": "p4b-2",
+       "text": "Opatreniami a postupmi národného plánu podľa odseku 1 sú najmä:",
+       "n": "2",
+       "items": [
+        {
+         "anchor": "p4b-2-a",
+         "label": "a)",
+         "letter": "a",
+         "text": "podrobné uplatňovanie vymedzenia budov s takmer nulovou potrebou energie, ktoré vychádza z celoštátnych ročných priemerných hodnôt a z technických noriem a zohľadňuje celoštátne, regionálne a miestne podmienky vrátane číselného ukazovateľa využitia primárnej energie v kWh/m² ročne,"
+        },
+        {
+         "anchor": "p4b-2-b",
+         "label": "b)",
+         "letter": "b",
+         "text": "priebežné ciele na rok 2015 na zlepšenie energetickej hospodárnosti nových budov s cieľom pripraviť dosiahnutie stavu podľa odseku 1,"
+        },
+        {
+         "anchor": "p4b-2-c",
+         "label": "c)",
+         "letter": "c",
+         "text": "informácie o politikách a o finančných a iných opatreniach prijatých na podporu budov s takmer nulovou potrebou energie vrátane podrobností o celoštátnych požiadavkách a opatreniach týkajúcich sa podpory využívania energie z obnoviteľných zdrojov v nových budovách a v existujúcich budovách po ich významnej obnove,"
+        },
+        {
+         "anchor": "p4b-2-d",
+         "label": "d)",
+         "letter": "d",
+         "text": "ďalšie nástroje a opatrenia na urýchlenie zvyšovania energetickej hospodárnosti budov a na ich prechod na budovy s takmer nulovou potrebou energie."
+        }
+       ]
+      },
+      {
+       "anchor": "p4b-3",
+       "text": "Národný plán obsahuje aj zásady, podľa ktorých bude možné v špecifických a opodstatnených prípadoch rozhodnúť, že opatrenia podľa odseku 2 písm. a) a b) sa nebudú uplatňovať na existujúce budovy, pre ktoré analýza nákladov a výnosov počas ekonomického životného cyklu budovy preukáže časovú návratnosť viac ako 15 rokov.",
+       "n": "3"
+      },
+      {
+       "anchor": "p4b-4",
+       "text": "Poskytované stimuly na novú výstavbu a na významnú obnovu budov musia zohľadňovať nákladovo optimálnu úroveň (§ 4 ods. 6). Nákladovo optimálnu úroveň môžu presiahnuť, ak ide o stimuly na nové budovy alebo na významnú obnovu budov v špecifických a opodstatnených prípadoch podľa odseku 3.",
+       "n": "4"
+      }
+     ],
+     "heading": "Národný plán"
+    },
+    {
+     "type": "provision",
+     "anchor": "p4c",
+     "label": "§ 4c",
+     "paragraphs": [
+      {
+       "anchor": "p4c-1",
+       "text": "Stratégia obnovy obsahuje opatrenia a postupy na podporu obnovy fondu budov s cieľom dosiahnuť do roku 2050 vysoko energeticky efektívny a dekarbonizovaný fond budov a uľahčiť nákladovo efektívnu transformáciu existujúcich bytových budov a nebytových budov na budovy s takmer nulovou potrebou energie (§ 2 ods. 10).",
+       "n": "1"
+      },
+      {
+       "anchor": "p4c-2",
+       "text": "Stratégia obnovy obsahuje",
+       "n": "2",
+       "items": [
+        {
+         "anchor": "p4c-2-a",
+         "label": "a)",
+         "letter": "a",
+         "text": "prehľad fondu budov založený na štatistických vzorkách a na očakávanom podiele obnovovaných existujúcich budov v roku 2020,"
+        },
+        {
+         "anchor": "p4c-2-b",
+         "label": "b)",
+         "letter": "b",
+         "text": "identifikáciu nákladovo efektívnych prístupov k obnove v závislosti od typu budovy, pričom sa podľa potreby zohľadňujú možné vplyvy v rámci životného cyklu budovy (§ 4 ods. 6),"
+        },
+        {
+         "anchor": "p4c-2-c",
+         "label": "c)",
+         "letter": "c",
+         "text": "politiky a činnosti zamerané na podporu nákladovo efektívnej hĺbkovej obnovy budov vrátane postupnej hĺbkovej obnovy a na podporu cielených nákladovo efektívnych opatrení a obnovy budov, napríklad zavedením dobrovoľnej schémy pasportov obnovy budov,"
+        },
+        {
+         "anchor": "p4c-2-d",
+         "label": "d)",
+         "letter": "d",
+         "text": "politiky a činnosti zamerané na budovy s najhoršou energetickou hospodárnosťou, na riešenie problému nejednotnej motivácie obnovy budov a zlyhania trhu a určenie činností, ktoré prispievajú k zmierneniu energetickej chudoby,"
+        },
+        {
+         "anchor": "p4c-2-e",
+         "label": "e)",
+         "letter": "e",
+         "text": "politiky a činnosti zamerané na verejné budovy,"
+        },
+        {
+         "anchor": "p4c-2-f",
+         "label": "f)",
+         "letter": "f",
+         "text": "prehľad iniciatív zameraných na podporu inteligentných technológií a dobre prepojených budov a komunít, ako aj zručností a vzdelávania v odvetviach stavebníctva a energetickej efektívnosti,"
+        },
+        {
+         "anchor": "p4c-2-g",
+         "label": "g)",
+         "letter": "g",
+         "text": "dôkazmi podložený odhad očakávaných úspor energie a ďalších prínosov spojených napríklad so zdravím, s bezpečnosťou a s kvalitou ovzdušia,"
+        },
+        {
+         "anchor": "p4c-2-h",
+         "label": "h)",
+         "letter": "h",
+         "text": "konkrétne efektívne opatrenia s merateľnými ukazovateľmi postupného plnenia stratégie obnovy do roku 2050 s orientačnými míľnikmi na roky 2030, 2040 a 2050 s cieľom",
+         "items": [
+          {
+           "anchor": "p4c-2-h-1",
+           "label": "1.",
+           "letter": "1",
+           "text": "dosiahnuť v Európskej únii zníženie emisií skleníkových plynov o 80 % až 95 % v porovnaní s hodnotami v roku 1990,"
+          },
+          {
+           "anchor": "p4c-2-h-2",
+           "label": "2.",
+           "letter": "2",
+           "text": "dosiahnuť vysoko energeticky efektívny a dekarbonizovaný fond budov a"
+          },
+          {
+           "anchor": "p4c-2-h-3",
+           "label": "3.",
+           "letter": "3",
+           "text": "uľahčiť nákladovo efektívnu transformáciu existujúcich budov na budovy s takmer nulovou potrebou energie,"
+          }
+         ]
+        },
+        {
+         "anchor": "p4c-2-i",
+         "label": "i)",
+         "letter": "i",
+         "text": "vhodné mechanizmy na podporu mobilizácie investícií do obnovy existujúcich budov, aby sa dosiahli ciele stratégie obnovy, najmä",
+         "items": [
+          {
+           "anchor": "p4c-2-i-1",
+           "label": "1.",
+           "letter": "1",
+           "text": "zlučovanie investičných projektov skupín investorov a investičných zámerov malých podnikov a stredných podnikov s cieľom uľahčiť prístup investorov k obnove budov, ako aj riešenia balíkov opatrení pre možných klientov,"
+          },
+          {
+           "anchor": "p4c-2-i-2",
+           "label": "2.",
+           "letter": "2",
+           "text": "znižovanie vnímaných rizík činností v oblasti energetickej hospodárnosti budov pre investorov a pre súkromný sektor,"
+          },
+          {
+           "anchor": "p4c-2-i-3",
+           "label": "3.",
+           "letter": "3",
+           "text": "využívanie verejných financií ako prostriedku na získanie ďalších investícií súkromného sektora do energetickej hospodárnosti budov alebo pri riešení zlyhania trhu,"
+          },
+          {
+           "anchor": "p4c-2-i-4",
+           "label": "4.",
+           "letter": "4",
+           "text": "usmerňovanie investícií do energeticky hospodárneho fondu verejných budov s využitím zmluvy podľa osobitného predpisu³ᵇ) a"
+          },
+          {
+           "anchor": "p4c-2-i-5",
+           "label": "5.",
+           "letter": "5",
+           "text": "dostupné a transparentné poradenské služby pre spotrebiteľov, napríklad s využívaním jednotných kontaktných miest, poradenské služby v oblasti energetiky poskytujúce poradenstvo o vhodnej obnove existujúcich budov zameranej na energetickú hospodárnosť budov a o finančných nástrojoch a stimuloch týkajúcich sa obnovy budov z hľadiska spotrebiteľa."
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "anchor": "p4c-3",
+       "text": "Verejnou budovou podľa odseku 2 písm. e) sa rozumie budova vo vlastníctve štátu, vyššieho územného celku, obce alebo verejnoprávnej inštitúcie.",
+       "n": "3"
+      }
+     ],
+     "heading": "Stratégia obnovy"
+    },
+    {
+     "type": "section",
+     "anchor": "s-clanok-1-g-energeticka-certifikacia",
+     "kind": "group",
+     "heading": "Energetická certifikácia",
+     "children": [
+      {
+       "type": "provision",
+       "anchor": "p5",
+       "label": "§ 5",
+       "paragraphs": [
+        {
+         "anchor": "p5-1",
+         "text": "Energetickou certifikáciou sa budova zatrieďuje do energetickej triedy. Základom energetickej certifikácie je výpočet a kategorizácia budov.",
+         "n": "1"
+        },
+        {
+         "anchor": "p5-2",
+         "text": "Energetická certifikácia je povinná",
+         "n": "2",
+         "items": [
+          {
+           "anchor": "p5-2-a",
+           "label": "a)",
+           "letter": "a",
+           "text": "pre budovy alebo samostatné časti, ktoré sa predávajú alebo prenajímajú novému nájomcovi,"
+          },
+          {
+           "anchor": "p5-2-b",
+           "label": "b)",
+           "letter": "b",
+           "text": "pre budovy, v ktorých viac ako 250 m²celkovej podlahovej plochy užíva orgán verejnej moci a verejnosť ich často navštevuje,"
+          },
+          {
+           "anchor": "p5-2-c",
+           "label": "c)",
+           "letter": "c",
+           "text": "pri dokončení novej budovy alebo významnej obnovy existujúcej budovy; inak je dobrovoľná."
+          }
+         ]
+        },
+        {
+         "anchor": "p5-3",
+         "text": "Ak odborne spôsobilá osoba podľa § 6 preukáže zhodu energetického hodnotenia a porovnateľnosť rodinných domov, možno energetickú certifikáciu rodinného domu vykonať aj na základe hodnotenia iného rodinného domu s podobnou architektúrou, veľkosťou a úrovňou energetickej hospodárnosti.",
+         "n": "3"
+        }
+       ]
+      },
+      {
+       "type": "provision",
+       "anchor": "p6",
+       "label": "§ 6",
+       "paragraphs": [
+        {
+         "anchor": "p6-1",
+         "text": "Podnikanie v oblasti energetickej certifikácie je živnosťou podľa osobitného predpisu;⁴) osobitnou podmienkou jej prevádzkovania je odborná spôsobilosť a jej preukázanie skúškou odbornej spôsobilosti pred skúšobnou komisiou podľa osobitného predpisu.⁵)",
+         "n": "1"
+        },
+        {
+         "anchor": "p6-2",
+         "text": "Odborná spôsobilosť sa podľa miest spotreby energie v budove člení na odbornú spôsobilosť na",
+         "n": "2",
+         "items": [
+          {
+           "anchor": "p6-2-a",
+           "label": "a)",
+           "letter": "a",
+           "text": "tepelnú ochranu stavebných konštrukcií a budov,"
+          },
+          {
+           "anchor": "p6-2-b",
+           "label": "b)",
+           "letter": "b",
+           "text": "vykurovanie a prípravu teplej vody,"
+          },
+          {
+           "anchor": "p6-2-c",
+           "label": "c)",
+           "letter": "c",
+           "text": "vetranie a klimatizáciu,"
+          },
+          {
+           "anchor": "p6-2-d",
+           "label": "d)",
+           "letter": "d",
+           "text": "elektroinštaláciu a zabudované osvetlenie budov."
+          }
+         ]
+        },
+        {
+         "anchor": "p6-3",
+         "text": "Odborne spôsobilý je ten, kto preukáže, že má vysokoškolské vzdelanie druhého stupňa",
+         "n": "3",
+         "items": [
+          {
+           "anchor": "p6-3-a",
+           "label": "a)",
+           "letter": "a",
+           "text": "stavebného zamerania alebo v oblasti architektúry, ak ide o odbornú spôsobilosť podľa odseku 2 písm. a),"
+          },
+          {
+           "anchor": "p6-3-b",
+           "label": "b)",
+           "letter": "b",
+           "text": "stavebného, energetického alebo strojárskeho zamerania, ak ide o odbornú spôsobilosť podľa odseku 2 písm. b) a c),"
+          },
+          {
+           "anchor": "p6-3-c",
+           "label": "c)",
+           "letter": "c",
+           "text": "elektrotechnického zamerania, ak ide o odbornú spôsobilosť podľa odseku 2 písm. d)"
+          }
+         ],
+         "tail": "a odbornú prax po ukončení vzdelávania v rozsahu najmenej troch rokov v oblasti projektovania stavebných konštrukcií alebo energetického vybavenia budov, alebo v oblasti posudzovania stavebných konštrukcií z hľadiska ich tepelnotechnických vlastností alebo energetického vybavenia budov."
+        },
+        {
+         "anchor": "p6-4",
+         "text": "Energetickú certifikáciu budov, ktoré slúžia na zabezpečenie obrany štátu, do ktorých môžu vstupovať iba osoby s bezpečnostnou previerkou podľa stupňa utajenia, vykonávajú zamestnanci Ministerstva obrany Slovenskej republiky s odbornou spôsobilosťou podľa odsekov 2 a 3, ktorú preukázali skúškou odbornej spôsobilosti podľa odseku 1.",
+         "n": "4"
+        }
+       ]
+      },
+      {
+       "type": "provision",
+       "anchor": "p7",
+       "label": "§ 7",
+       "paragraphs": [
+        {
+         "anchor": "p7-1",
+         "text": "Osvedčením o vykonanej energetickej certifikácii je energetický certifikát. Energetický certifikát obsahuje",
+         "n": "1",
+         "items": [
+          {
+           "anchor": "p7-1-a",
+           "label": "a)",
+           "letter": "a",
+           "text": "označenie prevádzkovateľa živnosti podľa § 6 ods. 1 (ďalej len „oprávnená osoba“) v rozsahu obchodné meno, sídlo alebo miesto podnikania, identifikačné číslo a označenie registra, v ktorom je zapísaný, a číslo zápisu v ňom, a ak ide o právnickú osobu, aj právnu formu,"
+          },
+          {
+           "anchor": "p7-1-b",
+           "label": "b)",
+           "letter": "b",
+           "text": "opis budovy a jej adresu v rozsahu obec, súpisné číslo, ulica a orientačné číslo,"
+          },
+          {
+           "anchor": "p7-1-c",
+           "label": "c)",
+           "letter": "c",
+           "text": "údaj o zaradení budovy do kategórie,"
+          },
+          {
+           "anchor": "p7-1-d",
+           "label": "d)",
+           "letter": "d",
+           "text": "číselné ukazovatele vyjadrujúce minimálne požiadavky na energetickú hospodárnosť budov určené pre jednotlivé miesta a spôsoby spotreby energie v budove a na úroveň tvorby emisií oxidu uhličitého v budove podľa technických noriem,"
+          },
+          {
+           "anchor": "p7-1-e",
+           "label": "e)",
+           "letter": "e",
+           "text": "výsledky výpočtu,"
+          },
+          {
+           "anchor": "p7-1-f",
+           "label": "f)",
+           "letter": "f",
+           "text": "opis technických a energetických charakteristík budovy a technického systému budovy a jej zatriedenie do energetickej triedy vrátane grafického vyjadrenia,"
+          },
+          {
+           "anchor": "p7-1-g",
+           "label": "g)",
+           "letter": "g",
+           "text": "údaj o platnosti energetického certifikátu,"
+          },
+          {
+           "anchor": "p7-1-h",
+           "label": "h)",
+           "letter": "h",
+           "text": "označenie menom, priezviskom a titulom osoby, ktorá uskutočnila energetickú certifikáciu, a označenie menom, priezviskom, titulom a funkciou osoby, ktorá je štatutárnym orgánom oprávnenej osoby; ak sa na energetickej certifikácii podieľalo viac oprávnených osôb, uvedú sa všetky s vyznačením rozsahu ich účasti na energetickej certifikácii,"
+          },
+          {
+           "anchor": "p7-1-i",
+           "label": "i)",
+           "letter": "i",
+           "text": "vlastnoručné podpisy a odtlačok pečiatky osôb uvedených v písmene h),"
+          },
+          {
+           "anchor": "p7-1-j",
+           "label": "j)",
+           "letter": "j",
+           "text": "údaj o ročnej spotrebe energie alebo o priemernej spotrebe energie za tri predchádzajúce roky,"
+          },
+          {
+           "anchor": "p7-1-k",
+           "label": "k)",
+           "letter": "k",
+           "text": "údaj o podiele energie z obnoviteľných zdrojov nachádzajúcich sa v budove alebo v jej blízkosti v percentách."
+          }
+         ]
+        },
+        {
+         "anchor": "p7-2",
+         "text": "Prílohou energetického certifikátu je",
+         "n": "2",
+         "items": [
+          {
+           "anchor": "p7-2-a",
+           "label": "a)",
+           "letter": "a",
+           "text": "opis nedostatkov v technických a energetických charakteristikách budovy, v technickom systéme budovy a v energetickom vybavení,"
+          },
+          {
+           "anchor": "p7-2-b",
+           "label": "b)",
+           "letter": "b",
+           "text": "odporúčanie na nákladovo efektívne zlepšenie energetickej hospodárnosti budovy alebo jej samostatnej časti, ak je dôvod na také zlepšenie v porovnaní s platnými požiadavkami na energetickú hospodárnosť budovy,"
+          },
+          {
+           "anchor": "p7-2-c",
+           "label": "c)",
+           "letter": "c",
+           "text": "správa obsahujúca vstupné údaje, údaje o vlastnostiach stavebných konštrukcií a technických systémov, čiastkové a konečné výsledky výpočtu a"
+          },
+          {
+           "anchor": "p7-2-d",
+           "label": "d)",
+           "letter": "d",
+           "text": "výňatok z energetického certifikátu, v ktorom sa uvedú údaje podľa odseku 1 písm. a) až c) a f) až k) (ďalej len „energetický štítok“)."
+          }
+         ]
+        },
+        {
+         "anchor": "p7-3",
+         "text": "Odporúčanie podľa odseku 2 písm. b) musí byť pre konkrétnu budovu technicky uskutočniteľné a navrhované opatrenia musia umožniť odhadnúť časovú návratnosť a porovnanie nákladov a prínosov počas jej ekonomického životného cyklu.",
+         "n": "3"
+        },
+        {
+         "anchor": "p7-4",
+         "text": "Odporúčanie podľa odseku 2 písm. b) sa člení na opatrenia, ktoré sa uskutočňujú",
+         "n": "4",
+         "items": [
+          {
+           "anchor": "p7-4-a",
+           "label": "a)",
+           "letter": "a",
+           "text": "v súvislosti s významnou obnovou a"
+          },
+          {
+           "anchor": "p7-4-b",
+           "label": "b)",
+           "letter": "b",
+           "text": "nezávisle od významnej obnovy budovy len zmenou obalovej konštrukcie alebo technického systému."
+          }
+         ]
+        },
+        {
+         "anchor": "p7-5",
+         "text": "Súčasťou odporúčania podľa odseku 2 písm. b) sú aj údaje o mieste, kde môže vlastník alebo nájomca budovy získať podrobnejšie informácie o obsahu odporúčania vrátane informácie o nákladovej efektívnosti odporúčaní uvedených v energetickom certifikáte. Hodnotenie nákladovej efektívnosti musí vychádzať zo súboru štandardných podmienok, ktoré sa týkajú posudzovania úspor energie a aktuálnych cien energií a z predbežného odhadu investičných nákladov podľa obvyklých aktuálnych cien stavebných výrobkov a stavebných prác na trhu. Okrem toho sú v ňom zahrnuté aj informácie o postupoch, ktoré je potrebné vykonať na implementáciu odporúčania; môžu byť poskytnuté aj ďalšie súvisiace informácie, najmä informácie o finančných a iných stimuloch a o možnostiach poskytnutia dotácie na ich uskutočnenie.",
+         "n": "5"
+        },
+        {
+         "anchor": "p7-6",
+         "text": "Odborne spôsobilá osoba elektronicky doručí návrh vypracovaného energetického certifikátu do centrálnej evidencie podľa § 9 ods. 3 písm. a) pred jeho odovzdaním vlastníkovi budovy.",
+         "n": "6"
+        },
+        {
+         "anchor": "p7-7",
+         "text": "Platnosť energetického certifikátu je najviac desať rokov. Pred uplynutím určenej platnosti stratí energetický certifikát platnosť vykonaním stavebných úprav budovy, ktoré majú vplyv na jej energetickú hospodárnosť.",
+         "n": "7"
+        }
+       ],
+       "heading": "Energetický certifikát"
+      },
+      {
+       "type": "provision",
+       "anchor": "p8",
+       "label": "§ 8",
+       "paragraphs": [
+        {
+         "anchor": "p8-1",
+         "text": "Vlastník budovy, na ktorú sa vzťahuje povinná certifikácia, je povinný mať energetický certifikát",
+         "n": "1",
+         "items": [
+          {
+           "anchor": "p8-1-a",
+           "label": "a)",
+           "letter": "a",
+           "text": "ku dňu podania návrhu na kolaudáciu stavby, ak ide o novú budovu alebo o existujúcu budovu po významnej obnove, ak stavebný úrad neurčí inak,⁵ᵃ)"
+          },
+          {
+           "anchor": "p8-1-b",
+           "label": "b)",
+           "letter": "b",
+           "text": "do dvoch mesiacov odo dňa zániku platnosti energetického certifikátu z dôvodu vykonania stavebných úprav budovy, ktoré majú vplyv na jej energetickú hospodárnosť,"
+          },
+          {
+           "anchor": "p8-1-c",
+           "label": "c)",
+           "letter": "c",
+           "text": "ku dňu uzatvorenia zmluvy o predaji alebo o nájme budovy alebo jej samostatnej časti."
+          }
+         ]
+        },
+        {
+         "anchor": "p8-2",
+         "text": "Vlastník existujúcej budovy je povinný",
+         "n": "2",
+         "items": [
+          {
+           "anchor": "p8-2-a",
+           "label": "a)",
+           "letter": "a",
+           "text": "zabezpečiť reguláciu zásobovania teplom v budove,"
+          },
+          {
+           "anchor": "p8-2-b",
+           "label": "b)",
+           "letter": "b",
+           "text": "zabezpečiť hydraulické vyváženie vykurovacej sústavy budovy po každom zásahu do jej tepelnej ochrany alebo technického systému budovy,"
+          },
+          {
+           "anchor": "p8-2-c",
+           "label": "c)",
+           "letter": "c",
+           "text": "uchovávať energetický certifikát počas jeho platnosti a",
+           "items": [
+            {
+             "anchor": "p8-2-c-1",
+             "label": "1.",
+             "letter": "1",
+             "text": "pri predaji budovy odovzdať platný energetický certifikát novému vlastníkovi,"
+            },
+            {
+             "anchor": "p8-2-c-2",
+             "label": "2.",
+             "letter": "2",
+             "text": "pri prenájme budovy odovzdať kópiu energetického certifikátu nájomcovi."
+            }
+           ]
+          }
+         ]
+        },
+        {
+         "anchor": "p8-3",
+         "text": "Vlastník budovy je povinný do piatich pracovných dní odo dňa prevzatia energetického certifikátu a energetického štítku vystaviť na čas platnosti energetického certifikátu energetický štítok na nápadnom, pre verejnosť jasne viditeľnom mieste, ak ide",
+         "n": "3",
+         "items": [
+          {
+           "anchor": "p8-3-a",
+           "label": "a)",
+           "letter": "a",
+           "text": "o budovu podľa § 5 ods. 2 písm. b) a"
+          },
+          {
+           "anchor": "p8-3-b",
+           "label": "b)",
+           "letter": "b",
+           "text": "o budovu s celkovou podlahovou plochou viac ako 500 m², ktorú verejnosť často navštevuje."
+          }
+         ]
+        },
+        {
+         "anchor": "p8-4",
+         "text": "Ak vlastník stavby predáva rozostavanú budovu, na ktorú ešte nie je vyhotovený energetický certifikát, je povinný poskytnúť nadobúdateľovi projektové energetické hodnotenie; rovnako je povinný postupovať, ak sa so stavbou ešte nezačalo, ale už je zhotovená projektová dokumentácia.",
+         "n": "4"
+        },
+        {
+         "anchor": "p8-5",
+         "text": "Vlastník budovy musí ako súčasť zverejnenej ponuky na predaj alebo prenájom budovy alebo jej samostatnej časti, na ktorú bol vypracovaný energetický certifikát, uviesť aj ukazovateľ integrovanej energetickej hospodárnosti z energetického certifikátu. To platí aj na predaj alebo prenájom s využitím služieb realitnej kancelárie, ktorej zverejnená ponuka musí obsahovať takýto údaj.",
+         "n": "5"
+        },
+        {
+         "anchor": "p8-6",
+         "text": "Ak je to technicky, funkčne a ekonomicky uskutočniteľné, vlastník budovy je povinný pri jej významnej obnove uplatniť nové alebo obnovené technické systémy, zaviesť inteligentné meracie systémy a inštalovať systémy automatizácie a riadenia budovy vrátane monitorovacích systémov zameraných na úsporu energie.",
+         "n": "6"
+        },
+        {
+         "anchor": "p8-7",
+         "text": "Ak je to technicky a ekonomicky uskutočniteľné, vlastník budovy je povinný novú budovu vybaviť samoregulačnými zariadeniami na individuálnu reguláciu vnútornej teploty v každej vykurovanej miestnosti a v každej vykurovanej samostatnej časti.",
+         "n": "7"
+        },
+        {
+         "anchor": "p8-8",
+         "text": "Ak je to technicky a ekonomicky uskutočniteľné, vlastník budovy je povinný pri výmene zariadenia na výrobu tepla vybaviť samoregulačnými zariadeniami aj vykurované miestnosti existujúcej budovy a vykurované existujúce samostatné časti.",
+         "n": "8"
+        },
+        {
+         "anchor": "p8-9",
+         "text": "Vlastník budovy je povinný každú novú budovu a významne obnovovanú existujúcu budovu vybaviť nabíjacími stanicami elektrických vozidiel a infraštruktúrou vedenia podľa § 8a.",
+         "n": "9"
+        }
+       ],
+       "heading": "Povinnosti vlastníka budovy"
+      },
+      {
+       "type": "provision",
+       "anchor": "p8a",
+       "label": "§ 8a",
+       "paragraphs": [
+        {
+         "anchor": "p8a-1",
+         "text": "Nové nebytové budovy a významne obnovované existujúce nebytové budovy s viac ako desiatimi parkovacími miestami musia mať najmenej jednu nabíjaciu stanicu elektrických vozidiel a infraštruktúru vedenia, najmä rozvody pre elektrické káble, na najmenej jednom z piatich parkovacích miest s cieľom zabezpečiť neskoršiu inštaláciu nabíjacích staníc pre elektrické vozidlá, ak sa parkovisko nachádza",
+         "n": "1",
+         "items": [
+          {
+           "anchor": "p8a-1-a",
+           "label": "a)",
+           "letter": "a",
+           "text": "vnútri budovy a pri významnej obnove budovy sa obnova vzťahuje aj na parkovisko alebo na elektrickú infraštruktúru budovy, alebo"
+          },
+          {
+           "anchor": "p8a-1-b",
+           "label": "b)",
+           "letter": "b",
+           "text": "v bezprostrednom susedstve budovy a významná obnova budovy sa týka aj obnovy parkoviska alebo elektrickej infraštruktúry parkoviska."
+          }
+         ]
+        },
+        {
+         "anchor": "p8a-2",
+         "text": "Nové bytové budovy a významne obnovované existujúce bytové budovy s viac ako desiatimi parkovacími miestami musia mať infraštruktúru vedenia, najmä rozvody pre elektrické káble, pre každé parkovacie miesto s cieľom umožniť neskoršiu inštaláciu nabíjacích staníc pre elektrické vozidlá, ak sa parkovisko nachádza",
+         "n": "2",
+         "items": [
+          {
+           "anchor": "p8a-2-a",
+           "label": "a)",
+           "letter": "a",
+           "text": "vnútri budovy a pri významnej obnove budovy sa obnova vzťahuje aj na parkovisko alebo na elektrickú infraštruktúru budovy, alebo"
+          },
+          {
+           "anchor": "p8a-2-b",
+           "label": "b)",
+           "letter": "b",
+           "text": "v bezprostrednom susedstve budovy a významná obnova budovy sa týka aj obnovy parkoviska alebo elektrickej infraštruktúry parkoviska."
+          }
+         ]
+        },
+        {
+         "anchor": "p8a-3",
+         "text": "Požiadavky podľa odsekov 1 a 2 sa nevzťahujú",
+         "n": "3",
+         "items": [
+          {
+           "anchor": "p8a-3-a",
+           "label": "a)",
+           "letter": "a",
+           "text": "na budovy, pri ktorých žiadosť o stavebné povolenie alebo žiadosť o povolenie zmeny stavby je podaná do 10. marca 2021,"
+          },
+          {
+           "anchor": "p8a-3-b",
+           "label": "b)",
+           "letter": "b",
+           "text": "na významne obnovované existujúce budovy, ak náklady na nabíjacie stanice a infraštruktúru vedenia presahujú 7 % celkových nákladov významnej obnovy budovy."
+          }
+         ]
+        },
+        {
+         "anchor": "p8a-4",
+         "text": "Každá nebytová budova s viac ako 20 parkovacími miestami musí mať od 1. januára 2025 najmenej jednu nabíjaciu stanicu elektrických vozidiel.",
+         "n": "4"
+        }
+       ],
+       "heading": "Elektromobilita"
+      },
+      {
+       "type": "provision",
+       "anchor": "p9",
+       "label": "§ 9",
+       "paragraphs": [
+        {
+         "anchor": "p9-1",
+         "text": "Ministerstvo dopravy, výstavby a regionálneho rozvoja Slovenskej republiky (ďalej len „ministerstvo“) ako ústredný orgán štátnej správy",
+         "n": "1",
+         "items": [
+          {
+           "anchor": "p9-1-a",
+           "label": "a)",
+           "letter": "a",
+           "text": "vypracúva a predkladá vláde Slovenskej republiky návrhy koncepcií a programov zameraných na systémové dosiahnutie vyššej energetickej hospodárnosti budov a národný plán a stratégiu obnovy,"
+          },
+          {
+           "anchor": "p9-1-b",
+           "label": "b)",
+           "letter": "b",
+           "text": "určuje po dohode s Úradom pre normalizáciu, metrológiu a skúšobníctvo Slovenskej republiky slovenské technické normy vhodné na výpočet a na energetickú certifikáciu a ich zoznam zverejňuje vo Vestníku Úradu pre normalizáciu, metrológiu a skúšobníctvo Slovenskej republiky,"
+          },
+          {
+           "anchor": "p9-1-c",
+           "label": "c)",
+           "letter": "c",
+           "text": "zostavuje zoznam existujúcich a navrhovaných opatrení a nástrojov na podporu splnenia opatrení z národného plánu vrátane opatrení a nástrojov finančnej povahy; zoznam aktualizuje každé tri roky a oznamuje Európskej komisii priamo alebo ako súčasť akčných plánov energetickej efektívnosti,"
+          },
+          {
+           "anchor": "p9-1-d",
+           "label": "d)",
+           "letter": "d",
+           "text": "oznamuje Európskej komisii výsledky verejnej konzultácie uskutočnenej inkluzívnym spôsobom a podrobnosti o aktuálne uskutočňovaných a plánovaných politikách a činnostiach vyplývajúcich zo stratégie obnovy,"
+          },
+          {
+           "anchor": "p9-1-e",
+           "label": "e)",
+           "letter": "e",
+           "text": "poskytuje dotácie v oblasti energetickej hospodárnosti budov podľa § 9a a 9b (ďalej len „dotácia“),"
+          },
+          {
+           "anchor": "p9-1-f",
+           "label": "f)",
+           "letter": "f",
+           "text": "poskytuje príspevok podľa § 9c až 9g (ďalej len „príspevok“) na",
+           "items": [
+            {
+             "anchor": "p9-1-f-1",
+             "label": "1.",
+             "letter": "1",
+             "text": "zateplenie rodinného domu na účely zlepšenia energetickej hospodárnosti rodinného domu (ďalej len „príspevok na zateplenie rodinného domu“),"
+            },
+            {
+             "anchor": "p9-1-f-2",
+             "label": "2.",
+             "letter": "2",
+             "text": "rodinný dom s takmer nulovou potrebou energie podľa § 2 ods. 10 (ďalej len „príspevok na rodinný dom“),"
+            }
+           ]
+          },
+          {
+           "anchor": "p9-1-g",
+           "label": "g)",
+           "letter": "g",
+           "text": "pravidelne, najmenej raz za päť rokov, prehodnocuje minimálne požiadavky na energetickú hospodárnosť budov,"
+          },
+          {
+           "anchor": "p9-1-h",
+           "label": "h)",
+           "letter": "h",
+           "text": "informuje Európsku komisiu o programoch a opatreniach na urýchlenie zvyšovania energetickej hospodárnosti budov a na ich prechod na budovy s takmer nulovou potrebou energie,"
+          },
+          {
+           "anchor": "p9-1-i",
+           "label": "i)",
+           "letter": "i",
+           "text": "informuje Európsku komisiu o zásadách podľa § 4b ods. 3,"
+          },
+          {
+           "anchor": "p9-1-j",
+           "label": "j)",
+           "letter": "j",
+           "text": "informuje Európsku komisiu alebo jej navrhuje zmeny ohľadne primeranosti opatrení z národného plánu, a to do deviatich mesiacov odo dňa doručenia žiadosti Európskej komisie,"
+          },
+          {
+           "anchor": "p9-1-k",
+           "label": "k)",
+           "letter": "k",
+           "text": "informuje Európsku komisiu o opatreniach potrebných na zabezpečenie vykonávania pravidiel o sankciách."
+          }
+         ]
+        },
+        {
+         "anchor": "p9-2",
+         "text": "Ministerstvo vydá všeobecne záväzný právny predpis, v ktorom ustanoví",
+         "n": "2",
+         "items": [
+          {
+           "anchor": "p9-2-a",
+           "label": "a)",
+           "letter": "a",
+           "text": "podrobnosti o metodike výpočtu,"
+          },
+          {
+           "anchor": "p9-2-b",
+           "label": "b)",
+           "letter": "b",
+           "text": "podrobnosti o náležitostiach obsahu energetického certifikátu vrátane rozpätí energetických tried pre všetky ukazovatele potreby energie v budove a globálneho ukazovateľa primárnej energie a emisií oxidu uhličitého uvádzaných v energetickom certifikáte,"
+          },
+          {
+           "anchor": "p9-2-c",
+           "label": "c)",
+           "letter": "c",
+           "text": "vzor energetického certifikátu pre jednotlivé kategórie budov,"
+          },
+          {
+           "anchor": "p9-2-d",
+           "label": "d)",
+           "letter": "d",
+           "text": "vzor energetického štítku,"
+          },
+          {
+           "anchor": "p9-2-e",
+           "label": "e)",
+           "letter": "e",
+           "text": "harmonogram postupnosti zmien minimálnych požiadaviek na energetické úrovne výstavby budov a dosiahnutia takmer nulovej potreby energie a"
+          },
+          {
+           "anchor": "p9-2-f",
+           "label": "f)",
+           "letter": "f",
+           "text": "podrobnosti o náležitostiach žiadosti o dotáciu."
+          }
+         ]
+        },
+        {
+         "anchor": "p9-3",
+         "text": "Ministerstvo alebo ním určená právnická osoba",
+         "n": "3",
+         "items": [
+          {
+           "anchor": "p9-3-a",
+           "label": "a)",
+           "letter": "a",
+           "text": "vedie centrálnu evidenciu energetických certifikátov, vyhodnocuje ich obsah a výsledky vyhodnotenia podľa jednotlivých kategórií budov, prideľuje evidenčné číslo a doručuje údaje prevádzkovateľovi monitorovacieho systému efektívnosti pri používaní energie každoročne do 31. marca za predchádzajúci kalendárny rok,"
+          },
+          {
+           "anchor": "p9-3-b",
+           "label": "b)",
+           "letter": "b",
+           "text": "sprístupňuje energetické certifikáty evidované podľa písmena a) na požiadanie orgánu dozoru podľa § 10,"
+          },
+          {
+           "anchor": "p9-3-c",
+           "label": "c)",
+           "letter": "c",
+           "text": "zisťuje nákladovo optimálne úrovne a oznamuje Európskej komisii všetky vstupné údaje a odhady použité na toto zisťovanie a na základe toho vypracúva správu o zistenom výsledku, v ktorej uvedie aj opatrenia potrebné na podstatné zníženie zisteného rozdielu medzi minimálnymi požiadavkami na energetickú hospodárnosť podľa § 4 ods. 1 a nákladovo optimálnou úrovňou (§ 4 ods. 6) do nasledujúceho preskúmavania minimálnych požiadaviek; správu aktualizuje každých päť rokov počnúc 30. júnom 2012 a oznamuje Európskej komisii priamo alebo ako súčasť akčných plánov energetickej efektívnosti,"
+          },
+          {
+           "anchor": "p9-3-d",
+           "label": "d)",
+           "letter": "d",
+           "text": "zverejňuje",
+           "items": [
+            {
+             "anchor": "p9-3-d-1",
+             "label": "1.",
+             "letter": "1",
+             "text": "informácie pre vlastníkov existujúcich budov o rôznych metódach a nákladovo efektívnych spôsoboch zlepšovania energetickej hospodárnosti budov a o existujúcich dostupných finančných nástrojoch určených na podporu zlepšenia energetickej hospodárnosti budov a ich samostatných častí,"
+            },
+            {
+             "anchor": "p9-3-d-2",
+             "label": "2.",
+             "letter": "2",
+             "text": "zoznam certifikovaných budov s ich zatriedením do energetickej triedy podľa jednotlivých kategórií budov,"
+            },
+            {
+             "anchor": "p9-3-d-3",
+             "label": "3.",
+             "letter": "3",
+             "text": "zoznam existujúcich a navrhovaných opatrení a nástrojov na podporu splnenia opatrení z národného plánu vrátane opatrení a nástrojov finančnej povahy,"
+            }
+           ]
+          },
+          {
+           "anchor": "p9-3-e",
+           "label": "e)",
+           "letter": "e",
+           "text": "uskutočňuje kontrolu energetických certifikátov jedným alebo niekoľkými druhmi kontroly z týchto možností:",
+           "items": [
+            {
+             "anchor": "p9-3-e-1",
+             "label": "1.",
+             "letter": "1",
+             "text": "kontrolou platnosti vstupných údajov o budove a použitých údajov na vydanie energetického certifikátu, ako aj kontrolou výsledkov uvedených v energetickom certifikáte,"
+            },
+            {
+             "anchor": "p9-3-e-2",
+             "label": "2.",
+             "letter": "2",
+             "text": "kontrolou vstupných údajov a overením výsledkov uvedených v energetickom certifikáte vrátane poskytnutého odporúčania,"
+            },
+            {
+             "anchor": "p9-3-e-3",
+             "label": "3.",
+             "letter": "3",
+             "text": "úplnou kontrolou vstupných údajov o budove, ktoré boli použité na vypracovanie energetického certifikátu, úplným overením výsledkov uvedených v energetickom certifikáte vrátane poskytnutého odporúčania, a ak je to možné, aj kontrolou energeticky certifikovanej budovy na mieste s cieľom skontrolovať zhodu medzi špecifikáciami uvedenými v energetickom certifikáte a parametrami energeticky certifikovanej budovy,"
+            }
+           ]
+          },
+          {
+           "anchor": "p9-3-f",
+           "label": "f)",
+           "letter": "f",
+           "text": "uskutočňuje kontroly energetických certifikátov podľa písmena e) náhodným výberom štatisticky významného percentuálneho podielu z celkového počtu každoročne vydávaných energetických certifikátov."
+          }
+         ]
+        },
+        {
+         "anchor": "p9-4",
+         "text": "Podrobnosti o výške príspevku a náležitosti žiadosti o poskytnutie príspevku (ďalej len „žiadosť o príspevok“) vrátane zoznamu príloh ustanoví všeobecne záväzný právny predpis, ktorý vydá ministerstvo.",
+         "n": "4"
+        },
+        {
+         "anchor": "p9-5",
+         "text": "Ministerstvo na účely optimalizácie využívania energie technickými systémami budov určuje systémové požiadavky na celkovú energetickú hospodárnosť, správne zabudovanie a primerané dimenzovanie, nastavenie a reguláciu technických systémov budov, ktoré sú zabudované v existujúcich budovách.",
+         "n": "5"
+        },
+        {
+         "anchor": "p9-6",
+         "text": "Požiadavky na systémy podľa odseku 5 sa určujú pre nové, vymenené a modernizované technické systémy budov, ak ich uplatnenie je technicky, funkčne a ekonomicky uskutočniteľné.",
+         "n": "6"
+        },
+        {
+         "anchor": "p9-7",
+         "text": "Ministerstvo vykonáva opatrenia na zjednodušenie zavádzania nabíjacích staníc v nových budovách a v existujúcich budovách podľa § 8a a rieši regulačné prekážky, najmä v povoľovacích konaniach a pri kolaudácii stavby bez toho, aby bolo dotknuté vlastnícke právo a právo nájmu.",
+         "n": "7"
+        }
+       ],
+       "heading": "Ministerstvo dopravy, výstavby a regionálneho rozvoja Slovenskej republiky"
+      }
+     ]
+    },
+    {
+     "type": "section",
+     "anchor": "s-clanok-1-g-dotacia",
+     "kind": "group",
+     "heading": "Dotácia",
+     "children": [
+      {
+       "type": "provision",
+       "anchor": "p9a",
+       "label": "§ 9a",
+       "paragraphs": [
+        {
+         "anchor": "p9a-1",
+         "text": "Dotáciu možno poskytnúť na",
+         "n": "1",
+         "items": [
+          {
+           "anchor": "p9a-1-a",
+           "label": "a)",
+           "letter": "a",
+           "text": "výskum a vývoj v oblasti energetickej hospodárnosti a"
+          },
+          {
+           "anchor": "p9a-1-b",
+           "label": "b)",
+           "letter": "b",
+           "text": "urýchlenie zvyšovania energetickej hospodárnosti budov a na ich prechod na budovy s takmer nulovou potrebou energie podľa národného plánu (§ 4b ods. 2)."
+          }
+         ]
+        },
+        {
+         "anchor": "p9a-2",
+         "text": "Dotáciu podľa odseku 1 písm. a) možno poskytnúť do 100 % ekonomicky oprávnených nákladov.",
+         "n": "2"
+        },
+        {
+         "anchor": "p9a-3",
+         "text": "Na poskytnutie dotácie nie je právny nárok.",
+         "n": "3"
+        }
+       ]
+      },
+      {
+       "type": "provision",
+       "anchor": "p9b",
+       "label": "§ 9b",
+       "paragraphs": [
+        {
+         "anchor": "p9b-1",
+         "text": "Žiadateľom o dotáciu môže byť právnická osoba a fyzická osoba-podnikateľ.",
+         "n": "1"
+        },
+        {
+         "anchor": "p9b-2",
+         "text": "Žiadateľ musí spĺňať požiadavky podľa osobitného predpisu.⁵ᵇ) Ak je dotácia štátnou pomocou,⁵ᶜ) musia byť splnené aj požiadavky podľa predpisov o štátnej pomoci.",
+         "n": "2"
+        },
+        {
+         "anchor": "p9b-3",
+         "text": "Dotáciu možno poskytnúť na základe písomnej žiadosti o poskytnutie dotácie (ďalej len „žiadosť“), ktorú žiadateľ môže podať ministerstvu až na základe oznámenia o podávaní žiadostí (ďalej len „oznámenie“) zverejnenom na webovom sídle ministerstva.",
+         "n": "3"
+        },
+        {
+         "anchor": "p9b-4",
+         "text": "Oznámenie obsahuje najmä",
+         "n": "4",
+         "items": [
+          {
+           "anchor": "p9b-4-a",
+           "label": "a)",
+           "letter": "a",
+           "text": "základný cieľ poskytnutia dotácie a kritériá, podľa ktorých sa budú vyhodnocovať žiadosti, a ich váhu,"
+          },
+          {
+           "anchor": "p9b-4-b",
+           "label": "b)",
+           "letter": "b",
+           "text": "výšku finančných prostriedkov zo zdrojov žiadateľa určených na spolufinancovanie,"
+          },
+          {
+           "anchor": "p9b-4-c",
+           "label": "c)",
+           "letter": "c",
+           "text": "formulár žiadosti v elektronickej podobe,"
+          },
+          {
+           "anchor": "p9b-4-d",
+           "label": "d)",
+           "letter": "d",
+           "text": "okruh oprávnených žiadateľov,"
+          },
+          {
+           "anchor": "p9b-4-e",
+           "label": "e)",
+           "letter": "e",
+           "text": "disponibilný objem prostriedkov viazaných na oznámenie,"
+          },
+          {
+           "anchor": "p9b-4-f",
+           "label": "f)",
+           "letter": "f",
+           "text": "najvyššiu a najnižšiu výšku dotácie poskytnutú na jednu žiadosť."
+          }
+         ]
+        },
+        {
+         "anchor": "p9b-5",
+         "text": "Každý žiadateľ môže podať len jednu žiadosť.",
+         "n": "5"
+        },
+        {
+         "anchor": "p9b-6",
+         "text": "O poskytnutí dotácie rozhoduje minister dopravy, výstavby a regionálneho rozvoja Slovenskej republiky (ďalej len „minister“) na základe odporúčania najmenej trojčlennej komisie, ktorú na tento účel zriadi.",
+         "n": "6"
+        },
+        {
+         "anchor": "p9b-7",
+         "text": "Komisia je pri vyhodnocovaní žiadostí nezávislá a musí žiadosti vyhodnocovať len podľa kritérií uvedených v oznámení a podľa váhy kritérií uvedenej v oznámení.",
+         "n": "7"
+        },
+        {
+         "anchor": "p9b-8",
+         "text": "Ministerstvo poskytuje dotáciu podľa zmluvy o poskytnutí dotácie uzatvorenej s vybratým žiadateľom. Zmluva o poskytnutí dotácie obsahuje",
+         "n": "8",
+         "items": [
+          {
+           "anchor": "p9b-8-a",
+           "label": "a)",
+           "letter": "a",
+           "text": "identifikačné údaje zmluvných strán,"
+          },
+          {
+           "anchor": "p9b-8-b",
+           "label": "b)",
+           "letter": "b",
+           "text": "bankové spojenie a číslo bankového účtu príjemcu dotácie,"
+          },
+          {
+           "anchor": "p9b-8-c",
+           "label": "c)",
+           "letter": "c",
+           "text": "účel, druh a výšku dotácie a lehotu jej čerpania,"
+          },
+          {
+           "anchor": "p9b-8-d",
+           "label": "d)",
+           "letter": "d",
+           "text": "výšku finančných prostriedkov zo zdrojov prijímateľa dotácie určených na spolufinancovanie,"
+          },
+          {
+           "anchor": "p9b-8-e",
+           "label": "e)",
+           "letter": "e",
+           "text": "podmienky použitia dotácie,"
+          },
+          {
+           "anchor": "p9b-8-f",
+           "label": "f)",
+           "letter": "f",
+           "text": "spôsob a lehotu plnenia záväzkov zmluvných strán,"
+          },
+          {
+           "anchor": "p9b-8-g",
+           "label": "g)",
+           "letter": "g",
+           "text": "očakávané prínosy poskytnutej dotácie,"
+          },
+          {
+           "anchor": "p9b-8-h",
+           "label": "h)",
+           "letter": "h",
+           "text": "sankcie za porušenie zmluvy,"
+          },
+          {
+           "anchor": "p9b-8-i",
+           "label": "i)",
+           "letter": "i",
+           "text": "termín zúčtovania dotácie,"
+          },
+          {
+           "anchor": "p9b-8-j",
+           "label": "j)",
+           "letter": "j",
+           "text": "ďalšie dohodnuté údaje."
+          }
+         ]
+        },
+        {
+         "anchor": "p9b-9",
+         "text": "Ministerstvo zverejní na svojom webovom sídle všetky",
+         "n": "9",
+         "items": [
+          {
+           "anchor": "p9b-9-a",
+           "label": "a)",
+           "letter": "a",
+           "text": "schválené žiadosti aj so sumami žiadaných a poskytnutých dotácií vrátane dátumu schválenia poskytnutia dotácie, ako aj výšku a účel dotácie a označenie konečného príjemcu dotácie, a to do 30 dní odo dňa schválenia žiadosti,"
+          },
+          {
+           "anchor": "p9b-9-b",
+           "label": "b)",
+           "letter": "b",
+           "text": "neschválené žiadosti vrátane dátumu a dôvodu neschválenia žiadosti, a to do 30 dní odo dňa neschválenia žiadosti."
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "type": "provision",
+       "anchor": "p9c",
+       "label": "§ 9c",
+       "paragraphs": [
+        {
+         "anchor": "p9c-1",
+         "text": "Príspevok na zateplenie rodinného domu možno poskytnúť na zlepšenie energetickej hospodárnosti rodinného domu uskutočnením stavebných úprav rodinného domu, ktorými sa vykoná zásah do obalových konštrukcií budovy zateplením obvodového plášťa, strešného plášťa, vnútorných deliacich konštrukcií medzi vykurovaným a nevykurovaným priestorom a výmenou pôvodných otvorových konštrukcií rodinného domu (ďalej len „zateplenie rodinného domu“).",
+         "n": "1"
+        },
+        {
+         "anchor": "p9c-2",
+         "text": "Príspevok na zateplenie rodinného domu možno poskytnúť do výšky 40 % oprávnených a uhradených nákladov, najviac v sume 8 000 eur, v závislosti od dosiahnutej hodnoty súčiniteľa prechodu tepla stavebných konštrukcií a v závislosti od dosiahnutej hodnoty potreby tepla na vykurovanie rodinného domu.",
+         "n": "2"
+        },
+        {
+         "anchor": "p9c-3",
+         "text": "Príspevok na zateplenie rodinného domu vypočítaný podľa odseku 2 možno zvýšiť o náklady za vypracovanie projektovej dokumentácie zateplenia rodinného domu vrátane projektového energetického hodnotenia rodinného domu, za vypracovanie žiadosti o príspevok a za vypracovanie energetického certifikátu, najviac však o sumu 800 eur.",
+         "n": "3"
+        },
+        {
+         "anchor": "p9c-4",
+         "text": "Oprávnenými nákladmi sú náklady za zhotovenie zateplenia rodinného domu. Do oprávnených nákladov možno započítať aj tieto náklady:",
+         "n": "4",
+         "items": [
+          {
+           "anchor": "p9c-4-a",
+           "label": "a)",
+           "letter": "a",
+           "text": "náklady za vyregulovanie vykurovacieho systému,"
+          },
+          {
+           "anchor": "p9c-4-b",
+           "label": "b)",
+           "letter": "b",
+           "text": "náklady na súvisiace stavebné úpravy pozostávajúce najmä z obnovy vstupov, bleskozvodu a vystupujúcich častí stavby, ako sú lodžia, balkón a prekrytie vstupu,"
+          },
+          {
+           "anchor": "p9c-4-c",
+           "label": "c)",
+           "letter": "c",
+           "text": "náklady za výmenu zdroja tepla,"
+          },
+          {
+           "anchor": "p9c-4-d",
+           "label": "d)",
+           "letter": "d",
+           "text": "náklady na realizáciu tepelnoizolačného systému novozhotovovaných stavebných konštrukcií rodinného domu a novozhotovovaných otvorových konštrukcií."
+          }
+         ]
+        },
+        {
+         "anchor": "p9c-5",
+         "text": "Do oprávnených nákladov podľa odseku 4 písm. c) sa započítavajú náklady za výmenu zdroja tepla, ak tieto neboli uplatnené v rámci iných podporných programov z verejných prostriedkov alebo z finančných prostriedkov Európskej únie.",
+         "n": "5"
+        },
+        {
+         "anchor": "p9c-6",
+         "text": "Oprávnenými nákladmi sa rozumejú náklady vrátane dane z pridanej hodnoty.",
+         "n": "6"
+        }
+       ],
+       "heading": "Príspevok na zateplenie rodinného domu"
+      },
+      {
+       "type": "provision",
+       "anchor": "p9ca",
+       "label": "§ 9ca",
+       "paragraphs": [
+        {
+         "anchor": "p9ca-x1",
+         "text": "Príspevok na rodinný dom možno poskytnúť vo výške 8 000 eur."
+        }
+       ],
+       "heading": "Príspevok na rodinný dom"
+      },
+      {
+       "type": "provision",
+       "anchor": "p9d",
+       "label": "§ 9d",
+       "paragraphs": [
+        {
+         "anchor": "p9d-1",
+         "text": "Žiadateľom o príspevok môže byť fyzická osoba, ktorá",
+         "n": "1",
+         "items": [
+          {
+           "anchor": "p9d-1-a",
+           "label": "a)",
+           "letter": "a",
+           "text": "je občanom členského štátu Európskej únie, štátu, ktorý je zmluvnou stranou Dohody o Európskom hospodárskom priestore alebo Švajčiarskej konfederácie,"
+          },
+          {
+           "anchor": "p9d-1-b",
+           "label": "b)",
+           "letter": "b",
+           "text": "má na území Slovenskej republiky trvalý pobyt a"
+          },
+          {
+           "anchor": "p9d-1-c",
+           "label": "c)",
+           "letter": "c",
+           "text": "je vlastníkom rodinného domu počas celého konania o poskytnutí príspevku; táto podmienka sa považuje za splnenú aj v prípade prechodu vlastníckeho práva na oprávnených dedičov."
+          }
+         ]
+        },
+        {
+         "anchor": "p9d-2",
+         "text": "Ak je rodinný dom v podielovom spoluvlastníctve viacerých fyzických osôb, žiadosť o príspevok môže podať ktorýkoľvek spoluvlastník, ktorý predloží písomný súhlas všetkých spoluvlastníkov s podaním žiadosti o príspevok a zároveň je ostatnými spoluvlastníkmi splnomocnený na zastupovanie v konaní o poskytnutí príspevku, prijímanie doručovaných písomností týkajúcich sa konania a na vyplatenie poskytnutého príspevku. Na uvedené účely môže byť splnomocnený len jeden spoluvlastník. Podpisy spoluvlastníkov na súhlase a písomnom plnomocenstve musia byť úradne osvedčené.",
+         "n": "2"
+        },
+        {
+         "anchor": "p9d-3",
+         "text": "Ak je rodinný dom v bezpodielovom spoluvlastníctve manželov, žiadosť o príspevok môže podať ktorýkoľvek z manželov, pričom musí byť druhým manželom splnomocnený na zastupovanie v konaní o poskytnutí príspevku a prijímanie doručovaných písomností týkajúcich sa konania. Podpis druhého manžela na písomnom plnomocenstve musí byť úradne osvedčený.",
+         "n": "3"
+        },
+        {
+         "anchor": "p9d-4",
+         "text": "Ak dôjde k prechodu vlastníckeho práva k rodinnému domu na oprávnených dedičov, poskytnú títo oprávnení dediči údaje podľa osobitného predpisu⁵ᶜᵃ) potrebné na účel overenia podmienky podľa odseku 1 písm. c).",
+         "n": "4"
+        }
+       ],
+       "heading": "Žiadateľ o príspevok"
+      },
+      {
+       "type": "provision",
+       "anchor": "p9e",
+       "label": "§ 9e",
+       "paragraphs": [
+        {
+         "anchor": "p9e-1",
+         "text": "Príspevok na zateplenie rodinného domu možno poskytnúť, ak",
+         "n": "1",
+         "items": [
+          {
+           "anchor": "p9e-1-a",
+           "label": "a)",
+           "letter": "a",
+           "text": "sú pri obnovených stavebných konštrukciách, vymenených stavebných konštrukciách alebo novozhotovovaných stavebných konštrukciách splnené požiadavky tepelnoizolačných vlastností stavebných konštrukcií preukázaním hodnoty súčiniteľa prechodu tepla stavebných konštrukcií podľa slovenskej technickej normy,⁵ᵈ)"
+          },
+          {
+           "anchor": "p9e-1-b",
+           "label": "b)",
+           "letter": "b",
+           "text": "pri neobnovených stavebných konštrukciách a nevymenených stavebných konštrukciách sú splnené aspoň maximálne hodnoty súčiniteľa prechodu tepla stavebných konštrukcií podľa slovenskej technickej normy,⁵ᵈ)"
+          },
+          {
+           "anchor": "p9e-1-c",
+           "label": "c)",
+           "letter": "c",
+           "text": "na zateplenie rodinného domu uskutočnené tepelnoizolačným systémom na vonkajšiu tepelnú ochranu stien vydal vyhlásenie o parametroch výrobca systému,"
+          },
+          {
+           "anchor": "p9e-1-d",
+           "label": "d)",
+           "letter": "d",
+           "text": "kolaudačné osvedčenie alebo iný doklad preukazuje, že rodinný dom bol daný do užívania aspoň 10 rokov pred realizáciou jeho zateplenia,"
+          },
+          {
+           "anchor": "p9e-1-e",
+           "label": "e)",
+           "letter": "e",
+           "text": "celková podlahová plocha je najviac 150 m² pri jednopodlažnom rodinnom dome alebo 300 m² pri viacpodlažnom rodinnom dome,"
+          },
+          {
+           "anchor": "p9e-1-f",
+           "label": "f)",
+           "letter": "f",
+           "text": "rodinný dom sa nachádza na území Slovenskej republiky,"
+          },
+          {
+           "anchor": "p9e-1-g",
+           "label": "g)",
+           "letter": "g",
+           "text": "rodinný dom je využívaný výlučne na bývanie,"
+          },
+          {
+           "anchor": "p9e-1-h",
+           "label": "h)",
+           "letter": "h",
+           "text": "žiadateľ čestne vyhlási, že práce zahrnuté do oprávnených nákladov boli začaté po 31. decembri 2014,"
+          },
+          {
+           "anchor": "p9e-1-i",
+           "label": "i)",
+           "letter": "i",
+           "text": "na rodinný dom nebol poskytnutý príspevok podľa tohto zákona alebo podpora na zateplenie rodinného domu podľa osobitného predpisu,⁵ᵉ)"
+          },
+          {
+           "anchor": "p9e-1-j",
+           "label": "j)",
+           "letter": "j",
+           "text": "žiadosť o príspevok obsahuje predpísané náležitosti."
+          }
+         ]
+        },
+        {
+         "anchor": "p9e-2",
+         "text": "Stavebnými konštrukciami sa rozumejú konštrukcie obvodového plášťa, strešného plášťa, vonkajších otvorových konštrukcií a vnútorné deliace konštrukcie medzi vykurovaným a nevykurovaným priestorom.",
+         "n": "2"
+        },
+        {
+         "anchor": "p9e-3",
+         "text": "Podmienka podľa odseku 1 písm. a) sa považuje za splnenú, ak pri obnovených stavebných konštrukciách alebo vymenených stavebných konštrukciách nie je z funkčných dôvodov alebo technických dôvodov umožnené splnenie normalizovanej hodnoty súčiniteľa prechodu tepla podľa platnej slovenskej technickej normy,⁵ᵈ) ale sú splnené aspoň maximálne hodnoty súčiniteľa prechodu tepla podľa slovenskej technickej normy⁵ᵈ) a súčasne v projektovej dokumentácii sú uvedené funkčné dôvody a technické dôvody nedosiahnutia normalizovanej hodnoty súčiniteľa prechodu tepla.",
+         "n": "3"
+        },
+        {
+         "anchor": "p9e-4",
+         "text": "Splnenie podmienok podľa odseku 1 písm. a), b) a e) ministerstvo overuje z verejne dostupných registrov alebo z centrálnej evidencie podľa § 9 ods. 3 písm. a).",
+         "n": "4"
+        }
+       ],
+       "heading": "Podmienky poskytnutia príspevku na zateplenie rodinného domu"
+      },
+      {
+       "type": "provision",
+       "anchor": "p9ea",
+       "label": "§ 9ea",
+       "paragraphs": [
+        {
+         "anchor": "p9ea-1",
+         "text": "Príspevok na rodinný dom možno poskytnúť, ak",
+         "n": "1",
+         "items": [
+          {
+           "anchor": "p9ea-1-a",
+           "label": "a)",
+           "letter": "a",
+           "text": "rodinný dom spĺňa minimálne požiadavky na energetickú hospodárnosť budov s takmer nulovou potrebou energie,"
+          },
+          {
+           "anchor": "p9ea-1-b",
+           "label": "b)",
+           "letter": "b",
+           "text": "stavebné konštrukcie rodinného domu podľa § 9e ods. 2 spĺňajú minimálne požiadavky na energetickú hospodárnosť budov s takmer nulovou potrebou energie,"
+          },
+          {
+           "anchor": "p9ea-1-c",
+           "label": "c)",
+           "letter": "c",
+           "text": "právoplatné kolaudačné osvedčenie rodinného domu bolo vydané najskôr v druhom kalendárnom roku predchádzajúcom roku, v ktorom bola podaná žiadosť o príspevok,"
+          },
+          {
+           "anchor": "p9ea-1-d",
+           "label": "d)",
+           "letter": "d",
+           "text": "celková podlahová plocha rodinného domu je najviac 200 m²,"
+          },
+          {
+           "anchor": "p9ea-1-e",
+           "label": "e)",
+           "letter": "e",
+           "text": "rodinný dom sa nachádza na území Slovenskej republiky,"
+          },
+          {
+           "anchor": "p9ea-1-f",
+           "label": "f)",
+           "letter": "f",
+           "text": "rodinný dom je využívaný výlučne na bývanie,"
+          },
+          {
+           "anchor": "p9ea-1-g",
+           "label": "g)",
+           "letter": "g",
+           "text": "na rodinný dom vrátane jeho technického systému nebol poskytnutý príspevok podľa tohto zákona, podpora podľa osobitného predpisu,⁵ᵉ) verejné prostriedky alebo finančné prostriedky Európskej únie v rámci iných podporných programov,"
+          },
+          {
+           "anchor": "p9ea-1-h",
+           "label": "h)",
+           "letter": "h",
+           "text": "žiadosť o príspevok obsahuje predpísané náležitosti."
+          }
+         ]
+        },
+        {
+         "anchor": "p9ea-2",
+         "text": "Splnenie podmienok podľa odseku 1 písm. a), b) a d) ministerstvo overuje z verejne dostupných registrov alebo z centrálnej evidencie podľa § 9 ods. 3 písm. a).",
+         "n": "2"
+        }
+       ],
+       "heading": "Podmienky poskytnutia príspevku na rodinný dom"
+      },
+      {
+       "type": "provision",
+       "anchor": "p9f",
+       "label": "§ 9f",
+       "paragraphs": [
+        {
+         "anchor": "p9f-1",
+         "text": "Žiadateľ predkladá ministerstvu žiadosť o príspevok na základe výzvy na predkladanie žiadostí o príspevok zverejnenej na webovom sídle ministerstva.",
+         "n": "1"
+        },
+        {
+         "anchor": "p9f-2",
+         "text": "Žiadateľ predkladá žiadosť o príspevok v elektronickej podobe a v listinnej podobe.",
+         "n": "2"
+        },
+        {
+         "anchor": "p9f-3",
+         "text": "Žiadateľ vyplní a odošle formulár elektronickej podoby žiadosti o príspevok uverejnenej na webovom sídle ministerstva.",
+         "n": "3"
+        },
+        {
+         "anchor": "p9f-4",
+         "text": "Ministerstvo umožní zaevidovať elektronickú podobu žiadosti o príspevok dňom, ktorý je uvedený vo výzve na predkladanie žiadostí o príspevok ako termín na začatie podávania žiadostí o príspevok. Ministerstvo nezaeviduje elektronickú podobu žiadosti o príspevok, ak boli prijaté žiadosti o príspevok v počte uvedenom vo výzve na predkladanie žiadostí o príspevok alebo ak uplynul termín na ukončenie podávania žiadostí o príspevok uvedený vo výzve na predkladanie žiadostí o príspevok.",
+         "n": "4"
+        },
+        {
+         "anchor": "p9f-5",
+         "text": "Listinnú podobu žiadosti o príspevok vytlačenú z elektronickej podoby vrátane príloh žiadateľ predloží ministerstvu v lehote do desiatich pracovných dní odo dňa odoslania elektronickej podoby žiadosti o príspevok alebo v tej istej lehote odošle na jeho adresu.",
+         "n": "5"
+        },
+        {
+         "anchor": "p9f-6",
+         "text": "O príspevok na zateplenie rodinného domu môže žiadateľ požiadať aj pred realizáciou zateplenia rodinného domu, pričom žiadosť o príspevok musí obsahovať aspoň minimálny rozsah príloh, ktorý ministerstvo určí vo vykonávacom predpise.",
+         "n": "6"
+        },
+        {
+         "anchor": "p9f-7",
+         "text": "Účastníkom konania je vlastník rodinného domu, ktorý podal žiadosť o príspevok a ostatní spoluvlastníci.",
+         "n": "7"
+        },
+        {
+         "anchor": "p9f-8",
+         "text": "Konanie o poskytnutí príspevku sa začína pridelením identifikačného čísla žiadosti o príspevok v elektronickom systéme ministerstva, o ktorom bude žiadateľ informovaný. O začatí konania sa účastník konania neupovedomuje.",
+         "n": "8"
+        },
+        {
+         "anchor": "p9f-9",
+         "text": "Ak žiadateľ podá žiadosť o príspevok, ktorou žiada o poskytnutie príspevku na zateplenie rodinného domu pred realizáciou zateplenia rodinného domu, a predloženou žiadosťou o príspevok je preukázané splnenie podmienok § 9e ods. 1 písm. a), b), d) až i), ministerstvo konanie o poskytnutí príspevku na zateplenie rodinného domu preruší najviac na jeden rok. Od vydania rozhodnutia o prerušení konania až po právoplatné rozhodnutie vo veci ministerstvo obmedzí z hľadiska časového a vecného použitie finančných prostriedkov zodpovedajúcich maximálnej výške príspevku na zateplenie rodinného domu podľa § 9c ods. 2 a 3.",
+         "n": "9"
+        },
+        {
+         "anchor": "p9f-10",
+         "text": "Ministerstvo konanie o poskytnutí príspevku zastaví, ak",
+         "n": "10",
+         "items": [
+          {
+           "anchor": "p9f-10-a",
+           "label": "a)",
+           "letter": "a",
+           "text": "listinná podoba žiadosti o príspevok nebola predložená ministerstvu alebo odoslaná v lehote podľa odseku 5,"
+          },
+          {
+           "anchor": "p9f-10-b",
+           "label": "b)",
+           "letter": "b",
+           "text": "listinná podoba žiadosti o príspevok nie je doručená ministerstvu v lehote do 30 pracovných dní od zaevidovania elektronickej podoby žiadosti o príspevok,"
+          },
+          {
+           "anchor": "p9f-10-c",
+           "label": "c)",
+           "letter": "c",
+           "text": "doručená žiadosť o príspevok neobsahuje všetky prílohy v nej vyznačené a účastník konania ich na výzvu správneho orgánu v lehote do 10 pracovných dní odo dňa doručenia výzvy nedoplnil,"
+          },
+          {
+           "anchor": "p9f-10-d",
+           "label": "d)",
+           "letter": "d",
+           "text": "žiadateľ v lehote určenej v rozhodnutí o prerušení konania podľa odseku 9 nedoplní všetky prílohy ustanovené vykonávacím predpisom,"
+          },
+          {
+           "anchor": "p9f-10-e",
+           "label": "e)",
+           "letter": "e",
+           "text": "na zateplenie rodinného domu sa požaduje poskytnutie príspevku na zateplenie rodinného domu v rámci inej výzvy na predkladanie žiadostí o príspevok a ministerstvo v prebiehajúcom konaní o poskytnutí príspevku na zateplenie rodinného domu vydalo rozhodnutie podľa odseku 9."
+          }
+         ]
+        },
+        {
+         "anchor": "p9f-11",
+         "text": "Ministerstvo rozhodne o poskytnutí príspevku v lehote 90 dní od doručenia listinnej podoby žiadosti o príspevok ministerstvu.",
+         "n": "11"
+        }
+       ],
+       "heading": "Konanie o poskytnutí príspevku"
+      },
+      {
+       "type": "provision",
+       "anchor": "p9g",
+       "label": "§ 9g",
+       "paragraphs": [
+        {
+         "anchor": "p9g-1",
+         "text": "Na účely spracovania žiadosti o príspevok a poskytnutia príspevku je ministerstvo oprávnené spracúvať osobné údaje o žiadateľovi a ostatných spoluvlastníkoch rodinného domu aj bez jeho súhlasu v rozsahu",
+         "n": "1",
+         "items": [
+          {
+           "anchor": "p9g-1-a",
+           "label": "a)",
+           "letter": "a",
+           "text": "meno, priezvisko, rodné priezvisko,"
+          },
+          {
+           "anchor": "p9g-1-b",
+           "label": "b)",
+           "letter": "b",
+           "text": "adresa trvalého bydliska,"
+          },
+          {
+           "anchor": "p9g-1-c",
+           "label": "c)",
+           "letter": "c",
+           "text": "dátum narodenia,"
+          },
+          {
+           "anchor": "p9g-1-d",
+           "label": "d)",
+           "letter": "d",
+           "text": "e-mailová adresa a telefonický kontakt,"
+          },
+          {
+           "anchor": "p9g-1-e",
+           "label": "e)",
+           "letter": "e",
+           "text": "štátna príslušnosť,"
+          },
+          {
+           "anchor": "p9g-1-f",
+           "label": "f)",
+           "letter": "f",
+           "text": "číslo účtu v tvare IBAN."
+          }
+         ]
+        },
+        {
+         "anchor": "p9g-2",
+         "text": "Ministerstvo zverejní na svojom webovom sídle",
+         "n": "2",
+         "items": [
+          {
+           "anchor": "p9g-2-a",
+           "label": "a)",
+           "letter": "a",
+           "text": "limit finančných prostriedkov vyčlenených v štátnom rozpočte na poskytnutie príspevku na príslušný rozpočtový rok,"
+          },
+          {
+           "anchor": "p9g-2-b",
+           "label": "b)",
+           "letter": "b",
+           "text": "výzvu na predkladanie žiadostí o príspevok najmenej jeden mesiac pred termínom predkladania, ktorá obsahuje najmä",
+           "items": [
+            {
+             "anchor": "p9g-2-b-1",
+             "label": "1.",
+             "letter": "1",
+             "text": "počet žiadostí o príspevok, ktoré budú prijaté v rámci danej výzvy na predkladanie žiadostí o príspevok,"
+            },
+            {
+             "anchor": "p9g-2-b-2",
+             "label": "2.",
+             "letter": "2",
+             "text": "termín na začatie a ukončenie podávania žiadostí o príspevok,"
+            },
+            {
+             "anchor": "p9g-2-b-3",
+             "label": "3.",
+             "letter": "3",
+             "text": "spôsob odstraňovania formálnych nedostatkov žiadostí o príspevok,"
+            },
+            {
+             "anchor": "p9g-2-b-4",
+             "label": "4.",
+             "letter": "4",
+             "text": "najneskorší termín vyhodnotenia žiadostí o príspevok,"
+            },
+            {
+             "anchor": "p9g-2-b-5",
+             "label": "5.",
+             "letter": "5",
+             "text": "technické parametre pre zdroj tepla, ktorého náklady je možné započítať do oprávnených nákladov podľa § 9c ods. 4 písm. c), ak ide o príspevok na zateplenie rodinného domu,"
+            }
+           ]
+          },
+          {
+           "anchor": "p9g-2-c",
+           "label": "c)",
+           "letter": "c",
+           "text": "identifikačné údaje rodinného domu, na ktorý bol poskytnutý príspevok."
+          }
+         ]
+        },
+        {
+         "anchor": "p9g-3",
+         "text": "Finančné prostriedky podľa § 9f ods. 9 vedie ministerstvo na samostatnom mimorozpočtovom účte.",
+         "n": "3"
+        }
+       ]
+      },
+      {
+       "type": "provision",
+       "anchor": "p10",
+       "label": "§ 10",
+       "paragraphs": [
+        {
+         "anchor": "p10-1",
+         "text": "Štátny dozor vykonáva Úrad pre reguláciu sieťových odvetví (ďalej len „úrad“). Úrad je oprávnený",
+         "n": "1",
+         "items": [
+          {
+           "anchor": "p10-1-a",
+           "label": "a)",
+           "letter": "a",
+           "text": "vyzvať oprávnenú osobu odstrániť zistený nedostatok v energetickej certifikácii a určiť na tento účel primeranú lehotu,"
+          },
+          {
+           "anchor": "p10-1-b",
+           "label": "b)",
+           "letter": "b",
+           "text": "vyzvať vlastníka budovy splniť povinnosť umiestniť v budove energetický štítok,"
+          },
+          {
+           "anchor": "p10-1-c",
+           "label": "c)",
+           "letter": "c",
+           "text": "ukladať poriadkové pokuty, pokuty za správne delikty a prejednávať priestupky,"
+          },
+          {
+           "anchor": "p10-1-d",
+           "label": "d)",
+           "letter": "d",
+           "text": "predkladať návrhy na preskúšanie oprávnenej osoby.⁶)"
+          }
+         ]
+        },
+        {
+         "anchor": "p10-2",
+         "text": "Zamestnanec úradu poverený výkonom štátneho dozoru podľa tohto zákona je",
+         "n": "2",
+         "items": [
+          {
+           "anchor": "p10-2-a",
+           "label": "a)",
+           "letter": "a",
+           "text": "oprávnený",
+           "items": [
+            {
+             "anchor": "p10-2-a-1",
+             "label": "1.",
+             "letter": "1",
+             "text": "nahliadať do výpočtu a do podkladov, ktoré oprávnená osoba použila na energetickú certifikáciu,"
+            },
+            {
+             "anchor": "p10-2-a-2",
+             "label": "2.",
+             "letter": "2",
+             "text": "požadovať od oprávnenej osoby vysvetlenie týkajúce sa energetickej certifikácie,"
+            },
+            {
+             "anchor": "p10-2-a-3",
+             "label": "3.",
+             "letter": "3",
+             "text": "požadovať od vlastníka budovy vysvetlenie týkajúce sa povinnosti umiestniť energetický štítok v budove,"
+            },
+            {
+             "anchor": "p10-2-a-4",
+             "label": "4.",
+             "letter": "4",
+             "text": "vstupovať do budov, v ktorých sa musia umiestňovať energetické štítky,"
+            },
+            {
+             "anchor": "p10-2-a-5",
+             "label": "5.",
+             "letter": "5",
+             "text": "zúčastniť sa na kolaudácii novej budovy alebo významne obnovenej budovy,"
+            }
+           ]
+          },
+          {
+           "anchor": "p10-2-b",
+           "label": "b)",
+           "letter": "b",
+           "text": "povinný",
+           "items": [
+            {
+             "anchor": "p10-2-b-1",
+             "label": "1.",
+             "letter": "1",
+             "text": "preukázať sa poverením a dodatkom k povereniu spolu so služobným preukazom, prípadne iným dokladom preukazujúcim jeho totožnosť, pred začatím výkonu štátneho dozoru,"
+            },
+            {
+             "anchor": "p10-2-b-2",
+             "label": "2.",
+             "letter": "2",
+             "text": "zachovávať mlčanlivosť o všetkých skutočnostiach, ktoré sa dozvedel pri výkone štátneho dozoru."
+            }
+           ]
+          }
+         ]
+        }
+       ],
+       "heading": "Štátny dozor"
+      },
+      {
+       "type": "provision",
+       "anchor": "p11",
+       "label": "§ 11",
+       "paragraphs": [
+        {
+         "anchor": "p11-1",
+         "text": "Úrad uloží pokutu od 200 eur do 5 000 eur oprávnenej osobe, ktorá vykonala energetickú certifikáciu v rozpore s ustanoveniami tohto zákona a technickými normami upravujúcimi výpočet, minimálne požiadavky alebo obsah a formu energetického certifikátu.",
+         "n": "1"
+        },
+        {
+         "anchor": "p11-2",
+         "text": "Úrad uloží, a to aj opakovane, poriadkovú pokutu až do 500 eur oprávnenej osobe za sťažovanie výkonu štátneho dozoru neposkytnutím súčinnosti pri sprístupňovaní výpočtu alebo podkladov použitých na energetickú certifikáciu a za neposkytnutie vysvetlenia a vlastníkovi budovy za neposkytnutie vysvetlenia alebo neumožnenie vstupu do budovy, v ktorej sa musí umiestniť energetický štítok.",
+         "n": "2"
+        },
+        {
+         "anchor": "p11-3",
+         "text": "Úrad uloží pokutu od 500 eur do 3 000 eur právnickej osobe a fyzickej osobe-podnikateľovi, ktorá",
+         "n": "3",
+         "items": [
+          {
+           "anchor": "p11-3-a",
+           "label": "a)",
+           "letter": "a",
+           "text": "ako vlastník",
+           "items": [
+            {
+             "anchor": "p11-3-a-1",
+             "label": "1.",
+             "letter": "1",
+             "text": "nesplní povinnosť podľa § 8 ods. 3,"
+            },
+            {
+             "anchor": "p11-3-a-2",
+             "label": "2.",
+             "letter": "2",
+             "text": "neobstará v lehote podľa § 8 ods. 1 energetický certifikát, hoci je na to podľa tohto zákona povinná,"
+            },
+            {
+             "anchor": "p11-3-a-3",
+             "label": "3.",
+             "letter": "3",
+             "text": "neuschová energetický certifikát na čas jeho platnosti,"
+            },
+            {
+             "anchor": "p11-3-a-4",
+             "label": "4.",
+             "letter": "4",
+             "text": "neodovzdá platný energetický certifikát novému vlastníkovi pri predaji budovy,"
+            },
+            {
+             "anchor": "p11-3-a-5",
+             "label": "5.",
+             "letter": "5",
+             "text": "neodovzdá kópiu platného energetického certifikátu nájomcovi,"
+            },
+            {
+             "anchor": "p11-3-a-6",
+             "label": "6.",
+             "letter": "6",
+             "text": "neodovzdá projektové energetické hodnotenie novému nadobúdateľovi budovy pri jej predaji pred začatím výstavby budovy alebo rozostavanej budovy,"
+            }
+           ]
+          },
+          {
+           "anchor": "p11-3-b",
+           "label": "b)",
+           "letter": "b",
+           "text": "vykonáva energetickú certifikáciu, hoci nie je oprávnenou osobou, alebo nemá odbornú spôsobilosť na príslušnú časť energetickej certifikácie podľa § 6 ods. 2,"
+          },
+          {
+           "anchor": "p11-3-c",
+           "label": "c)",
+           "letter": "c",
+           "text": "ako sprostredkovateľ predaja alebo prenájmu budovy alebo jej samostatnej časti, na ktorú bol vypracovaný energetický certifikát, neuvedie ako súčasť zverejnenej ponuky ukazovateľ jej integrovanej energetickej hospodárnosti z energetického certifikátu."
+          }
+         ]
+        },
+        {
+         "anchor": "p11-4",
+         "text": "Pri určovaní výšky pokuty sa prihliada na závažnosť konania a na trvanie protiprávneho stavu.",
+         "n": "4"
+        },
+        {
+         "anchor": "p11-5",
+         "text": "Konanie o uložení pokuty možno začať do jedného roka odo dňa, keď sa úrad dozvedel o konaní podľa odsekov 1 až 3, najneskôr do troch rokov odo dňa, keď k takému konaniu došlo.",
+         "n": "5"
+        },
+        {
+         "anchor": "p11-6",
+         "text": "Výnos pokút je príjmom štátneho rozpočtu Slovenskej republiky.",
+         "n": "6"
+        }
+       ],
+       "heading": "Správne delikty a poriadkové opatrenia"
+      },
+      {
+       "type": "provision",
+       "anchor": "p12",
+       "label": "§ 12",
+       "paragraphs": [
+        {
+         "anchor": "p12-1",
+         "text": "Priestupku sa dopustí vlastník budovy tým, že",
+         "n": "1",
+         "items": [
+          {
+           "anchor": "p12-1-a",
+           "label": "a)",
+           "letter": "a",
+           "text": "neobstará energetický certifikát, hoci je na to podľa tohto zákona povinný,"
+          },
+          {
+           "anchor": "p12-1-b",
+           "label": "b)",
+           "letter": "b",
+           "text": "neuschová energetický certifikát po celý čas jeho platnosti,"
+          },
+          {
+           "anchor": "p12-1-c",
+           "label": "c)",
+           "letter": "c",
+           "text": "neodovzdá platný energetický certifikát novému vlastníkovi pri predaji budovy,"
+          },
+          {
+           "anchor": "p12-1-d",
+           "label": "d)",
+           "letter": "d",
+           "text": "neodovzdá kópiu energetického certifikátu nájomcovi pri prenájme budovy,"
+          },
+          {
+           "anchor": "p12-1-e",
+           "label": "e)",
+           "letter": "e",
+           "text": "neodovzdá projektové energetické hodnotenie nadobúdateľovi budovy pri jej predaji pred začatím výstavby budovy alebo rozostavanej budovy,"
+          },
+          {
+           "anchor": "p12-1-f",
+           "label": "f)",
+           "letter": "f",
+           "text": "neuvedie ako súčasť zverejnenej ponuky na predaj alebo prenájom budovy alebo jej samostatnej časti aj ukazovateľ jej integrovanej energetickej hospodárnosti z energetického certifikátu."
+          }
+         ]
+        },
+        {
+         "anchor": "p12-2",
+         "text": "Za priestupok podľa odseku 1 možno uložiť pokutu do 2 000 eur.",
+         "n": "2"
+        },
+        {
+         "anchor": "p12-3",
+         "text": "Na priestupky a ich prejednávanie sa vzťahuje všeobecný predpis o priestupkoch.⁷)",
+         "n": "3"
+        }
+       ],
+       "heading": "Priestupky"
+      }
+     ]
+    },
+    {
+     "type": "section",
+     "anchor": "s-clanok-1-g-zaverecne-ustanovenia",
+     "kind": "group",
+     "heading": "Záverečné ustanovenia",
+     "children": [
+      {
+       "type": "provision",
+       "anchor": "p13",
+       "label": "§ 13",
+       "paragraphs": [
+        {
+         "anchor": "p13-1",
+         "text": "Povinnosti, ktoré má podľa tohto zákona vlastník budovy, vzťahujú sa aj na správcu budovy vo vlastníctve štátu, samosprávneho kraja alebo obce, na spoločenstvo vlastníkov bytov a nebytových priestorov v bytovom dome a na bytové družstvo.",
+         "n": "1"
+        },
+        {
+         "anchor": "p13-2",
+         "text": "Všeobecný predpis o správnom konaní⁸) sa nevzťahuje na energetickú certifikáciu a na určovanie slovenských technických noriem vhodných na výpočet a na energetickú certifikáciu ani na postup vyhodnocovania žiadostí a rozhodovanie o poskytnutí dotácie.",
+         "n": "2"
+        },
+        {
+         "anchor": "p13-3",
+         "text": "Na konanie o poskytnutí príspevku podľa § 9f sa vzťahuje všeobecný predpis o správnom konaní.⁸)",
+         "n": "3"
+        }
+       ]
+      },
+      {
+       "type": "provision",
+       "anchor": "p14",
+       "label": "§ 14",
+       "paragraphs": [
+        {
+         "anchor": "p14-x1",
+         "text": "Povinnosť energetickej certifikácie sa vzťahuje",
+         "items": [
+          {
+           "anchor": "p14-x1-a",
+           "label": "a)",
+           "letter": "a",
+           "text": "na novú budovu a na významne obnovovanú existujúcu budovu, ktorých kolaudačné konanie sa začalo po 1. januári 2008,"
+          },
+          {
+           "anchor": "p14-x1-b",
+           "label": "b)",
+           "letter": "b",
+           "text": "na budovu predávanú alebo prenajímanú po 1. januári 2008."
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "type": "provision",
+       "anchor": "p14a",
+       "label": "§ 14a",
+       "paragraphs": [
+        {
+         "anchor": "p14a-1",
+         "text": "Do 9. júla 2015 sa povinnosť podľa § 5 ods. 2 písm. b) vzťahuje na budovy s viac ako 500 m²celkovej podlahovej plochy.",
+         "n": "1"
+        },
+        {
+         "anchor": "p14a-2",
+         "text": "Do 31. decembra 2015 sa povinnosť podľa § 5 ods. 2 nevzťahuje na prenájom bytov a samostatných častí.",
+         "n": "2"
+        },
+        {
+         "anchor": "p14a-3",
+         "text": "Energetické certifikáty vydané do 31. decembra 2012 platia do uplynutia platnosti, ktorá je v nich uvedená.",
+         "n": "3"
+        }
+       ]
+      },
+      {
+       "type": "provision",
+       "anchor": "p14aa",
+       "label": "§ 14aa",
+       "paragraphs": [
+        {
+         "anchor": "p14aa-1",
+         "text": "Na konanie o poskytnutí príspevku podľa § 9f sa použijú ustanovenia zákona účinné v čase vyhlásenia výzvy na predkladanie žiadostí zverejnenej na webovom sídle ministerstva.",
+         "n": "1"
+        },
+        {
+         "anchor": "p14aa-2",
+         "text": "Na žiadosti o príspevok podané na základe výzvy na predkladanie žiadostí zverejnenej na webovom sídle ministerstva od 15. júna 2017 do 31. decembra 2018 sa podmienka uvedená v § 9e ods. 1 písm. f) nevzťahuje.",
+         "n": "2"
+        }
+       ],
+       "heading": "Prechodné ustanovenia k úpravám účinným od 15. júna 2017"
+      },
+      {
+       "type": "provision",
+       "anchor": "p14ab",
+       "label": "§ 14ab",
+       "paragraphs": [
+        {
+         "anchor": "p14ab-x1",
+         "text": "Na konanie o poskytnutí príspevku na zateplenie rodinného domu sa použijú ustanovenia zákona účinné v čase vyhlásenia výzvy na predkladanie žiadostí o príspevok zverejnenej na webovom sídle ministerstva."
+        }
+       ],
+       "heading": "Prechodné ustanovenie k úpravám účinným od 1. mája 2019"
+      },
+      {
+       "type": "provision",
+       "anchor": "p14ac",
+       "label": "§ 14ac",
+       "paragraphs": [
+        {
+         "anchor": "p14ac-x1",
+         "text": "Na konanie o poskytnutí príspevku na rodinný dom sa použijú ustanovenia zákona účinné v čase vyhlásenia výzvy na predkladanie žiadostí o príspevok zverejnenej na webovom sídle ministerstva."
+        }
+       ],
+       "heading": "Prechodné ustanovenie k úpravám účinným od 10. marca 2020"
+      },
+      {
+       "type": "provision",
+       "anchor": "p14ad",
+       "label": "§ 14ad",
+       "paragraphs": [
+        {
+         "anchor": "p14ad-x1",
+         "text": "Ak v konaní o poskytnutí príspevku na zateplenie rodinného domu začatom na základe výzvy na predkladanie žiadostí o príspevok vyhlásenej ministerstvom podľa § 9g ods. 2 písm. b) v roku 2019 je žiadateľ vyzvaný na predloženie chýbajúcich príloh, termín na ich predloženie sa ustanovuje do 30. júna 2021."
+        }
+       ],
+       "heading": "Prechodné ustanovenie súvisiace s krízovou situáciou\nspôsobenou ochorením COVID-19"
+      },
+      {
+       "type": "provision",
+       "anchor": "p14ae",
+       "label": "§ 14ae",
+       "paragraphs": [
+        {
+         "anchor": "p14ae-x1",
+         "text": "Konania o správnych deliktoch a priestupkoch začaté a právoplatne neukončené Slovenskou obchodnou inšpekciou do 31. júla 2024 dokončí podľa predpisov účinných do 31. júla 2024 Slovenská obchodná inšpekcia."
+        }
+       ],
+       "heading": "Prechodné ustanovenie k úpravám účinným od 1. augusta 2024"
+      },
+      {
+       "type": "provision",
+       "anchor": "p14b",
+       "label": "§ 14b",
+       "paragraphs": [
+        {
+         "anchor": "p14b-x1",
+         "text": "Zrušuje sa vyhláška Ministerstva výstavby a regionálneho rozvoja Slovenskej republiky č. 311/2009 Z. z., ktorou sa ustanovujú podrobnosti o výpočte energetickej hospodárnosti budov a obsah energetického certifikátu."
+        }
+       ]
+      },
+      {
+       "type": "provision",
+       "anchor": "p15",
+       "label": "§ 15",
+       "paragraphs": [
+        {
+         "anchor": "p15-x1",
+         "text": "Týmto zákonom sa preberajú právne záväzné akty Európskej únie uvedené v prílohe."
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "type": "provision",
+   "anchor": "cl2",
+   "label": "Čl. II",
+   "paragraphs": [
+    {
+     "anchor": "cl2-x1",
+     "text": "Zákon č. 455/1991 Zb. o živnostenskom podnikaní (živnostenský zákon) v znení zákona Slovenskej národnej rady č. 231/1992 Zb., zákona Slovenskej národnej rady č. 600/1992 Zb., zákona Národnej rady Slovenskej republiky č. 132/1994 Z. z., zákona Národnej rady Slovenskej republiky č. 200/1995 Z. z., zákona Národnej rady Slovenskej republiky č. 216/1995 Z. z., zákona Národnej rady Slovenskej republiky č. 233/1995 Z. z., zákona Národnej rady Slovenskej republiky č. 123/1996 Z. z., zákona Národnej rady Slovenskej republiky č. 164/1996 Z. z., zákona Národnej rady Slovenskej republiky č. 222/1996 Z. z., zákona Národnej rady Slovenskej republiky č. 289/1996 Z. z., zákona Národnej rady Slovenskej republiky č. 290/1996 Z. z., zákona č. 288/1997 Z. z., zákona č. 379/1997 Z. z., zákona č. 70/1998 Z. z., zákona č. 76/1998 Z. z., zákona č. 126/1998 Z. z., zákona č. 129/1998 Z. z., zákona č. 140/1998 Z. z., zákona č. 143/1998 Z. z., zákona č. 144/1998 Z. z., zákona č. 161/1998 Z. z., zákona č. 178/1998 Z. z., zákona č. 179/1998 Z. z., zákona č. 194/1998 Z. z., zákona č. 263/1999 Z. z., zákona č. 264/1999 Z. z., zákona č. 119/2000 Z. z., zákona č. 142/2000 Z. z., zákona č. 236/2000 Z. z., zákona č. 238/2000 Z. z., zákona č. 268/2000 Z. z., zákona č. 338/2000 Z. z., zákona č. 223/2001 Z. z., zákona č. 279/2001 Z. z., zákona č. 488/2001 Z. z., zákona č. 554/2001 Z. z., zákona č. 261/2002 Z. z., zákona č. 284/2002 Z. z., zákona č. 506/2002 Z. z., zákona č. 190/2003 Z. z., zákona č. 219/2003 Z. z., zákona č. 245/2003 Z. z., zákona č. 423/2003 Z. z., zákona č. 515/2003 Z. z., zákona č. 586/2003 Z. z., zákona č. 602/2003 Z. z., zákona č. 347/2004 Z. z., zákona č. 350/2004 Z. z., zákona č. 365/2004 Z. z., zákona č. 420/2004 Z. z., zákona č. 533/2004 Z. z., zákona č. 544/2004 Z. z., zákona č. 578/2004 Z. z., zákona č. 624/2004 Z. z., zákona č. 650/2004 Z. z., zákona č. 656/2004 Z. z., zákona č. 725/2004 Z. z., zákona č. 8/2005 Z. z., zákona č. 93/2005 Z. z., zákona č. 331/2005 Z. z., zákona č. 340/2005 Z. z., zákona č. 351/2005 Z. z., zákona č. 470/2005 Z. z., zákona č. 473/2005 Z. z. a zákona č. 491/2005 Z. z. sa dopĺňa takto:"
+    },
+    {
+     "anchor": "cl2-x2",
+     "text": "",
+     "items": [
+      {
+       "anchor": "cl2-x2-i1",
+       "label": "",
+       "letter": "i1",
+       "text": "V prílohe č. 2 sa skupina 213 - Stavebníctvo na konci dopĺňa o novú živnosť por. č. 18a, ktorá v stĺpci Živnosť znie: „Energetická certifikácia“, v stĺpci Preukaz spôsobilosti znie: „osvedčenie o vykonaní skúšky odbornej spôsobilosti“, v stĺpci Poznámka znie: „§ 31 ods. 2 písm. j) zákona Slovenskej národnej rady č. 138/1992 Zb. o autorizovaných architektoch a autorizovaných stavebných inžinieroch v znení neskorších predpisov“."
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "type": "provision",
+   "anchor": "cl3",
+   "label": "Čl. III",
+   "paragraphs": [
+    {
+     "anchor": "cl3-x1",
+     "text": "Zákon Slovenskej národnej rady č. 138/1992 Zb. o autorizovaných architektoch a autorizovaných stavebných inžinieroch v znení zákona č. 236/2000 Z. z., zákona č. 554/2001 Z. z., zákona č. 533/2003 Z. z. a zákona č. 624/2004 Z. z. sa mení a dopĺňa takto:"
+    },
+    {
+     "anchor": "cl3-x2",
+     "text": "",
+     "items": [
+      {
+       "anchor": "cl3-x2-1",
+       "label": "1.",
+       "letter": "1",
+       "text": "V § 1 sa na koniec pripájajú tieto slová: „a na energetickú certifikáciu“."
+      },
+      {
+       "anchor": "cl3-x2-2",
+       "label": "2.",
+       "letter": "2",
+       "text": "V § 23a ods. 1 sa za slovo „ministerstva“ vkladá čiarka a slovo „Štátnej energetickej inšpekcie“."
+      },
+      {
+       "anchor": "cl3-x2-3",
+       "label": "3.",
+       "letter": "3",
+       "text": "V § 23a ods. 4 sa pred bodkočiarku vkladajú tieto slová: „alebo na energetickú certifikáciu“."
+      },
+      {
+       "anchor": "cl3-x2-4",
+       "label": "4.",
+       "letter": "4",
+       "text": "V § 31 ods. 2 písmeno j) znie:",
+       "items": [
+        {
+         "anchor": "cl3-x2-4-i1",
+         "label": "„j)",
+         "letter": "i1",
+         "text": "vykonávať skúšky odbornej spôsobilosti uchádzačov o oprávnenie na výkon činnosti stavbyvedúceho, na stavebný dozor a na energetickú certifikáciu, preskúšavať ich (§ 23a) a vydávať im osvedčenie o vykonaní skúšky odbornej spôsobilosti,“."
+        }
+       ]
+      },
+      {
+       "anchor": "cl3-x2-5",
+       "label": "5.",
+       "letter": "5",
+       "text": "V § 31 ods. 2 písm. k) sa na koniec pripájajú tieto slová: „a na energetickú certifikáciu“."
+      },
+      {
+       "anchor": "cl3-x2-6",
+       "label": "6.",
+       "letter": "6",
+       "text": "V § 31 ods. 4 sa za slovo „dozor“ vkladajú tieto slová: „a na energetickú certifikáciu“."
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "type": "provision",
+   "anchor": "cl5",
+   "label": "Čl. V",
+   "paragraphs": [
+    {
+     "anchor": "cl5-x1",
+     "text": "Tento zákon nadobúda účinnosť 1. januára 2006."
+    }
+   ]
+  },
+  {
+   "type": "section",
+   "anchor": "s-prilohy",
+   "kind": "prilohy",
+   "label": "Prílohy",
+   "children": [
+    {
+     "type": "provision",
+     "anchor": "priloha-k-zakonu-c-555-2005-z-z",
+     "label": "Príloha k zákonu č. 555/2005 Z. z.",
+     "paragraphs": [
+      {
+       "anchor": "priloha-k-zakonu-c-555-2005-z-z-x1",
+       "text": "",
+       "items": [
+        {
+         "anchor": "priloha-k-zakonu-c-555-2005-z-z-x1-i1",
+         "label": "",
+         "letter": "i1",
+         "text": "ZOZNAM PREBERANÝCH PRÁVNE ZÁVÄZNÝCH AKTOV EURÓPSKEJ ÚNIE",
+         "items": [
+          {
+           "anchor": "priloha-k-zakonu-c-555-2005-z-z-x1-i1-1",
+           "label": "1.",
+           "letter": "1",
+           "text": "Smernica Európskeho parlamentu a Rady 2010/31/EÚ z 19. mája 2010 o energetickej hospodárnosti budov (prepracované znenie) (Ú. v. EÚ L 153, 18. 6. 2010)."
+          },
+          {
+           "anchor": "priloha-k-zakonu-c-555-2005-z-z-x1-i1-2",
+           "label": "2.",
+           "letter": "2",
+           "text": "Smernica Európskeho parlamentu a Rady (EÚ) 2018/844 z 30. mája 2018, ktorou sa mení smernica 2010/31/EÚ o energetickej hospodárnosti budov a smernica 2012/27/EÚ o energetickej efektívnosti (Ú. v. EÚ L 156, 19. 06. 2018)."
+          }
+         ]
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  }
+ ],
+ "footnotes": [
+  {
+   "anchor": "fn-1",
+   "label": "1)",
+   "text": "§ 2 ods. 1 zákona č. 49/2002 Z. z. o pamiatkovom fonde."
+  },
+  {
+   "anchor": "fn-2",
+   "label": "2)",
+   "text": "§ 2 ods. 9 Stavebného zákona."
+  },
+  {
+   "anchor": "fn-3a",
+   "label": "3a)",
+   "text": "Delegované nariadenie Komisie (EÚ) č. 244/2012 zo 16. januára 2012, ktorým sa dopĺňa smernica Európskeho parlamentu a Rady 2010/31/EÚ o energetickej hospodárnosti budov vytvorením rámca porovnávacej metodiky na výpočet nákladovo optimálnych úrovní minimálnych požiadaviek na energetickú hospodárnosť budov a prvkov budov (Ú. v. EÚ L 81, 21. 3. 2012)."
+  },
+  {
+   "anchor": "fn-3b",
+   "label": "3b)",
+   "text": "§ 18 ods. 1 zákona č. 321/2014 Z. z. o energetickej efektívnosti a o zmene a doplnení niektorých zákonov v znení zákona č. 4/2019 Z. z."
+  },
+  {
+   "anchor": "fn-4",
+   "label": "4)",
+   "text": "Príloha č. 2 položka č. 18a zákona č. 455/1991 Zb. o živnostenskom podnikaní (živnostenský zákon) v znení zákona č. 555/2005 Z. z."
+  },
+  {
+   "anchor": "fn-5",
+   "label": "5)",
+   "text": "§ 21 a 22 zákona Slovenskej národnej rady č. 138/1992 Zb. o autorizovaných architektoch a autorizovaných stavebných inžinieroch v znení neskorších predpisov."
+  },
+  {
+   "anchor": "fn-5a",
+   "label": "5a)",
+   "text": "§ 66 ods. 5 Stavebného zákona."
+  },
+  {
+   "anchor": "fn-5b",
+   "label": "5b)",
+   "text": "§ 8a zákona č. 523/2004 Z. z. o rozpočtových pravidlách verejnej správy a o zmene a doplnení niektorých zákonov v znení zákona č. 383/2008 Z. z."
+  },
+  {
+   "anchor": "fn-5c",
+   "label": "5c)",
+   "text": "Napríklad čl. 107 a 108 zmluvy o fungovaní Európskej únie (Ú. v. EÚ C 83, 30. 3. 2010), nariadenie Komisie (ES) č. 800/2008 zo 6. augusta 2008 o vyhlásení určitých kategórií pomoci za zlučiteľné so spoločným trhom podľa čl. 87 a 88 zmluvy (Všeobecné nariadenie o skupinových výnimkách) (Ú. v. EÚ L 214. 9. 8. 2008)."
+  },
+  {
+   "anchor": "fn-5ca",
+   "label": "5ca)",
+   "text": "§ 60 ods. 3 vyhlášky Úradu geodézie, kartografie a katastra Slovenskej republiky č. 461/2009 Z. z., ktorou sa vykonáva zákon Národnej rady Slovenskej republiky č. 162/1995 Z. z. o katastri nehnuteľností a o zápise vlastníckych a iných práv k nehnuteľnostiam (katastrálny zákon) v znení neskorších predpisov."
+  },
+  {
+   "anchor": "fn-5d",
+   "label": "5d)",
+   "text": "STN 73 0540-2 Tepelná ochrana budov. Tepelnotechnické vlastnosti stavebných konštrukcií a budov. Časť 2: Funkčné požiadavky (73 0540)."
+  },
+  {
+   "anchor": "fn-5e",
+   "label": "5e)",
+   "text": "Zákon č. 150/2013 Z. z. o Štátnom fonde rozvoja bývania v znení zákona č. 276/2015 Z. z."
+  },
+  {
+   "anchor": "fn-6",
+   "label": "6)",
+   "text": "§ 23a ods. 1 zákona Slovenskej národnej rady č. 138/1992 Zb. v znení zákona č. 236/2000 Z. z."
+  },
+  {
+   "anchor": "fn-7",
+   "label": "7)",
+   "text": "Zákon Slovenskej národnej rady č. 372/1990 Zb. o priestupkoch v znení neskorších predpisov."
+  },
+  {
+   "anchor": "fn-8",
+   "label": "8)",
+   "text": "Zákon č. 71/1967 Zb. o správnom konaní (správny poriadok) v znení neskorších predpisov."
+  }
+ ]
+}
