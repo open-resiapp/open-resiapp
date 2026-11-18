@@ -6,6 +6,7 @@ import { db } from "@/db";
 import {
   accountingSettings,
   auditLog,
+  bankAppCredentials,
   bankConnections,
   payments,
 } from "../db/schema";
@@ -26,19 +27,26 @@ import {
   pickAccountUid,
   pickPsuType,
   type EbAspsp,
+  type EnableBankingErrorCode,
   type EbSessionResponse,
   type EbTransactionsPage,
   type EnableBankingConfig,
   type MappedEbLine,
   type StoredEbAccount,
 } from "./enable-banking-format";
-import { signEnableBankingJwt } from "./enable-banking-jwt";
+import {
+  isValidEnableBankingAppId,
+  normalizeEnableBankingPrivateKey,
+  signEnableBankingJwt,
+} from "./enable-banking-jwt";
+import { SecretBoxError, openSecret, sealSecret } from "@/lib/secret-box";
 
 // Enable Banking PSD2 connector (BYT-20261118-001). Same shape as the Fio
 // connector (fio.ts): per-dom row in mod_accounting_bank_connections, the
 // shared import pipeline, an injectable HTTP layer for tests. App-level
-// credentials come from env — one Enable Banking application per instance
-// (self-host: the HOA's own restricted-mode app; cloud: injected secret).
+// credentials — one Enable Banking application per instance — come from env
+// (cloud: injected secret) or, when env is empty, from the admin-entered,
+// encrypted row in mod_accounting_bank_app_credentials (self-host).
 // token = Enable Banking session_id; never returned to clients.
 
 type Country = "sk" | "cz";
@@ -55,7 +63,16 @@ interface AppCredentials {
   apiBase: string;
 }
 
-function loadCredentials(): AppCredentials | null {
+type CredentialSource = "env" | "db";
+
+function apiBase(): string {
+  return (
+    process.env.ENABLE_BANKING_API_URL?.trim() || ENABLE_BANKING_API
+  ).replace(/\/$/, "");
+}
+
+/** Env credentials (cloud-injected / self-host env). Win over the DB row. */
+function envCredentials(): AppCredentials | null {
   const appId = process.env.ENABLE_BANKING_APP_ID?.trim();
   if (!appId) return null;
   let privateKey = process.env.ENABLE_BANKING_PRIVATE_KEY?.trim() ?? "";
@@ -72,14 +89,53 @@ function loadCredentials(): AppCredentials | null {
   if (!privateKey) return null;
   // Env files often carry the PEM on one line with literal "\n".
   privateKey = privateKey.replace(/\\n/g, "\n");
-  const apiBase = (
-    process.env.ENABLE_BANKING_API_URL?.trim() || ENABLE_BANKING_API
-  ).replace(/\/$/, "");
-  return { appId, privateKey, apiBase };
+  return { appId, privateKey, apiBase: apiBase() };
 }
 
-export function isEnableBankingConfigured(): boolean {
-  return loadCredentials() !== null;
+/** True when the instance env carries Enable Banking app credentials. */
+function envManaged(): boolean {
+  return Boolean(process.env.ENABLE_BANKING_APP_ID?.trim());
+}
+
+async function loadCredentialRow() {
+  const [row] = await db
+    .select({
+      id: bankAppCredentials.id,
+      appId: bankAppCredentials.appId,
+      privateKeyEnc: bankAppCredentials.privateKeyEnc,
+      keyFingerprint: bankAppCredentials.keyFingerprint,
+      updatedAt: bankAppCredentials.updatedAt,
+    })
+    .from(bankAppCredentials)
+    .where(eq(bankAppCredentials.provider, "enable_banking"));
+  return row ?? null;
+}
+
+/**
+ * Resolves the app credentials: env first, then the admin-entered DB row.
+ * A row that no longer decrypts (AUTH_SECRET rotated) counts as missing —
+ * the settings page asks the admin to enter the key again.
+ */
+async function loadCredentials(): Promise<AppCredentials | null> {
+  if (envManaged()) return envCredentials();
+  const row = await loadCredentialRow();
+  if (!row) return null;
+  try {
+    return {
+      appId: row.appId,
+      privateKey: openSecret(row.privateKeyEnc, KEY_PURPOSE),
+      apiBase: apiBase(),
+    };
+  } catch (err) {
+    if (err instanceof SecretBoxError) return null;
+    throw err;
+  }
+}
+
+const KEY_PURPOSE = "enable-banking-private-key" as const;
+
+export async function isEnableBankingConfigured(): Promise<boolean> {
+  return (await loadCredentials()) !== null;
 }
 
 export const ENABLE_BANKING_CALLBACK_PATH =
@@ -102,22 +158,64 @@ export function enableBankingRedirectUrl(): string | null {
   }
 }
 
-/** Setup status for the settings guide — never exposes the key itself. */
-export function getEnableBankingAppInfo(): {
+function maskAppId(appId: string | null | undefined): string | null {
+  if (!appId) return null;
+  return appId.length > 8 ? `${appId.slice(0, 4)}…${appId.slice(-4)}` : appId;
+}
+
+export interface EnableBankingAppInfo {
   configured: boolean;
+  /** Where the credentials come from; null = none entered yet. */
+  source: CredentialSource | null;
   appIdMasked: string | null;
+  keyFingerprint: string | null;
+  updatedAt: string | null;
+  /** DB row exists but no longer decrypts (AUTH_SECRET changed). */
+  keyUnreadable: boolean;
   redirectUrl: string | null;
-} {
-  const creds = loadCredentials();
-  const appId = creds?.appId ?? process.env.ENABLE_BANKING_APP_ID?.trim();
+}
+
+/** Setup status for the settings page — never exposes the key itself. */
+export async function getEnableBankingAppInfo(): Promise<EnableBankingAppInfo> {
+  const redirectUrl = enableBankingRedirectUrl();
+  if (envManaged()) {
+    const creds = envCredentials();
+    return {
+      configured: creds !== null,
+      source: "env",
+      appIdMasked: maskAppId(process.env.ENABLE_BANKING_APP_ID?.trim()),
+      keyFingerprint: null,
+      updatedAt: null,
+      keyUnreadable: false,
+      redirectUrl,
+    };
+  }
+  const row = await loadCredentialRow();
+  if (!row) {
+    return {
+      configured: false,
+      source: null,
+      appIdMasked: null,
+      keyFingerprint: null,
+      updatedAt: null,
+      keyUnreadable: false,
+      redirectUrl,
+    };
+  }
+  let readable = true;
+  try {
+    openSecret(row.privateKeyEnc, KEY_PURPOSE);
+  } catch {
+    readable = false;
+  }
   return {
-    configured: creds !== null,
-    appIdMasked: appId
-      ? appId.length > 8
-        ? `${appId.slice(0, 4)}…${appId.slice(-4)}`
-        : appId
-      : null,
-    redirectUrl: enableBankingRedirectUrl(),
+    configured: readable,
+    source: "db",
+    appIdMasked: maskAppId(row.appId),
+    keyFingerprint: row.keyFingerprint,
+    updatedAt: row.updatedAt.toISOString(),
+    keyUnreadable: !readable,
+    redirectUrl,
   };
 }
 
@@ -126,7 +224,11 @@ export function getEnableBankingAppInfo(): {
 export type EbFetchLike = (
   url: string,
   init: { method: string; headers: Record<string, string>; body?: string }
-) => Promise<{ ok: boolean; status: number; json(): Promise<unknown> }>;
+) => Promise<{
+  ok: boolean;
+  status: number;
+  json: () => Promise<unknown>;
+}>;
 
 interface CallOpts {
   fetchImpl?: EbFetchLike;
@@ -136,9 +238,15 @@ interface CallOpts {
 async function call<T>(
   method: "GET" | "POST" | "DELETE",
   path: string,
-  opts: CallOpts & { body?: unknown; expiredOnAuthError?: boolean }
+  opts: CallOpts & {
+    body?: unknown;
+    /** Code thrown on 401/403 (default: generic EB_API_ERROR). */
+    authErrorCode?: EnableBankingErrorCode;
+    /** Explicit credentials (credential check before saving). */
+    creds?: AppCredentials;
+  }
 ): Promise<T> {
-  const creds = loadCredentials();
+  const creds = opts.creds ?? (await loadCredentials());
   if (!creds) throw new EnableBankingError("EB_NOT_CONFIGURED");
   const fetchImpl = opts.fetchImpl ?? (fetch as unknown as EbFetchLike);
   let response;
@@ -161,15 +269,150 @@ async function call<T>(
   if (!response.ok) {
     if (response.status === 429) throw new EnableBankingError("EB_RATE_LIMITED");
     if (
-      opts.expiredOnAuthError &&
+      opts.authErrorCode &&
       (response.status === 401 || response.status === 403)
     ) {
-      throw new EnableBankingError("EB_CONSENT_EXPIRED");
+      throw new EnableBankingError(opts.authErrorCode);
     }
     throw new EnableBankingError("EB_API_ERROR", `HTTP ${response.status}`);
   }
   if (response.status === 204) return undefined as T;
   return (await response.json()) as T;
+}
+
+// ── app credentials (admin) ────────────────────────────
+
+export interface EnableBankingCredentialCheck {
+  /** Enable Banking says the application is active (restricted or full). */
+  appActive: boolean | null;
+  /** Our callback URL is among the app's registered redirect URLs. */
+  redirectRegistered: boolean | null;
+  environment: string | null;
+}
+
+/**
+ * Admin enters the app id + private key in Pokročilé → Prepojenie s bankou.
+ * The pair is verified against Enable Banking (GET /application — a bad key
+ * or a wrong app id is rejected there) BEFORE anything is stored; the key is
+ * stored encrypted. Returns the application status so the UI can warn about
+ * an inactive app or an unregistered redirect URL (both fixable later in the
+ * Enable Banking control panel, so they do not block saving).
+ */
+export async function saveEnableBankingCredentials(
+  input: {
+    entityId: string;
+    actorId: string;
+    appId: string;
+    privateKey: string;
+  },
+  opts: CallOpts = {}
+): Promise<EnableBankingCredentialCheck> {
+  if (envManaged()) throw new EnableBankingError("EB_CREDENTIALS_FROM_ENV");
+  const appId = input.appId.trim();
+  if (!isValidEnableBankingAppId(appId)) {
+    throw new EnableBankingError("EB_INVALID_APP_ID");
+  }
+  const { pem, fingerprint } = normalizeEnableBankingPrivateKey(input.privateKey);
+
+  let sealed: string;
+  try {
+    sealed = sealSecret(pem, KEY_PURPOSE);
+  } catch (err) {
+    if (err instanceof SecretBoxError) {
+      throw new EnableBankingError("EB_SECRET_UNAVAILABLE");
+    }
+    throw err;
+  }
+
+  const app = await call<{
+    active?: boolean;
+    redirect_urls?: string[];
+    environment?: string;
+  }>("GET", "/application", {
+    ...opts,
+    creds: { appId, privateKey: pem, apiBase: apiBase() },
+    authErrorCode: "EB_CREDENTIALS_REJECTED",
+  });
+  const redirectUrl = enableBankingRedirectUrl();
+  const check: EnableBankingCredentialCheck = {
+    appActive: typeof app?.active === "boolean" ? app.active : null,
+    redirectRegistered:
+      redirectUrl && Array.isArray(app?.redirect_urls)
+        ? app.redirect_urls.includes(redirectUrl)
+        : null,
+    environment: typeof app?.environment === "string" ? app.environment : null,
+  };
+
+  const now = opts.now ?? new Date();
+  await db.transaction(async (tx) => {
+    const [row] = await tx
+      .insert(bankAppCredentials)
+      .values({
+        provider: "enable_banking",
+        appId,
+        privateKeyEnc: sealed,
+        keyFingerprint: fingerprint,
+        updatedById: input.actorId,
+        updatedAt: now,
+      })
+      .onConflictDoUpdate({
+        target: bankAppCredentials.provider,
+        set: {
+          appId,
+          privateKeyEnc: sealed,
+          keyFingerprint: fingerprint,
+          updatedById: input.actorId,
+          updatedAt: now,
+        },
+      })
+      .returning({ id: bankAppCredentials.id });
+    await tx.insert(auditLog).values({
+      entityId: input.entityId,
+      actorId: input.actorId,
+      action: "update",
+      tableName: "mod_accounting_bank_app_credentials",
+      recordId: row.id,
+      // Never the key — fingerprint + masked id only.
+      after: {
+        provider: "enable_banking",
+        appId: maskAppId(appId),
+        keyFingerprint: fingerprint,
+        environment: check.environment,
+      },
+      justification: "enable banking app credentials saved",
+    });
+  });
+  return check;
+}
+
+/**
+ * Undo path: deletes the stored credentials. An existing bank connection
+ * stays in the DB but cannot sync until credentials are entered again
+ * (same app → it keeps working; another app → reconnect the bank).
+ */
+export async function deleteEnableBankingCredentials(input: {
+  entityId: string;
+  actorId: string;
+}): Promise<void> {
+  if (envManaged()) throw new EnableBankingError("EB_CREDENTIALS_FROM_ENV");
+  const row = await loadCredentialRow();
+  if (!row) return;
+  await db.transaction(async (tx) => {
+    await tx.delete(bankAppCredentials).where(eq(bankAppCredentials.id, row.id));
+    await tx.insert(auditLog).values({
+      entityId: input.entityId,
+      actorId: input.actorId,
+      action: "delete",
+      tableName: "mod_accounting_bank_app_credentials",
+      recordId: row.id,
+      before: {
+        provider: "enable_banking",
+        appId: maskAppId(row.appId),
+        keyFingerprint: row.keyFingerprint,
+      },
+      justification: "enable banking app credentials removed",
+    });
+  });
 }
 
 // ── connection state ───────────────────────────────────
@@ -209,7 +452,7 @@ async function loadConnection(entityId: string) {
 export async function getEnableBankingConnection(
   entityId: string
 ): Promise<EnableBankingState> {
-  const configured = isEnableBankingConfigured();
+  const configured = await isEnableBankingConfigured();
   const row = await loadConnection(entityId);
   if (!row) {
     return {
@@ -592,7 +835,7 @@ export async function syncEnableBanking(
       res = await call<EbTransactionsPage>(
         "GET",
         `/accounts/${encodeURIComponent(row.config.accountUid)}/transactions?${params}`,
-        { ...opts, expiredOnAuthError: true }
+        { ...opts, authErrorCode: "EB_CONSENT_EXPIRED" }
       );
     } catch (err) {
       // A stale continuation key must not wedge the connection: drop the

@@ -11,6 +11,9 @@
  *   - counterparty side (debtor on credits, creditor on debits)
  *   - session account shapes, account auto-pick, consent cap, psu_type
  *   - JWT header/claims shape and a valid RS256 signature
+ *   - admin-entered key: PEM validation/normalization, app id shape
+ *   - secret-box: AES-GCM round trip; tamper, wrong secret, bad format
+ *     all fail closed
  */
 import { createVerify, generateKeyPairSync } from "node:crypto";
 import {
@@ -26,7 +29,12 @@ import {
   EnableBankingError,
   type EbTransaction,
 } from "@modules/accounting/src/lib/enable-banking-format";
-import { signEnableBankingJwt } from "@modules/accounting/src/lib/enable-banking-jwt";
+import {
+  isValidEnableBankingAppId,
+  normalizeEnableBankingPrivateKey,
+  signEnableBankingJwt,
+} from "@modules/accounting/src/lib/enable-banking-jwt";
+import { SecretBoxError, openSecret, sealSecret } from "@/lib/secret-box";
 
 let failures = 0;
 function check(name: string, cond: boolean, detail?: string) {
@@ -206,6 +214,63 @@ console.log("signEnableBankingJwt");
   verifier.update(`${h}.${b}`);
   verifier.end();
   check("signature verifies", verifier.verify(publicKey, Buffer.from(sig, "base64url")));
+}
+
+console.log("normalizeEnableBankingPrivateKey / app id");
+{
+  const rsa = generateKeyPairSync("rsa", {
+    modulusLength: 2048,
+    privateKeyEncoding: { type: "pkcs1", format: "pem" },
+    publicKeyEncoding: { type: "spki", format: "pem" },
+  });
+  const norm = normalizeEnableBankingPrivateKey(`\n  ${rsa.privateKey}  \n`);
+  check("PKCS#1 normalized to PKCS#8", norm.pem.startsWith("-----BEGIN PRIVATE KEY-----"));
+  check("fingerprint 16 hex", /^[0-9a-f]{16}$/.test(norm.fingerprint), norm.fingerprint);
+  const oneLine = rsa.privateKey.trim().replace(/\n/g, "\\n");
+  check("literal \\n one-liner accepted",
+    normalizeEnableBankingPrivateKey(oneLine).fingerprint === norm.fingerprint);
+  check("normalized key still signs",
+    signEnableBankingJwt({ appId: "a", privateKey: norm.pem }).split(".").length === 3);
+  const ec = generateKeyPairSync("ec", {
+    namedCurve: "P-256",
+    privateKeyEncoding: { type: "pkcs8", format: "pem" },
+    publicKeyEncoding: { type: "spki", format: "pem" },
+  });
+  throwsCode("EC key rejected", () => normalizeEnableBankingPrivateKey(ec.privateKey), "EB_INVALID_KEY");
+  throwsCode("public key rejected", () => normalizeEnableBankingPrivateKey(rsa.publicKey), "EB_INVALID_KEY");
+  throwsCode("garbage rejected",
+    () => normalizeEnableBankingPrivateKey("-----BEGIN PRIVATE KEY-----\nnope\n-----END PRIVATE KEY-----"),
+    "EB_INVALID_KEY");
+  check("uuid app id ok", isValidEnableBankingAppId("1b2c3d4e-0000-4a5b-9c8d-112233445566"));
+  check("app id with space rejected", !isValidEnableBankingAppId("abc def"));
+  check("empty app id rejected", !isValidEnableBankingAppId(""));
+}
+
+console.log("secret-box");
+{
+  const secret = "x".repeat(48);
+  const sealed = sealSecret("top secret pem", "enable-banking-private-key", secret);
+  check("format v1.iv.tag.ct", /^v1\.[\w-]+\.[\w-]+\.[\w-]+$/.test(sealed));
+  check("not plaintext", !sealed.includes("top secret"));
+  check("round trip", openSecret(sealed, "enable-banking-private-key", secret) === "top secret pem");
+  check("fresh iv each seal", sealSecret("a", "enable-banking-private-key", secret) !== sealSecret("a", "enable-banking-private-key", secret));
+  const fails = (name: string, fn: () => unknown) => {
+    try {
+      fn();
+      failures++;
+      console.error(`  FAIL ${name} — did not throw`);
+    } catch (err) {
+      check(name, err instanceof SecretBoxError && err.code === "SECRET_UNREADABLE", String(err));
+    }
+  };
+  fails("wrong secret fails", () => openSecret(sealed, "enable-banking-private-key", "y".repeat(48)));
+  const parts = sealed.split(".");
+  const ct = Buffer.from(parts[3], "base64url");
+  ct[0] ^= 1;
+  fails("tampered ciphertext fails", () =>
+    openSecret([parts[0], parts[1], parts[2], ct.toString("base64url")].join("."), "enable-banking-private-key", secret));
+  fails("malformed fails", () => openSecret("v1.abc", "enable-banking-private-key", secret));
+  fails("unknown version fails", () => openSecret(sealed.replace(/^v1/, "v9"), "enable-banking-private-key", secret));
 }
 
 if (failures > 0) {

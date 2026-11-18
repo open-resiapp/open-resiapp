@@ -47,10 +47,13 @@ accounts, volume-priced production.
 - New bank provider `enable_banking` beside `fio`, using the shared
   `importNormalizedLines()` pipeline (dedupe, VS matching, auto-post,
   reconciliation queue) unchanged.
-- App-level credentials from env (`ENABLE_BANKING_APP_ID`,
-  `ENABLE_BANKING_PRIVATE_KEY`): one Enable Banking application per instance.
+- App-level credentials: one Enable Banking application per instance.
+  Resolution order: env (`ENABLE_BANKING_APP_ID` + `ENABLE_BANKING_PRIVATE_KEY`
+  / `_FILE`) → admin-entered row in `mod_accounting_bank_app_credentials`.
   - **Self-host**: the HOA registers its own app in the Enable Banking control
-    panel (restricted mode, free) and links its own account there.
+    panel (restricted mode, free), links its own account there, and the admin
+    enters app id + private key in Pokročilé → Prepojenie s bankou (2026-11-18
+    owner decision: "aby si to človek vedel napísať sám").
   - **Cloud**: open-resiapp-cloud injects our production app's credentials as
     per-instance secrets (`config_service.get_env_vars_for_ecs()`). Cloud-side
     change is a follow-up handoff, not this spec.
@@ -102,6 +105,24 @@ accounts, volume-priced production.
     `config` = `{ aspspName, aspspCountry, accountUid | null,
     accounts: [{ uid, iban, name, currency }] }`.
   - Fio rows unchanged (`config` null).
+- `mod_accounting_bank_app_credentials` (migration 0088): `provider`
+  (unique), `app_id`, `private_key_enc`, `key_fingerprint`, `updated_by_id`
+  (→ users, `set null`), `created_at`, `updated_at`. Instance-level (keyed by
+  provider, not dom): the registered redirect URL is the instance origin.
+  - `private_key_enc` = AES-256-GCM (`src/lib/secret-box.ts`), key =
+    HMAC-SHA256(AUTH_SECRET‖NEXTAUTH_SECRET, "open-housing/secret-box/v1/
+    <purpose>"), purpose bound as AAD, format `v1.<iv>.<tag>.<ct>`. No new env
+    var; every replica derives the same key. Rotating AUTH_SECRET → row
+    unreadable → page shows "zadajte kľúč znova" (`keyUnreadable`), connector
+    treats it as not configured.
+  - The key is normalized (RSA only, re-exported PKCS#8) and **verified
+    against Enable Banking `GET /application` before anything is stored**
+    (401/403 → `EB_CREDENTIALS_REJECTED`). The response's `active` and
+    `redirect_urls` drive non-blocking warnings (app not yet activated,
+    callback URL not registered).
+  - Never returned to any client; UI shows masked app id + 16-hex SHA-256
+    fingerprint of the public key. Audit log row on save/delete (fingerprint,
+    masked id — never the key).
 - Every place that lists bank sources (`inArray(payments.source, …)`, TS
   unions, MCP accounting actions, PaymentsList label) gains
   `enable_banking_api` in the same PR as the migration (CLAUDE.md enum rule).
@@ -176,6 +197,8 @@ accounts, volume-priced production.
 | `/api/accounting/enable-banking/callback` | GET | bank redirect target → session → redirect to Platby page with `?eb=connected|<code>` |
 | `/api/accounting/enable-banking/account` | POST | `{ accountUid }` pick |
 | `/api/accounting/enable-banking/sync` | POST | manual sync → `ImportSummary` |
+| `/api/accounting/enable-banking/credentials` | PUT | **admin only** (writer + `manageSettings`): `{ appId, privateKey }` → verify → store encrypted → `{ check: { appActive, redirectRegistered, environment } }` |
+| `/api/accounting/enable-banking/credentials` | DELETE | **admin only**: remove stored credentials (undo path); connection row stays |
 
 ### UI
 **Pokročilé → Prepojenie s bankou** (`/settings/advanced/bank`) — the setup
@@ -189,8 +212,12 @@ treasurers (no access to the admin-only hub) reach it via the Platby link.
      button (error if `NEXTAUTH_URL`/`APP_URL` is missing),
   3. create the key (in-browser in the control panel, or the `openssl`
      command with copy button), never share the private key,
-  4. put `ENABLE_BANKING_APP_ID` + key into env and restart — the key is
-     deliberately NOT entered through the web UI (no secret storage in DB),
+  4. enter the application ID + private key (paste or upload .pem) — "Overiť
+     a uložiť" verifies against Enable Banking, then stores encrypted; after
+     that only masked id + fingerprint + date with "Zmeniť kľúč" /
+     "Odstrániť kľúč" (confirm). Env vars are a collapsed alternative; when
+     env is set the step is read-only ("nastavené v prostredí servera"). A
+     treasurer sees only status + "ask the admin",
   5. link the HOA account in the control panel (activates restricted mode),
   6. connect the bank on this page.
   Footer: restricted mode is free for own accounts; multi-community operators
@@ -214,8 +241,21 @@ consent needs renewal or an account must be picked.
    enabled; the page 404s with accounting disabled and redirects non-writers
    to /settings.
 1b. The guide shows the exact redirect URL from `NEXTAUTH_URL`/`APP_URL`
-   (copyable) or a clear error when neither is set; the private key is never
-   displayed or accepted by the UI.
+   (copyable) or a clear error when neither is set.
+1c. Admin saves app id + private key: an invalid PEM / non-RSA key →
+   `EB_INVALID_KEY`, malformed id → `EB_INVALID_APP_ID`, pair refused by
+   Enable Banking → `EB_CREDENTIALS_REJECTED`; in all three cases nothing is
+   stored. On success the DB holds only ciphertext (no `PRIVATE KEY` text in
+   `private_key_enc`), the page shows masked id + fingerprint and the
+   connection card appears; the key is never returned by any route.
+1d. Non-admin writer (treasurer) gets 403 `EB_FORBIDDEN` on PUT/DELETE
+   credentials. With `ENABLE_BANKING_APP_ID` set in env, PUT/DELETE return
+   `EB_CREDENTIALS_FROM_ENV` and the UI shows the read-only env notice.
+1e. Undo: "Odstrániť kľúč" deletes the row (audit logged); state flips to
+   `configured: false`, the bank connection row and imported payments stay;
+   re-entering the same app's key resumes syncing without reconnecting.
+1f. After AUTH_SECRET changes, the page shows `credentialsUnreadable` and the
+   form; sync returns `EB_NOT_CONFIGURED` (no crash).
 2. Treasurer picks a bank and is redirected to the bank's login; non-writers
    get 403 on every Enable Banking route.
 3. Callback with a wrong/missing `state` creates no connection and lands on the
@@ -271,8 +311,11 @@ consent needs renewal or an account must be picked.
 - [x] Review fixes (2026-11-18): IBAN guard `EB_IBAN_MISMATCH`, lastSyncAt
       reset on account change, first-sync floor at other sources, cross-source
       content dedupe (`possibleDuplicates`), page-cap cursor (AC 14–16)
-- [ ] i18n for `EB_IBAN_MISMATCH` + `summaryPossibleDuplicates` (sk/en/cs) —
-      keys listed in the review-fix report, not yet in messages/
+- [x] i18n for `EB_IBAN_MISMATCH` + `summaryPossibleDuplicates` (present in
+      sk/en/cs as of 2026-11-18)
+- [x] Admin-entered credentials in DB (encrypted, verified via
+      `GET /application`), migration `0088_bank_app_credentials`, secret-box +
+      key-normalize golden checks, AC 1c–1f
 - [ ] Integration tests for AC 14–16 (DB-backed; golden check only covers
       `pickAccountUid`)
 - [ ] `pnpm test:accounting-enable-banking` (owner runs)

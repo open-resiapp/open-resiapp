@@ -17,6 +17,13 @@ export const EB_ERROR_CODES = [
   "EB_INVALID_AMOUNT",
   "EB_CURRENCY_MISMATCH",
   "EB_IBAN_MISMATCH",
+  // App credentials entered in Pokročilé → Prepojenie s bankou
+  "EB_INVALID_APP_ID",
+  "EB_INVALID_KEY",
+  "EB_CREDENTIALS_REJECTED",
+  "EB_CREDENTIALS_FROM_ENV",
+  "EB_SECRET_UNAVAILABLE",
+  "EB_FORBIDDEN",
 ] as const;
 
 export type EnableBankingErrorCode = (typeof EB_ERROR_CODES)[number];
