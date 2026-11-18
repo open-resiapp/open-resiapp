@@ -15,7 +15,9 @@ import { useShell } from "@/components/layout/ShellContext";
 export default function BottomTabBar() {
   const tNav = useTranslations("Nav");
   const pathname = usePathname();
-  const { navItems, badges } = useShell();
+  const { navItems: allItems, badges } = useShell();
+  // Secondary (reference) items stay out of the 4-slot tab bar.
+  const navItems = allItems.filter((item) => !item.secondary);
 
   if (navItems.length === 0) return null;
 

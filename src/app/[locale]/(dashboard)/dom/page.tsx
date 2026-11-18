@@ -38,6 +38,9 @@ export default async function HousePage() {
             <LinkRow href="/documents" icon="file" label={t("documents")} hint={t("documentsHint")} />
           </li>
         ) : null}
+        <li>
+          <LinkRow href="/zakony" icon="file" label={t("laws")} hint={t("lawsHint")} />
+        </li>
       </ul>
 
       <HomeSection title={t("contacts")}>

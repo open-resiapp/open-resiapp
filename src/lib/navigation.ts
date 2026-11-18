@@ -23,7 +23,8 @@ export type NavLabelKey =
   | "owners"
   | "documents"
   | "settings"
-  | "house";
+  | "house"
+  | "laws";
 
 export interface NavItem {
   id: string;
@@ -44,6 +45,11 @@ export interface NavItem {
   /** Hidden unless the user holds an active membership at a unit. */
   requiresOwnUnit?: boolean;
   badgeKey?: NavBadgeKey;
+  /**
+   * Reference destination: listed in the sidebar below the main items,
+   * never in the owner bottom tab bar (owners reach it from Dom).
+   */
+  secondary?: boolean;
 }
 
 export interface NavUser {
@@ -127,6 +133,15 @@ export const NAV_ITEMS: readonly NavItem[] = [
     permission: "viewSettings",
   },
   { id: "house", href: "/dom", labelKey: "house", icon: "building", audience: ["owner"] },
+  // Laws library — read-only reference for every active member.
+  {
+    id: "laws",
+    href: "/zakony",
+    labelKey: "laws",
+    icon: "file",
+    audience: ["owner", "board"],
+    secondary: true,
+  },
 ];
 
 /**

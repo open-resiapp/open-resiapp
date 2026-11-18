@@ -1,5 +1,6 @@
 "use client";
 
+import { Fragment } from "react";
 import { useTranslations } from "next-intl";
 
 import { Link, usePathname } from "@/i18n/navigation";
@@ -74,33 +75,41 @@ export default function Sidebar({
         </div>
 
         <nav className="p-4 space-y-1" aria-label={tNav("menu")}>
-          {navItems.map((item) => {
+          {navItems.map((item, index) => {
             const isActive = isNavItemActive(item, pathname);
             const count = item.badgeKey ? badges[item.badgeKey] : undefined;
 
+            // Secondary (reference) items follow the main ones after a divider.
+            const startsSecondary =
+              item.secondary && (index === 0 || !navItems[index - 1].secondary);
+
             return (
-              <Link
-                key={item.id}
-                href={item.href}
-                onClick={onClose}
-                aria-current={isActive ? "page" : undefined}
-                className={`flex items-center gap-3 min-h-[48px] px-4 py-3 rounded-lg text-base font-medium transition-colors ${
-                  isActive
-                    ? "bg-blue-50 text-blue-800 dark:bg-blue-900/40 dark:text-blue-100"
-                    : "text-gray-800 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-800"
-                }`}
-              >
-                <Icon name={item.icon} size={22} className="shrink-0" />
-                <span className="flex-1 min-w-0 truncate">{tNav(item.labelKey)}</span>
-                {count ? (
-                  <span
-                    className="inline-flex items-center justify-center min-w-[1.75rem] h-7 px-2 rounded-full bg-red-600 text-white text-sm font-semibold"
-                    aria-label={tNav("badgeWaiting", { count })}
-                  >
-                    {count}
-                  </span>
+              <Fragment key={item.id}>
+                {startsSecondary ? (
+                  <hr className="my-3 border-gray-200 dark:border-gray-800" />
                 ) : null}
-              </Link>
+                <Link
+                  href={item.href}
+                  onClick={onClose}
+                  aria-current={isActive ? "page" : undefined}
+                  className={`flex items-center gap-3 min-h-[48px] px-4 py-3 rounded-lg text-base font-medium transition-colors ${
+                    isActive
+                      ? "bg-blue-50 text-blue-800 dark:bg-blue-900/40 dark:text-blue-100"
+                      : "text-gray-800 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-800"
+                  }`}
+                >
+                  <Icon name={item.icon} size={22} className="shrink-0" />
+                  <span className="flex-1 min-w-0 truncate">{tNav(item.labelKey)}</span>
+                  {count ? (
+                    <span
+                      className="inline-flex items-center justify-center min-w-[1.75rem] h-7 px-2 rounded-full bg-red-600 text-white text-sm font-semibold"
+                      aria-label={tNav("badgeWaiting", { count })}
+                    >
+                      {count}
+                    </span>
+                  ) : null}
+                </Link>
+              </Fragment>
             );
           })}
         </nav>

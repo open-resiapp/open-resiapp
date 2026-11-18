@@ -14,6 +14,8 @@ const ITEMS: { key: string; href: string; icon: IconName }[] = [
   { key: "connections", href: "/settings/advanced/connections", icon: "link" },
   { key: "import", href: "/admin/import", icon: "upload" },
   { key: "setupGuide", href: "/onboarding", icon: "help" },
+  // Same reader members use (/zakony) — no admin-only copy.
+  { key: "laws", href: "/zakony", icon: "file" },
 ];
 
 export default async function AdvancedSettingsPage({
