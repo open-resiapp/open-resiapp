@@ -78,10 +78,17 @@ export interface CastFailure {
   status: number;
   /** Pre-Phase-6 Slovak message — returned verbatim on the paper path so its behaviour is unchanged. */
   legacyMessage: string;
+  /** Machine-readable detail for callers that map the code further (MCP). */
+  detail?: Record<string, unknown>;
 }
 
-function fail(code: CastErrorCode, status: number, legacyMessage: string = code): CastFailure {
-  return { ok: false, code, status, legacyMessage };
+function fail(
+  code: CastErrorCode,
+  status: number,
+  legacyMessage: string = code,
+  detail?: Record<string, unknown>
+): CastFailure {
+  return detail ? { ok: false, code, status, legacyMessage, detail } : { ok: false, code, status, legacyMessage };
 }
 
 export interface MarkedChoice {
@@ -98,9 +105,13 @@ export interface ValidCast {
 }
 
 /**
- * Eligibility + content checks shared by every cast path, in the same order
- * the pre-Phase-6 POST ran them. `electronic` adds the electronic-only rules
- * (statutory e-voting block, voting window end).
+ * Eligibility + content checks shared by every cast path — web routes and
+ * the MCP ballot path (modules/voting/src/ballots.ts validateBallotCast
+ * maps the failures to McpError) — in the same order the pre-Phase-6 POST
+ * ran them. `electronic` adds the electronic-only rules (statutory e-voting
+ * block, voting window end). `requireOwnerMembership` narrows eligibility to
+ * an active OWNER membership (MCP path); the web routes keep their
+ * historical "any active membership" rule.
  */
 export async function validateCast(input: {
   votingId: string;
@@ -108,6 +119,7 @@ export async function validateCast(input: {
   voterId: string;
   incoming: unknown;
   electronic: boolean;
+  requireOwnerMembership?: boolean;
 }): Promise<ValidCast | CastFailure> {
   const { votingId, flatId, voterId, electronic } = input;
   const incoming: unknown[] = Array.isArray(input.incoming) ? input.incoming : [];
@@ -118,7 +130,7 @@ export async function validateCast(input: {
     .where(eq(votings.id, votingId))
     .limit(1);
   if (!voting || voting.status !== "active") {
-    return fail("VOTING_NOT_ACTIVE", 400, "Hlasovanie nie je aktívne");
+    return fail("VOTING_NOT_ACTIVE", 400, "Hlasovanie nie je aktívne", { exists: Boolean(voting) });
   }
   // Voting window (electronic only — a paper ballot received in time may be
   // entered by the counter after the deadline, as before).
@@ -134,21 +146,23 @@ export async function validateCast(input: {
       400,
       voting.votingType === "meeting"
         ? "Elektronické hlasovanie nie je povolené pre hlasovanie na schôdzi"
-        : "Elektronické hlasovanie nie je povolené pre hlasovanie iniciované štvrtinou vlastníkov"
+        : "Elektronické hlasovanie nie je povolené pre hlasovanie iniciované štvrtinou vlastníkov",
+      { reason: voting.votingType === "meeting" ? "meeting" : "owners_quarter" }
     );
   }
 
-  // Ownership: the voter must hold an active membership on the unit.
+  // Ownership: the voter must hold an active membership on the unit
+  // (an active OWNER membership with requireOwnerMembership).
+  const ownershipConds = [
+    eq(memberships.userId, voterId),
+    eq(memberships.entityId, flatId),
+    eq(memberships.status, "active"),
+  ];
+  if (input.requireOwnerMembership) ownershipConds.push(eq(memberships.role, "owner"));
   const [ownerFlat] = await db
     .select({ id: memberships.id })
     .from(memberships)
-    .where(
-      and(
-        eq(memberships.userId, voterId),
-        eq(memberships.entityId, flatId),
-        eq(memberships.status, "active")
-      )
-    )
+    .where(and(...ownershipConds))
     .limit(1);
   if (!ownerFlat) {
     return fail("NOT_UNIT_OWNER", 400, "Vlastník nevlastní tento byt");
