@@ -2805,6 +2805,39 @@
       "okruh_fpuo": "Fond oprav",
       "okruh_svc": "Služby",
       "okruh_mgmt": "Správa"
+    },
+    "inputErrors": {
+      "required": "Pole „{field}“ je povinné.",
+      "invalid_amount": "Neplatná částka.",
+      "invalid_amounts": "Neplatná částka v poli „{field}“.",
+      "invalid_date": "Neplatné datum v poli „{field}“.",
+      "future_date": "Datum v poli „{field}“ nemůže být v budoucnosti.",
+      "invalid_okruh": "Neplatný okruh nákladů.",
+      "netto_dph_required": "Částka bez DPH i DPH jsou povinné.",
+      "netto_dph_mismatch": "Částka bez DPH a DPH musí dohromady dát částku s DPH.",
+      "invalid_unit": "Neplatná jednotka.",
+      "invalid_method": "Neplatný způsob platby.",
+      "invalid_meter_type": "Neplatný typ měřidla.",
+      "invalid_value": "Neplatná hodnota odečtu.",
+      "fields": {
+        "amountCents": "Částka",
+        "amountNettoCents": "Částka bez DPH",
+        "dphCents": "DPH",
+        "dphRateBp": "Sazba DPH",
+        "supplierName": "Dodavatel",
+        "supplierIco": "IČO",
+        "supplierDic": "DIČ",
+        "supplierIban": "IBAN dodavatele",
+        "invoiceNo": "Číslo faktury",
+        "invoiceDate": "Datum faktury",
+        "okruh": "Okruh",
+        "unitEntityId": "Jednotka",
+        "method": "Způsob platby",
+        "receivedAt": "Datum přijetí",
+        "meterType": "Typ měřidla",
+        "valueMilli": "Hodnota",
+        "readingDate": "Datum odečtu"
+      }
     }
   },
   "Home": {

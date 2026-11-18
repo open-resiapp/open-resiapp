@@ -8,6 +8,7 @@ import {
   voidReading,
 } from "@modules/accounting/src/lib/meters";
 import { validateMeterReadingInput } from "@modules/accounting/src/lib/input-validators";
+import { inputErrorResponse } from "@modules/accounting/src/lib/input-errors.server";
 import { listAccessibleUnits } from "@modules/accounting/src/lib/karta-bytu";
 
 // Meter readings API — owners for their own units, board roles for all
@@ -56,7 +57,7 @@ export async function handlePost(req: NextRequest): Promise<NextResponse> {
   }
   const parsed = validateMeterReadingInput(body);
   if (!parsed.ok) {
-    return NextResponse.json({ error: parsed.message }, { status: 400 });
+    return inputErrorResponse(req, parsed);
   }
   const input = parsed.value;
 

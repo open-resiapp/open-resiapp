@@ -47,8 +47,8 @@ const isoDate = z.string().min(8).max(40);
 
 /** Shared validator field names → MCP tool argument names. */
 const FIELD_ALIAS: Record<string, string> = { unitEntityId: "unitId" };
-function fieldError(field: string): McpError {
-  return validationError(FIELD_ALIAS[field] ?? field);
+function fieldError(field: string, reason?: string): McpError {
+  return validationError(FIELD_ALIAS[field] ?? field, reason ? { reason } : undefined);
 }
 
 async function unitOrThrow(ctx: ActionContext, unitId: string) {
@@ -84,7 +84,7 @@ const matchPayment = defineAction({
   authorize: (ctx) => assertWriter(ctx.principal),
   async validate(ctx, p) {
     const v = validateMatchInput({ unitEntityId: p.unitId });
-    if (!v.ok) throw fieldError(v.field);
+    if (!v.ok) throw fieldError(v.field, v.code);
     const line = await getBankLineState(ctx.root.id, p.paymentId);
     if (!line) throw new McpError("not_found");
     if (line.source !== "bank_import" && line.source !== "fio_api") throw validationError("paymentId");
@@ -161,7 +161,7 @@ const recordPayment = defineAction({
       method: p.method,
       note: p.note,
     });
-    if (!v.ok) throw fieldError(v.field);
+    if (!v.ok) throw fieldError(v.field, v.code);
     await unitOrThrow(ctx, p.unitId);
     // Pin the resolved date so confirm commits exactly what was previewed.
     return { ...p, receivedAt: v.value.receivedAt.toISOString(), note: p.note?.trim() || undefined };
@@ -240,7 +240,7 @@ const postExpenseFromInbox = defineAction({
   authorize: (ctx) => assertWriter(ctx.principal),
   async validate(ctx, p) {
     const v = validateExpenseInput({ ...p });
-    if (!v.ok) throw fieldError(v.field);
+    if (!v.ok) throw fieldError(v.field, v.code);
     const iban = normalizeIban(p.supplierIban);
     if (!iban || !isValidIban(iban)) throw validationError("supplierIban");
     if (p.dueDate && Number.isNaN(new Date(p.dueDate).getTime())) throw validationError("dueDate");
@@ -416,7 +416,7 @@ const submitMeterReading = defineAction({
       readingDate: p.readingDate,
       valueMilli: p.valueMilli,
     });
-    if (!v.ok) throw fieldError(v.field);
+    if (!v.ok) throw fieldError(v.field, v.code);
     const readingDate = notFutureIso(p.readingDate, "readingDate");
     await unitOrThrow(ctx, p.unitId);
     return { ...p, readingDate };
