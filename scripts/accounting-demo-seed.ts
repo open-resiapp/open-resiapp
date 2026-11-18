@@ -103,6 +103,10 @@ async function main() {
       await w(`delete from mod_accounting_unit_persons where unit_entity_id in (select id from entities where root_id = $1)`);
       await w(`delete from mod_accounting_bank_connections where entity_id = $1`);
       await w(`delete from mod_accounting_audit_log where entity_id = $1`);
+      // Reading rounds (BYT-20261118-006) hold a restrict FK to periods;
+      // their reminders / person-months cascade, meter readings set null.
+      await w(`delete from mod_accounting_building_meter_readings where entity_id = $1`);
+      await w(`delete from mod_accounting_reading_rounds where entity_id = $1`);
       await w(`delete from mod_accounting_periods where entity_id = $1`);
       await w(`delete from mod_accounting_unit_settings where entity_id = $1`);
       await w(`delete from mod_accounting_settings where entity_id = $1`);
@@ -116,8 +120,15 @@ async function main() {
       await w(`delete from mod_voting_ballot_photos where ballot_id in (select b.id from mod_voting_ballots b join mod_voting_votings v on b.voting_id = v.id where v.entity_id = $1)`);
       await w(`delete from mod_voting_ballots where voting_id in (select id from mod_voting_votings where entity_id = $1)`);
       await w(`delete from mod_voting_mandates where voting_id in (select id from mod_voting_votings where entity_id = $1)`);
+      await w(`delete from mod_voting_voting_events where voting_id in (select id from mod_voting_votings where entity_id = $1)`);
+      await w(`delete from mod_voting_attendance where voting_id in (select id from mod_voting_votings where entity_id = $1)`);
       await w(`delete from mod_voting_voting_items where voting_id in (select id from mod_voting_votings where entity_id = $1)`);
+      await w(`delete from mod_voting_eligibility_snapshots where unit_entity_id in (select id from entities where root_id = $1)`);
       await w(`delete from mod_voting_votings where entity_id = $1`);
+      // Posts after votings (votings.post_id → community_posts, no action);
+      // responses / RSVPs / notifications cascade.
+      await w(`delete from community_posts where entity_id in (select id from entities where root_id = $1)`);
+      await w(`delete from mod_faults_faults where root_entity_id = $1`); // cascades events, photos, notifications
       await w(`delete from board_members where entity_id = $1`);
       await w(`delete from memberships where entity_id in (select id from entities where root_id = $1)`);
       await w(`delete from entities where root_id = $1`);

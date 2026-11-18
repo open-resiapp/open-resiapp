@@ -416,7 +416,7 @@ export async function listDirectory(rootId: string): Promise<DirectoryListItem[]
   const flat = aliasedTable(entities, "flat");
   const entrance = aliasedTable(entities, "entrance");
   const userIds = baseRows.map((r) => r.userId);
-  const flatRows = userIds.length
+  const flatRows: { userId: string; flatNumber: string; entranceName: string | null }[] = userIds.length
     ? await db
         .select({
           userId: memberships.userId,

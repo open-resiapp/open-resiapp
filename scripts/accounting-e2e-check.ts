@@ -726,6 +726,7 @@ async function main() {
 
   // ── voting→accounting pipeline (AC 513/514/515) ──
   console.log("voting→accounting pipeline");
+  const revisionMonth = Math.min(12, Math.max(8, new Date().getUTCMonth() + 2));
   const rateItemId = randomUUID();
   const expenseItemId = randomUUID();
   const effects = [
@@ -734,11 +735,11 @@ async function main() {
       votingItemId: rateItemId,
       title: "Zvýšenie FPÚO",
       kind: "fpuo_rate_change" as const,
-      // Deterministic effective month (Aug of the test year) so the draft
-      // supersedes the Jan predpis and its months become due below — the
-      // pipeline's own default is firstOfNextMonth, which drifts to next
-      // year when the suite runs in December.
-      params: { newRateCents: 35000, effectiveFrom: `${year}-08-01` },
+      // Effective from the first month not yet posted (karta reads post
+      // every month due by real "now"), at least August, so the draft
+      // supersedes the Jan predpis in the test year and its months become
+      // due below. Still breaks in December (no later month in the year).
+      params: { newRateCents: 35000, effectiveFrom: `${year}-${String(revisionMonth).padStart(2, "0")}-01` },
     },
     {
       votingId: randomUUID(),

@@ -153,6 +153,7 @@ export const USER_FK_REGISTRY: readonly UserFkEntry[] = [
   // ── Accounting (431/2002 §35: 10 years; authorship is part of the record) ──
   { table: "mod_accounting_audit_log", column: "actor_id", onDelete: "restrict", merge: repoint, retained: true, group: "accounting" },
   { table: "mod_accounting_bank_connections", column: "created_by_id", onDelete: "restrict", merge: repoint, retained: true, group: "accounting" },
+  { table: "mod_accounting_bank_app_credentials", column: "updated_by_id", onDelete: "set null", merge: repoint, retained: false, group: "accounting" },
   { table: "mod_accounting_building_meter_readings", column: "created_by_id", onDelete: "restrict", merge: repoint, retained: true, group: "accounting" },
   { table: "mod_accounting_building_meter_readings", column: "voided_by_id", onDelete: "set null", merge: repoint, retained: true, group: "accounting" },
   { table: "mod_accounting_expense_attachments", column: "created_by_id", onDelete: "restrict", merge: repoint, retained: true, group: "accounting" },

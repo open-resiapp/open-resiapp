@@ -82,7 +82,8 @@ async function handler(
     ? itemVotes
     : itemVotes.map((iv) => ({ ...iv, ownerId: null, ownerName: null }));
 
-  const votesByItem = new Map<string, typeof visibleVotes>();
+  type VisibleVote = (typeof visibleVotes)[number];
+  const votesByItem = new Map<string, VisibleVote[]>();
   for (const iv of visibleVotes) {
     const slot = votesByItem.get(iv.itemId) ?? [];
     slot.push(iv);
