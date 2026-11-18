@@ -91,6 +91,19 @@ function deriveKey(purpose: SignedTokenPurpose): Buffer {
     .digest();
 }
 
+/**
+ * A key derived from the auth secret for another INTERNAL integrity use
+ * (e.g. BYT-20261118-009 e-mail ballot signature). The label must not start
+ * with `open-housing/signed-token/` so it never equals a token key. Throws
+ * ConfirmationUnavailableError like every token operation.
+ */
+export function deriveInternalKey(label: string): Buffer {
+  if (label.startsWith("open-housing/signed-token/")) {
+    throw new Error("deriveInternalKey: label collides with token keys");
+  }
+  return createHmac("sha256", serverSecret()).update(label, "utf8").digest();
+}
+
 function b64url(buf: Buffer | string): string {
   return Buffer.from(buf).toString("base64url");
 }

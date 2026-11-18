@@ -160,7 +160,12 @@ const requestBallotConfirmation = defineAction<BallotPayload>({
         marked,
         ballotHash,
       },
-      { clientId: ctx.principal.clientId, pendingActionId: meta.actionId, locale: meta.locale }
+      {
+        source: "mcp",
+        clientId: ctx.principal.clientId,
+        pendingActionId: meta.actionId,
+        locale: meta.locale,
+      }
     );
 
     const sent = await sendBallotConfirmation({

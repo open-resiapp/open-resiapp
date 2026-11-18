@@ -7,9 +7,11 @@ import type { Country, VoteChoice } from "@/types";
 // Vote e-mails (BYT-20261117-002 Phase 6). Strings come from
 // messages/{locale}.json → Email.vote, in the voter's locale.
 //
-//  - sendVoteConfirmationLink: the single-use confirmation link. Opening it
-//    shows a page that states the ballot; only the POST from that page
-//    records the vote (a GET never does — mail scanners prefetch links).
+//  - sendVoteConfirmationLink: the single-use confirmation link of a web
+//    pending ballot (BYT-20261118-009) to /<locale>/voting/confirm/<token>.
+//    Opening it (signed in as the voter) shows the ballot; only the explicit
+//    confirm on that page records the vote (a GET never does — mail
+//    scanners prefetch links).
 //  - sendVoteConfirmation: the receipt after an electronic ballot was
 //    recorded (voter + unit + every item choice + time + ballot hash).
 //    For SK communities it cites §14a ods. 5 zák. 182/1993 Z.z.; the
@@ -75,6 +77,8 @@ export async function sendVoteConfirmationLink(params: {
   votingTitle: string;
   flatNumber: string;
   items: VoteEmailItem[];
+  /** First 12 hex chars of the ballot hash — the confirm page shows the same. */
+  shortHash: string;
   confirmUrl: string;
   expiresAt: Date;
   /** Inline first-vote flow: the same link also activates the new passkey. */
@@ -105,6 +109,9 @@ export async function sendVoteConfirmationLink(params: {
         params.items,
         t
       )}</table>
+      <p style="color: #374151;">${esc(t("linkHash"))} <code style="font-size: 15px;">${esc(
+        params.shortHash
+      )}</code></p>
       <div style="margin: 24px 0; text-align: center;">
         <a href="${esc(params.confirmUrl)}"
            style="display: inline-block; padding: 14px 32px; background-color: #2563eb; color: #ffffff; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 16px;">
@@ -116,6 +123,7 @@ export async function sendVoteConfirmationLink(params: {
           ? `<p style="color: #374151;">${esc(t("linkActivatesPasskey"))}</p>`
           : ""
       }
+      <p style="color: #374151;">${esc(t("linkLoginNote"))}</p>
       <p style="color: #374151;">${esc(t("linkExpiry", { time: expires }))}</p>
       <p style="color: #6b7280; font-size: 14px;">${esc(t("linkNotYou"))}</p>
     </div>

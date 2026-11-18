@@ -23,6 +23,7 @@ import {
   documentProjects,
   mcpPendingActions,
   communityPosts,
+  webauthnCredentials,
 } from "@/db/schema";
 
 // ── Enums ──────────────────────────────────────────────
@@ -260,7 +261,11 @@ export const ballots = pgTable(
       onDelete: "restrict",
     }),
     ballotHash: varchar("ballot_hash", { length: 64 }).notNull(), // commitment over all item choices
-    signature: text("signature"), // passkey assertion (one, over ballotHash)
+    // BYT-20261118-009 §5. passkey: WebAuthn proof JSON (externally
+    // verifiable). email: "hmac-sha256:v1:<hex>" server HMAC over
+    // (voting, unit, owner, ballotHash, confirmedAt, pendingBallotId) —
+    // INTERNAL tamper detection only. NULL: paper / legacy.
+    signature: text("signature"),
     // How the owner actively confirmed this electronic ballot
     // (docs/domain/voting.md): 'passkey' = WebAuthn assertion over the ballot
     // digest (web, BYT-20261117-002 Phase 6); 'email' = single-use email link
@@ -484,9 +489,10 @@ export const eligibilitySnapshots = pgTable(
   })
 );
 
-// ── Pending ballots (BYT-20261117-001 §6) ──────────────
-// A ballot proposed through MCP waits here until the owner clicks the
-// emailed single-use link and confirms while signed in as the same owner.
+// ── Pending ballots (BYT-20261117-001 §6, BYT-20261118-009) ──
+// Every e-mail-confirmed electronic ballot — proposed through MCP or cast
+// on the web — waits here until the owner clicks the emailed single-use
+// link and confirms while signed in as the same owner.
 // Deliberately a SEPARATE table: no results / participation / turnout /
 // external API / audit-bundle query reads it, so a pending ballot can never
 // be counted. Expiry is evaluated at read time (no background job).
@@ -521,7 +527,7 @@ export const pendingBallots = pgTable(
     // Set when the owner confirmed or cancelled through the email link.
     usedAt: timestamp("used_at"),
     failureCode: varchar("failure_code", { length: 64 }),
-    source: varchar("source", { length: 16 }).$type<"mcp">().notNull().default("mcp"),
+    source: varchar("source", { length: 16 }).$type<"mcp" | "web">().notNull().default("mcp"),
     // OAuth client_id string of the AI app that proposed the ballot.
     clientId: varchar("client_id", { length: 2048 }),
     // The MCP pending action whose confirm sent the email (audit link).
@@ -535,6 +541,14 @@ export const pendingBallots = pgTable(
     }),
     // Language of the email + confirm page.
     locale: varchar("locale", { length: 8 }).notNull().default("sk"),
+    // Web inline first-vote flow (BYT-20261118-009 §4): the same link also
+    // activates this still-pending passkey (bound to row id AND credential
+    // id, like the Phase 6 token claims k / kc). NULL for MCP rows.
+    activatePasskeyId: uuid("activate_passkey_id").references(
+      () => webauthnCredentials.id,
+      { onDelete: "set null" }
+    ),
+    activatePasskeyCredentialId: text("activate_passkey_credential_id"),
     createdAt: timestamp("created_at").defaultNow().notNull(),
   },
   (table) => ({

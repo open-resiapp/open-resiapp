@@ -842,7 +842,9 @@
       "withdrawIntro": "Požiadali ste o stiahnutie svojho hlasu v hlasovaní „{voting}“ za byt {flat}.",
       "withdrawButton": "Otvoriť a stiahnuť hlas",
       "withdrawExpiry": "Odkaz platí do {time} a dá sa použiť len raz. Kým stiahnutie na otvorenej stránke nepotvrdíte, váš hlas zostáva platný.",
-      "withdrawNotYou": "Ak ste o stiahnutie nežiadali, tento e-mail ignorujte — váš hlas zostane platný."
+      "withdrawNotYou": "Ak ste o stiahnutie nežiadali, tento e-mail ignorujte — váš hlas zostane platný.",
+      "linkHash": "Kontrolný kód lístka:",
+      "linkLoginNote": "Po otvorení odkazu sa prihláste svojím účtom (tým, na ktorý prišiel tento e-mail). Hlas sa zaznamená až po stlačení „Potvrdzujem hlas“."
     },
     "passkey": {
       "unnamedDevice": "zariadenie",
@@ -3701,7 +3703,7 @@
     "confirmEmail": "Poslať potvrdzovací e-mail",
     "emailSentTitle": "Skontrolujte si e-mail",
     "emailSentTo": "Poslali sme vám e-mail na {email}.",
-    "emailSentHelp": "Otvorte ho na ľubovoľnom zariadení a stlačte tlačidlo Potvrdiť hlas. Odkaz platí do {time}.",
+    "emailSentHelp": "Otvorte ho na ľubovoľnom zariadení, prihláste sa a stlačte tlačidlo Potvrdzujem hlas. Odkaz platí do {time}.",
     "emailNotYetRecorded": "Kým hlas v e-maile nepotvrdíte, nie je zaznamenaný.",
     "emailDoneReload": "Potvrdil(a) som — zobraziť stav",
     "backToReview": "Späť na kontrolu hlasu",
@@ -3724,7 +3726,7 @@
     "withdrawPasskey": "Stiahnuť a potvrdiť prístupovým kľúčom",
     "withdrawEmail": "Poslať e-mail na potvrdenie stiahnutia",
     "withdrawCancel": "Nesťahovať, späť",
-    "withdrawEmailHelp": "Otvorte ho na ľubovoľnom zariadení a stlačte tlačidlo Stiahnuť hlas. Odkaz platí do {time}.",
+    "withdrawEmailHelp": "Otvorte ho na ľubovoľnom zariadení, prihláste sa a stlačte tlačidlo Stiahnuť hlas. Odkaz platí do {time}.",
     "withdrawNotYetDone": "Kým stiahnutie v e-maile nepotvrdíte, váš hlas zostáva platný.",
     "backToReceipt": "Späť na môj hlas",
     "paperLockedNote": "Tento hlas zapísal výbor z vášho papierového hlasovacieho lístka. V aplikácii ho nemôžete zmeniť ani stiahnuť. Ak je v ňom chyba, obráťte sa na výbor.",
@@ -3762,7 +3764,8 @@
       "PASSKEY_PENDING": "Váš prístupový kľúč ešte nie je potvrdený. Otvorte e-mail s odkazom na potvrdenie kľúča alebo potvrďte hlas e-mailom.",
       "PAPER_BALLOT_LOCKED": "Za tento byt už výbor zapísal váš papierový hlasovací lístok. V aplikácii ho nemožno zmeniť ani stiahnuť.",
       "BALLOT_NOT_FOUND": "Hlas sa nenašiel. Možno už bol stiahnutý.",
-      "WITHDRAW_NOT_CONFIRMED_YET": "Hlas ešte nie je stiahnutý. Otvorte e-mail a stlačte tlačidlo Stiahnuť hlas."
+      "WITHDRAW_NOT_CONFIRMED_YET": "Hlas ešte nie je stiahnutý. Otvorte e-mail a stlačte tlačidlo Stiahnuť hlas.",
+      "BALLOT_CONFLICT": "Práve prebieha iná žiadosť o potvrdenie tohto hlasu. Skúste to o chvíľu znova."
     }
   },
   "VoteConfirmPage": {
@@ -3806,6 +3809,10 @@
       "paperLocked": {
         "title": "Hlas je zapísaný z papiera",
         "body": "Za tento byt už výbor zapísal váš papierový hlasovací lístok. Elektronicky ho nemožno zmeniť ani stiahnuť."
+      },
+      "otherVoter": {
+        "title": "Odkaz patrí inému účtu",
+        "body": "Tento odkaz patrí inému vlastníkovi. Odhláste sa a prihláste účtom, na ktorého e-mail prišiel."
       }
     }
   },
@@ -4260,7 +4267,9 @@
       "internal": "Nastala neočakávaná chyba. Hlas nebol odovzdaný.",
       "email_failed": "Potvrdzovací email sa nepodarilo odoslať.",
       "generic": "Hlas sa nepodarilo odovzdať."
-    }
+    },
+    "introWeb": "Tento hlasovací lístok ste pripravili v aplikácii. Skontrolujte každý bod.",
+    "passkeyActivated": "Váš prístupový kľúč je zapnutý."
   },
   "Laws": {
     "title": "Zákony",

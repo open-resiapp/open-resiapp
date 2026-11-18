@@ -3,9 +3,13 @@ import "server-only";
 //
 //   POST /api/ballots/passkey-options    → assertion options; challenge = signed token bound to the ballot
 //                                          ({ action: "withdraw" } → bound to withdrawing the current ballot)
-//   POST /api/ballots/email-confirmation → e-mails a single-use link (token carries the choices)
-//                                          ({ action: "withdraw" } → link that withdraws the current ballot)
-//   POST /api/ballots { confirmation }   → verifies the proof and records the ballot (castConfirmed)
+//   POST /api/ballots/email-confirmation → parks the ballot in mod_voting_pending_ballots
+//                                          (source 'web') and e-mails a single-use link to
+//                                          /<locale>/voting/confirm/<token> — the SAME path as
+//                                          MCP (BYT-20261118-009); confirmed there, signed in
+//                                          ({ action: "withdraw" } → signed-token link that
+//                                          withdraws the current ballot, signed in)
+//   POST /api/ballots { confirmation }   → passkey proof only; records the ballot (castConfirmed)
 //   DELETE /api/ballots { confirmation } → verifies the proof and withdraws the ballot (withdrawConfirmed)
 //
 // Every error is a stable code (CastErrorCode) mapped to VoteCast.errors.* in the UI.
@@ -25,7 +29,6 @@ import {
   type SignedTokenPurpose,
 } from "@/lib/signed-token.server";
 import {
-  activatePendingPasskey,
   assertionChallengeToken,
   createAssertionOptions,
   getPendingPasskey,
@@ -33,7 +36,7 @@ import {
   userPasskeyState,
   verifyAssertion,
 } from "@/lib/webauthn.server";
-import { maskEmail, sendPasskeyAddedNotice } from "@/lib/webauthn-email.server";
+import { maskEmail } from "@/lib/webauthn-email.server";
 import {
   EMAIL_CONFIRMATION_TTL_MS,
   PASSKEY_CHALLENGE_TTL_MS,
@@ -42,14 +45,18 @@ import { routing } from "@/i18n/routing";
 import { getTransporter } from "@/lib/email";
 import { getCommunityRoot } from "@/lib/legacy-compat";
 import {
-  sendVoteConfirmation,
   sendVoteConfirmationLink,
   sendWithdrawConfirmationLink,
 } from "@modules/voting/src/email/vote-confirmation";
-import type { Country, UserRole, VoteChoice } from "@/types";
 import {
-  VALID_CHOICES,
-  ballotTokensRevokedAt,
+  createPendingBallot,
+  markPendingBallotFailed,
+  shortBallotHash,
+} from "@modules/voting/src/pending-ballots";
+import { sendBallotReceipt } from "@modules/voting/src/receipt.server";
+import { toMcpError } from "@/lib/mcp/errors";
+import type { Country, UserRole } from "@/types";
+import {
   claimsMatch,
   currentBallot,
   currentBallotState,
@@ -248,99 +255,129 @@ export async function emailConfirmation(request: NextRequest): Promise<NextRespo
   const locale = pickLocale(body?.locale);
   const withdraw = body?.action === "withdraw";
 
-  let claims: VoteConfirmClaims;
-  let marked: MarkedChoice[] = [];
-  if (withdraw) {
-    const w = await checkWithdraw(votingId, flatId, userId);
-    if (!w.ok) return err(w.code, w.status);
-    claims = { u: userId, v: votingId, e: flatId, d: w.ballotHash, pb: w.pb, l: locale };
-  } else {
-    const v = await validateCast({
-      votingId,
-      flatId,
-      voterId: userId,
-      incoming: body?.items,
-      electronic: true,
-    });
-    if (!v.ok) return err(v.code, v.status);
-    if (await paperLocked(votingId, flatId, userId)) return err("PAPER_BALLOT_LOCKED", 409);
-    marked = v.marked;
-    claims = {
-      u: userId,
-      v: votingId,
-      e: flatId,
-      d: v.ballotHash,
-      pb: await currentBallotState(votingId, flatId, userId),
-      c: v.marked.map((m) => [m.itemId, m.choice]),
-      l: locale,
-    };
-    // Inline first-vote flow: this link also activates the passkey the voter
-    // has just registered (bound to its row id AND credential id).
-    if (typeof body?.activatePasskeyId === "string") {
-      const pending = await getPendingPasskey(userId, body.activatePasskeyId);
-      if (!pending) return err("PASSKEY_NOT_FOUND", 404);
-      claims.k = pending.id;
-      claims.kc = pending.credentialId;
-    }
-  }
-
   const [voter] = await db
     .select({ email: users.email, name: users.name })
     .from(users)
     .where(eq(users.id, userId))
     .limit(1);
+
+  if (withdraw) {
+    const w = await checkWithdraw(votingId, flatId, userId);
+    if (!w.ok) return err(w.code, w.status);
+    if (!voter?.email) return err("NO_EMAIL", 409);
+    if (!getTransporter()) return err("EMAIL_UNAVAILABLE", 503);
+    const claims: VoteConfirmClaims = {
+      u: userId,
+      v: votingId,
+      e: flatId,
+      d: w.ballotHash,
+      pb: w.pb,
+      l: locale,
+    };
+    let token: string;
+    let exp: number;
+    let appUrl: string;
+    try {
+      const signed = signToken<VoteConfirmClaims>(
+        "vote-withdraw-email",
+        claims,
+        EMAIL_CONFIRMATION_TTL_MS
+      );
+      token = signed.token;
+      exp = signed.claims.exp;
+      appUrl = getPublicAppUrl(request);
+    } catch (e) {
+      if (e instanceof ConfirmationUnavailableError) return err("CONFIRMATION_UNAVAILABLE", 503);
+      throw e;
+    }
+    const described = await describeBallot(votingId, flatId, []);
+    const sent = await sendWithdrawConfirmationLink({
+      recipientEmail: voter.email,
+      voterName: voter.name,
+      votingTitle: described.votingTitle,
+      flatNumber: described.flatNumber,
+      confirmUrl: `${appUrl}/${locale}/vote-confirm?t=${encodeURIComponent(token)}`,
+      expiresAt: new Date(exp),
+      country: await communityCountry(),
+      locale,
+    });
+    if (!sent) return err("EMAIL_UNAVAILABLE", 503);
+    return NextResponse.json({ sentTo: maskEmail(voter.email), expiresAt: new Date(exp).toISOString() });
+  }
+
+  // Cast (BYT-20261118-009): the shared pending-ballot path. Nothing is
+  // written to mod_voting_ballots here; the owner confirms on
+  // /<locale>/voting/confirm/<token>, signed in as themselves.
+  const v = await validateCast({
+    votingId,
+    flatId,
+    voterId: userId,
+    incoming: body?.items,
+    electronic: true,
+  });
+  if (!v.ok) return err(v.code, v.status);
+  if (await paperLocked(votingId, flatId, userId)) return err("PAPER_BALLOT_LOCKED", 409);
+
+  // Inline first-vote flow: the same link also activates the passkey the
+  // voter has just registered (bound to its row id AND credential id).
+  let activatePasskey: { id: string; credentialId: string } | null = null;
+  if (typeof body?.activatePasskeyId === "string") {
+    const pending = await getPendingPasskey(userId, body.activatePasskeyId);
+    if (!pending) return err("PASSKEY_NOT_FOUND", 404);
+    activatePasskey = { id: pending.id, credentialId: pending.credentialId };
+  }
+
   if (!voter?.email) return err("NO_EMAIL", 409);
   if (!getTransporter()) return err("EMAIL_UNAVAILABLE", 503);
-
-  let token: string;
-  let exp: number;
   let appUrl: string;
   try {
-    const signed = signToken<VoteConfirmClaims>(
-      withdraw ? "vote-withdraw-email" : "vote-email",
-      claims,
-      EMAIL_CONFIRMATION_TTL_MS
-    );
-    token = signed.token;
-    exp = signed.claims.exp;
     appUrl = getPublicAppUrl(request);
   } catch (e) {
     if (e instanceof ConfirmationUnavailableError) return err("CONFIRMATION_UNAVAILABLE", 503);
     throw e;
   }
 
-  const country = await communityCountry();
-  const confirmUrl = `${appUrl}/${locale}/vote-confirm?t=${encodeURIComponent(token)}`;
-  let sent: boolean;
-  if (withdraw) {
-    const described = await describeBallot(votingId, flatId, []);
-    sent = await sendWithdrawConfirmationLink({
-      recipientEmail: voter.email,
-      voterName: voter.name,
-      votingTitle: described.votingTitle,
-      flatNumber: described.flatNumber,
-      confirmUrl,
-      expiresAt: new Date(exp),
-      country,
-      locale,
-    });
-  } else {
-    const described = await describeBallot(votingId, flatId, marked);
-    sent = await sendVoteConfirmationLink({
-      recipientEmail: voter.email,
-      voterName: voter.name,
-      votingTitle: described.votingTitle,
-      flatNumber: described.flatNumber,
-      items: described.items,
-      confirmUrl,
-      expiresAt: new Date(exp),
-      activatesPasskey: Boolean(claims.k),
-      country,
-      locale,
-    });
+  let created: Awaited<ReturnType<typeof createPendingBallot>>;
+  try {
+    created = await createPendingBallot(
+      {
+        votingId,
+        unitId: flatId,
+        ownerId: userId,
+        marked: v.marked,
+        ballotHash: v.ballotHash,
+      },
+      { source: "web", clientId: null, pendingActionId: null, locale, activatePasskey }
+    );
+  } catch (e) {
+    const code = toMcpError(e).code;
+    if (code === "rate_limited") return err("RATE_LIMITED", 429);
+    if (code === "conflict.state_changed") return err("BALLOT_CONFLICT", 409);
+    throw e;
   }
-  if (!sent) return err("EMAIL_UNAVAILABLE", 503);
-  return NextResponse.json({ sentTo: maskEmail(voter.email), expiresAt: new Date(exp).toISOString() });
+
+  const described = await describeBallot(votingId, flatId, v.marked);
+  const sent = await sendVoteConfirmationLink({
+    recipientEmail: voter.email,
+    voterName: voter.name,
+    votingTitle: described.votingTitle,
+    flatNumber: described.flatNumber,
+    items: described.items,
+    shortHash: shortBallotHash(v.ballotHash),
+    confirmUrl: `${appUrl}/${locale}/voting/confirm/${created.token}`,
+    expiresAt: created.expiresAt,
+    activatesPasskey: Boolean(activatePasskey),
+    country: v.country,
+    locale,
+  });
+  if (!sent) {
+    await markPendingBallotFailed(created.id, "email_failed");
+    return err("EMAIL_UNAVAILABLE", 503);
+  }
+  return NextResponse.json({
+    sentTo: maskEmail(voter.email),
+    expiresAt: created.expiresAt.toISOString(),
+  });
 }
 
 // ── Recording: POST /api/ballots with a confirmation proof ──
@@ -360,34 +397,24 @@ async function finish(
     signature: string | null;
     locale: string;
     country: Country;
-    passkeyActivated?: boolean;
   }
 ) {
   const rec = await recordConfirmedBallot(input);
   if (!rec.ok) return err(rec.code, rec.status);
 
-  // Receipt e-mail (best effort, never blocks or fails the recorded vote).
-  void (async () => {
-    const [voter] = await db
-      .select({ email: users.email, name: users.name })
-      .from(users)
-      .where(eq(users.id, input.voterId))
-      .limit(1);
-    if (!voter?.email) return;
-    const d = await describeBallot(input.votingId, input.flatId, input.marked);
-    await sendVoteConfirmation({
-      recipientEmail: voter.email,
-      voterName: voter.name,
-      votingTitle: d.votingTitle,
-      flatNumber: d.flatNumber,
-      items: d.items,
-      timestamp: rec.recordedAt,
-      ballotHash: input.ballotHash,
-      method: input.method,
-      country: input.country,
-      locale: input.locale,
-    });
-  })().catch((e) => console.error("[voting] receipt e-mail failed:", e));
+  // Receipt e-mail (best effort, never blocks or fails the recorded vote) —
+  // the same helper the e-mail path uses (BYT-20261118-009 §6).
+  sendBallotReceipt({
+    votingId: input.votingId,
+    flatId: input.flatId,
+    voterId: input.voterId,
+    marked: input.marked,
+    ballotHash: input.ballotHash,
+    recordedAt: rec.recordedAt,
+    method: input.method,
+    country: input.country,
+    locale: input.locale,
+  });
 
   return NextResponse.json(
     {
@@ -396,17 +423,16 @@ async function finish(
       recordedAt: rec.recordedAt,
       confirmationMethod: input.method,
       superseded: rec.superseded,
-      passkeyActivated: Boolean(input.passkeyActivated),
+      passkeyActivated: false,
     },
     { status: rec.superseded ? 200 : 201 }
   );
 }
 
 /**
- * Electronic cast. Requires `confirmation`:
- *   { method: "passkey", response: AuthenticationResponseJSON } + session + the ballot in the body
- *   { method: "email", token }  — the ballot comes from the signed token; no session needed
- *     (the link may be opened on another device), the voter is the token's user.
+ * Electronic cast with a passkey: `confirmation` =
+ *   { method: "passkey", response: AuthenticationResponseJSON } + session + the ballot in the body.
+ * E-mail confirmation goes through the pending-ballot path instead.
  */
 export async function castConfirmed(
   request: NextRequest,
@@ -423,60 +449,13 @@ export async function castConfirmed(
   }
   const locale = pickLocale(body.locale);
 
+  // BYT-20261118-009: an e-mail confirmation is no longer a stateless token
+  // posted here — it is a pending ballot confirmed on
+  // /<locale>/voting/confirm/<token> (pending-ballots.ts). A legacy
+  // "vote-email" token (minted before the change) is dead: start over.
+  if (confirmation.method === "email") return err("CONFIRMATION_EXPIRED", 400);
+
   try {
-    if (confirmation.method === "email") {
-      const vt = verifyToken<VoteConfirmClaims>("vote-email", confirmation.token);
-      if (!vt.ok) return err(tokenErrorCode(vt.error), 400);
-      const claims = vt.claims;
-      if (!Array.isArray(claims.c)) return err("CONFIRMATION_INVALID", 400);
-      if (!(await voterStillAllowed(claims.u))) return err("FORBIDDEN", 403);
-
-      // Inline first-vote flow: clicking this link proves control of the
-      // mailbox exactly like a separate activation link would, so it also
-      // activates the passkey registered with it — whatever happens to the
-      // ballot below (a stale or late ballot does not make the proof weaker).
-      // Idempotent: only a still-pending credential of this user flips.
-      let passkeyActivated = false;
-      if (claims.k && claims.kc) {
-        const a = await activatePendingPasskey(claims.u, claims.k, claims.kc);
-        if (a.ok) {
-          passkeyActivated = true;
-          void sendPasskeyAddedNotice({
-            userId: claims.u,
-            deviceLabel: a.deviceLabel,
-            activatedAt: a.activatedAt,
-            locale: claims.l ? pickLocale(claims.l) : locale,
-          });
-        }
-      }
-
-      const incoming = claims.c.map(([itemId, choice]) => ({ itemId, choice }));
-      const v = await validateCast({
-        votingId: claims.v,
-        flatId: claims.e,
-        voterId: claims.u,
-        incoming,
-        electronic: true,
-      });
-      if (!v.ok) return err(v.code, v.status);
-      if (!claimsMatch(claims, { voterId: claims.u, votingId: claims.v, flatId: claims.e, ballotHash: v.ballotHash })) {
-        return err("CONFIRMATION_MISMATCH", 400);
-      }
-      return finish({
-        votingId: claims.v,
-        flatId: claims.e,
-        voterId: claims.u,
-        marked: v.marked,
-        ballotHash: v.ballotHash,
-        claims,
-        method: "email",
-        signature: null,
-        locale: claims.l ? pickLocale(claims.l) : locale,
-        country: v.country,
-        passkeyActivated,
-      });
-    }
-
     // Passkey.
     const session = await auth();
     if (!session?.user?.id) return err("UNAUTHORIZED", 401);
@@ -534,7 +513,7 @@ export async function castConfirmed(
  * ballot:
  *   { method: "passkey", response } + session + ?votingId&flatId
  *   { method: "email", token } — voter, voting and unit come from the token;
- *     no session needed (the link may be opened on another device).
+ *     the session user must be that voter (BYT-20261118-009).
  */
 export async function withdrawConfirmed(
   request: NextRequest,
@@ -555,6 +534,11 @@ export async function withdrawConfirmed(
     if (confirmation.method === "email") {
       const vt = verifyToken<VoteConfirmClaims>("vote-withdraw-email", confirmation.token);
       if (!vt.ok) return err(tokenErrorCode(vt.error), 400);
+      // BYT-20261118-009 §8: the token binds the ballot, the session binds
+      // the person — the signed-in user must be the token's voter.
+      const withdrawSession = await auth();
+      if (!withdrawSession?.user?.id) return err("UNAUTHORIZED", 401);
+      if (withdrawSession.user.id !== vt.claims.u) return err("FORBIDDEN", 403);
       if (!(await voterStillAllowed(vt.claims.u))) return err("FORBIDDEN", 403);
       const w = await checkWithdraw(vt.claims.v, vt.claims.e, vt.claims.u);
       if (!w.ok) return err(w.code, w.status);
@@ -598,20 +582,10 @@ export async function withdrawConfirmed(
   }
 }
 
-// ── E-mail link page (GET): describe, never record ──────
+// ── Withdraw e-mail link page (GET): describe, never withdraw ──
+// Vote links no longer land here (BYT-20261118-009: /<locale>/voting/confirm/<token>).
 export type EmailConfirmationView =
-  | { status: "invalid" | "expired" | "superseded" | "closed" | "paperLocked" }
-  | {
-      status: "ready";
-      action: "vote";
-      votingId: string;
-      votingTitle: string;
-      flatNumber: string;
-      voterName: string;
-      endsAt: string;
-      items: { idx: number; title: string; choice: VoteChoice }[];
-      activatesPasskey: boolean;
-    }
+  | { status: "invalid" | "expired" | "superseded" | "closed" | "paperLocked" | "otherVoter" }
   | {
       status: "ready";
       action: "withdraw";
@@ -632,84 +606,50 @@ async function voterName(userId: string): Promise<string> {
 }
 
 /**
- * Read-only description of an e-mail confirmation token for the link page.
- * Opening the link (GET, e.g. a mail scanner prefetch) never records or
- * withdraws anything; only the explicit POST / DELETE from the page does.
+ * Read-only description of a withdraw e-mail token for the link page,
+ * as `viewerId` (the signed-in user) may see it. Opening the link (GET,
+ * e.g. a mail scanner prefetch) never withdraws anything; only the explicit
+ * DELETE from the page does. A legacy vote-email token (minted before
+ * BYT-20261118-009) is reported as expired — the voter starts over.
  */
-export async function describeEmailConfirmation(token: unknown): Promise<EmailConfirmationView> {
-  let vt;
+export async function describeEmailConfirmation(
+  token: unknown,
+  viewerId: string
+): Promise<EmailConfirmationView> {
   let wt;
+  let vt;
   try {
-    vt = verifyToken<VoteConfirmClaims>("vote-email", token);
-    wt = vt.ok ? null : verifyToken<VoteConfirmClaims>("vote-withdraw-email", token);
+    wt = verifyToken<VoteConfirmClaims>("vote-withdraw-email", token);
+    vt = wt.ok ? null : verifyToken<VoteConfirmClaims>("vote-email", token);
   } catch {
     return { status: "invalid" };
   }
 
-  // Withdraw link.
-  if (wt) {
-    if (!wt.ok) {
-      // Report expiry of whichever purpose the token really has.
-      if ((!vt.ok && vt.error === "TOKEN_EXPIRED") || wt.error === "TOKEN_EXPIRED") {
-        return { status: "expired" };
-      }
-      return { status: "invalid" };
-    }
-    const c = wt.claims;
-    const w = await checkWithdraw(c.v, c.e, c.u);
-    if (!w.ok) {
-      if (w.code === "VOTING_NOT_ACTIVE" || w.code === "VOTING_ENDED") return { status: "closed" };
-      if (w.code === "PAPER_BALLOT_LOCKED") return { status: "paperLocked" };
-      if (w.code === "BALLOT_NOT_FOUND") return { status: "superseded" };
-      return { status: "invalid" };
-    }
-    if (w.pb !== c.pb || w.ballotHash !== c.d) return { status: "superseded" };
-    const d = await describeBallot(c.v, c.e, []);
-    return {
-      status: "ready",
-      action: "withdraw",
-      votingId: c.v,
-      votingTitle: d.votingTitle,
-      flatNumber: d.flatNumber,
-      voterName: await voterName(c.u),
-      endsAt: d.endsAt.toISOString(),
-    };
+  if (!wt.ok) {
+    if (wt.error === "TOKEN_EXPIRED") return { status: "expired" };
+    if (vt && (vt.ok || vt.error === "TOKEN_EXPIRED")) return { status: "expired" };
+    return { status: "invalid" };
   }
 
-  if (!vt.ok) return { status: vt.error === "TOKEN_EXPIRED" ? "expired" : "invalid" };
-  const c = vt.claims;
-  if (!Array.isArray(c.c)) return { status: "invalid" };
-
-  const marked: MarkedChoice[] = c.c
-    .filter(([, choice]) => VALID_CHOICES.includes(choice))
-    .map(([itemId, choice]) => ({ itemId, choice }));
-  const v = await validateCast({
-    votingId: c.v,
-    flatId: c.e,
-    voterId: c.u,
-    incoming: marked,
-    electronic: true,
-  });
-  if (!v.ok) {
-    return { status: v.code === "VOTING_NOT_ACTIVE" || v.code === "VOTING_ENDED" ? "closed" : "invalid" };
+  const c = wt.claims;
+  // Another person's link: no ballot details (the session binds the person).
+  if (c.u !== viewerId) return { status: "otherVoter" };
+  const w = await checkWithdraw(c.v, c.e, c.u);
+  if (!w.ok) {
+    if (w.code === "VOTING_NOT_ACTIVE" || w.code === "VOTING_ENDED") return { status: "closed" };
+    if (w.code === "PAPER_BALLOT_LOCKED") return { status: "paperLocked" };
+    if (w.code === "BALLOT_NOT_FOUND") return { status: "superseded" };
+    return { status: "invalid" };
   }
-  if (v.ballotHash !== c.d) return { status: "invalid" };
-  const current = await currentBallot(c.v, c.e, c.u);
-  if (current?.voteType === "paper") return { status: "paperLocked" };
-  const state = current ? current.recordedAtMs : 0;
-  if (state !== c.pb || (state !== 0 && c.iat <= state)) return { status: "superseded" };
-  if (c.iat <= (await ballotTokensRevokedAt(c.v, c.e, c.u))) return { status: "superseded" };
-
-  const d = await describeBallot(c.v, c.e, marked);
+  if (w.pb !== c.pb || w.ballotHash !== c.d) return { status: "superseded" };
+  const d = await describeBallot(c.v, c.e, []);
   return {
     status: "ready",
-    action: "vote",
+    action: "withdraw",
     votingId: c.v,
     votingTitle: d.votingTitle,
     flatNumber: d.flatNumber,
     voterName: await voterName(c.u),
     endsAt: d.endsAt.toISOString(),
-    items: d.items,
-    activatesPasskey: Boolean(c.k && c.kc),
   };
 }

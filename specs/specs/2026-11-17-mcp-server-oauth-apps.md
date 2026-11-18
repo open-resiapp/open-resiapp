@@ -372,7 +372,7 @@ Cross-cutting
 - **ChatGPT:** verify its MCP Apps support for `visibility: ["app"]` before claiming parity; the fallback page covers it either way.
 
 ### Found gaps (outside this spec, file separately)
-- Web ballot cast has **no confirmation step** (`routes/api/ballots/index.ts:306-519` writes final on session); `sendVoteConfirmation` is dead code; `ballots.signature` never written. Conflicts with `docs/domain/voting.md:30-33`. Legal priority — needs its own spec reusing §6.
+- Web ballot cast has **no confirmation step** (`routes/api/ballots/index.ts:306-519` writes final on session); `sendVoteConfirmation` is dead code; `ballots.signature` never written. Conflicts with `docs/domain/voting.md:30-33`. Legal priority — needs its own spec reusing §6. → Partly closed by BYT-20261117-002 Phase 6; the rest (one shared e-mail path, login, signature, receipt for MCP) is **BYT-20261118-009** (`2026-11-18-web-ballot-confirmation.md`).
 - `GET /api/posts/[id]` and `GET /api/votings/[id]` skip the visibility check (any session reads any id).
 - `list_votings` route returns drafts to owners.
 - `normalizeItems` silently falls back to `simple_all` on an invalid `quorumType` (`items.ts:88-90`); `POST /api/votings` honours a client-sent `status:'active'`.
