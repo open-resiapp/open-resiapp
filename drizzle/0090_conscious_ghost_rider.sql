@@ -1,0 +1,3 @@
+ALTER TABLE "mod_voting_pending_ballots" ADD COLUMN "activate_passkey_id" uuid;--> statement-breakpoint
+ALTER TABLE "mod_voting_pending_ballots" ADD COLUMN "activate_passkey_credential_id" text;--> statement-breakpoint
+ALTER TABLE "mod_voting_pending_ballots" ADD CONSTRAINT "mod_voting_pending_ballots_activate_passkey_id_webauthn_credentials_id_fk" FOREIGN KEY ("activate_passkey_id") REFERENCES "public"."webauthn_credentials"("id") ON DELETE set null ON UPDATE no action;

@@ -631,6 +631,13 @@
       "when": 1795008413264,
       "tag": "0089_wave_fixes",
       "breakpoints": true
+    },
+    {
+      "idx": 90,
+      "version": "7",
+      "when": 1795010679088,
+      "tag": "0090_conscious_ghost_rider",
+      "breakpoints": true
     }
   ]
 }
