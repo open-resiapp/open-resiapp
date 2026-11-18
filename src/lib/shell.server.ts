@@ -5,19 +5,20 @@ import type { Session } from "next-auth";
 import { and, eq, isNotNull, isNull, sql } from "drizzle-orm";
 
 import { db } from "@/db";
-import { boardMembers, entities, memberships, users } from "@/db/schema";
+import { entities, memberships, users } from "@/db/schema";
 import { getBranding } from "@/lib/branding.server";
 import { CURRENT_POLICY_VERSION } from "@/lib/consent";
 import { getConsentStatus } from "@/lib/consent.server";
 import { resolveCurrentEntityContext } from "@/lib/current-entity";
 import { getCommunityRoot } from "@/lib/legacy-compat";
-import { listEnabledModuleNames } from "@/lib/modules/enabled.server";
+import { listEnabledModules } from "@/lib/modules/route-guard";
 import { getNavAudience } from "@/lib/navigation";
 import { getOnboardingStatus } from "@/lib/onboarding.server";
 import { hasPermission } from "@/lib/permissions";
 import { listShareSumViolations } from "@/lib/share-sum-invariants.server";
 import { getDisplayTemplateSlug } from "@/lib/templates/display-slug";
 import { getTemplate } from "@/lib/templates/loader";
+import { listActiveBoardRoles as listActiveBoardRolesUncached } from "@/lib/user-context";
 import {
   EMPTY_KIND_CHAIN,
   type CommunityKindChain,
@@ -74,26 +75,18 @@ export const getRequestConsent = cache(async function getRequestConsent(
   );
 });
 
-/** Enabled module names, once per request. */
-export const getRequestEnabledModules = cache(() => listEnabledModuleNames());
+/**
+ * Enabled module names, once per request — from the route guard's
+ * per-replica 60 s cache (the same source isModuleEnabled uses), so the
+ * shell and the module guards agree and core_modules is not re-queried.
+ */
+export const getRequestEnabledModules = cache(() => listEnabledModules());
 
-/** Active board roles of `userId` on the root entity, once per request. */
-export const listActiveBoardRoles = cache(async function listActiveBoardRoles(
-  userId: string,
-  entityId: string
-): Promise<BoardMemberRole[]> {
-  const rows = await db
-    .selectDistinct({ role: boardMembers.role })
-    .from(boardMembers)
-    .where(
-      and(
-        eq(boardMembers.userId, userId),
-        eq(boardMembers.entityId, entityId),
-        eq(boardMembers.isActive, true)
-      )
-    );
-  return rows.map((r) => r.role);
-});
+/** Active board roles of `userId` on the root entity, once per request (user-context.ts). */
+export const listActiveBoardRoles = cache(
+  (userId: string, entityId: string): Promise<BoardMemberRole[]> =>
+    listActiveBoardRolesUncached(userId, entityId)
+);
 
 /** Live units with an active membership of `userId`, once per request. */
 export const listOwnUnitIds = cache(async function listOwnUnitIds(

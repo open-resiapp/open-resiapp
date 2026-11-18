@@ -179,7 +179,9 @@ async function isUserActive(userId: string): Promise<boolean> {
 /** POST /api/oauth/token — authorization_code + refresh_token grants. */
 export async function handleToken(req: NextRequest): Promise<Response> {
   if (!(await isMcpEnabled())) return notFound();
-  const limited = checkRateLimit(req, RATE_LIMITS.oauth, "oauth");
+  // Called server-to-server from AI-host egress IPs shared by all users —
+  // limited per IP but never blocks the IP (see RATE_LIMITS.oauthHost).
+  const limited = checkRateLimit(req, RATE_LIMITS.oauthHost, "oauth-token", { blockOnRepeat: false });
   if (limited) return limited;
 
   const form = await readForm(req);
@@ -246,7 +248,7 @@ export async function handleToken(req: NextRequest): Promise<Response> {
 /** POST /api/oauth/register — public clients only; deprecated fallback to CIMD. */
 export async function handleRegister(req: NextRequest): Promise<Response> {
   if (!(await isMcpEnabled())) return notFound();
-  const limited = checkRateLimit(req, RATE_LIMITS.oauth, "oauth-register");
+  const limited = checkRateLimit(req, RATE_LIMITS.oauthRegister, "oauth-register", { blockOnRepeat: false });
   if (limited) return limited;
 
   let body: unknown;
@@ -282,7 +284,7 @@ export async function handleRegister(req: NextRequest): Promise<Response> {
 /** POST /api/oauth/revoke — revokes the token's whole family; always 200. */
 export async function handleRevoke(req: NextRequest): Promise<Response> {
   if (!(await isMcpEnabled())) return notFound();
-  const limited = checkRateLimit(req, RATE_LIMITS.oauth, "oauth");
+  const limited = checkRateLimit(req, RATE_LIMITS.oauthHost, "oauth-revoke", { blockOnRepeat: false });
   if (limited) return limited;
   const form = await readForm(req);
   const token = form?.get("token");

@@ -161,24 +161,30 @@ export default async function VotingConfirmPage({
           </div>
         </dl>
 
-        <h2 className="mt-5 text-lg font-semibold text-gray-900 dark:text-gray-100">{t("itemsHeading")}</h2>
-        <ol className="mt-2 divide-y divide-gray-200 rounded-xl border border-gray-200 dark:divide-gray-700 dark:border-gray-700">
-          {desc.items.map((it, i) => (
-            <li key={it.itemId} className="flex flex-col gap-1 px-4 py-3 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
-              <span className="text-base text-gray-900 dark:text-gray-100 break-words">
-                <span className="text-gray-500 dark:text-gray-400">{i + 1}.</span> {it.title}
-              </span>
-              <span
-                className={[
-                  "text-base font-bold whitespace-nowrap",
-                  it.choice ? "text-gray-900 dark:text-gray-100" : "text-gray-500 dark:text-gray-400",
-                ].join(" ")}
-              >
-                {choiceLabel(it.choice)}
-              </span>
-            </li>
-          ))}
-        </ol>
+        {/* Choices are kept only while the request is pending (retention:
+            pending-ballots.ts empties `items` once it is decided). */}
+        {row.status === "pending" && (
+        <>
+          <h2 className="mt-5 text-lg font-semibold text-gray-900 dark:text-gray-100">{t("itemsHeading")}</h2>
+          <ol className="mt-2 divide-y divide-gray-200 rounded-xl border border-gray-200 dark:divide-gray-700 dark:border-gray-700">
+            {desc.items.map((it, i) => (
+              <li key={it.itemId} className="flex flex-col gap-1 px-4 py-3 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
+                <span className="text-base text-gray-900 dark:text-gray-100 break-words">
+                  <span className="text-gray-500 dark:text-gray-400">{i + 1}.</span> {it.title}
+                </span>
+                <span
+                  className={[
+                    "text-base font-bold whitespace-nowrap",
+                    it.choice ? "text-gray-900 dark:text-gray-100" : "text-gray-500 dark:text-gray-400",
+                  ].join(" ")}
+                >
+                  {choiceLabel(it.choice)}
+                </span>
+              </li>
+            ))}
+          </ol>
+        </>
+        )}
 
         <p className="mt-4 text-base text-gray-700 dark:text-gray-300">
           {t("hashLabel")}{" "}

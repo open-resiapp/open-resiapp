@@ -2,6 +2,7 @@ import { notFound, redirect } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 
 import { auth } from "@/lib/auth";
+import { requestUrlFromHeaders } from "@/lib/mcp/config";
 import { isMcpEnabled } from "@/lib/mcp/module-state";
 import {
   AUTHORIZE_PARAMS,
@@ -50,7 +51,10 @@ export default async function OAuthAuthorizePage({
   const t = await getTranslations("Mcp.consent");
   const tScopes = await getTranslations("Mcp.scopes");
 
-  const v = await validateAuthorizeRequest(authParams);
+  // Same origin fallback as /api/oauth/authorize (req.url) when no public
+  // URL is configured — else resource validation fails as invalid_target.
+  const requestUrl = await requestUrlFromHeaders();
+  const v = await validateAuthorizeRequest(authParams, requestUrl);
   if (v.kind === "fatal") {
     return (
       <div className="bg-white rounded-2xl shadow-lg p-5 sm:p-8 dark:bg-gray-900 dark:shadow-black/40">
@@ -61,7 +65,7 @@ export default async function OAuthAuthorizePage({
       </div>
     );
   }
-  if (v.kind === "redirect_error") redirect(errorRedirectFor(v));
+  if (v.kind === "redirect_error") redirect(errorRedirectFor(v, requestUrl));
 
   const session = await auth();
   if (!session) {

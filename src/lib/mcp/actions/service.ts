@@ -1,6 +1,6 @@
 import "server-only";
 
-import { and, count, eq, gt, lte, sql } from "drizzle-orm";
+import { and, count, eq, gt, inArray, lt, lte, ne, sql } from "drizzle-orm";
 import type { z } from "zod";
 
 import { db } from "@/db";
@@ -46,10 +46,25 @@ import {
 //
 // Expiry is lazy (no background job — multi-replica safe): a pending row
 // past `expires_at` is treated as expired and flipped when touched.
+//
+// Retention (no background job either): `payload` can hold a lot of personal
+// data (import_owners: up to 1000 owners), so it is replaced by
+// SCRUBBED_PAYLOAD as soon as the row leaves `pending` (confirm / cancel /
+// fail / expire). The rendered `preview` (a bounded sample — what the human
+// saw), kind, hashes, status and result stay for audit. Rows are deleted
+// after the MCP audit-log retention (90 days, src/lib/mcp/audit.ts) by a
+// bounded request-time sweep in proposeAction.
 
 export const PENDING_ACTION_TTL_MS = 10 * 60 * 1000;
 /** Max proposals per user per TTL window (§7). */
 export const PENDING_ACTION_RATE_LIMIT = 10;
+
+/** Stored in place of `payload` once a row is decided (column is NOT NULL). */
+const SCRUBBED_PAYLOAD: Record<string, unknown> = {};
+/** Same retention as mcp_audit_log (src/lib/mcp/audit.ts). */
+const PENDING_ACTION_RETENTION_MS = 90 * 24 * 60 * 60 * 1000;
+/** Upper bound of rows one sweep statement touches. */
+const SWEEP_LIMIT = 200;
 
 const ACTIONS: ReadonlyMap<ActionKind, ActionDef> = new Map(
   [
@@ -162,7 +177,82 @@ export async function proposeAction(
     })
     .returning({ id: mcpPendingActions.id });
 
+  await sweepPendingActions(ctx.principal.userId);
+
   return { actionId: row.id, confirmToken, preview, expiresAt, locale };
+}
+
+/**
+ * Request-time retention sweep, bounded (LIMIT) and keyed by the
+ * (user_id, created_at) index — no background job (multi-replica safe;
+ * concurrent sweeps only contend on row locks). For `userId`: rows past
+ * retention are deleted; pending rows that expired untouched are flipped to
+ * expired and decided rows still carrying a payload are scrubbed. With 1%
+ * probability (like the audit-log prune) the retention delete also runs
+ * across all users, so people who stop using MCP are cleaned up too.
+ * Never fails the proposal.
+ */
+async function sweepPendingActions(userId: string): Promise<void> {
+  const cutoff = new Date(Date.now() - PENDING_ACTION_RETENTION_MS);
+  try {
+    const old = db
+      .select({ id: mcpPendingActions.id })
+      .from(mcpPendingActions)
+      .where(and(eq(mcpPendingActions.userId, userId), lt(mcpPendingActions.createdAt, cutoff)))
+      .limit(SWEEP_LIMIT);
+    await db.delete(mcpPendingActions).where(inArray(mcpPendingActions.id, old));
+
+    const stale = db
+      .select({ id: mcpPendingActions.id })
+      .from(mcpPendingActions)
+      .where(
+        and(
+          eq(mcpPendingActions.userId, userId),
+          lt(mcpPendingActions.createdAt, new Date(Date.now() - PENDING_ACTION_TTL_MS)),
+          eq(mcpPendingActions.status, "pending"),
+          lte(mcpPendingActions.expiresAt, sql`now()`)
+        )
+      )
+      .limit(SWEEP_LIMIT);
+    await db
+      .update(mcpPendingActions)
+      .set({
+        status: "expired",
+        decidedAt: new Date(),
+        resultCode: "action_expired",
+        payload: SCRUBBED_PAYLOAD,
+      })
+      .where(and(inArray(mcpPendingActions.id, stale), eq(mcpPendingActions.status, "pending")));
+
+    // Decided rows still holding a payload (written before scrubbing
+    // existed, or a crash between commit and the result write).
+    const unscrubbed = db
+      .select({ id: mcpPendingActions.id })
+      .from(mcpPendingActions)
+      .where(
+        and(
+          eq(mcpPendingActions.userId, userId),
+          ne(mcpPendingActions.status, "pending"),
+          sql`${mcpPendingActions.payload} <> '{}'::jsonb`
+        )
+      )
+      .limit(SWEEP_LIMIT);
+    await db
+      .update(mcpPendingActions)
+      .set({ payload: SCRUBBED_PAYLOAD })
+      .where(inArray(mcpPendingActions.id, unscrubbed));
+
+    if (Math.random() < 0.01) {
+      const anyOld = db
+        .select({ id: mcpPendingActions.id })
+        .from(mcpPendingActions)
+        .where(lt(mcpPendingActions.createdAt, cutoff))
+        .limit(SWEEP_LIMIT);
+      await db.delete(mcpPendingActions).where(inArray(mcpPendingActions.id, anyOld));
+    }
+  } catch (err) {
+    console.error("[mcp] pending-action sweep failed:", err);
+  }
 }
 
 // ── decision (confirm / cancel) ──────────────────────────────────────────
@@ -217,7 +307,12 @@ async function explainMiss(actionId: string, userId: string): Promise<McpError> 
 async function expireIfDue(actionId: string): Promise<void> {
   await db
     .update(mcpPendingActions)
-    .set({ status: "expired", decidedAt: new Date(), resultCode: "action_expired" })
+    .set({
+      status: "expired",
+      decidedAt: new Date(),
+      resultCode: "action_expired",
+      payload: SCRUBBED_PAYLOAD,
+    })
     .where(
       and(
         eq(mcpPendingActions.id, actionId),
@@ -230,7 +325,7 @@ async function expireIfDue(actionId: string): Promise<void> {
 async function markFailed(actionId: string, code: McpErrorCode): Promise<void> {
   await db
     .update(mcpPendingActions)
-    .set({ status: "failed", resultCode: code.slice(0, 64) })
+    .set({ status: "failed", resultCode: code.slice(0, 64), payload: SCRUBBED_PAYLOAD })
     .where(eq(mcpPendingActions.id, actionId));
 }
 
@@ -302,7 +397,11 @@ export async function confirmAction(
 
   await db
     .update(mcpPendingActions)
-    .set({ resultCode: "ok", result: { ...committed.data, path: committed.path } })
+    .set({
+      resultCode: "ok",
+      result: { ...committed.data, path: committed.path },
+      payload: SCRUBBED_PAYLOAD,
+    })
     .where(eq(mcpPendingActions.id, actionId));
 
   const t = await translatorFor(locale);
@@ -326,7 +425,12 @@ export async function cancelAction(
   assertActive(ctx.principal);
   const [row] = await db
     .update(mcpPendingActions)
-    .set({ status: "cancelled", decidedAt: new Date(), resultCode: "cancelled" })
+    .set({
+      status: "cancelled",
+      decidedAt: new Date(),
+      resultCode: "cancelled",
+      payload: SCRUBBED_PAYLOAD,
+    })
     .where(claimWhere(actionId, ctx.principal.userId, auth))
     .returning({ kind: mcpPendingActions.kind, locale: mcpPendingActions.locale });
   if (!row) throw await explainMiss(actionId, ctx.principal.userId);

@@ -1,5 +1,7 @@
 import "server-only";
 
+import { headers } from "next/headers";
+
 // Public URLs of the MCP resource server + OAuth authorization server
 // (BYT-20261117-001 §2). The issuer and resource identifiers must be stable
 // across replicas and requests, so they come from configuration
@@ -69,4 +71,25 @@ export function getRegistrationEndpoint(fallbackRequestUrl?: string): string {
 
 export function getRevocationEndpoint(fallbackRequestUrl?: string): string {
   return `${getPublicOrigin(fallbackRequestUrl)}/api/oauth/revoke`;
+}
+
+/**
+ * Request URL for server components / server actions, which have no
+ * `req.url`: built from x-forwarded-proto / x-forwarded-host (or host).
+ * Pass it as `fallbackRequestUrl` — like route handlers pass `req.url` —
+ * so the consent page and its action resolve the same origin as
+ * /api/oauth/authorize when no public URL is configured. Configured
+ * origins still win (getPublicOrigin).
+ */
+export async function requestUrlFromHeaders(): Promise<string | undefined> {
+  const h = await headers();
+  const host = (h.get("x-forwarded-host") ?? h.get("host") ?? "").split(",")[0].trim();
+  if (!host) return undefined;
+  const rawProto = (h.get("x-forwarded-proto") ?? "").split(",")[0].trim().toLowerCase();
+  const proto = rawProto === "http" || rawProto === "https" ? rawProto : "https";
+  try {
+    return new URL(`${proto}://${host}/`).toString();
+  } catch {
+    return undefined;
+  }
 }

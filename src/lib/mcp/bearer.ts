@@ -49,7 +49,9 @@ export type BearerResult =
   | { ok: false; response: Response };
 
 export async function authenticateBearer(req: NextRequest): Promise<BearerResult> {
-  const ipLimited = checkRateLimit(req, RATE_LIMITS.api, "mcp-ip");
+  // AI hosts send every user from a few egress IPs: generous per-IP cap that
+  // never feeds the IP block list; the per-token limit below is the main one.
+  const ipLimited = checkRateLimit(req, RATE_LIMITS.mcpIp, "mcp-ip", { blockOnRepeat: false });
   if (ipLimited) return { ok: false, response: ipLimited };
 
   const header = req.headers.get("authorization") ?? "";

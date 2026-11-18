@@ -2819,6 +2819,39 @@
       "okruh_fpuo": "Repair fund",
       "okruh_svc": "Services",
       "okruh_mgmt": "Management"
+    },
+    "inputErrors": {
+      "required": "“{field}” is required.",
+      "invalid_amount": "Invalid amount.",
+      "invalid_amounts": "Invalid amount in “{field}”.",
+      "invalid_date": "Invalid date in “{field}”.",
+      "future_date": "“{field}” cannot be in the future.",
+      "invalid_okruh": "Invalid cost group.",
+      "netto_dph_required": "Net amount and VAT are both required.",
+      "netto_dph_mismatch": "Net amount plus VAT must equal the gross amount.",
+      "invalid_unit": "Invalid unit.",
+      "invalid_method": "Invalid payment method.",
+      "invalid_meter_type": "Invalid meter type.",
+      "invalid_value": "Invalid reading value.",
+      "fields": {
+        "amountCents": "Amount",
+        "amountNettoCents": "Net amount",
+        "dphCents": "VAT",
+        "dphRateBp": "VAT rate",
+        "supplierName": "Supplier",
+        "supplierIco": "Company ID (IČO)",
+        "supplierDic": "Tax ID (DIČ)",
+        "supplierIban": "Supplier IBAN",
+        "invoiceNo": "Invoice number",
+        "invoiceDate": "Invoice date",
+        "okruh": "Cost group",
+        "unitEntityId": "Unit",
+        "method": "Payment method",
+        "receivedAt": "Date received",
+        "meterType": "Meter type",
+        "valueMilli": "Value",
+        "readingDate": "Reading date"
+      }
     }
   },
   "Home": {

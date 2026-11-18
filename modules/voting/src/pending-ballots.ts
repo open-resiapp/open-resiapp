@@ -1,6 +1,6 @@
 import "server-only";
 
-import { and, asc, count, eq, gt, lte, sql } from "drizzle-orm";
+import { and, asc, count, eq, gt, inArray, lt, lte, sql } from "drizzle-orm";
 
 import { db } from "@/db";
 import { entities } from "@/db/schema";
@@ -39,11 +39,23 @@ import {
 // No resend exists (voting.md "Counterparts"): an expired link is dead and
 // the owner starts over. Expiry is evaluated at read time — no background
 // job (multi-replica safe).
+//
+// Retention: `items` (the owner's choices) is emptied as soon as a row
+// leaves `pending` (confirmed — the ballot itself is in mod_voting_ballots
+// —, cancelled, superseded, expired, failed); hash, status and audit links
+// stay. Rows are deleted after the MCP audit-log retention (90 days) by a
+// bounded request-time sweep in createPendingBallot.
 
 export const PENDING_BALLOT_TTL_MS = 30 * 60 * 1000;
 /** §7: 3 ballot emails per voting per owner per hour. */
 export const BALLOT_EMAILS_PER_HOUR = 3;
 const HOUR_MS = 60 * 60 * 1000;
+/** Same retention as mcp_audit_log (src/lib/mcp/audit.ts). */
+const PENDING_BALLOT_RETENTION_MS = 90 * 24 * 60 * 60 * 1000;
+/** Upper bound of rows one sweep statement touches. */
+const SWEEP_LIMIT = 200;
+/** Stored in place of `items` once a row is decided (column is NOT NULL). */
+const SCRUBBED_ITEMS: PendingBallotRow["items"] = [];
 
 export type PendingBallotRow = typeof pendingBallots.$inferSelect;
 export type PendingBallotStatus = PendingBallotRow["status"];
@@ -101,6 +113,7 @@ export async function createPendingBallot(
         .update(pendingBallots)
         .set({
           status: sql`CASE WHEN ${pendingBallots.expiresAt} <= now() THEN 'expired' ELSE 'superseded' END::mod_voting_pending_ballot_status`,
+          items: SCRUBBED_ITEMS,
         })
         .where(
           and(
@@ -129,6 +142,7 @@ export async function createPendingBallot(
         .returning({ id: pendingBallots.id });
       return row.id;
     });
+    await sweepPendingBallots(v.votingId, v.ownerId);
     return { id, token, expiresAt };
   } catch (err) {
     // A concurrent request for the same (voting, unit, owner) won the
@@ -138,11 +152,51 @@ export async function createPendingBallot(
   }
 }
 
+/**
+ * Request-time retention sweep, bounded (LIMIT) — no background job
+ * (multi-replica safe). For this (voting, owner) — the
+ * voting_owner_created index — expired-but-untouched requests are flipped to
+ * expired with their items emptied. With 1% probability (like the audit-log
+ * prune) rows past retention are deleted across all owners. Never fails
+ * the request.
+ */
+async function sweepPendingBallots(votingId: string, ownerId: string): Promise<void> {
+  try {
+    const stale = db
+      .select({ id: pendingBallots.id })
+      .from(pendingBallots)
+      .where(
+        and(
+          eq(pendingBallots.votingId, votingId),
+          eq(pendingBallots.ownerId, ownerId),
+          eq(pendingBallots.status, "pending"),
+          lte(pendingBallots.expiresAt, sql`now()`)
+        )
+      )
+      .limit(SWEEP_LIMIT);
+    await db
+      .update(pendingBallots)
+      .set({ status: "expired", items: SCRUBBED_ITEMS })
+      .where(and(inArray(pendingBallots.id, stale), eq(pendingBallots.status, "pending")));
+
+    if (Math.random() < 0.01) {
+      const old = db
+        .select({ id: pendingBallots.id })
+        .from(pendingBallots)
+        .where(lt(pendingBallots.createdAt, new Date(Date.now() - PENDING_BALLOT_RETENTION_MS)))
+        .limit(SWEEP_LIMIT);
+      await db.delete(pendingBallots).where(inArray(pendingBallots.id, old));
+    }
+  } catch (err) {
+    console.error("[voting] pending-ballot sweep failed:", err);
+  }
+}
+
 /** The email could not be sent → the request is dead (nothing to click). */
 export async function markPendingBallotFailed(id: string, code: string): Promise<void> {
   await db
     .update(pendingBallots)
-    .set({ status: "failed", failureCode: code.slice(0, 64) })
+    .set({ status: "failed", failureCode: code.slice(0, 64), items: SCRUBBED_ITEMS })
     .where(and(eq(pendingBallots.id, id), eq(pendingBallots.status, "pending")));
 }
 
@@ -172,7 +226,7 @@ export async function lookupPendingBallot(
   if (row.ownerId !== userId) return { kind: "other_owner" };
   if (row.status === "pending" && row.expiresAt.getTime() <= Date.now()) {
     await expireIfDue(row.id);
-    return { kind: "own", row: { ...row, status: "expired" } };
+    return { kind: "own", row: { ...row, status: "expired", items: SCRUBBED_ITEMS } };
   }
   return { kind: "own", row };
 }
@@ -180,7 +234,7 @@ export async function lookupPendingBallot(
 async function expireIfDue(id: string): Promise<void> {
   await db
     .update(pendingBallots)
-    .set({ status: "expired" })
+    .set({ status: "expired", items: SCRUBBED_ITEMS })
     .where(
       and(
         eq(pendingBallots.id, id),
@@ -376,7 +430,7 @@ export async function confirmPendingBallot(
 
   await db
     .update(pendingBallots)
-    .set({ ballotId: persisted.ballotId })
+    .set({ ballotId: persisted.ballotId, items: SCRUBBED_ITEMS })
     .where(eq(pendingBallots.id, claimed.id));
 
   return {
@@ -390,7 +444,7 @@ export async function confirmPendingBallot(
 async function failClaimed(id: string, code: string): Promise<void> {
   await db
     .update(pendingBallots)
-    .set({ status: "failed", failureCode: code.slice(0, 64) })
+    .set({ status: "failed", failureCode: code.slice(0, 64), items: SCRUBBED_ITEMS })
     .where(eq(pendingBallots.id, id));
 }
 
@@ -402,7 +456,7 @@ export async function cancelPendingBallot(
   if (!isPendingBallotToken(token)) throw new McpError("action_expired");
   const [row] = await db
     .update(pendingBallots)
-    .set({ status: "cancelled", usedAt: new Date() })
+    .set({ status: "cancelled", usedAt: new Date(), items: SCRUBBED_ITEMS })
     .where(claimWhere(token, owner.userId))
     .returning({ id: pendingBallots.id, pendingActionId: pendingBallots.pendingActionId });
   if (!row) throw await explainMiss(token, owner.userId);

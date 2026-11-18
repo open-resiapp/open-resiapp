@@ -24,6 +24,7 @@ import {
 } from "@/db/schema";
 import { mandates, ballots, votings } from "@modules/voting/src/db/schema";
 import { recordEntityAudit } from "@/lib/entity-audit";
+import { approvePendingRegistration } from "@/lib/registration-review.server";
 
 export class ShellMergeError extends Error {
   constructor(public code: string, message: string) {
@@ -49,6 +50,10 @@ interface MergeResult {
  * - Shell row is deleted last.
  * - Audit entry `user.merge_shell` records (shellId, targetId).
  *
+ * With `approvePendingAsOwner`, the target (a pending self-registration) is
+ * approved as owner in the SAME transaction; when it is no longer pending
+ * the whole merge rolls back with ShellMergeError("state_changed").
+ *
  * Vote `auditHash` includes the original shell UUID — after merge the
  * hash no longer verifies. Spec §Notes acknowledges this; the trade-off
  * is documented as an open question. For now, the hash is preserved
@@ -59,7 +64,8 @@ interface MergeResult {
 export async function mergeShellIntoUser(
   shellUserId: string,
   targetUserId: string,
-  actorUserId: string
+  actorUserId: string,
+  opts: { approvePendingAsOwner?: boolean } = {}
 ): Promise<MergeResult> {
   if (shellUserId === targetUserId) {
     throw new ShellMergeError(
@@ -68,7 +74,7 @@ export async function mergeShellIntoUser(
     );
   }
 
-  return db.transaction(async (tx) => {
+  const result = await db.transaction(async (tx) => {
     const [shell] = await tx
       .select({
         id: users.id,
@@ -320,14 +326,33 @@ export async function mergeShellIntoUser(
     // cascade-delete (FK cascade). Everything else has been moved.
     await tx.delete(users).where(eq(users.id, shellUserId));
 
-    recordEntityAudit({
-      action: "user.merge_shell",
-      actorUserId,
-      entityId: null,
-      before: { shellUserId, shellName: shell.name },
-      after: { targetUserId, movedMemberships: moved, skippedMemberships: skipped },
-    });
+    if (opts.approvePendingAsOwner) {
+      const approved = await approvePendingRegistration(
+        { userId: targetUserId, flatId: null, role: "owner" },
+        tx
+      );
+      // Throwing rolls the merge back with the failed approval.
+      if (!approved.ok) {
+        throw new ShellMergeError("state_changed", "Target is no longer a pending registration");
+      }
+    }
 
-    return { movedMemberships: moved, skippedMemberships: skipped };
+    return { shellName: shell.name, movedMemberships: moved, skippedMemberships: skipped };
   });
+
+  // Audited only after the transaction committed (a rolled-back merge
+  // must not leave a user.merge_shell entry behind).
+  recordEntityAudit({
+    action: "user.merge_shell",
+    actorUserId,
+    entityId: null,
+    before: { shellUserId, shellName: result.shellName },
+    after: {
+      targetUserId,
+      movedMemberships: result.movedMemberships,
+      skippedMemberships: result.skippedMemberships,
+    },
+  });
+
+  return { movedMemberships: result.movedMemberships, skippedMemberships: result.skippedMemberships };
 }
