@@ -334,7 +334,8 @@
     "unknown": "Neznámý",
     "noPermission": "Nemáte oprávnění k této akci.",
     "saveFailed": "Nepodařilo se uložit změny",
-    "noDash": "—"
+    "noDash": "—",
+    "retry": "Zkusit znovu"
   },
   "Auth": {
     "title": "Přihlášení",
@@ -528,7 +529,8 @@
       "addedSubject": "K vašemu účtu byl přidán přístupový klíč",
       "addedHeading": "Přístupový klíč je zapnutý",
       "addedIntro": "{date} byl k vašemu účtu přidán a potvrzen přístupový klíč ({device}). Od teď jím můžete potvrzovat hlasování.",
-      "addedNotYou": "Pokud jste to nebyli vy, klíč ihned odstraňte v aplikaci v části Profil → Přístupový klíč a kontaktujte výbor."
+      "addedNotYou": "Pokud jste to nebyli vy, klíč ihned odstraňte v aplikaci v části Profil → Přístupový klíč a kontaktujte výbor.",
+      "activationRegisteredAt": "Přístupový klíč byl zaregistrován {time} v prohlížeči {device}."
     },
     "common": {
       "greeting": "Vážený/á {name},",
@@ -845,7 +847,13 @@
       "VOTING_LOCKED": "Po vyhlášení už nelze obsah hlasování měnit.",
       "ENDS_AT_ONLY_LATER": "Konec hlasování lze jen prodloužit, a to jen během hlasování.",
       "REPEAT_ESCALATION_UNSUPPORTED": "Opakované rozhodnutí se v této zemi neposuzuje zvlášť.",
-      "REPEAT_ESCALATION_NOT_APPLICABLE": "U souhlasu všech vlastníků se většina při opakování nemění."
+      "REPEAT_ESCALATION_NOT_APPLICABLE": "U souhlasu všech vlastníků se většina při opakování nemění.",
+      "QUORUM_NOT_ALLOWED": "Zvolený typ většiny není pro tento druh hlasování povolen.",
+      "PAPER_PHOTO_REQUIRED": "Fotografie podepsaného listinného hlasu je povinná.",
+      "PER_ROLLAM_TOO_SHORT": "Písemné hlasování je příliš krátké. Nejdřívější konec je {minDate}.",
+      "PUBLISH_BEFORE_END": "Výsledek lze zveřejnit až po skončení hlasování.",
+      "MINUTES_NOT_AVAILABLE": "Zápis lze vyhotovit jen pro uzavřené hlasování.",
+      "BALLOT_CONFLICT": "Hlas se právě zapisuje z jiného zařízení. Obnovte stránku."
     },
     "readiness": {
       "heading": "Co by dnes prošlo elektronicky",
@@ -932,7 +940,8 @@
       "dateAndSignature": "Datum a podpis vlastníka",
       "verifier": "Ověřovatel",
       "unmarkedNote": "Otázka bez vyznačené odpovědi se považuje za neplatný hlas."
-    }
+    },
+    "minutesSuperseded": "Zápis v{version} — nahrazen"
   },
   "VotingWizard": {
     "stepsLabel": "Kroky",
@@ -1067,7 +1076,9 @@
     "notVotedYet": "Ještě jste nehlasovali",
     "showResults": "Zobrazit výsledky",
     "open": "Otevřít",
-    "draftBadge": "Koncept"
+    "draftBadge": "Koncept",
+    "loadFailedTitle": "Hlasování se nepodařilo načíst",
+    "loadFailedText": "Zkontrolujte připojení a zkuste to znovu."
   },
   "VotingResults": {
     "title": "Výsledky",
@@ -1130,7 +1141,11 @@
     "itemsLabel": "Body hlasování",
     "setRemainingLabel": "Nastavit zbývající na:",
     "photosLabel": "Fotky lístku",
-    "photosHelp": "Můžete přidat více fotek (vícestránkový lístek)."
+    "photosHelp": "Můžete přidat více fotek (vícestránkový lístek).",
+    "errors": {
+      "BALLOT_CONFLICT": "Hlas se právě zapisuje z jiného zařízení. Obnovte stránku.",
+      "VOTING_NOT_ACTIVE": "Hlasování již není otevřené, hlas nelze zapsat."
+    }
   },
   "Mandate": {
     "title": "Plná moc",
@@ -1355,7 +1370,7 @@
       "copied": "Zkopírováno!",
       "expiresOn": "Platnost do: {date}",
       "print": "Vytisknout",
-      "shellBannerTitle": "Toto je nepárovaná karta vlastníka",
+      "shellBannerTitle": "Toto je nespárovaná karta vlastníka",
       "shellBannerHint": "Vlastník zatím nemá přístupový účet. Můžete odeslat pozvánku nebo přiřadit existující účet.",
       "mergeTitle": "Přiřadit existující účet",
       "mergeHint": "Vyberte registrovaného uživatele, kterému patří karta vlastníka {shellName}. Členství se převedou a karta se zruší.",
@@ -1427,7 +1442,18 @@
     "shareDenominatorLabel": "Jmenovatel podílu",
     "invalidShare": "Neplatný podíl — čitatel i jmenovatel musí být celá čísla větší než 0.",
     "shareSumWarningTitle": "Součet vlastnických podílů se nerovná 1/1",
-    "shareSumWarningItem": "Byt {flat}: součet podílů je {sum} (má být 1/1)."
+    "shareSumWarningItem": "Byt {flat}: součet podílů je {sum} (má být 1/1).",
+    "apiErrors": {
+      "unauthorized": "Přihlaste se znovu.",
+      "forbidden": "K této akci nemáte oprávnění.",
+      "user_not_found": "Osoba nebyla nalezena. Obnovte stránku.",
+      "invalid_share": "Podíl musí být zlomek celých čísel, např. 1/2.",
+      "no_changes": "Není co uložit.",
+      "email_taken": "Tento e-mail už používá jiný účet.",
+      "cannot_delete_self": "Vlastní účet nemůžete smazat.",
+      "user_has_history": "Osoba má historii, kterou je třeba zachovat. Odeberte ji z budovy nebo anonymizujte.",
+      "plan_stale": "Údaje se mezitím změnily. Zkontrolujte souhrn a potvrďte znovu."
+    }
   },
   "Register": {
     "loading": "Načítám...",
@@ -3082,11 +3108,13 @@
         "EB_AUTH_REJECTED": "Přihlášení v bance bylo zrušeno nebo zamítnuto.",
         "EB_INVALID_PAYLOAD": "Banka vrátila neočekávaná data.",
         "EB_INVALID_AMOUNT": "Banka vrátila platbu s neplatnou částkou.",
-        "EB_CURRENCY_MISMATCH": "Účet je v jiné měně, než v jaké dům vede účetnictví."
+        "EB_CURRENCY_MISMATCH": "Účet je v jiné měně, než v jaké dům vede účetnictví.",
+        "EB_IBAN_MISMATCH": "Vybraný účet v bance není účet společenství nastavený v účetnictví (IBAN nesouhlasí). Vyberte správný účet nebo opravte IBAN v nastavení."
       },
       "ebCompactHint": "Platby můžete stahovat přímo z účtu domu v libovolné bance.",
       "ebSettingsLink": "Propojit banku",
-      "ebRenewLink": "Obnovit souhlas"
+      "ebRenewLink": "Obnovit souhlas",
+      "summaryPossibleDuplicates": "{count, plural, one {# platba vypadá} few {# platby vypadají} other {# plateb vypadá}} jako již importovaná z jiného zdroje (stejné datum, částka a VS). Nezaúčtovaly se — zkontrolujte je níže a duplicity zamítněte."
     },
     "expenses": {
       "uploadInvoice": "Nahrát fakturu",
@@ -3213,7 +3241,8 @@
       "publishing": "Publikuje se…",
       "publishError": "Publikování selhalo",
       "unprescribedWarning": "⚠️ Náklady bez předpisu: {categories}. Rovné rozdělení nemá právní základ — doplňte službu do předpisu nebo přeřaďte výdaj. Publikování je zablokováno.",
-      "draftScheduleWarning": "{count, plural, one {Existuje # nepublikovaný návrh předpisu} few {Existují # nepublikované návrhy předpisu} other {Existuje # nepublikovaných návrhů předpisu}} pro tento rok — po uzamčení období už nepůjde publikovat."
+      "draftScheduleWarning": "{count, plural, one {Existuje # nepublikovaný návrh předpisu} few {Existují # nepublikované návrhy předpisu} other {Existuje # nepublikovaných návrhů předpisu}} pro tento rok — po uzamčení období už nepůjde publikovat.",
+      "gateSingleReadingBlocking": "{count, plural, one {# jednotka má} few {# jednotky mají} other {# jednotek má}} v roce jen jeden odečet tepla nebo teplé vody. Stav měřidla by se rozúčtoval jako spotřeba — doplňte počáteční odečet, jinak vyúčtování nelze zveřejnit."
     },
     "vyuctovaniePdf": {
       "download": "Vyúčtování {year} (PDF)",
@@ -3382,7 +3411,8 @@
       "status_published": "zveřejněný",
       "status_used": "použitý",
       "status_cancelled": "zrušený",
-      "journalEntries": "{count} účetních zápisů"
+      "journalEntries": "{count} účetních zápisů",
+      "notPassedAnymore": "Bod po znovuotevření již neprošel — návrh zkontrolujte."
     },
     "inbox": {
       "pendingTitle": "Ke zpracování ({count})",
@@ -3519,7 +3549,8 @@
       "step_connect_body": "Po restartu se na této stránce zobrazí výběr banky. Vyberte stejnou banku, přihlaste se a potvrďte přístup. Platby pak stáhnete tlačítkem Synchronizovat nyní na stránce Platby.",
       "guideCost": "Omezený režim je zdarma pro vlastní účty. Pokud provozujete aplikaci pro více společenství, potřebujete placenou smlouvu s Enable Banking. V cloudové verzi je to nastaveno za vás.",
       "copy": "Kopírovat",
-      "copied": "Zkopírováno"
+      "copied": "Zkopírováno",
+      "askAdmin": "Propojení s bankou nastavuje správce aplikace. Požádejte ho, aby ho nastavil."
     }
   },
   "Home": {
@@ -3825,7 +3856,8 @@
           "title": "Klíč je už zapnutý",
           "body": "Tento přístupový klíč je už potvrzen. Nemusíte dělat nic dalšího."
         }
-      }
+      },
+      "notYou": "Nepřidali jste tento klíč? Nic nemačkejte a odstraňte ho v Profilu. Bez potvrzení nefunguje."
     },
     "errors": {
       "generic": "Něco se nepovedlo. Zkuste to prosím znovu.",
@@ -4439,7 +4471,10 @@
       "history": "Historie změn",
       "createdNotice": "Děkujeme, hlášení je odeslané. O každé změně stavu vám pošleme e-mail.",
       "progress": "Průběh",
-      "reported": "Nahlášeno"
+      "reported": "Nahlášeno",
+      "removePhotoTitle": "Odstranit fotku {n}?",
+      "removePhotoWarn": "Fotka bude z hlášení trvale odstraněna.",
+      "removePhotoConfirm": "Odstranit fotku"
     },
     "history": {
       "empty": "—",
@@ -4685,7 +4720,10 @@
       "lateNotice": "Pozor: ode dneška do shromáždění neuplyne 7 celých dní. Nejdřívější termín při oznámení dnes je {date}.",
       "failed": "Nepodařilo se doručit: {names}",
       "withoutEmail": "Bez e-mailu — doručte pozvánku v papírové podobě:",
-      "disclaimer": "E-mailová pozvánka je pomůcka. Pozvánku na shromáždění doručte způsobem, který určují stanovy."
+      "disclaimer": "E-mailová pozvánka je pomůcka. Pozvánku na shromáždění doručte způsobem, který určují stanovy.",
+      "confirmTitle": "Odeslat pozvánku?",
+      "confirmBody": "E-mail s pozvánkou se hned odešle přibližně {count} vlastníkům (těm s e-mailem, kteří ji ještě nedostali).",
+      "confirmButton": "Odeslat pozvánku"
     },
     "change": {
       "button": "Změnit datum nebo místo",
@@ -4696,7 +4734,10 @@
       "when": "Kdy",
       "where": "Kde",
       "hint": "Odpovědi vlastníků zůstanou uloženy.",
-      "save": "Uložit změnu"
+      "save": "Uložit změnu",
+      "notifyConfirmTitle": "Poslat změnu vlastníkům?",
+      "notifyConfirmBody": "Zpráva o změně schůze se hned odešle přibližně {count} vlastníkům, kteří už pozvánku dostali.",
+      "notifyConfirmButton": "Poslat změnu"
     },
     "cancel": {
       "button": "Zrušit shromáždění",
@@ -4763,7 +4804,8 @@
       "noMandate": "Tento vlastník nemá ověřenou plnou moc pro toto hlasování. Plnou moc nejdříve ověřte v části Plné moci.",
       "mandate": "Ověřená plná moc",
       "representativeName": "Jméno zástupce",
-      "representativeHint": "Vytiskne se na prezenční listině."
+      "representativeHint": "Vytiskne se na prezenční listině.",
+      "noMandateHint": "Nejprve vytvořte plnou moc tlačítkem „Vytvořit plnou moc“ na této stránce, poté se sem vraťte."
     },
     "export": {
       "heading": "Tisk a export",

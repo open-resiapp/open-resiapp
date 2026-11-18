@@ -1,6 +1,5 @@
 import "server-only";
 
-import { randomUUID } from "crypto";
 import { and, desc, eq, gt, isNull, lt, or, sql } from "drizzle-orm";
 
 import { db } from "@/db";
@@ -119,7 +118,10 @@ export async function exchangeAuthorizationCode(input: {
       )
     )
     .returning();
-  if (!row) throw new GrantError("invalid_grant", "authorization code is invalid, expired or already used");
+  if (!row) {
+    await revokeFamilyOfReusedCode(input.code);
+    throw new GrantError("invalid_grant", "authorization code is invalid, expired or already used");
+  }
   if (row.clientId !== input.client.id) {
     throw new GrantError("invalid_grant", "authorization code was issued to another client");
   }
@@ -136,13 +138,30 @@ export async function exchangeAuthorizationCode(input: {
     throw new GrantError("invalid_grant", "user is not active");
   }
   const tokens = await insertTokenRow({
-    familyId: randomUUID(),
+    // The family id IS the code row id, so a later replay of this code can
+    // find and revoke everything issued from it without a schema change.
+    familyId: row.id,
     clientRowId: row.clientId,
     userId: row.userId,
     scopes: normalizeStoredScopes(row.scopes),
     resource: row.resource,
   });
   return { tokens, userId: row.userId };
+}
+
+/**
+ * RFC 6749 §4.1.2: a code presented again after it was redeemed → revoke
+ * every token issued from it (the family whose id is the code row id; the
+ * family's later refresh rotations keep that id). An unknown / merely
+ * expired code revokes nothing. Read + one conditional UPDATE, PK / indexed.
+ */
+async function revokeFamilyOfReusedCode(code: string): Promise<void> {
+  const [used] = await db
+    .select({ id: oauthAuthorizationCodes.id, usedAt: oauthAuthorizationCodes.usedAt })
+    .from(oauthAuthorizationCodes)
+    .where(eq(oauthAuthorizationCodes.codeHash, sha256Hex(code)))
+    .limit(1);
+  if (used?.usedAt) await revokeFamily(used.id);
 }
 
 // ── Refresh (rotation + reuse detection) ────────────────

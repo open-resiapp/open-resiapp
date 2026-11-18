@@ -27,7 +27,9 @@ import {
   votingItems,
   ballots,
   ballotItemVotes,
+  ballotPhotos,
 } from "@modules/voting/src/db/schema";
+import { recordVotingEvent } from "@modules/voting/src/events";
 import {
   computeBallotHash,
   computeItemAuditHash,
@@ -47,6 +49,7 @@ export const VALID_CHOICES: VoteChoice[] = ["za", "proti", "zdrzal_sa"];
 /** Stable error codes of the electronic cast path (mapped to VoteCast.errors.*). */
 export type CastErrorCode =
   | "UNAUTHORIZED"
+  | "BALLOT_CONFLICT"
   | "FORBIDDEN"
   | "INVALID_REQUEST"
   | "RATE_LIMITED"
@@ -110,9 +113,9 @@ export interface ValidCast {
  * the MCP ballot path (modules/voting/src/ballots.ts validateBallotCast
  * maps the failures to McpError) — in the same order the pre-Phase-6 POST
  * ran them. `electronic` adds the electronic-only rules (statutory e-voting
- * block, voting window end). `requireOwnerMembership` narrows eligibility to
- * an active OWNER membership (MCP path); the web routes keep their
- * historical "any active membership" rule.
+ * block, voting window end). Eligibility is ALWAYS an active OWNER
+ * membership on the unit (2026-11-18 review: the web path used to accept
+ * any active membership, tenants included) — web, paper and MCP identical.
  */
 export async function validateCast(input: {
   votingId: string;
@@ -120,7 +123,6 @@ export async function validateCast(input: {
   voterId: string;
   incoming: unknown;
   electronic: boolean;
-  requireOwnerMembership?: boolean;
 }): Promise<ValidCast | CastFailure> {
   const { votingId, flatId, voterId, electronic } = input;
   const incoming: unknown[] = Array.isArray(input.incoming) ? input.incoming : [];
@@ -152,18 +154,18 @@ export async function validateCast(input: {
     );
   }
 
-  // Ownership: the voter must hold an active membership on the unit
-  // (an active OWNER membership with requireOwnerMembership).
-  const ownershipConds = [
-    eq(memberships.userId, voterId),
-    eq(memberships.entityId, flatId),
-    eq(memberships.status, "active"),
-  ];
-  if (input.requireOwnerMembership) ownershipConds.push(eq(memberships.role, "owner"));
+  // Ownership: the voter must hold an active OWNER membership on the unit.
   const [ownerFlat] = await db
     .select({ id: memberships.id })
     .from(memberships)
-    .where(and(...ownershipConds))
+    .where(
+      and(
+        eq(memberships.userId, voterId),
+        eq(memberships.entityId, flatId),
+        eq(memberships.status, "active"),
+        eq(memberships.role, "owner")
+      )
+    )
     .limit(1);
   if (!ownerFlat) {
     return fail("NOT_UNIT_OWNER", 400, "Vlastník nevlastní tento byt");
@@ -318,8 +320,15 @@ type Tx = Parameters<Parameters<typeof db.transaction>[0]>[0];
  * Lock order shared by every ballot write: voting row FOR SHARE, then the
  * ballot row FOR UPDATE. Closing a voting updates the voting row, so it
  * waits for in-flight casts and every cast after it sees the new status.
+ * `enforceDeadline: false` = board / counter writes (paper ballots received
+ * in time may be entered after endsAt, and the board corrects a reopened
+ * voting) — status must still be active.
  */
-async function lockActiveVoting(tx: Tx, votingId: string): Promise<void> {
+export async function lockActiveVoting(
+  tx: Tx,
+  votingId: string,
+  opts: { enforceDeadline?: boolean } = {}
+): Promise<void> {
   const [v] = await tx
     .select({ status: votings.status, endsAt: votings.endsAt })
     .from(votings)
@@ -327,17 +336,25 @@ async function lockActiveVoting(tx: Tx, votingId: string): Promise<void> {
     .limit(1)
     .for("share");
   if (!v || v.status !== "active") throw new TxAbort("VOTING_NOT_ACTIVE", 400);
-  if (Date.now() > v.endsAt.getTime()) throw new TxAbort("VOTING_ENDED", 400);
+  if (opts.enforceDeadline !== false && Date.now() > v.endsAt.getTime()) {
+    throw new TxAbort("VOTING_ENDED", 400);
+  }
 }
 
-function txFailure(err: unknown): CastFailure | null {
+export function isUniqueViolation(err: unknown): boolean {
+  // drizzle ≥0.44 wraps the driver error in `cause`.
+  const e = err as { code?: string; cause?: { code?: string } };
+  return e?.code === "23505" || e?.cause?.code === "23505";
+}
+
+/** TxAbort / unique-violation → CastFailure (null = rethrow). */
+export function txFailure(
+  err: unknown,
+  uniqueCode: CastErrorCode = "CONFIRMATION_SUPERSEDED"
+): CastFailure | null {
   if (err instanceof TxAbort) return fail(err.code, err.status);
   // Lost the race for the first insert on the unique index.
-  // (drizzle ≥0.44 wraps the driver error in `cause`.)
-  const e = err as { code?: string; cause?: { code?: string } };
-  if (e?.code === "23505" || e?.cause?.code === "23505") {
-    return fail("CONFIRMATION_SUPERSEDED", 409);
-  }
+  if (isUniqueViolation(err)) return fail(uniqueCode, 409);
   return null;
 }
 
@@ -526,29 +543,147 @@ export async function deleteBallotAsBoard(input: {
   votingId: string;
   flatId: string;
   ownerId: string;
-}): Promise<boolean> {
+}): Promise<{ ok: true } | CastFailure> {
   const { votingId, flatId, ownerId } = input;
-  return db.transaction(async (tx) => {
-    // ballot_item_votes + ballot_photos cascade on ballot delete.
-    const deleted = await tx
-      .delete(ballots)
-      .where(
-        and(
-          eq(ballots.votingId, votingId),
-          eq(ballots.entityId, flatId),
-          eq(ballots.ownerId, ownerId)
+  try {
+    return await db.transaction(async (tx) => {
+      // Same lock order as every ballot write; status re-checked on the
+      // locked row (no deadline — the board corrects until close).
+      await lockActiveVoting(tx, votingId, { enforceDeadline: false });
+      const [existing] = await tx
+        .select({ id: ballots.id })
+        .from(ballots)
+        .where(
+          and(
+            eq(ballots.votingId, votingId),
+            eq(ballots.entityId, flatId),
+            eq(ballots.ownerId, ownerId)
+          )
         )
-      )
-      .returning({ id: ballots.id });
-    if (deleted.length === 0) return false;
-    await revokeTokensIssuedBefore(
-      tx,
-      ballotTokenScope(votingId, flatId, ownerId),
-      new Date(),
-      MAX_VOTE_TOKEN_TTL_MS
-    );
-    return true;
-  });
+        .limit(1)
+        .for("update");
+      if (!existing) throw new TxAbort("BALLOT_NOT_FOUND", 404);
+      // ballot_item_votes + ballot_photos cascade on ballot delete.
+      await tx.delete(ballots).where(eq(ballots.id, existing.id));
+      await revokeTokensIssuedBefore(
+        tx,
+        ballotTokenScope(votingId, flatId, ownerId),
+        new Date(),
+        MAX_VOTE_TOKEN_TTL_MS
+      );
+      return { ok: true as const };
+    });
+  } catch (err) {
+    const f = txFailure(err, "BALLOT_CONFLICT");
+    if (f) return f;
+    throw err;
+  }
+}
+
+/**
+ * Board / counter write of a PAPER ballot (create or supersede). One
+ * transaction, the lock order of every ballot write: voting row FOR SHARE
+ * (status re-checked on the locked row; no deadline — a paper ballot
+ * received in time may be entered after endsAt), then the ballot row FOR
+ * UPDATE. A lost first-insert race maps to BALLOT_CONFLICT (409).
+ * §14a ods. 7: paper beats electronic — the replaced e-ballot leaves a
+ * `ballot_superseded` audit trace (its commitment only, no choices).
+ */
+export async function recordPaperBallot(input: {
+  votingId: string;
+  flatId: string;
+  voterId: string;
+  actorId: string;
+  mandateId: string | null;
+  marked: MarkedChoice[];
+  ballotHash: string;
+  photoUrls: string[];
+}): Promise<
+  | { ok: true; ballotId: string; recordedAt: Date; superseded: boolean }
+  | CastFailure
+> {
+  const { votingId, flatId, voterId, marked, ballotHash } = input;
+  const recordedAt = new Date();
+  try {
+    return await db.transaction(async (tx) => {
+      await lockActiveVoting(tx, votingId, { enforceDeadline: false });
+      const [existing] = await tx
+        .select({ id: ballots.id, voteType: ballots.voteType, ballotHash: ballots.ballotHash })
+        .from(ballots)
+        .where(
+          and(
+            eq(ballots.votingId, votingId),
+            eq(ballots.entityId, flatId),
+            eq(ballots.ownerId, voterId)
+          )
+        )
+        .limit(1)
+        .for("update");
+
+      const paperValues = {
+        voteType: "paper" as const,
+        recordedById: input.actorId,
+        mandateId: input.mandateId || null,
+        ballotHash,
+        // A paper ballot replaces any electronic confirmation metadata.
+        signature: null,
+        confirmationKind: null,
+        confirmedAt: null,
+        recordedAt,
+      };
+      // Ownership frozen at cast time (results never move on a later ownership change).
+      const snapshot = await ownershipSnapshot(tx, flatId, voterId);
+      let bId: string;
+      if (existing) {
+        bId = existing.id;
+        if (existing.voteType === "electronic") {
+          await recordVotingEvent(tx, {
+            votingId,
+            kind: "ballot_superseded",
+            actorId: input.actorId,
+            payload: { ballotHash: existing.ballotHash, unitId: flatId, ownerId: voterId },
+          });
+        }
+        await tx.update(ballots).set({ ...paperValues, ...snapshot }).where(eq(ballots.id, bId));
+        await tx.delete(ballotItemVotes).where(eq(ballotItemVotes.ballotId, bId));
+        await tx.delete(ballotPhotos).where(eq(ballotPhotos.ballotId, bId));
+      } else {
+        const [created] = await tx
+          .insert(ballots)
+          .values({ votingId, entityId: flatId, ownerId: voterId, ...paperValues, ...snapshot })
+          .returning({ id: ballots.id });
+        bId = created.id;
+      }
+
+      if (marked.length > 0) {
+        await tx.insert(ballotItemVotes).values(
+          marked.map((m) => ({
+            ballotId: bId,
+            itemId: m.itemId,
+            choice: m.choice,
+            itemAuditHash: computeItemAuditHash({
+              votingId,
+              itemId: m.itemId,
+              entityId: flatId,
+              ownerId: voterId,
+              choice: m.choice,
+              recordedAt,
+            }),
+          }))
+        );
+      }
+      if (input.photoUrls.length > 0) {
+        await tx.insert(ballotPhotos).values(
+          input.photoUrls.map((url, idx) => ({ ballotId: bId, storageKey: url, idx }))
+        );
+      }
+      return { ok: true as const, ballotId: bId, recordedAt, superseded: Boolean(existing) };
+    });
+  } catch (err) {
+    const f = txFailure(err, "BALLOT_CONFLICT");
+    if (f) return f;
+    throw err;
+  }
 }
 
 /** Human description of a ballot: voting title, unit number, items in ballot order. */

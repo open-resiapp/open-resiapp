@@ -194,7 +194,8 @@ function render(p){
   ok.addEventListener("click",function(){decide("confirm_action");});
   no.addEventListener("click",function(){decide("cancel_action");});
   actions.appendChild(ok);actions.appendChild(no);
-  root.appendChild(actions);
+  // No token = host did not declare MCP Apps UI; decide in the app (link below).
+  if(p.confirmToken)root.appendChild(actions);
 
   var status=h("p","status");
   status.id="status";

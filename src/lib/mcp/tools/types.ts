@@ -23,6 +23,14 @@ export interface ToolContext {
   origin: string;
   /** Number formatting locale for money strings. */
   numberLocale: "sk-SK" | "cs-CZ";
+  /**
+   * The client declared MCP Apps UI support (`io.modelcontextprotocol/ui`)
+   * for this request. Set per tools/call by server.ts. Gates whether a
+   * write proposal hands out its single-use confirm token: a client without
+   * the UI would surface `_meta` to the model, which could then call
+   * confirm_action itself.
+   */
+  appsUi?: boolean;
 }
 
 export interface ToolOutput {

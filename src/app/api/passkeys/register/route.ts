@@ -2,7 +2,8 @@
 // passkey for the signed-in user — INACTIVE until the e-mailed single-use
 // link is clicked (a session alone must not add a voting credential).
 //
-// Body: { response, deviceLabel?, locale?, activation?: "vote" }
+// Body: { response, locale?, activation?: "vote" }  (a legacy `deviceLabel`
+//   field is ignored — the label comes from the User-Agent)
 //   activation "vote" → the inline first-vote flow: no separate activation
 //   e-mail; the client next asks for the vote confirmation e-mail with
 //   `activatePasskeyId`, and that one link records the vote AND activates
@@ -23,7 +24,7 @@ export async function POST(request: NextRequest) {
   if (!session?.user?.id) {
     return NextResponse.json({ error: "UNAUTHORIZED" }, { status: 401 });
   }
-  let body: { response?: unknown; deviceLabel?: unknown; locale?: unknown; activation?: unknown } | null =
+  let body: { response?: unknown; locale?: unknown; activation?: unknown } | null =
     null;
   try {
     body = await request.json();
@@ -33,10 +34,9 @@ export async function POST(request: NextRequest) {
   if (!body?.response || typeof body.response !== "object") {
     return NextResponse.json({ error: "INVALID_REQUEST" }, { status: 400 });
   }
-  const label =
-    typeof body.deviceLabel === "string" && body.deviceLabel.trim()
-      ? body.deviceLabel.trim()
-      : deviceLabelFromUserAgent(request.headers.get("user-agent"));
+  // Label is derived server-side only; a body `deviceLabel` is ignored (it is
+  // shown in the activation e-mail / page and must not be attacker-chosen).
+  const label = deviceLabelFromUserAgent(request.headers.get("user-agent"));
   const locale = typeof body.locale === "string" ? body.locale : null;
   try {
     const result = await verifyRegistration(
@@ -59,7 +59,12 @@ export async function POST(request: NextRequest) {
     const mail = await sendPasskeyActivationEmail({
       request,
       userId: session.user.id,
-      credential: { id: result.id, credentialId: result.credentialId, deviceLabel: result.deviceLabel },
+      credential: {
+        id: result.id,
+        credentialId: result.credentialId,
+        deviceLabel: result.deviceLabel,
+        createdAt: new Date(),
+      },
       locale,
     });
     return NextResponse.json(

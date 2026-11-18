@@ -1,6 +1,6 @@
 import "server-only";
 
-import { eq } from "drizzle-orm";
+import { eq, sql } from "drizzle-orm";
 
 import { db } from "@/db";
 import { oauthClients } from "@/db/schema";
@@ -232,9 +232,37 @@ export function getClientByClientId(clientId: string): Promise<OAuthClientRow | 
   return findByClientId(clientId);
 }
 
+const STALE_CIMD_MS = 30 * 24 * 3600 * 1000;
+const PRUNE_BATCH = 20;
+const PRUNE_PROBABILITY = 0.05;
+
+/**
+ * Opportunistic, bounded cleanup of cached CIMD client rows nobody uses:
+ * not re-fetched for 30 days and no codes / tokens point at them. Safe to
+ * drop — a CIMD client is re-fetched on its next authorize. One short
+ * statement (≤ PRUNE_BATCH rows), no background job, runs on ~5 % of DCR
+ * registrations; the outer WHERE repeats the predicate so a row touched
+ * concurrently by another replica (re-fetch, new code) is re-checked and
+ * kept. Fire-and-forget: never blocks or fails the registration.
+ */
+function maybePruneStaleCimdClients(): void {
+  if (Math.random() >= PRUNE_PROBABILITY) return;
+  const cutoff = new Date(Date.now() - STALE_CIMD_MS);
+  const unused = sql`c.source = 'cimd'
+      AND c.fetched_at < ${cutoff}
+      AND NOT EXISTS (SELECT 1 FROM oauth_tokens t WHERE t.client_id = c.id)
+      AND NOT EXISTS (SELECT 1 FROM oauth_authorization_codes a WHERE a.client_id = c.id)`;
+  db.execute(
+    sql`DELETE FROM oauth_clients c
+        WHERE c.id IN (SELECT c.id FROM oauth_clients c WHERE ${unused} LIMIT ${PRUNE_BATCH})
+          AND ${unused}`
+  ).catch((err) => console.warn("[oauth] CIMD prune skipped:", (err as Error).message));
+}
+
 /** RFC 7591 registration of a public client. */
 export async function registerDcrClient(metadata: unknown): Promise<OAuthClientRow> {
   const meta = parseClientMetadata(metadata, "AI app");
+  maybePruneStaleCimdClients();
   const [row] = await db
     .insert(oauthClients)
     .values({

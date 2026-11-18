@@ -37,6 +37,19 @@ export interface OverviewBallot {
   voteType: string;
   recordedAt: string;
   choices: { itemId: string; choice: string }[];
+  /**
+   * Shares frozen on the ballot (owner share at cast time, unit share at
+   * close) — authoritative over `eligible`, exactly like results.ts. NULL
+   * fields fall back to the eligible line (2026-11-18 review).
+   */
+  frozen?: {
+    ownerUnitShareNumerator: number | null;
+    ownerUnitShareDenominator: number | null;
+    membershipWeight: number | null;
+    unitShareNumerator: number | null;
+    unitShareDenominator: number | null;
+    area: number | null;
+  };
 }
 
 export interface OverviewInput {
@@ -46,6 +59,10 @@ export interface OverviewInput {
   items: { id: string; quorumType: QuorumType }[];
   eligible: OverviewEligible[];
   ballots: OverviewBallot[];
+  /** Meeting votings: the engine's present-at-meeting rules (same as results.ts). */
+  votingType?: "written" | "meeting";
+  /** Presence of the actual result (attendance basis); null = list empty. */
+  presence?: { weight: number; owners: number } | null;
 }
 
 export interface OwnerLine {
@@ -81,18 +98,26 @@ function key(unitId: string, ownerId: string) {
   return `${unitId}:${ownerId}`;
 }
 
-function toVote(e: OverviewEligible | undefined, b: { entityId: string; ownerId: string; ownerName: string | null }, choice: VoteChoice): VoteWithOwnership {
+function toVote(
+  e: OverviewEligible | undefined,
+  b: { entityId: string; ownerId: string; ownerName: string | null; frozen?: OverviewBallot["frozen"] },
+  choice: VoteChoice
+): VoteWithOwnership {
+  const f = b.frozen;
+  const unitFrozen =
+    f != null && (f.unitShareNumerator != null || f.unitShareDenominator != null || f.area != null);
+  const ownerFrozen = f?.ownerUnitShareNumerator != null && f?.ownerUnitShareDenominator != null;
   return {
     unitEntityId: b.entityId,
     userId: b.ownerId,
     userName: b.ownerName,
     choice,
-    unitShareNumerator: e?.unitShareNumerator ?? 0,
-    unitShareDenominator: e?.unitShareDenominator ?? 1,
-    area: e?.area ?? null,
-    ownerUnitShareNumerator: e?.ownerUnitShareNumerator ?? 1,
-    ownerUnitShareDenominator: e?.ownerUnitShareDenominator ?? 1,
-    membershipWeight: e?.membershipWeight ?? 1,
+    unitShareNumerator: unitFrozen ? (f!.unitShareNumerator ?? 0) : (e?.unitShareNumerator ?? 0),
+    unitShareDenominator: unitFrozen ? (f!.unitShareDenominator ?? 1) : (e?.unitShareDenominator ?? 1),
+    area: unitFrozen ? f!.area : (e?.area ?? null),
+    ownerUnitShareNumerator: ownerFrozen ? f!.ownerUnitShareNumerator! : (e?.ownerUnitShareNumerator ?? 1),
+    ownerUnitShareDenominator: ownerFrozen ? f!.ownerUnitShareDenominator! : (e?.ownerUnitShareDenominator ?? 1),
+    membershipWeight: f?.membershipWeight ?? e?.membershipWeight ?? 1,
   };
 }
 
@@ -136,7 +161,8 @@ export function buildOverview(input: OverviewInput): ItemOverview[] {
         const r = resolveUnitVote(
           expressed.map((l) => {
             const e = owners.find((o) => o.ownerId === l.ownerId);
-            return toVote(e, { entityId: unitId, ownerId: l.ownerId, ownerName: l.ownerName }, l.choice!);
+            const frozen = ballotByKey.get(key(unitId, l.ownerId))?.frozen;
+            return toVote(e, { entityId: unitId, ownerId: l.ownerId, ownerName: l.ownerName, frozen }, l.choice!);
           }),
           input.votingMethod
         );
@@ -188,10 +214,17 @@ export function canStillPass(input: OverviewInput): Record<string, PassOutlook> 
       if (!c) continue;
       actual.push(toVote(eligibleByKey.get(key(b.entityId, b.ownerId)), b, c.choice as VoteChoice));
     }
+    // Same engine options as results.ts (meeting presence included).
     const run = (votes: VoteWithOwnership[]) =>
-      calculateResults(votes, input.votingMethod, item.quorumType, input.totalPossibleWeight, {
-        country: input.country,
-      }).passed;
+      calculateResults(
+        votes,
+        input.votingMethod,
+        item.quorumType,
+        input.totalPossibleWeight,
+        input.votingType === "meeting"
+          ? { country: input.country, votingType: "meeting", presence: input.presence ?? null }
+          : { country: input.country }
+      ).passed;
     if (run(actual)) {
       out[item.id] = "passed";
       continue;

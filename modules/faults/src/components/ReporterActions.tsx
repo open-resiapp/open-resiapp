@@ -1,10 +1,10 @@
 "use client";
 
-import { useId, useState } from "react";
+import { useState } from "react";
 import { useTranslations } from "next-intl";
 
-import { Button, ConfirmDialog, Field, Icon, Input, Modal, Textarea, cn } from "@/components/ui";
-import { focusRing } from "@/components/ui/cn";
+import { Button, ConfirmDialog, Field, Icon, Input, Modal, Textarea, cn, useConfirm } from "@/components/ui";
+import { focusWithinRing } from "@/components/ui/cn";
 import { useRouter } from "@/i18n/navigation";
 
 import { checkPhoto, MAX_PHOTOS, TITLE_MAX, type FaultVisibility } from "../engine/transitions";
@@ -30,7 +30,7 @@ export function ReporterActions({
   const t = useTranslations("Faults");
   const router = useRouter();
   const api = useFaultApi();
-  const fileId = useId();
+  const confirm = useConfirm();
 
   const [editing, setEditing] = useState(false);
   const [withdrawing, setWithdrawing] = useState(false);
@@ -76,7 +76,15 @@ export function ReporterActions({
     if (res) router.refresh();
   };
 
-  const removePhoto = async (photoId: string) => {
+  const removePhoto = async (photoId: string, n: number) => {
+    const ok = await confirm({
+      title: t("detail.removePhotoTitle", { n }),
+      description: t("detail.removePhotoWarn"),
+      confirmLabel: t("detail.removePhotoConfirm"),
+      cancelLabel: t("board.cancel"),
+      tone: "danger",
+    });
+    if (!ok) return;
     const res = await api.call(`/api/modules/faults/${fault.id}/photos/${photoId}`, { method: "DELETE" });
     if (res) router.refresh();
   };
@@ -86,8 +94,14 @@ export function ReporterActions({
       {fault.photos.length > 0 ? (
         <ul className="flex flex-wrap gap-2">
           {fault.photos.map((p, i) => (
-            <li key={p.id}>
-              <Button variant="ghost" onClick={() => removePhoto(p.id)} disabled={api.busy}>
+            <li key={p.id} className="flex items-center gap-2">
+              {/* eslint-disable-next-line @next/next/no-img-element -- auth-gated proxy route, not optimisable */}
+              <img
+                src={`/api/modules/faults/photos/${p.id}`}
+                alt={t("detail.photoAlt", { n: i + 1 })}
+                className="h-16 w-16 shrink-0 rounded-lg border border-ui-border object-cover"
+              />
+              <Button variant="ghost" onClick={() => removePhoto(p.id, i + 1)} disabled={api.busy}>
                 <Icon name="trash" size={20} />
                 {t("detail.removePhotoN", { n: i + 1 })}
               </Button>
@@ -104,27 +118,24 @@ export function ReporterActions({
         {fault.photos.length < MAX_PHOTOS ? (
           <>
             <label
-              htmlFor={fileId}
               className={cn(
                 "inline-flex min-h-11 cursor-pointer items-center gap-2 rounded-lg border border-ui-border-strong bg-ui-surface px-4 text-base font-medium text-ui-text hover:bg-ui-surface-muted",
-                focusRing
+                focusWithinRing
               )}
             >
               <Icon name="upload" size={20} />
               {t("report.addPhoto")}
+              <input
+                type="file"
+                accept="image/jpeg,image/png,image/webp"
+                multiple
+                className="sr-only"
+                onChange={(e) => {
+                  void addPhotos(e.target.files);
+                  e.target.value = "";
+                }}
+              />
             </label>
-            <input
-              id={fileId}
-              type="file"
-              accept="image/jpeg,image/png,image/webp"
-              capture="environment"
-              multiple
-              className="sr-only"
-              onChange={(e) => {
-                void addPhotos(e.target.files);
-                e.target.value = "";
-              }}
-            />
           </>
         ) : null}
         <Button variant="danger" onClick={() => setWithdrawing(true)}>

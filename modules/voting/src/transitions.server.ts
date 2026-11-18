@@ -9,14 +9,17 @@ import "server-only";
 // waits on the row lock, then sees `closed` and gets TRANSITION_NOT_ALLOWED,
 // so exactly one `closed` event is written. Lock order matches the cast path
 // (voting row first), see routes/api/ballots/cast.server.ts.
-import { and, eq } from "drizzle-orm";
+import { and, asc, eq } from "drizzle-orm";
 
 import { db } from "@/db";
 import { getCommunityRoot } from "@/lib/legacy-compat";
 import { timeZoneForCountry } from "@/lib/time-zone";
 import type { Country, VotingStatus } from "@/types";
-import { votings } from "./db/schema";
+import { votingEvents, votings } from "./db/schema";
 import { recordVotingEvent, type VotingEventKind } from "./events";
+import { clearVotingFreeze, freezeVotingAtClose } from "./freeze.server";
+import { validatePerRollamDuration } from "./rules";
+import { minutesHistory } from "./workflow/minutes";
 import {
   checkTransition,
   type TransitionErrorCode,
@@ -24,7 +27,13 @@ import {
 } from "./workflow/transitions";
 import { validateNotice, type NoticeErrorCode } from "./workflow/notice";
 
-export type TransitionFailureCode = TransitionErrorCode | NoticeErrorCode | "NOT_FOUND";
+export type TransitionFailureCode =
+  | TransitionErrorCode
+  | NoticeErrorCode
+  | "NOT_FOUND"
+  // CZ §1211 per rollam minimum term (rules/validatePerRollamDuration),
+  // re-checked on announce: a draft PATCH of endsAt is not validated.
+  | "PER_ROLLAM_TOO_SHORT";
 
 export type TransitionResult =
   | { ok: true; voting: typeof votings.$inferSelect; action: VotingAction }
@@ -76,7 +85,11 @@ export async function transitionVoting(input: {
       if (!current) throw new Abort("NOT_FOUND", 404);
 
       const check = checkTransition(
-        { status: current.status as VotingStatus, resultPublishedAt: current.resultPublishedAt },
+        {
+          status: current.status as VotingStatus,
+          resultPublishedAt: current.resultPublishedAt,
+          endsAt: current.endsAt,
+        },
         action,
         { note, publishedAt: input.publishedAt ?? null }
       );
@@ -95,6 +108,12 @@ export async function transitionVoting(input: {
           timeZone: timeZoneForCountry(country),
         });
         if (noticeError) throw new Abort(noticeError.code, 400, noticeError.minDate);
+        if (current.votingType === "written") {
+          const minEnd = validatePerRollamDuration(country, current.startsAt, current.endsAt);
+          if (minEnd) {
+            throw new Abort("PER_ROLLAM_TOO_SHORT", 400, minEnd.toISOString().split("T")[0]);
+          }
+        }
         // Set once: a later reopen never moves the announcement.
         if (!current.announcedAt) set.announcedAt = now;
       }
@@ -107,15 +126,35 @@ export async function transitionVoting(input: {
         .returning();
       if (!updated) throw new Abort("TRANSITION_NOT_ALLOWED", 409);
 
+      // 2026-11-18 review: freeze on close, unfreeze on reopen (same tx, the
+      // voting row is locked FOR UPDATE — no ballot can change meanwhile).
+      let payload: Record<string, unknown> | null = null;
+      if (action === "close") await freezeVotingAtClose(tx, updated);
+      if (action === "reopen") {
+        await clearVotingFreeze(tx, votingId);
+        // Spec §6: minutes generated before the reopen are superseded. The
+        // marker lives on the append-only `reopened` event; minutesHistory()
+        // derives the same flag for the history list.
+        const history = await tx
+          .select({ kind: votingEvents.kind, payload: votingEvents.payload, createdAt: votingEvents.createdAt })
+          .from(votingEvents)
+          .where(eq(votingEvents.votingId, votingId))
+          .orderBy(asc(votingEvents.createdAt));
+        const superseded = minutesHistory(history)
+          .filter((m) => !m.superseded)
+          .map((m) => m.version);
+        if (superseded.length > 0) payload = { supersededMinutes: superseded };
+      }
+      if (action === "publish") {
+        payload = { publishedAt: (set.resultPublishedAt as Date).toISOString() };
+      }
+
       await recordVotingEvent(tx, {
         votingId,
         kind: EVENT_FOR_ACTION[action],
         actorId,
         note: action === "reopen" ? note : null,
-        payload:
-          action === "publish"
-            ? { publishedAt: (set.resultPublishedAt as Date).toISOString() }
-            : null,
+        payload,
       });
       return updated;
     });

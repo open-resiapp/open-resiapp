@@ -187,12 +187,13 @@ export async function userPasskeyState(
 export async function getPendingPasskey(
   userId: string,
   id: string
-): Promise<{ id: string; credentialId: string; deviceLabel: string | null } | null> {
+): Promise<{ id: string; credentialId: string; deviceLabel: string | null; createdAt: Date } | null> {
   const [row] = await db
     .select({
       id: webauthnCredentials.id,
       credentialId: webauthnCredentials.credentialId,
       deviceLabel: webauthnCredentials.deviceLabel,
+      createdAt: webauthnCredentials.createdAt,
     })
     .from(webauthnCredentials)
     .where(
@@ -249,15 +250,37 @@ function sanitizeTransports(
 }
 
 /** Short human label from the User-Agent ("iPhone", "Android", "Mac", …). */
+function browserFromUserAgent(ua: string): string | null {
+  // Order matters: Edge / Opera / Samsung UAs also contain "Chrome" and
+  // "Safari"; Chrome UAs also contain "Safari".
+  if (/Edg(e|A|iOS)?\//i.test(ua)) return "Edge";
+  if (/OPR\/|Opera/i.test(ua)) return "Opera";
+  if (/SamsungBrowser/i.test(ua)) return "Samsung Internet";
+  if (/Firefox\/|FxiOS/i.test(ua)) return "Firefox";
+  if (/Chrome\/|CriOS/i.test(ua)) return "Chrome";
+  if (/Safari\//i.test(ua)) return "Safari";
+  return null;
+}
+
+/**
+ * Passkey label derived server-side from the registering request's
+ * User-Agent ("Chrome · Mac"). Never taken from the request body: the label
+ * is shown in the activation e-mail / page, so a client-chosen text would be
+ * a phishing vector (a stolen session could name its passkey anything).
+ */
 export function deviceLabelFromUserAgent(ua: string | null): string | null {
   if (!ua) return null;
-  if (/iPhone/i.test(ua)) return "iPhone";
-  if (/iPad/i.test(ua)) return "iPad";
-  if (/Android/i.test(ua)) return "Android";
-  if (/Macintosh|Mac OS X/i.test(ua)) return "Mac";
-  if (/Windows/i.test(ua)) return "Windows";
-  if (/Linux/i.test(ua)) return "Linux";
-  return null;
+  let os: string | null = null;
+  if (/iPhone/i.test(ua)) os = "iPhone";
+  else if (/iPad/i.test(ua)) os = "iPad";
+  else if (/Android/i.test(ua)) os = "Android";
+  else if (/Macintosh|Mac OS X/i.test(ua)) os = "Mac";
+  else if (/Windows/i.test(ua)) os = "Windows";
+  else if (/CrOS/i.test(ua)) os = "ChromeOS";
+  else if (/Linux/i.test(ua)) os = "Linux";
+  const browser = browserFromUserAgent(ua);
+  if (browser && os) return `${browser} · ${os}`;
+  return browser ?? os;
 }
 
 // ── Registration ────────────────────────────────────────
@@ -569,6 +592,27 @@ export type AssertionResult =
     };
 
 /**
+ * Issued-at of the signed token carried as a WebAuthn challenge
+ * (base64url(token), token = base64url(JSON claims) "." sig). The caller has
+ * already verified the token's signature and purpose; this only reads `iat`.
+ */
+function challengeIssuedAt(challenge: string): Date | null {
+  try {
+    const token = Buffer.from(challenge, "base64url").toString("utf8");
+    const payloadPart = token.split(".")[0];
+    if (!payloadPart) return null;
+    const claims = JSON.parse(Buffer.from(payloadPart, "base64url").toString("utf8")) as {
+      iat?: unknown;
+    };
+    return typeof claims.iat === "number" && Number.isFinite(claims.iat)
+      ? new Date(claims.iat)
+      : null;
+  } catch {
+    return null;
+  }
+}
+
+/**
  * Verify an assertion for `userId` against `expectedChallenge` (already
  * checked by the caller to be a valid signed token bound to the ballot).
  * Checks origin, RP ID, user verification, signature and the signature
@@ -598,6 +642,13 @@ export async function verifyAssertion(
   // A pending passkey (e-mail activation not clicked yet) never confirms.
   if (!cred.activatedAt) return { ok: false, code: "PASSKEY_PENDING" };
 
+  // Replay guard, same as sign-in (see the block comment above
+  // verifyPasskeyLogin): synced passkeys report counter 0, so the counter
+  // CAS alone lets a captured assertion be replayed. Require that the
+  // passkey was not used after this challenge was issued.
+  const issuedAt = challengeIssuedAt(expectedChallenge);
+  if (!issuedAt) return { ok: false, code: "PASSKEY_VERIFICATION_FAILED" };
+
   const newCounter = await checkAssertionSignature(request, cred, response, expectedChallenge);
   if (newCounter === null) {
     return { ok: false, code: "PASSKEY_VERIFICATION_FAILED" };
@@ -613,7 +664,11 @@ export async function verifyAssertion(
       and(
         eq(webauthnCredentials.id, cred.id),
         eq(webauthnCredentials.counter, cred.counter),
-        isNotNull(webauthnCredentials.activatedAt)
+        isNotNull(webauthnCredentials.activatedAt),
+        or(
+          isNull(webauthnCredentials.lastUsedAt),
+          lt(webauthnCredentials.lastUsedAt, issuedAt)
+        )
       )
     )
     .returning({ id: webauthnCredentials.id });

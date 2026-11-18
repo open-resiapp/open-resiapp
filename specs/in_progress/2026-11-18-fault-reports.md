@@ -166,7 +166,7 @@ widen. Board may change to any value.
 | `in_progress` | `resolved`, `rejected`, `new` | board | same |
 | `resolved` | `in_progress` (reopen) | board | public reason |
 | `rejected` | `new` (reopen) | board | — |
-| `new` | *(deleted)* | reporter | withdraw, only while `new` and no board change yet |
+| `new` | `withdrawn` | reporter | withdraw, only while `new` and no board change yet (record, history and photos kept — Decision 3) |
 
 Error codes (never prose): `FAULT_INVALID_TRANSITION`, `FAULT_REASON_REQUIRED`,
 `FAULT_NOT_EDITABLE` (reporter edit after `new`), `FAULT_WITHDRAW_NOT_ALLOWED`,
@@ -328,9 +328,11 @@ mod_faults_notifications_sent
   uniqueIndex(kind, recipient_id, dedupe_key); index(fault_id, kind, sent_at)
 ```
 
-Withdraw (reporter, `new`, no board event): hard delete of the fault row; photos, events and
-notification rows cascade; stored photo files are removed via `src/lib/storage.ts` in the same
-action (best effort, logged).
+Withdraw (reporter, `new`, no board event): status → `withdrawn` (Decision 3, re-confirmed by
+the owner 2026-11-18). The fault row, its events AND its photos (rows + files) are kept for the
+board. No user-facing copy promises deletion: the confirm dialog (`Faults.detail.withdrawWarn`)
+says the report stays in the history. The guarded UPDATE (`status = 'new' AND
+board_touched_at IS NULL`) returning 0 rows → `FAULT_WITHDRAW_NOT_ALLOWED`.
 
 ### i18n
 
@@ -354,10 +356,17 @@ use `custom_name` (user data, not translated).
 - [x] Up to 5 photos; a 6th returns `FAULT_TOO_MANY_PHOTOS`; non-image or > 10 MB rejected.
 - [x] "Moje hlásenia" lists the reporter's faults with status badge and latest public message.
 - [x] Reporter can edit title/description/photos while `new`; after any status change edit
-      returns `FAULT_NOT_EDITABLE`.
-- [ ] Reporter can withdraw while `new` with no board change; the fault, its photos (rows and
-      files), events and notification rows are gone. After a board change, withdraw returns
-      `FAULT_WITHDRAW_NOT_ALLOWED`.
+      returns `FAULT_NOT_EDITABLE`. The edit UPDATE itself carries the guard (`status = 'new'
+      AND board_touched_at IS NULL AND reporter_id = actor`); a board change racing the edit
+      → 0 rows → `FAULT_NOT_EDITABLE`, no events written. *(guard added 2026-11-18)*
+- [x] Photo cap holds under concurrency: the count is taken inside the insert transaction
+      under `SELECT … FOR UPDATE` on the fault row (reporter editability re-checked there);
+      two parallel uploads can't exceed 5. Stored files of a refused upload are removed.
+      *(2026-11-18)*
+- [x] Reporter can withdraw while `new` with no board change: status becomes `withdrawn`;
+      the record, history and photos (rows + files) stay for the board (Decision 3 — the
+      original "everything is gone" wording is superseded). After a board change — including
+      one racing the withdraw — withdraw returns `FAULT_WITHDRAW_NOT_ALLOWED`.
 
 **Lifecycle and board fields**
 - [x] Every transition in the table succeeds for board; every transition not in the table

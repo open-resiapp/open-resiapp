@@ -16,6 +16,7 @@ import {
   canManageAttendance,
   changeMeeting,
   getOwnMeetingState,
+  loadMeetingVoting,
 } from "@modules/voting/src/attendance";
 import {
   sendMeetingChanges,
@@ -39,11 +40,11 @@ export async function GET(_request: NextRequest, { params }: Ctx) {
   if (!session) return err("UNAUTHORIZED", 401);
   const role = session.user.role as UserRole;
   const principal = await principalFromSession(session);
+  const { id } = await params;
   // Caretaker / tenant see nothing of this (§9).
-  if (!hasPermission(role, "vote") && !canManageAttendance(principal)) {
+  if (!hasPermission(role, "vote") && !canManageAttendance(principal, await loadMeetingVoting(id))) {
     return err("FORBIDDEN", 403);
   }
-  const { id } = await params;
   const state = await getOwnMeetingState(id, session.user.id);
   if (!state) return err("NOT_FOUND", 404);
   return NextResponse.json(state);
@@ -85,7 +86,9 @@ export async function POST(request: NextRequest, { params }: Ctx) {
       case "notify_change":
         return NextResponse.json(await sendMeetingChanges(id, { cancelled: false, locale }));
       case "cancel": {
-        await cancelMeeting(id);
+        // Idempotent: a second cancel sends no second round of e-mails.
+        const { cancelled } = await cancelMeeting(id);
+        if (!cancelled) return NextResponse.json({ sent: 0, failed: [], alreadyCancelled: true });
         return NextResponse.json(await sendMeetingChanges(id, { cancelled: true, locale }));
       }
       default:

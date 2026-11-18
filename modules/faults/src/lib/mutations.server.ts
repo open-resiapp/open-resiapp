@@ -250,8 +250,23 @@ export async function reporterEdit(
   }
   if (changes.length === 0) return { ok: true };
 
-  await db.transaction(async (tx) => {
-    await tx.update(faults).set(patch).where(eq(faults.id, id));
+  const applied = await db.transaction(async (tx) => {
+    // Guard in the UPDATE itself: the board may have moved the fault (or
+    // touched it) between loadOwn and here — the pre-check alone would let
+    // the reporter overwrite a fault that is no longer editable.
+    const updated = await tx
+      .update(faults)
+      .set(patch)
+      .where(
+        and(
+          eq(faults.id, id),
+          eq(faults.reporterId, actor.userId),
+          eq(faults.status, "new"),
+          isNull(faults.boardTouchedAt)
+        )
+      )
+      .returning({ id: faults.id });
+    if (updated.length === 0) return false;
     await touch(tx, id, false);
     await tx.insert(faultEvents).values(
       changes.map((c) => ({
@@ -263,26 +278,31 @@ export async function reporterEdit(
         newValue: c.new,
       }))
     );
+    return true;
   });
+  if (!applied) return err("FAULT_NOT_EDITABLE", 409);
   return { ok: true };
 }
 
 /**
- * Withdraw (decided 2026-11-18): status → `withdrawn`, the record and its
- * history stay for the board; photos stay (the board may still need them).
+ * Withdraw (decided 2026-11-18, re-confirmed by the owner): status →
+ * `withdrawn`, the record, its history AND its photos stay for the board
+ * (the board may still need them). No copy promises deletion — the
+ * confirm dialog says the report stays in the history.
  */
 export async function withdrawFault(actor: FaultActor, id: string): Promise<MutationResult> {
   const row = await loadOwn(actor, id);
   if (!row) return err("FAULT_NOT_FOUND", 404);
   const can = checkWithdraw({ status: row.status, boardTouched: row.boardTouchedAt !== null });
   if (!can.ok) return err(can.code, 409);
-  await db.transaction(async (tx) => {
+  const applied = await db.transaction(async (tx) => {
     const updated = await tx
       .update(faults)
       .set({ status: "withdrawn", updatedAt: new Date() })
       .where(and(eq(faults.id, id), eq(faults.status, "new"), isNull(faults.boardTouchedAt)))
       .returning({ id: faults.id });
-    if (updated.length === 0) return;
+    // Raced with a board change — report it instead of a silent no-op.
+    if (updated.length === 0) return false;
     await tx.insert(faultEvents).values({
       faultId: id,
       actorId: actor.userId,
@@ -292,7 +312,9 @@ export async function withdrawFault(actor: FaultActor, id: string): Promise<Muta
       newValue: "withdrawn",
       isPublic: true,
     });
+    return true;
   });
+  if (!applied) return err("FAULT_WITHDRAW_NOT_ALLOWED", 409);
   return { ok: true };
 }
 
@@ -315,6 +337,8 @@ export async function addPhotos(
   if (!row) return err("FAULT_NOT_FOUND", 404);
   const gate = await canTouchPhotos(actor, row);
   if (!gate.ok) return gate.res;
+  // Fast fail before storing files; the authoritative count is re-taken
+  // inside the transaction under the fault row lock below.
   const [{ n }] = await db
     .select({ n: count() })
     .from(faultPhotos)
@@ -324,7 +348,31 @@ export async function addPhotos(
 
   const stored = await storePhotos(files);
   try {
-    const ids = await db.transaction(async (tx) => {
+    const result = await db.transaction(async (tx): Promise<
+      { ok: true; ids: string[] } | { ok: false; code: FaultErrorCode }
+    > => {
+      // Lock the fault row: concurrent uploads serialize here, so two
+      // requests can't both see "3 photos" and push the total past 5.
+      const [locked] = await tx
+        .select({ status: faults.status, boardTouchedAt: faults.boardTouchedAt })
+        .from(faults)
+        .where(eq(faults.id, id))
+        .for("update");
+      if (!locked) return { ok: false, code: "FAULT_NOT_FOUND" };
+      if (!gate.boardSide) {
+        const can = checkReporterEdit({
+          status: locked.status,
+          boardTouched: locked.boardTouchedAt !== null,
+        });
+        if (!can.ok) return { ok: false, code: can.code };
+      }
+      const [{ n: current }] = await tx
+        .select({ n: count() })
+        .from(faultPhotos)
+        .where(eq(faultPhotos.faultId, id));
+      const countCheck = checkPhotoCount(current, stored.length);
+      if (!countCheck.ok) return { ok: false, code: countCheck.code };
+
       const inserted = await tx
         .insert(faultPhotos)
         .values(
@@ -346,9 +394,16 @@ export async function addPhotos(
           newValue: p.id,
         }))
       );
-      return inserted.map((p) => p.id);
+      return { ok: true, ids: inserted.map((p) => p.id) };
     });
-    return { ok: true, ids };
+    if (!result.ok) {
+      await removeStoredBestEffort(stored.map((s) => s.key));
+      return err(
+        result.code,
+        result.code === "FAULT_NOT_FOUND" ? 404 : result.code === "FAULT_NOT_EDITABLE" ? 409 : 400
+      );
+    }
+    return { ok: true, ids: result.ids };
   } catch (e) {
     await removeStoredBestEffort(stored.map((s) => s.key));
     throw e;

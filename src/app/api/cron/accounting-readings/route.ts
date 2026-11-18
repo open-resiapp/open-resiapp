@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { secretsEqual } from "@/lib/secret-compare.server";
 
 import { isModuleEnabled } from "@/lib/modules/route-guard";
 import { runReadingReminders } from "@modules/accounting/src/lib/reading-reminders";
@@ -18,7 +19,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       { status: 500 }
     );
   }
-  if (request.headers.get("x-cron-secret") !== expected) {
+  if (!secretsEqual(request.headers.get("x-cron-secret"), expected)) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 

@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { secretsEqual } from "@/lib/secret-compare.server";
 
 import { isModuleEnabled } from "@/lib/modules/route-guard";
 import { runStaleDigest } from "@modules/faults/src/lib/digest.server";
@@ -13,7 +14,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
   if (!expected) {
     return NextResponse.json({ error: "CRON_SECRET not configured" }, { status: 500 });
   }
-  if (request.headers.get("x-cron-secret") !== expected) {
+  if (!secretsEqual(request.headers.get("x-cron-secret"), expected)) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
   if (!(await isModuleEnabled("faults"))) {

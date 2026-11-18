@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 
+import { isInt4 } from "@modules/accounting/src/lib/input-validators";
 import { requireReader, requireWriter } from "@modules/accounting/src/lib/api-guard";
 import {
   getAccountingSettings,
@@ -63,7 +64,7 @@ export async function handlePost(req: NextRequest): Promise<NextResponse> {
       : Number(rawThreshold);
   if (
     debtorDisclosureThresholdCents !== null &&
-    !Number.isInteger(debtorDisclosureThresholdCents)
+    !isInt4(debtorDisclosureThresholdCents)
   ) {
     return NextResponse.json({ error: "invalid threshold" }, { status: 400 });
   }

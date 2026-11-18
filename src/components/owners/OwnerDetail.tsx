@@ -92,7 +92,9 @@ export default function OwnerDetail({
     close();
     if (!res.ok) {
       const body = await res.json().catch(() => ({}));
-      setError(body.error || tCommon("saveFailed"));
+      // The API returns a stable code ({ error: CODE }) — never show it raw.
+      const key = `apiErrors.${body.error}`;
+      setError(typeof body.error === "string" && t.has(key) ? t(key) : tCommon("saveFailed"));
       return;
     }
     refresh();

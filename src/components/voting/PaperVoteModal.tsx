@@ -206,7 +206,11 @@ export default function PaperVoteModal({
       const data = await res.json().catch(() => ({}));
       const code = data.error;
       setError(
-        code === "PAPER_PHOTO_REQUIRED" ? t("photoRequired") : code || t("submitFailed")
+        code === "PAPER_PHOTO_REQUIRED"
+          ? t("photoRequired")
+          : typeof code === "string" && t.has(`errors.${code}`)
+            ? t(`errors.${code}`)
+            : t("submitFailed")
       );
       setLoading(false);
       return;

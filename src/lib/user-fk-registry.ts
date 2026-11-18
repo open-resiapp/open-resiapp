@@ -86,6 +86,7 @@ export const USER_FK_REGISTRY: readonly UserFkEntry[] = [
   // stays on the tombstone (statutory evidence, never dropped).
   { table: "mod_voting_attendance", column: "owner_id", onDelete: "restrict", merge: custom, retained: true, group: "meetings" },
   { table: "mod_voting_attendance", column: "identified_by_id", onDelete: "set null", merge: repoint, retained: true, group: "meetings" },
+  { table: "mod_voting_eligibility_snapshots", column: "owner_id", onDelete: "restrict", merge: custom, retained: true, group: "voting" },
   { table: "mod_voting_pending_ballots", column: "owner_id", onDelete: "cascade", merge: dedupe("voting_id", "unit_id"), retained: false, group: "voting" },
 
   // ── Meetings / community ──
@@ -121,7 +122,7 @@ export const USER_FK_REGISTRY: readonly UserFkEntry[] = [
   { table: "registration_tokens", column: "created_by_id", onDelete: "cascade", merge: repoint, retained: true, group: "content" },
 
   // ── Credentials (dropped on merge / anonymise) ──
-  { table: "webauthn_credentials", column: "user_id", onDelete: "cascade", merge: repoint, retained: false, group: "credentials" },
+  { table: "webauthn_credentials", column: "user_id", onDelete: "cascade", merge: drop, retained: false, group: "credentials" },
   { table: "push_subscriptions", column: "user_id", onDelete: "cascade", merge: dedupe("endpoint"), retained: false, group: "credentials" },
   { table: "email_verifications", column: "user_id", onDelete: "cascade", merge: drop, retained: false, group: "credentials" },
   { table: "oauth_authorization_codes", column: "user_id", onDelete: "cascade", merge: drop, retained: false, group: "credentials" },

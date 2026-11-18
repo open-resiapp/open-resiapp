@@ -30,6 +30,16 @@ export interface VotingDetail {
   items?: VotingItemRow[];
   /** Board only. */
   events?: VotingEvent[];
+  /** Board only: minutes history; `superseded` = generated before a later reopen. */
+  minutes?: VotingMinutesEntry[];
+}
+
+export interface VotingMinutesEntry {
+  version: number;
+  kind: "document_generated" | "minutes_finalised";
+  at: string;
+  contentHash: string | null;
+  superseded: boolean;
 }
 
 export interface VotingOfficial {

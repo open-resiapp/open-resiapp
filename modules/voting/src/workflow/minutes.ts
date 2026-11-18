@@ -173,3 +173,41 @@ function presenceOf(results: VotingResults[]): MinutesPresence | null {
     meetingQuorumReached: r.presence.meetingQuorumReached ?? null,
   };
 }
+
+// ── Minutes history (spec §6 "Documents after reopen") ─────────────────
+// Pure. A minutes document generated / finalised before a later `reopened`
+// event is SUPERSEDED ("Zápisnica v1 — nahradená"): it must not be offered
+// as the current minutes. transitions.server.ts also writes the superseded
+// versions onto the `reopened` event payload (append-only marker).
+
+export interface MinutesHistoryEntry {
+  version: number;
+  kind: "document_generated" | "minutes_finalised";
+  at: Date;
+  contentHash: string | null;
+  superseded: boolean;
+}
+
+export function minutesHistory(
+  events: { kind: string; payload: unknown; createdAt: Date }[]
+): MinutesHistoryEntry[] {
+  const sorted = [...events].sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime());
+  const reopenTimes = sorted.filter((e) => e.kind === "reopened").map((e) => e.createdAt.getTime());
+  const out: MinutesHistoryEntry[] = [];
+  let closes = 0;
+  for (const e of sorted) {
+    if (e.kind === "closed") closes += 1;
+    const p = (e.payload ?? {}) as { doc?: unknown; version?: unknown; contentHash?: unknown };
+    const isMinutesDoc = e.kind === "document_generated" && p.doc === "minutes";
+    if (!isMinutesDoc && e.kind !== "minutes_finalised") continue;
+    const t = e.createdAt.getTime();
+    out.push({
+      version: typeof p.version === "number" ? p.version : Math.max(1, closes),
+      kind: e.kind as MinutesHistoryEntry["kind"],
+      at: e.createdAt,
+      contentHash: typeof p.contentHash === "string" ? p.contentHash : null,
+      superseded: reopenTimes.some((r) => r > t),
+    });
+  }
+  return out;
+}

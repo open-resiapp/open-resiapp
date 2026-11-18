@@ -1,10 +1,10 @@
 "use client";
 
-import { useId, useState } from "react";
+import { useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
 
 import { Button, Card, Field, Icon, Input, Textarea, cn } from "@/components/ui";
-import { focusRing } from "@/components/ui/cn";
+import { focusRing, focusWithinRing } from "@/components/ui/cn";
 import { useRouter } from "@/i18n/navigation";
 
 import {
@@ -40,7 +40,6 @@ export function ReportFlow({
   const locale = useLocale();
   const router = useRouter();
   const { call, busy, error, setError } = useFaultApi();
-  const fileInputId = useId();
 
   const [step, setStep] = useState<Step>(1);
   const [title, setTitle] = useState("");
@@ -125,29 +124,26 @@ export function ReportFlow({
 
           <div className="space-y-3">
             <label
-              htmlFor={fileInputId}
               className={cn(
                 "inline-flex min-h-11 cursor-pointer items-center gap-2 rounded-lg border border-ui-border-strong bg-ui-surface px-4 text-base font-medium text-ui-text hover:bg-ui-surface-muted",
                 photos.length >= MAX_PHOTOS && "pointer-events-none opacity-50",
-                focusRing
+                focusWithinRing
               )}
             >
               <Icon name="upload" size={20} />
               {t("report.addPhoto")}
+              <input
+                type="file"
+                accept="image/jpeg,image/png,image/webp"
+                multiple
+                className="sr-only"
+                disabled={photos.length >= MAX_PHOTOS}
+                onChange={(e) => {
+                  addFiles(e.target.files);
+                  e.target.value = "";
+                }}
+              />
             </label>
-            <input
-              id={fileInputId}
-              type="file"
-              accept="image/jpeg,image/png,image/webp"
-              capture="environment"
-              multiple
-              className="sr-only"
-              disabled={photos.length >= MAX_PHOTOS}
-              onChange={(e) => {
-                addFiles(e.target.files);
-                e.target.value = "";
-              }}
-            />
             <p className="text-base text-ui-text-muted">{t("report.photoHint", { max: MAX_PHOTOS })}</p>
             {photos.length > 0 ? (
               <ul className="space-y-2">

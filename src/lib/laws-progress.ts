@@ -6,6 +6,13 @@ export const LAW_FONT_SIZES = ["sm", "md", "lg"] as const;
 export type LawFontSize = (typeof LAW_FONT_SIZES)[number];
 
 const FONT_KEY = "oh.laws.fontSize";
+/** Server-readable copy of the font size, so the first paint already has it (no layout jump). */
+export const LAW_FONT_COOKIE = "oh_law_size";
+const FONT_COOKIE_MAX_AGE = 60 * 60 * 24 * 365;
+
+export function isLawFontSize(v: unknown): v is LawFontSize {
+  return (LAW_FONT_SIZES as readonly string[]).includes(String(v ?? ""));
+}
 const PROGRESS_KEY = "oh.laws.progress";
 const PROGRESS_MAX = 20;
 
@@ -34,13 +41,19 @@ function write(key: string, value: string): void {
   }
 }
 
+/** Legacy localStorage value (before the cookie); used once to migrate. */
 export function readFontSize(): LawFontSize | null {
   const v = read(FONT_KEY);
-  return (LAW_FONT_SIZES as readonly string[]).includes(v ?? "") ? (v as LawFontSize) : null;
+  return isLawFontSize(v) ? v : null;
 }
 
 export function writeFontSize(size: LawFontSize): void {
   write(FONT_KEY, size);
+  try {
+    document.cookie = `${LAW_FONT_COOKIE}=${size}; path=/; max-age=${FONT_COOKIE_MAX_AGE}; SameSite=Lax`;
+  } catch {
+    /* cookies blocked — preference just isn't remembered */
+  }
 }
 
 export function readProgress(): Record<string, LawProgressEntry> {

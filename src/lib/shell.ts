@@ -5,7 +5,7 @@
 // boundary as a prop.
 
 import type { NavAudience, NavBadgeKey } from "@/lib/navigation";
-import type { BoardMemberRole, UserRole, UserStatus } from "@/types";
+import type { BoardMemberRole, Country, UserRole, UserStatus } from "@/types";
 
 export interface CommunityKindChain {
   templateSlug: string | null;
@@ -41,6 +41,11 @@ export interface ShellCommunity {
   /** Slug guaranteed to have a `Templates.<slug>.name` message, or null. */
   displayTemplateSlug: string | null;
   kinds: CommunityKindChain;
+  /** Same fields /api/building returns, so pages need not refetch it. */
+  country: Country | null;
+  address: string | null;
+  ico: string | null;
+  legalNotice: string | null;
 }
 
 export interface ShellEntityOption {

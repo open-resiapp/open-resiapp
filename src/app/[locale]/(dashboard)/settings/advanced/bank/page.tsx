@@ -54,7 +54,7 @@ export default async function BankConnectionSettingsPage({
         backHref={isAdmin ? "/settings/advanced" : "/accounting/payments"}
         backLabel={isAdmin ? th("backToAdvanced") : t("backToPayments")}
       />
-      <EnableBankingSetupGuide {...info} />
+      <EnableBankingSetupGuide {...info} isAdmin={isAdmin} />
       {info.configured && (
         <Card as="section" aria-label={t("connectionTitle")}>
           <EnableBankingConnection variant="settings" />

@@ -19,7 +19,9 @@ export type TransitionErrorCode =
   | "TRANSITION_NOT_ALLOWED"
   | "REOPEN_NOTE_REQUIRED"
   | "RESULT_ALREADY_PUBLISHED"
-  | "PUBLISH_DATE_INVALID";
+  | "PUBLISH_DATE_INVALID"
+  // §14a ods. 9: the result can only be published once the voting has ended.
+  | "PUBLISH_BEFORE_END";
 
 /** Minimum length of the reopen note (docs/domain/voting.md invariant). */
 export const REOPEN_NOTE_MIN = 10;
@@ -27,6 +29,8 @@ export const REOPEN_NOTE_MIN = 10;
 export interface TransitionState {
   status: VotingStatus;
   resultPublishedAt: Date | null;
+  /** publish: the published date must not precede the end of the voting. */
+  endsAt?: Date | null;
 }
 
 export type TransitionCheck =
@@ -63,6 +67,11 @@ export function checkTransition(
         if (Number.isNaN(t) || t > now.getTime()) {
           return { ok: false, code: "PUBLISH_DATE_INVALID" };
         }
+      }
+      // publishedAt defaults to now; either way it must be ≥ endsAt.
+      const published = opts.publishedAt ?? now;
+      if (state.endsAt && published.getTime() < state.endsAt.getTime()) {
+        return { ok: false, code: "PUBLISH_BEFORE_END" };
       }
       return { ok: true, to: "closed" };
     }

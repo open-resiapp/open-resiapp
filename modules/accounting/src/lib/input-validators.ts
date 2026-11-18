@@ -32,6 +32,18 @@ export type ValidationResult<T> =
   | { ok: true; value: T }
   | { ok: false; field: string; code: InputErrorCode };
 
+/** Postgres int4 bounds — every accounting cents / milli column is int4. */
+export const INT4_MAX = 2_147_483_647;
+export const INT4_MIN = -2_147_483_648;
+
+/** Integer that fits an int4 column (out of range = 500 on insert). */
+export function isInt4(n: number): boolean {
+  return Number.isInteger(n) && n >= INT4_MIN && n <= INT4_MAX;
+}
+
+/** VAT rate in basis points: 0 – 100 %. */
+const MAX_DPH_RATE_BP = 10_000;
+
 const fail = (field: string, code: InputErrorCode) =>
   ({ ok: false, field, code }) as const;
 
@@ -77,7 +89,7 @@ export function validateExpenseInput(
   body: Record<string, unknown>
 ): ValidationResult<ExpenseInput> {
   const amountCents = Number(body.amountCents);
-  if (!Number.isInteger(amountCents) || amountCents <= 0) {
+  if (!isInt4(amountCents) || amountCents <= 0) {
     return fail("amountCents", "invalid_amount");
   }
   const requiredStrings: Array<[string, unknown]> = [
@@ -105,7 +117,10 @@ export function validateExpenseInput(
     ["dphCents", dphCents],
     ["dphRateBp", dphRateBp],
   ] as Array<[string, number | null]>) {
-    if (n !== null && !Number.isInteger(n)) return fail(field, "invalid_amounts");
+    if (n !== null && !isInt4(n)) return fail(field, "invalid_amounts");
+  }
+  if (dphRateBp !== null && (dphRateBp < 0 || dphRateBp > MAX_DPH_RATE_BP)) {
+    return fail("dphRateBp", "invalid_amounts");
   }
   if (amountNettoCents === null || dphCents === null) {
     return fail(
@@ -162,7 +177,7 @@ export function validateManualPaymentInput(
     return fail("method", "invalid_method");
   }
   const amountCents = Number(body.amountCents);
-  if (!Number.isInteger(amountCents) || amountCents <= 0) {
+  if (!isInt4(amountCents) || amountCents <= 0) {
     return fail("amountCents", "invalid_amount");
   }
   const receivedAt = body.receivedAt ? new Date(String(body.receivedAt)) : now;
@@ -203,7 +218,7 @@ export function validateMeterReadingInput(
     return fail("meterType", "invalid_meter_type");
   }
   const valueMilli = Number(body.valueMilli);
-  if (!Number.isInteger(valueMilli) || valueMilli < 0) {
+  if (!isInt4(valueMilli) || valueMilli < 0) {
     return fail("valueMilli", "invalid_value");
   }
   const readingDate = new Date(String(body.readingDate ?? ""));

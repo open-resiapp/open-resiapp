@@ -5,7 +5,7 @@ import { getViewer, isViewerGated, soft } from "@/lib/home.server";
 import { canReadUnitLedger } from "@modules/accounting/src/lib/karta-bytu";
 import {
   getOwnerPaymentSummary,
-  listOwnedUnits,
+  listOwnershipWindows,
   syncDuePostings,
 } from "@modules/accounting/src/lib/owner-payments";
 import { MyPaymentsView } from "@modules/accounting/src/components/owner/MyPaymentsView";
@@ -62,7 +62,9 @@ export default async function MyPaymentsPage({
       </div>
     );
   }
-  const owned = await listOwnedUnits(viewer.userId, root.id);
+  // Current AND former ownerships, each limited to its validity window
+  // (a buyer never sees the seller's history; a seller keeps their own).
+  const owned = await listOwnershipWindows(viewer.userId, root.id);
 
   let unitId: string | null = null;
   if (requested && owned.some((u) => u.id === requested)) {
@@ -101,10 +103,11 @@ export default async function MyPaymentsPage({
       country: root.country,
       unitEntityId: unitId,
       beneficiaryName: root.name,
+      windows: owned.find((u) => u.id === unitId)?.windows,
     }),
     // Odpočty a osoby (BYT-20261118-006): only for a unit the viewer OWNS —
     // a board member opening another unit's page must not submit as owner.
-    owned.some((u) => u.id === unitId)
+    owned.some((u) => u.id === unitId && u.current)
       ? soft(
           getOwnerReadingsView({ entityId: root.id, unitEntityId: unitId, userId: viewer.userId }),
           null

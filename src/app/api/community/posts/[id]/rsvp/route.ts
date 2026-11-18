@@ -10,6 +10,7 @@ import { principalFromSession } from "@/lib/mcp/principal";
 import {
   MeetingError,
   canManageAttendance,
+  loadMeetingVotingByPost,
   setMeetingRsvp,
 } from "@modules/voting/src/attendance";
 import type { UserRole } from "@/types";
@@ -54,7 +55,9 @@ async function meetingRsvp(
   let recordedById: string | null = null;
   if (typeof ownerId === "string" && ownerId && ownerId !== session.user.id) {
     // Board answers for an owner who phoned (spec §2).
-    if (!canManageAttendance(await principalFromSession(session))) {
+    // Board, or the vote counter of THIS meeting's voting.
+    const voting = await loadMeetingVotingByPost(postId);
+    if (!canManageAttendance(await principalFromSession(session), voting)) {
       return err("FORBIDDEN", 403);
     }
     userId = ownerId;

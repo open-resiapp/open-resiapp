@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 
+import { isInt4 } from "@modules/accounting/src/lib/input-validators";
 import { requireWriter } from "@modules/accounting/src/lib/api-guard";
 import {
   createOkruhTransfer,
@@ -38,7 +39,7 @@ export async function handleCreate(req: NextRequest): Promise<NextResponse> {
     return NextResponse.json({ error: "invalid okruh" }, { status: 400 });
   }
   const amountCents = Number(body.amountCents);
-  if (!Number.isInteger(amountCents) || amountCents <= 0) {
+  if (!isInt4(amountCents) || amountCents <= 0) {
     return NextResponse.json({ error: "invalid amount" }, { status: 400 });
   }
   const transferDate = new Date(String(body.transferDate ?? ""));

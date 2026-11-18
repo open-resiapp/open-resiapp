@@ -1,11 +1,11 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import VotingCard from "@/components/voting/VotingCard";
 import { useShell } from "@/components/layout/ShellContext";
 import { hasPermission } from "@/lib/permissions";
-import { ButtonLink, EmptyState, LoadingBlock, PageHeader } from "@/components/ui";
+import { Button, ButtonLink, EmptyState, LoadingBlock, PageHeader } from "@/components/ui";
 import type { UserRole, VotingStatus, VotingType } from "@/types";
 
 interface VotingData {
@@ -32,19 +32,27 @@ export default function HlasovaniePage({
   const tCommon = useTranslations("Common");
   const [votings, setVotings] = useState<VotingData[]>([]);
   const [loading, setLoading] = useState(true);
+  const [failed, setFailed] = useState(false);
 
   const canCreate = canCreateProp ?? hasPermission(user.role as UserRole, "createVoting");
   const isBoard = audience === "board";
 
-  useEffect(() => {
+  const load = useCallback(() => {
+    setLoading(true);
+    setFailed(false);
     fetch("/api/votings")
-      .then((r) => r.json())
-      .then((data) => {
-        setVotings(Array.isArray(data) ? data : []);
-        setLoading(false);
+      .then((r) => {
+        if (!r.ok) throw new Error("load");
+        return r.json();
       })
-      .catch(() => setLoading(false));
+      .then((data) => setVotings(Array.isArray(data) ? data : []))
+      .catch(() => setFailed(true))
+      .finally(() => setLoading(false));
   }, []);
+
+  useEffect(() => {
+    load();
+  }, [load]);
 
   // Owners never see unfinished drafts (presentation only; API unchanged).
   const visible = isBoard ? votings : votings.filter((v) => v.status !== "draft");
@@ -58,11 +66,18 @@ export default function HlasovaniePage({
     <div className="mx-auto max-w-3xl">
       <PageHeader
         title={t("title")}
-        actions={canCreate && (loading || visible.length > 0 || !isBoard) ? <ButtonLink href="/voting/new">{t("newVoting")}</ButtonLink> : undefined}
+        actions={canCreate && (loading || failed || visible.length > 0 || !isBoard) ? <ButtonLink href="/voting/new">{t("newVoting")}</ButtonLink> : undefined}
       />
 
       {loading ? (
         <LoadingBlock label={tCommon("loading")} />
+      ) : failed ? (
+        <EmptyState
+          icon="alert"
+          title={tl("loadFailedTitle")}
+          description={tl("loadFailedText")}
+          action={<Button onClick={load}>{tCommon("retry")}</Button>}
+        />
       ) : visible.length === 0 ? (
         <EmptyState
           icon="vote"

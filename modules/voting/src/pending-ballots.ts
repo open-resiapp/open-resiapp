@@ -367,7 +367,6 @@ export async function confirmPendingBallot(
       votingId: claimed.votingId,
       unitId: claimed.unitId,
       items: claimed.items,
-      requireOwnerMembership: true,
     });
     if (validated.ballotHash !== claimed.ballotHash) {
       throw new McpError("conflict.state_changed");

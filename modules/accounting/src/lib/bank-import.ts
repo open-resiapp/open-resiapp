@@ -1,6 +1,17 @@
 import "server-only";
 
-import { and, asc, eq, inArray, isNotNull, isNull, sql } from "drizzle-orm";
+import {
+  and,
+  asc,
+  eq,
+  gte,
+  inArray,
+  isNotNull,
+  isNull,
+  lt,
+  ne,
+  sql,
+} from "drizzle-orm";
 import { db } from "@/db";
 import { entities, memberships, users } from "@/db/schema";
 import {
@@ -149,6 +160,64 @@ export interface ImportSummary {
   autoMatched: number;
   needsReview: number;
   debitsSkipped: number;
+  /**
+   * Lines that look like a payment another bank source (camt.053 upload,
+   * Fio, Enable Banking) already imported — same date, amount, VS and
+   * (when both known) counterparty IBAN. Inserted UNMATCHED so they never
+   * auto-post; the treasurer confirms or dismisses them in reconciliation.
+   * Also counted in needsReview.
+   */
+  possibleDuplicates: number;
+}
+
+type BankSource = "bank_import" | "fio_api" | "enable_banking_api";
+const BANK_SOURCES: BankSource[] = ["bank_import", "fio_api", "enable_banking_api"];
+
+/** "sk96 1100 …" → "SK961100…" — IBAN comparisons ignore spacing / case. */
+export function normalizeIban(value: string | null | undefined): string | null {
+  const v = value?.replace(/\s+/g, "").toUpperCase() ?? "";
+  return v.length > 0 ? v : null;
+}
+
+/**
+ * Cross-source content dedupe. The externalTxId format differs per source
+ * (eb:…, AcctSvcrRef, fio:…), so the same bank movement imported via two
+ * channels slips past the unique index. Match on content instead: same dom,
+ * same booking day, same amount, same VS, and — when both sides carry one —
+ * the same counterparty IBAN. Only payments from a DIFFERENT bank source
+ * count: two identical payments on one statement are legitimate.
+ */
+async function findCrossSourceDuplicate(
+  tx: Tx,
+  entityId: string,
+  source: BankSource,
+  line: NormalizedBankLine
+): Promise<string | null> {
+  if (!line.bookingDate) return null;
+  const day = new Date(`${line.bookingDate}T00:00:00Z`);
+  if (Number.isNaN(day.getTime())) return null;
+  const nextDay = new Date(day.getTime() + 24 * 3600 * 1000);
+  const iban = normalizeIban(line.counterpartyIban);
+  const [hit] = await tx
+    .select({ id: payments.id })
+    .from(payments)
+    .where(
+      and(
+        eq(payments.entityId, entityId),
+        gte(payments.receivedAt, day),
+        lt(payments.receivedAt, nextDay),
+        eq(payments.amountCents, line.amountCents),
+        ne(payments.source, source),
+        inArray(payments.source, BANK_SOURCES),
+        isNull(payments.voidedAt),
+        line.vs ? eq(payments.vs, line.vs) : isNull(payments.vs),
+        iban
+          ? sql`(${payments.counterpartyIban} is null or upper(replace(${payments.counterpartyIban}, ' ', '')) = ${iban})`
+          : undefined
+      )
+    )
+    .limit(1);
+  return hit?.id ?? null;
 }
 
 /** Ledger currency per country — imports in any other currency refuse. */
@@ -184,7 +253,7 @@ async function importLines(
     entityId: string;
     country: Country;
     actorId: string;
-    source: "bank_import" | "fio_api" | "enable_banking_api";
+    source: BankSource;
     lines: NormalizedBankLine[];
     summary: ImportSummary;
   }
@@ -222,6 +291,15 @@ async function importLines(
       continue;
     }
 
+    // Same money already imported via another channel → insert for review
+    // only. Auto-posting it would credit the unit twice.
+    const duplicateOf = await findCrossSourceDuplicate(
+      tx,
+      input.entityId,
+      input.source,
+      line
+    );
+
     const suggestion = suggestMatch(
       {
         vs: line.vs,
@@ -232,7 +310,8 @@ async function importLines(
       },
       matchable
     );
-    const autoUnit = suggestion.autoApply ? suggestion.unitEntityId : null;
+    const autoUnit =
+      suggestion.autoApply && !duplicateOf ? suggestion.unitEntityId : null;
 
     const receivedAt = line.bookingDate
       ? new Date(`${line.bookingDate}T00:00:00Z`)
@@ -256,7 +335,9 @@ async function importLines(
         counterpartyName: line.counterpartyName,
         narrative: line.narrative,
         externalTxId: line.externalTxId,
-        rawPayload: line as unknown as Record<string, unknown>,
+        rawPayload: (duplicateOf
+          ? { ...line, possibleDuplicateOf: duplicateOf }
+          : line) as unknown as Record<string, unknown>,
         createdById: input.actorId,
       })
       .onConflictDoNothing()
@@ -289,6 +370,7 @@ async function importLines(
       summary.autoMatched += 1;
     } else {
       summary.needsReview += 1;
+      if (duplicateOf) summary.possibleDuplicates += 1;
     }
   }
 }
@@ -298,7 +380,7 @@ export async function importNormalizedLines(input: {
   entityId: string;
   country: Country;
   actorId: string;
-  source: "bank_import" | "fio_api" | "enable_banking_api";
+  source: BankSource;
   lines: NormalizedBankLine[];
 }): Promise<ImportSummary> {
   return db.transaction(async (tx) => {
@@ -314,6 +396,7 @@ export async function importNormalizedLines(input: {
       autoMatched: 0,
       needsReview: 0,
       debitsSkipped: 0,
+      possibleDuplicates: 0,
     };
     await importLines(tx, { ...input, summary });
     // Every money mutation is audited — API-sourced imports included.
@@ -395,9 +478,11 @@ export async function importCamt053Statement(input: {
       )
       .orderBy(sql`${accountingSettings.effectiveFrom} desc`)
       .limit(1);
-    if (settingsRow?.bankIban) {
+    const configuredIban = normalizeIban(settingsRow?.bankIban);
+    if (configuredIban) {
       for (const stmt of statements) {
-        if (stmt.iban && stmt.iban !== settingsRow.bankIban) {
+        const stmtIban = normalizeIban(stmt.iban);
+        if (stmtIban && stmtIban !== configuredIban) {
           throw new Error(
             `accounting: statement account ${stmt.iban} does not match the configured IBAN — wrong file?`
           );
@@ -413,6 +498,7 @@ export async function importCamt053Statement(input: {
       autoMatched: 0,
       needsReview: 0,
       debitsSkipped: 0,
+      possibleDuplicates: 0,
     };
 
     // Idempotency key: the bank's AcctSvcrRef, or a synthesized

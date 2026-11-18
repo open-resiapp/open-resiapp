@@ -12,6 +12,7 @@ import {
   MeetingError,
   canManageAttendance,
   getAttendanceExport,
+  loadMeetingVoting,
 } from "@modules/voting/src/attendance";
 import { EXPORT_COLUMNS, type ExportDocument, type ExportRowMode } from "@modules/voting/src/workflow/attendance";
 
@@ -27,10 +28,10 @@ type Ctx = { params: Promise<{ id: string }> };
 export async function GET(request: NextRequest, { params }: Ctx) {
   const session = await auth();
   if (!session) return NextResponse.json({ error: "UNAUTHORIZED" }, { status: 401 });
-  if (!canManageAttendance(await principalFromSession(session))) {
+  const { id } = await params;
+  if (!canManageAttendance(await principalFromSession(session), await loadMeetingVoting(id))) {
     return NextResponse.json({ error: "FORBIDDEN" }, { status: 403 });
   }
-  const { id } = await params;
   const sp = new URL(request.url).searchParams;
   const document: ExportDocument = sp.get("doc") === "blank" ? "blank" : "filled";
   const mode: ExportRowMode = sp.get("mode") === "unit" ? "unit" : "owner";

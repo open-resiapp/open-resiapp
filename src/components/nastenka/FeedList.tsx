@@ -380,28 +380,12 @@ function CommunityCard({
               {t("rsvp.counts", { yes: post.rsvp.yes, maybe: post.rsvp.maybe, no: post.rsvp.no })}
             </p>
             {!isPast && viewer.canRespond && post.status === "active" ? (
-              <fieldset>
-                <legend className="mb-2 text-base font-medium text-ui-text">{t("rsvp.label")}</legend>
-                <div className="grid grid-cols-3 gap-2">
-                  {(["yes", "maybe", "no"] as const).map((s) => {
-                    const active = post.rsvp?.myRsvp === s;
-                    return (
-                      <Button
-                        key={s}
-                        variant="secondary"
-                        aria-pressed={active}
-                        onClick={() => onRsvp(s)}
-                        className={
-                          active ? "border-ui-primary bg-ui-surface-muted ring-2 ring-ui-primary" : undefined
-                        }
-                      >
-                        {active ? <Icon name="check" size={18} /> : null}
-                        {t(`rsvp.${s}`)}
-                      </Button>
-                    );
-                  })}
-                </div>
-              </fieldset>
+              <MeetingRsvpButtons
+                legend={t("rsvp.label")}
+                value={post.rsvp.myRsvp}
+                onSelect={onRsvp}
+                onWithdraw={onRsvpWithdraw}
+              />
             ) : null}
           </div>
         ) : null}

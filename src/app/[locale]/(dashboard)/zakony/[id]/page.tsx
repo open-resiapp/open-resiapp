@@ -9,6 +9,7 @@ import { focusRing } from "@/components/ui/cn";
 import { Link, getPathname } from "@/i18n/navigation";
 import { getViewer, isViewerGated } from "@/lib/home.server";
 import { getChapters, searchLaw, type LawChapter } from "@/lib/laws-reader";
+import { getLawFontSizeFromCookie } from "@/lib/laws-font.server";
 import { getLaw } from "@/lib/laws.server";
 
 // Law reader, e-book style: one chapter (časť / hlava …, see getChapters)
@@ -25,12 +26,13 @@ export default async function LawReaderPage({
   params: Promise<{ locale: string; id: string }>;
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
-  const [{ locale, id }, sp, viewer, t, format] = await Promise.all([
+  const [{ locale, id }, sp, viewer, t, format, fontSize] = await Promise.all([
     params,
     searchParams,
     getViewer(),
     getTranslations("Laws"),
     getFormatter(),
+    getLawFontSizeFromCookie(),
   ]);
   if (!viewer || isViewerGated(viewer)) return null;
 
@@ -146,6 +148,7 @@ export default async function LawReaderPage({
               lawId={law.id}
               chapter={chapter.index}
               readerId={READER_ID}
+              initialSize={fontSize}
               resolverBase={`${getPathname({ href: `/zakony/${law.id}/p`, locale })}/`}
               labels={{
                 fontSize: t("fontSize"),
@@ -163,11 +166,11 @@ export default async function LawReaderPage({
               <ChapterNav chapters={chapters} current={chapter.index} hrefFor={chapterHref} t={t} labels={tocLabels} />
               <div
                 id={READER_ID}
-                data-size="md"
+                data-size={fontSize ?? "md"}
                 className="mx-auto mt-6 max-w-[65ch] font-serif text-lg leading-relaxed text-ui-text [overflow-wrap:anywhere] data-[size=lg]:text-xl data-[size=sm]:text-base"
               >
                 {chapter.trail.length ? (
-                  <p className="mb-6 text-center font-sans text-sm font-medium tracking-wide text-ui-text-muted">
+                  <p className="mb-6 text-center font-sans text-base font-medium tracking-wide text-ui-text-muted">
                     {chapter.trail.join(" › ")}
                   </p>
                 ) : null}
@@ -218,7 +221,7 @@ function ChapterNav({
         <ButtonLink href={hrefFor(prev.index)} variant="secondary" className="text-left">
           <Icon name="chevronLeft" size={20} className="shrink-0" />
           <span className="min-w-0">
-            <span className="block text-sm text-ui-text-muted">{t("prevChapter")}</span>
+            <span className="block text-base text-ui-text-muted">{t("prevChapter")}</span>
             <span className="block break-words">{chapterLabel(prev, labels)}</span>
           </span>
         </ButtonLink>
@@ -231,7 +234,7 @@ function ChapterNav({
       {next ? (
         <ButtonLink href={hrefFor(next.index)} variant="secondary" className="text-right">
           <span className="min-w-0">
-            <span className="block text-sm text-ui-text-muted">{t("nextChapter")}</span>
+            <span className="block text-base text-ui-text-muted">{t("nextChapter")}</span>
             <span className="block break-words">{chapterLabel(next, labels)}</span>
           </span>
           <Icon name="chevronRight" size={20} className="shrink-0" />
@@ -302,7 +305,7 @@ function SearchResults({
                 <mark className="rounded bg-ui-warning/25 px-0.5 text-ui-text">{hit.match}</mark>
                 {hit.after}
               </span>
-              <span className="mt-1 block text-sm text-ui-text-muted">{t("inChapter", { n: hit.chapter })}</span>
+              <span className="mt-1 block text-base text-ui-text-muted">{t("inChapter", { n: hit.chapter })}</span>
             </Link>
           </li>
         ))}

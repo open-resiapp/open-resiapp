@@ -408,7 +408,8 @@ instant. Enum additions are plain `ADD VALUE` — no value is renamed, so no lit
 - [x] A user without `createVoting` cannot create a post with `eventKind = "owners_meeting"`
       through any endpoint.
 - [x] Changing date or place keeps existing RSVP rows and offers to notify owners; cancelling
-      expires the post and notifies owners.
+      expires the post and notifies owners. (2026-11-18 review: cancel only while the voting is
+      active; a second cancel is a no-op without e-mails — `alreadyCancelled`.)
 
 **RSVP**
 - [x] The meeting card shows exactly three answer buttons (Prídem / Neprídem / Ešte neviem), each
@@ -435,7 +436,8 @@ instant. Enum additions are plain `ADD VALUE` — no value is renamed, so no lit
       yes, maybe or nothing, and **none** to owners who answered no; a meeting post triggers no
       generic `event_reminder`.
 - [ ] Two overlapping cron runs (or two replicas) send each owner at most one reminder — verified
-      by running `runCron()` twice concurrently against one DB.
+      by running `runCron()` twice concurrently against one DB. (Claim now keyed by the current
+      `meeting_change_seq`; a failed send releases its claim for a retry. Concurrency test not run.)
 - [x] All three e-mails render in `sk`, `en`, `cs` from the `Email` namespace.
 
 **Board overview**
@@ -450,12 +452,16 @@ instant. Enum additions are plain `ADD VALUE` — no value is renamed, so no lit
 **Attendance list**
 - [x] A board member or the vote counter can mark an owner present or represented from 2 h before
       start until the voting is closed; outside that window the write fails with a code.
+      (2026-11-18 review: "the vote counter" = `votings.voteCounterId` of this voting, not the global
+      role; the write runs with the voting row FOR SHARE so it cannot slip past the close.)
 - [x] `represented` without a verified active mandate for that owner and voting fails with
       `ATTENDANCE_MANDATE_REQUIRED`.
 - [x] A recorded entry can be removed while the voting is open and no ballot is bound to it; an
       owner who left can be marked and unmarked as left.
 - [x] After the voting is closed no attendance row can be created, changed or deleted, and every
-      eligible owner without a row is reported absent.
+      eligible owner without a row is reported absent. (2026-11-18 review: the eligible set, weights
+      and unit labels are frozen at close — `mod_voting_eligibility_snapshots` + attendance
+      `weight` / `unit_label`; list, export and totals of a closed voting read the frozen data.)
 - [x] Marking the same owner twice (two devices) leaves one row and returns
       `ATTENDANCE_ALREADY_RECORDED`.
 - [x] There is exactly one attendance table in the schema; the kiosk spec's `attendanceId` can
@@ -485,8 +491,9 @@ instant. Enum additions are plain `ADD VALUE` — no value is renamed, so no lit
 **Minutes hand-off**
 - [x] `getMeetingAttendanceSummary` returns counts and weights that match the attendance list and
       export for the same voting.
-- [x] `VotingMinutesPDF`, `engine/*`, `rules/*` and `results.ts` are byte-identical before and
-      after this change.
+- [ ] `VotingMinutesPDF`, `engine/*`, `rules/*` and `results.ts` are byte-identical before and
+      after this change. (False: the "present" change and the 2026-11-18 review fixes changed
+      `engine/*`, `rules/*` and `results.ts`.)
 
 **Cross-cutting**
 - [x] Every new string exists in `sk.json`, `en.json` and `cs.json`; every new error code maps to

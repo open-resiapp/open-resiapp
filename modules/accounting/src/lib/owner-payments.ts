@@ -1,8 +1,9 @@
 import "server-only";
 
-import { and, asc, eq, isNull, sql } from "drizzle-orm";
+import { and, asc, eq, inArray, isNull, sql } from "drizzle-orm";
 import { db } from "@/db";
 import { entities, memberships } from "@/db/schema";
+import { ACCOUNT_CODES } from "../seeds/coa-sk";
 import { accountingPeriods, feeAssessments, feeSchedules } from "../db/schema";
 import { domUnitsWhere } from "./dom-units";
 import { postAllDueMonths } from "./fee-schedule-publish";
@@ -26,17 +27,25 @@ export interface OwnedUnit {
   flatNumber: string | null;
 }
 
+/** Today as YYYY-MM-DD (UTC) — membership validity dates are plain dates. */
+function todayIso(): string {
+  return new Date().toISOString().slice(0, 10);
+}
+
 /**
- * Units the user holds an ACTIVE OWNER membership on — the same population
- * karta bytu grants a non-board user (listAccessibleUnits' owner branch),
- * but also for board members, whose "Moje platby" is about their own flat.
+ * Units the user OWNS TODAY: active owner membership whose validity window
+ * [valid_from, valid_to) contains today (BYT-20261118-007). A buyer with a
+ * future valid_from is not an owner yet; a seller whose valid_to passed is
+ * not one any more. Used by the home balance card and self-readings — both
+ * are about the current owner only.
  */
 export async function listOwnedUnits(
   userId: string,
   entityId: string
 ): Promise<OwnedUnit[]> {
+  const today = todayIso();
   return db
-    .select({
+    .selectDistinct({
       id: entities.id,
       name: entities.name,
       flatNumber: sql<string | null>`${entities.data}->>'flat_number'`,
@@ -48,10 +57,86 @@ export async function listOwnedUnits(
         domUnitsWhere(entityId),
         eq(memberships.userId, userId),
         eq(memberships.role, "owner"),
-        eq(memberships.status, "active")
+        eq(memberships.status, "active"),
+        sql`${memberships.validFrom} <= ${today}::date`,
+        sql`(${memberships.validTo} IS NULL OR ${memberships.validTo} > ${today}::date)`
       )
     )
     .orderBy(asc(entities.name));
+}
+
+/** [from, to) in YYYY-MM-DD; to = null → still the owner. */
+export interface OwnershipWindow {
+  from: string;
+  to: string | null;
+}
+
+export interface OwnedUnitWithWindows extends OwnedUnit {
+  windows: OwnershipWindow[];
+  /** Owner today (a window contains today). */
+  current: boolean;
+}
+
+/**
+ * Every unit the user owns or OWNED (current + ended owner memberships),
+ * with the ownership windows. "Moje platby" shows each person only the
+ * money of their own ownership period: the buyer does not see the seller's
+ * history, the seller keeps access to their own after the sale.
+ * Current units first, then former ones; by name within each group.
+ */
+export async function listOwnershipWindows(
+  userId: string,
+  entityId: string
+): Promise<OwnedUnitWithWindows[]> {
+  const today = todayIso();
+  const rows = await db
+    .select({
+      id: entities.id,
+      name: entities.name,
+      flatNumber: sql<string | null>`${entities.data}->>'flat_number'`,
+      validFrom: memberships.validFrom,
+      validTo: memberships.validTo,
+    })
+    .from(entities)
+    .innerJoin(memberships, eq(memberships.entityId, entities.id))
+    .where(
+      and(
+        domUnitsWhere(entityId),
+        eq(memberships.userId, userId),
+        eq(memberships.role, "owner"),
+        inArray(memberships.status, ["active", "archived"]),
+        // A future ownership is not visible yet.
+        sql`${memberships.validFrom} <= ${today}::date`
+      )
+    )
+    .orderBy(asc(entities.name), asc(memberships.validFrom));
+
+  const byUnit = new Map<string, OwnedUnitWithWindows>();
+  for (const r of rows) {
+    // Zero-length windows (corrections ending on the start day) own nothing.
+    if (r.validTo !== null && r.validTo <= r.validFrom) continue;
+    let unit = byUnit.get(r.id);
+    if (!unit) {
+      unit = { id: r.id, name: r.name, flatNumber: r.flatNumber, windows: [], current: false };
+      byUnit.set(r.id, unit);
+    }
+    unit.windows.push({ from: r.validFrom, to: r.validTo });
+    if (inWindows(today, [{ from: r.validFrom, to: r.validTo }])) unit.current = true;
+  }
+  const units = [...byUnit.values()];
+  return [...units.filter((u) => u.current), ...units.filter((u) => !u.current)];
+}
+
+/** Is the day (YYYY-MM-DD) inside any [from, to) window? */
+function inWindows(day: string, windows: OwnershipWindow[]): boolean {
+  return windows.some((w) => w.from <= day && (w.to === null || day < w.to));
+}
+
+/** Does calendar year `year` overlap any window? */
+function yearInWindows(year: number, windows: OwnershipWindow[]): boolean {
+  const first = `${year}-01-01`;
+  const last = `${year}-12-31`;
+  return windows.some((w) => w.from <= last && (w.to === null || w.to > first));
 }
 
 /**
@@ -169,8 +254,16 @@ export async function getOwnerPaymentSummary(input: {
   country: Country;
   unitEntityId: string;
   beneficiaryName: string;
+  /**
+   * The viewer's ownership windows on this unit. When given, every row
+   * (charges, payments, settlements, overdue months) is limited to them and
+   * the balance is the sum of the viewer's own rows; the payment
+   * instruction (predpis / QR) shows only to a current owner. Omit for a
+   * whole-dom reader (board) viewing the full unit history.
+   */
+  windows?: OwnershipWindow[];
 }): Promise<OwnerPaymentSummary | null> {
-  const { entityId, country, unitEntityId, beneficiaryName } = input;
+  const { entityId, country, unitEntityId, beneficiaryName, windows } = input;
 
   const [ledger, predpis, settlementYears, overdue] = await Promise.all([
     getUnitLedger(entityId, unitEntityId, country),
@@ -184,9 +277,41 @@ export async function getOwnerPaymentSummary(input: {
   ]);
   if (!ledger) return null;
 
+  const isCurrent = windows ? inWindows(todayIso(), windows) : true;
+  const ledgerRows = windows
+    ? ledger.rows.filter((r) => inWindows(r.postedAt.slice(0, 10), windows))
+    : ledger.rows;
+  // Balance + parked preplatok of the viewer's own period, derived from the
+  // same ledger rows (debit − credit; 379 credit = preplatok).
+  const balanceCents = windows
+    ? ledgerRows.reduce((sum, r) => sum + r.deltaCents, 0)
+    : ledger.balanceCents;
+  const preplatokCents = windows
+    ? ledgerRows.reduce(
+        (sum, r) =>
+          sum +
+          r.lines
+            .filter((l) => l.accountCode === ACCOUNT_CODES.INE_ZAVAZKY)
+            .reduce((s, l) => s - l.deltaCents, 0),
+        0
+      )
+    : ledger.preplatokCents;
+  const visibleSettlementYears = windows
+    ? settlementYears.filter((y) => yearInWindows(y, windows))
+    : settlementYears;
+  const overdueItems = overdue
+    ? windows
+      ? overdue.items.filter((i) =>
+          i.kind === "settlement"
+            ? yearInWindows(i.periodYear, windows)
+            : inWindows(`${i.periodYear}-${String(i.month).padStart(2, "0")}-01`, windows)
+        )
+      : overdue.items
+    : [];
+
   let latestSettlement: OwnerPaymentSummary["latestSettlement"] = null;
-  if (settlementYears.length > 0) {
-    const year = settlementYears[0];
+  if (visibleSettlementYears.length > 0) {
+    const year = visibleSettlementYears[0];
     const pdf = await getVyuctovaniePdfData({
       entityId,
       country,
@@ -197,7 +322,7 @@ export async function getOwnerPaymentSummary(input: {
     latestSettlement = { year, differenceCents: pdf ? pdf.totalDifferenceCents : null };
   }
 
-  const lastPayments = ledger.rows
+  const lastPayments = ledgerRows
     .filter((r) => r.sourceType === "payment" && r.deltaCents < 0)
     .slice(-3)
     .reverse()
@@ -207,18 +332,18 @@ export async function getOwnerPaymentSummary(input: {
       amountCents: -r.deltaCents,
     }));
 
-  const overdueMonths = overdue
-    ? new Set(overdue.items.map((i) => `${i.periodYear}-${i.month}`)).size
-    : 0;
+  const overdueMonths = new Set(
+    overdueItems.map((i) => `${i.periodYear}-${i.month}`)
+  ).size;
 
   return {
     unitEntityId,
     label: ledger.flatNumber ?? ledger.name,
     vs: ledger.vs,
-    balanceCents: ledger.balanceCents,
-    preplatokCents: ledger.preplatokCents,
+    balanceCents,
+    preplatokCents,
     lastPayments,
-    monthly: predpis
+    monthly: predpis && isCurrent
       ? {
           totalCents: predpis.totalCents,
           iban: predpis.iban,
@@ -228,10 +353,10 @@ export async function getOwnerPaymentSummary(input: {
           qrPayload: predpis.payBySquare,
         }
       : null,
-    settlementYears,
+    settlementYears: visibleSettlementYears,
     latestSettlement,
     overdue: {
-      totalOpenCents: overdue?.totalOpenCents ?? 0,
+      totalOpenCents: overdueItems.reduce((s, i) => s + i.openCents, 0),
       months: overdueMonths,
     },
   };

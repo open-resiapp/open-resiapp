@@ -16,6 +16,7 @@ export const EB_ERROR_CODES = [
   "EB_INVALID_PAYLOAD",
   "EB_INVALID_AMOUNT",
   "EB_CURRENCY_MISMATCH",
+  "EB_IBAN_MISMATCH",
 ] as const;
 
 export type EnableBankingErrorCode = (typeof EB_ERROR_CODES)[number];

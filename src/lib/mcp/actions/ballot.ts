@@ -95,7 +95,6 @@ const requestBallotConfirmation = defineAction<BallotPayload>({
       votingId: p.votingId,
       unitId: p.unitId,
       items: p.items,
-      requireOwnerMembership: true,
     });
     await ownerContact(ctx.principal.userId);
     return {

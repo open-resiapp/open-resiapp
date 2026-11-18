@@ -40,7 +40,7 @@ export function LawToc({
           return (
             <li key={ch.index}>
               {group && group !== prevGroup ? (
-                <p className="mt-3 px-2 pb-1 text-sm font-semibold tracking-wide text-ui-text-muted">{group}</p>
+                <p className="mt-3 px-2 pb-1 text-base font-semibold tracking-wide text-ui-text-muted">{group}</p>
               ) : null}
               <Link
                 href={`/zakony/${lawId}?kapitola=${ch.index}`}
@@ -53,7 +53,7 @@ export function LawToc({
                 <ol className="mb-2 ml-2 mt-1 space-y-0.5 border-l border-ui-border pl-2">
                   {ch.provisions.map((p) => (
                     <li key={p.anchor}>
-                      <a href={`#${p.anchor}`} className={cn(linkClass(false), "py-1 text-sm")}>
+                      <a href={`#${p.anchor}`} className={cn(linkClass(false), "py-1 text-base")}>
                         <span className="font-medium text-ui-text">{p.label}</span>
                         {p.heading ? <span> · {p.heading}</span> : null}
                       </a>

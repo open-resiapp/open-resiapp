@@ -12,12 +12,11 @@ import {
 } from "@/db/schema";
 import { getCommunityRoot } from "@/lib/legacy-compat";
 import { normalizeVotingMethod } from "@/lib/voting-method";
-import { isBoard } from "@/lib/mcp/authz";
-import { hasPermission } from "@/lib/permissions";
 import { timeZoneForCountry } from "@/lib/time-zone";
 import { isResidentialUnit } from "@/lib/unit-type";
 import type { Principal } from "@/lib/mcp/principal";
-import type { Country, UserRole } from "@/types";
+import type { Country } from "@/types";
+import { canRecordForVoting } from "./counter-authz.server";
 import { attendance, ballots, mandates, votingItems, votings } from "./db/schema";
 import { listEligibleVoters } from "./participation";
 import { validateNotice } from "./workflow/notice";
@@ -103,12 +102,15 @@ export async function loadMeetingVotingByPost(postId: string): Promise<MeetingVo
 
 /**
  * Who may run the door list and see names (spec §6, §9): the board
- * (admin / active chairman) and the paper-vote recorders (admin,
- * vote_counter — same as recordPaperVote). Caretaker / tenant / owner: no.
+ * (admin / active chairman) and the vote counter OF THIS VOTING
+ * (votings.voteCounterId — 2026-11-18 review; the global vote_counter role
+ * alone no longer suffices). Caretaker / tenant / owner: no.
  */
-export function canManageAttendance(p: Pick<Principal, "role" | "status" | "boardRoles">): boolean {
-  if (p.status !== "active") return false;
-  return isBoard(p) || hasPermission(p.role as UserRole, "recordPaperVote");
+export function canManageAttendance(
+  p: Pick<Principal, "userId" | "role" | "status" | "boardRoles">,
+  voting: { voteCounterId: string | null } | null
+): boolean {
+  return canRecordForVoting(p, voting);
 }
 
 export async function eligibleLines(votingId: string): Promise<EligibleLine[]> {
@@ -227,22 +229,35 @@ export async function changeMeeting(
   return (await loadMeetingVoting(votingId))!;
 }
 
-/** Cancels the meeting announcement: the post expires, the counter is bumped. */
-export async function cancelMeeting(votingId: string): Promise<MeetingVoting> {
+/**
+ * Cancels the meeting announcement: the post expires, the counter is bumped.
+ * Only while the voting is active. Idempotent: a second call (post already
+ * expired) changes nothing and returns `cancelled: false`, so the caller
+ * sends no second round of e-mails.
+ */
+export async function cancelMeeting(
+  votingId: string
+): Promise<{ voting: MeetingVoting; cancelled: boolean }> {
   const v = await loadMeetingVoting(votingId);
   if (!v) throw new MeetingError("ATTENDANCE_NOT_FOUND", 404);
+  if (v.votingType !== "meeting") throw new MeetingError("MEETING_NOT_MEETING_VOTING");
   if (!v.meetingPostId) throw new MeetingError("MEETING_NOT_ANNOUNCED");
-  await db.transaction(async (tx) => {
+  if (v.status !== "active") throw new MeetingError("MEETING_VOTING_NOT_ACTIVE");
+  const cancelled = await db.transaction(async (tx) => {
+    // Guarded on the post status: two clicks / two replicas → one cancel.
+    const [post] = await tx
+      .update(communityPosts)
+      .set({ status: "expired", updatedAt: new Date() })
+      .where(and(eq(communityPosts.id, v.meetingPostId!), eq(communityPosts.status, "active")))
+      .returning({ id: communityPosts.id });
+    if (!post) return false;
     await tx
       .update(votings)
       .set({ meetingChangeSeq: sql`${votings.meetingChangeSeq} + 1` })
-      .where(eq(votings.id, votingId));
-    await tx
-      .update(communityPosts)
-      .set({ status: "expired", updatedAt: new Date() })
-      .where(eq(communityPosts.id, v.meetingPostId!));
+      .where(and(eq(votings.id, votingId), eq(votings.status, "active")));
+    return true;
   });
-  return (await loadMeetingVoting(votingId))!;
+  return { voting: (await loadMeetingVoting(votingId))!, cancelled };
 }
 
 // ── RSVP (§2, §3) ──────────────────────────────────────
@@ -464,6 +479,27 @@ async function assertWritable(votingId: string): Promise<MeetingVoting> {
   return v;
 }
 
+/**
+ * Runs an attendance write with the voting row locked FOR SHARE and the
+ * write window re-checked on it — same lock order as ballot casts. The close
+ * transaction locks the row FOR UPDATE and freezes the list, so no row can be
+ * added / changed after (or while) the list is frozen.
+ */
+async function inWritableVoting<T>(votingId: string, fn: (tx: Tx) => Promise<T>): Promise<T> {
+  return db.transaction(async (tx) => {
+    const [v] = await tx
+      .select({ votingType: votings.votingType, status: votings.status, startsAt: votings.startsAt })
+      .from(votings)
+      .where(eq(votings.id, votingId))
+      .limit(1)
+      .for("share");
+    if (!v) throw new MeetingError("ATTENDANCE_NOT_FOUND", 404);
+    const e = attendanceWriteError(v, new Date());
+    if (e) throw new MeetingError(e, 409);
+    return fn(tx);
+  });
+}
+
 export async function recordAttendance(input: {
   votingId: string;
   ownerId: string;
@@ -475,9 +511,13 @@ export async function recordAttendance(input: {
   actorId: string;
 }) {
   await assertWritable(input.votingId);
-  if (!(await isEligibleOwner(input.votingId, input.ownerId))) {
+  // The owner's lines → eligibility + the weight / unit label stored on the row.
+  const ownLines = (await eligibleLines(input.votingId)).filter((l) => l.ownerId === input.ownerId);
+  if (ownLines.length === 0) {
     throw new MeetingError("ATTENDANCE_NOT_ELIGIBLE", 400);
   }
+  const ownWeight = ownLines.reduce((acc, l) => acc + l.weight, 0);
+  const ownLabel = ownLines.map((l) => l.unitLabel).join(", ").slice(0, 500);
 
   let mandateId: string | null = null;
   let representativeName: string | null = null;
@@ -504,22 +544,26 @@ export async function recordAttendance(input: {
       (input.representativeName?.trim() || m.toOwnerName || "").slice(0, 255) || null;
   }
 
-  const [row] = await db
-    .insert(attendance)
-    .values({
-      votingId: input.votingId,
-      ownerId: input.ownerId,
-      status: input.status,
-      mandateId,
-      representativeName,
-      identifiedById: input.actorId,
-      // TODO(decision): default "known in person" keeps door ticking to one tap.
-      idCheckMethod: input.idCheckMethod ?? "known_in_person",
-      source: "board",
-      note: input.note?.trim().slice(0, 500) || null,
-    })
-    .onConflictDoNothing({ target: [attendance.votingId, attendance.ownerId] })
-    .returning({ id: attendance.id });
+  const [row] = await inWritableVoting(input.votingId, (tx) =>
+    tx
+      .insert(attendance)
+      .values({
+        votingId: input.votingId,
+        ownerId: input.ownerId,
+        status: input.status,
+        mandateId,
+        representativeName,
+        identifiedById: input.actorId,
+        // TODO(decision): default "known in person" keeps door ticking to one tap.
+        idCheckMethod: input.idCheckMethod ?? "known_in_person",
+        source: "board",
+        note: input.note?.trim().slice(0, 500) || null,
+        weight: ownWeight,
+        unitLabel: ownLabel || null,
+      })
+      .onConflictDoNothing({ target: [attendance.votingId, attendance.ownerId] })
+      .returning({ id: attendance.id })
+  );
   if (!row) throw new MeetingError("ATTENDANCE_ALREADY_RECORDED", 409);
   return row;
 }
@@ -535,20 +579,24 @@ export async function removeAttendance(votingId: string, ownerId: string) {
     .where(and(eq(ballots.votingId, votingId), eq(ballots.ownerId, ownerId)))
     .limit(1);
   if (b) throw new MeetingError("ATTENDANCE_HAS_BALLOT", 409);
-  const deleted = await db
-    .delete(attendance)
-    .where(and(eq(attendance.votingId, votingId), eq(attendance.ownerId, ownerId)))
-    .returning({ id: attendance.id });
+  const deleted = await inWritableVoting(votingId, (tx) =>
+    tx
+      .delete(attendance)
+      .where(and(eq(attendance.votingId, votingId), eq(attendance.ownerId, ownerId)))
+      .returning({ id: attendance.id })
+  );
   if (deleted.length === 0) throw new MeetingError("ATTENDANCE_NOT_FOUND", 404);
 }
 
 export async function setAttendanceLeft(votingId: string, ownerId: string, left: boolean) {
   await assertWritable(votingId);
-  const updated = await db
-    .update(attendance)
-    .set({ leftAt: left ? new Date() : null })
-    .where(and(eq(attendance.votingId, votingId), eq(attendance.ownerId, ownerId)))
-    .returning({ id: attendance.id });
+  const updated = await inWritableVoting(votingId, (tx) =>
+    tx
+      .update(attendance)
+      .set({ leftAt: left ? new Date() : null })
+      .where(and(eq(attendance.votingId, votingId), eq(attendance.ownerId, ownerId)))
+      .returning({ id: attendance.id })
+  );
   if (updated.length === 0) throw new MeetingError("ATTENDANCE_NOT_FOUND", 404);
 }
 

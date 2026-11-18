@@ -1,6 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { NextIntlClientProvider, hasLocale } from "next-intl";
-import { getMessages } from "next-intl/server";
+import { getMessages, getTimeZone } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { routing } from "@/i18n/routing";
 import Providers from "@/components/Providers";
@@ -52,8 +52,9 @@ export default async function LocaleLayout({
     notFound();
   }
 
-  const [messages, theme] = await Promise.all([
+  const [messages, timeZone, theme] = await Promise.all([
     getMessages(),
+    getTimeZone(),
     getThemeFromCookie(),
   ]);
 
@@ -67,7 +68,7 @@ export default async function LocaleLayout({
         <script dangerouslySetInnerHTML={{ __html: themeBootstrap }} />
       </head>
       <body className="antialiased">
-        <NextIntlClientProvider messages={messages}>
+        <NextIntlClientProvider messages={messages} timeZone={timeZone}>
           <Providers initialTheme={theme}>
             <InstanceStateBanners />
             {children}

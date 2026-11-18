@@ -240,7 +240,20 @@ export default function BoardConsole({
       {/* Voting→accounting financial impacts (drafts + posted entries) */}
       {isClosed && canManage && <VotingFinancialImpacts votingId={votingId} />}
 
-      {/* Per-item voting minutes */}
+      {/* Minutes history (board): superseded versions flagged; download below only while closed */}
+      {canManage && voting.minutes && voting.minutes.length > 0 && (
+        <ul className="mt-6 space-y-1 text-base text-ui-text-muted">
+          {voting.minutes.map((m, i) => (
+            <li key={`${m.kind}-${m.version}-${i}`} className={m.superseded ? "line-through" : ""}>
+              {m.superseded
+                ? tWorkflow("minutesSuperseded", { version: m.version })
+                : `v${m.version}`}
+            </li>
+          ))}
+        </ul>
+      )}
+
+      {/* Per-item voting minutes — hidden while reopened (status active) */}
       {isClosed && canManage && data && building && (
         <div className="mt-6">
           <DownloadMinutesButton

@@ -5,6 +5,7 @@ import {
   text,
   boolean,
   integer,
+  doublePrecision,
   timestamp,
   jsonb,
   pgEnum,
@@ -137,6 +138,14 @@ export const votings = pgTable("mod_voting_votings", {
   // Bumped on every date / place change of the meeting; keys the
   // meeting_change e-mail claim (community_notifications_sent.change_seq).
   meetingChangeSeq: integer("meeting_change_seq").notNull().default(0),
+  // Frozen at close (2026-11-18 review): the total possible weight and the
+  // voting method the result was computed with, so a later unit / share /
+  // membership change never moves a closed result. NULL = not closed (or
+  // closed before 0087 and not backfilled) → results.ts falls back to the
+  // as-of-end-date computation. Cleared on reopen, rewritten on every close.
+  frozenTotalWeight: doublePrecision("frozen_total_weight"),
+  frozenVotingMethod: varchar("frozen_voting_method", { length: 32 }),
+  frozenAt: timestamp("frozen_at"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 }, (table) => ({
   meetingPostIdx: uniqueIndex("mod_voting_votings_meeting_post_idx")
@@ -268,6 +277,12 @@ export const ballots = pgTable(
     ownerUnitShareNumerator: integer("owner_unit_share_numerator"),
     ownerUnitShareDenominator: integer("owner_unit_share_denominator"),
     membershipWeight: integer("membership_weight"),
+    // Unit share / area frozen at CLOSE (2026-11-18 review) — the unit-level
+    // half of the snapshot (entities.data can change later). NULL while the
+    // voting is open (results read the live unit), cleared on reopen.
+    unitShareNumerator: integer("unit_share_numerator"),
+    unitShareDenominator: integer("unit_share_denominator"),
+    unitAreaM2: doublePrecision("unit_area_m2"),
     // BYT-20261118-007: the owner id the item audit hashes were built with.
     // Set ONLY when an account merge re-points owner_id (src/lib/user-merge.server.ts);
     // no FK, immutable. Verifiers hash with COALESCE(hash_owner_id, owner_id).
@@ -414,10 +429,56 @@ export const attendance = pgTable(
     checkedInAt: timestamp("checked_in_at").defaultNow().notNull(),
     leftAt: timestamp("left_at"),
     note: varchar("note", { length: 500 }),
+    // The owner's weight (sum over their eligible units) and unit label(s)
+    // at check-in, re-frozen at close from the eligibility snapshot.
+    weight: doublePrecision("weight"),
+    unitLabel: varchar("unit_label", { length: 500 }),
   },
   (table) => ({
     votingOwnerIdx: uniqueIndex("mod_voting_attendance_voting_owner_idx").on(
       table.votingId,
+      table.ownerId
+    ),
+  })
+);
+
+// ── Eligibility snapshot (2026-11-18 review) ───────────
+// The eligible (unit, owner) set of a voting, frozen when it closes: the
+// prezenčná listina (absent owners included), its exports and totals, the
+// participation / management view and the ballot lists of a CLOSED voting
+// read these rows instead of today's memberships. Rewritten on every close,
+// deleted on reopen. Same rows / weights as participation.ts at close time.
+export const eligibilitySnapshots = pgTable(
+  "mod_voting_eligibility_snapshots",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    // cascade: owned child of the voting (only drafts can be deleted, and a
+    // draft never has a snapshot).
+    votingId: uuid("voting_id")
+      .references(() => votings.id, { onDelete: "cascade" })
+      .notNull(),
+    // restrict: statutory record, like ballots.entity_id.
+    unitEntityId: uuid("unit_entity_id")
+      .references(() => entities.id, { onDelete: "restrict" })
+      .notNull(),
+    // restrict: owners are merged / anonymised, never hard-deleted under it.
+    ownerId: uuid("owner_id")
+      .references(() => users.id, { onDelete: "restrict" })
+      .notNull(),
+    unitLabel: varchar("unit_label", { length: 255 }).notNull(),
+    weight: doublePrecision("weight").notNull(),
+    unitShareNumerator: integer("unit_share_numerator"),
+    unitShareDenominator: integer("unit_share_denominator"),
+    unitAreaM2: doublePrecision("unit_area_m2"),
+    ownerUnitShareNumerator: integer("owner_unit_share_numerator").notNull(),
+    ownerUnitShareDenominator: integer("owner_unit_share_denominator").notNull(),
+    membershipWeight: integer("membership_weight").notNull().default(1),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+  },
+  (table) => ({
+    votingUnitOwnerIdx: uniqueIndex("mod_voting_eligibility_snapshots_voting_unit_owner_idx").on(
+      table.votingId,
+      table.unitEntityId,
       table.ownerId
     ),
   })

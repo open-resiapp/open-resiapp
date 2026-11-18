@@ -17,6 +17,7 @@ export default function LoginPage() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [passkeyBusy, setPasskeyBusy] = useState(false);
+  const [passkeyError, setPasskeyError] = useState("");
   const [canPasskey, setCanPasskey] = useState(false);
 
   useEffect(() => setCanPasskey(browserSupportsWebAuthn()), []);
@@ -43,6 +44,7 @@ export default function LoginPage() {
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setError("");
+    setPasskeyError("");
     setLoading(true);
 
     const formData = new FormData(e.currentTarget);
@@ -65,12 +67,13 @@ export default function LoginPage() {
 
   async function handlePasskey() {
     setError("");
+    setPasskeyError("");
     setPasskeyBusy(true);
     try {
       const optRes = await fetch("/api/passkeys/login/options", { method: "POST" });
       const opt = await optRes.json().catch(() => null);
       if (!optRes.ok || !opt?.options) {
-        setError(t("passkeyFailed"));
+        setPasskeyError(t("passkeyFailed"));
         return;
       }
       let response;
@@ -78,7 +81,7 @@ export default function LoginPage() {
         response = await startAuthentication(opt.options);
       } catch {
         // Cancelled or no passkey for this site on this device.
-        setError(t("passkeyCancelled"));
+        setPasskeyError(t("passkeyCancelled"));
         return;
       }
       const result = await signIn("passkey", {
@@ -86,7 +89,7 @@ export default function LoginPage() {
         redirect: false,
       });
       if (result?.error) {
-        setError(t("passkeyFailed"));
+        setPasskeyError(t("passkeyFailed"));
         return;
       }
       goAfterLogin();
@@ -143,7 +146,7 @@ export default function LoginPage() {
 
       <form onSubmit={handleSubmit} className="space-y-6">
         {error && (
-          <div className="bg-red-50 text-red-700 px-4 py-3 rounded-lg text-base dark:bg-red-900/30 dark:text-red-200">
+          <div role="alert" className="bg-red-50 text-red-700 px-4 py-3 rounded-lg text-base dark:bg-red-900/30 dark:text-red-200">
             {error}
           </div>
         )}
@@ -211,6 +214,11 @@ export default function LoginPage() {
             </svg>
             {passkeyBusy ? t("submitting") : t("passkeySubmit")}
           </button>
+          {passkeyError && (
+            <div role="alert" className="mt-3 bg-red-50 text-red-700 px-4 py-3 rounded-lg text-base dark:bg-red-900/30 dark:text-red-200">
+              {passkeyError}
+            </div>
+          )}
           <p className="mt-3 text-base text-gray-600 dark:text-gray-300">{t("passkeyHint")}</p>
         </div>
       )}

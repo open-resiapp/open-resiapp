@@ -30,6 +30,7 @@ const SCOPE_KEYS: Record<string, string> = {
 export default function ConnectedAiApps() {
   const t = useTranslations("Mcp.profile");
   const tScopes = useTranslations("Mcp.scopeNames");
+  const tCommon = useTranslations("Common");
   const format = useFormatter();
   const [grants, setGrants] = useState<Grant[] | null>(null);
   const [enabled, setEnabled] = useState(true);
@@ -38,6 +39,7 @@ export default function ConnectedAiApps() {
   const [busy, setBusy] = useState(false);
 
   const load = useCallback(async () => {
+    setError(false);
     try {
       const res = await fetch("/api/profile/ai-apps");
       if (res.status === 404) {
@@ -94,7 +96,13 @@ export default function ConnectedAiApps() {
       )}
 
       {grants === null ? (
-        <LoadingBlock />
+        error ? (
+          <Button variant="secondary" onClick={() => void load()}>
+            {tCommon("retry")}
+          </Button>
+        ) : (
+          <LoadingBlock />
+        )
       ) : grants.length === 0 ? (
         <p className="text-base text-ui-text-muted">{t("empty")}</p>
       ) : (

@@ -1,6 +1,6 @@
 "use client";
 
-import { Fragment } from "react";
+import { Fragment, useEffect, useRef, useSyncExternalStore, type KeyboardEvent } from "react";
 import { useTranslations } from "next-intl";
 
 import { Link, usePathname } from "@/i18n/navigation";
@@ -14,6 +14,17 @@ import { useShell } from "@/components/layout/ShellContext";
 //
 // Board audience: static sidebar on desktop, slide-in drawer on mobile.
 // Owner audience: desktop sidebar only — mobile uses <BottomTabBar>.
+
+// Same selector the shared Modal uses for its focus trap.
+const FOCUSABLE =
+  'a[href],button:not([disabled]),input:not([disabled]):not([type="hidden"]),select:not([disabled]),textarea:not([disabled]),[tabindex]:not([tabindex="-1"])';
+
+const DESKTOP_QUERY = "(min-width: 1024px)";
+const subscribeDesktop = (cb: () => void) => {
+  const mq = window.matchMedia(DESKTOP_QUERY);
+  mq.addEventListener("change", cb);
+  return () => mq.removeEventListener("change", cb);
+};
 
 export default function Sidebar({
   isOpen,
@@ -38,6 +49,55 @@ export default function Sidebar({
     templateKey && tRoot.has(templateKey) ? tRoot(templateKey) : t("appDescription");
 
   const isDrawer = audience === "board";
+  const asideRef = useRef<HTMLElement>(null);
+  // The sidebar is a static column from lg up; the drawer behaviour (dialog,
+  // focus trap, inert) only applies below it. Server snapshot = desktop so
+  // the closed drawer is not inert-flagged before hydration.
+  const isDesktop = useSyncExternalStore(
+    subscribeDesktop,
+    () => window.matchMedia(DESKTOP_QUERY).matches,
+    () => true,
+  );
+  const drawerActive = isDrawer && !isDesktop;
+  const drawerOpen = drawerActive && isOpen;
+
+  // Move focus into the open drawer; give it back to the opener on close.
+  useEffect(() => {
+    if (!drawerOpen) return;
+    const trigger = document.activeElement as HTMLElement | null;
+    const panel = asideRef.current;
+    const first = panel?.querySelector<HTMLElement>(FOCUSABLE);
+    (first ?? panel)?.focus();
+    return () => trigger?.focus?.();
+  }, [drawerOpen]);
+
+  const onDrawerKeyDown = (e: KeyboardEvent<HTMLElement>) => {
+    if (!drawerOpen) return;
+    if (e.key === "Escape") {
+      e.stopPropagation();
+      onClose();
+      return;
+    }
+    if (e.key !== "Tab") return;
+    const panel = asideRef.current;
+    if (!panel) return;
+    const items = Array.from(panel.querySelectorAll<HTMLElement>(FOCUSABLE));
+    if (items.length === 0) {
+      e.preventDefault();
+      panel.focus();
+      return;
+    }
+    const first = items[0];
+    const last = items[items.length - 1];
+    const active = document.activeElement;
+    if (e.shiftKey && (active === first || active === panel)) {
+      e.preventDefault();
+      last.focus();
+    } else if (!e.shiftKey && active === last) {
+      e.preventDefault();
+      first.focus();
+    }
+  };
 
   return (
     <>
@@ -51,6 +111,14 @@ export default function Sidebar({
 
       <aside
         id="app-sidebar"
+        ref={asideRef}
+        tabIndex={drawerOpen ? -1 : undefined}
+        role={drawerOpen ? "dialog" : undefined}
+        aria-modal={drawerOpen ? true : undefined}
+        aria-label={drawerOpen ? tNav("menu") : undefined}
+        // Closed drawer is off-screen: keep it out of tab order / a11y tree.
+        inert={drawerActive && !isOpen}
+        onKeyDown={onDrawerKeyDown}
         className={
           isDrawer
             ? `fixed top-0 left-0 z-50 h-full w-72 overflow-y-auto bg-white border-r border-gray-200 transform transition-transform lg:translate-x-0 lg:static lg:h-auto lg:z-auto lg:w-64 dark:bg-gray-900 dark:border-gray-800 ${
@@ -71,7 +139,7 @@ export default function Sidebar({
             </div>
           )}
           <h2 className="text-lg font-bold text-blue-700 dark:text-blue-300">{buildingName}</h2>
-          <p className="text-sm text-gray-600 mt-1 dark:text-gray-300">{subtitle}</p>
+          <p className="text-base text-gray-600 mt-1 dark:text-gray-300">{subtitle}</p>
         </div>
 
         <nav className="p-4 space-y-1" aria-label={tNav("menu")}>
@@ -102,7 +170,7 @@ export default function Sidebar({
                   <span className="flex-1 min-w-0 truncate">{tNav(item.labelKey)}</span>
                   {count ? (
                     <span
-                      className="inline-flex items-center justify-center min-w-[1.75rem] h-7 px-2 rounded-full bg-red-600 text-white text-sm font-semibold"
+                      className="inline-flex items-center justify-center min-w-[2rem] h-8 px-2 rounded-full bg-red-600 text-white text-base font-semibold"
                       aria-label={tNav("badgeWaiting", { count })}
                     >
                       {count}

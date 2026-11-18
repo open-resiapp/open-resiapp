@@ -19,13 +19,39 @@ export default function EnableBankingSetupGuide({
   configured,
   appIdMasked,
   redirectUrl,
+  isAdmin = true,
 }: {
+  /** Self-host steps (openssl, env vars) are for the administrator only. */
+  isAdmin?: boolean;
   configured: boolean;
   appIdMasked: string | null;
   redirectUrl: string | null;
 }) {
   const t = useTranslations("Accounting.bankConnection");
   const [open, setOpen] = useState(!configured);
+
+  if (!isAdmin) {
+    // Treasurer: no server-side steps, just the state and who to ask.
+    return (
+      <Card as="section" aria-labelledby="eb-guide-title">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <h2 id="eb-guide-title" className="text-lg font-semibold text-ui-text">
+            {t("guideTitle")}
+          </h2>
+          {configured ? (
+            <Badge tone="success">
+              {t("statusConfigured", { appId: appIdMasked ?? "" })}
+            </Badge>
+          ) : (
+            <Badge tone="warning">{t("statusNotConfigured")}</Badge>
+          )}
+        </div>
+        {!configured && (
+          <p className="mt-2 text-base text-ui-text">{t("askAdmin")}</p>
+        )}
+      </Card>
+    );
+  }
 
   return (
     <Card as="section" aria-labelledby="eb-guide-title">

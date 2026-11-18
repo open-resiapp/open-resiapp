@@ -4,7 +4,7 @@ import "server-only";
 // owner's unit share and membership weight are copied onto the ballot row.
 // results.ts uses these values and falls back to the CURRENT membership only
 // for legacy rows (NULL snapshot).
-import { and, desc, eq, sql } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 
 import { db } from "@/db";
 import { memberships } from "@/db/schema";
@@ -33,11 +33,12 @@ export async function ownershipSnapshot(
       and(
         eq(memberships.entityId, unitId),
         eq(memberships.userId, ownerId),
-        eq(memberships.status, "active")
+        eq(memberships.status, "active"),
+        // 2026-11-18 review: only an OWNER membership votes (validateCast
+        // enforces the same) — a tenant row must never feed the snapshot.
+        eq(memberships.role, "owner")
       )
     )
-    // Prefer the owner membership when a user holds several roles on the unit.
-    .orderBy(desc(sql`(${memberships.role} = 'owner')`))
     .limit(1);
   return {
     ownerUnitShareNumerator: m?.num ?? null,

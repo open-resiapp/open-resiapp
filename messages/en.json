@@ -334,7 +334,8 @@
     "unknown": "Unknown",
     "noPermission": "You do not have permission for this action.",
     "saveFailed": "Failed to save changes",
-    "noDash": "—"
+    "noDash": "—",
+    "retry": "Try again"
   },
   "Auth": {
     "title": "Sign In",
@@ -854,7 +855,8 @@
       "addedSubject": "A passkey was added to your account",
       "addedHeading": "Your passkey is active",
       "addedIntro": "On {date} a passkey ({device}) was added to your account and confirmed. From now on you can use it to confirm votes.",
-      "addedNotYou": "If this was not you, remove it immediately in the app under Profile → Passkey and contact the board."
+      "addedNotYou": "If this was not you, remove it immediately in the app under Profile → Passkey and contact the board.",
+      "activationRegisteredAt": "The passkey was registered on {time} in {device}."
     },
     "common": {
       "greeting": "Dear {name},",
@@ -1171,7 +1173,13 @@
       "VOTING_LOCKED": "After the announcement the content of the vote can no longer be changed.",
       "ENDS_AT_ONLY_LATER": "The end of the vote can only be extended, and only while the vote is running.",
       "REPEAT_ESCALATION_UNSUPPORTED": "Repeated decisions have no special majority in this country.",
-      "REPEAT_ESCALATION_NOT_APPLICABLE": "With consent of all owners the majority does not change on repetition."
+      "REPEAT_ESCALATION_NOT_APPLICABLE": "With consent of all owners the majority does not change on repetition.",
+      "QUORUM_NOT_ALLOWED": "The selected majority type is not allowed for this kind of voting.",
+      "PAPER_PHOTO_REQUIRED": "A photo of the signed paper ballot is required.",
+      "PER_ROLLAM_TOO_SHORT": "The written vote is too short. The earliest end is {minDate}.",
+      "PUBLISH_BEFORE_END": "The result can only be published after the voting has ended.",
+      "MINUTES_NOT_AVAILABLE": "Minutes can only be issued for a closed voting.",
+      "BALLOT_CONFLICT": "This ballot was just recorded from another device. Reload the page."
     },
     "readiness": {
       "heading": "What would pass electronically today",
@@ -1258,7 +1266,8 @@
       "dateAndSignature": "Date and owner signature",
       "verifier": "Verifier",
       "unmarkedNote": "A question without a marked answer counts as an invalid vote."
-    }
+    },
+    "minutesSuperseded": "Minutes v{version} — superseded"
   },
   "VotingWizard": {
     "stepsLabel": "Steps",
@@ -1393,7 +1402,9 @@
     "notVotedYet": "You have not voted yet",
     "showResults": "Show results",
     "open": "Open",
-    "draftBadge": "Draft"
+    "draftBadge": "Draft",
+    "loadFailedTitle": "Could not load votings",
+    "loadFailedText": "Check your connection and try again."
   },
   "VotingResults": {
     "title": "Results",
@@ -1456,7 +1467,11 @@
     "itemsLabel": "Voting items",
     "setRemainingLabel": "Set remaining to:",
     "photosLabel": "Ballot photos",
-    "photosHelp": "You can add multiple photos (multi-page ballot)."
+    "photosHelp": "You can add multiple photos (multi-page ballot).",
+    "errors": {
+      "BALLOT_CONFLICT": "This ballot was just recorded from another device. Reload the page.",
+      "VOTING_NOT_ACTIVE": "The voting is no longer open; the ballot cannot be recorded."
+    }
   },
   "Mandate": {
     "title": "Power of Attorney",
@@ -1723,7 +1738,18 @@
     "shareDenominatorLabel": "Share denominator",
     "invalidShare": "Invalid share — numerator and denominator must be whole numbers greater than 0.",
     "shareSumWarningTitle": "Ownership shares do not sum to 1/1",
-    "shareSumWarningItem": "Flat {flat}: shares sum to {sum} (should be 1/1)."
+    "shareSumWarningItem": "Flat {flat}: shares sum to {sum} (should be 1/1).",
+    "apiErrors": {
+      "unauthorized": "Please sign in again.",
+      "forbidden": "You do not have permission for this action.",
+      "user_not_found": "Person not found. Reload the page.",
+      "invalid_share": "The share must be a fraction of whole numbers, for example 1/2.",
+      "no_changes": "Nothing to save.",
+      "email_taken": "This e-mail is already used by another account.",
+      "cannot_delete_self": "You cannot delete your own account.",
+      "user_has_history": "The person has history that must be kept. Remove them from the building or anonymise instead.",
+      "plan_stale": "The data changed in the meantime. Review the summary and confirm again."
+    }
   },
   "Claim": {
     "loading": "Loading...",
@@ -3082,11 +3108,13 @@
         "EB_AUTH_REJECTED": "The bank sign-in was cancelled or rejected.",
         "EB_INVALID_PAYLOAD": "The bank returned unexpected data.",
         "EB_INVALID_AMOUNT": "The bank returned a payment with an invalid amount.",
-        "EB_CURRENCY_MISMATCH": "The account is in a different currency than the community's books."
+        "EB_CURRENCY_MISMATCH": "The account is in a different currency than the community's books.",
+        "EB_IBAN_MISMATCH": "The selected bank account is not the community account set in accounting (IBAN does not match). Choose the right account or correct the IBAN in settings."
       },
       "ebCompactHint": "You can fetch payments straight from the community's account at any bank.",
       "ebSettingsLink": "Connect a bank",
-      "ebRenewLink": "Renew consent"
+      "ebRenewLink": "Renew consent",
+      "summaryPossibleDuplicates": "{count, plural, one {# payment looks} other {# payments look}} like one already imported from another source (same date, amount and VS). Not posted — review below and dismiss duplicates."
     },
     "expenses": {
       "uploadInvoice": "Upload invoice",
@@ -3213,7 +3241,8 @@
       "publishing": "Publishing…",
       "publishError": "Publishing failed",
       "unprescribedWarning": "⚠️ Costs without any prescription: {categories}. An equal split has no legal basis — add the service to the schedule or recategorize the expense. Publishing is blocked.",
-      "draftScheduleWarning": "{count, plural, one {# unpublished schedule draft exists} other {# unpublished schedule drafts exist}} for this year — after locking the period it can no longer be published."
+      "draftScheduleWarning": "{count, plural, one {# unpublished schedule draft exists} other {# unpublished schedule drafts exist}} for this year — after locking the period it can no longer be published.",
+      "gateSingleReadingBlocking": "{count, plural, one {# flat has} other {# flats have}} only one heat or hot-water reading in the year. The meter state would be billed as consumption — add the start-of-year reading; until then the statement cannot be published."
     },
     "vyuctovaniePdf": {
       "download": "Settlement {year} (PDF)",
@@ -3382,7 +3411,8 @@
       "status_published": "published",
       "status_used": "used",
       "status_cancelled": "cancelled",
-      "journalEntries": "{count} journal entries"
+      "journalEntries": "{count} journal entries",
+      "notPassedAnymore": "After the reopen this item no longer passes — review the draft."
     },
     "inbox": {
       "pendingTitle": "To process ({count})",
@@ -3519,7 +3549,8 @@
       "step_connect_body": "After the restart a bank picker appears on this page. Choose the same bank, sign in and approve access. Then fetch payments with Sync now on the Payments page.",
       "guideCost": "Restricted mode is free for your own accounts. If you run the app for several communities you need a paid contract with Enable Banking. The cloud version has this set up for you.",
       "copy": "Copy",
-      "copied": "Copied"
+      "copied": "Copied",
+      "askAdmin": "The administrator sets up the bank connection. Please ask them to set it up."
     }
   },
   "Home": {
@@ -3825,7 +3856,8 @@
           "title": "The passkey is already active",
           "body": "This passkey is already confirmed. There is nothing more to do."
         }
-      }
+      },
+      "notYou": "Didn't add this passkey? Don't press anything and remove it under Profile. It doesn't work until confirmed."
     },
     "errors": {
       "generic": "Something went wrong. Please try again.",
@@ -4439,7 +4471,10 @@
       "history": "Change history",
       "createdNotice": "Thank you, the report has been sent. We will e-mail you about every status change.",
       "progress": "Progress",
-      "reported": "Reported"
+      "reported": "Reported",
+      "removePhotoTitle": "Remove photo {n}?",
+      "removePhotoWarn": "The photo will be removed from the report permanently.",
+      "removePhotoConfirm": "Remove photo"
     },
     "history": {
       "empty": "—",
@@ -4685,7 +4720,10 @@
       "lateNotice": "Careful: 7 full days will not pass between today and the meeting. The earliest date when announced today is {date}.",
       "failed": "Could not be delivered: {names}",
       "withoutEmail": "No e-mail — deliver the invitation on paper:",
-      "disclaimer": "The e-mail invitation is a convenience. Deliver the statutory meeting notice the way your agreement sets out."
+      "disclaimer": "The e-mail invitation is a convenience. Deliver the statutory meeting notice the way your agreement sets out.",
+      "confirmTitle": "Send the invitation?",
+      "confirmBody": "The invitation e-mail will be sent now to about {count} owners (those with an e-mail who were not invited yet).",
+      "confirmButton": "Send invitation"
     },
     "change": {
       "button": "Change date or place",
@@ -4696,7 +4734,10 @@
       "when": "When",
       "where": "Where",
       "hint": "Owners' answers are kept. The new date must be at least 7 full days from today.",
-      "save": "Save change"
+      "save": "Save change",
+      "notifyConfirmTitle": "Send the change to owners?",
+      "notifyConfirmBody": "The meeting change will be e-mailed now to about {count} owners who already got the invitation.",
+      "notifyConfirmButton": "Send change"
     },
     "cancel": {
       "button": "Cancel the meeting",
@@ -4763,7 +4804,8 @@
       "noMandate": "This owner has no verified power of attorney for this voting. Verify the power of attorney with a certified signature under Mandates first.",
       "mandate": "Verified power of attorney",
       "representativeName": "Representative's name",
-      "representativeHint": "Printed on the attendance list."
+      "representativeHint": "Printed on the attendance list.",
+      "noMandateHint": "First create the mandate with the \"Create mandate\" button on this page, then come back here."
     },
     "export": {
       "heading": "Print and export",

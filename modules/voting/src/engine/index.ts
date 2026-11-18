@@ -242,7 +242,7 @@ function finalizeTally(
     };
     if (rules.meetingQuorumShare !== null) {
       presence.meetingQuorumReached =
-        totalPossibleWeight > 0 && weight > totalPossibleWeight * rules.meetingQuorumShare;
+        totalPossibleWeight > 0 && exceeds(weight, totalPossibleWeight * rules.meetingQuorumShare, totalPossibleWeight);
       if (!presence.meetingQuorumReached) codes.push("MEETING_QUORUM_NOT_REACHED");
     }
   }
@@ -254,22 +254,26 @@ function finalizeTally(
     case "simple_present": {
       const present = presence ? presence.weight : totalWeight;
       quorumReached = present > 0;
-      passed = zaWeight > present / 2;
+      passed = exceeds(zaWeight, present / 2, present);
       break;
     }
     case "simple_all":
-      quorumReached = totalPossibleWeight > 0 && zaWeight > totalPossibleWeight / 2;
+      quorumReached =
+        totalPossibleWeight > 0 &&
+        exceeds(zaWeight, totalPossibleWeight / 2, totalPossibleWeight);
       passed = quorumReached;
       break;
     case "two_thirds_all":
       quorumReached =
-        totalPossibleWeight > 0 && zaWeight >= (totalPossibleWeight * 2) / 3;
+        totalPossibleWeight > 0 &&
+        atLeast(zaWeight, (totalPossibleWeight * 2) / 3, totalPossibleWeight);
       passed = quorumReached;
       break;
     case "four_fifths_all":
       // SK §14b ods. 6: repeat of a §14b ods. 2 matter within one year.
       quorumReached =
-        totalPossibleWeight > 0 && zaWeight >= (totalPossibleWeight * 4) / 5;
+        totalPossibleWeight > 0 &&
+        atLeast(zaWeight, (totalPossibleWeight * 4) / 5, totalPossibleWeight);
       passed = quorumReached;
       break;
     case "all_unanimous":
@@ -307,7 +311,21 @@ function finalizeTally(
  * can miss by one ulp (e.g. 0.1 + 0.2 vs 0.2 + 0.1 shares).
  */
 function isWholeWeight(zaWeight: number, totalPossibleWeight: number): boolean {
-  return zaWeight >= totalPossibleWeight - 1e-9 * Math.max(1, totalPossibleWeight);
+  return atLeast(zaWeight, totalPossibleWeight, totalPossibleWeight);
+}
+
+/**
+ * Threshold comparisons tolerant to float summation error. Shares are summed
+ * as floats, so a za set of exactly 4/5 can come out as 0.7999999999999999.
+ * `scale` is the magnitude of the compared weights (the total).
+ */
+const WEIGHT_EPSILON = 1e-9;
+function atLeast(value: number, threshold: number, scale: number): boolean {
+  return value >= threshold - WEIGHT_EPSILON * Math.max(1, scale);
+}
+/** Strictly more than `threshold`; an exact half (up to float noise) is NOT more. */
+function exceeds(value: number, threshold: number, scale: number): boolean {
+  return value > threshold + WEIGHT_EPSILON * Math.max(1, scale);
 }
 
 // ── Member-scoped resolution (Phase 3b) ──────────────────

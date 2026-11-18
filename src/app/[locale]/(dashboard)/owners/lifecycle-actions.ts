@@ -8,6 +8,7 @@ import { auth } from "@/lib/auth";
 import { resolveBoardRootId } from "@/lib/current-entity";
 import { hasPermission } from "@/lib/permissions";
 import { isUserInRoot } from "@/lib/owners-board.server";
+import { assertWritable } from "@/lib/readonly";
 import {
   findRestorableRemoval,
   loadUnitOwnerPeriods,
@@ -128,6 +129,7 @@ export async function transferAction(
   input: TransferActionInput,
   planHash: string
 ): Promise<LifecycleResult<{ transferId: string }>> {
+  assertWritable();
   const ctx = await boardCtx();
   if (!ctx) return forbidden;
   if (!planHash) return { ok: false, error: "not_confirmed" };
@@ -146,6 +148,7 @@ export async function planRemoveAction(userId: string): Promise<LifecycleResult<
 }
 
 export async function removeAction(userId: string, planHash: string): Promise<LifecycleResult<{ auditId: string }>> {
+  assertWritable();
   const ctx = await boardCtx();
   if (!ctx) return forbidden;
   if (!planHash) return { ok: false, error: "not_confirmed" };
@@ -162,6 +165,7 @@ export async function findRestorableAction(userId: string): Promise<LifecycleRes
 }
 
 export async function restoreAction(userId: string, auditId: string): Promise<LifecycleResult> {
+  assertWritable();
   const ctx = await boardCtx();
   if (!ctx) return forbidden;
   if (!UUID_RE.test(userId) || !UUID_RE.test(auditId)) return notFound;
@@ -185,6 +189,7 @@ export async function planMergeAction(
 }
 
 export async function mergeAction(fromId: string, intoId: string, planHash: string): Promise<LifecycleResult> {
+  assertWritable();
   const ctx = await boardCtx();
   if (!ctx) return forbidden;
   if (!planHash) return { ok: false, error: "not_confirmed" };
@@ -202,6 +207,7 @@ export async function planAnonymizeAction(userId: string): Promise<LifecycleResu
 }
 
 export async function anonymizeAction(userId: string, planHash: string): Promise<LifecycleResult> {
+  assertWritable();
   const ctx = await boardCtx();
   if (!ctx) return forbidden;
   if (!planHash) return { ok: false, error: "not_confirmed" };
@@ -217,6 +223,7 @@ export async function planDeleteAction(userId: string): Promise<LifecycleResult<
 }
 
 export async function deleteAction(userId: string, planHash: string): Promise<LifecycleResult> {
+  assertWritable();
   const ctx = await boardCtx();
   if (!ctx) return forbidden;
   if (!planHash) return { ok: false, error: "not_confirmed" };

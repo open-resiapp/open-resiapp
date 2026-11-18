@@ -22,9 +22,9 @@ import { validateNotice } from "./workflow/notice";
 // BYT-20261118-001 §4 — meeting e-mails. Every send is preceded by a CLAIM:
 // INSERT … ON CONFLICT DO NOTHING RETURNING on the partial unique index
 // (post, recipient, kind, change_seq) — two clicks, two replicas or two
-// overlapping cron runs can never send the same e-mail twice. Trade-off kept
-// from the existing pattern: the row is written before the send, so a failed
-// SMTP call is not retried automatically (the route reports failures).
+// overlapping cron runs can never send the same e-mail twice. A failed SMTP
+// send RELEASES its claim (2026-11-18 review), so the next click / cron run
+// retries it; a concurrent run that lost the claim race never sends.
 
 type MeetingKind = "meeting_invitation" | "meeting_reminder" | "meeting_change";
 
@@ -46,6 +46,20 @@ async function claim(postId: string, recipientId: string, kind: MeetingKind, cha
     .onConflictDoNothing()
     .returning({ id: communityNotificationsSent.id });
   return Boolean(row);
+}
+
+/** Undo a claim whose send failed, so a later click / cron run can retry it. */
+async function release(postId: string, recipientId: string, kind: MeetingKind, changeSeq: number) {
+  await db
+    .delete(communityNotificationsSent)
+    .where(
+      and(
+        eq(communityNotificationsSent.postId, postId),
+        eq(communityNotificationsSent.recipientId, recipientId),
+        eq(communityNotificationsSent.kind, kind),
+        eq(communityNotificationsSent.changeSeq, changeSeq)
+      )
+    );
 }
 
 interface Recipient {
@@ -157,7 +171,10 @@ export async function sendMeetingInvitations(votingId: string, locale: string = 
       answerUrls: urls,
     });
     if (ok) sent += 1;
-    else failed.push({ ownerId: r.ownerId, name: r.name });
+    else {
+      await release(v.meetingPostId, r.ownerId, "meeting_invitation", 0);
+      failed.push({ ownerId: r.ownerId, name: r.name });
+    }
   }
   return {
     sent,
@@ -192,7 +209,10 @@ export async function sendMeetingChanges(
       cancelled: opts.cancelled,
     });
     if (ok) sent += 1;
-    else failed.push({ ownerId: r.ownerId, name: r.name });
+    else {
+      await release(v.meetingPostId, r.ownerId, "meeting_change", v.meetingChangeSeq);
+      failed.push({ ownerId: r.ownerId, name: r.name });
+    }
   }
   return { sent, failed };
 }
@@ -234,13 +254,16 @@ export async function runMeetingReminders(now: Date = new Date()): Promise<numbe
       const answer = byUser.get(r.ownerId) ?? null;
       if (!r.email || answer === "no") continue;
       const urls = answerUrls(v, r.ownerId, locale);
-      if (!(await claim(p.postId, r.ownerId, "meeting_reminder", 0))) continue;
+      // Keyed by the CURRENT change counter: after a date change the owner
+      // gets a reminder for the new date too (one per change, not one ever).
+      if (!(await claim(p.postId, r.ownerId, "meeting_reminder", v.meetingChangeSeq))) continue;
       const ok = await sendMeetingReminder({
         ...baseParams(v, r, timeZone, locale),
         answerUrls: urls,
         answered: answer !== null,
       });
       if (ok) sent += 1;
+      else await release(p.postId, r.ownerId, "meeting_reminder", v.meetingChangeSeq);
     }
   }
   return sent;

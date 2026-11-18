@@ -69,7 +69,8 @@ export type ActivationEmailResult =
 export async function sendPasskeyActivationEmail(params: {
   request: NextRequest;
   userId: string;
-  credential: { id: string; credentialId: string; deviceLabel: string | null };
+  /** createdAt: when the passkey was registered (shown in the e-mail). */
+  credential: { id: string; credentialId: string; deviceLabel: string | null; createdAt?: Date };
   locale?: string | null;
 }): Promise<ActivationEmailResult> {
   const to = await recipient(params.userId);
@@ -90,12 +91,26 @@ export async function sendPasskeyActivationEmail(params: {
     timeZone,
   });
   const device = params.credential.deviceLabel || t("unnamedDevice");
+  // Registration time + browser let the owner spot a passkey they did not
+  // add. Rendered once the catalog has the key (added separately).
+  const registeredAt = (params.credential.createdAt ?? new Date()).toLocaleString(BCP47[locale], {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    timeZone,
+  });
+  const registeredLine = t.has("activationRegisteredAt")
+    ? `<p style="color: #374151;">${esc(t("activationRegisteredAt", { time: registeredAt, device }))}</p>`
+    : "";
 
   const html = `
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
       <h2 style="color: #1d4ed8;">${esc(t("activationHeading"))}</h2>
       <p>${esc(tCommon("greeting", { name: to.name }))}</p>
       <p>${esc(t("activationIntro", { device }))}</p>
+      ${registeredLine}
       <div style="margin: 24px 0; text-align: center;">
         <a href="${esc(url)}"
            style="display: inline-block; padding: 14px 32px; background-color: #2563eb; color: #ffffff; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 16px;">

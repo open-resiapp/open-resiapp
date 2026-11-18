@@ -15,6 +15,7 @@ import ProjectDocsInline from "@/components/documents/ProjectDocsInline";
 import { Badge, Button, Card, Icon, LoadingBlock } from "@/components/ui";
 import type { UserRole } from "@/types";
 import { useShell } from "@/components/layout/ShellContext";
+import { canRecordForVotingClient } from "@modules/voting/src/counter-authz";
 import OwnerBallot from "./OwnerBallot";
 import BoardConsole, { EditVotingForm } from "./BoardConsole";
 import WorkflowPanel from "./WorkflowPanel";
@@ -39,7 +40,7 @@ export default function VotingDetailPage({
   const [voting, setVoting] = useState<VotingDetail | null>(null);
   const [data, setData] = useState<BallotData | null>(null);
   // Community data comes from the server-resolved shell (no /api/building fetch).
-  const { community } = useShell();
+  const { community, user: shellUser } = useShell();
   const buildingData = useMemo<BuildingInfo | null>(
     () =>
       community
@@ -60,7 +61,8 @@ export default function VotingDetailPage({
 
   const role = (session?.user?.role || "owner") as UserRole;
   const canVote = hasPermission(role, "vote");
-  const canRecordPaper = hasPermission(role, "recordPaperVote");
+  // Per voting: admin, active chairman or this voting's own counter (mirrors server).
+  const canRecordPaper = canRecordForVotingClient(shellUser, voting);
   const canMandate = hasPermission(role, "grantMandate");
 
   const fetchBallots = useCallback(async (): Promise<BallotData | null> => {

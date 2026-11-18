@@ -31,8 +31,13 @@ declare module "next-auth/jwt" {
     id: string;
     role: UserRole;
     status: UserStatus;
+    /** epoch ms of the last DB re-validation of this account */
+    checkedAt?: number;
   }
 }
+
+/** How long a JWT may go without re-reading the user row. */
+const SESSION_RECHECK_MS = 60_000;
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   trustHost: true,
@@ -135,19 +140,44 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         token.id = user.id as string;
         token.role = user.role;
         token.status = user.status;
+        // Fresh sign-in: authorize() just read the row.
+        token.checkedAt = Date.now();
+        return token;
       }
-      const shouldRefresh =
-        token.id && (trigger === "update" || token.status === "pending");
-      if (shouldRefresh) {
+      if (!token.id) return token;
+      // Re-validate the account against the DB at most every
+      // SESSION_RECHECK_MS (and always on update() / while pending), so a
+      // deactivated, rejected, merged or anonymised user loses access within
+      // a minute instead of at JWT expiry. One PK lookup.
+      const stale =
+        typeof token.checkedAt !== "number" ||
+        Date.now() - token.checkedAt > SESSION_RECHECK_MS;
+      if (trigger === "update" || token.status === "pending" || stale) {
         const [fresh] = await db
-          .select({ role: users.role, status: users.status })
+          .select({
+            role: users.role,
+            status: users.status,
+            isActive: users.isActive,
+            mergedIntoUserId: users.mergedIntoUserId,
+            anonymizedAt: users.anonymizedAt,
+          })
           .from(users)
           .where(eq(users.id, token.id))
           .limit(1);
-        if (fresh) {
-          token.role = fresh.role;
-          token.status = fresh.status;
+        if (
+          !fresh ||
+          !fresh.isActive ||
+          fresh.status === "rejected" ||
+          fresh.mergedIntoUserId !== null ||
+          fresh.anonymizedAt !== null
+        ) {
+          // Returning null makes @auth/core clear the session cookie and
+          // auth() resolve to null -> protected pages redirect to /login.
+          return null;
         }
+        token.role = fresh.role;
+        token.status = fresh.status;
+        token.checkedAt = Date.now();
       }
       return token;
     },

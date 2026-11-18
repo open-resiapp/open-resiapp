@@ -166,6 +166,8 @@ console.log("mapSessionAccounts / pickAccountUid");
   check("several, no match → null", pickAccountUid(objects, "SK0000000000000000000000") === null);
   check("several, no dom IBAN → null", pickAccountUid(objects, null) === null);
   check("single → that one", pickAccountUid(uids, null) === "u9");
+  check("single, same IBAN spaced → that one", pickAccountUid(uids, "sk08 0900 0000 0001 2312 3123") === "u9");
+  check("single, different known IBAN → null", pickAccountUid(uids, "SK0000000000000000000000") === null);
   check("none → null", pickAccountUid([], null) === null);
 }
 

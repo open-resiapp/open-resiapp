@@ -24,6 +24,7 @@ import type { Country, VotingStatus } from "@/types";
 import { listOfficials, replaceOfficials } from "@modules/voting/src/officials";
 import { listVotingEvents, recordVotingEvent } from "@modules/voting/src/events";
 import { normalizeOfficials } from "@modules/voting/src/workflow/officials";
+import { minutesHistory } from "@modules/voting/src/workflow/minutes";
 import { checkQuorumForVotingPatch } from "@modules/voting/src/quorum-guard.server";
 import { getApprovedFinancialEffects } from "@modules/voting/src/results";
 import { processApprovedFinancialEffects } from "@modules/accounting/src/lib/voting-pipeline";
@@ -57,8 +58,14 @@ export async function GET(
     isBoard = false;
   }
   const events = isBoard ? await listVotingEvents(id) : undefined;
+  // Spec §6: minutes generated before a reopen are flagged superseded.
+  const minutes = events ? minutesHistory(events) : undefined;
 
-  return NextResponse.json({ ...voting, officials, ...(events ? { events } : {}) });
+  return NextResponse.json({
+    ...voting,
+    officials,
+    ...(events ? { events, minutes } : {}),
+  });
 }
 
 // BYT-20261118-002 §4: record a generated document (board only). The
@@ -90,10 +97,21 @@ export async function POST(
   ) {
     return NextResponse.json({ error: "INVALID_REQUEST" }, { status: 400 });
   }
-  const [exists] = await db.select({ id: votings.id }).from(votings).where(eq(votings.id, id)).limit(1);
+  const [exists] = await db
+    .select({ id: votings.id, status: votings.status })
+    .from(votings)
+    .where(eq(votings.id, id))
+    .limit(1);
   if (!exists) return NextResponse.json({ error: "NOT_FOUND" }, { status: 404 });
+  // Minutes exist only for a closed voting; while reopened the previous
+  // version is superseded and no current minutes may be issued.
+  if (body.doc === "minutes" && exists.status !== "closed") {
+    return NextResponse.json({ error: "MINUTES_NOT_AVAILABLE" }, { status: 409 });
+  }
   const history = await listVotingEvents(id);
-  const version = history.filter((e) => e.kind === "closed").length + 1;
+  const closes = history.filter((e) => e.kind === "closed").length;
+  // Minutes version = n-th close (v2 after close → reopen → close).
+  const version = body.doc === "minutes" ? Math.max(1, closes) : closes + 1;
   await recordVotingEvent(db, {
     votingId: id,
     kind: "document_generated",
@@ -361,8 +379,9 @@ async function afterClose(updated: typeof votings.$inferSelect) {
   // can't reach this TS pipeline until the module build step lands; the
   // pipeline is idempotent, so it's safe if the hook later fires too (and on
   // a second close after a reopen).
-  // TODO(decision): spec §6 — warn on a financial impact whose item flipped
-  // passed → not passed after a reopen; not implemented yet.
+  // Spec §6: an item that flipped passed → not passed after a reopen keeps
+  // its draft (nothing is deleted or reversed automatically); the impacts
+  // route flags it (`notPassedAnymore`, results.ts getItemPassedMap).
   // Non-fatal + module-gated: a failure here never blocks closing a vote.
   if (await isModuleEnabled("accounting")) {
     try {

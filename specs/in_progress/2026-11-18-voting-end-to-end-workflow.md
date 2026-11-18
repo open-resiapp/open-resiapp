@@ -381,23 +381,29 @@ export function computeEVoteReadiness(input: {
       and nothing else from this spec (assert absence of officials, drill-down, history, readiness).
 - [ ] A vote counter (not chairman/admin) sees step 3 and can record paper votes; steps 1, 2, 4, 5
       actions are not rendered for them and the corresponding endpoints return `FORBIDDEN`.
+      (2026-11-18 review: server side now grants paper / participation / door-list rights only to
+      board or `votings.voteCounterId` of THAT voting — `counter-authz.server.ts`; the page still
+      uses the global `recordPaperVote` role → UI part open.)
 - [ ] At 390 px no step scrolls horizontally; all new controls are ≥ 44 px high.
 
 **Preparation and announcement**
-- [x] Place, paper start and at least two verifiers and one recorder can be entered, edited and
+- [ ] Place, paper start and at least two verifiers and one recorder can be entered, edited and
       removed while the voting is a draft (create / update / delete all covered).
+      (Not true as written: `paperStartsAt` does not exist — see Deviation; place + officials only.)
 - [ ] Activating an SK written vote without place → `NOTICE_PLACE_REQUIRED`; with fewer than two
       verifiers → `NOTICE_VERIFIERS_REQUIRED`; with `paperStartsAt` earlier than 7 days after
       activation → `NOTICE_LEAD_TIME_TOO_SHORT` carrying `minDate`. Each code renders a translated
       message in sk, en, cs; no raw code or English prose reaches the UI.
-- [x] The paper-start date picker cannot select a date earlier than the minimum and states the
-      earliest allowed date in text.
+- [ ] The paper-start date picker cannot select a date earlier than the minimum and states the
+      earliest allowed date in text. (No `paperStartsAt`; the rule applies to `startsAt`.)
 - [x] First activation sets `announcedAt` once; a later reopen/activate does not change it.
-- [x] An electronic ballot is accepted immediately after activation, before `paperStartsAt`.
-- [x] After activation, title, items, place and `paperStartsAt` are rejected by the API when
-      changed.
+- [ ] An electronic ballot is accepted immediately after activation, before `paperStartsAt`.
+      (No `paperStartsAt`; e-votes are accepted from the announcement, cast path ignores `startsAt`.)
+- [ ] After activation, title, items, place and `paperStartsAt` are rejected by the API when
+      changed. (True for title / items / place / `startsAt`; `paperStartsAt` does not exist.)
 - [x] CZ behaviour is unchanged: the existing 15-day minimum still applies and no SK lead-time
-      error is produced for a CZ community.
+      error is produced for a CZ community. (2026-11-18 review: the minimum is now also re-checked
+      on announce — a draft PATCH of `endsAt` no longer bypasses it → `PER_ROLLAM_TOO_SHORT` + `minDate`.)
 
 **Documents**
 - [x] Announcement PDF contains community identification, numbered questions with full text,
@@ -437,8 +443,15 @@ export function computeEVoteReadiness(input: {
       board can record a paper ballot.
 - [ ] Close → reopen → close creates no duplicate accounting draft; a question that flipped from
       passed to not passed shows a warning on its financial impact row.
+      (2026-11-18 review: no duplicate — pipeline idempotent per item; server flag
+      `notPassedAnymore` on `/api/accounting/voting-impacts`; warning row in
+      `VotingFinancialImpacts` not rendered yet → open.)
 - [ ] Minutes finalised before a reopen are listed as superseded and cannot be downloaded as
       current; after the second close the wizard issues version 2.
+      (2026-11-18 review, server side done: `minutesHistory()` → `minutes[].superseded` in the board
+      GET, `reopened` event payload `supersededMinutes`, `document_generated` for minutes refused
+      with `MINUTES_NOT_AVAILABLE` unless closed, minutes version = n-th close. History list / hidden
+      download button in the UI → open.)
 - [x] `mod_voting_voting_events` has no update or delete code path (grep-level check).
 - [x] The close confirmation text no longer says the voting cannot be reopened, in all locales.
 
@@ -581,3 +594,26 @@ Implemented together with the 2026-11-18 legal fixes (brief overrides the
   Without a drill-down (no overview) only the count line is shown.
 - Known gap: `canStillPass` outlook (workflow/overview.ts) still estimates on cast ballots for
   meeting votings; the binding "passed" comes from the engine result.
+
+### Implementation notes — review fixes (2026-11-18)
+- **Close snapshot** (`freeze.server.ts`, in the close transaction under the voting row lock):
+  `votings.frozen_total_weight` / `frozen_voting_method` / `frozen_at`, per-ballot
+  `unit_share_*` / `unit_area_m2` (+ legacy owner share), `mod_voting_eligibility_snapshots`
+  (every eligible unit × owner, absent included), attendance `weight` / `unit_label`. Reopen clears
+  it, the next close rewrites it. `results.ts`, participation, attendance list / export and the
+  overview read the snapshot for closed votings. Migration 0087 backfills closed votings with the
+  pre-0086 current-membership logic.
+- **Results fallback** for a ballot without owner snapshot: membership valid on the end date, else
+  the current active membership, owner role first; no membership join any more (no duplicate vote
+  rows for a user with two memberships on one unit).
+- **Owner-only voting:** `validateCast` always requires an active OWNER membership (web, paper,
+  MCP identical); `ownershipSnapshot` reads owner memberships only; the cast UI lists owner units only.
+- **Paper ballot write / board delete** run in one transaction: voting FOR SHARE (status re-checked,
+  no deadline for board writes), ballot FOR UPDATE; unique race → `BALLOT_CONFLICT` (409).
+- **Vote counter per voting:** board (admin / active chairman) or `votings.voteCounterId`.
+- **Publish:** `publishedAt` (default now) must be ≥ `endsAt` → `PUBLISH_BEFORE_END`.
+- **canStillPass** uses the ballots' frozen shares, the frozen method / total and the meeting presence
+  of the actual result (closes the "known gap" above).
+- Engine float threshold compares (`simple_all`, `two_thirds_all`, `four_fifths_all`) left as is —
+  engine owned by another session; patch proposed in the review report.
+

@@ -173,6 +173,7 @@ function codes(units: string[], ms: CheckMembership[], lvChecks = true) {
     check(`${name} → only ${code}`, got.length === 1 && got[0] === code, JSON.stringify(got));
 
   one("co-owner missing", codes(["u1"], [m("a", "u1", [1, 2])]), "share_sum_mismatch");
+  one("no shares set (total 0)", codes(["u1"], [m("a", "u1", [0, 1])]), "share_sum_mismatch");
   one("unit without owner", codes(["u1", "u2"], [m("a", "u1", [1, 1])]), "unit_without_owner");
   one(
     "BSM partner missing",

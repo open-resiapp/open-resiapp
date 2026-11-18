@@ -19,7 +19,7 @@ export async function handleGet(req: NextRequest): Promise<NextResponse> {
   const year = Number(yearParam);
   // `Number(null)`/`Number("")` are 0 (a valid integer) — reject a missing or
   // empty param explicitly rather than silently answering for year 0.
-  if (!yearParam || !Number.isInteger(year)) {
+  if (!yearParam || !Number.isInteger(year) || year < 2000 || year > 2100) {
     return NextResponse.json({ error: "invalid year" }, { status: 400 });
   }
   const [status, viewerCanApprove] = await Promise.all([
@@ -46,7 +46,7 @@ export async function handleApprove(req: NextRequest): Promise<NextResponse> {
   }
   // Reject null/undefined explicitly — `Number(null)` is 0, a valid integer.
   const year = body.year == null ? NaN : Number(body.year);
-  if (!Number.isInteger(year)) {
+  if (!Number.isInteger(year) || year < 2000 || year > 2100) {
     return NextResponse.json({ error: "invalid year" }, { status: 400 });
   }
   if (typeof body.votingItemId !== "string" || body.votingItemId.trim() === "") {

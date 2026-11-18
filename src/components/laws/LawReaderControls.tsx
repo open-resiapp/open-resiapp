@@ -26,6 +26,8 @@ export interface LawReaderControlsProps {
   chapter: number;
   /** Id of the element whose data-size drives the reading font size. */
   readerId: string;
+  /** Size read from the cookie on the server (already painted via data-size); null = never chosen. */
+  initialSize: LawFontSize | null;
   /** Locale-prefixed path to the anchor resolver, e.g. "/sk/zakony/sk-182-1993/p/". */
   resolverBase: string;
   labels: {
@@ -36,19 +38,25 @@ export interface LawReaderControlsProps {
   };
 }
 
-export function LawReaderControls({ lawId, chapter, readerId, resolverBase, labels }: LawReaderControlsProps) {
-  const [size, setSize] = useState<LawFontSize>("md");
+export function LawReaderControls({ lawId, chapter, readerId, initialSize, resolverBase, labels }: LawReaderControlsProps) {
+  const [size, setSize] = useState<LawFontSize>(initialSize ?? "md");
   const [status, setStatus] = useState("");
 
-  // Restore the remembered font size.
+  // One-time migration: a size remembered in localStorage before the cookie
+  // existed. With a cookie the server already rendered the right size.
   useEffect(() => {
+    if (initialSize) return;
     const stored = readFontSize();
-    if (stored) setSize(stored);
-  }, []);
+    if (stored) {
+      setSize(stored);
+      writeFontSize(stored);
+    }
+  }, [initialSize]);
 
+  // Idempotent: no-op when the server already painted this size.
   useEffect(() => {
     const el = document.getElementById(readerId);
-    if (el) el.dataset.size = size;
+    if (el && el.dataset.size !== size) el.dataset.size = size;
   }, [size, readerId]);
 
   // Copy-link buttons (event delegation).

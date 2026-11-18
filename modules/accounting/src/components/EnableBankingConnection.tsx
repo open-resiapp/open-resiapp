@@ -38,6 +38,7 @@ export interface EbImportSummary {
   autoMatched: number;
   needsReview: number;
   debitsSkipped: number;
+  possibleDuplicates?: number;
 }
 
 const RENEW_WARNING_DAYS = 14;

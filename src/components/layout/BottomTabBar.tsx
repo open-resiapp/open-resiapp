@@ -35,7 +35,7 @@ export default function BottomTabBar() {
               <Link
                 href={item.href}
                 aria-current={isActive ? "page" : undefined}
-                className={`relative flex flex-col items-center justify-center gap-0.5 min-h-16 px-1 text-sm font-medium transition-colors ${
+                className={`relative flex flex-col items-center justify-center gap-0.5 min-h-16 px-1 text-base font-medium transition-colors ${
                   isActive
                     ? "text-blue-700 dark:text-blue-300"
                     : "text-gray-700 hover:text-gray-900 dark:text-gray-300 dark:hover:text-gray-100"
@@ -51,7 +51,7 @@ export default function BottomTabBar() {
                 <span className="max-w-full truncate leading-tight">{tNav(item.labelKey)}</span>
                 {count ? (
                   <span
-                    className="absolute top-1.5 right-[calc(50%-1.5rem)] inline-flex items-center justify-center min-w-5 h-5 px-1 rounded-full bg-red-600 text-white text-xs font-semibold"
+                    className="absolute top-1 right-[calc(50%-1.75rem)] inline-flex items-center justify-center min-w-6 h-6 px-1.5 rounded-full bg-red-600 text-white text-sm font-semibold"
                     aria-label={tNav("badgeWaiting", { count })}
                   >
                     {count}

@@ -57,6 +57,7 @@ interface ImportSummary {
   autoMatched: number;
   needsReview: number;
   debitsSkipped: number;
+  possibleDuplicates?: number;
 }
 
 interface FioState {
@@ -286,6 +287,13 @@ export default function ReconciliationPanel({ onChanged }: { onChanged?: () => v
                 {t("summarySkipped", {
                   duplicates: summary.skippedDuplicates,
                   debits: summary.debitsSkipped,
+                })}
+              </p>
+            )}
+            {(summary.possibleDuplicates ?? 0) > 0 && (
+              <p className="mt-1 font-medium">
+                {t("summaryPossibleDuplicates", {
+                  count: summary.possibleDuplicates ?? 0,
                 })}
               </p>
             )}

@@ -19,22 +19,9 @@ import {
   publicationDeadline,
   type VotingAction,
 } from "@modules/voting/src/workflow/transitions";
+import { VOTING_WORKFLOW_ERRORS } from "@modules/voting/src/workflow/error-codes";
 import type { VotingDetail, VotingOfficial } from "./types";
 
-const KNOWN_ERRORS = new Set([
-  "TRANSITION_NOT_ALLOWED",
-  "REOPEN_NOTE_REQUIRED",
-  "RESULT_ALREADY_PUBLISHED",
-  "PUBLISH_DATE_INVALID",
-  "NOTICE_LEAD_TIME_TOO_SHORT",
-  "NOTICE_START_AFTER_END",
-  "NOTICE_VERIFIERS_REQUIRED",
-  "OFFICIALS_INVALID",
-  "VOTING_LOCKED",
-  "ENDS_AT_ONLY_LATER",
-  "REPEAT_ESCALATION_UNSUPPORTED",
-  "REPEAT_ESCALATION_NOT_APPLICABLE",
-]);
 
 type StepKey = "prepare" | "announce" | "progress" | "close" | "minutes";
 const STEPS: StepKey[] = ["prepare", "announce", "progress", "close", "minutes"];
@@ -76,7 +63,7 @@ export default function WorkflowPanel({
     format.dateTime(new Date(d), { day: "numeric", month: "long", year: "numeric" });
 
   function errorText(code: string, minDate?: string) {
-    if (!KNOWN_ERRORS.has(code)) return t("errors.generic");
+    if (!VOTING_WORKFLOW_ERRORS.has(code)) return t("errors.generic");
     return t(`errors.${code}`, { minDate: minDate ? dateFmt(`${minDate}T12:00:00`) : "" });
   }
 

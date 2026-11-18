@@ -433,6 +433,14 @@ History-safe reads
 - [ ] Seller A can still open their own payments and assessments for months before
       D and sees nothing dated after D. Buyer B sees nothing before D. Both are
       403-tested server-side, not just hidden in the UI.
+      *(2026-11-18 partial: "Moje platby" — `listOwnershipWindows` +
+      `getOwnerPaymentSummary({ windows })` in
+      `modules/accounting/src/lib/owner-payments.ts` — limits ledger rows,
+      balance, settlements and overdue months to the viewer's [valid_from,
+      valid_to) windows; former owners keep access to their period; predpis/QR
+      only for current owners. Still open: karta bytu API / PDFs
+      (`canReadUnitLedger`, active-membership gate, unit-scoped rows) and the
+      server-side 403 tests.)*
 - [x] Ended members cannot cast, give mandates, enter meter readings or post. Each
       is tested against the server action or route.
 
@@ -489,10 +497,15 @@ Hard delete and erasure
       verify.
 
 i18n
-- [x] Every new string and every error code (`transfer_date_in_future`,
+- [ ] Every new string and every error code (`transfer_date_in_future`,
       `restore_conflict`, `merge_conflict_open_ballot`, `merge_self_mandate`,
       `user_has_history`, `plan_stale`, …) has an entry in `sk.json`, `en.json` and
       `cs.json`. The SK and CZ anonymise notices come from separate template modules.
+      *(Unticked 2026-11-18: `/api/users/[id]` returned Slovak prose and the owner
+      edit form / detail showed `body.error` raw (`user_has_history`,
+      `plan_stale`). Route now returns codes, UI maps `Owners.apiErrors.<code>`
+      with a `Common.saveFailed` fallback — tick once those keys land in
+      sk/en/cs.)*
 
 ## Project Context
 
@@ -576,7 +589,7 @@ Code: `src/lib/ownership.ts` (types, codes), `src/lib/ownership.server.ts` (as-o
 - Deviations / TODO(decision): closed-voting duplicate ballot — survivor's ballot is kept, the
   loser's flagged `disputed` (swap under the unique key deferred); same for kiosk attendance.
   Anonymise requires no current ownership (remove first). Former-owner self-service ledger
-  access not built (board export; TODO). `resolveMergedUserIds` exists but debtor /
+  access: Moje platby done (2026-11-18, window-filtered); karta bytu API still TODO. `resolveMergedUserIds` exists but debtor /
   owner-payment readers are not switched yet; buyer-sees-nothing-before-D not enforced
   (karta bytu is unit-scoped). `participation.ts` not switched to as-of. "Pseudonymizovať"
   not built. Legal copy (anonymise notices) needs sign-off. No tests written beyond the

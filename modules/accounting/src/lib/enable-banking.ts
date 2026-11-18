@@ -1,16 +1,18 @@
 import "server-only";
 
 import { readFileSync } from "node:fs";
-import { and, eq, sql } from "drizzle-orm";
+import { and, desc, eq, inArray, isNull, sql } from "drizzle-orm";
 import { db } from "@/db";
 import {
   accountingSettings,
   auditLog,
   bankConnections,
+  payments,
 } from "../db/schema";
 import {
   assertLedgerCurrency,
   importNormalizedLines,
+  normalizeIban,
   type ImportSummary,
   type NormalizedBankLine,
 } from "./bank-import";
@@ -312,6 +314,45 @@ async function domIban(entityId: string): Promise<string | null> {
 }
 
 /**
+ * The synced account must be the dom's configured collection account (same
+ * rule as the camt.053 upload). Only refuses when BOTH IBANs are known — a
+ * bank that does not report the account IBAN cannot be checked.
+ */
+function assertAccountMatchesDom(
+  account: StoredEbAccount | undefined,
+  configuredIban: string | null
+): void {
+  const wanted = normalizeIban(configuredIban);
+  const actual = normalizeIban(account?.iban);
+  if (wanted && actual && wanted !== actual) {
+    throw new EnableBankingError("EB_IBAN_MISMATCH");
+  }
+}
+
+/**
+ * First-sync start: never reach back before money other bank channels
+ * (camt.053 upload, Fio) already imported — the 90-day backfill would
+ * otherwise re-import the same movements under eb:… ids and credit units
+ * twice. The latest such day itself is included (content dedupe in the
+ * import pipeline catches same-day overlap).
+ */
+async function otherSourcesImportedUntil(entityId: string): Promise<Date | null> {
+  const [row] = await db
+    .select({ receivedAt: payments.receivedAt })
+    .from(payments)
+    .where(
+      and(
+        eq(payments.entityId, entityId),
+        inArray(payments.source, ["bank_import", "fio_api"]),
+        isNull(payments.voidedAt)
+      )
+    )
+    .orderBy(desc(payments.receivedAt))
+    .limit(1);
+  return row?.receivedAt ?? null;
+}
+
+/**
  * Exchanges the callback code for a session and stores it. Replaces any
  * previous Enable Banking session of the dom (consent renewal) — the old
  * session is revoked best-effort. lastSyncAt is kept on renewal so the next
@@ -340,6 +381,7 @@ export async function completeEnableBankingAuth(
   const aspspCountry = session.aspsp?.country || input.aspspCountry;
 
   const previous = await loadConnection(input.entityId);
+  const configuredIban = await domIban(input.entityId);
   const keepAccount =
     previous?.config.accountUid &&
     accounts.some((a) => a.uid === previous.config.accountUid)
@@ -348,10 +390,18 @@ export async function completeEnableBankingAuth(
   const config: EnableBankingConfig = {
     aspspName,
     aspspCountry,
-    accountUid:
-      keepAccount ?? pickAccountUid(accounts, await domIban(input.entityId)),
+    accountUid: keepAccount ?? pickAccountUid(accounts, configuredIban),
     accounts,
+    // Continuation keys are session-bound — a renewal resumes from
+    // lastSyncAt (minus overlap) instead.
+    syncCursor: null,
   };
+  // lastSyncAt belongs to the account it was synced from: a different
+  // account (or a fresh connection) restarts the backfill.
+  const keepLastSyncAt =
+    previous && previous.config.accountUid === config.accountUid
+      ? previous.lastSyncAt
+      : null;
   const validUntil = session.access?.valid_until
     ? new Date(session.access.valid_until)
     : null;
@@ -375,8 +425,9 @@ export async function completeEnableBankingAuth(
           config,
           validUntil,
           isActive: true,
-          // Fresh connection (was inactive / none) restarts the backfill.
-          lastSyncAt: previous ? previous.lastSyncAt : null,
+          // Fresh connection (was inactive / none) or another account
+          // restarts the backfill.
+          lastSyncAt: keepLastSyncAt,
         },
       });
     await tx.insert(auditLog).values({
@@ -409,17 +460,22 @@ export async function selectEnableBankingAccount(input: {
 }): Promise<void> {
   const row = await loadConnection(input.entityId);
   if (!row) throw new EnableBankingError("EB_NOT_CONNECTED");
-  if (!row.config.accounts.some((a) => a.uid === input.accountUid)) {
+  const account = row.config.accounts.find((a) => a.uid === input.accountUid);
+  if (!account) {
     throw new EnableBankingError("EB_UNKNOWN_ACCOUNT");
   }
+  assertAccountMatchesDom(account, await domIban(input.entityId));
+  const changed = row.config.accountUid !== input.accountUid;
   const config: EnableBankingConfig = {
     ...row.config,
     accountUid: input.accountUid,
+    syncCursor: changed ? null : (row.config.syncCursor ?? null),
   };
   await db.transaction(async (tx) => {
     await tx
       .update(bankConnections)
-      .set({ config })
+      // A different account has its own history — restart the backfill.
+      .set(changed ? { config, lastSyncAt: null } : { config })
       .where(eq(bankConnections.id, row.id));
     await tx.insert(auditLog).values({
       entityId: input.entityId,
@@ -498,20 +554,57 @@ export async function syncEnableBanking(
     throw new EnableBankingError("EB_CONSENT_EXPIRED");
   }
 
-  const from = row.lastSyncAt
-    ? new Date(row.lastSyncAt.getTime() - OVERLAP_DAYS * 24 * 3600 * 1000)
-    : new Date(now.getTime() - DEFAULT_BACKFILL_DAYS * 24 * 3600 * 1000);
+  const account = row.config.accounts.find(
+    (a) => a.uid === row.config.accountUid
+  );
+  assertAccountMatchesDom(account, await domIban(input.entityId));
+
+  // Resume a sync that stopped at the page cap; else overlap from the last
+  // completed sync; else the first-sync backfill (bounded by what other
+  // bank channels already imported).
+  const cursor = row.config.syncCursor ?? null;
+  let fromDay: string;
+  if (cursor) {
+    fromDay = cursor.dateFrom;
+  } else if (row.lastSyncAt) {
+    fromDay = isoDate(
+      new Date(row.lastSyncAt.getTime() - OVERLAP_DAYS * 24 * 3600 * 1000)
+    );
+  } else {
+    const backfill = new Date(
+      now.getTime() - DEFAULT_BACKFILL_DAYS * 24 * 3600 * 1000
+    );
+    const otherUntil = await otherSourcesImportedUntil(input.entityId);
+    fromDay = isoDate(
+      otherUntil && otherUntil.getTime() > backfill.getTime()
+        ? otherUntil
+        : backfill
+    );
+  }
 
   const transactions = [];
-  let continuation: string | null = null;
+  let continuation: string | null = cursor?.continuationKey ?? null;
   for (let page = 0; page < MAX_PAGES; page++) {
-    const params = new URLSearchParams({ date_from: isoDate(from) });
+    const params = new URLSearchParams({ date_from: fromDay });
     if (continuation) params.set("continuation_key", continuation);
-    const res: EbTransactionsPage = await call<EbTransactionsPage>(
-      "GET",
-      `/accounts/${encodeURIComponent(row.config.accountUid)}/transactions?${params}`,
-      { ...opts, expiredOnAuthError: true }
-    );
+    let res: EbTransactionsPage;
+    try {
+      res = await call<EbTransactionsPage>(
+        "GET",
+        `/accounts/${encodeURIComponent(row.config.accountUid)}/transactions?${params}`,
+        { ...opts, expiredOnAuthError: true }
+      );
+    } catch (err) {
+      // A stale continuation key must not wedge the connection: drop the
+      // cursor (lastSyncAt was never advanced) so the next sync refetches.
+      if (cursor && page === 0) {
+        await db
+          .update(bankConnections)
+          .set({ config: { ...row.config, syncCursor: null } })
+          .where(eq(bankConnections.id, row.id));
+      }
+      throw err;
+    }
     transactions.push(...(res.transactions ?? []));
     continuation = res.continuation_key || null;
     if (!continuation) break;
@@ -532,10 +625,27 @@ export async function syncEnableBanking(
     lines: mapped.map(toNormalizedLine),
   });
 
-  await db
-    .update(bankConnections)
-    .set({ lastSyncAt: now })
-    .where(eq(bankConnections.id, row.id));
+  if (continuation) {
+    // Page cap hit with more data at the bank: keep lastSyncAt where it was
+    // and park the continuation key — the next sync picks up exactly here.
+    await db
+      .update(bankConnections)
+      .set({
+        config: {
+          ...row.config,
+          syncCursor: { dateFrom: fromDay, continuationKey: continuation },
+        },
+      })
+      .where(eq(bankConnections.id, row.id));
+  } else {
+    await db
+      .update(bankConnections)
+      .set({
+        lastSyncAt: now,
+        config: { ...row.config, syncCursor: null },
+      })
+      .where(eq(bankConnections.id, row.id));
+  }
 
   return summary;
 }

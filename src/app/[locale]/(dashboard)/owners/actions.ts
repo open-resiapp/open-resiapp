@@ -6,6 +6,7 @@ import { createShellOwner, revokeShellInvitations } from "@/lib/owners-board.ser
 import { dismissOwnerHealthItem, undoOwnerHealthDismissal } from "@/lib/owner-health.server";
 import type { DismissErrorCode } from "@/lib/owner-health";
 import { hasPermission } from "@/lib/permissions";
+import { assertWritable } from "@/lib/readonly";
 import type { CreateOwnerErrorCode, RevokeInviteErrorCode } from "@/lib/owners-board";
 import type { UserRole } from "@/types";
 
@@ -30,6 +31,7 @@ export interface CreateOwnerActionInput {
 export async function createOwnerAction(
   input: CreateOwnerActionInput
 ): Promise<{ ok: true; id: string } | { ok: false; error: CreateOwnerErrorCode }> {
+  assertWritable();
   const session = await requireManageUsers();
   if (!session) return { ok: false, error: "forbidden" };
   // Role "admin" stays allowed: parity with the old POST /api/users, which
@@ -50,6 +52,7 @@ export async function createOwnerAction(
 export async function revokeInvitationAction(
   shellUserId: string
 ): Promise<{ ok: true } | { ok: false; error: RevokeInviteErrorCode }> {
+  assertWritable();
   const session = await requireManageUsers();
   if (!session) return { ok: false, error: "forbidden" };
   if (typeof shellUserId !== "string" || !shellUserId) return { ok: false, error: "not_found" };
@@ -70,6 +73,7 @@ export async function revokeInvitationAction(
 export async function dismissOwnerHealthAction(
   fingerprint: string
 ): Promise<{ ok: true; id: string } | { ok: false; error: DismissErrorCode }> {
+  assertWritable();
   const session = await requireManageUsers();
   if (!session) return { ok: false, error: "forbidden" };
   if (typeof fingerprint !== "string" || !fingerprint || fingerprint.length > 128) {
@@ -83,6 +87,7 @@ export async function dismissOwnerHealthAction(
 export async function undoOwnerHealthDismissalAction(
   dismissalId: string
 ): Promise<{ ok: true } | { ok: false; error: DismissErrorCode }> {
+  assertWritable();
   const session = await requireManageUsers();
   if (!session) return { ok: false, error: "forbidden" };
   if (typeof dismissalId !== "string" || !/^[0-9a-f-]{36}$/i.test(dismissalId)) {

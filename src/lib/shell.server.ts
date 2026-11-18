@@ -170,27 +170,25 @@ const resolveShellData = cache(async function resolveShellData(
     soft(resolveKindChain(root?.templateSlug ?? null), EMPTY_KIND_CHAIN),
   ]);
 
+  // Groups 3 + 4 are independent → one Promise.all.
   // Group 3 — admins only; onboarding runs 3 counts + 1 share-sum scan.
-  const onboarding =
-    isActive && isSettingsAdmin
-      ? await soft(
-          getOnboardingStatus(root).then((s) => ({ complete: s.complete })),
-          null
-        )
-      : null;
-
   // Group 4 — manageUsers only (BYT-20261118-003). The owners snapshot of
   // the board's current community (same root rule as /owners) runs once
   // (4 queries + root meta + dismissals) and feeds both the "Na riešenie"
   // nav badge and the scoped share-sum banner; /owners and Domov reuse it.
   const ownersRootId = entityCtx.currentId ?? root?.id ?? null;
-  const [ownerQueue, shareSumViolations] =
+  const [onboarding, ownerQueue, shareSumViolations] = await Promise.all([
+    isActive && isSettingsAdmin
+      ? soft(
+          getOnboardingStatus(root).then((s) => ({ complete: s.complete })),
+          null
+        )
+      : Promise.resolve(null),
+    isActive && isUsersAdmin ? soft(countOwnerQueue(ownersRootId), 0) : Promise.resolve(0),
     isActive && isUsersAdmin
-      ? await Promise.all([
-          soft(countOwnerQueue(ownersRootId), 0),
-          soft(listShareSumViolations(ownersRootId), []),
-        ])
-      : ([0, []] as [number, Awaited<ReturnType<typeof listShareSumViolations>>]);
+      ? soft(listShareSumViolations(ownersRootId), [] as Awaited<ReturnType<typeof listShareSumViolations>>)
+      : Promise.resolve([] as Awaited<ReturnType<typeof listShareSumViolations>>),
+  ]);
 
   return {
     user: {
@@ -210,6 +208,10 @@ const resolveShellData = cache(async function resolveShellData(
           templateSlug: root.templateSlug,
           displayTemplateSlug: getDisplayTemplateSlug(root.templateSlug),
           kinds,
+          country: root.country ?? null,
+          address: root.address ?? null,
+          ico: root.ico ?? null,
+          legalNotice: root.legalNotice ?? null,
         }
       : null,
     branding: {

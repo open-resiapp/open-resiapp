@@ -3,6 +3,7 @@ import "server-only";
 import { hasPermission } from "@/lib/permissions";
 import { McpError, validationError } from "@/lib/mcp/errors";
 import type { Viewer } from "@/lib/mcp/principal";
+import { canRecordForVotingId, type CounterActor } from "./counter-authz.server";
 import type { UserRole, VoteChoice } from "@/types";
 import { votings } from "./db/schema";
 import { validateCast, VALID_CHOICES, type CastFailure } from "./routes/api/ballots/cast.server";
@@ -34,11 +35,6 @@ export interface BallotCastInput {
    * Omitted = electronic ballot cast by the actor themself.
    */
   paper?: { ownerId: string };
-  /**
-   * Require an active OWNER membership on the unit (MCP ballot path). The
-   * web route keeps its historical "any active membership" rule.
-   */
-  requireOwnerMembership?: boolean;
 }
 
 export interface ValidatedBallot {
@@ -84,15 +80,17 @@ function castFailureToMcp(f: CastFailure): McpError {
  *   validation.items (duplicate).
  */
 export async function validateBallotCast(
-  actor: Viewer,
+  actor: Viewer & Partial<Pick<CounterActor, "status" | "boardRoles">>,
   input: BallotCastInput
 ): Promise<ValidatedBallot> {
   const isPaper = Boolean(input.paper);
   const voterId = input.paper ? input.paper.ownerId : actor.userId;
 
-  // Permission.
+  // Permission. Paper: board, or the vote counter of THIS voting
+  // (votings.voteCounterId) — the global vote_counter role alone no longer
+  // suffices (2026-11-18 review, same rule as the web paper route).
   if (isPaper) {
-    if (!hasPermission(actor.role as UserRole, "recordPaperVote")) {
+    if (!(await canRecordForVotingId(actor, input.votingId))) {
       throw new McpError("forbidden", { kind: "paper" });
     }
   } else if (!hasPermission(actor.role as UserRole, "vote")) {
@@ -105,7 +103,6 @@ export async function validateBallotCast(
     voterId,
     incoming: input.items,
     electronic: !isPaper,
-    requireOwnerMembership: input.requireOwnerMembership,
   });
   if (!res.ok) throw castFailureToMcp(res);
 

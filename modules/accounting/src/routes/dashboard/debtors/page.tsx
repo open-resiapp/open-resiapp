@@ -40,82 +40,73 @@ export default function DebtorsPage() {
   }, []);
 
   if (error) {
-    return <p className="text-red-600 dark:text-red-400">{t("loadError")}</p>;
+    return (
+      <p role="alert" className="text-base text-ui-danger">
+        {t("loadError")}
+      </p>
+    );
   }
   if (!data) {
-    return (
-      <div className="animate-pulse h-40 bg-gray-100 dark:bg-gray-800 rounded-lg" />
-    );
+    return <div className="h-40 animate-pulse rounded-lg bg-ui-surface-muted" />;
   }
 
   return (
     <div className="max-w-2xl">
       <Link
         href="/accounting"
-        className="text-sm text-blue-600 dark:text-blue-400 hover:underline"
+        className="inline-flex min-h-11 items-center text-base font-medium text-ui-primary hover:underline"
       >
         ← {t("backToAccounting")}
       </Link>
-      <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mt-2 mb-1">
-        {t("title")}
-      </h1>
+      <h1 className="mb-1 mt-2 text-2xl font-bold text-ui-text">{t("title")}</h1>
 
       {!data.enabled ? (
-        <p className="text-gray-600 dark:text-gray-400 mt-4">
-          {t("disabled")}
-        </p>
+        <p className="mt-4 text-base text-ui-text-muted">{t("disabled")}</p>
       ) : (
         <>
-          <p className="text-gray-600 dark:text-gray-400 mb-6">
+          <p className="mb-6 text-base text-ui-text-muted">
             {data.audience === "board"
               ? t("boardSubtitle")
               : t("subtitle", { threshold: formatEur(data.thresholdCents ?? 0) })}
           </p>
           {data.debtors.length === 0 ? (
-            <p className="text-green-700 dark:text-green-400">
+            <p className="text-base text-ui-success">
               {data.audience === "board" ? t("boardNone") : t("none")}
             </p>
           ) : (
-            <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg p-6">
-              <table className="w-full text-sm">
-                <thead>
-                  <tr className="text-left text-gray-600 dark:text-gray-400 border-b border-gray-200 dark:border-gray-700">
-                    <th className="py-2 pr-4">{t("colUnit")}</th>
+            // Card list instead of a table: fits 390 px without sideways scroll.
+            <ul className="divide-y divide-ui-border rounded-lg border border-ui-border bg-ui-surface">
+              {data.debtors.map((d) => (
+                <li
+                  key={d.unitLabel}
+                  className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 px-4 py-3"
+                >
+                  <div className="min-w-0">
+                    <p className="text-base font-semibold text-ui-text">
+                      <span className="sr-only">{t("colUnit")}: </span>
+                      {d.unitLabel}
+                    </p>
                     {data.namesEnabled && (
-                      <th className="py-2 pr-4">{t("colOwner")}</th>
+                      <p className="break-words text-base text-ui-text-muted">
+                        <span className="sr-only">{t("colOwner")}: </span>
+                        {d.ownerNames && d.ownerNames.length > 0
+                          ? d.ownerNames.join(", ")
+                          : data.audience === "board"
+                            ? t("boardNoOwner")
+                            : /* Below the statutory 500 € → withheld. */
+                              t("nameWithheld")}
+                      </p>
                     )}
-                    <th className="py-2 text-right">{t("colAmount")}</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {data.debtors.map((d) => (
-                    <tr
-                      key={d.unitLabel}
-                      className="border-b border-gray-100 dark:border-gray-800"
-                    >
-                      <td className="py-2 pr-4 text-gray-900 dark:text-gray-100">
-                        {d.unitLabel}
-                      </td>
-                      {data.namesEnabled && (
-                        <td className="py-2 pr-4 text-gray-700 dark:text-gray-300">
-                          {d.ownerNames && d.ownerNames.length > 0
-                            ? d.ownerNames.join(", ")
-                            : data.audience === "board"
-                              ? t("boardNoOwner")
-                              : /* Below the statutory 500 € → withheld. */
-                                t("nameWithheld")}
-                        </td>
-                      )}
-                      <td className="py-2 text-right font-medium text-red-600 dark:text-red-400">
-                        {formatEur(d.balanceCents)}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                  </div>
+                  <p className="shrink-0 text-base font-semibold text-ui-danger">
+                    <span className="sr-only">{t("colAmount")}: </span>
+                    {formatEur(d.balanceCents)}
+                  </p>
+                </li>
+              ))}
+            </ul>
           )}
-          <p className="text-xs text-gray-400 dark:text-gray-500 mt-3">
+          <p className="mt-3 text-base text-ui-text-muted">
             {data.audience === "board" ? t("boardNote") : t("legalNote")}
           </p>
         </>

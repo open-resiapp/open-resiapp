@@ -94,6 +94,12 @@ export interface EnableBankingConfig {
   aspspCountry: string;
   accountUid: string | null;
   accounts: StoredEbAccount[];
+  /**
+   * Set when a sync stopped at the page cap with more data at the bank. The
+   * next sync resumes from this continuation key (same date_from) instead of
+   * advancing lastSyncAt past transactions it never fetched.
+   */
+  syncCursor?: { dateFrom: string; continuationKey: string } | null;
 }
 
 // ── amounts ────────────────────────────────────────────
@@ -264,18 +270,24 @@ export function mapSessionAccounts(
 
 /**
  * The account to sync: the one whose IBAN equals the dom's configured bank
- * IBAN, else the only one, else null (the treasurer picks).
+ * IBAN, else the only one (unless its known IBAN differs from the configured
+ * one), else null (the treasurer picks).
  */
 export function pickAccountUid(
   accounts: StoredEbAccount[],
   domIban: string | null
 ): string | null {
-  const wanted = domIban?.replace(/\s+/g, "").toUpperCase() ?? null;
+  const wanted = domIban?.replace(/\s+/g, "").toUpperCase() || null;
   if (wanted) {
     const hit = accounts.find((a) => a.iban === wanted);
     if (hit) return hit.uid;
   }
-  return accounts.length === 1 ? accounts[0].uid : null;
+  if (accounts.length !== 1) return null;
+  // A lone account whose IBAN is known and differs from the configured one
+  // is NOT auto-selected — sync would refuse it (EB_IBAN_MISMATCH) anyway.
+  const only = accounts[0];
+  if (wanted && only.iban && only.iban !== wanted) return null;
+  return only.uid;
 }
 
 /** PSD2 consent length: the bank's maximum, capped at 180 days. */

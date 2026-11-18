@@ -22,6 +22,7 @@ interface Impact {
     usedExpenseId: string | null;
   } | null;
   journalEntryCount: number;
+  notPassedAnymore?: boolean;
 }
 
 export default function VotingFinancialImpacts({
@@ -62,6 +63,14 @@ export default function VotingFinancialImpacts({
             <p className="text-sm font-medium text-gray-900 dark:text-gray-100">
               {i.title}
             </p>
+            {i.notPassedAnymore && (
+              <p
+                role="alert"
+                className="mt-1 inline-block px-2 py-0.5 rounded text-xs bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200"
+              >
+                {t("notPassedAnymore")}
+              </p>
+            )}
             <div className="flex flex-wrap gap-2 mt-1 text-xs">
               {i.feeScheduleDraft && (
                 <Link

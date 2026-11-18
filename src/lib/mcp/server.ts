@@ -1,13 +1,17 @@
 import "server-only";
 
 import {
+  CLIENT_CAPABILITIES_META_KEY,
   createMcpHandler,
   McpServer,
   type CallToolResult,
+  type ClientCapabilities,
   type McpHttpHandler,
+  type ServerContext,
   type StandardSchemaWithJSON,
 } from "@modelcontextprotocol/server";
 import {
+  getUiCapability,
   RESOURCE_MIME_TYPE,
   RESOURCE_URI_META_KEY,
   registerAppResource,
@@ -224,6 +228,24 @@ async function executeTool(
   }
 }
 
+/**
+ * Did the client declare MCP Apps UI support for this request? 2026-07-28
+ * clients carry their capabilities in the per-request envelope; for 2025-era
+ * clients the SDK only knows them from `initialize`, which in stateless
+ * serving is a different HTTP request — so those clients count as "no UI"
+ * and get the in-app confirm link instead of the confirm token.
+ */
+function clientDeclaresAppsUi(server: McpServer, sdkCtx: ServerContext | undefined): boolean {
+  const envelope = sdkCtx?.mcpReq?.envelope as Record<string, unknown> | undefined;
+  const caps =
+    (envelope?.[CLIENT_CAPABILITIES_META_KEY] as ClientCapabilities | undefined) ??
+    server.server.getClientCapabilities();
+  const ui = getUiCapability(caps);
+  if (!ui) return false;
+  // A host that lists MIME types must list the MCP App one.
+  return !Array.isArray(ui.mimeTypes) || ui.mimeTypes.includes(RESOURCE_MIME_TYPE);
+}
+
 /** One McpServer for one request / principal. */
 export function buildMcpServer(ctx: ToolContext): McpServer {
   const server = new McpServer(SERVER_INFO, {
@@ -291,7 +313,8 @@ export function buildMcpServer(ctx: ToolContext): McpServer {
         };
       },
     };
-    const cb = (args: unknown) => executeTool(def, args, ctx);
+    const cb = (args: unknown, sdkCtx?: ServerContext) =>
+      executeTool(def, args, { ...ctx, appsUi: clientDeclaresAppsUi(server, sdkCtx) });
     if (meta) {
       // MCP Apps helper: mirrors `_meta.ui.resourceUri` into the legacy
       // "ui/resourceUri" key for older hosts.

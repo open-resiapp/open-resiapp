@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { secretsEqual } from "@/lib/secret-compare.server";
 import { db } from "@/db";
 import {
   communityNotificationsSent,
@@ -211,7 +212,7 @@ export async function POST(request: NextRequest) {
   }
 
   const provided = request.headers.get("x-cron-secret");
-  if (provided !== expected) {
+  if (!secretsEqual(provided, expected)) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 

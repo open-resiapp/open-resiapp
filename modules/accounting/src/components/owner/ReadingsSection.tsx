@@ -598,7 +598,6 @@ export function MeterForm({
           id={`${idBase}-photo`}
           type="file"
           accept="image/*"
-          capture="environment"
           onChange={(e) => setPhoto(e.target.files?.[0] ?? null)}
           className="block min-h-11 w-full text-base text-ui-text file:mr-3 file:min-h-11 file:rounded-lg file:border file:border-ui-border-strong file:bg-ui-surface file:px-4 file:text-base file:text-ui-text"
         />

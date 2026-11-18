@@ -71,8 +71,9 @@ async function buildMeteredCostShares(input: {
   categoryIdBySlug: Record<string, string>;
   costByCategory: Map<string, number>;
   heatBasicPct: number;
-}): Promise<Map<string, Record<string, number>>> {
+}): Promise<MeteredCostShares> {
   const out = new Map<string, Record<string, number>>();
+  const singleReadingUnitIds = new Set<string>();
   const plans = (
     [
       {
@@ -91,7 +92,7 @@ async function buildMeteredCostShares(input: {
     .filter(
       (p) => p.categoryId && (input.costByCategory.get(p.categoryId) ?? 0) > 0
     );
-  if (plans.length === 0) return out;
+  if (plans.length === 0) return { shares: out, singleReadingUnitIds };
 
   // Areas — every unit must carry one (the split needs plocha for the basic
   // component AND the correction bounds).
@@ -105,7 +106,9 @@ async function buildMeteredCostShares(input: {
     .from(entities)
     .where(domUnitsWhere(input.entityId));
   const areaByUnit = new Map(areaRows.map((r) => [r.id, r.areaMilli ?? 0]));
-  if (input.units.some((u) => (areaByUnit.get(u.id) ?? 0) <= 0)) return out;
+  if (input.units.some((u) => (areaByUnit.get(u.id) ?? 0) <= 0)) {
+    return { shares: out, singleReadingUnitIds };
+  }
 
   // Readings for the metered types, date-ordered.
   const rows = await db
@@ -151,6 +154,14 @@ async function buildMeteredCostShares(input: {
       c: consFor(plan.meterType, u.id),
     }));
     if (cons.some((x) => x.c === null)) continue; // partial metering
+    // A lone reading is an absolute counter state, not the year's
+    // consumption — the split below would bill it as such. Recorded so
+    // publish refuses (METER_SINGLE_READING); the preview still renders.
+    for (const u of input.units) {
+      if ((byTypeUnit.get(`${plan.meterType}|${u.id}`)?.length ?? 0) === 1) {
+        singleReadingUnitIds.add(u.id);
+      }
+    }
     const split = computeHeatSplit(
       input.costByCategory.get(plan.categoryId)!,
       input.units.map((u) => ({
@@ -165,8 +176,17 @@ async function buildMeteredCostShares(input: {
       Object.fromEntries(split.units.map((s) => [s.unitId, s.finalCents]))
     );
   }
-  return out;
+  return { shares: out, singleReadingUnitIds };
 }
+
+interface MeteredCostShares {
+  shares: Map<string, Record<string, number>>;
+  /** Units whose metered split used a single in-year reading. */
+  singleReadingUnitIds: Set<string>;
+}
+
+/** Stable publish-blocker codes — the UI maps them to i18n. */
+export type VyuctovanieBlocker = "METER_SINGLE_READING";
 
 export interface VyuctovanieGates {
   periodStatus: "missing" | "open" | "reconciling" | "published" | "closed";
@@ -189,7 +209,14 @@ export interface VyuctovanieGates {
   yearElapsed: boolean;
   /** Draft schedules for the year — locking strands them unpublishable. */
   draftSchedules: number;
-  /** Gates clear, year over, period open. */
+  /** Units whose METERED heat / TÚV split (a plan that actually applies)
+   * rests on a single in-year reading — the absolute counter would be
+   * billed as consumption. Blocks publish (METER_SINGLE_READING); the
+   * preview still renders. Set by the preview (0 when no settlement). */
+  meteredSingleReadingUnits: number;
+  /** Stable codes of extra publish blockers (beyond the checklist above). */
+  blockers: VyuctovanieBlocker[];
+  /** Gates clear, year over, period open, no blockers. */
   canPublish: boolean;
 }
 
@@ -290,6 +317,8 @@ async function computeGates(
     readingRound: await getReadingRoundGate(entityId, year),
     yearElapsed,
     draftSchedules: drafts.n,
+    meteredSingleReadingUnits: 0,
+    blockers: [],
     canPublish:
       periodStatus === "open" &&
       yearElapsed &&
@@ -438,7 +467,7 @@ export async function getVyuctovaniePreview(
     )
     .orderBy(desc(accountingSettings.effectiveFrom))
     .limit(1);
-  const meteredShares = await buildMeteredCostShares({
+  const metered = await buildMeteredCostShares({
     entityId,
     yearStart,
     yearEnd,
@@ -451,6 +480,16 @@ export async function getVyuctovaniePreview(
     ),
     heatBasicPct: heatSettingRow?.h ?? DEFAULT_HEAT_BASIC_PCT,
   });
+  const meteredShares = metered.shares;
+  const gatesOut: VyuctovanieGates =
+    metered.singleReadingUnitIds.size > 0
+      ? {
+          ...gates,
+          meteredSingleReadingUnits: metered.singleReadingUnitIds.size,
+          blockers: [...gates.blockers, "METER_SINGLE_READING"],
+          canPublish: false,
+        }
+      : gates;
 
   // Allocation key per category from the year's published schedule(s) — the
   // statutory "použitý kľúč rozúčtovania" on the vyúčtovanie (AC 442). A
@@ -513,7 +552,7 @@ export async function getVyuctovaniePreview(
 
   return {
     year,
-    gates,
+    gates: gatesOut,
     settlement,
     unprescribedCostCategories,
     categorySlugs,
@@ -873,6 +912,11 @@ export async function publishVyuctovanie(input: {
       input.country,
       input.year
     );
+    if (preview.gates.blockers.includes("METER_SINGLE_READING")) {
+      throw new Error(
+        "accounting: METER_SINGLE_READING — a metered heat / hot-water split rests on a single reading in the year (absolute counter, not consumption); record the start-of-year reading first"
+      );
+    }
     if (!preview.gates.canPublish) {
       throw new Error(
         "accounting: gates not passed — the year must be over, bank lines reconciled and invoices categorized"

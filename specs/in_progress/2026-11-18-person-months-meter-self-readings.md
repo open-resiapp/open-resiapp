@@ -200,7 +200,17 @@ Self-readings collected once a year (one reading per unit) would therefore feed 
 **absolute meter state** into the heat/TÚV split. Until the engine slice that takes
 the delta against the previous year's last reading lands, the board table must show a
 warning when a unit has exactly one reading in the year for a metered type. The
-wizard gate repeats that warning. It is display only.
+wizard gate repeats that warning.
+
+**Changed 2026-11-18 (review fix): publish is BLOCKED** while the metered split
+actually applies (heat / TÚV category with cost, every unit metered and with area)
+and any unit has a single in-year reading for that type: `buildMeteredCostShares`
+returns `singleReadingUnitIds`, the preview sets `gates.meteredSingleReadingUnits`,
+`gates.blockers = ["METER_SINGLE_READING"]` and `canPublish = false`;
+`publishVyuctovanie` refuses with `METER_SINGLE_READING`. The preview still renders
+(warning + ❌ gate row in the wizard). The round-table / non-metered warning
+(`readingRound.singleReadingUnits`) stays informational. Lifts once engine slice A
+(year-boundary delta) lands.
 
 ### Reminder e-mail (cron, no per-node loop)
 
@@ -353,6 +363,7 @@ Notes on the sketch:
 - [x] Board enters or corrects a reading for any unit, with audit justification "board entry".
 - [x] Board records a building meter reading with a date in the previous month. A future date → `date_in_future`. The building card shows the informational "súčet bytov vs. hlavný merač" difference.
 - [x] A unit with exactly one reading in the year for `heat`/`water_hot` shows the "single reading = counter state" warning in the table and in the vyúčtovanie wizard gate.
+- [x] When the metered heat/TÚV split applies and any unit has a single in-year reading for it, the preview still renders but `gates.canPublish = false` with blocker `METER_SINGLE_READING`; `publishVyuctovanie` refuses with that code. *(2026-11-18; i18n key `Accounting.vyuctovanie.gateSingleReadingBlocking` pending in messages; no fixture test yet)*
 - [x] CSV and XLSX export contain persons (per unit × 12 months + total), unit readings, and building readings for the round. A cell value starting with `=` is exported prefixed with `'`.
 - [x] Board readers can view and export but get 403 on every write.
 

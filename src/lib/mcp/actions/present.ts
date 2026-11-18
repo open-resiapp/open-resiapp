@@ -98,9 +98,13 @@ function previewText(preview: ActionPreview): string {
 }
 
 export async function presentProposal(
-  ctx: Pick<ActionContext, "origin">,
+  ctx: Pick<ActionContext, "origin"> & { appsUi?: boolean },
   r: ProposeResult
 ): Promise<ToolOutput> {
+  // The confirm token goes only to hosts that render the MCP App view
+  // (they keep result `_meta` away from the model). Anyone else gets the
+  // in-app confirm link only; confirm_action without a token is rejected.
+  const withToken = ctx.appsUi === true;
   const t = await translatorFor(r.locale);
   const confirmUrl = appLink(ctx, r.locale, confirmPagePath(r.actionId));
   const expiresAt = r.expiresAt.toISOString();
@@ -120,12 +124,14 @@ export async function presentProposal(
       expiresAt,
       confirmUrl,
       preview: r.preview,
-      note: "Nothing has been written. The user must confirm in the app view or at confirmUrl; you cannot confirm on their behalf.",
+      note: withToken
+        ? "Nothing has been written. The user must confirm in the app view or at confirmUrl; you cannot confirm on their behalf."
+        : "Nothing has been written. Send the user confirmUrl; they confirm or cancel there in the app. You cannot confirm on their behalf.",
     },
     meta: {
       [VIEW_META_KEY]: {
         actionId: r.actionId,
-        confirmToken: r.confirmToken,
+        ...(withToken ? { confirmToken: r.confirmToken } : {}),
         locale: r.locale,
         expiresAt,
         confirmUrl,

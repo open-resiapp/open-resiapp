@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 
+import { isInt4 } from "@modules/accounting/src/lib/input-validators";
 import { requireWriter } from "@modules/accounting/src/lib/api-guard";
 import {
   getOpeningBalanceState,
@@ -45,8 +46,8 @@ export async function handlePost(req: NextRequest): Promise<NextResponse> {
   const bankaCents = Number(body.bankaCents);
   const pokladnicaCents = Number(body.pokladnicaCents);
   if (
-    !Number.isInteger(bankaCents) ||
-    !Number.isInteger(pokladnicaCents) ||
+    !isInt4(bankaCents) ||
+    !isInt4(pokladnicaCents) ||
     bankaCents < 0 ||
     pokladnicaCents < 0
   ) {
@@ -62,7 +63,7 @@ export async function handlePost(req: NextRequest): Promise<NextResponse> {
   }));
   if (
     unitBalances.some(
-      (u) => !Number.isInteger(u.fpuoCents) || !Number.isInteger(u.zalohyCents)
+      (u) => !isInt4(u.fpuoCents) || !isInt4(u.zalohyCents)
     )
   ) {
     return NextResponse.json({ error: "invalid unit amounts" }, { status: 400 });

@@ -66,6 +66,10 @@ export default async function Page({
         })}
       </p>
       <p className="mb-4 text-base text-ui-text">{t("explain")}</p>
+      {/* "Not you?" — rendered once the catalog key exists in all locales. */}
+      {t.has("notYou") && (
+        <p className="mb-4 text-base text-ui-text-muted">{t("notYou")}</p>
+      )}
       <PasskeyActivateButton token={token ?? ""} />
     </Card>
   );

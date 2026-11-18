@@ -100,7 +100,9 @@ export default function OwnerEditForm({
     });
     if (!res.ok) {
       const data = await res.json().catch(() => ({}));
-      setError(data.error || tCommon("saveFailed"));
+      // The API returns a stable code ({ error: CODE }) — never show it raw.
+      const key = `apiErrors.${data.error}`;
+      setError(typeof data.error === "string" && t.has(key) ? t(key) : tCommon("saveFailed"));
       setSaving(false);
       return;
     }

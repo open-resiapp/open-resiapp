@@ -24,6 +24,8 @@ interface Gates {
   };
   yearElapsed: boolean;
   draftSchedules: number;
+  meteredSingleReadingUnits?: number;
+  blockers?: string[];
   canPublish: boolean;
 }
 
@@ -238,7 +240,26 @@ export default function VyuctovaniePage() {
                   </Link>
                 </li>
               )}
-              {(preview.gates.readingRound?.singleReadingUnits ?? 0) > 0 && (
+              {/* Blocking: a metered split on a single reading would bill
+                  the absolute counter as the year's consumption. */}
+              {(preview.gates.meteredSingleReadingUnits ?? 0) > 0 && (
+                <li className="flex items-center gap-2 text-sm">
+                  <span>❌</span>
+                  <span className="text-gray-900 dark:text-gray-100">
+                    {t("gateSingleReadingBlocking", {
+                      count: preview.gates.meteredSingleReadingUnits ?? 0,
+                    })}
+                  </span>
+                  <Link
+                    href={`/accounting/readings?year=${preview.year}`}
+                    className="text-blue-600 dark:text-blue-400 hover:underline"
+                  >
+                    {t("resolve")}
+                  </Link>
+                </li>
+              )}
+              {(preview.gates.meteredSingleReadingUnits ?? 0) === 0 &&
+                (preview.gates.readingRound?.singleReadingUnits ?? 0) > 0 && (
                 <li className="flex items-center gap-2 text-sm">
                   <span>⚠️</span>
                   <span className="text-gray-900 dark:text-gray-100">

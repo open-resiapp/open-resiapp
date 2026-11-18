@@ -94,7 +94,7 @@ export async function GET(
 ) {
   const session = await auth();
   if (!session) {
-    return NextResponse.json({ error: "Neautorizovaný prístup" }, { status: 401 });
+    return NextResponse.json({ error: "unauthorized" }, { status: 401 });
   }
 
   const { id } = await params;
@@ -116,7 +116,7 @@ export async function GET(
     .limit(1);
 
   if (!user) {
-    return NextResponse.json({ error: "Používateľ nenájdený" }, { status: 404 });
+    return NextResponse.json({ error: "user_not_found" }, { status: 404 });
   }
 
   const isShell = user.passwordHash === null;
@@ -150,11 +150,11 @@ export async function PATCH(
 ) {
   const session = await auth();
   if (!session) {
-    return NextResponse.json({ error: "Neautorizovaný prístup" }, { status: 401 });
+    return NextResponse.json({ error: "unauthorized" }, { status: 401 });
   }
 
   if (!hasPermission(session.user.role as UserRole, "manageUsers")) {
-    return NextResponse.json({ error: "Nemáte oprávnenie" }, { status: 403 });
+    return NextResponse.json({ error: "forbidden" }, { status: 403 });
   }
 
   const { id } = await params;
@@ -181,7 +181,7 @@ export async function PATCH(
         s.den <= 0
       ) {
         return NextResponse.json(
-          { error: "Neplatný vlastnícky podiel" },
+          { error: "invalid_share" },
           { status: 400 }
         );
       }
@@ -335,7 +335,7 @@ export async function PATCH(
   }
 
   if (Object.keys(updateData).length === 0 && !hasFlatIds && !hasFlatId) {
-    return NextResponse.json({ error: "Žiadne údaje na aktualizáciu" }, { status: 400 });
+    return NextResponse.json({ error: "no_changes" }, { status: 400 });
   }
 
   // Check email uniqueness if changing email
@@ -348,7 +348,7 @@ export async function PATCH(
 
     if (existing.length > 0 && existing[0].id !== id) {
       return NextResponse.json(
-        { error: "Používateľ s týmto emailom už existuje" },
+        { error: "email_taken" },
         { status: 400 }
       );
     }
@@ -385,7 +385,7 @@ export async function PATCH(
   }
 
   if (!updated) {
-    return NextResponse.json({ error: "Používateľ nenájdený" }, { status: 404 });
+    return NextResponse.json({ error: "user_not_found" }, { status: 404 });
   }
 
   const shareWarnings = await computeShareWarnings(affectedUnitIds);
@@ -399,11 +399,11 @@ export async function DELETE(
 ) {
   const session = await auth();
   if (!session) {
-    return NextResponse.json({ error: "Neautorizovaný prístup" }, { status: 401 });
+    return NextResponse.json({ error: "unauthorized" }, { status: 401 });
   }
 
   if (!hasPermission(session.user.role as UserRole, "manageUsers")) {
-    return NextResponse.json({ error: "Nemáte oprávnenie" }, { status: 403 });
+    return NextResponse.json({ error: "forbidden" }, { status: 403 });
   }
 
   const { id } = await params;
@@ -411,7 +411,7 @@ export async function DELETE(
   // Prevent self-deletion
   if (session.user.id === id) {
     return NextResponse.json(
-      { error: "Nemôžete zmazať vlastný účet" },
+      { error: "cannot_delete_self" },
       { status: 400 }
     );
   }

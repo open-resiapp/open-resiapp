@@ -7,13 +7,13 @@
 // BYT-20261117-002 Phase 6: electronic ballots require an active
 // confirmation (passkey or e-mail link) — ./confirm.server.ts.
 import { NextRequest, NextResponse } from "next/server";
+import type { Session } from "next-auth";
 import { and, eq, inArray, isNull, sql } from "drizzle-orm";
 
 import { auth } from "@/lib/auth";
 import { db } from "@/db";
 import { users, entities, memberships } from "@/db/schema";
 import {
-  votings,
   ballots,
   ballotItemVotes,
   ballotPhotos,
@@ -21,14 +21,11 @@ import {
 import { hasPermission } from "@/lib/permissions";
 import { getVotingResults } from "@modules/voting/src/results";
 import { getVotingParticipation } from "@modules/voting/src/participation";
-import { sessionIsBoard } from "@/lib/mcp/authz";
-import {
-  computeItemAuditHash,
-} from "@modules/voting/src/engine";
+import { principalFromSession } from "@/lib/mcp/principal";
+import { canRecordForVotingId } from "@modules/voting/src/counter-authz.server";
 import { userPasskeyState } from "@/lib/webauthn.server";
 import type { UserRole } from "@/types";
-import { deleteBallotAsBoard, validateCast } from "./cast.server";
-import { ownershipSnapshot } from "@modules/voting/src/ballot-snapshot.server";
+import { deleteBallotAsBoard, recordPaperBallot, validateCast } from "./cast.server";
 import {
   buildOverview,
   canStillPass,
@@ -36,10 +33,17 @@ import {
   type OverviewInput,
 } from "@modules/voting/src/workflow/overview";
 import { getCommunityRoot } from "@/lib/legacy-compat";
-import { normalizeVotingMethod } from "@/lib/voting-method";
 import type { Country, QuorumType } from "@/types";
-import { recordVotingEvent } from "@modules/voting/src/events";
 import { castConfirmed, withdrawConfirmed } from "./confirm.server";
+
+/** Board, or the vote counter of THIS voting (2026-11-18 review). */
+async function sessionMayRecord(session: Session, votingId: string): Promise<boolean> {
+  try {
+    return await canRecordForVotingId(await principalFromSession(session), votingId);
+  } catch {
+    return false;
+  }
+}
 
 // ── GET: items + per-item results + caller's ballots ──────
 export async function GET(request: NextRequest) {
@@ -88,6 +92,13 @@ export async function GET(request: NextRequest) {
       disputed: ballots.disputed,
       confirmationMethod: ballots.confirmationKind,
       confirmedAt: ballots.confirmedAt,
+      // Frozen shares (cast time / close) — the overview uses the same data as the engine.
+      ownerUnitShareNumerator: ballots.ownerUnitShareNumerator,
+      ownerUnitShareDenominator: ballots.ownerUnitShareDenominator,
+      membershipWeight: ballots.membershipWeight,
+      unitShareNumerator: ballots.unitShareNumerator,
+      unitShareDenominator: ballots.unitShareDenominator,
+      unitAreaM2: ballots.unitAreaM2,
     })
     .from(ballots)
     .leftJoin(users, eq(ballots.ownerId, users.id))
@@ -134,11 +145,23 @@ export async function GET(request: NextRequest) {
     photosByBallot.set(p.ballotId, slot);
   }
 
-  const ballotsList = ballotRows.map((b) => ({
-    ...b,
-    choices: choicesByBallot.get(b.id) ?? [],
-    photos: photosByBallot.get(b.id) ?? [],
-  }));
+  // Snapshot columns are internal (overview input), not part of the response shape.
+  const ballotsList = ballotRows.map(
+    ({
+      ownerUnitShareNumerator: _on,
+      ownerUnitShareDenominator: _od,
+      membershipWeight: _mw,
+      unitShareNumerator: _un,
+      unitShareDenominator: _ud,
+      unitAreaM2: _ua,
+      ...b
+    }) => ({
+      ...b,
+      choices: choicesByBallot.get(b.id) ?? [],
+      photos: photosByBallot.get(b.id) ?? [],
+    })
+  );
+  const snapshotById = new Map(ballotRows.map((b) => [b.id, b]));
 
   const userBallots = ballotsList
     .filter((b) => b.ownerId === session.user.id)
@@ -165,6 +188,8 @@ export async function GET(request: NextRequest) {
       and(
         eq(memberships.userId, session.user.id),
         eq(memberships.status, "active"),
+        // Only an owner membership votes (validateCast) — a tenant gets no cast form.
+        eq(memberships.role, "owner"),
         eq(entities.kind, "unit"),
         isNull(entities.archivedAt)
       )
@@ -178,11 +203,9 @@ export async function GET(request: NextRequest) {
       ? await userPasskeyState(session.user.id)
       : { active: false, pending: false };
 
-  // Turnout + who has not voted yet: board and vote counters only (the
+  // Turnout + who has not voted yet: board and THIS voting's counter (the
   // same people who record paper ballots for the missing units).
-  const canSeeParticipation =
-    hasPermission(session.user.role as UserRole, "recordPaperVote") ||
-    (await sessionIsBoard());
+  const canSeeParticipation = await sessionMayRecord(session, votingId);
   const participation = canSeeParticipation
     ? await getVotingParticipation(votingId)
     : null;
@@ -192,20 +215,40 @@ export async function GET(request: NextRequest) {
   let overview: unknown = null;
   if (participation) {
     const root = await getCommunityRoot();
+    // Same inputs as the engine: method (frozen at close), total, presence
+    // of a meeting voting, and the ballots' frozen shares.
+    const presence = results.find((r) => r.presence)?.presence ?? null;
     const ovInput: OverviewInput = {
       country: (root?.country ?? "sk") as Country,
-      votingMethod: normalizeVotingMethod(root?.votingMethod),
+      votingMethod: participation.votingMethod,
       totalPossibleWeight,
       items: bundle.items.map((i) => ({ id: i.id, quorumType: i.quorumType as QuorumType })),
       eligible: participation.eligible,
-      ballots: ballotsList.map((b) => ({
-        entityId: b.entityId,
-        ownerId: b.ownerId,
-        ownerName: b.ownerName,
-        voteType: b.voteType,
-        recordedAt: b.recordedAt.toISOString(),
-        choices: b.choices,
-      })),
+      ballots: ballotsList.map((b) => {
+        const snap = snapshotById.get(b.id);
+        return {
+          entityId: b.entityId,
+          ownerId: b.ownerId,
+          ownerName: b.ownerName,
+          voteType: b.voteType,
+          recordedAt: b.recordedAt.toISOString(),
+          choices: b.choices,
+          frozen: snap
+            ? {
+                ownerUnitShareNumerator: snap.ownerUnitShareNumerator,
+                ownerUnitShareDenominator: snap.ownerUnitShareDenominator,
+                membershipWeight: snap.membershipWeight,
+                unitShareNumerator: snap.unitShareNumerator,
+                unitShareDenominator: snap.unitShareDenominator,
+                area: snap.unitAreaM2,
+              }
+            : undefined,
+        };
+      }),
+      votingType: presence ? "meeting" : undefined,
+      presence: presence && presence.basis === "attendance"
+        ? { weight: presence.weight, owners: presence.owners }
+        : null,
     };
     const outlook = canStillPass(ovInput);
     // "passed" is the binding engine result (frozen shares), not a re-run.
@@ -295,7 +338,8 @@ export async function POST(request: NextRequest) {
   if (photoUrls.length === 0) {
     return NextResponse.json({ error: "PAPER_PHOTO_REQUIRED" }, { status: 400 });
   }
-  if (!hasPermission(session.user.role as UserRole, "recordPaperVote")) {
+  // Board, or the vote counter of THIS voting (votings.voteCounterId).
+  if (!(await sessionMayRecord(session, votingId))) {
     return NextResponse.json(
       { error: "Nemáte oprávnenie zapisovať listinné hlasy" },
       { status: 403 }
@@ -312,91 +356,26 @@ export async function POST(request: NextRequest) {
   if (!v.ok) {
     return NextResponse.json({ error: v.legacyMessage }, { status: v.status });
   }
-  const { marked, ballotHash } = v;
-  const recordedAt = new Date();
 
-  // Upsert: a re-submitted ballot supersedes (not appends) the prior one.
-  const [existing] = await db
-    .select({ id: ballots.id, voteType: ballots.voteType, ballotHash: ballots.ballotHash })
-    .from(ballots)
-    .where(
-      and(
-        eq(ballots.votingId, votingId),
-        eq(ballots.entityId, flatId),
-        eq(ballots.ownerId, voterId)
-      )
-    )
-    .limit(1);
-
-  const paperValues = {
-    voteType: "paper" as const,
-    recordedById: session.user.id,
-    mandateId: mandateId || null,
-    ballotHash,
-    // A paper ballot replaces any electronic confirmation metadata.
-    signature: null,
-    confirmationKind: null,
-    confirmedAt: null,
-    recordedAt,
-  };
-
-  const ballotId = await db.transaction(async (tx) => {
-    // Ownership frozen at cast time (results never move on a later ownership change).
-    const snapshot = await ownershipSnapshot(tx, flatId, voterId);
-    let bId: string;
-    if (existing) {
-      bId = existing.id;
-      // §14a ods. 7: paper beats electronic — leave an audit trace of the
-      // replaced e-ballot (its commitment only, no choices) before the overwrite.
-      if (existing.voteType === "electronic") {
-        await recordVotingEvent(tx, {
-          votingId,
-          kind: "ballot_superseded",
-          actorId: session.user.id,
-          payload: { ballotHash: existing.ballotHash, unitId: flatId, ownerId: voterId },
-        });
-      }
-      await tx.update(ballots).set({ ...paperValues, ...snapshot }).where(eq(ballots.id, bId));
-      await tx.delete(ballotItemVotes).where(eq(ballotItemVotes.ballotId, bId));
-      await tx.delete(ballotPhotos).where(eq(ballotPhotos.ballotId, bId));
-    } else {
-      const [created] = await tx
-        .insert(ballots)
-        .values({ votingId, entityId: flatId, ownerId: voterId, ...paperValues, ...snapshot })
-        .returning({ id: ballots.id });
-      bId = created.id;
-    }
-
-    if (marked.length > 0) {
-      await tx.insert(ballotItemVotes).values(
-        marked.map((m) => ({
-          ballotId: bId,
-          itemId: m.itemId,
-          choice: m.choice,
-          itemAuditHash: computeItemAuditHash({
-            votingId,
-            itemId: m.itemId,
-            entityId: flatId,
-            ownerId: voterId,
-            choice: m.choice,
-            recordedAt,
-          }),
-        }))
-      );
-    }
-
-    if (photoUrls.length > 0) {
-      await tx.insert(ballotPhotos).values(
-        photoUrls.map((url, idx) => ({ ballotId: bId, storageKey: url, idx }))
-      );
-    }
-
-    return bId;
+  // One transaction with the voting row FOR SHARE (status re-checked) and the
+  // ballot row FOR UPDATE — a concurrent close or second recorder cannot interleave.
+  const r = await recordPaperBallot({
+    votingId,
+    flatId,
+    voterId,
+    actorId: session.user.id,
+    mandateId,
+    marked: v.marked,
+    ballotHash: v.ballotHash,
+    photoUrls,
   });
+  if (!r.ok) {
+    return NextResponse.json({ error: r.code }, { status: r.status });
+  }
 
   return NextResponse.json(
-    { ballotId, ballotHash, recordedAt, superseded: Boolean(existing) },
-    { status: existing ? 200 : 201 }
+    { ballotId: r.ballotId, ballotHash: v.ballotHash, recordedAt: r.recordedAt, superseded: r.superseded },
+    { status: r.superseded ? 200 : 201 }
   );
 }
 
@@ -444,26 +423,24 @@ export async function DELETE(request: NextRequest) {
     return withdrawConfirmed(request, body, { votingId, flatId });
   }
 
-  // Withdrawing someone else's ballot requires the paper-recorder permission.
-  if (!hasPermission(session.user.role as UserRole, "recordPaperVote")) {
+  // Withdrawing someone else's ballot: board, or the vote counter of THIS voting.
+  if (!(await sessionMayRecord(session, votingId))) {
     return NextResponse.json({ error: "Nemáte oprávnenie" }, { status: 403 });
   }
 
-  const [voting] = await db
-    .select({ status: votings.status })
-    .from(votings)
-    .where(eq(votings.id, votingId))
-    .limit(1);
-  if (!voting || voting.status !== "active") {
-    return NextResponse.json(
-      { error: "Hlas je možné stiahnuť len počas aktívneho hlasovania" },
-      { status: 400 }
-    );
-  }
-
+  // Status is re-checked inside the transaction on the locked voting row.
   const deleted = await deleteBallotAsBoard({ votingId, flatId, ownerId: targetOwnerId });
-  if (!deleted) {
-    return NextResponse.json({ error: "Hlas nenájdený" }, { status: 404 });
+  if (!deleted.ok) {
+    if (deleted.code === "VOTING_NOT_ACTIVE") {
+      return NextResponse.json(
+        { error: "Hlas je možné stiahnuť len počas aktívneho hlasovania" },
+        { status: 400 }
+      );
+    }
+    if (deleted.code === "BALLOT_NOT_FOUND") {
+      return NextResponse.json({ error: "Hlas nenájdený" }, { status: 404 });
+    }
+    return NextResponse.json({ error: deleted.code }, { status: deleted.status });
   }
   return NextResponse.json({ ok: true }, { status: 200 });
 }

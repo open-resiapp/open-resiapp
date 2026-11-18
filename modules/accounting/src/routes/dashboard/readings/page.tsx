@@ -945,7 +945,6 @@ function BuildingCard({
               id="bm-photo"
               type="file"
               accept="image/*"
-              capture="environment"
               onChange={(e) => setPhoto(e.target.files?.[0] ?? null)}
               className="block min-h-11 w-full text-base text-ui-text"
             />

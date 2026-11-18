@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 
+import { isInt4 } from "@modules/accounting/src/lib/input-validators";
 import { requireReader, requireWriter } from "@modules/accounting/src/lib/api-guard";
 import {
   createFeeSchedule,
@@ -30,8 +31,9 @@ function parseServiceRows(raw: unknown): ServiceRowInput[] | null {
       r.fixedAmountCents === null || r.fixedAmountCents === undefined
         ? null
         : Number(r.fixedAmountCents);
-    if (rateCents !== null && !Number.isInteger(rateCents)) return null;
-    if (fixedAmountCents !== null && !Number.isInteger(fixedAmountCents)) return null;
+    // int4 columns — an out-of-range value would 500 on insert.
+    if (rateCents !== null && !isInt4(rateCents)) return null;
+    if (fixedAmountCents !== null && !isInt4(fixedAmountCents)) return null;
     rows.push({
       serviceCategoryId: r.serviceCategoryId,
       allocationKey,

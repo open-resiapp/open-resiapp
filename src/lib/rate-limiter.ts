@@ -35,21 +35,52 @@ export const RATE_LIMITS = {
   // the IP (blockOnRepeat: false). The per-token limit is the real control.
   mcpIp: { maxRequests: 1200, windowMs: 60 * 1000 } as RateLimitConfig, // 1200/min
   oauthHost: { maxRequests: 300, windowMs: 60 * 1000 } as RateLimitConfig, // 300/min
-  oauthRegister: { maxRequests: 60, windowMs: 60 * 1000 } as RateLimitConfig, // 60/min
+  // DCR creates a DB row per call; CIMD (no registration) is the primary
+  // path, so DCR stays tight even for shared AI-host egress IPs.
+  oauthRegister: { maxRequests: 30, windowMs: 15 * 60 * 1000 } as RateLimitConfig, // 30/15 min
   // BYT-20261117-001 §6: ballot email-link confirm page + decision, per user.
   ballotConfirm: { maxRequests: 20, windowMs: 60 * 60 * 1000 } as RateLimitConfig, // 20/hr
 };
 
+/**
+ * Reverse proxies in front of the app that append to X-Forwarded-For
+ * (Caddy, a load balancer …). The client IP is the entry the outermost
+ * trusted proxy appended: counted from the RIGHT, so a client cannot spoof
+ * it by sending its own X-Forwarded-For. Default 1 (Caddy → app). 0 = do
+ * not trust the header at all (every request shares the "unknown" bucket).
+ * Read at call time.
+ */
+function trustedProxyHops(): number {
+  const raw = process.env.TRUSTED_PROXY_HOPS;
+  if (raw === undefined || raw.trim() === "") return 1;
+  const n = Number.parseInt(raw, 10);
+  return Number.isFinite(n) && n >= 0 ? n : 1;
+}
+
+/** Shared bucket for requests whose client IP cannot be determined. */
+export const UNKNOWN_IP = "unknown";
+
 export function getClientIp(request: NextRequest): string {
+  const hops = trustedProxyHops();
+  if (hops === 0) return UNKNOWN_IP;
   const forwarded = request.headers.get("x-forwarded-for");
   if (forwarded) {
-    return forwarded.split(",")[0].trim();
+    const parts = forwarded
+      .split(",")
+      .map((p) => p.trim())
+      .filter(Boolean);
+    if (parts.length > 0) {
+      // Fewer entries than trusted hops → fewer proxies than configured;
+      // the left-most entry is the best we have.
+      const ip = parts[Math.max(0, parts.length - hops)];
+      if (ip) return ip;
+    }
   }
   const realIp = request.headers.get("x-real-ip");
-  if (realIp) {
+  if (realIp && realIp.trim()) {
     return realIp.trim();
   }
-  return "unknown";
+  return UNKNOWN_IP;
 }
 
 export interface RateLimitOptions {
@@ -69,9 +100,10 @@ export function checkRateLimit(
   tier: string = "default",
   options: RateLimitOptions = {}
 ): NextResponse | null {
+  // An undeterminable IP is ONE shared bucket (limited, never unlimited),
+  // but never put on the block list — that would lock out every such client.
   const ip = getClientIp(request);
-  if (ip === "unknown") return null;
-  const blockOnRepeat = options.blockOnRepeat ?? true;
+  const blockOnRepeat = (options.blockOnRepeat ?? true) && ip !== UNKNOWN_IP;
 
   // Check IP block first
   if (blockOnRepeat && isIpBlocked(ip)) {

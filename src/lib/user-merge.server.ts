@@ -308,6 +308,18 @@ async function applyMergeTx(tx: Tx, fromId: string, intoId: string, conflicts: M
       AND NOT EXISTS (SELECT 1 FROM mod_voting_attendance s WHERE s.owner_id = ${intoId} AND s.voting_id = l.voting_id)
   `);
 
+  // mod_voting_eligibility_snapshots (voting, unit, owner unique): follows the
+  // ballots — repointed unless the survivor already has the same (voting,
+  // unit) line, which then stays on the tombstone (frozen evidence).
+  await tx.execute(sql`
+    UPDATE mod_voting_eligibility_snapshots l SET owner_id = ${intoId}
+    WHERE l.owner_id = ${fromId}
+      AND NOT EXISTS (
+        SELECT 1 FROM mod_voting_eligibility_snapshots s
+        WHERE s.owner_id = ${intoId} AND s.voting_id = l.voting_id AND s.unit_entity_id = l.unit_entity_id
+      )
+  `);
+
   // Everything else straight from the registry.
   for (const e of USER_FK_REGISTRY) {
     const t = ident(e.table);

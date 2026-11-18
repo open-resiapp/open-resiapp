@@ -16,13 +16,7 @@ import {
 import { civilDate, minStartDate } from "@modules/voting/src/workflow/notice";
 import { timeZoneForCountry } from "@/lib/time-zone";
 
-// Server codes the wizard renders from VotingWorkflow.errors.* (BYT-20261118-002).
-const WORKFLOW_ERRORS = new Set([
-  "NOTICE_LEAD_TIME_TOO_SHORT",
-  "NOTICE_START_AFTER_END",
-  "REPEAT_ESCALATION_UNSUPPORTED",
-  "REPEAT_ESCALATION_NOT_APPLICABLE",
-]);
+import { VOTING_WORKFLOW_ERRORS as WORKFLOW_ERRORS } from "@modules/voting/src/workflow/error-codes";
 import {
   Button,
   Card,

@@ -132,14 +132,36 @@ accounts, volume-priced production.
   Enable Banking app.
 - Consent length = `min(ASPSP maximum_consent_validity, 180 days)`.
 - psu_type: `business` if the ASPSP lists it, else `personal`.
-- Account pick: the account whose IBAN equals `accounting_settings.bank_iban`;
-  else the only account; else `accountUid = null` and UI asks.
+- Account pick: the account whose IBAN equals `accounting_settings.bank_iban`
+  (spaces / case ignored); else the only account — unless its known IBAN
+  differs from a configured `bank_iban`; else `accountUid = null` and UI asks.
+- IBAN guard (same rule as the camt.053 upload): when `bank_iban` is set and
+  the selected account's IBAN is known and differs, account pick and sync
+  refuse with `EB_IBAN_MISMATCH`. An account without a reported IBAN cannot
+  be checked and is allowed.
+- `lastSyncAt` belongs to one account: picking a different account (pick or
+  consent renewal landing on another account) resets it → fresh backfill.
 - Session id never leaves the server (masked like the Fio token).
 - Audit log row on connect, account pick, disconnect.
 
 ### Sync
-- `from` = `lastSyncAt − 7 days` (overlap), first sync 90 days back. Dedupe is
-  idempotent via `external_tx_id`.
+- `from` = `lastSyncAt − 7 days` (overlap). First sync 90 days back, but never
+  before the latest `receivedAt` of non-voided payments already imported for
+  the dom by another bank channel (camt.053 upload, Fio) — that day itself
+  is included. Dedupe is idempotent via `external_tx_id`.
+- Cross-source content dedupe (shared pipeline, all bank sources): a line
+  with the same dom + booking day + amount cents + VS (+ counterparty IBAN
+  when both sides have one) as a non-voided payment from a DIFFERENT bank
+  source is inserted UNMATCHED (never auto-posted), `raw_payload.
+  possibleDuplicateOf` = the other payment, counted in
+  `ImportSummary.possibleDuplicates` (and `needsReview`). The treasurer
+  dismisses or confirms it in reconciliation. Not skipped: two identical
+  real payments on one day must not vanish silently.
+- Page cap (50 pages): when the bank still returns a `continuation_key`,
+  `lastSyncAt` is NOT advanced; `config.syncCursor = { dateFrom,
+  continuationKey }` is stored and the next sync resumes from it. A failing
+  resume clears the cursor (next sync refetches from `lastSyncAt − 7 d`).
+  Renewal clears the cursor (keys are session-bound).
 - `valid_until` passed → `EB_CONSENT_EXPIRED` without calling the API.
 - HTTP 401/403 from Enable Banking on transactions → `EB_CONSENT_EXPIRED`
   (bank revoked); 429 → `EB_RATE_LIMITED`; other → `EB_API_ERROR`.
@@ -200,7 +222,7 @@ consent needs renewal or an account must be picked.
    bank settings page with the `EB_STATE_MISMATCH` message.
 4. Successful callback stores the session (masked in API output), the consent
    `valid_until`, the account list, and auto-picks the account matching
-   `bank_iban` (or the only one).
+   `bank_iban` (or the only one, unless its IBAN differs from `bank_iban`).
 5. With several accounts and no IBAN match, the UI asks to pick one; sync is
    refused (`EB_ACCOUNT_NOT_SELECTED`) until then.
 6. Sync imports booked credits through `importNormalizedLines` with source
@@ -214,6 +236,15 @@ consent needs renewal or an account must be picked.
 11. Enable Banking payments appear everywhere Fio/CAMT payments do
     (dashboard, vyúčtovanie, reconciliation, MCP match tool, list label).
 12. All new strings exist in sk, en, cs; connector errors render translated.
+14. With `bank_iban` set, picking / syncing an account whose IBAN differs
+    (spaces / case ignored) is refused with `EB_IBAN_MISMATCH`; picking a
+    different account resets `lastSyncAt`.
+15. First sync after months of camt.053 / Fio imports starts at the latest
+    such payment's day, not 90 days back; a same-day line equal by date +
+    amount + VS (+ IBAN) to a payment of another source is imported
+    unmatched and counted as `possibleDuplicates`, never auto-posted.
+16. A sync that hits the 50-page cap leaves `lastSyncAt` unchanged and the
+    next sync continues from the stored continuation key.
 13. `pnpm test:accounting-enable-banking` covers the mapper (booked-only,
     direction, cents, id fallback, VS extraction, counterparty side) and the
     JWT shape, with no network.
@@ -237,6 +268,13 @@ consent needs renewal or an account must be picked.
 - [x] `.env.example`
 - [x] `pnpm db:generate` → `drizzle/0084_enable_banking_connector.sql`
 - [x] `tsc --noEmit` clean (whole repo)
+- [x] Review fixes (2026-11-18): IBAN guard `EB_IBAN_MISMATCH`, lastSyncAt
+      reset on account change, first-sync floor at other sources, cross-source
+      content dedupe (`possibleDuplicates`), page-cap cursor (AC 14–16)
+- [ ] i18n for `EB_IBAN_MISMATCH` + `summaryPossibleDuplicates` (sk/en/cs) —
+      keys listed in the review-fix report, not yet in messages/
+- [ ] Integration tests for AC 14–16 (DB-backed; golden check only covers
+      `pickAccountUid`)
 - [ ] `pnpm test:accounting-enable-banking` (owner runs)
 - [ ] Manual verification against Enable Banking sandbox (owner)
 - [ ] Phase 2: cron auto-sync, consent-expiry email, cloud handoff
