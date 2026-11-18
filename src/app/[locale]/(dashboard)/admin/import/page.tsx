@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useRef, useState, useTransition } from
 
 import { useRouter } from "@/i18n/navigation";
 import { getDisplayTemplateSlug } from "@/lib/templates/display-slug";
+import { isUnitType } from "@/lib/unit-type";
 import { useTranslations } from "next-intl";
 
 import { PageHeader, useConfirm } from "@/components/ui";
@@ -108,6 +109,7 @@ function downloadBlob(filename: string, base64: string, mimeType: string) {
 
 export default function ImportWizardPage() {
   const t = useTranslations("Import");
+  const tUnitType = useTranslations("UnitType");
   const confirm = useConfirm();
   const tHub = useTranslations("SettingsHub");
   const router = useRouter();
@@ -758,7 +760,7 @@ export default function ImportWizardPage() {
                       title={c.comment}
                     >
                       <span className="truncate block pr-2">
-                        {c.label}
+                        {c.key === "unit_type" ? tUnitType("column") : c.label}
                         {c.required ? " *" : ""}
                       </span>
                       <span
@@ -801,10 +803,14 @@ export default function ImportWizardPage() {
                                 className={`w-full px-1 py-0.5 border rounded text-sm bg-white dark:bg-gray-900 ${hasError ? "border-red-500" : "border-gray-300 dark:border-gray-700"}`}
                                 title={cellErrors.map((e) => e.message).join("\n")}
                               >
-                                <option value="" />
+                                <option value="">
+                                  {c.key === "unit_type" ? tUnitType("unset") : ""}
+                                </option>
                                 {c.enumOptions?.map((opt) => (
                                   <option key={opt} value={opt}>
-                                    {opt}
+                                    {c.key === "unit_type" && isUnitType(opt)
+                                      ? tUnitType(opt)
+                                      : opt}
                                   </option>
                                 ))}
                               </select>

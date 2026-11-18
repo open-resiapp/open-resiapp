@@ -8,6 +8,7 @@ import {
   type StructureVariant,
 } from "./types";
 import { ONE, ZERO, add, eq, mul, parseShare, rational, type Rational } from "../rational";
+import { UNIT_TYPES, type UnitType } from "../unit-type";
 
 // ── Row schema ────────────────────────────────────────────
 
@@ -135,6 +136,32 @@ const shareDenominatorSchema = sharePartSchema;
 
 const emailSchema = z.preprocess(stripBlank, z.string().email().optional());
 
+// Typ priestoru (src/lib/unit-type.ts). Accepts the canonical codes plus the
+// Slovak / Czech words people type into a spreadsheet; empty = unclassified.
+const UNIT_TYPE_ALIASES: Record<string, UnitType> = {
+  byt: "flat",
+  flat: "flat",
+  "nebytový priestor": "non_residential",
+  "nebytovy priestor": "non_residential",
+  "nebytový prostor": "non_residential",
+  "nebytovy prostor": "non_residential",
+  np: "non_residential",
+  non_residential: "non_residential",
+  garáž: "garage",
+  garaz: "garage",
+  garage: "garage",
+  iné: "other",
+  ine: "other",
+  jiné: "other",
+  jine: "other",
+  other: "other",
+};
+const unitTypeField = z.preprocess((v) => {
+  const s = stripBlank(v);
+  if (typeof s !== "string") return s;
+  return UNIT_TYPE_ALIASES[s.toLowerCase()] ?? s;
+}, z.enum(UNIT_TYPES).optional());
+
 const rowSchemaForStructure = (structure: StructureVariant) =>
   z.object({
     community_name: requiredString,
@@ -157,6 +184,7 @@ const rowSchemaForStructure = (structure: StructureVariant) =>
     unit_area_m2: optionalIntField,
     unit_share_numerator: shareNumeratorSchema,
     unit_share_denominator: shareDenominatorSchema,
+    unit_type: unitTypeField,
     owner_name: requiredString,
     owner_address: stringField,
     owner_email: emailSchema,
@@ -231,6 +259,7 @@ function unitFieldsConsistent(rows: ImportRow[], errors: ImportError[]) {
       "unit_area_m2",
       "unit_share_numerator",
       "unit_share_denominator",
+      "unit_type",
     ];
     for (const k of keys) {
       if (r[k] !== seen.first[k]) {

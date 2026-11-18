@@ -22,6 +22,7 @@ import {
   Modal,
   Select,
   Tabs,
+  useConfirm,
 } from "@/components/ui";
 import type { AttendanceOwnerLine, MeetingAttendanceSummary, RsvpOverview } from "@modules/voting/src/workflow/attendance";
 import { Link } from "@/i18n/navigation";
@@ -79,6 +80,7 @@ export function MeetingBoardPanel({
   const errorText = useErrorText();
   const locale = useLocale();
   const format = useFormatter();
+  const confirm = useConfirm();
   const [data, setData] = useState<BoardData | null>(null);
   const [loading, setLoading] = useState(true);
   const [tab, setTab] = useState<"answers" | "list">(
@@ -190,6 +192,14 @@ export function MeetingBoardPanel({
               loading={busy}
               disabled={voting.status !== "active"}
               onClick={async () => {
+                // Mails every owner with an address who was not invited yet.
+                const count = ov.owners.filter((o) => o.hasEmail && !o.invited).length;
+                const ok = await confirm({
+                  title: t("invite.confirmTitle"),
+                  description: t("invite.confirmBody", { count }),
+                  confirmLabel: t("invite.confirmButton"),
+                });
+                if (!ok) return;
                 const r = await meetingAction({ action: "invite" });
                 if (r) setInviteResult(r);
               }}
@@ -206,6 +216,14 @@ export function MeetingBoardPanel({
                 variant="secondary"
                 loading={busy}
                 onClick={async () => {
+                  // Mails the owners who were already invited and have an address.
+                  const count = ov.owners.filter((o) => o.hasEmail && o.invited).length;
+                  const ok = await confirm({
+                    title: t("change.notifyConfirmTitle"),
+                    description: t("change.notifyConfirmBody", { count }),
+                    confirmLabel: t("change.notifyConfirmButton"),
+                  });
+                  if (!ok) return;
                   const r = await meetingAction({ action: "notify_change" });
                   if (r) setNotice(t("change.sent", { count: r.sent }));
                 }}
@@ -648,6 +666,7 @@ function RepresentModal({
   onSave: (mandateId: string, representativeName: string) => Promise<void>;
 }) {
   const t = useTranslations("MeetingAttendance.represent");
+  const tUi = useTranslations("Ui");
   const [mandateId, setMandateId] = useState(mandates[0]?.id ?? "");
   const [name, setName] = useState(mandates[0]?.toOwnerName ?? "");
   const [busy, setBusy] = useState(false);
@@ -657,21 +676,31 @@ function RepresentModal({
       onClose={onClose}
       title={t("title", { name: line.ownerName ?? "—" })}
       footer={
-        <Button
-          disabled={!mandateId || busy}
-          loading={busy}
-          onClick={async () => {
-            setBusy(true);
-            await onSave(mandateId, name);
-            setBusy(false);
-          }}
-        >
-          {t("save")}
-        </Button>
+        <>
+          <Button variant="secondary" onClick={onClose} disabled={busy}>
+            {tUi("cancel")}
+          </Button>
+          {mandates.length > 0 ? (
+            <Button
+              disabled={!mandateId || busy}
+              loading={busy}
+              onClick={async () => {
+                setBusy(true);
+                await onSave(mandateId, name);
+                setBusy(false);
+              }}
+            >
+              {t("save")}
+            </Button>
+          ) : null}
+        </>
       }
     >
       {mandates.length === 0 ? (
-        <p className="text-base text-ui-text">{t("noMandate")}</p>
+        <div className="space-y-3">
+          <p className="text-base text-ui-text">{t("noMandate")}</p>
+          <p className="text-base text-ui-text-muted">{t("noMandateHint")}</p>
+        </div>
       ) : (
         <div className="space-y-4">
           <Field label={t("mandate")}>
@@ -755,6 +784,7 @@ const MODE_KEY = "meeting-attendance-export-mode";
 
 function ExportBox({ voting, building }: { voting: VotingDetail; building: BuildingInfo | null }) {
   const t = useTranslations("MeetingAttendance.export");
+  const tUnitType = useTranslations("UnitType");
   const locale = useLocale();
   const format = useFormatter();
   const errorText = useErrorText();
@@ -780,7 +810,12 @@ function ExportBox({ voting, building }: { voting: VotingDetail; building: Build
     }
   }
 
-  const base = `/api/votings/${voting.id}/attendance/export?mode=${mode}&locale=${locale}`;
+  // "Len byty" (unit type, src/lib/unit-type.ts): rows without non-residential
+  // units / garages; totals still count every owner. Off by default.
+  const [residentialOnly, setResidentialOnly] = useState(false);
+  const base = `/api/votings/${voting.id}/attendance/export?mode=${mode}&locale=${locale}${
+    residentialOnly ? "&units=residential" : ""
+  }`;
 
   async function downloadPdf(doc: "blank" | "filled") {
     setBusy(doc);
@@ -889,8 +924,18 @@ function ExportBox({ voting, building }: { voting: VotingDetail; building: Build
           <option value="unit">{t("modeUnit")}</option>
         </Select>
       </Field>
-      {/* TODO(decision): "include non-residential units / garages" stays hidden
-          until units carry a unit-type discriminator (spec Decisions 6). */}
+      <label className="flex min-h-11 items-start gap-3 text-base text-ui-text">
+        <input
+          type="checkbox"
+          className="mt-0.5 h-5 w-5 shrink-0"
+          checked={residentialOnly}
+          onChange={(e) => setResidentialOnly(e.target.checked)}
+        />
+        <span>
+          {tUnitType("exportResidentialOnly")}
+          <span className="block text-ui-text-muted">{tUnitType("exportResidentialOnlyHint")}</span>
+        </span>
+      </label>
       <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
         <Button variant="secondary" loading={busy === "blank"} onClick={() => void downloadPdf("blank")}>
           <Icon name="download" size={20} />

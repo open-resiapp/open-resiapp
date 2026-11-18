@@ -1,4 +1,27 @@
 {
+  "UnitType": {
+    "flat": "Byt",
+    "non_residential": "Nebytový prostor",
+    "garage": "Garáž",
+    "other": "Jiné",
+    "column": "Typ prostoru",
+    "unset": "Nezadáno",
+    "bulkStart": "Nastavit typ prostorů",
+    "bulkHint": "Označte prostory a vyberte jejich typ. Typ prostoru nemění váhu hlasu.",
+    "bulkSelectAll": "Označit vše",
+    "bulkSelectUnset": "Označit nezadané",
+    "bulkClear": "Zrušit označení",
+    "bulkSelected": "Označeno: {count}",
+    "bulkTypeLabel": "Nový typ",
+    "bulkApply": "Nastavit typ",
+    "bulkDone": "Hotovo",
+    "bulkSaved": "Typ prostoru uložen ({count}).",
+    "bulkFailed": "Typ prostoru se nepodařilo uložit.",
+    "selectUnit": "Označit {unit}",
+    "unsetBadge": "Typ nezadán",
+    "exportResidentialOnly": "Jen byty (bez nebytových prostorů a garáží)",
+    "exportResidentialOnlyHint": "Součty dole stále počítají všechny vlastníky."
+  },
   "OwnerLifecycle": {
     "formerChip": "Bývalý vlastník",
     "formerUntil": "Bývalý vlastník · do {date}",
@@ -250,6 +273,11 @@
       "duplicate_ordinal": {
         "label": "Stejné pořadové číslo",
         "reason": "Pořadové číslo {ordinal} z výpisu má více vlastníků (jednotky {units})."
+      },
+      "unit_type_unset": {
+        "label": "Zkontrolujte typy prostorů",
+        "reason": "{count, plural, one {# prostor nemá} few {# prostory nemají} other {# prostorů nemá}} zadaný typ (byt, nebytový prostor, garáž).",
+        "action": "Nastavit typy"
       }
     },
     "showOwners": "Zobrazit vlastníky",
@@ -849,6 +877,7 @@
       },
       "channelSplit": "Elektronicky {electronic} %, listinně {paper} % všech hlasů",
       "noneForFilter": "Žádné jednotky pro tento filtr.",
+      "notVotedJump": "Dosud nehlasovali: {count}. Zobrazit v průběhu hlasování",
       "status": {
         "resolved_for": "Pro",
         "resolved_against": "Proti",
@@ -1063,7 +1092,19 @@
     "rationaleUnanimous": "Jednomyslný hlas všech spoluvlastníků",
     "rationaleMajorityShare": "Většina spoluvlastnických podílů",
     "rationaleTieAbstain": "Rovnost podílů – jednotka se zdržela (§1187)",
-    "rationaleNoQuorumWithinUnit": "Žádný spoluvlastník nehlasoval"
+    "rationaleNoQuorumWithinUnit": "Žádný spoluvlastník nehlasoval",
+    "presence": {
+      "heading": "Přítomní na shromáždění",
+      "attendance": "Podle prezenční listiny: {owners} vlastníků, {pct} % všech hlasů.",
+      "cast": "Podle odevzdaných hlasů: {owners} vlastníků, {pct} % všech hlasů.",
+      "forOfPresent": "Pro hlasovalo {pct} % hlasů přítomných. K přijetí je třeba více než polovina hlasů přítomných; přítomný, který nehlasoval, se počítá jako nesouhlas.",
+      "quorumMet": "Shromáždění je usnášeníschopné (přítomní mají většinu všech hlasů).",
+      "quorumNotMet": "Shromáždění není usnášeníschopné: přítomní nemají většinu všech hlasů."
+    },
+    "codes": {
+      "ATTENDANCE_MISSING": "Prezenční listina není vyplněna – výsledek je spočítán z odevzdaných hlasů.",
+      "MEETING_QUORUM_NOT_REACHED": "Shromáždění nebylo usnášeníschopné – rozhodnutí není přijato."
+    }
   },
   "VoteButton": {
     "for": "PRO",

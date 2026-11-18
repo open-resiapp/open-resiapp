@@ -1,4 +1,27 @@
 {
+  "UnitType": {
+    "flat": "Flat",
+    "non_residential": "Non-residential unit",
+    "garage": "Garage",
+    "other": "Other",
+    "column": "Unit type",
+    "unset": "Not set",
+    "bulkStart": "Set unit types",
+    "bulkHint": "Select units and choose their type. The unit type does not change voting weight.",
+    "bulkSelectAll": "Select all",
+    "bulkSelectUnset": "Select not set",
+    "bulkClear": "Clear selection",
+    "bulkSelected": "Selected: {count}",
+    "bulkTypeLabel": "New type",
+    "bulkApply": "Set type",
+    "bulkDone": "Done",
+    "bulkSaved": "Unit type saved ({count}).",
+    "bulkFailed": "The unit type could not be saved.",
+    "selectUnit": "Select {unit}",
+    "unsetBadge": "Type not set",
+    "exportResidentialOnly": "Flats only (without non-residential units and garages)",
+    "exportResidentialOnlyHint": "Totals at the bottom still count all owners."
+  },
   "OwnerLifecycle": {
     "formerChip": "Former owner",
     "formerUntil": "Former owner · until {date}",
@@ -250,6 +273,11 @@
       "duplicate_ordinal": {
         "label": "Same ordinal number",
         "reason": "LV ordinal {ordinal} is held by several owners (units {units})."
+      },
+      "unit_type_unset": {
+        "label": "Check unit types",
+        "reason": "{count, plural, one {# unit has} other {# units have}} no type set (flat, non-residential unit, garage).",
+        "action": "Set types"
       }
     },
     "showOwners": "Show owners",
@@ -1175,6 +1203,7 @@
       },
       "channelSplit": "Electronic {electronic} %, paper {paper} % of all votes",
       "noneForFilter": "No units for this filter.",
+      "notVotedJump": "Not voted yet: {count}. Show in voting progress",
       "status": {
         "resolved_for": "For",
         "resolved_against": "Against",
@@ -1389,7 +1418,19 @@
     "rationaleUnanimous": "Unanimous co-owner vote",
     "rationaleMajorityShare": "Majority of co-ownership shares",
     "rationaleTieAbstain": "Tied shares — unit abstained (§14 ods. 4)",
-    "rationaleNoQuorumWithinUnit": "No co-owner cast a vote"
+    "rationaleNoQuorumWithinUnit": "No co-owner cast a vote",
+    "presence": {
+      "heading": "Present at the meeting",
+      "attendance": "From the attendance list: {owners} owners, {pct} % of all votes.",
+      "cast": "From the cast ballots: {owners} owners, {pct} % of all votes.",
+      "forOfPresent": "{pct} % of the votes present voted for. Adoption needs more than half of the votes present; a present owner who did not vote counts as against.",
+      "quorumMet": "The meeting has a quorum (owners present hold a majority of all votes).",
+      "quorumNotMet": "The meeting has no quorum: owners present do not hold a majority of all votes."
+    },
+    "codes": {
+      "ATTENDANCE_MISSING": "The attendance list is empty – the result is counted from the cast ballots.",
+      "MEETING_QUORUM_NOT_REACHED": "No quorum – the decision is not adopted."
+    }
   },
   "VoteButton": {
     "for": "FOR",

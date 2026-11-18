@@ -635,3 +635,29 @@ Implemented in one pass (no commits; coordinator generates migration 0086).
   Draft meeting votings are announced from the voting detail after activation (not on activation).
   "Nesúhlasí to?" is a plain hint, no prefilled message.
 
+
+### Implementation notes — "present" in the result (2026-11-18, decided by Filip "podľa zákona")
+- L3 resolved: a meeting voting's result now measures `simple_present` (SK §14b ods. 4) against the
+  attendance list. `results.ts` loads `mod_voting_attendance` once (present + represented, not
+  left, as-of ownership, voting scope) ∪ cast ballots → `computePresence` (engine, pure) → engine
+  option `{ votingType: "meeting", presence }`. Weight basis = the tally's: a unit counts once,
+  full weight, if any co-owner is present (differs from the door header, which sums co-owner shares).
+- CZ §1206 ods. 2: meeting quorum = present weight > 50 % of all votes for every quorum type
+  (`rules.meetingQuorumShare`); `simple_present` = majority of present; no silence-is-no at a
+  meeting. §1210 náhradní shromáždění (40 %) — TODO(decision), no substitute-meeting flag exists.
+- Empty attendance list → fallback to cast ballots + result code `ATTENDANCE_MISSING`; inquorate CZ
+  meeting → `MEETING_QUORUM_NOT_REACHED`. UI: `ResultPresence` under each item result
+  (`VotingResults.presence.*` / `.codes.*`).
+- Minutes hand-off: `MinutesProtocol.presence` (basis, owners, weight, share, CZ quorum) derived from
+  the result. Data only; L5 (PDF wording) still TODO(legal).
+
+### Implementation notes — unit type / "Len byty" export (2026-11-18)
+- Decision 6 resolved: units carry `entities.data.unit_type` (`flat | non_residential | garage |
+  other`, no migration; absent = flat) — helper `src/lib/unit-type.ts`. Voting weight unchanged
+  (SK §14(3): one vote per flat AND per non-residential unit).
+- Export option unhidden as a checkbox "Len byty (bez nebytových priestorov a garáží)" in
+  `MeetingPanel.tsx` → `?units=residential` → `getAttendanceExport(..., { residentialOnly })` →
+  `buildAttendanceExport({ includeUnit })`. Rows drop excluded units (owner rows keep only their
+  included units + weight); **totals intentionally stay over all eligible owners** (every NP votes)
+  and the option shows that hint. TODO(decision): the AC wants totals to follow the option and the
+  footer to state the exclusion — not done (PDF/xlsx footer unchanged); AC left unticked.

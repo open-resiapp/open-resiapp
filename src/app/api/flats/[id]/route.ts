@@ -25,7 +25,7 @@ export async function PATCH(
 
   const { id } = await params;
   const body = await request.json();
-  const { flatNumber, floor, area, shareNumerator, shareDenominator, entranceId } = body;
+  const { flatNumber, floor, area, shareNumerator, shareDenominator, entranceId, unitType } = body;
 
   // Phase 8a: dual-write removed — entities.data is the only target.
   if (flatNumber !== undefined) {
@@ -40,6 +40,8 @@ export async function PATCH(
     shareNumerator,
     shareDenominator,
     area,
+    // Typ priestoru — display / filters only, never voting weight (SK §14(3)).
+    unitType,
   });
   if (Object.keys(dataPatch).length > 0) {
     await db
@@ -68,6 +70,7 @@ export async function PATCH(
       area: sql<number | null>`(${entities.data}->>'area_m2')::numeric`,
       shareNumerator: sql<number>`(${entities.data}->>'share_numerator')::int`,
       shareDenominator: sql<number>`(${entities.data}->>'share_denominator')::int`,
+      unitType: sql<string | null>`${entities.data}->>'unit_type'`,
       createdAt: entities.createdAt,
     })
     .from(entities)

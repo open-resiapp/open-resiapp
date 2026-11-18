@@ -1,3 +1,4 @@
+import { UNIT_TYPES } from "@/lib/unit-type";
 import type { StructureVariant } from "./types";
 
 // Column ordering and labels live here so CSV + XLSX generators and the
@@ -137,6 +138,18 @@ const UNIT_AND_OWNER: ColumnDef[] = [
     excelFormat: "text",
     comment: "Menovateľ podielu BYTU na komunite (napr. 96 z '1/96').",
   },
+  // Typ priestoru — src/lib/unit-type.ts. LV import fills it; empty = not
+  // classified yet (read as byt). Voting weight is unaffected (SK §14(3)).
+  {
+    key: "unit_type",
+    label: "unit_type",
+    required: false,
+    scope: "row",
+    excelFormat: "enum",
+    enumOptions: [...UNIT_TYPES],
+    comment:
+      "Typ priestoru: flat = byt, non_residential = nebytový priestor, garage = garáž, other = iné. Prázdne = doplníte neskôr.",
+  },
   {
     key: "owner_name",
     label: "owner_name",
@@ -240,6 +253,7 @@ export function sampleRow(s: StructureVariant): Record<string, string> {
     unit_area_m2: "",
     unit_share_numerator: "1",
     unit_share_denominator: "96",
+    unit_type: "flat",
     owner_name: "Vzor Vlastník",
     owner_address: "",
     owner_email: "",

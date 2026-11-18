@@ -15,6 +15,8 @@
  *      duplicate_ordinal while the same ordinal on another unit does; units
  *      without LV data never produce BSM / ordinal findings.
  *   3. LV parser keeps lv_ordinal + ownership_form on both BSM spouses.
+ *   4. Unit type: getUnitType defaults, ONE aggregated unit_type_unset
+ *      finding (exact set), LV byt / nebytový priestor / garáž detection.
  */
 import { runOwnershipChecks, type CheckMembership } from "@/lib/owner-checks";
 import {
@@ -25,6 +27,7 @@ import {
   type QueuePerson,
 } from "@/lib/owner-queue";
 import { parseLvText } from "@/lib/import/parsers/lv-paste";
+import { getUnitType, isResidentialUnit, isUnitTypeSet } from "@/lib/unit-type";
 
 let failures = 0;
 function check(name: string, cond: boolean, detail?: string) {
@@ -247,6 +250,68 @@ console.log("parseLvText");
     "sole owner keeps ordinal 13 and no form",
     sole.length === 1 && sole[0].lv_ordinal === 13,
     JSON.stringify(sole)
+  );
+}
+
+// ── 4. Unit type (src/lib/unit-type.ts) ──────────────────────────────
+console.log("unit type");
+{
+  check("absent unit_type reads as flat", getUnitType({}) === "flat" && !isUnitTypeSet({}));
+  check("garbage unit_type reads as flat, unset", getUnitType({ unit_type: "x" }) === "flat" && !isUnitTypeSet({ unit_type: "x" }));
+  check("garage is set and non-residential", isUnitTypeSet({ unit_type: "garage" }) && !isResidentialUnit({ unit_type: "garage" }));
+
+  const units = [
+    { id: "u1", unitTypeSet: true },
+    { id: "u2", unitTypeSet: false },
+    { id: "u3", unitTypeSet: false },
+  ];
+  const owned = [m("a", "u1", [1, 1]), m("b", "u2", [1, 1]), m("c", "u3", [1, 1])];
+  const on = runOwnershipChecks(units, owned, { lvChecks: false, unitTypeCheck: true });
+  check(
+    "unset types → EXACTLY one aggregated unit_type_unset finding",
+    on.length === 1 && on[0].code === "unit_type_unset" && on[0].facts.count === 2 &&
+      on[0].unitIds.join(",") === "u2,u3",
+    JSON.stringify(on)
+  );
+  const off = runOwnershipChecks(units, owned, { lvChecks: false });
+  check("unitTypeCheck off → no unit_type_unset", off.length === 0, JSON.stringify(off));
+  const allSet = runOwnershipChecks(
+    units.map((u) => ({ ...u, unitTypeSet: true })),
+    owned,
+    { lvChecks: true, unitTypeCheck: true }
+  );
+  check("all types set → []", allSet.length === 0, JSON.stringify(allSet));
+
+  const owner = (n: number) =>
+    `${n} Novák Ján, Hlavná 1, Poprad, SR, Dátum narodenia: 01.01.1970 1/1\nIné údaje: Bez zápisu\nSprávca - Neevidovaní`;
+  const lv = [
+    "Vchod (číslo) 1",
+    "Poschodie prízemie",
+    "Číslo bytu 1",
+    "Podiel priestoru na spoločných častiach a spoločných zariadeniach domu a spoluvlastnícky podiel k pozemku 1/96",
+    "Spoluvlastnícky podiel",
+    owner(1),
+    "Vchod (číslo) 1",
+    "Poschodie prízemie",
+    "Číslo nebytového priestoru 1",
+    "Druh nebytového priestoru garáž",
+    "Podiel priestoru na spoločných častiach a spoločných zariadeniach domu a spoluvlastnícky podiel k pozemku 1/192",
+    "Spoluvlastnícky podiel",
+    owner(2),
+    // NP without its own "Vchod (číslo)" line — must not glue onto NP 1.
+    "Poschodie suterén",
+    "Číslo nebytového priestoru 2",
+    "Druh nebytového priestoru sklad",
+    "Podiel priestoru na spoločných častiach a spoločných zariadeniach domu a spoluvlastnícky podiel k pozemku 1/192",
+    "Spoluvlastnícky podiel",
+    owner(3),
+  ].join("\n");
+  const rows = parseLvText(lv);
+  const got = rows.map((r) => `${r.unit_number}:${r.unit_type}`).join("|");
+  check(
+    "LV: byt → flat, NP garáž → garage, NP without Vchod → own non_residential unit",
+    got === "1:flat|NP 1:garage|NP 2:non_residential",
+    got
   );
 }
 

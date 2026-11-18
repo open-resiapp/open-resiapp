@@ -10,6 +10,8 @@
 //
 //   sql`${entities.data} || ${JSON.stringify(rootDataPatch(body))}::jsonb`
 
+import { isUnitType } from "@/lib/unit-type";
+
 export function rootDataPatch(input: {
   address?: unknown;
   ico?: unknown;
@@ -38,9 +40,12 @@ export function unitDataPatch(input: {
   shareNumerator?: unknown;
   shareDenominator?: unknown;
   area?: unknown;
+  /** Typ priestoru; anything but a valid UnitType is ignored. */
+  unitType?: unknown;
 }): Record<string, unknown> {
   const out: Record<string, unknown> = {};
   if (input.flatNumber !== undefined) out.flat_number = input.flatNumber;
+  if (isUnitType(input.unitType)) out.unit_type = input.unitType;
   if (input.floor !== undefined) out.floor = input.floor;
   if (input.shareNumerator !== undefined) out.share_numerator = input.shareNumerator;
   if (input.shareDenominator !== undefined) out.share_denominator = input.shareDenominator;

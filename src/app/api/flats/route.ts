@@ -9,6 +9,7 @@ import { createEntity } from "@/lib/entity-tree";
 import { recordEntityAudit } from "@/lib/entity-audit";
 import { listUserFlats } from "@/lib/legacy-compat";
 import { unitDataPatch } from "@/lib/db/entity-data";
+import { isUnitType } from "@/lib/unit-type";
 import type { UserRole } from "@/types";
 
 export async function GET(request: NextRequest) {
@@ -46,6 +47,8 @@ export async function GET(request: NextRequest) {
       area: sql<number | null>`(${entities.data}->>'area_m2')::numeric`,
       shareNumerator: sql<number>`(${entities.data}->>'share_numerator')::int`,
       shareDenominator: sql<number>`(${entities.data}->>'share_denominator')::int`,
+      // Raw value; null = unclassified (read as "flat", src/lib/unit-type.ts).
+      unitType: sql<string | null>`${entities.data}->>'unit_type'`,
       entranceId: entities.parentId,
       entranceName: entrance.name,
     })
@@ -70,7 +73,7 @@ export async function POST(request: NextRequest) {
   }
 
   const body = await request.json();
-  const { entranceId, flatNumber, floor, area, shareNumerator, shareDenominator } = body;
+  const { entranceId, flatNumber, floor, area, shareNumerator, shareDenominator, unitType } = body;
 
   if (!entranceId || !flatNumber || shareNumerator === undefined || shareDenominator === undefined) {
     return NextResponse.json(
@@ -104,6 +107,7 @@ export async function POST(request: NextRequest) {
     shareNumerator,
     shareDenominator,
     area: area ?? null,
+    unitType,
   });
   await db
     .update(entities)
@@ -121,6 +125,7 @@ export async function POST(request: NextRequest) {
       area: area ?? null,
       shareNumerator,
       shareDenominator,
+      unitType: isUnitType(unitType) ? unitType : null,
       createdAt: entity.createdAt,
     },
     { status: 201 }

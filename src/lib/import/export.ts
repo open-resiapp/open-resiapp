@@ -4,6 +4,7 @@ import { and, asc, eq, inArray, isNull, sql } from "drizzle-orm";
 
 import { db } from "@/db";
 import { entities, memberships, users } from "@/db/schema";
+import { isUnitType } from "@/lib/unit-type";
 
 import type { StructureVariant } from "./types";
 
@@ -82,6 +83,7 @@ export async function exportCommunityAsImportRows(): Promise<ExportResult | null
       area: sql<number | null>`(${entities.data}->>'area_m2')::numeric`,
       shareNumerator: sql<number>`(${entities.data}->>'share_numerator')::int`,
       shareDenominator: sql<number>`(${entities.data}->>'share_denominator')::int`,
+      unitType: sql<string | null>`${entities.data}->>'unit_type'`,
     })
     .from(entities)
     .where(
@@ -177,6 +179,7 @@ type UnitRow = {
   area: number | null;
   shareNumerator: number;
   shareDenominator: number;
+  unitType: string | null;
 };
 
 type OwnerLink = {
@@ -199,6 +202,9 @@ function buildRow(
     unit_area_m2: unit.area ?? "",
     unit_share_numerator: String(unit.shareNumerator),
     unit_share_denominator: String(unit.shareDenominator),
+    // Unclassified units export an empty cell (not "flat") so a re-import
+    // keeps them unclassified for the unit_type_unset check.
+    unit_type: isUnitType(unit.unitType) ? unit.unitType : "",
     owner_name: owner?.userName ?? "",
     owner_address: "",
     owner_email: owner?.userEmail ?? "",

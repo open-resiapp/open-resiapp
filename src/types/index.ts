@@ -192,6 +192,34 @@ export interface VotingResults {
    * with unitBreakdowns.
    */
   memberBreakdowns?: MemberResolution[];
+  /**
+   * Meeting votings only (2026-11-18, SK §14b ods. 4 / CZ §1206 ods. 2):
+   * who counts as "present". Omitted for written votes and legacy callers.
+   */
+  presence?: VotingPresence;
+  /** Stable result codes (meeting votings); UI maps them to VotingResults.codes.*. */
+  codes?: VotingResultCode[];
+}
+
+/**
+ * ATTENDANCE_MISSING — meeting voting without any prezenčná listina entry:
+ *   "present" fell back to the weight of cast ballots.
+ * MEETING_QUORUM_NOT_REACHED — CZ §1206 ods. 2: owners present hold no
+ *   majority of all votes, so the meeting could not decide.
+ */
+export type VotingResultCode = "ATTENDANCE_MISSING" | "MEETING_QUORUM_NOT_REACHED";
+
+export interface VotingPresence {
+  /** "attendance" = prezenčná listina (∪ cast ballots); "cast" = fallback. */
+  basis: "attendance" | "cast";
+  /** Weight of present units / members — the simple_present denominator. */
+  weight: number;
+  /** Distinct present owners. */
+  owners: number;
+  /** weight / totalPossibleWeight (0..1; 0 when the total is 0). */
+  share: number;
+  /** CZ §1206 ods. 2 meeting quorum; omitted where the country has none (SK). */
+  meetingQuorumReached?: boolean;
 }
 
 // ── Multi-item votings (BYT-20260609-008) ──────────────

@@ -16,6 +16,7 @@ import {
 import { computeOwnerQueue, countBadgeItems, type QueuePerson } from "@/lib/owner-queue";
 import { loadOwnersSnapshot } from "@/lib/owners-board.server";
 import { getDisplayTemplateSlug } from "@/lib/templates/display-slug";
+import { isUnitTypeSet } from "@/lib/unit-type";
 
 // BYT-20261118-003 — "Na riešenie" queue + ownership checks for one
 // community root. Derived at read time from the rows the Vlastníci page
@@ -23,8 +24,11 @@ import { getDisplayTemplateSlug } from "@/lib/templates/display-slug";
 // reads (root meta, dismissals). No writes on read, no polling, no
 // cross-request state. Writes happen only in dismiss / undo (board action).
 
-/** BSM / LV-ordinal checks only for SK / CZ HOA communities. */
-async function rootRunsLvChecks(rootId: string): Promise<boolean> {
+/**
+ * BSM / LV-ordinal checks only for SK / CZ HOA communities; the unit-type
+ * check (unit_type_unset) for every HOA community.
+ */
+async function rootCheckFlags(rootId: string): Promise<{ lvChecks: boolean; hoa: boolean }> {
   const [row] = await db
     .select({
       templateSlug: sql<string | null>`${entities.data}->>'template_slug'`,
@@ -33,11 +37,12 @@ async function rootRunsLvChecks(rootId: string): Promise<boolean> {
     .from(entities)
     .where(eq(entities.id, rootId))
     .limit(1);
-  if (!row) return false;
+  if (!row) return { lvChecks: false, hoa: false };
   // Pre-template installs carry no slug — they are HOA installs.
   const slug = row.templateSlug ? getDisplayTemplateSlug(row.templateSlug) : "hoa";
   const country = (row.country ?? "sk").toLowerCase();
-  return slug === "hoa" && (country === "sk" || country === "cz");
+  const hoa = slug === "hoa";
+  return { lvChecks: hoa && (country === "sk" || country === "cz"), hoa };
 }
 
 function listDismissals(rootId: string) {
@@ -53,8 +58,8 @@ function listDismissals(rootId: string) {
 
 async function compute(rootId: string, now: Date): Promise<OwnerHealthData> {
   const { raw, board } = await loadOwnersSnapshot(rootId);
-  const [lvChecks, dismissalRows] = await Promise.all([
-    rootRunsLvChecks(rootId),
+  const [{ lvChecks, hoa }, dismissalRows] = await Promise.all([
+    rootCheckFlags(rootId),
     listDismissals(rootId),
   ]);
   const dismissalByFp = new Map(
@@ -86,7 +91,7 @@ async function compute(rootId: string, now: Date): Promise<OwnerHealthData> {
   });
 
   // ── Ownership checks ────────────────────────────────────────────────
-  const units = raw.unitRows.map((u) => ({ id: u.id }));
+  const units = raw.unitRows.map((u) => ({ id: u.id, unitTypeSet: isUnitTypeSet(u.unitType) }));
   const unitLabel = new Map(raw.unitRows.map((u) => [u.id, u.flatNumber ?? ""]));
   const nameById = new Map(raw.userRows.map((u) => [u.id, u.name]));
   const ownerMemberships: CheckMembership[] = raw.membershipRows
@@ -99,7 +104,10 @@ async function compute(rootId: string, now: Date): Promise<OwnerHealthData> {
       lvOrdinal: m.lvOrdinal,
       ownershipForm: m.ownershipForm,
     }));
-  const checksAll: CheckEntry[] = runOwnershipChecks(units, ownerMemberships, { lvChecks }).map(
+  const checksAll: CheckEntry[] = runOwnershipChecks(units, ownerMemberships, {
+    lvChecks,
+    unitTypeCheck: hoa,
+  }).map(
     (f) => ({
       ...f,
       unitLabels: f.unitIds.map((id) => unitLabel.get(id) ?? ""),

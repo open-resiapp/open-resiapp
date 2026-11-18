@@ -11,6 +11,8 @@ import type {
   VoteWithShare,
   VotingItemResult,
   VotingMethod,
+  VotingPresence,
+  VotingResultCode,
   VotingResults,
 } from "@/types";
 import {
@@ -35,6 +37,67 @@ import type { CanonicalVotingMethod } from "@/lib/voting-method";
 export interface CalculateResultsOptions {
   country?: Country;
   totalFlats?: number;
+  /**
+   * "meeting" switches on the present-at-meeting rules (SK §14b ods. 4,
+   * CZ §1206 ods. 2). Omitted / "written" = written-vote behaviour, which is
+   * also the legacy behaviour of every caller that does not pass it.
+   */
+  votingType?: "written" | "meeting";
+  /**
+   * Meeting votings: presence from the prezenčná listina (see
+   * computePresence). null / omitted = the list has no entries → "present"
+   * falls back to the cast ballots and the result carries ATTENDANCE_MISSING.
+   */
+  presence?: { weight: number; owners: number } | null;
+}
+
+/** One present (unit, owner) — an attendance row or a cast ballot. */
+export interface PresenceRow {
+  unitEntityId: string;
+  userId: string;
+  unitShareNumerator: number | null;
+  unitShareDenominator: number | null;
+  area: number | null;
+  membershipWeight?: number | null;
+}
+
+/**
+ * Weight + owner count of those present at a meeting, on the SAME basis as
+ * the tally: unit-scoped methods count a unit's full weight once when any of
+ * its owners is present (§14 ods. 3: one vote per flat; co-owners resolve on
+ * expressed shares), member-scoped methods count each present member once.
+ * The caller passes attendance rows (present / represented, not left) AND the
+ * cast ballots — a voter is present by definition. Pure.
+ */
+export function computePresence(
+  rows: PresenceRow[],
+  method: VotingMethod
+): { weight: number; owners: number } {
+  const canonical = normalizeVotingMethod(method);
+  const owners = new Set(rows.map((r) => r.userId)).size;
+  let weight = 0;
+  if (isUnitScoped(canonical)) {
+    const seen = new Set<string>();
+    for (const r of rows) {
+      if (seen.has(r.unitEntityId)) continue;
+      seen.add(r.unitEntityId);
+      weight += computeUnitWeight(
+        {
+          shareNumerator: r.unitShareNumerator ?? 0,
+          shareDenominator: r.unitShareDenominator || 1,
+          area: r.area,
+        },
+        canonical
+      );
+    }
+  } else {
+    const byUser = new Map<string, PresenceRow>();
+    for (const r of rows) byUser.set(r.userId, r);
+    for (const r of byUser.values()) {
+      weight += computeMemberWeight({ membershipWeight: r.membershipWeight ?? 1 }, canonical);
+    }
+  }
+  return { weight, owners };
 }
 
 /**
@@ -63,7 +126,8 @@ export function calculateResults(
       canonical,
       quorumType,
       totalPossibleWeight,
-      rules
+      rules,
+      options
     );
   }
 
@@ -103,8 +167,58 @@ export function calculateResults(
     }
   }
 
-  // 4. CZ per rollam: silence = nesúhlas (non-voters count as "proti").
-  if (rules.silenceIsNo && totalPossibleWeight > 0) {
+  // 4-5. Silence rule, presence, quorum (shared with the member path).
+  const castOwners = new Set(votes.map((v) => v.userId)).size;
+  return {
+    ...finalizeTally(
+      { za: zaWeight, proti: protiWeight, zdrzalSa: zdrzalSaWeight, total: totalWeight },
+      quorumType,
+      totalPossibleWeight,
+      rules,
+      options,
+      castOwners
+    ),
+    unitBreakdowns,
+  };
+}
+
+interface Tally {
+  za: number;
+  proti: number;
+  zdrzalSa: number;
+  total: number;
+}
+
+/**
+ * Shared tail of both tally paths: silence rule, presence, quorum.
+ *
+ * - Written vote (or votingType omitted = legacy): unchanged — CZ per rollam
+ *   silence = nesúhlas; simple_present is measured against the cast weight
+ *   (SK §14b ods. 4 "owners who took part in the written vote").
+ * - Meeting: no silence rule (§1211 is per rollam only). simple_present is
+ *   measured against the weight PRESENT (prezenčná listina ∪ cast ballots),
+ *   so a present owner who does not vote counts against. No attendance
+ *   entries → fallback to the cast weight + ATTENDANCE_MISSING. Countries
+ *   with a meeting quorum (CZ §1206 ods. 2) additionally need the present
+ *   weight to exceed that share of ALL votes, for every quorum type.
+ */
+function finalizeTally(
+  tally: Tally,
+  quorumType: QuorumType,
+  totalPossibleWeight: number,
+  rules: CountryVotingRules,
+  options: CalculateResultsOptions,
+  castOwners: number
+): Omit<VotingResults, "unitBreakdowns" | "memberBreakdowns"> {
+  const zaWeight = tally.za;
+  const zdrzalSaWeight = tally.zdrzalSa;
+  let protiWeight = tally.proti;
+  let totalWeight = tally.total;
+  const isMeeting = options.votingType === "meeting";
+  const castWeight = tally.total;
+
+  // CZ per rollam: silence = nesúhlas (non-voters count as "proti").
+  if (!isMeeting && rules.silenceIsNo && totalPossibleWeight > 0) {
     const nonVotedWeight = totalPossibleWeight - totalWeight;
     if (nonVotedWeight > 0) {
       protiWeight += nonVotedWeight;
@@ -112,14 +226,37 @@ export function calculateResults(
     }
   }
 
-  // 5. Apply quorum.
+  const codes: VotingResultCode[] = [];
+  let presence: VotingPresence | undefined;
+  if (isMeeting) {
+    const p = options.presence ?? null;
+    if (!p) codes.push("ATTENDANCE_MISSING");
+    // Guard: whoever cast a ballot was present, even if the list missed them.
+    const weight = p ? Math.max(p.weight, castWeight) : castWeight;
+    const owners = p ? Math.max(p.owners, castOwners) : castOwners;
+    presence = {
+      basis: p ? "attendance" : "cast",
+      weight,
+      owners,
+      share: totalPossibleWeight > 0 ? weight / totalPossibleWeight : 0,
+    };
+    if (rules.meetingQuorumShare !== null) {
+      presence.meetingQuorumReached =
+        totalPossibleWeight > 0 && weight > totalPossibleWeight * rules.meetingQuorumShare;
+      if (!presence.meetingQuorumReached) codes.push("MEETING_QUORUM_NOT_REACHED");
+    }
+  }
+
+  // Apply quorum.
   let passed = false;
   let quorumReached = false;
   switch (quorumType) {
-    case "simple_present":
-      quorumReached = totalWeight > 0;
-      passed = zaWeight > totalWeight / 2;
+    case "simple_present": {
+      const present = presence ? presence.weight : totalWeight;
+      quorumReached = present > 0;
+      passed = zaWeight > present / 2;
       break;
+    }
     case "simple_all":
       quorumReached = totalPossibleWeight > 0 && zaWeight > totalPossibleWeight / 2;
       passed = quorumReached;
@@ -142,6 +279,12 @@ export function calculateResults(
       break;
   }
 
+  // CZ §1206 ods. 2: an inquorate meeting decides nothing.
+  if (presence?.meetingQuorumReached === false) {
+    quorumReached = false;
+    passed = false;
+  }
+
   return {
     za: zaWeight,
     proti: protiWeight,
@@ -154,7 +297,7 @@ export function calculateResults(
     quorumReached,
     quorumType,
     totalPossibleWeight,
-    unitBreakdowns,
+    ...(presence ? { presence, codes } : {}),
   };
 }
 
@@ -183,7 +326,8 @@ function calculateMemberScopedResults(
   method: CanonicalVotingMethod,
   quorumType: QuorumType,
   totalPossibleWeight: number,
-  rules: CountryVotingRules
+  rules: CountryVotingRules,
+  options: CalculateResultsOptions
 ): VotingResults {
   // Last-write-wins per voter.
   const byVoter = new Map<string, VoteWithOwnership>();
@@ -220,58 +364,15 @@ function calculateMemberScopedResults(
     });
   }
 
-  // CZ per rollam: silence counts as opposition.
-  if (rules.silenceIsNo && totalPossibleWeight > 0) {
-    const nonVoted = totalPossibleWeight - totalWeight;
-    if (nonVoted > 0) {
-      protiWeight += nonVoted;
-      totalWeight = totalPossibleWeight;
-    }
-  }
-
-  // Same quorum types as unit-scoped.
-  let passed = false;
-  let quorumReached = false;
-  switch (quorumType) {
-    case "simple_present":
-      quorumReached = totalWeight > 0;
-      passed = zaWeight > totalWeight / 2;
-      break;
-    case "simple_all":
-      quorumReached =
-        totalPossibleWeight > 0 && zaWeight > totalPossibleWeight / 2;
-      passed = quorumReached;
-      break;
-    case "two_thirds_all":
-      quorumReached =
-        totalPossibleWeight > 0 && zaWeight >= (totalPossibleWeight * 2) / 3;
-      passed = quorumReached;
-      break;
-    case "four_fifths_all":
-      // SK §14b ods. 6: repeat of a §14b ods. 2 matter within one year.
-      quorumReached =
-        totalPossibleWeight > 0 && zaWeight >= (totalPossibleWeight * 4) / 5;
-      passed = quorumReached;
-      break;
-    case "all_unanimous":
-      quorumReached =
-        totalPossibleWeight > 0 && isWholeWeight(zaWeight, totalPossibleWeight);
-      passed = quorumReached;
-      break;
-  }
-
   return {
-    za: zaWeight,
-    proti: protiWeight,
-    zdrzalSa: zdrzalSaWeight,
-    total: totalWeight,
-    zaPercent: totalWeight > 0 ? (zaWeight / totalWeight) * 100 : 0,
-    protiPercent: totalWeight > 0 ? (protiWeight / totalWeight) * 100 : 0,
-    zdrzalSaPercent: totalWeight > 0 ? (zdrzalSaWeight / totalWeight) * 100 : 0,
-    passed,
-    quorumReached,
-    quorumType,
-    totalPossibleWeight,
+    ...finalizeTally(
+      { za: zaWeight, proti: protiWeight, zdrzalSa: zdrzalSaWeight, total: totalWeight },
+      quorumType,
+      totalPossibleWeight,
+      rules,
+      options,
+      byVoter.size
+    ),
     memberBreakdowns,
   };
 }

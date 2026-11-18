@@ -3,8 +3,8 @@ import "server-only";
 import { and, eq, isNotNull, isNull, sql } from "drizzle-orm";
 import { db } from "@/db";
 import { entities, memberships, users } from "@/db/schema";
-import { votings, votingItems, ballots, ballotItemVotes } from "./db/schema";
-import { calculateItemResults } from "./engine";
+import { votings, votingItems, ballots, ballotItemVotes, attendance } from "./db/schema";
+import { calculateItemResults, computePresence, type PresenceRow } from "./engine";
 import {
   computeMemberWeight,
   computeUnitWeight,
@@ -62,7 +62,12 @@ export async function getVotingResults(
   const country = (root?.country ?? "sk") as Country;
 
   const [voting] = await db
-    .select({ entityId: votings.entityId, status: votings.status, endsAt: votings.endsAt })
+    .select({
+      entityId: votings.entityId,
+      status: votings.status,
+      endsAt: votings.endsAt,
+      votingType: votings.votingType,
+    })
     .from(votings)
     .where(eq(votings.id, votingId))
     .limit(1);
@@ -213,12 +218,85 @@ export async function getVotingResults(
     }
   }
 
+  // 2026-11-18 (SK §14b ods. 4, CZ §1206 ods. 2): a meeting voting measures
+  // "present" against the prezenčná listina — present + represented owners
+  // not marked as left, on the same weight basis and as-of ownership as the
+  // tally, united with everyone who cast a ballot. ONE query; an empty list
+  // → presence null → engine falls back to cast ballots (ATTENDANCE_MISSING).
+  let presence: { weight: number; owners: number } | null = null;
+  if (voting.votingType === "meeting") {
+    const unitScoped = isUnitScoped(votingMethod);
+    const attendanceRows = await db
+      .select({
+        attendanceId: attendance.id,
+        leftAt: attendance.leftAt,
+        userId: attendance.ownerId,
+        unitEntityId: entities.id,
+        unitShareNumerator: sql<number | null>`(${entities.data}->>'share_numerator')::int`,
+        unitShareDenominator: sql<number | null>`(${entities.data}->>'share_denominator')::int`,
+        area: sql<number | null>`(${entities.data}->>'area_m2')::float8`,
+        membershipWeight: memberships.weight,
+      })
+      .from(attendance)
+      .leftJoin(
+        memberships,
+        and(
+          eq(memberships.userId, attendance.ownerId),
+          sql`${memberships.status} <> 'pending'`,
+          membershipAsOf,
+          sql`${memberships.endReason} IS DISTINCT FROM 'merged'`,
+          ...(unitScoped ? [eq(memberships.role, "owner")] : [])
+        )
+      )
+      .leftJoin(
+        entities,
+        and(
+          eq(entities.id, memberships.entityId),
+          isNull(entities.archivedAt),
+          ...(unitScoped ? [eq(entities.kind, "unit")] : []),
+          voting.entityId
+            ? sql`${entities.path} LIKE (SELECT path || '%' FROM ${entities} WHERE id = ${voting.entityId})`
+            : sql`true`
+        )
+      )
+      .where(eq(attendance.votingId, votingId));
+
+    if (attendanceRows.length > 0) {
+      const rows: PresenceRow[] = [];
+      for (const a of attendanceRows) {
+        if (a.leftAt || !a.unitEntityId) continue;
+        rows.push({
+          unitEntityId: a.unitEntityId,
+          userId: a.userId,
+          unitShareNumerator: a.unitShareNumerator,
+          unitShareDenominator: a.unitShareDenominator,
+          area: a.area,
+          membershipWeight: a.membershipWeight,
+        });
+      }
+      // A voter is present by definition (also covers a list that missed them).
+      for (const r of itemVoteRows) {
+        rows.push({
+          unitEntityId: r.unitEntityId,
+          userId: r.ownerId,
+          unitShareNumerator: r.shareNumerator,
+          unitShareDenominator: r.shareDenominator,
+          area: r.area,
+          membershipWeight: r.frozenWeight ?? r.membershipWeight ?? 1,
+        });
+      }
+      presence = computePresence(rows, votingMethod);
+    }
+  }
+
   const results = calculateItemResults(
     items.map((i) => ({ id: i.id, quorumType: i.quorumType as QuorumType })),
     votesByItem,
     votingMethod,
     totalPossibleWeight,
-    { country }
+    voting.votingType === "meeting"
+      ? { country, votingType: "meeting", presence }
+      : { country }
   );
 
   return {

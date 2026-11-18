@@ -398,6 +398,10 @@ export async function seedImport(input: SeedInput): Promise<SeedResult> {
       // for non-HOA templates this is still the friendliest default
       // because the row schema uses `unit_number` as the leaf
       // identifier. Operators can rename via the UI afterwards.
+      // Kept as "Byt <N>" for every unit type: the name is the re-import
+      // idempotency key (matchExistingUnits), so it must not depend on the
+      // editable unit_type column. Non-flat units carry their own number
+      // ("NP 1") from the LV parser.
       const leafName = `Byt ${r.unit_number}`;
 
       // Skip if a leaf with the same parent + label is already in the
@@ -438,6 +442,10 @@ export async function seedImport(input: SeedInput): Promise<SeedResult> {
           share_numerator: r.unit_share_numerator,
           share_denominator: r.unit_share_denominator,
           area_m2: r.unit_area_m2 ?? null,
+          // Typ priestoru (src/lib/unit-type.ts) — only for HOA `unit`
+          // leaves and only when known; absent = unclassified (read as
+          // "flat"). No effect on voting weight (SK §14(3)).
+          ...(kinds.leaf === "unit" && r.unit_type ? { unit_type: r.unit_type } : {}),
         },
       });
 

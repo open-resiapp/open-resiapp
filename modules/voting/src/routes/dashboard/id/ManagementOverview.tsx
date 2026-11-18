@@ -11,7 +11,8 @@ import { Badge, Button, Card } from "@/components/ui";
 import { cn } from "@/components/ui/cn";
 import type { BallotData, OverviewUnitLine } from "./types";
 
-type Filter = "all" | "notVoted" | "incomplete" | "paper" | "electronic";
+export type OverviewFilter = "all" | "notVoted" | "incomplete" | "paper" | "electronic";
+type Filter = OverviewFilter;
 const FILTERS: Filter[] = ["all", "notVoted", "incomplete", "paper", "electronic"];
 
 function matches(u: OverviewUnitLine, f: Filter): boolean {
@@ -43,17 +44,24 @@ export default function ManagementOverview({
   isActive,
   onRecordPaper,
   onRefresh,
+  filter: controlledFilter,
+  onFilterChange,
 }: {
   data: BallotData;
   canRecordPaper: boolean;
   isActive: boolean;
   onRecordPaper: (preset: { ownerId: string; unitId: string }) => void;
   onRefresh: () => void;
+  /** Controlled filter (BoardConsole's "not voted yet" line preselects notVoted). */
+  filter?: Filter;
+  onFilterChange?: (f: Filter) => void;
 }) {
   const t = useTranslations("VotingWorkflow");
   const tVoting = useTranslations("Voting");
   const format = useFormatter();
-  const [filter, setFilter] = useState<Filter>("all");
+  const [localFilter, setLocalFilter] = useState<Filter>("all");
+  const filter = controlledFilter ?? localFilter;
+  const setFilter = onFilterChange ?? setLocalFilter;
   const [openItem, setOpenItem] = useState<string | null>(data.items[0]?.id ?? null);
   const [refreshing, setRefreshing] = useState(false);
   const ov = data.overview;
@@ -63,7 +71,12 @@ export default function ManagementOverview({
     whole > 0 ? Math.round((part / whole) * 1000) / 10 : 0;
 
   return (
-    <Card as="section" className="mb-6 space-y-4" aria-labelledby="mgmt-heading">
+    <Card
+      as="section"
+      id="voting-overview"
+      className="mb-6 scroll-mt-4 space-y-4"
+      aria-labelledby="mgmt-heading"
+    >
       <div className="flex flex-wrap items-center justify-between gap-2">
         <h3 id="mgmt-heading" className="text-lg font-bold text-ui-text">
           {t("overview.heading")}

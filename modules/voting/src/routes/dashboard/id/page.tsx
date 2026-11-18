@@ -5,14 +5,16 @@
 // the board / admin console (BoardConsole).
 import { useSession } from "next-auth/react";
 import { useTranslations, useFormatter } from "next-intl";
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useMemo } from "react";
 import { useParams } from "next/navigation";
 import { useRouter } from "@/i18n/navigation";
 import VotingResults from "@/components/voting/VotingResults";
+import ResultPresence from "./ResultPresence";
 import { hasPermission } from "@/lib/permissions";
 import ProjectDocsInline from "@/components/documents/ProjectDocsInline";
 import { Badge, Button, Card, Icon, LoadingBlock } from "@/components/ui";
 import type { UserRole } from "@/types";
+import { useShell } from "@/components/layout/ShellContext";
 import OwnerBallot from "./OwnerBallot";
 import BoardConsole, { EditVotingForm } from "./BoardConsole";
 import WorkflowPanel from "./WorkflowPanel";
@@ -36,8 +38,22 @@ export default function VotingDetailPage({
 
   const [voting, setVoting] = useState<VotingDetail | null>(null);
   const [data, setData] = useState<BallotData | null>(null);
-  const [buildingData, setBuildingData] = useState<BuildingInfo | null>(null);
-  const [legalNotice, setLegalNotice] = useState<string | null>(null);
+  // Community data comes from the server-resolved shell (no /api/building fetch).
+  const { community } = useShell();
+  const buildingData = useMemo<BuildingInfo | null>(
+    () =>
+      community
+        ? {
+            name: community.name,
+            address: community.address ?? "",
+            ico: community.ico,
+            country: community.country ?? undefined,
+            templateSlug: community.templateSlug,
+          }
+        : null,
+    [community]
+  );
+  const legalNotice = community?.legalNotice ?? null;
   const [loading, setLoading] = useState(true);
   const [voting404, setVoting404] = useState(false);
   const [editMode, setEditMode] = useState(false);
@@ -47,42 +63,35 @@ export default function VotingDetailPage({
   const canRecordPaper = hasPermission(role, "recordPaperVote");
   const canMandate = hasPermission(role, "grantMandate");
 
-  const fetchVoteData = useCallback(async () => {
-    if (!hasPermission(role, "viewVotingResults")) return;
+  const fetchBallots = useCallback(async (): Promise<BallotData | null> => {
+    if (!hasPermission(role, "viewVotingResults")) return null;
     const res = await fetch(`/api/ballots?votingId=${id}`);
-    if (res.ok) setData(await res.json());
+    return res.ok ? ((await res.json()) as BallotData) : null;
   }, [id, role]);
+
+  const fetchVoteData = useCallback(async () => {
+    const ballots = await fetchBallots();
+    if (ballots) setData(ballots);
+  }, [fetchBallots]);
 
   useEffect(() => {
     async function load() {
-      const res = await fetch(`/api/votings/${id}`);
-      if (res.status === 404) {
+      // Independent requests — run in parallel.
+      const [votingRes, ballots] = await Promise.all([
+        fetch(`/api/votings/${id}`),
+        fetchBallots().catch(() => null),
+      ]);
+      if (votingRes.status === 404) {
         setVoting404(true);
         setLoading(false);
         return;
       }
-      if (res.ok) {
-        setVoting(await res.json());
-      }
-      const buildingRes = await fetch("/api/building");
-      if (buildingRes.ok) {
-        const bldData = await buildingRes.json();
-        if (bldData) {
-          setBuildingData({
-            name: bldData.name,
-            address: bldData.address,
-            ico: bldData.ico,
-            country: bldData.country,
-            templateSlug: bldData.templateSlug ?? null,
-          });
-          if (bldData.legalNotice) setLegalNotice(bldData.legalNotice);
-        }
-      }
-      await fetchVoteData();
+      if (votingRes.ok) setVoting(await votingRes.json());
+      if (ballots) setData(ballots);
       setLoading(false);
     }
     load();
-  }, [id, fetchVoteData]);
+  }, [id, fetchBallots]);
 
   // BYT-20261118-002: one refetch after the board's own action (no polling).
   async function refetchVoting() {
@@ -296,6 +305,7 @@ export default function VotingDetailPage({
                   flatNumbers={flatNumbers}
                   country={buildingData?.country ?? "sk"}
                 />
+                <ResultPresence results={r} />
               </div>
             );
           })}

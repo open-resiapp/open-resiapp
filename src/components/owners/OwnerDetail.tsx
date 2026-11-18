@@ -17,6 +17,7 @@ import OwnerDocumentsSection from "@/components/documents/OwnerDocumentsSection"
 import UnitNoteCard from "@/components/unit-notes/UnitNoteCard";
 import OwnerLifecyclePanel, { type MergeOption } from "./OwnerLifecyclePanel";
 import UnitOwnershipCard from "./UnitOwnershipCard";
+import UnitTypeBadge from "@/components/units/UnitTypeBadge";
 import type { OwnershipPeriod } from "@/lib/ownership";
 
 /** BYT-20261118-007: ownership history + lifecycle actions (server-loaded). */
@@ -232,7 +233,7 @@ export default function OwnerDetail({
                     <ul className="space-y-1">
                       {owner.flats.map((f) => (
                         <li key={f.unitId} className="break-words">
-                          {flatLine(f)}
+                          {flatLine(f)} <UnitTypeBadge type={f.unitType} />
                         </li>
                       ))}
                     </ul>

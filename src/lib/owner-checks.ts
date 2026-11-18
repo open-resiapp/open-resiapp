@@ -15,6 +15,9 @@ export const CHECK_CODES = [
   "bsm_share_mismatch",
   "bsm_too_many",
   "duplicate_ordinal",
+  // ONE aggregated finding when any unit has no stored unit_type
+  // (src/lib/unit-type.ts). Action: bulk "Nastaviť typ priestorov".
+  "unit_type_unset",
 ] as const;
 export type CheckCode = (typeof CHECK_CODES)[number];
 
@@ -23,6 +26,11 @@ export const OWNERSHIP_FORMS = ["bsm"] as const;
 
 export interface CheckUnit {
   id: string;
+  /**
+   * `entities.data.unit_type` holds a valid type (isUnitTypeSet). Omitted =
+   * not known to the caller → never reported as unset.
+   */
+  unitTypeSet?: boolean;
 }
 
 /** One ACTIVE OWNER membership on a live unit of the community. */
@@ -49,7 +57,7 @@ export interface CheckFinding {
     ordinal?: number | null;
     /** bsm_share_mismatch: "n/d" per spouse. */
     shares?: string[];
-    /** bsm_too_many: memberships sharing the ordinal. */
+    /** bsm_too_many: memberships sharing the ordinal; unit_type_unset: units. */
     count?: number;
   };
 }
@@ -61,6 +69,11 @@ export interface CheckOptions {
    * LV-imported units).
    */
   lvChecks: boolean;
+  /**
+   * unit_type_unset — HOA communities only (flat vs non-residential unit is
+   * an HOA concept). Default off.
+   */
+  unitTypeCheck?: boolean;
 }
 
 const MAX_FP = 128;
@@ -124,7 +137,10 @@ export function runOwnershipChecks(
       const s = shareOf(m);
       if (s) total = add(total, s);
     }
-    if (total.num > 0n && total.num !== total.den) {
+    // A total of 0 (every share zero or invalid) is flagged too: owners
+    // with no share set are themselves a registry gap — reported as
+    // "under" with sum 0/1.
+    if (total.num !== total.den) {
       const sum = `${total.num}/${total.den}`;
       findings.push({
         code: "share_sum_mismatch",
@@ -140,6 +156,27 @@ export function runOwnershipChecks(
     }
   }
 
+  // ── Unit type not set: one aggregated finding ─────────────────────
+  // Unit type never changes voting weight (SK §14(3): one vote per flat
+  // and per non-residential unit) — this is a data-completeness nudge only.
+  if (opts.unitTypeCheck) {
+    const unset = units
+      .filter((u) => u.unitTypeSet === false)
+      .map((u) => u.id)
+      .sort();
+    if (unset.length > 0) {
+      findings.push({
+        code: "unit_type_unset",
+        unitIds: unset,
+        userIds: [],
+        fingerprint: fp("unit_type_unset", unset),
+        facts: { count: unset.length },
+      });
+    }
+  }
+
+  const rank = (c: CheckCode) => CHECK_CODES.indexOf(c);
+  // unit_type_unset was pushed last, so the unsorted order stays as before.
   if (!opts.lvChecks) return findings;
 
   // ── BSM pairs: same unit + same ordinal ───────────────────────────
@@ -213,6 +250,5 @@ export function runOwnershipChecks(
     });
   }
 
-  const rank = (c: CheckCode) => CHECK_CODES.indexOf(c);
   return findings.sort((a, b) => rank(a.code) - rank(b.code));
 }

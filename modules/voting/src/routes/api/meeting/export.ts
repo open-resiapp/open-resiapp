@@ -35,6 +35,8 @@ export async function GET(request: NextRequest, { params }: Ctx) {
   const document: ExportDocument = sp.get("doc") === "blank" ? "blank" : "filled";
   const mode: ExportRowMode = sp.get("mode") === "unit" ? "unit" : "owner";
   const format = sp.get("format") === "json" ? "json" : "xlsx";
+  // "Len byty" — rows without non-residential units / garages (totals unchanged).
+  const residentialOnly = sp.get("units") === "residential";
   const localeParam = sp.get("locale");
   const locale =
     localeParam && (routing.locales as readonly string[]).includes(localeParam)
@@ -43,7 +45,7 @@ export async function GET(request: NextRequest, { params }: Ctx) {
 
   let data: Awaited<ReturnType<typeof getAttendanceExport>>;
   try {
-    data = await getAttendanceExport(id, document, mode);
+    data = await getAttendanceExport(id, document, mode, { residentialOnly });
   } catch (e) {
     if (e instanceof MeetingError) return NextResponse.json({ error: e.code }, { status: e.status });
     throw e;

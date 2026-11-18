@@ -25,6 +25,18 @@ smartphones and are afraid of breaking something.
   resolves by the jurisdiction's silence rule.
 - Quorum and majority are per item, not per voting; each item carries its own
   quorum type and produces its own result.
+- "Present" (2026-11-18). Written vote: owners who cast a valid ballot (SK
+  §14b ods. 4 "took part"). Meeting: owners present or represented on the
+  prezenčná listina and not marked as left, united with everyone who cast a
+  ballot, weighted like the tally (a unit counts once, full weight, if any
+  co-owner is present). SK `simple_present` at a meeting = more than half of
+  the present weight, so a present non-voter counts against. CZ §1206 ods. 2:
+  a meeting decides only if those present hold more than half of ALL votes
+  (every quorum type); `simple_present` = majority of the present; no
+  silence-is-no at a meeting (per rollam only). An empty attendance list
+  falls back to cast ballots with result code `ATTENDANCE_MISSING`; an
+  inquorate CZ meeting carries `MEETING_QUORUM_NOT_REACHED`. CZ §1210
+  náhradní shromáždění (40 %) is not modelled yet.
 - A vote choice is always one of three values: for, against, abstain.
   Null, skipped, or other values must never exist.
 - An electronic vote is never accepted on the basis of an authenticated

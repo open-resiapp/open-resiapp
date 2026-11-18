@@ -17,6 +17,7 @@ import {
 
 import { db } from "@/db";
 import { entities, entityAuditLog, invitations, memberships, users } from "@/db/schema";
+import { getUnitType } from "@/lib/unit-type";
 import { rankCandidates } from "@/lib/name-match";
 import { mul, rational } from "@/lib/rational";
 import type { UserRole } from "@/types";
@@ -68,6 +69,8 @@ interface UnitRow {
   id: string;
   flatNumber: string | null;
   entranceName: string | null;
+  /** Raw entities.data.unit_type (src/lib/unit-type.ts); null = unclassified. */
+  unitType: string | null;
 }
 
 /** Users holding any membership (any status) on an entity of `rootId`. */
@@ -174,6 +177,7 @@ async function loadRaw(rootId: string) {
         id: entities.id,
         flatNumber: sql<string>`${entities.data}->>'flat_number'`,
         entranceName: entrance.name,
+        unitType: sql<string | null>`${entities.data}->>'unit_type'`,
       })
       .from(entities)
       .leftJoin(entrance, eq(entrance.id, entities.parentId))
@@ -237,11 +241,13 @@ function buildBoard(
   );
   const now = Date.now();
 
+  const unitTypeById = new Map(unitRows.map((u) => [u.id, getUnitType(u.unitType)]));
   const flatsByUser = new Map<string, OwnerFlat[]>();
   for (const m of membershipRows) {
     const list = flatsByUser.get(m.userId) ?? [];
     list.push({
       unitId: m.unitId,
+      unitType: unitTypeById.get(m.unitId) ?? "flat",
       flatNumber: m.flatNumber ?? "",
       entranceName: m.entranceName,
       floor: m.floor,
@@ -358,6 +364,7 @@ function buildBoard(
     id: u.id,
     flatNumber: u.flatNumber ?? "",
     entranceName: u.entranceName,
+    unitType: getUnitType(u.unitType),
     owners: ownersByUnit.get(u.id) ?? [],
   }));
 

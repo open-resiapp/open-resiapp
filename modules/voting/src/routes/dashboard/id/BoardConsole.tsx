@@ -11,7 +11,7 @@ import MandateModal from "@/components/voting/MandateModal";
 import PaperVoteModal from "@/components/voting/PaperVoteModal";
 import DownloadMinutesButton from "@/components/voting/DownloadMinutesButton";
 import VotingFinancialImpacts from "@modules/voting/src/ui/VotingFinancialImpacts";
-import ManagementOverview from "./ManagementOverview";
+import ManagementOverview, { type OverviewFilter } from "./ManagementOverview";
 import VotingDocuments from "./VotingDocuments";
 import type { BallotData, BuildingInfo, VotingDetail } from "./types";
 
@@ -126,6 +126,8 @@ export default function BoardConsole({
   onRefresh: () => void;
 }) {
   const t = useTranslations("Voting");
+  const tWorkflow = useTranslations("VotingWorkflow");
+  const [overviewFilter, setOverviewFilter] = useState<OverviewFilter>("all");
   const [showMandateModal, setShowMandateModal] = useState(false);
   const [showPaperModal, setShowPaperModal] = useState(false);
   const [paperPreset, setPaperPreset] = useState<{ ownerId: string; unitId: string } | null>(
@@ -163,7 +165,7 @@ export default function BoardConsole({
         </div>
       )}
 
-      {/* Turnout + owners who have not voted yet (board / vote counter) */}
+      {/* Turnout + a one-line "not voted yet" jump to the drill-down (board / vote counter) */}
       {isActive && participation && (
         <Card as="section" className="mb-6 space-y-4">
           <h3 className="text-lg font-bold text-ui-text">{t("turnoutHeading")}</h3>
@@ -189,40 +191,25 @@ export default function BoardConsole({
           </div>
           {participation.notVoted.length === 0 ? (
             <p className="text-base text-ui-text-muted">{t("allVoted")}</p>
+          ) : data?.overview ? (
+            // One list only: the units are listed (with "Zapísať listinný
+            // hlas") in the drill-down below — jump there, filter preset.
+            <button
+              type="button"
+              className="min-h-11 text-left text-base font-medium text-ui-primary underline underline-offset-2"
+              onClick={() => {
+                setOverviewFilter("notVoted");
+                document
+                  .getElementById("voting-overview")
+                  ?.scrollIntoView({ behavior: "smooth", block: "start" });
+              }}
+            >
+              {tWorkflow("overview.notVotedJump", { count: participation.notVoted.length })}
+            </button>
           ) : (
-            <div>
-              <h4 className="mb-2 text-base font-semibold text-ui-text">
-                {t("notVotedHeading", { count: participation.notVoted.length })}
-              </h4>
-              <ul className="divide-y divide-ui-border">
-                {participation.notVoted.map((r) => (
-                  <li
-                    key={`${r.unitId}-${r.ownerId}`}
-                    className="flex flex-col gap-2 py-3 sm:flex-row sm:items-center sm:justify-between"
-                  >
-                    <div className="min-w-0">
-                      <p className="text-base font-medium text-ui-text">
-                        {t("flatHeader", { number: r.unitLabel })}
-                      </p>
-                      <p className="break-words text-base text-ui-text-muted">
-                        {r.ownerName ?? t("noOwnerName")}
-                      </p>
-                    </div>
-                    {canRecordPaper && (
-                      <Button
-                        variant="secondary"
-                        onClick={() => {
-                          setPaperPreset({ ownerId: r.ownerId, unitId: r.unitId });
-                          setShowPaperModal(true);
-                        }}
-                      >
-                        {t("recordPaperFor")}
-                      </Button>
-                    )}
-                  </li>
-                ))}
-              </ul>
-            </div>
+            <p className="text-base text-ui-text">
+              {t("notVotedHeading", { count: participation.notVoted.length })}
+            </p>
           )}
         </Card>
       )}
@@ -231,6 +218,8 @@ export default function BoardConsole({
       {(isActive || isClosed) && data?.overview && (
         <ManagementOverview
           data={data}
+          filter={overviewFilter}
+          onFilterChange={setOverviewFilter}
           canRecordPaper={canRecordPaper}
           isActive={isActive}
           onRecordPaper={(preset) => {

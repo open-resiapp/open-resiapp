@@ -134,6 +134,9 @@ export const CANONICAL_KIND_CATALOG: KindCatalogRow[] = [
         share_numerator: { type: "integer" },
         share_denominator: { type: "integer" },
         area_m2: { type: "number" },
+        // src/lib/unit-type.ts — absent = "flat" (unclassified). Does not
+        // affect voting weight (SK §14(3): one vote per flat / NP).
+        unit_type: { type: "string", enum: ["flat", "non_residential", "garage", "other"] },
       },
     },
     sortOrder: 40,

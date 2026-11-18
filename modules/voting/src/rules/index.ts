@@ -10,6 +10,13 @@ export interface CountryVotingRules {
   // Fallback quorum (náhradná schôdza / náhradné zhromaždenie)
   fallbackQuorum: number;
 
+  // Meeting quorum: share of ALL votes the owners present must hold (strictly
+  // more than) for the meeting to decide at all. SK: none — §14b ods. 4 is
+  // measured against those present. CZ §1206 ods. 2: majority of all votes.
+  // TODO(decision): CZ §1210 náhradní shromáždění (fallbackQuorum 0.4) — no
+  // substitute-meeting flag exists on votings yet, so it is not applied.
+  meetingQuorumShare: number | null;
+
   // E-voting restrictions
   ownersQuarterBlocksElectronic: boolean;
   meetingBlocksElectronic: boolean;
@@ -31,6 +38,7 @@ const SK_RULES: CountryVotingRules = {
   perRollamMinDays: null,
   silenceIsNo: false,
   fallbackQuorum: 0.5,
+  meetingQuorumShare: null,
   ownersQuarterBlocksElectronic: true,
   meetingBlocksElectronic: true,
   repeatedVoteEscalation: true,
@@ -48,6 +56,7 @@ const CZ_RULES: CountryVotingRules = {
   perRollamMinDays: 15,
   silenceIsNo: true,
   fallbackQuorum: 0.4,
+  meetingQuorumShare: 0.5,
   ownersQuarterBlocksElectronic: false,
   meetingBlocksElectronic: true,
   repeatedVoteEscalation: false,

@@ -6,6 +6,7 @@ import { db } from "@/db";
 import {
   communityNotificationsSent,
   communityPosts,
+  entities,
   eventRsvps,
   users,
 } from "@/db/schema";
@@ -14,6 +15,7 @@ import { normalizeVotingMethod } from "@/lib/voting-method";
 import { isBoard } from "@/lib/mcp/authz";
 import { hasPermission } from "@/lib/permissions";
 import { timeZoneForCountry } from "@/lib/time-zone";
+import { isResidentialUnit } from "@/lib/unit-type";
 import type { Principal } from "@/lib/mcp/principal";
 import type { Country, UserRole } from "@/types";
 import { attendance, ballots, mandates, votingItems, votings } from "./db/schema";
@@ -616,7 +618,8 @@ async function postIsActive(postId: string): Promise<boolean> {
 export async function getAttendanceExport(
   votingId: string,
   document: ExportDocument,
-  mode: ExportRowMode
+  mode: ExportRowMode,
+  opts: { residentialOnly?: boolean } = {}
 ) {
   const v = await loadMeetingVoting(votingId);
   if (!v) return null;
@@ -626,6 +629,19 @@ export async function getAttendanceExport(
     throw new MeetingError("MEETING_EXPORT_UNAVAILABLE", 400);
   }
   const [eligible, rows] = await Promise.all([eligibleLines(votingId), attendanceRows(votingId)]);
+  // "Len byty": hide non-residential units / garages from the ROWS only
+  // (unit type from entities.data.unit_type; absent = flat). Totals keep
+  // every unit — each NP votes too (SK §14(3)).
+  let includeUnit: ((unitId: string) => boolean) | undefined;
+  if (opts.residentialOnly && eligible.length > 0) {
+    const unitIds = [...new Set(eligible.map((e) => e.unitId))];
+    const typed = await db
+      .select({ id: entities.id, unitType: sql<string | null>`${entities.data}->>'unit_type'` })
+      .from(entities)
+      .where(inArray(entities.id, unitIds));
+    const nonResidential = new Set(typed.filter((u) => !isResidentialUnit(u.unitType)).map((u) => u.id));
+    includeUnit = (unitId) => !nonResidential.has(unitId);
+  }
   return {
     voting: {
       title: v.title,
@@ -634,6 +650,6 @@ export async function getAttendanceExport(
       country: (root?.country ?? "sk") as Country,
     },
     community: { name: root?.name ?? "" },
-    ...buildAttendanceExport({ document, mode, eligible, rows, closed: v.status === "closed" }),
+    ...buildAttendanceExport({ document, mode, eligible, rows, closed: v.status === "closed", includeUnit }),
   };
 }

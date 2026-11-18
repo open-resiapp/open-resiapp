@@ -25,6 +25,9 @@ const focusRingClass =
 
 export type CheckFilter = CheckCode | "all";
 
+/** Settings → Budova a byty with the bulk unit-type mode open (FlatsTab). */
+const UNIT_TYPE_BULK_HREF = "/settings?tab=building&unitTypes=1";
+
 interface OwnersHealthProps {
   health: OwnerHealthData;
   /** The existing registrations inbox (first group of the queue), or null. */
@@ -228,14 +231,19 @@ export default function OwnersHealth({
           ordinal: f.facts.ordinal ?? "",
           units: f.unitLabels.join(", "),
         });
+      case "unit_type_unset":
+        return t("checks.unit_type_unset.reason", { count: f.facts.count ?? f.unitIds.length });
     }
   }
 
   function renderCheckRow(f: CheckEntry, handled: boolean) {
+    // unit_type_unset is ONE aggregated item over many units: no per-unit
+    // menu entries, the primary button opens the bulk "set type" screen.
+    const aggregated = f.code === "unit_type_unset";
     const menu: ActionMenuItem[] = handled
       ? []
       : [
-          ...f.unitIds.slice(1).map((id, idx) => ({
+          ...(aggregated ? [] : f.unitIds.slice(1)).map((id, idx) => ({
             label: t("showOwnersOf", { unit: f.unitLabels[idx + 1] ?? "" }),
             onSelect: () => onShowUnit(id, f.unitLabels[idx + 1] ?? ""),
           })),
@@ -260,6 +268,10 @@ export default function OwnersHealth({
             <Button variant="secondary" onClick={() => restore(f.dismissal!.id)} disabled={busy}>
               {t("restore")}
             </Button>
+          ) : aggregated ? (
+            <ButtonLink variant="secondary" href={UNIT_TYPE_BULK_HREF}>
+              {t("checks.unit_type_unset.action")}
+            </ButtonLink>
           ) : f.code === "unit_without_owner" ? (
             <Button variant="secondary" onClick={onAddOwner}>
               <Icon name="plus" size={20} />
@@ -271,7 +283,14 @@ export default function OwnersHealth({
             </Button>
           )}
           {menu.length > 0 ? (
-            <ActionMenu label={t("moreForCheck", { unit: f.unitLabels.join(", ") })} items={menu} />
+            <ActionMenu
+              label={
+                aggregated
+                  ? t("checks.unit_type_unset.label")
+                  : t("moreForCheck", { unit: f.unitLabels.join(", ") })
+              }
+              items={menu}
+            />
           ) : null}
         </div>
       </Card>

@@ -28,6 +28,7 @@ import type { OwnerHealthData } from "@/lib/owner-health";
 import AddOwnerModal from "./AddOwnerModal";
 import InvitationModal from "./InvitationModal";
 import { OwnerStatusBadge } from "./OwnerStatusBadge";
+import UnitTypeBadge from "@/components/units/UnitTypeBadge";
 import OwnersHealth, { type CheckFilter } from "./OwnersHealth";
 import OwnersInbox from "./OwnersInbox";
 import PendingApprovalModal from "./PendingApprovalModal";
@@ -419,11 +420,14 @@ export default function OwnersBoard({
                     ) : (
                       <ul className="space-y-0.5">
                         {row.flats.map((f) => (
-                          <li key={f.unitId}>
-                            {t("flatWithShare", {
-                              flat: f.flatNumber,
-                              share: `${f.shareNum}/${f.shareDen}`,
-                            })}
+                          <li key={f.unitId} className="flex flex-wrap items-center gap-2">
+                            <span>
+                              {t("flatWithShare", {
+                                flat: f.flatNumber,
+                                share: `${f.shareNum}/${f.shareDen}`,
+                              })}
+                            </span>
+                            <UnitTypeBadge type={f.unitType} />
                           </li>
                         ))}
                       </ul>

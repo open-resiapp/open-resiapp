@@ -1,4 +1,27 @@
 {
+  "UnitType": {
+    "flat": "Byt",
+    "non_residential": "Nebytový priestor",
+    "garage": "Garáž",
+    "other": "Iné",
+    "column": "Typ priestoru",
+    "unset": "Nezadané",
+    "bulkStart": "Nastaviť typ priestorov",
+    "bulkHint": "Označte priestory a vyberte ich typ. Typ priestoru nemení váhu hlasu.",
+    "bulkSelectAll": "Označiť všetky",
+    "bulkSelectUnset": "Označiť nezadané",
+    "bulkClear": "Zrušiť označenie",
+    "bulkSelected": "Označené: {count}",
+    "bulkTypeLabel": "Nový typ",
+    "bulkApply": "Nastaviť typ",
+    "bulkDone": "Hotovo",
+    "bulkSaved": "Typ priestoru uložený ({count}).",
+    "bulkFailed": "Typ priestoru sa nepodarilo uložiť.",
+    "selectUnit": "Označiť {unit}",
+    "unsetBadge": "Typ nezadaný",
+    "exportResidentialOnly": "Len byty (bez nebytových priestorov a garáží)",
+    "exportResidentialOnlyHint": "Súčty v dolnej časti stále rátajú všetkých vlastníkov."
+  },
   "OwnerLifecycle": {
     "formerChip": "Bývalý vlastník",
     "formerUntil": "Bývalý vlastník · do {date}",
@@ -250,6 +273,11 @@
       "duplicate_ordinal": {
         "label": "Rovnaké poradové číslo",
         "reason": "Poradové číslo {ordinal} z LV majú viacerí vlastníci (byty {units})."
+      },
+      "unit_type_unset": {
+        "label": "Skontrolujte typy priestorov",
+        "reason": "{count, plural, one {# priestor nemá} few {# priestory nemajú} other {# priestorov nemá}} zadaný typ (byt, nebytový priestor, garáž).",
+        "action": "Nastaviť typy"
       }
     },
     "showOwners": "Zobraziť vlastníkov",
@@ -1175,6 +1203,7 @@
       },
       "channelSplit": "Elektronicky {electronic} %, listinne {paper} % všetkých hlasov",
       "noneForFilter": "Žiadne byty pre tento filter.",
+      "notVotedJump": "Ešte nehlasovali: {count}. Zobraziť v priebehu hlasovania",
       "status": {
         "resolved_for": "Za",
         "resolved_against": "Proti",
@@ -1389,7 +1418,19 @@
     "rationaleUnanimous": "Jednomyseľný hlas všetkých spoluvlastníkov",
     "rationaleMajorityShare": "Väčšina spoluvlastníckych podielov",
     "rationaleTieAbstain": "Rovnosť podielov – byt sa zdržal (§14 ods. 4)",
-    "rationaleNoQuorumWithinUnit": "Bez vyjadrenia spoluvlastníkov"
+    "rationaleNoQuorumWithinUnit": "Bez vyjadrenia spoluvlastníkov",
+    "presence": {
+      "heading": "Prítomní na schôdzi",
+      "attendance": "Podľa prezenčnej listiny: {owners} vlastníkov, {pct} % všetkých hlasov.",
+      "cast": "Podľa odovzdaných hlasov: {owners} vlastníkov, {pct} % všetkých hlasov.",
+      "forOfPresent": "Za hlasovalo {pct} % hlasov prítomných. Na prijatie treba viac ako polovicu hlasov prítomných; prítomný, ktorý nehlasoval, sa počíta ako nesúhlas.",
+      "quorumMet": "Zhromaždenie je uznášaniaschopné (prítomní majú väčšinu všetkých hlasov).",
+      "quorumNotMet": "Zhromaždenie nie je uznášaniaschopné: prítomní nemajú väčšinu všetkých hlasov."
+    },
+    "codes": {
+      "ATTENDANCE_MISSING": "Prezenčná listina nie je vyplnená – výsledok počítaný z odovzdaných hlasov.",
+      "MEETING_QUORUM_NOT_REACHED": "Uznášaniaschopnosť nebola dosiahnutá – rozhodnutie nie je prijaté."
+    }
   },
   "VoteButton": {
     "for": "ZA",

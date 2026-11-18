@@ -9,10 +9,10 @@
 // minutes attachment (§14a ods. 8) — the export is the sheet to be signed;
 // §14b ods. 4 decisions are measured against owners present.
 //
-// TODO(legal): the engine still counts "present" for simple_present as the
-// weight of CAST ballots (engine/index.ts, untouched by this spec). The
-// attendance numbers below are shown NEXT TO the result, never fed into it.
-// Using the attendance list as the §14b ods. 4 denominator needs sign-off.
+// 2026-11-18 (Filip, "podľa zákona"): the result of a meeting voting now
+// measures "present" against the attendance list — results.ts feeds it to the
+// engine via computePresence (unit-level, ∪ cast ballots). The summary below
+// stays the owner-level door-list view.
 import type { QuorumType, VoteWithOwnership } from "@/types";
 import type { CanonicalVotingMethod } from "@/lib/voting-method";
 import { calculateResults } from "../engine";
@@ -392,8 +392,10 @@ const pct = (part: number, whole: number) =>
  * two renderers (xlsx on the server, PDF in the browser) — same rows and
  * totals for the same options. Totals are mode-independent.
  *
- * TODO(decision): "include non-residential units / garages" is hidden until
- * units carry a unit-type discriminator (spec Decisions 6).
+ * `includeUnit` (optional row filter, e.g. "flats only" — src/lib/unit-type.ts)
+ * drops excluded units from the ROWS only; owner rows keep just their included
+ * units. Totals always count every eligible owner: non-residential units and
+ * garages vote too (SK §14(3)), so the filter never changes the quorum basis.
  */
 export function buildAttendanceExport(input: {
   document: ExportDocument;
@@ -401,6 +403,7 @@ export function buildAttendanceExport(input: {
   eligible: EligibleLine[];
   rows: AttendanceRowIn[];
   closed: boolean;
+  includeUnit?: (unitId: string) => boolean;
 }): AttendanceExport {
   const summary = buildAttendanceSummary({
     votingId: "",
@@ -430,11 +433,27 @@ export function buildAttendanceExport(input: {
     };
   };
 
+  const include = input.includeUnit;
   let rows: ExportRow[];
   if (input.mode === "owner") {
-    rows = summary.rows.map((r) => toRow(r.unitLabel, r.ownerId, r.ownerName, r.weight));
+    // Owner → only the included units (label + weight), when filtering.
+    const kept = include
+      ? new Map(
+          byOwner(input.eligible.filter((e) => include(e.unitId))).map((o) => [
+            o.ownerId,
+            { label: o.units.map((u) => u.unitLabel).join(", "), weight: o.weight },
+          ])
+        )
+      : null;
+    rows = summary.rows
+      .filter((r) => !kept || kept.has(r.ownerId))
+      .map((r) => {
+        const k = kept?.get(r.ownerId);
+        return toRow(k ? k.label : r.unitLabel, r.ownerId, r.ownerName, k ? k.weight : r.weight);
+      });
   } else {
     rows = [...input.eligible]
+      .filter((e) => !include || include(e.unitId))
       .sort((a, b) => a.unitLabel.localeCompare(b.unitLabel, undefined, { numeric: true }))
       .map((e) => toRow(e.unitLabel, e.ownerId, e.ownerName, e.weight));
   }

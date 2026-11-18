@@ -433,3 +433,14 @@ Open / manual
   negative checks that `last_login_at` is absent from `/api/users`, neighbours directory and MCP tools
   (it is never selected there).
 
+
+### Implementation notes — unit type check (2026-11-18)
+- New check code `unit_type_unset` ("Skontrolujte typy priestorov") in `src/lib/owner-checks.ts`:
+  ONE aggregated finding (unitIds = every live unit without a valid `data.unit_type`, `facts.count`),
+  HOA communities only (`unitTypeCheck` option, set in `owner-health.server.ts`). Fingerprint covers
+  the unit ids, so "Označiť ako vyriešené" works like other checks and the item returns when a new
+  unclassified unit appears. Informative only — never in the nav badge, never blocks anything.
+- Action button opens `/settings?tab=building&unitTypes=1` — FlatsTab bulk mode with every
+  unclassified unit pre-selected (select all / select unset / clear, one type select, "Nastaviť
+  typ"); endpoint `POST /api/flats/unit-type` (manageSettings, current root, one UPDATE).
+- Check script: `scripts/owner-health-check.ts` §4 (exact-set check + LV NP detection). Not run.

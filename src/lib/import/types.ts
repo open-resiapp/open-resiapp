@@ -5,6 +5,8 @@
 // parent fields. Empty strings denote "not provided" — Zod converts them
 // to undefined in the parse step.
 
+import type { UnitType } from "@/lib/unit-type";
+
 export type CountryCode = "sk" | "cz";
 
 export type VotingMethod = "per_share" | "per_flat" | "per_area";
@@ -33,6 +35,12 @@ export interface ImportRow {
   unit_area_m2?: number;
   unit_share_numerator: number;
   unit_share_denominator: number;
+  /**
+   * Typ priestoru (src/lib/unit-type.ts). The LV parser fills it from the
+   * "Číslo bytu" / "Číslo nebytového priestoru" label; empty = unclassified
+   * (read as "flat"). Never affects voting weight (SK §14(3)).
+   */
+  unit_type?: UnitType;
 
   // owner-level (per row)
   owner_name: string;

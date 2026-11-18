@@ -133,6 +133,9 @@ function normaliseLvPdfText(text: string): string {
     "Vchod (číslo)",
     "Poschodie",
     "Číslo bytu",
+    // Unit type (lv-paste.ts detectUnit): nebytový priestor / garáž.
+    "Číslo nebytového priestoru",
+    "Druh nebytového priestoru",
     "Podiel priestoru",
     "Súpisné číslo",
     "Miestna časť",

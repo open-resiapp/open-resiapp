@@ -19,6 +19,7 @@ import {
   calculateItemResults,
   computeBallotHash,
   computeItemAuditHash,
+  computePresence,
 } from "@modules/voting/src/engine";
 import {
   escalateRepeatedQuorum,
@@ -340,6 +341,114 @@ console.log("legal fixes 2026-11-18");
       "RESULT_ALREADY_PUBLISHED"
   );
   check("publish only once", code(checkTransition(st("closed", true), "publish")) === "RESULT_ALREADY_PUBLISHED");
+}
+
+// ── (5) present at a meeting (2026-11-18, SK §14b ods. 4 / CZ §1206 ods. 2) ──
+console.log("present at a meeting");
+{
+  // Ten units of 1/10 each → total possible weight 1 (weighted_by_share).
+  const present = (units: string[]) =>
+    computePresence(
+      units.map((u) => ({
+        unitEntityId: u,
+        userId: `p-${u}`,
+        unitShareNumerator: 1,
+        unitShareDenominator: 10,
+        area: null,
+      })),
+      "weighted_by_share"
+    );
+
+  // SK meeting: A, B for; C against; D, E present but did not vote.
+  const skVotes = [vote("A", "za"), vote("B", "za"), vote("C", "proti")];
+  const castOnly = calculateResults(skVotes, "weighted_by_share", "simple_present", 1, {
+    country: "sk",
+  });
+  const skMeeting = calculateResults(skVotes, "weighted_by_share", "simple_present", 1, {
+    country: "sk",
+    votingType: "meeting",
+    presence: present(["A", "B", "C", "D", "E"]),
+  });
+  check("SK cast-only simple_present would pass (0.2 > 0.15)", castOnly.passed === true);
+  check(
+    "SK meeting: present non-voters count against (0.2 ≤ 0.5/2) → not passed",
+    skMeeting.passed === false &&
+      skMeeting.presence?.basis === "attendance" &&
+      Math.abs((skMeeting.presence?.weight ?? 0) - 0.5) < 1e-9 &&
+      skMeeting.presence?.owners === 5 &&
+      (skMeeting.codes ?? []).length === 0,
+    JSON.stringify(skMeeting.presence)
+  );
+  check(
+    "SK meeting: co-owner present → unit counted once, full weight",
+    Math.abs(
+      computePresence(
+        [
+          { unitEntityId: "A", userId: "x", unitShareNumerator: 1, unitShareDenominator: 10, area: null },
+          { unitEntityId: "A", userId: "y", unitShareNumerator: 1, unitShareDenominator: 10, area: null },
+        ],
+        "weighted_by_share"
+      ).weight - 0.1
+    ) < 1e-9
+  );
+
+  // SK written simple_present: unchanged (participants = cast ballots, no presence).
+  const skWrittenRes = calculateResults(skVotes, "weighted_by_share", "simple_present", 1, {
+    country: "sk",
+    votingType: "written",
+  });
+  check(
+    "SK written simple_present byte-identical to legacy",
+    JSON.stringify(skWrittenRes) === JSON.stringify(castOnly) && skWrittenRes.presence === undefined
+  );
+
+  // CZ meeting, quorum NOT reached: 40 % present, everyone for.
+  const czLow = calculateResults(
+    [vote("A", "za"), vote("B", "za"), vote("C", "za"), vote("D", "za")],
+    "weighted_by_share",
+    "simple_present",
+    1,
+    { country: "cz", votingType: "meeting", presence: present(["A", "B", "C", "D"]) }
+  );
+  check(
+    "CZ meeting <50 % present → not passed, MEETING_QUORUM_NOT_REACHED",
+    czLow.passed === false &&
+      czLow.quorumReached === false &&
+      czLow.presence?.meetingQuorumReached === false &&
+      (czLow.codes ?? []).includes("MEETING_QUORUM_NOT_REACHED"),
+    JSON.stringify({ passed: czLow.passed, codes: czLow.codes, presence: czLow.presence })
+  );
+
+  // CZ meeting, 60 % present: 40 % for, 10 % against, 10 % present silent.
+  const czOk = calculateResults(
+    [vote("A", "za"), vote("B", "za"), vote("C", "za"), vote("D", "za"), vote("E", "proti")],
+    "weighted_by_share",
+    "simple_present",
+    1,
+    { country: "cz", votingType: "meeting", presence: present(["A", "B", "C", "D", "E", "F"]) }
+  );
+  check(
+    "CZ meeting passes with majority of present (0.4 > 0.3), no silence-is-no",
+    czOk.passed === true &&
+      czOk.presence?.meetingQuorumReached === true &&
+      (czOk.codes ?? []).length === 0 &&
+      Math.abs(czOk.proti - 0.1) < 1e-9,
+    JSON.stringify({ passed: czOk.passed, proti: czOk.proti, presence: czOk.presence })
+  );
+
+  // Missing attendance list → fallback to cast ballots + warning code.
+  const fallback = calculateResults(skVotes, "weighted_by_share", "simple_present", 1, {
+    country: "sk",
+    votingType: "meeting",
+    presence: null,
+  });
+  check(
+    "meeting without attendance falls back to cast ballots + ATTENDANCE_MISSING",
+    fallback.passed === castOnly.passed &&
+      fallback.presence?.basis === "cast" &&
+      (fallback.codes ?? []).includes("ATTENDANCE_MISSING"),
+    JSON.stringify({ presence: fallback.presence, codes: fallback.codes })
+  );
 }
 
 if (failures > 0) {

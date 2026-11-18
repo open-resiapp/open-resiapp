@@ -2,6 +2,7 @@
 // The loader lives in `owners-board.server.ts`.
 
 import type { UserRole } from "@/types";
+import type { UnitType } from "@/lib/unit-type";
 
 /**
  * One account status per person, derived from `users` + `invitations`:
@@ -19,6 +20,8 @@ export const OWNER_STATUSES: OwnerStatus[] = ["no_account", "invited", "pending"
 
 export interface OwnerFlat {
   unitId: string;
+  /** Typ priestoru (absent in data → "flat"); badge for non-flat units. */
+  unitType?: UnitType;
   flatNumber: string;
   entranceName: string | null;
   floor: number | null;
@@ -86,6 +89,7 @@ export interface UnitOption {
   id: string;
   flatNumber: string;
   entranceName: string | null;
+  unitType?: UnitType;
   owners: UnitOwnerShare[];
 }
 

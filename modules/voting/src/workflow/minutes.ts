@@ -47,11 +47,28 @@ export interface MinutesProtocol {
   /**
    * BYT-20261118-001 §10: attendance (prezenčná listina) of a meeting voting —
    * from getMeetingAttendanceSummary. Data only, NOT rendered.
-   * TODO(legal): §14b ods. 4 "present" — the engine measures simple_present
-   * against cast ballots; whether presentWeight should be the denominator,
-   * and the attendance paragraph wording, need legal sign-off (spec L3, L5).
    */
   attendance?: MinutesAttendance | null;
+  /**
+   * 2026-11-18: who counted as "present" in the tally of a meeting voting
+   * (SK §14b ods. 4 denominator, CZ §1206 ods. 2 quorum) — taken from the
+   * engine result, so the minutes state exactly what the result used.
+   * Data only. TODO(legal): printing it in VotingMinutesPDF (wording of the
+   * attendance / quorum paragraph) needs the legal-copy sign-off.
+   */
+  presence?: MinutesPresence | null;
+}
+
+export interface MinutesPresence {
+  /** "attendance" = prezenčná listina; "cast" = list empty, fell back to ballots. */
+  basis: "attendance" | "cast";
+  presentOwners: number;
+  presentWeight: number;
+  /** presentWeight / totalPossibleWeight (0..1). */
+  presentShare: number;
+  totalPossibleWeight: number;
+  /** CZ only. */
+  meetingQuorumReached: boolean | null;
 }
 
 export interface MinutesAttendance {
@@ -136,8 +153,23 @@ export function buildMinutesInput(input: {
           .map((e) => ({ at: e.createdAt, note: e.note })),
         resultPublishedAt: src.resultPublishedAt ?? null,
         attendance: src.attendance ?? null,
+        presence: presenceOf(input.results),
       }
     : undefined;
 
   return { items, ballots: ballotRows, flatNumbersByUnitId, protocol };
+}
+
+/** Presence is voting-level (same for every item) — read it from the first result carrying it. */
+function presenceOf(results: VotingResults[]): MinutesPresence | null {
+  const r = results.find((x) => x.presence);
+  if (!r?.presence) return null;
+  return {
+    basis: r.presence.basis,
+    presentOwners: r.presence.owners,
+    presentWeight: r.presence.weight,
+    presentShare: r.presence.share,
+    totalPossibleWeight: r.totalPossibleWeight,
+    meetingQuorumReached: r.presence.meetingQuorumReached ?? null,
+  };
 }

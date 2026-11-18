@@ -5,12 +5,16 @@
 // Contract:
 //   parseLvText(text) → DraftRow[] (best-effort, never throws)
 //
+// Unit type: flat ("Číslo bytu") vs nebytový priestor / garáž — see
+// detectUnit(). Voting weight does not depend on it (SK §14(3)).
+//
 // What we DON'T extract:
 //   - Date of birth, rodné číslo, IČO (PII, GDPR exclusion)
 //   - Areas in m² (not present in LV)
 //   - Emails, phones (not present in LV)
 //   - Časť C (Ťarchy) — liens, separate concern
 
+import type { UnitType } from "../../unit-type";
 import type { ImportRow } from "../types";
 
 type DraftRow = Partial<ImportRow>;
@@ -83,7 +87,54 @@ function splitUnitBlocks(text: string): string[] {
   // Each unit section starts with the literal "Vchod (číslo)" header line.
   const parts = text.split(/(?=Vchod\s*\(číslo\))/g);
   // The first chunk is the LV preamble — drop it.
-  return parts.filter((p) => /Vchod\s*\(číslo\)/.test(p));
+  return parts.filter((p) => /Vchod\s*\(číslo\)/.test(p)).flatMap(splitByUnitLabel);
+}
+
+// A unit label WITH its value: "Číslo bytu 12" / "Číslo nebytového priestoru 3".
+const UNIT_LABEL_RE = /Číslo\s+(?:bytu|nebytového\s+priestoru)\s*:?\s*\n?\s*\d/g;
+
+/**
+ * A non-residential unit (nebytový priestor) may be listed without its own
+ * "Vchod (číslo)" line (e.g. a garage outside the entrances) and would then
+ * glue onto the previous flat — its owners counted as owners of that flat.
+ * Cut a block again at every further unit label, but only when the tail
+ * carries its own owner section ("Spoluvlastnícky podiel"), so a repeated
+ * page-header label can never cut an owner list in two.
+ *
+ * TODO(decision): verified only against flat-only LVs (LV č. 3182); the
+ * layout of nebytové priestory is best-effort until we get a real LV with NP.
+ */
+function splitByUnitLabel(block: string): string[] {
+  const starts = [...block.matchAll(UNIT_LABEL_RE)].map((m) => m.index ?? 0);
+  if (starts.length <= 1) return [block];
+  const cuts = [0];
+  for (const idx of starts.slice(1)) {
+    const tail = block.slice(idx);
+    if (/Spoluvlastnícky\s+podiel/i.test(tail)) cuts.push(idx);
+  }
+  return cuts.map((c, i) => block.slice(c, cuts[i + 1] ?? block.length));
+}
+
+/**
+ * Typ priestoru from the unit labels (src/lib/unit-type.ts):
+ *   "Číslo bytu" → flat; "Číslo nebytového priestoru" / "Druh nebytového
+ *   priestoru" → non_residential, or garage when the druh text says garáž /
+ *   garážové stojisko. Returns the unit number ("NP 3" for non-flat units so
+ *   NP č. 3 does not merge with byt č. 3 in the same entrance).
+ *
+ * TODO(decision): the druh may also be a numeric KN code on some LVs; only
+ * the text form is recognised. Unknown → non_residential (board can change).
+ */
+function detectUnit(block: string): { type?: UnitType; number?: string } {
+  const flat = block.match(/Číslo bytu\s*:?\s*\n?\s*(\d+\w?)/i)?.[1];
+  const np = block.match(/Číslo nebytového priestoru\s*:?\s*\n?\s*(\d+\w?)/i)?.[1];
+  const druh = block.match(/Druh nebytového priestoru\s*:?\s*\n?\s*([^\n]*)/i)?.[1] ?? "";
+  if (np || (!flat && /Druh nebytového priestoru/i.test(block))) {
+    const type: UnitType = /gar[aá]ž/i.test(druh) ? "garage" : "non_residential";
+    return { type, number: np ? `NP ${np}` : undefined };
+  }
+  if (flat) return { type: "flat", number: flat };
+  return {};
 }
 
 // ── Single unit block ────────────────────────────────────
@@ -97,7 +148,9 @@ function parseUnitBlock(block: string, header: LvHeader): DraftRow[] {
   // (paste-from-text with newlines or pdf-extract with spaces).
   const vchod = block.match(/Vchod\s*\(číslo\)\s*\n?\s*(\S+)/i)?.[1];
   const poschodieRaw = block.match(/Poschodie\s*\n?\s*(\S+)/i)?.[1];
-  const cisloBytu = block.match(/Číslo bytu\s*\n?\s*(\d+\w?)/i)?.[1];
+  // Flat ("Číslo bytu") or non-residential unit ("Číslo nebytového priestoru").
+  const unit = detectUnit(block);
+  const cisloBytu = unit.number;
 
   // Unit's share of community: the fraction after the "Podiel priestoru …
   // spoluvlastnícky podiel k pozemku" header.
@@ -135,6 +188,7 @@ function parseUnitBlock(block: string, header: LvHeader): DraftRow[] {
       entrance_label: vchod ?? undefined,
       unit_number: cisloBytu ?? undefined,
       unit_floor: floor,
+      unit_type: unit.type,
       supisne_cislo: supisne ?? undefined,
       unit_share_numerator: unitShareNum,
       unit_share_denominator: unitShareDen,

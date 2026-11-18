@@ -570,3 +570,14 @@ Implemented together with the 2026-11-18 legal fixes (brief overrides the
   `minutes_finalised` / superseded minutes; financial-impact flip warning;
   CZ documents (legal sign-off).
 - Legal sign-off TODOs: notice + ballot sheet wording, minutes Phase B.
+
+### Implementation notes — meeting "present" + board list dedupe (2026-11-18)
+- Results of meeting votings use the attendance list as "present" (SK §14b ods. 4 denominator,
+  CZ §1206 ods. 2 quorum); written votes unchanged. Details in BYT-20261118-001 notes; golden
+  cases in `scripts/voting-golden-check.ts` §5.
+- Board view: the separate "Ešte nehlasovali (N)" list with per-unit paper buttons is replaced by a
+  one-line jump that preselects the "Nehlasovali" filter of the "Priebeh hlasovania" drill-down
+  (single list; paper entry per owner stays there, plus the general "Zapísať listinný hlas").
+  Without a drill-down (no overview) only the count line is shown.
+- Known gap: `canStillPass` outlook (workflow/overview.ts) still estimates on cast ballots for
+  meeting votings; the binding "passed" comes from the engine result.
